@@ -37,9 +37,6 @@ jobs:
           mkdir -p dist
           tar --gzip -cf ./dist/git-dotenv-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
 
-      - name: permission
-        run: chmod +x bin/git-dotenv
-
       - name: create release
         uses: softprops/action-gh-release@v1
         with:
