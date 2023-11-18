@@ -8,6 +8,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -60,7 +62,13 @@ jobs:
             dist/*.tar.gz
       - name: gen checksums
         uses: wangzuo/action-release-checksums@v1
-
+    
+  homebrew:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
       # https://github.com/Justintime50/homebrew-releaser
       - name: homebrew releaser
         uses: Justintime50/homebrew-releaser@v1
@@ -79,6 +87,3 @@ jobs:
           target_linux_amd64: true
           target_linux_arm64: true
           update_readme_table: true
-
-    strategy:
-      fail-fast: true
