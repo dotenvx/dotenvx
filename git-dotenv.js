@@ -20,4 +20,10 @@ program.command('decrypt')
     console.log('decrypted!')
   })
 
+program.command('run')
+  .description('Load env from encrypted .env.vault or .env')
+  .action((str, options) => {
+    console.log('Loaindg env from encrypted .env.vault')
+  })
+
 program.parse()
