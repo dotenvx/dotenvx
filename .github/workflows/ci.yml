@@ -3,8 +3,8 @@ name: ci
 on: push
 
 jobs:
-  build-macos:
-    runs-on: macos-latest
+  build:
+    runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v2
