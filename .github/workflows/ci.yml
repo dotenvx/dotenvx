@@ -20,6 +20,9 @@ jobs:
     - name: pkg
       run: npm run pkg
 
+    - name: permission
+      run: chmod +x dist/git-dotenv
+
     - name: create release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
