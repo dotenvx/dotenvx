@@ -60,7 +60,7 @@ function executeCommand (command, args, env) {
     process.exit(code)
   })
 
-  subprocess.on('error', (err) => {
+  subprocess.on('error', (_err) => {
     process.exit(1)
   })
 }
