@@ -1,18 +1,26 @@
-name: ci
+name: bins
 
 on: push
 
 jobs:
-  build:
+  bins:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v2
 
+    - name: ldid for macos binary building
+      uses: MOZGIII/install-ldid-action@<action-version>
+      with:
+        tag: v2.1.5-procursus2
+
+    - name: ldid
+      run: ldid
+
     - name: node
       uses: actions/setup-node@v2
       with:
-        node-version: '14'
+        node-version: '18'
 
     - name: npm install
       run: npm install
@@ -21,10 +29,10 @@ jobs:
       run: npm run pkg
 
     - name: permission
-      run: chmod +x dist/git-dotenv
+      run: chmod +x bin/git-dotenv
 
     - name: create release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: dist/git-dotenv
+        files: bin/git-dotenv

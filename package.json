@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.0",
   "name": "git-dotenv",
   "description": "A more secure, standalone, cross-platform dotenv - from the creator of dotenv",
   "author": "@motdotla",
@@ -26,7 +26,7 @@
     "standard": "^17.1.0"
   },
   "pkg": {
-    "targets": ["node16-macos-x64"],
-    "outputPath": "dist"
+    "targets": ["node18-macos-arm64"],
+    "outputPath": "bin"
   }
 }
