@@ -9,8 +9,12 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
 
+    # https://news.ycombinator.com/item?id=32388964
+    # https://github.com/procursusteam/ldid
+    # https://www.pulumi.com/blog/nodejs-binaries-with-pkg/
+    # https://github.com/pulumi/pulumi-aws-static-website/blob/main/.github/workflows/release.yaml
     - name: ldid for macos binary building
-      uses: MOZGIII/install-ldid-action@<action-version>
+      uses: MOZGIII/install-ldid-action@v1
       with:
         tag: v2.1.5-procursus2
 
