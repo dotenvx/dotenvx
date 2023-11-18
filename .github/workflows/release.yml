@@ -70,8 +70,8 @@ jobs:
           homebrew_tap: homebrew-brew
           formula_folder: Formula
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          commit_owner: motdotla
-          commit_email: homebrew@dotenv.org
+          commit_owner: motdotenv
+          commit_email: mot@dotenv.org
           install: 'bin.install "git-dotenv"'
           test: 'system bin/"git-dotenv", "--version"'
 
