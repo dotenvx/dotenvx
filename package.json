@@ -11,18 +11,19 @@
   "repository": "dotenv-org/git-dotenv",
   "license": "MIT",
   "files": [
-    "git-dotenv.js"
+    "git-dotenv.mjs"
   ],
-  "main": "git-dotenv.js",
+  "main": "git-dotenv.mjs",
   "bin": {
-    "git-dotenv": "./git-dotenv.js"
+    "git-dotenv": "./git-dotenv.mjs"
   },
   "scripts": {
     "standard": "standard --fix"
   },
   "dependencies": {
     "commander": "^11.1.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "read-pkg": "^9.0.1"
   },
   "devDependencies": {
     "pkg": "^5.8.1",
