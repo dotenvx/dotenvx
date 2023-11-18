@@ -10,6 +10,9 @@
   "homepage": "https://github.com/dotenv-org/git-dotenv",
   "repository": "dotenv-org/git-dotenv",
   "license": "MIT",
+  "files": [
+    "git-dotenv.js"
+  ],
   "main": "git-dotenv.js",
   "bin": {
     "git-dotenv": "./git-dotenv.js"
