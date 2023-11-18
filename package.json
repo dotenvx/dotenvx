@@ -1,0 +1,22 @@
+{
+  "version": "0.1.0",
+  "name": "git-dotenv",
+  "description": "A more secure, standalone, cross-platform dotenv - from the creator of dotenv",
+  "author": "@motdotla",
+  "keywords": [
+    "dotenv",
+    "env"
+  ],
+  "homepage": "https://github.com/dotenv-org/git-dotenv",
+  "repository": "dotenv-org/git-dotenv",
+  "license": "MIT",
+  "scripts": {
+    "standard": "standard"
+  },
+  "dependencies": {
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "standard": "^17.1.0"
+  }
+}
