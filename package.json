@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "git-dotenv",
   "description": "A more secure, standalone, cross-platform dotenv - from the creator of dotenv",
   "author": "@motdotla",
@@ -15,10 +15,11 @@
     "git-dotenv": "./git-dotenv.js"
   },
   "scripts": {
-    "standard": "standard"
+    "standard": "standard --fix"
   },
   "dependencies": {
-    "commander": "^11.1.0"
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "pkg": "^5.8.1",
