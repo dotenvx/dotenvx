@@ -1,13 +1,8 @@
-#!/usr/bin/env node
-
-import { spawn } from 'child_process'
-import { Command } from 'commander'
-import dotenv from 'dotenv'
-import { readPackageSync } from 'read-pkg'
-
-const packageJson = readPackageSync()
-
+const packageJson = require('./package.json')
+const { spawn } = require('child_process')
+const { Command } = require('commander')
 const program = new Command()
+const dotenv = require('dotenv')
 
 program
   .name(packageJson.name)
@@ -46,7 +41,7 @@ program.command('run')
     executeCommand(command, args, env)
   })
 
-program.parse(process.argv)
+program.parse()
 
 function executeCommand (command, args, env) {
   const subprocess = spawn(command, args, {
@@ -60,7 +55,6 @@ function executeCommand (command, args, env) {
   })
 
   subprocess.on('error', (err) => {
-    console.error(err)
     process.exit(1)
   })
 }
