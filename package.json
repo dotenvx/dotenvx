@@ -18,13 +18,16 @@
     "git-dotenv": "./git-dotenv.js"
   },
   "scripts": {
-    "standard": "standard --fix"
+    "standard": "standard --fix",
+    "standard:fix": "standard",
+    "test": "jest"
   },
   "dependencies": {
     "commander": "^11.1.0",
     "dotenv": "^16.3.1"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "pkg": "^5.8.1",
     "standard": "^17.1.0"
   }
