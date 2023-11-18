@@ -2,12 +2,13 @@ name: release
 
 # run only if ci completes and it was a tag push
 on:
+  push:
+    tags:
+      - v*.*.*
   workflow_run:
     workflows: ["ci"]
     types:
       - completed
-    tags:
-      - v*.*.*
 
 jobs:
   release:
