@@ -1,0 +1,36 @@
+# after a release
+name: homebrew
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  homebrew:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/Justintime50/homebrew-releaser
+      - name: homebrew releaser
+        uses: Justintime50/homebrew-releaser@v1
+        with:
+          debug: true
+          homebrew_owner: dotenv-org
+          homebrew_tap: homebrew-brew
+          formula_folder: Formula
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          commit_owner: motdotla
+          commit_email: homebrew@dotenv.org
+          install: 'bin.install "git-dotenv"'
+          test: 'system bin/"git-dotenv", "--version"'
+
+          # Adds URL and checksum targets for different OS and architecture pairs. Using this option assumes 
+          # a tar archive exists on your GitHub repo with the following URL pattern (this cannot be customized):
+          # https://github.com/{GITHUB_OWNER}/{REPO_NAME}/releases/download/{TAG}/{REPO_NAME}-{VERSION}-{OPERATING_SYSTEM}-{ARCHITECTURE}.tar.gz'
+          # https://github.com/dotenv-org/git-dotenv/releases/download/v1.2.0/git-dotenv-1.2.0-darwin-amd64.tar.gz
+          # https://github.com/dotenv-org/git-dotenv/releases/download/v0.1.7/git-dotenv-darwin-amd64.tar.gz
+          target_darwin_amd64: true
+          target_darwin_arm64: true
+          target_linux_amd64: true
+          target_linux_arm64: true
+            
+    

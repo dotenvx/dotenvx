@@ -6,11 +6,19 @@ on:
       - v*.*.*
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
+      # GITHUB_ENV operates like a .env file
+      - name: extract version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
 
       - name: node
         uses: actions/setup-node@v1
@@ -39,11 +47,11 @@ jobs:
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/git-dotenv.exe
           echo "dist-ing"
           mkdir -p dist
-          tar --gzip -cf ./dist/git-dotenv-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
-          tar --gzip -cf ./dist/git-dotenv-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
-          tar --gzip -cf ./dist/git-dotenv-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
-          tar --gzip -cf ./dist/git-dotenv-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
-          tar --gzip -cf ./dist/git-dotenv-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
 
       - name: create release
         uses: softprops/action-gh-release@v1
