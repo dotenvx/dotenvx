@@ -1,5 +1,5 @@
 {
-  "version": "0.1.11",
+  "version": "0.1.12",
   "name": "git-dotenv",
   "description": "A more secure, standalone, cross-platform dotenv - from the creator of `dotenv`",
   "author": "@motdotla",
