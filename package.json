@@ -17,6 +17,7 @@
     "commander": "^11.1.0"
   },
   "devDependencies": {
+    "pkg": "^5.8.1",
     "standard": "^17.1.0"
   }
 }
