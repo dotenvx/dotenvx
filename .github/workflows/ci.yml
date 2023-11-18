@@ -1,16 +1,10 @@
 name: ci
 
-on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
+on: push
 
 jobs:
   build-macos:
     runs-on: macos-latest
-
     steps:
     - name: checkout
       uses: actions/checkout@v2
@@ -26,10 +20,8 @@ jobs:
     - name: pkg
       run: npm run pkg
 
-    - name: upload binary
-      uses: actions/upload-artifact@v2
+    - name: create release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-        name: git-dotenv
-        path: dist/git-dotenv
-
-
+        files: dist/git-dotenv
