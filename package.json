@@ -1,7 +1,7 @@
 {
   "version": "0.1.10",
   "name": "git-dotenv",
-  "description": "A more secure, standalone, cross-platform dotenv - from the creator of dotenv",
+  "description": "A more secure, standalone, cross-platform dotenv - from the creator of `dotenv`",
   "author": "@motdotla",
   "keywords": [
     "dotenv",
