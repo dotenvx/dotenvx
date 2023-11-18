@@ -50,5 +50,7 @@ jobs:
         with:
           files: |
             dist/*.tar.gz
+      - name: gen checksums
+        uses: wangzuo/action-release-checksums@v1
     strategy:
       fail-fast: true
