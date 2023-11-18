@@ -20,7 +20,7 @@
   "scripts": {
     "standard": "standard --fix",
     "standard:fix": "standard",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "commander": "^11.1.0",
