@@ -18,7 +18,7 @@ brew install dotenv-org/brew/dotenv
 
 &nbsp;
 
-## Run Anywhere
+<h2>Run Anywhere <small><sup>cross-platform</sup></small></h2>
 
 **Node**
 
