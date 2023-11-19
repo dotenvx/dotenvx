@@ -78,12 +78,14 @@ Pass the `--env-file` flag (shorthand `-f`) to run any environment from a `.env.
 
 ```sh
 $ dotenv run --env-file=.env.production -- node index.js
+[dotenv][INFO] Injecting 12 production environment variables into your application process
 ```
 
 Combine multiple `.env` files if you like.
 
 ```
 $ dotenv run --env-file=.env.local --env-file=.env -- node index.js
+[dotenv][INFO] Injecting 12 local, 1 development environment variables into your application process
 ```
 
 &nbps;
