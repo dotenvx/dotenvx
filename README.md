@@ -20,10 +20,6 @@ brew install dotenv-org/brew/dotenv
 
 ## Run Anywhere
 
-> One tool that works everywhere. Consistent and predictable loading of your environments across your entire infrastructure and organization.
-
-With node
-
 ```sh
 # node
 $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -69,7 +65,7 @@ $ dotenv run -- php artisan serve
 # ...
 ```
 
-
+> One tool that works everywhere. Consistent and predictable loading of your environments across your entire infrastructure and organization.
 
 &nbsp;
 
