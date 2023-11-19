@@ -7,7 +7,7 @@
 ```sh
 brew install dotenv-org/brew/dotenv
 ```
-> * [other installation methods](#install)
+> * [other ways to install](#install)
 
 ## Install
 
@@ -29,6 +29,19 @@ Or use [`npx`](https://docs.npmjs.com/cli/v8/commands/npx):
 
 ```sh
 npx dotenv --help
+```
+
+2. dotenv is a standalone binary, so (if you want) you can just download it directly:
+
+```sh
+# download it to `./dotenv`
+curl -o ./dotenv --compressed -f --proto '=https' https://pkgx.sh/$(uname)/$(uname -m)
+
+# install it to `/usr/local/bin/dotenv`
+sudo install -m 755 dotenv /usr/local/bin
+
+# check it works
+dotenv --help
 ```
 
 

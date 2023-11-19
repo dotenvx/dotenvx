@@ -68,6 +68,11 @@ jobs:
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/dotenv-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/dotenv-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenv-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/dotenv-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenv-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
 
       - name: create release
         uses: softprops/action-gh-release@v1
