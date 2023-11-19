@@ -51,7 +51,6 @@ program.command('run')
   .option('-f, --env-file <paths...>', 'path to your environment file', '.env')
   .action(function () {
     // injecting 1 environment variable from ${options.envFile}
-
     const options = this.opts()
     logger.debug(options)
 
@@ -64,13 +63,15 @@ program.command('run')
     const env = {}
 
     for (const envFilepath of optionEnvFile) {
-      logger.verbose(`parsing ${envFilepath}`)
       const filepath = helpers.resolvePath(envFilepath)
 
       try {
         const contents = fs.readFileSync(filepath, { encoding: ENCODING })
+
         const parsed = dotenv.parse(contents)
         logger.debug(parsed)
+
+        dotenv.populate(process.env, parsed, { debug: (logger.level === 'debug') })
       } catch (e) {
         logger.warn(e)
       }
@@ -79,7 +80,7 @@ program.command('run')
     // Extract command and arguments after '--'
     const commandIndex = process.argv.indexOf('--')
     if (commandIndex === -1 || commandIndex === process.argv.length - 1) {
-      console.error('Error: No command provided after --.')
+      logger.error('Error: No command provided after --.')
       process.exit(1)
     }
 
