@@ -105,5 +105,5 @@ dotenv --help
 
 If you have questions or feedback:
 
-* [github.com/dotenv-org/dotenv](https://github.com/dotenv-org/dotenv)
+* [github.com/dotenv-org/dotenv](https://github.com/dotenv-org/dotenv) - bugs and discussions
 * [x.com/dotenvorg](https://x.com/dotenvorg) (DMs are open)
