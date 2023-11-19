@@ -1,4 +1,4 @@
-const config = function() {
+const config = function () {
   console.log('Hello World')
 }
 
