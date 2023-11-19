@@ -2,34 +2,82 @@
 
 const fs = require('fs')
 const path = require('path')
-const { spawn } = require('child_process')
 const { Command } = require('commander')
 const program = new Command()
 const dotenv = require('dotenv')
 
-const packageJsonPath = path.join(__dirname, 'package.json')
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+// constants
+const ENCODING = 'utf8'
 
+const logger = require('./src/logger')
+const helpers = require('./src/helpers')
+const packageJson = require('./src/packageJson')
+
+// global log levels
+program
+  .option('-l, --log-level <level>', 'set log level', 'info')
+  .hook('preAction', (thisCommand, actionCommand) => {
+    const options = thisCommand.opts()
+
+    if (options.logLevel) {
+      logger.level = options.logLevel
+    }
+  })
+
+// cli
 program
   .name(packageJson.name)
   .description(packageJson.description)
   .version(packageJson.version)
 
+// commands
 program.command('encrypt')
   .description('encrypt something')
-  .action((str, options) => {
+  .action((_str, _options) => {
+    logger.info('INFO!')
+    logger.debug('DEBUG!')
+    logger.verbose('VERBOSE!')
+
     console.log('encrypted!')
   })
 
 program.command('decrypt')
   .description('decrypt something')
-  .action((str, options) => {
+  .action((_str, _options) => {
     console.log('decrypted!')
   })
 
 program.command('run')
-  .description('Load env from encrypted .env.vault or .env')
-  .action(() => {
+  .description('Inject environment variables into your application process')
+  .option('-f, --env-file <paths...>', 'path to your environment file', '.env')
+  .action(function() {
+    // injecting 1 environment variable from ${options.envFile}
+
+    const options = this.opts()
+    logger.debug(options)
+
+    // convert to array if needed
+    let optionEnvFile = options.envFile
+    if (!Array.isArray(optionEnvFile)) {
+      optionEnvFile = [optionEnvFile]
+    }
+
+    const env = {}
+
+    for (const envFilepath of optionEnvFile) {
+      logger.verbose(`parsing ${envFilepath}`)
+      const filepath = helpers.resolvePath(envFilepath)
+
+      try {
+        const contents = fs.readFileSync(filepath, { encoding: ENCODING })
+        const parsed = dotenv.parse(contents)
+        logger.debug(parsed)
+
+      } catch (e) {
+        logger.warn(e)
+      }
+    }
+
     // Extract command and arguments after '--'
     const commandIndex = process.argv.indexOf('--')
     if (commandIndex === -1 || commandIndex === process.argv.length - 1) {
@@ -40,27 +88,7 @@ program.command('run')
     const command = process.argv[commandIndex + 1]
     const args = process.argv.slice(commandIndex + 2)
 
-    dotenv.config() // load from .env of .env.vault file
-
-    const env = {} // save for overrides
-
-    executeCommand(command, args, env)
+    helpers.executeCommand(command, args, env)
   })
 
-program.parse()
-
-function executeCommand (command, args, env) {
-  const subprocess = spawn(command, args, {
-    stdio: 'inherit',
-    shell: true,
-    env: { ...process.env, ...env }
-  })
-
-  subprocess.on('close', (code) => {
-    process.exit(code)
-  })
-
-  subprocess.on('error', (_err) => {
-    process.exit(1)
-  })
-}
+program.parse(process.argv)

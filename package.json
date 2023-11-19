@@ -11,23 +11,26 @@
   "repository": "dotenv-org/git-dotenv",
   "license": "MIT",
   "files": [
-    "git-dotenv.js"
+    "git-dotenv.js",
+    "src/**/*"
   ],
   "main": "git-dotenv.js",
   "bin": {
     "git-dotenv": "./git-dotenv.js"
   },
   "scripts": {
-    "standard": "standard --fix",
-    "standard:fix": "standard",
+    "standard": "standard",
+    "standard:fix": "standard --fix",
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "commander": "^11.1.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "jest-mock-process": "^2.0.0",
     "pkg": "^5.8.1",
     "standard": "^17.1.0"
   }
