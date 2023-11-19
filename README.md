@@ -18,7 +18,7 @@ brew install dotenv-org/brew/dotenv
 
 &nbsp;
 
-## Use Dotenv Anywhere
+## Run Anywhere
 
 **Node**
 
