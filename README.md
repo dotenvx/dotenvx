@@ -19,21 +19,15 @@ brew install dotenv-org/brew/dotenv
 
 ### Other Ways to Install
 
-1. After `brew` installing globally with [`npm`](https://www.npmjs.com/package/@dotenv/dotenv) is easiest:
+1. After `brew`, installing globally using [`npm`](https://www.npmjs.com/package/@dotenv/dotenv) is easiest:
 
 ```sh
 npm install @dotenv/dotenv --global
 ```
 
-Or use [`npx`](https://docs.npmjs.com/cli/v8/commands/npx):
-
-```sh
-npx dotenv --help
-```
-
 2. dotenv is a standalone binary, so (if you want) you can just download it directly:
 
-```sh
+```bash
 # download it to `./dotenv`
 curl -Lo ./dotenv --compressed -f --proto '=https' https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-$(uname -m).tar.gz
 
