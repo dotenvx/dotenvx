@@ -20,15 +20,9 @@ brew install dotenv-org/brew/dotenv
 
 ## Use Dotenv Anywhere
 
-```
-# .env
-HELLO="World"
-```
-```
-// index.js
-console.log('Hello' + process.env.HELLO)
-```
 ```sh
+$ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO);" > index.js
+
 $ node index.js
 Hello undefined
 
