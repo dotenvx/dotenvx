@@ -28,7 +28,7 @@ Hello undefined
 
 $ dotenv run -- node index.js
 Hello World
-> :D
+> :-D
 ```
 
 Here's a python example.
@@ -41,26 +41,22 @@ Hello
 
 $ dotenv run -- python3 index.py
 Hello World
-> :D
+> :-D
 ```
 
 Use it the same way across *any language, framework, or platform*. Create a `.env` file and then just put `dotenv run --` before your application start command. Your environment variables will be injected into your application process just in time.
 
 ```
-# next.js
 $ dotenv run -- next dev
-[dotenv][INFO] Injecting 13 environment variables into your application process
-
-# rails
+$ dotenv run -- npm start
 $ dotenv run -- bin/rails s
-[dotenv][INFO] Injecting 7 environment variables into your application process
-
-# laravel
 $ dotenv run -- php artisan serve
-[dotenv][INFO] Injecting 16 environment variables into your application process
+$ dotenv run -- dotnet run
+$ dotenv run -- gradlew bootRun
+$ dotenv run -- gunicorn --workers 4 --bind 0.0.0.0:${PORT} wsgi:app
+[dotenv][INFO] Injecting 13 environment variables into your application process
+> :-)
 
-# and more
-# ...
 ```
 
 > One tool that works everywhere. Consistent and predictable loading of your environments across your entire infrastructure and organization.
