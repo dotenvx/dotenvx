@@ -21,7 +21,8 @@ brew install dotenv-org/brew/dotenv
 ## Use Dotenv Anywhere
 
 ```sh
-$ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO);" > index.js
+# .env, index.js
+$ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ node index.js
 Hello undefined
@@ -34,6 +35,8 @@ Hello World
 Same goes for [Python](https://www.python.org).
 
 ```sh
+$ echo "import os;print("Hello " + os.getenv("HELLO", ''))" > index.py
+
 $ python3 index.py
 Hello
 
