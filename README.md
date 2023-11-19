@@ -2,6 +2,10 @@
 
 *better dotenv* from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
+* cross-platform
+* multi-environment
+* encrypted envs
+
 &nbsp;
 
 
