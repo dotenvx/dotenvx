@@ -82,6 +82,8 @@ program.command('run')
       }
     }
 
+    logger.info('Loaded env into your application process')
+
     // Extract command and arguments after '--'
     const commandIndex = process.argv.indexOf('--')
     if (commandIndex === -1 || commandIndex === process.argv.length - 1) {
