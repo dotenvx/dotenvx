@@ -21,7 +21,11 @@ brew install dotenv-org/brew/dotenv
 ## Use Dotenv Anywhere
 
 ```sh
-$ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO);" > index.js
+# .env
+# HELLO=World
+# 
+# // index.js
+# console.log('Hello ' + process.env.HELLO)
 
 $ node index.js
 Hello undefined
@@ -29,6 +33,7 @@ Hello undefined
 $ dotenv run -- node index.js
 [dotenv@0.2.7][INFO] Injecting X environment variables into your application process
 Hello World
+# ^^ env was injected from your .env file
 ```
 
 ## Install
