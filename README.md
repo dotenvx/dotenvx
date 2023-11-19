@@ -20,22 +20,15 @@ brew install dotenv-org/brew/dotenv
 
 ## Use Dotenv Anywhere
 
-Use `dotenv` without adding [`require('dotenv').config()`](https://github.com/motdotla/dotenv) to your code.
-
 ```sh
+$ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO);" > index.js
+
 $ node index.js
 Hello undefined
 
 $ dotenv run -- node index.js
 Hello World
 # ^^ Your environment variable(s) are injected into your application process just in time
-```
-```
-# .env
-# HELLO=World
-
-# // index.js
-# console.log('Hello ' + process.env.HELLO)
 ```
 
 Same goes for [Python](https://www.python.org).
