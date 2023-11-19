@@ -1,4 +1,4 @@
-“dotenv made better“ from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
+*better dotenv* from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
 &nbsp;
 

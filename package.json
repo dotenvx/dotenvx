@@ -1,7 +1,7 @@
 {
   "version": "0.2.2",
   "name": "@dotenv/dotenv",
-  "description": "“dotenv made better“ from the creator of `dotenv`",
+  "description": "“better dotenv“ from the creator of `dotenv`",
   "author": "@motdotla",
   "keywords": [
     "dotenv",
