@@ -6,8 +6,8 @@ const resolvePath = function (filepath) {
   return path.resolve(process.cwd(), filepath)
 }
 
-const executeCommand = function (command, args, env) {
-  const subprocess = spawn(command, args, {
+const executeCommand = function (subCommand, env) {
+  const subprocess = spawn(subCommand[0], subCommand.slice(1), {
     stdio: 'inherit',
     shell: true,
     env: { ...process.env, ...env }

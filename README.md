@@ -18,6 +18,24 @@ brew install dotenv-org/brew/dotenv
 
 &nbsp;
 
+## Use Dotenv Anywhere
+
+```
+# .env
+HELLO="World"
+```
+```
+// index.js
+console.log('Hello' + process.env.HELLO)
+```
+```sh
+$ node index.js
+Hello undefined
+
+$ dotenv run -- node index.js
+[dotenv@0.2.7][INFO] Injecting X environment variables into your application process
+Hello World
+```
 
 ## Install
 
@@ -38,7 +56,7 @@ npm install @dotenv/dotenv --global
 
 2. dotenv is a standalone binary, so (if you want) you can just download it directly:
 
-```bash
+```sh
 # download it to `./dotenv`
 curl -Lo ./dotenv --compressed -f --proto '=https' https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-$(uname -m).tar.gz
 

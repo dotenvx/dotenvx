@@ -103,14 +103,14 @@ program.command('run')
     // Extract command and arguments after '--'
     const commandIndex = process.argv.indexOf('--')
     if (commandIndex === -1 || commandIndex === process.argv.length - 1) {
-      logger.error('Error: No command provided after --.')
+      logger.error('At least one argument is required after the run command, received 0.')
+      logger.error('Exiting')
       process.exit(1)
+    } else {
+      const subCommand = process.argv.slice(commandIndex + 1)
+
+      helpers.executeCommand(subCommand, env)
     }
-
-    const command = process.argv[commandIndex + 1]
-    const args = process.argv.slice(commandIndex + 2)
-
-    helpers.executeCommand(command, args, env)
   })
 
 program.parse(process.argv)
