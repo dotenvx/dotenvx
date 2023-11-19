@@ -82,7 +82,7 @@ program.command('run')
       }
     }
 
-    logger.info('Injected env into your application process')
+    logger.info('Injecting X environment variables into your application process')
 
     // Extract command and arguments after '--'
     const commandIndex = process.argv.indexOf('--')
