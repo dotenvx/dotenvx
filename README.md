@@ -8,7 +8,7 @@
 ```sh
 brew install dotenv-org/brew/dotenv
 ```
-> * [other ways to install](#install)
+> * [other ways to install](#other-ways-to-install)
 
 &nbsp;
 
