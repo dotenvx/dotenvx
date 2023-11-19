@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const fs = require('fs')
-const path = require('path')
 const { Command } = require('commander')
 const program = new Command()
 const dotenv = require('dotenv')
@@ -50,7 +49,7 @@ program.command('decrypt')
 program.command('run')
   .description('Inject environment variables into your application process')
   .option('-f, --env-file <paths...>', 'path to your environment file', '.env')
-  .action(function() {
+  .action(function () {
     // injecting 1 environment variable from ${options.envFile}
 
     const options = this.opts()
@@ -72,7 +71,6 @@ program.command('run')
         const contents = fs.readFileSync(filepath, { encoding: ENCODING })
         const parsed = dotenv.parse(contents)
         logger.debug(parsed)
-
       } catch (e) {
         logger.warn(e)
       }
