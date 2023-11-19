@@ -15,12 +15,30 @@ const main = require('./../lib/main')
 // global log levels
 program
   .option('-l, --log-level <level>', 'set log level', 'info')
+  .option('-q, --quiet', 'sets log level to error')
+  .option('-v, --verbose', 'sets log level to verbose')
+  .option('-d, --debug', 'sets log level to debug')
   .hook('preAction', (thisCommand, actionCommand) => {
     const options = thisCommand.opts()
 
     if (options.logLevel) {
       logger.level = options.logLevel
       logger.debug(`Setting log level to ${options.logLevel}`)
+    }
+
+    // --quiet overides --log-level. only errors will be shown
+    if (options.quiet) {
+      logger.level = 'error'
+    }
+
+    // --verbose overrides --quiet
+    if (options.verbose) {
+      logger.level = 'verbose'
+    }
+
+    // --debug overrides --verbose
+    if (options.debug) {
+      logger.level = 'debug'
     }
   })
 
