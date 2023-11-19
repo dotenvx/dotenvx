@@ -8,9 +8,9 @@ const dotenv = require('dotenv')
 // constants
 const ENCODING = 'utf8'
 
-const logger = require('./src/logger')
-const helpers = require('./src/helpers')
-const packageJson = require('./src/packageJson')
+const logger = require('./../shared/logger')
+const helpers = require('./helpers')
+const packageJson = require('./../shared/packageJson')
 
 // global log levels
 program

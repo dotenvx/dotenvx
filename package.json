@@ -11,13 +11,12 @@
   "repository": "dotenv-org/dotenv",
   "license": "MIT",
   "files": [
-    "dotenv.js",
     "src/**/*"
   ],
-  "main": "dotenv.js",
+  "main": "src/lib/main.js",
   "bin": {
-    "dotenv": "./dotenv.js",
-    "git-dotenv": "./dotenv.js"
+    "dotenv": "./src/cli/dotenv.js",
+    "git-dotenv": "./src/cli/dotenv.js"
   },
   "scripts": {
     "standard": "standard",
