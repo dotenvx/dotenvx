@@ -22,6 +22,8 @@ brew install dotenv-org/brew/dotenv
 
 > One tool that works everywhere. Consistent and predictable loading of your environments across your entire infrastructure and organization.
 
+With node
+
 ```sh
 # node
 $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -34,7 +36,7 @@ Hello World
 # ^^ Your environment variable(s) are injected into your application process just in time
 ```
 
-> Just put `dotenv run --` before your application start command. It works with *any language, framework, or platform*. 
+or with python
 
 ```sh
 # python
@@ -46,9 +48,11 @@ Hello
 $ dotenv run -- python3 index.py
 Hello World
 # ^ Success
-#
-# --------------------------------
-#
+```
+
+or with *any language, framework, or platform*. Just put `dotenv run --` before your application start command.
+
+```
 # next.js
 $ dotenv run -- next dev
 [dotenv][INFO] Injecting 13 environment variables into your application process
@@ -64,6 +68,8 @@ $ dotenv run -- php artisan serve
 # and more
 # ...
 ```
+
+
 
 &nbsp;
 
