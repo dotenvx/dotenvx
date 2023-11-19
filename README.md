@@ -20,7 +20,7 @@ brew install dotenv-org/brew/dotenv
 
 ## Use Dotenv Anywhere
 
-Use `dotenv` in [Node](https://www.nodejs.org) WITHOUT need for the [`dotenv language module`](https://github.com/motdotla/dotenv).
+Use `dotenv` without adding [`require('dotenv').config()`](https://github.com/motdotla/dotenv) to your code.
 
 ```sh
 $ node index.js
