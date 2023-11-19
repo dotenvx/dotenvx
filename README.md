@@ -9,6 +9,9 @@ brew install dotenv-org/brew/dotenv
 ```
 > * [other ways to install](#install)
 
+&nbsp;
+
+
 ## Install
 
 Installing with [`brew`](https://brew.sh) is most straight forward:
@@ -16,6 +19,7 @@ Installing with [`brew`](https://brew.sh) is most straight forward:
 ```sh
 brew install dotenv-org/brew/dotenv
 ```
+
 
 ### Other Ways to Install
 
