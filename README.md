@@ -28,7 +28,7 @@ Hello undefined
 
 $ dotenv run -- node index.js
 Hello World
-# ^^ Your environment variable(s) are injected into your application process just in time
+> :D
 ```
 
 Here's a python example.
@@ -41,7 +41,7 @@ Hello
 
 $ dotenv run -- python3 index.py
 Hello World
-# ^ Success
+> :D
 ```
 
 Use it the same way across *any language, framework, or platform*. Create a `.env` file and then just put `dotenv run --` before your application start command. Your environment variables will be injected into your application process just in time.
