@@ -20,6 +20,8 @@ brew install dotenv-org/brew/dotenv
 
 ## Use Dotenv Anywhere
 
+**Node**
+
 ```sh
 # .env, index.js
 $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -32,7 +34,7 @@ Hello World
 # ^^ Your environment variable(s) are injected into your application process just in time
 ```
 
-Same goes for [Python](https://www.python.org).
+**Python**
 
 ```sh
 $ echo "import os;print("Hello " + os.getenv("HELLO", ''))" > index.py
@@ -48,7 +50,9 @@ Hello World
 # print("Hello " + os.getenv("HELLO", ''))
 ```
 
-Same goes for *any other language, framework, or platform*. Just put `dotenv run --` before your application start command.
+**Anywhere**
+
+Just put `dotenv run --` before your application start command. It works with *any language, framework, or platform*. 
 
 ```sh
 # next.js
