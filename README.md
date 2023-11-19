@@ -35,7 +35,7 @@ npx dotenv --help
 
 ```sh
 # download it to `./dotenv`
-curl -o ./dotenv --compressed -f --proto '=https' https://pkgx.sh/$(uname)/$(uname -m)
+curl -o ./dotenv --compressed -f --proto '=https' https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-$(uname -m).tar.gz
 
 # install it to `/usr/local/bin/dotenv`
 sudo install -m 755 dotenv /usr/local/bin
