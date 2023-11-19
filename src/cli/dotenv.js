@@ -3,7 +3,6 @@
 const fs = require('fs')
 const { Command } = require('commander')
 const program = new Command()
-const dotenv = require('dotenv')
 
 // constants
 const ENCODING = 'utf8'
@@ -11,6 +10,7 @@ const ENCODING = 'utf8'
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
 const packageJson = require('./../shared/packageJson')
+const main = require('./../lib/main')
 
 // global log levels
 program
@@ -68,15 +68,13 @@ program.command('run')
 
       try {
         logger.debug(`Reading env from ${filepath}`)
-        const contents = fs.readFileSync(filepath, { encoding: ENCODING })
+        const src = fs.readFileSync(filepath, { encoding: ENCODING })
 
         logger.debug(`Parsing env from ${filepath}`)
-        const parsed = dotenv.parse(contents)
-        logger.debug(parsed)
+        const parsed = main.parse(src)
 
         logger.debug(`Populating env from ${filepath}`)
-        dotenv.populate(process.env, parsed, { debug: (logger.level === 'debug'), override: options.overload })
-        logger.debug(process.env)
+        main.populate(process.env, parsed, { debug: (logger.level === 'debug'), override: options.overload })
       } catch (e) {
         logger.warn(e)
       }
