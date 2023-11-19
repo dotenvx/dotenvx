@@ -56,18 +56,18 @@ jobs:
       - name: pkg
         run: |
           echo "pkg-ing"
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-amd64/git-dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/git-dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/git-dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/git-dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/git-dotenv.exe
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-amd64/dotenv
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/dotenv
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/dotenv
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenv
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenv.exe
           echo "dist-ing"
           mkdir -p dist
-          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
-          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
-          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
-          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
-          tar --gzip -cf ./dist/git-dotenv-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
 
       - name: create release
         uses: softprops/action-gh-release@v1
@@ -94,8 +94,10 @@ jobs:
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           commit_owner: motdotenv
           commit_email: mot@dotenv.org
-          install: 'bin.install "git-dotenv"'
-          test: 'system bin/"git-dotenv", "--version"'
+          install: |
+            bin.install "dotenv"
+            bin.install_symlink "dotenv" => "git-dotenv"
+          test: 'system bin/"dotenv", "--version"'
           target_darwin_amd64: true
           target_darwin_arm64: true
           target_linux_amd64: true

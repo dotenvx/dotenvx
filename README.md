@@ -1,11 +1,11 @@
-# git-dotenv
+# @dotenv/dotenv
 
-A more secure, standalone, cross-platform dotenv - from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
+“dotenv made better“ from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
 ## Quickstart
 
 ```sh
-brew install dotenv-org/brew/git-dotenv
+brew install dotenv-org/brew/dotenv
 ```
 > * [other installation methods](#install)
 
@@ -14,21 +14,21 @@ brew install dotenv-org/brew/git-dotenv
 Installing with [`brew`](https://brew.sh) is most straight forward:
 
 ```sh
-brew install dotenv-org/brew/git-dotenv
+brew install dotenv-org/brew/dotenv
 ```
 
 ### Other Ways to Install
 
-1. After `brew` installing globally with [`npm`](https://www.npmjs.com/package/git-dotenv) is easiest:
+1. After `brew` installing globally with [`npm`](https://www.npmjs.com/package/@dotenv/dotenv) is easiest:
 
 ```sh
-npm install git-dotenv --global
+npm install @dotenv/dotenv --global
 ```
 
 Or use [`npx`](https://docs.npmjs.com/cli/v8/commands/npx):
 
 ```sh
-npx git-dotenv --help
+npx dotenv --help
 ```
 
 
