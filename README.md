@@ -21,7 +21,6 @@ brew install dotenv-org/brew/dotenv
 ## Run Anywhere
 
 ```sh
-# node
 $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ node index.js
@@ -32,10 +31,9 @@ Hello World
 # ^^ Your environment variable(s) are injected into your application process just in time
 ```
 
-or with python
+Here's a python example.
 
 ```sh
-# python
 $ echo "import os;print("Hello " + os.getenv("HELLO", ''))" > index.py
 
 $ python3 index.py
@@ -46,7 +44,7 @@ Hello World
 # ^ Success
 ```
 
-or with *any language, framework, or platform*. Just put `dotenv run --` before your application start command.
+Usage is the same across *any language, framework, or platform*. Just put `dotenv run --` before your application start command.
 
 ```
 # next.js
