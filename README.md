@@ -20,14 +20,17 @@ brew install dotenv-org/brew/dotenv
 
 ## Use Dotenv Anywhere
 
+Use `dotenv` in [Node](https://www.nodejs.org) WITHOUT need for the [`dotenv language module`](https://github.com/motdotla/dotenv).
+
 ```sh
 $ node index.js
 Hello undefined
 
 $ dotenv run -- node index.js
 Hello World
-# ^ Your environment variable was injected into your application process
-#
+# ^^ Your environment variable(s) are injected into your application process just in time
+```
+```
 # .env
 # HELLO=World
 
@@ -35,7 +38,7 @@ Hello World
 # console.log('Hello ' + process.env.HELLO)
 ```
 
-With [Python](https://www.python.org)
+Same goes for [Python](https://www.python.org).
 
 ```sh
 $ python3 index.py
@@ -49,17 +52,22 @@ Hello World
 # print("Hello " + os.getenv("HELLO", ''))
 ```
 
-With *any other language, framework, or platform*.
+Same goes for *any other language, framework, or platform*. Just put `dotenv run --` before your application start command.
 
 ```sh
 # next.js
 $ dotenv run -- next dev
+[dotenv][INFO] Injecting 13 environment variables into your application process
 
 # rails
 $ dotenv run -- bin/rails s
+[dotenv][INFO] Injecting 7 environment variables into your application process
 
 # laravel
 $ dotenv run -- php artisan serve
+[dotenv][INFO] Injecting 16 environment variables into your application process
+
+# ..more
 ```
 
 &nbsp;
