@@ -20,6 +20,7 @@ program
 
     if (options.logLevel) {
       logger.level = options.logLevel
+      logger.debug(`Setting log level to ${options.logLevel}`)
     }
   })
 
@@ -33,10 +34,6 @@ program
 program.command('encrypt')
   .description('encrypt something')
   .action((_str, _options) => {
-    logger.info('INFO!')
-    logger.debug('DEBUG!')
-    logger.verbose('VERBOSE!')
-
     console.log('encrypted!')
   })
 
@@ -47,11 +44,13 @@ program.command('decrypt')
   })
 
 program.command('run')
-  .description('Inject environment variables into your application process')
-  .option('-f, --env-file <paths...>', 'path to your environment file', '.env')
+  .description('Inject env variables into your application process')
+  .option('-f, --env-file <paths...>', 'path to your env file', '.env')
+  .option('-o, --overload', 'override existing env variables')
   .action(function () {
     // injecting 1 environment variable from ${options.envFile}
     const options = this.opts()
+    logger.debug('Configuring options')
     logger.debug(options)
 
     // convert to array if needed
@@ -65,13 +64,19 @@ program.command('run')
     for (const envFilepath of optionEnvFile) {
       const filepath = helpers.resolvePath(envFilepath)
 
+      logger.verbose(`Loading env from ${filepath}`)
+
       try {
+        logger.debug(`Reading env from ${filepath}`)
         const contents = fs.readFileSync(filepath, { encoding: ENCODING })
 
+        logger.debug(`Parsing env from ${filepath}`)
         const parsed = dotenv.parse(contents)
         logger.debug(parsed)
 
-        dotenv.populate(process.env, parsed, { debug: (logger.level === 'debug') })
+        logger.debug(`Populating env from ${filepath}`)
+        dotenv.populate(process.env, parsed, { debug: (logger.level === 'debug'), override: options.overload })
+        logger.debug(process.env)
       } catch (e) {
         logger.warn(e)
       }
