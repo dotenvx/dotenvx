@@ -20,6 +20,8 @@ brew install dotenv-org/brew/dotenv
 
 ## Run Anywhere
 
+One tool that works everywhere. Consistent and predictable loading of your environments across your entire infrastructure and organization.
+
 **Node**
 
 ```sh
@@ -69,8 +71,6 @@ $ dotenv run -- php artisan serve
 
 # ..more
 ```
-
-One tool that works everywhere–consistent and predictable loading of your environments across your entire infrastructure and organization.
 
 &nbsp;
 
