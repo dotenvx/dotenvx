@@ -44,7 +44,7 @@ Hello World
 # ^ Success
 ```
 
-Usage is the same across *any language, framework, or platform*. Just put `dotenv run --` before your application start command.
+Use it the same way across *any language, framework, or platform*. Create a `.env` file and then just put `dotenv run --` before your application start command. Your environment variables will be injected into your application process just in time.
 
 ```
 # next.js
