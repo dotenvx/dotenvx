@@ -45,4 +45,9 @@ sudo install -m 755 dotenv /usr/local/bin
 dotenv --help
 ```
 
+## Contributing
 
+If you have questions or feedback:
+
+* [github.com/dotenv-org/dotenv](https://github.com/dotenv-org/dotenv)
+* [x.com/dotenvorg](https://x.com/dotenvorg) (DMs are open)
