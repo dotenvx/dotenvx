@@ -88,13 +88,13 @@ $ dotenv run --env-file=.env.local --env-file=.env -- node index.js
 [dotenv][INFO] Injecting 12 local, 1 development environment variables into your application process
 ```
 
-&nbps;
+&nbsp;
 
 ## Encrypt Your Env Files
 
 WIP
 
-&nbps;
+&nbsp;
 
 ## Install
 
