@@ -18,7 +18,7 @@ brew install dotenv-org/brew/dotenv
 
 &nbsp;
 
-<h2>Run Anywhere <small><sup>cross-platform</sup></small></h2>
+## Run Anywhere
 
 **Node**
 
@@ -71,6 +71,28 @@ $ dotenv run -- php artisan serve
 ```
 
 &nbsp;
+
+## Multiple Environments
+
+Pass the `--env-file` flag (shorthand `-f`) to run any environment from a `.env.environment` file.
+
+```sh
+$ dotenv run --env-file=.env.production -- node index.js
+```
+
+Combine multiple `.env` files if you like.
+
+```
+$ dotenv run --env-file=.env.local --env-file=.env -- node index.js
+```
+
+&nbps;
+
+## Encrypt Your Env Files
+
+WIP
+
+&nbps;
 
 ## Install
 
