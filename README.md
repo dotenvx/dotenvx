@@ -2,7 +2,7 @@
 
 *better dotenv* from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
-* cross-platform
+* run anywhere (cross-platform)
 * multi-environment
 * encrypted envs
 
@@ -50,7 +50,7 @@ Hello World
 # print("Hello " + os.getenv("HELLO", ''))
 ```
 
-**Anywhere**
+**Next.js/Rails/Laravel/Anywhere**
 
 Just put `dotenv run --` before your application start command. It works with *any language, framework, or platform*. 
 
