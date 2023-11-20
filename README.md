@@ -75,6 +75,29 @@ More examples
 
   </details>
 
+* <details><summary>npx</summary><br>
+
+  ```sh
+  # alternatively use npx
+  $ npx @dotenv/dotenv run -- node index.js
+  $ npx @dotenv/dotenv run -- next dev
+  $ npx @dotenv/dotenv run -- npm start
+  ```
+
+  </details>
+
+* <details><summary>git</summary><br>
+
+  ```sh
+  # use as a git submodule
+  $ git dotenv run -- node index.js
+  $ git dotenv run -- next dev
+  $ git dotenv run -- npm start
+  ```
+
+  </details>
+
+
 &nbsp;
 
 ## Multiple Environments
