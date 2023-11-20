@@ -1,6 +1,6 @@
 ![dotenv.org](https://dotenv.org/better-banner.png)
 
-*better dotenv* from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
+*better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
 * run anywhere (cross-platform)
 * multi-environment
@@ -31,47 +31,49 @@ Hello World
 > :-D
 ```
 
-Other examples
+More examples
 
 * <details><summary>python</summary><br>
 
   ```sh
-  $ echo "import os;print("Hello " + os.getenv("HELLO", ''))" > index.py
+  $ echo 'import os;print("Hello " + os.getenv("HELLO", ""))' > index.py
 
   $ dotenv run -- python3 index.py
   Hello World
   ```
 
-  > [dotenv.org/docs/languages/python](https://dotenv.org/docs/languages/python)
-
   </details>
 * <details><summary>php</summary><br>
 
   ```sh
-  $ echo "<?php echo \"Hello {$_SERVER['HELLO']}\";" > index.php
+  $ echo '<?php echo "Hello {$_SERVER["HELLO"]}\n";' > index.php
 
   $ dotenv run -- php index.php
   Hello World
   ```
 
-  > [dotenv.org/docs/languages/php](https://dotenv.org/docs/languages/php)
+  </details>
+* <details><summary>ruby</summary><br>
+
+  ```sh
+  $ echo 'puts "Hello #{ENV["HELLO"]}"' > index.rb
+
+  $ dotenv run -- ruby index.rb
+  Hello World
+  ```
 
   </details>
 
-Use it the same way across *any language, framework, or platform*. Create a `.env` file and then just put `dotenv run --` before your application start command. Your environment variables will be injected into your application process just in time.
+* <details><summary>web frameworks</summary><br>
 
-```
-$ dotenv run -- next dev
-$ dotenv run -- npm start
-$ dotenv run -- bin/rails s
-$ dotenv run -- php artisan serve
-$ dotenv run -- dotnet run
-$ dotenv run -- gradlew bootRun
-$ dotenv run -- gunicorn --workers 4 --bind 0.0.0.0:${PORT} wsgi:app
-[dotenv][INFO] Injecting 13 environment variables into your application process
-> :-)
+  ```sh
+  $ dotenv run -- next dev
+  $ dotenv run -- npm start
+  $ dotenv run -- bin/rails s
+  $ dotenv run -- php artisan serve
+  ```
 
-```
+  </details>
 
 &nbsp;
 
