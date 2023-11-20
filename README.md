@@ -33,7 +33,7 @@ Hello World
 
 More examples
 
-* <details><summary>python 🐍</summary><br>
+* <details><summary>Python 🐍</summary><br>
 
   ```sh
   $ echo 'import os;print("Hello " + os.getenv("HELLO", ""))' > index.py
@@ -43,7 +43,7 @@ More examples
   ```
 
   </details>
-* <details><summary>php 🐘</summary><br>
+* <details><summary>PHP 🐘</summary><br>
 
   ```sh
   $ echo '<?php echo "Hello {$_SERVER["HELLO"]}\n";' > index.php
@@ -53,7 +53,7 @@ More examples
   ```
 
   </details>
-* <details><summary>ruby 💎</summary><br>
+* <details><summary>Ruby 💎</summary><br>
 
   ```sh
   $ echo 'puts "Hello #{ENV["HELLO"]}"' > index.rb
@@ -63,7 +63,7 @@ More examples
   ```
 
   </details>
-* <details><summary>rust 🦀</summary><br>
+* <details><summary>Rust 🦀</summary><br>
 
   ```sh
   $ echo 'fn main() {let hello = std::env::var("HELLO").unwrap_or("".to_string());println!("Hello {hello}");}' > src/main.rs
@@ -73,13 +73,27 @@ More examples
   ```
 
   </details>
-* <details><summary>web frameworks ▲ 🚂 👩‍🎨</summary><br>
+* <details><summary>Frameworks ▲ 🚂 👩‍🎨</summary><br>
 
   ```sh
   $ dotenv run -- next dev
   $ dotenv run -- npm start
   $ dotenv run -- bin/rails s
   $ dotenv run -- php artisan serve
+  ```
+
+  </details>
+* <details><summary>CI/CDs</summary><br>
+
+  ```sh
+  examples coming soon
+  ```
+
+  </details>
+* <details><summary>Platforms</summary><br>
+
+  ```sh
+  examples coming soon
   ```
 
   </details>
@@ -93,7 +107,7 @@ More examples
   ```
 
   </details>
-* <details><summary>git</summary><br>
+* <details><summary>Git</summary><br>
 
   ```sh
   # use as a git submodule
