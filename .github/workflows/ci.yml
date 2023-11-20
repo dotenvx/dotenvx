@@ -141,7 +141,7 @@ jobs:
           echo $(uname)
           echo $(uname -m)
           mkdir tools
-          curl -L https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-$(uname -m).tar.gz | gunzip > tools/$(uname -m)
+          curl -L https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-aarch64.tar.gz | gunzip > tools/aarch64
           chmod +x tools/*
       - run: docker build --tag dotenv/dotenv --file .github/Dockerfile .
       - run: |
