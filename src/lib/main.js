@@ -1,5 +1,4 @@
 const logger = require('./../shared/logger')
-
 const dotenv = require('dotenv')
 
 const config = function (options) {

@@ -152,7 +152,9 @@ WIP
 
 &nbsp;
 
-## Longstart
+## Usage
+
+### Guide
 
 Begin by creating a simple 'hello world' program.
 
@@ -212,7 +214,7 @@ Fix your `.env` file.
 HELLO="World"
 ```
 
-One last time. [Le tiredd](https://youtu.be/kCpjgl2baLs?t=41).
+One last time. [Le tired](https://youtu.be/kCpjgl2baLs?t=45).
 
 ```sh
 $ dotenv run -- node index.js
