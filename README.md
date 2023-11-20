@@ -176,7 +176,9 @@ $ dotenv run -- node index.js
 Hello undefined
 ```
 
-`dotenv` warns you when there is no `.env` file. (Pass the `--quiet` flag to suppress these warnings). Create the `.env` file.
+It warns you when there is no `.env` file (pass the `--quiet` flag to suppress these warnings).
+
+Create the `.env` file.
 
 ```ini
 # env
@@ -206,7 +208,7 @@ $ dotenv run --debug -- node index.js
 Fix your `.env` file.
 
 ```ini
-# env
+# .env
 HELLO="World"
 ```
 
