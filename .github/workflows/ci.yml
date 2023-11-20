@@ -62,6 +62,7 @@ jobs:
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/dotenv
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-x86_64/dotenv
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenv
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linux-arm64 --output bin/linux-aarch64/dotenv
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenv.exe
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenv.exe
           echo "dist-ing"
@@ -72,6 +73,7 @@ jobs:
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
           tar --gzip -cf ./dist/dotenv-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
@@ -80,6 +82,7 @@ jobs:
           tar --gzip -cf ./dist/dotenv-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
           tar --gzip -cf ./dist/dotenv-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
           tar --gzip -cf ./dist/dotenv-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenv-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenv-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenv-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
 
@@ -130,7 +133,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   docker:
-    # needs: release
+    needs: release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
