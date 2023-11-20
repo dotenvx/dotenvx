@@ -86,7 +86,8 @@ More examples
 * <details><summary>Docker 🐳</summary><br>
 
   ```sh
-  coming soon
+  $ run as a command line tool
+  docker run --rm dotenv/dotenv [dotenv arguments]
   ```
 
   </details>
