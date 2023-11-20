@@ -33,7 +33,7 @@ Hello World
 
 More examples
 
-* <details><summary>python</summary><br>
+* <details><summary>python 🐍</summary><br>
 
   ```sh
   $ echo 'import os;print("Hello " + os.getenv("HELLO", ""))' > index.py
@@ -43,7 +43,7 @@ More examples
   ```
 
   </details>
-* <details><summary>php</summary><br>
+* <details><summary>php 🐘</summary><br>
 
   ```sh
   $ echo '<?php echo "Hello {$_SERVER["HELLO"]}\n";' > index.php
@@ -53,7 +53,7 @@ More examples
   ```
 
   </details>
-* <details><summary>ruby</summary><br>
+* <details><summary>ruby 💎</summary><br>
 
   ```sh
   $ echo 'puts "Hello #{ENV["HELLO"]}"' > index.rb
@@ -63,8 +63,17 @@ More examples
   ```
 
   </details>
+* <details><summary>rust 🦀</summary><br>
 
-* <details><summary>web frameworks</summary><br>
+  ```sh
+  $ echo 'fn main() {let hello = std::env::var("HELLO").unwrap_or("".to_string());println!("Hello {hello}");}' > src/main.rs
+
+  $ dotenv run -- cargo run
+  Hello World
+  ```
+
+  </details>
+* <details><summary>web frameworks ▲,🚂,👩‍🎨</summary><br>
 
   ```sh
   $ dotenv run -- next dev
@@ -74,7 +83,6 @@ More examples
   ```
 
   </details>
-
 * <details><summary>npx</summary><br>
 
   ```sh
@@ -85,7 +93,6 @@ More examples
   ```
 
   </details>
-
 * <details><summary>git</summary><br>
 
   ```sh
@@ -96,7 +103,6 @@ More examples
   ```
 
   </details>
-
 
 &nbsp;
 
@@ -123,6 +129,75 @@ $ dotenv run --env-file=.env.local --env-file=.env -- node index.js
 WIP
 
 &nbsp;
+
+## Guide
+
+Begin by creating a simple 'hello world' program.
+
+```js
+// index.js
+console.log(`Hello ${process.env.HELLO}`)
+```
+
+Run it.
+
+```js
+$ node index.js
+Hello undefined
+```
+
+Run it with `dotenv`.
+
+```sh
+$ dotenv run -- node index.js
+[dotenv@x.x.x][WARN] ENOENT: no such file or directory, open '/../../.env'
+Hello undefined
+```
+
+`dotenv` warns you when there is no `.env` file. (Pass the `--quiet` flag to suppress these warnings). Create the `.env` file.
+
+```ini
+# env
+JELLO="World"
+```
+
+Run it again.
+
+```sh
+$ dotenv run -- node index.js
+[dotenv@x.x.x][INFO] Injecting 0 environment variables into your application process
+Hello undefined
+```
+
+Hrm, still undefined. Pass the `--debug` flag to debug the issue. I'll give you a hint: 🍮
+
+```sh
+$ dotenv run --debug -- node index.js
+[dotenv@x.x.x][VERBOSE] Loading env from /Users/scottmotte/Code/dotenv-org/temp/sandbox2/.env
+[dotenv@x.x.x][DEBUG] Reading env from /Users/scottmotte/Code/dotenv-org/temp/sandbox2/.env
+[dotenv@x.x.x][DEBUG] Parsing env from /Users/scottmotte/Code/dotenv-org/temp/sandbox2/.env
+[dotenv@x.x.x][DEBUG] {"JELLO":"World"}
+
+# Oops, HELLO not JELLO ^^
+```
+
+Fix your `.env` file.
+
+```ini
+# env
+HELLO="World"
+```
+
+One last time. [Le tiredd](https://youtu.be/kCpjgl2baLs?t=41).
+
+```sh
+$ dotenv run -- node index.js
+[dotenv@x.x.x][INFO] Injecting 0 environment variables into your application process
+Hello undefined
+```
+
+&nbsp;
+
 
 ## Install
 
