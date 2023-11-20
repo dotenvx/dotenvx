@@ -16,7 +16,6 @@
   "main": "src/lib/main.js",
   "bin": {
     "dotenv": "./src/cli/dotenv.js",
-    "dotenv2": "./src/cli/dotenv.js",
     "git-dotenv": "./src/cli/dotenv.js"
   },
   "scripts": {

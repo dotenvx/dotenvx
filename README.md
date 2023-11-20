@@ -90,6 +90,11 @@ More examples
   docker run -it --rm -v $(pwd):/app dotenv/dotenv run -- node index.js
   ```
 
+  ```sh
+  # include in a Dockerfile
+  # example coming soon
+  ```
+
   </details>
 
 * <details><summary>CI/CDs 🐙</summary><br>

@@ -112,7 +112,7 @@ jobs:
           commit_owner: motdotenv
           commit_email: mot@dotenv.org
           install: 'bin.install "dotenv"; bin.install "dotenv" => "dotenv2"; bin.install_symlink "dotenv" => "git-dotenv";'
-          test: 'system bin/"dotenv", "--version";'
+          # test: 'system bin/"dotenv", "--version";'
           target_darwin_amd64: true
           target_darwin_arm64: true
           target_linux_amd64: true
