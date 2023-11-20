@@ -130,7 +130,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   docker:
-    needs: release
+    # needs: release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -140,5 +140,16 @@ jobs:
           mkdir tools
           curl -L https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-$(uname -m).tar.gz | gunzip > tools/$(uname -m)
           chmod +x tools/*
+      - run:
+          docker build
+            --tag dotenv/dotenv
+            --file .github/Dockerfile
+      - run: |
+          cat <<EoD> Dockerfile
+          FROM dotenv/dotenv
+          RUN if which dotenv; then exit 1; fi
+          EoD
+
+          docker build --file Dockerfile .
 
 
