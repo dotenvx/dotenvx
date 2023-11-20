@@ -140,7 +140,7 @@ jobs:
           mkdir tools
           curl -L https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-$(uname -m).tar.gz | gunzip > tools/$(uname -m)
           chmod +x tools/*
-      - run:
+      - run: |
           docker build
             --tag dotenv/dotenv
             --file .github/Dockerfile
