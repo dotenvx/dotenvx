@@ -125,6 +125,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
+          echo $(uname)
+          echo $(uname -m)
           mkdir tools
           curl -L https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-$(uname -m).tar.gz | gunzip > tools/$(uname -m)
           chmod +x tools/*
