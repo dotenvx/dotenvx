@@ -151,6 +151,7 @@ jobs:
           push: true
           tags: dotenv/dotenv:latest
           # platforms: linux/amd64,linux/arm64
+      - uses: actions/checkout@v4
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v3
         with:
