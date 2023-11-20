@@ -56,22 +56,31 @@ jobs:
       - name: pkg
         run: |
           echo "pkg-ing"
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-amd64/dotenv
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-x86_64/dotenv
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/dotenv
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/dotenv
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-x86_64/dotenv
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenv
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenv.exe
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenv.exe
           echo "dist-ing"
           mkdir -p dist
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist/dotenv-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist/dotenv-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist/dotenv-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenv-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
           tar --gzip -cf ./dist/dotenv-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
           tar --gzip -cf ./dist/dotenv-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenv-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenv-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
 
       - name: create release
@@ -121,6 +130,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   docker:
+    needs: release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
