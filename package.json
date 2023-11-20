@@ -33,5 +33,8 @@
     "jest-mock-process": "^2.0.0",
     "pkg": "^5.8.1",
     "standard": "^17.1.0"
+  },
+  "standard": {
+    "env": ["jest"]
   }
 }
