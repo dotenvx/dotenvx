@@ -130,7 +130,7 @@ WIP
 
 &nbsp;
 
-## Guide
+## Longstart
 
 Begin by creating a simple 'hello world' program.
 
