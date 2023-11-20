@@ -7,14 +7,14 @@ WORKDIR /app
 # Set environment variables for the architecture and OS (change if necessary)
 ENV OS=linux
 
-# Accept architecture as a build argument
-ARG ARCH
-
 # Install dependencies
 RUN apt-get update && apt-get install -y curl
 
-# Fetch the dotenv binary
-RUN curl -L https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-${OS}-${ARCH}.tar.gz | tar -xz -C /usr/local/bin
+# Extract architecture from TARGETPLATFORM environment variable and fetch dotenv binary
+ARG TARGETPLATFORM
+RUN ARCH=$(echo ${TARGETPLATFORM} | cut -f2 -d '/') && \
+    echo "Architecture: ${ARCH}" && \
+    curl -L https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-${OS}-${ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
 # Make the binary executable
 RUN chmod +x /usr/local/bin/dotenv
