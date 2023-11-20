@@ -73,7 +73,7 @@ More examples
   ```
 
   </details>
-* <details><summary>Frameworks ▲ 🚂 👩‍🎨</summary><br>
+* <details><summary>Frameworks ▲</summary><br>
 
   ```sh
   $ dotenv run -- next dev
@@ -83,7 +83,15 @@ More examples
   ```
 
   </details>
-* <details><summary>CI/CDs</summary><br>
+* <details><summary>Docker 🐳</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>CI/CDs 🐙</summary><br>
 
   ```sh
   examples coming soon
