@@ -73,7 +73,7 @@ More examples
   ```
 
   </details>
-* <details><summary>web frameworks ▲,🚂,👩‍🎨</summary><br>
+* <details><summary>web frameworks ▲ 🚂 👩‍🎨</summary><br>
 
   ```sh
   $ dotenv run -- next dev
