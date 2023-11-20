@@ -151,3 +151,10 @@ jobs:
           push: true
           tags: dotenv/dotenv:latest
           # platforms: linux/amd64,linux/arm64
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: dotenv/dotenv
+          short-description: ${{ github.event.repository.description }}
