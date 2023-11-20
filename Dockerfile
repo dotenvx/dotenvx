@@ -6,7 +6,9 @@ WORKDIR /app
 
 # Set environment variables for the architecture and OS (change if necessary)
 ENV OS=linux
-ENV ARCH=amd64
+
+# Accept architecture as a build argument
+ARG ARCH
 
 # Install dependencies
 RUN apt-get update && apt-get install -y curl
