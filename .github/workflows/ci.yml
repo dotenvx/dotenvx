@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 16.x
-      - run: npm install
+      - run: npm install --no-cache
       - run: npm run standard
       - run: npm test
 
