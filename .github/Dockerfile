@@ -1,6 +1,6 @@
 FROM debian:buster-slim as stage0
 COPY ./tools/* /dotenv/
-RUN cp /dotenv/$(uname -m) /usr/local/bin/dotenv
+RUN cp /dotenv/aarch64 /usr/local/bin/dotenv
 RUN echo 'export PS1="\\[\\033[38;5;63m\\]dotenv\\[\\033[0m\\] $ "' >> /root/.bashrc
 
 FROM debian:buster-slim as stage1
