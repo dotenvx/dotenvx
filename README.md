@@ -140,7 +140,13 @@ brew install dotenv-org/brew/dotenv
 npm install @dotenv/dotenv --global
 ```
 
-2. dotenv is a standalone binary, so (if you want) you can just download it directly:
+2. Or use with [`npx`](https://www.npmjs.com/package/npx)
+
+```sh
+npx @dotenv/dotenv help
+```
+
+3. dotenv is a standalone binary, so (if you want) you can just download it directly:
 
 ```sh
 # download it to `./dotenv`
