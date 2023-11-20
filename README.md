@@ -20,8 +20,6 @@ brew install dotenv-org/brew/dotenv
 
 ## Run Anywhere
 
-Just prepend `dotenv run --` to your application start command.
-
 ```sh
 $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
@@ -32,47 +30,32 @@ $ dotenv run -- node index.js
 Hello World
 > :-D
 ```
-> One tool that works everywhere. Consistent and predictable loading of your environments across your entire infrastructure and organization.
 
-more examples
+Other examples
 
 * <details><summary>python</summary><br>
+
   ```sh
   $ echo "import os;print("Hello " + os.getenv("HELLO", ''))" > index.py
 
-  $ python3 index.py
-  Hello
-
   $ dotenv run -- python3 index.py
   Hello World
-  > :-D
   ```
+
+  > [dotenv.org/docs/languages/python](https://dotenv.org/docs/languages/python)
+
   </details>
+* <details><summary>php</summary><br>
 
-* <details><summary>python</summary><br>
-  ```sh
-  $ echo "import os;print("Hello " + os.getenv("HELLO", ''))" > index.py
-
-  $ python3 index.py
-  Hello
-
-  $ dotenv run -- python3 index.py
-  Hello World
-  > :-D
-  ```
-  </details>
-
-* <details><summary>python</summary><br>
   ```sh
   $ echo "<?php echo \"Hello {$_SERVER['HELLO']}\";" > index.php
 
-  $ php index.php
-  Hello
-
   $ dotenv run -- php index.php
   Hello World
-  > :-D
   ```
+
+  > [dotenv.org/docs/languages/php](https://dotenv.org/docs/languages/php)
+
   </details>
 
 Use it the same way across *any language, framework, or platform*. Create a `.env` file and then just put `dotenv run --` before your application start command. Your environment variables will be injected into your application process just in time.
