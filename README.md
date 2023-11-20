@@ -86,8 +86,8 @@ More examples
 * <details><summary>Docker 🐳</summary><br>
 
   ```sh
-  $ run as a command line tool
-  docker run --rm dotenv/dotenv [dotenv arguments]
+  # run as a command-line tool
+  docker run -it --rm -v $(pwd):/app dotenv/dotenv run -- node index.js
   ```
 
   </details>
