@@ -1,6 +1,6 @@
 ![dotenv.org](https://dotenv.org/better-banner.png)
 
-*better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
+*a better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
 * run anywhere (cross-platform)
 * multi-environment
