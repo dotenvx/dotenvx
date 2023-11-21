@@ -224,9 +224,11 @@ One last time. [Le tired](https://youtu.be/kCpjgl2baLs?t=45).
 
 ```sh
 $ dotenvx run -- node index.js
-[dotenvx@x.x.x][INFO] Injecting 0 environment variables into your application process
-Hello undefined
+[dotenvx@x.x.x][INFO] Injecting 1 environment variable into your application process
+Hello World
 ```
+
+🎉 It worked!
 
 &nbsp;
 
