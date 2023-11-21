@@ -152,7 +152,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: dotenvx/dotenvx:latest
+          tags: dotenv/dotenvx:latest
           platforms: linux/amd64,linux/arm64
       - uses: actions/checkout@v4
       - name: Docker Hub Description
@@ -160,5 +160,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: dotenvx/dotenvx
+          repository: dotenv/dotenvx
           short-description: ${{ github.event.repository.description }}
