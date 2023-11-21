@@ -258,6 +258,12 @@ npx @dotenvx/dotenvx help
 3. dotenvx is a standalone binary, so (if you want) you can just download it directly:
 
 ```sh
+curl -sfS https://dotenvx-sh-4066a51e4748.herokuapp.com/! | sh
+```
+
+Remove the `!` to install where you prefer. (the `!` downloads directly into `/usr/local/bin/`)
+
+```sh
 # download it to `./dotenvx`
 curl -sfS https://dotenvx-sh-4066a51e4748.herokuapp.com/ | sh
 
