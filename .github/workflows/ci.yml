@@ -56,35 +56,35 @@ jobs:
       - name: pkg
         run: |
           echo "pkg-ing"
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-amd64/dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-x86_64/dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-x86_64/dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-aarch64/dotenv
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenv.exe
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenv.exe
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-amd64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-x86_64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-x86_64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-aarch64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenvx.exe
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenvx.exe
           echo "dist-ing"
           mkdir -p dist
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
-          tar --gzip -cf ./dist/dotenv-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
-          tar --gzip -cf ./dist/dotenv-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
-          tar --gzip -cf ./dist/dotenv-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
-          tar --gzip -cf ./dist/dotenv-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
-          tar --gzip -cf ./dist/dotenv-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
-          tar --gzip -cf ./dist/dotenv-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
-          tar --gzip -cf ./dist/dotenv-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
-          tar --gzip -cf ./dist/dotenv-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
-          tar --gzip -cf ./dist/dotenv-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
-          tar --gzip -cf ./dist/dotenv-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
 
       - name: create release
         uses: softprops/action-gh-release@v1
@@ -105,14 +105,14 @@ jobs:
         uses: Justintime50/homebrew-releaser@v1
         with:
           debug: false
-          homebrew_owner: dotenv-org
+          homebrew_owner: dotenvx
           homebrew_tap: homebrew-brew
           formula_folder: Formula
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           commit_owner: motdotenv
           commit_email: mot@dotenv.org
-          install: 'bin.install "dotenv"; bin.install_symlink "dotenv" => "git-dotenv";'
-          # test: 'system bin/"dotenv", "--version";'
+          install: 'bin.install "dotenvx"; bin.install_symlink "dotenvx" => "git-dotenvx";'
+          test: 'system bin/"dotenvx", "--version";'
           target_darwin_amd64: true
           target_darwin_arm64: true
           target_linux_amd64: true
@@ -129,7 +129,7 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
-          scope: '@dotenv'
+          scope: '@dotenvx'
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -150,7 +150,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: dotenv/dotenv:latest
+          tags: dotenvx/dotenvx:latest
           platforms: linux/amd64,linux/arm64
       - uses: actions/checkout@v4
       - name: Docker Hub Description
@@ -158,5 +158,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: dotenv/dotenv
+          repository: dotenvx/dotenvx
           short-description: ${{ github.event.repository.description }}

@@ -1,22 +1,22 @@
 {
   "version": "0.2.19",
-  "name": "@dotenv/dotenv",
+  "name": "@dotenvx/dotenvx",
   "description": "a better dotenv–from the creator of `dotenv`",
   "author": "@motdotla",
   "keywords": [
     "dotenv",
     "env"
   ],
-  "homepage": "https://github.com/dotenv-org/dotenv",
-  "repository": "dotenv-org/dotenv",
+  "homepage": "https://github.com/dotenvx/dotenvx",
+  "repository": "dotenvx/dotenvx",
   "license": "MIT",
   "files": [
     "src/**/*"
   ],
   "main": "src/lib/main.js",
   "bin": {
-    "dotenv": "./src/cli/dotenv.js",
-    "git-dotenv": "./src/cli/dotenv.js"
+    "dotenvx": "./src/cli/dotenvx.js",
+    "git-dotenvx": "./src/cli/dotenvx.js"
   },
   "scripts": {
     "standard": "standard",

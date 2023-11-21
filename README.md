@@ -1,4 +1,4 @@
-![dotenv.org](https://dotenv.org/better-banner.png)
+![dotenvx](https://dotenv.org/better-banner.png)
 
 *a better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
@@ -12,7 +12,7 @@
 ### Quickstart
 
 ```sh
-brew install dotenv-org/brew/dotenv
+brew install dotenvx/brew/dotenvx
 ```
 > * [other ways to install](#other-ways-to-install)
 
@@ -205,9 +205,9 @@ Hrm, still undefined. Pass the `--debug` flag to debug the issue. I'll give you 
 
 ```sh
 $ dotenv run --debug -- node index.js
-[dotenv@x.x.x][VERBOSE] Loading env from /Users/scottmotte/Code/dotenv-org/temp/sandbox2/.env
-[dotenv@x.x.x][DEBUG] Reading env from /Users/scottmotte/Code/dotenv-org/temp/sandbox2/.env
-[dotenv@x.x.x][DEBUG] Parsing env from /Users/scottmotte/Code/dotenv-org/temp/sandbox2/.env
+[dotenv@x.x.x][VERBOSE] Loading env from /../../.env
+[dotenv@x.x.x][DEBUG] Reading env from /../../.env
+[dotenv@x.x.x][DEBUG] Parsing env from /../../.env
 [dotenv@x.x.x][DEBUG] {"JELLO":"World"}
 
 # Oops, HELLO not JELLO ^^
@@ -236,39 +236,39 @@ Hello undefined
 Installing with [`brew`](https://brew.sh) is most straight forward:
 
 ```sh
-brew install dotenv-org/brew/dotenv
+brew install dotenvx/brew/dotenvx
 ```
 
 ### Other Ways to Install
 
-1. After `brew`, installing globally using [`npm`](https://www.npmjs.com/package/@dotenv/dotenv) is easiest:
+1. After `brew`, installing globally using [`npm`](https://www.npmjs.com/package/@dotenvx/dotenvx) is easiest:
 
 ```sh
-npm install @dotenv/dotenv --global
+npm install @dotenvx/dotenvx --global
 ```
 
 2. Or use with [`npx`](https://www.npmjs.com/package/npx):
 
 ```sh
-npx @dotenv/dotenv help
+npx @dotenvx/dotenvx help
 ```
 
-3. dotenv is a standalone binary, so (if you want) you can just download it directly:
+3. dotenvx is a standalone binary, so (if you want) you can just download it directly:
 
 ```sh
-# download it to `./dotenv`
-curl -Lo ./dotenv --compressed -f --proto '=https' https://github.com/dotenv-org/dotenv/releases/latest/download/dotenv-$(uname)-$(uname -m).tar.gz
+# download it to `./dotenvx`
+curl -Lo ./dotenvx --compressed -f --proto '=https' https://github.com/dotenvx/dotenvx/releases/latest/download/dotenvx-$(uname)-$(uname -m).tar.gz
 
-# install it to `/usr/local/bin/dotenv`
-sudo install -m 755 dotenv /usr/local/bin
+# install it to `/usr/local/bin/dotenvx`
+sudo install -m 755 dotenvx /usr/local/bin
 
 # check it works
-dotenv --help
+dotenvx --help
 ```
 
 ## Contributing
 
 If you have questions or feedback:
 
-* [github.com/dotenv-org/dotenv](https://github.com/dotenv-org/dotenv) - bugs and discussions
-* [x.com/dotenvorg](https://x.com/dotenvorg) (DMs are open)
+* [github.com/dotenvx/dotenvx](https://github.com/dotenvx/dotenvx) - bugs and discussions
+* [@dotenvx 𝕏](https://x.com/dotenvx) (DMs are open)
