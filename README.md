@@ -26,7 +26,7 @@ $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" 
 $ node index.js
 Hello undefined
 
-$ dotenv run -- node index.js
+$ dotenvx run -- node index.js
 Hello World
 > :-D
 ```
@@ -38,7 +38,7 @@ More examples
   ```sh
   $ echo 'import os;print("Hello " + os.getenv("HELLO", ""))' > index.py
 
-  $ dotenv run -- python3 index.py
+  $ dotenvx run -- python3 index.py
   Hello World
   ```
 
@@ -48,7 +48,7 @@ More examples
   ```sh
   $ echo '<?php echo "Hello {$_SERVER["HELLO"]}\n";' > index.php
 
-  $ dotenv run -- php index.php
+  $ dotenvx run -- php index.php
   Hello World
   ```
 
@@ -58,7 +58,7 @@ More examples
   ```sh
   $ echo 'puts "Hello #{ENV["HELLO"]}"' > index.rb
 
-  $ dotenv run -- ruby index.rb
+  $ dotenvx run -- ruby index.rb
   Hello World
   ```
 
@@ -68,7 +68,7 @@ More examples
   ```sh
   $ echo 'fn main() {let hello = std::env::var("HELLO").unwrap_or("".to_string());println!("Hello {hello}");}' > src/main.rs
 
-  $ dotenv run -- cargo run
+  $ dotenvx run -- cargo run
   Hello World
   ```
 
@@ -76,10 +76,10 @@ More examples
 * <details><summary>Frameworks ▲</summary><br>
 
   ```sh
-  $ dotenv run -- next dev
-  $ dotenv run -- npm start
-  $ dotenv run -- bin/rails s
-  $ dotenv run -- php artisan serve
+  $ dotenvx run -- next dev
+  $ dotenvx run -- npm start
+  $ dotenvx run -- bin/rails s
+  $ dotenvx run -- php artisan serve
   ```
 
   </details>
@@ -87,7 +87,7 @@ More examples
 
   ```sh
   # run as a command-line tool
-  docker run -it --rm -v $(pwd):/app dotenv/dotenv run -- node index.js
+  docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- node index.js
   ```
 
   ```sh
@@ -115,9 +115,9 @@ More examples
 
   ```sh
   # alternatively use npx
-  $ npx @dotenv/dotenv run -- node index.js
-  $ npx @dotenv/dotenv run -- next dev
-  $ npx @dotenv/dotenv run -- npm start
+  $ npx @dotenvx/dotenvx run -- node index.js
+  $ npx @dotenvx/dotenvx run -- next dev
+  $ npx @dotenvx/dotenvx run -- npm start
   ```
 
   </details>
@@ -125,9 +125,9 @@ More examples
 
   ```sh
   # use as a git submodule
-  $ git dotenv run -- node index.js
-  $ git dotenv run -- next dev
-  $ git dotenv run -- npm start
+  $ git dotenvx run -- node index.js
+  $ git dotenvx run -- next dev
+  $ git dotenvx run -- npm start
   ```
 
   </details>
@@ -139,15 +139,15 @@ More examples
 Pass the `--env-file` flag (shorthand `-f`) to run any environment from a `.env.environment` file.
 
 ```sh
-$ dotenv run --env-file=.env.production -- node index.js
-[dotenv][INFO] Injecting 12 production environment variables into your application process
+$ dotenvx run --env-file=.env.production -- node index.js
+[dotenvx][INFO] Injecting 12 production environment variables into your application process
 ```
 
 Combine multiple `.env` files if you like.
 
 ```
-$ dotenv run --env-file=.env.local --env-file=.env -- node index.js
-[dotenv][INFO] Injecting 12 local, 1 development environment variables into your application process
+$ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
+[dotenvx][INFO] Injecting 12 local, 1 development environment variables into your application process
 ```
 
 &nbsp;
@@ -176,11 +176,11 @@ $ node index.js
 Hello undefined
 ```
 
-Run it with `dotenv`.
+Run it with `dotenvx`.
 
 ```sh
-$ dotenv run -- node index.js
-[dotenv@x.x.x][WARN] ENOENT: no such file or directory, open '/../../.env'
+$ dotenvx run -- node index.js
+[dotenvx@x.x.x][WARN] ENOENT: no such file or directory, open '/../../.env'
 Hello undefined
 ```
 
@@ -196,19 +196,19 @@ JELLO="World"
 Run it again.
 
 ```sh
-$ dotenv run -- node index.js
-[dotenv@x.x.x][INFO] Injecting 0 environment variables into your application process
+$ dotenvx run -- node index.js
+[dotenvx@x.x.x][INFO] Injecting 0 environment variables into your application process
 Hello undefined
 ```
 
 Hrm, still undefined. Pass the `--debug` flag to debug the issue. I'll give you a hint: 🍮
 
 ```sh
-$ dotenv run --debug -- node index.js
-[dotenv@x.x.x][VERBOSE] Loading env from /../../.env
-[dotenv@x.x.x][DEBUG] Reading env from /../../.env
-[dotenv@x.x.x][DEBUG] Parsing env from /../../.env
-[dotenv@x.x.x][DEBUG] {"JELLO":"World"}
+$ dotenvx run --debug -- node index.js
+[dotenvx@x.x.x][VERBOSE] Loading env from /../../.env
+[dotenvx@x.x.x][DEBUG] Reading env from /../../.env
+[dotenvx@x.x.x][DEBUG] Parsing env from /../../.env
+[dotenvx@x.x.x][DEBUG] {"JELLO":"World"}
 
 # Oops, HELLO not JELLO ^^
 ```
@@ -223,8 +223,8 @@ HELLO="World"
 One last time. [Le tired](https://youtu.be/kCpjgl2baLs?t=45).
 
 ```sh
-$ dotenv run -- node index.js
-[dotenv@x.x.x][INFO] Injecting 0 environment variables into your application process
+$ dotenvx run -- node index.js
+[dotenvx@x.x.x][INFO] Injecting 0 environment variables into your application process
 Hello undefined
 ```
 
