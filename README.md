@@ -265,7 +265,7 @@ Remove the `!` to install where you prefer. (the `!` downloads directly into `/u
 
 ```sh
 # download it to `./dotenvx`
-curl -sfS https://dotenvx-sh-4066a51e4748.herokuapp.com/ | sh
+curl -sfS https://www.dotenvx.sh/ | sh
 
 # check it works
 ./dotenvx help
