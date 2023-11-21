@@ -270,5 +270,5 @@ dotenvx --help
 
 If you have questions or feedback:
 
-* [github.com/dotenvx/dotenvx](https://github.com/dotenvx/dotenvx) - bugs and discussions
+* [github.com/dotenvx/dotenvx](https://github.com/dotenvx/dotenvx/issues) - bugs and discussions
 * [@dotenvx 𝕏](https://x.com/dotenvx) (DMs are open)
