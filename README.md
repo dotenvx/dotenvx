@@ -259,13 +259,20 @@ npx @dotenvx/dotenvx help
 
 ```sh
 # download it to `./dotenvx`
-curl -Lo ./dotenvx --compressed -f --proto '=https' https://github.com/dotenvx/dotenvx/releases/latest/download/dotenvx-$(uname)-$(uname -m).tar.gz
-
-# install it to `/usr/local/bin/dotenvx`
-sudo install -m 755 dotenvx /usr/local/bin
+curl -sfS https://dotenvx-sh-4066a51e4748.herokuapp.com/ | sh
 
 # check it works
-dotenvx --help
+./dotenvx help
+
+# move it to `/usr/local/bin/dotenvx`
+sudo install -m 755 dotenvx /usr/local/bin
+
+# check it still works
+/usr/local/bin/dotenvx help
+
+# check it is in your path
+which dotenv
+dotenvx help
 ```
 
 ## Contributing
