@@ -91,6 +91,8 @@ jobs:
         with:
           files: |
             dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: gen checksums
         uses: wangzuo/action-release-checksums@v1
     
