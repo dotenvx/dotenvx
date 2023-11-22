@@ -48,19 +48,6 @@ program
   .description(packageJson.description)
   .version(packageJson.version)
 
-// commands
-program.command('encrypt')
-  .description('encrypt something')
-  .action((_str, _options) => {
-    console.log('encrypted!')
-  })
-
-program.command('decrypt')
-  .description('decrypt something')
-  .action((_str, _options) => {
-    console.log('decrypted!')
-  })
-
 program.command('run')
   .description('Inject env variables into your application process')
   .option('-f, --env-file <paths...>', 'path to your env file', '.env')
