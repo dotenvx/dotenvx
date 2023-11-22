@@ -94,7 +94,7 @@ More examples
   ```sh
   FROM node:latest
   RUN echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
-  RUN curl https://dotenvx.sh/! | bash
+  RUN curl -sfS https://dotenvx.sh/! | bash
   CMD ["dotenvx", "run", "--", "echo", "Hello $HELLO"]
   ```
 
