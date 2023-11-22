@@ -86,13 +86,16 @@ More examples
 * <details><summary>Docker 🐳</summary><br>
 
   ```sh
-  # run as a command-line tool
-  docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- node index.js
+  $ docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- node index.js
   ```
 
+  Or in any image:
+
   ```sh
-  # include in a Dockerfile
-  # example coming soon
+  FROM node:latest
+  RUN echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
+  RUN curl https://dotenvx.sh/! | bash
+  CMD ["dotenvx", "run", "--", "echo", "Hello $HELLO"]
   ```
 
   </details>
