@@ -264,7 +264,7 @@ npx @dotenvx/dotenvx help
 npm i @dotenvx/dotenvx --save
 ```
 ```json
-...
+// package.json
 "scripts": {
   "start": "./node_modules/.bin/dotenvx run -- nodex index.js"
 }
