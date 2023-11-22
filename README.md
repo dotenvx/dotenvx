@@ -258,7 +258,19 @@ npm install @dotenvx/dotenvx --global
 npx @dotenvx/dotenvx help
 ```
 
-3. dotenvx is a standalone binary, so (if you want) you can just download it directly:
+3. Or install in your `package.json`
+
+```sh
+npm i @dotenvx/dotenvx --save
+```
+```json
+...
+"scripts": {
+  "start": "./node_modules/.bin/dotenvx run -- nodex index.js"
+}
+```
+
+3. Or download it directly as a standalone binary:
 
 ```sh
 curl -sfS https://dotenvx.sh/! | sh
