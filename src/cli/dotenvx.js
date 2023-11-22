@@ -49,7 +49,7 @@ program
   .version(packageJson.version)
 
 program.command('run')
-  .description('Inject env variables into your application process')
+  .description('inject env variables into your application process')
   .option('-f, --env-file <paths...>', 'path to your env file', '.env')
   .option('-o, --overload', 'override existing env variables')
   .action(function () {
