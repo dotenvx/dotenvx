@@ -106,7 +106,7 @@ jobs:
           cp -r dist/* releases/
       - name: commit and push
         run: |
-          cd destination-repo
+          cd releases
           git config --global user.name 'motdotenv'
           git config --global user.email 'mot@dotenv.org'
           git add .
