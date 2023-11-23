@@ -133,7 +133,7 @@ jobs:
           git config --global user.name 'motdotenv'
           git config --global user.email 'mot@dotenv.org'
           git add .
-          git commit -m "add release"
+          git commit -m "${{ env.VERSION }}"
           git push
           
   homebrew:
