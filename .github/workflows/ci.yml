@@ -68,6 +68,7 @@ jobs:
           echo "dist-ing"
           mkdir -p dist
           mkdir -p dist2
+          mkdir -p dist2/${{ env.CLEAN_VERSION }}
           mkdir -p dist2/latest
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
