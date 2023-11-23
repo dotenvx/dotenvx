@@ -20,7 +20,7 @@ jobs:
   # run only on semantic version tag
   release:
     needs: test
-    if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
+    # if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -86,16 +86,33 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
 
-      - name: create release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            dist/*.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      # - name: create release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: |
+      #       dist/*.tar.gz
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       # - name: gen checksums
       #   uses: wangzuo/action-release-checksums@v1
-    
+      - name: checkout dotenvx/releases repo
+        uses: actions/checkout@v2
+        with:
+          repository: "dotenvx/releases"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: "releases"
+      - name: copy dist files to release repo
+        run: |
+          cp -r dist/* releases/
+      - name: commit and push
+        run: |
+          cd destination-repo
+          git config --global user.name 'motdotenv'
+          git config --global user.email 'mot@dotenv.org'
+          git add .
+          git commit -m "add release"
+          git push
+          
   homebrew:
     needs: release
     runs-on: ubuntu-latest
