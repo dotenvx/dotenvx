@@ -67,6 +67,8 @@ jobs:
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenvx.exe
           echo "dist-ing"
           mkdir -p dist
+          mkdir -p dist2
+          mkdir -p dist2/latest
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
@@ -85,6 +87,24 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist2/${{ env.CLEAN_VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
 
       - name: create release
         uses: softprops/action-gh-release@v1
@@ -101,9 +121,11 @@ jobs:
           repository: "dotenvx/releases"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: "releases"
-      - name: copy dist files to release repo
+      - name: copy dist2 files to release repo
         run: |
-          cp -r dist/* releases/
+          mkdir -p releases/${{ env.VERSION }}
+          mkdir -p releases/latest
+          cp -r dist2/* releases/
       - name: commit and push
         run: |
           cd releases
