@@ -94,7 +94,7 @@ More examples
   ```sh
   FROM node:latest
   RUN echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
-  RUN curl -sfS https://dotenvx.sh/! | bash
+  RUN curl -fsS https://dotenvx.sh/! | bash
   CMD ["dotenvx", "run", "--", "echo", "Hello $HELLO"]
   ```
 
@@ -273,14 +273,14 @@ npm i @dotenvx/dotenvx --save
 3. Or download it directly as a standalone binary:
 
 ```sh
-curl -sfS https://dotenvx.sh/! | sh
+curl -fsS https://dotenvx.sh/! | sh
 ```
 
 Remove the `!` to install where you prefer. (the `!` downloads directly into `/usr/local/bin/`)
 
 ```sh
 # download it to `./dotenvx`
-curl -sfS https://dotenvx.sh/ | sh
+curl -fsS https://dotenvx.sh/ | sh
 
 # check it works
 ./dotenvx help
