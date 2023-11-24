@@ -127,6 +127,7 @@ jobs:
           mkdir -p releases/${{ env.VERSION }}
           mkdir -p releases/latest
           cp -r dist2/* releases/
+          echo "${{ env.CLEAN_VERSION }}" > releases/VERSION
       - name: commit and push
         run: |
           cd releases
