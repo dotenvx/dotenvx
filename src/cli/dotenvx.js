@@ -65,6 +65,8 @@ program.command('run')
     }
 
     const env = {}
+    const readableFilepaths = new Set()
+    let populated = new Set()
 
     for (const envFilepath of optionEnvFile) {
       const filepath = helpers.resolvePath(envFilepath)
@@ -79,13 +81,18 @@ program.command('run')
         const parsed = main.parse(src)
 
         logger.debug(`Populating env from ${filepath}`)
-        main.populate(process.env, parsed, { debug: (logger.level === 'debug'), override: options.overload })
+        const result = main.populate(parsed, options.overload)
+
+        readableFilepaths.add(envFilepath)
+        result.populated.forEach(key => populated.add(key));
       } catch (e) {
         logger.warn(e)
       }
     }
 
-    logger.info('Injecting X environment variables into your application process')
+    if (readableFilepaths.size > 0) {
+      logger.info(`Injecting ${populated.size} environment variables from ${[...readableFilepaths]}`)
+    }
 
     // Extract command and arguments after '--'
     const commandIndex = process.argv.indexOf('--')
