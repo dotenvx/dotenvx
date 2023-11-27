@@ -10,6 +10,7 @@ const ENCODING = 'utf8'
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
 const keys = require('./keys')
+const vault = require('./vault')
 const packageJson = require('./../shared/packageJson')
 const main = require('./../lib/main')
 
@@ -114,10 +115,13 @@ program.command('encrypt')
   .action(function () {
     logger.info('encrypting')
 
-    const data = keys.data()
-    const filename = keys.filename()
+    const keysData = keys.data()
+    const keysFilename = keys.filename()
+    fs.writeFileSync(keysFilename, keysData)
 
-    fs.writeFileSync(filename, data)
+    const vaultData = vault.data()
+    const vaultFilename = vault.filename()
+    fs.writeFileSync(vaultFilename, vaultData)
   })
 
 program.parse(process.argv)
