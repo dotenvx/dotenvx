@@ -13,12 +13,12 @@ const parse = function (src) {
   return result
 }
 
-const populate = function (processEnv = {}, parsed = {}, overload = false) {
+const write = function (processEnv = {}, parsed = {}, overload = false) {
   if (typeof parsed !== 'object') {
-    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to populate')
+    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to write')
   }
 
-  const populated = new Set()
+  const written = new Set()
   const preExisting = new Set()
 
   // set processEnv
@@ -26,7 +26,7 @@ const populate = function (processEnv = {}, parsed = {}, overload = false) {
     if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
       if (overload === true) {
         processEnv[key] = parsed[key]
-        populated.add(key)
+        written.add(key)
 
         logger.verbose(`${key} set`)
         logger.debug(`${key} set to ${parsed[key]}`)
@@ -38,7 +38,7 @@ const populate = function (processEnv = {}, parsed = {}, overload = false) {
       }
     } else {
       processEnv[key] = parsed[key]
-      populated.add(key)
+      written.add(key)
 
       logger.verbose(`${key} set`)
       logger.debug(`${key} set to ${parsed[key]}`)
@@ -46,7 +46,7 @@ const populate = function (processEnv = {}, parsed = {}, overload = false) {
   }
 
   return {
-    populated,
+    written,
     preExisting
   }
 }
@@ -54,5 +54,5 @@ const populate = function (processEnv = {}, parsed = {}, overload = false) {
 module.exports = {
   config,
   parse,
-  populate
+  write
 }

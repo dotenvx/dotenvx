@@ -24,7 +24,7 @@ program
 
     if (options.logLevel) {
       logger.level = options.logLevel
-      logger.debug(`Setting log level to ${options.logLevel}`)
+      logger.debug(`setting log level to ${options.logLevel}`)
     }
 
     // --quiet overides --log-level. only errors will be shown
@@ -55,9 +55,8 @@ program.command('run')
   .option('-f, --env-file <paths...>', 'path to your env file', '.env')
   .option('-o, --overload', 'override existing env variables')
   .action(function () {
-    // injecting 1 environment variable from ${options.envFile}
     const options = this.opts()
-    logger.debug('Configuring options')
+    logger.debug('configuring options')
     logger.debug(options)
 
     // convert to array if needed
@@ -68,39 +67,39 @@ program.command('run')
 
     const env = {}
     const readableFilepaths = new Set()
-    const populated = new Set()
+    const written = new Set()
 
     for (const envFilepath of optionEnvFile) {
       const filepath = helpers.resolvePath(envFilepath)
 
-      logger.verbose(`Loading env from ${filepath}`)
+      logger.verbose(`injecting env from ${filepath}`)
 
       try {
-        logger.debug(`Reading env from ${filepath}`)
+        logger.debug(`reading env from ${filepath}`)
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
 
-        logger.debug(`Parsing env from ${filepath}`)
+        logger.debug(`parsing env from ${filepath}`)
         const parsed = main.parse(src)
 
-        logger.debug(`Populating env from ${filepath}`)
-        const result = main.populate(process.env, parsed, options.overload)
+        logger.debug(`writing env from ${filepath}`)
+        const result = main.write(process.env, parsed, options.overload)
 
         readableFilepaths.add(envFilepath)
-        result.populated.forEach(key => populated.add(key))
+        result.written.forEach(key => written.add(key))
       } catch (e) {
         logger.warn(e)
       }
     }
 
     if (readableFilepaths.size > 0) {
-      logger.info(`Injecting ${populated.size} environment variables from ${[...readableFilepaths]}`)
+      logger.info(`injecting ${written.size} environment ${helpers.pluralize('variable', written.size)} from ${[...readableFilepaths]}`)
     }
 
     // Extract command and arguments after '--'
     const commandIndex = process.argv.indexOf('--')
     if (commandIndex === -1 || commandIndex === process.argv.length - 1) {
-      logger.error('At least one argument is required after the run command, received 0.')
-      logger.error('Exiting')
+      logger.error('at least one argument is required after the run command, received 0.')
+      logger.error('exiting')
       process.exit(1)
     } else {
       const subCommand = process.argv.slice(commandIndex + 1)

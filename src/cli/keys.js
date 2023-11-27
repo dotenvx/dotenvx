@@ -5,13 +5,13 @@ const dotenv = require('dotenv')
 
 const logger = require('./../shared/logger')
 
-const RESERVED_ENV_FILES = ['.env.vault',  '.env.projects', '.env.keys', '.env.me', '.env.x']
+const RESERVED_ENV_FILES = ['.env.vault', '.env.projects', '.env.keys', '.env.me', '.env.x']
 
-const filename = function() {
+const filename = function () {
   return '.env.keys'
 }
 
-const data = function() {
+const data = function () {
   let data = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
 #/   DOTENV_KEYs. DO NOT commit to source control   /
 #/   [how it works](https://dotenv.org/env-keys)    /
@@ -31,10 +31,10 @@ const data = function() {
   return data
 }
 
-const keys = function() {
+const keys = function () {
   const keys = {}
   // grab current .env.keys
-  const parsed = (dotenv.configDotenv({path: '.env.keys'}).parsed || {})
+  const parsed = (dotenv.configDotenv({ path: '.env.keys' }).parsed || {})
   const envLookups = this.envLookups()
 
   for (const file in envLookups) {
@@ -56,7 +56,7 @@ const keys = function() {
   return keys
 }
 
-const envLookups = function() {
+const envLookups = function () {
   const _this = this
   const dir = './'
   const lookups = {}
@@ -86,7 +86,7 @@ const envLookups = function() {
   return lookups
 }
 
-const _reservedEnvFilePath = function(file) {
+const _reservedEnvFilePath = function (file) {
   let result = false
 
   for (const reservedFile of RESERVED_ENV_FILES) {
@@ -98,7 +98,7 @@ const _reservedEnvFilePath = function(file) {
   return result
 }
 
-const _determineLikelyEnvironment = function(file) {
+const _determineLikelyEnvironment = function (file) {
   const splitFile = file.split('.')
   const possibleEnvironment = splitFile[2] // ['', 'env', environment']
 
@@ -109,7 +109,7 @@ const _determineLikelyEnvironment = function(file) {
   return possibleEnvironment
 }
 
-const _generateDotenvKey = function(environment) {
+const _generateDotenvKey = function (environment) {
   const rand = crypto.randomBytes(32).toString('hex')
 
   return `dotenv://:key_${rand}@dotenvx.com/vault/.env.vault?environment=${environment}`
