@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const { Command } = require('commander')
+const dotenv = require('dotenv')
 const program = new Command()
 
 // constants
@@ -9,7 +10,6 @@ const ENCODING = 'utf8'
 
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
-const keys = require('./keys')
 const vault = require('./vault')
 const packageJson = require('./../shared/packageJson')
 const main = require('./../lib/main')
@@ -53,7 +53,7 @@ program
 // dotenvx run -- node index.js
 program.command('run')
   .description('inject env variables into your application process')
-  .option('-f, --env-file <paths...>', 'path to your env file', '.env')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
   .action(function () {
     const options = this.opts()
@@ -112,16 +112,84 @@ program.command('run')
 // dotenvx encrypt
 program.command('encrypt')
   .description('encrypt .env.* to .env.vault')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', helpers.findEnvFiles('./'))
   .action(function () {
-    logger.info('encrypting')
+    const options = this.opts()
+    logger.debug('configuring options')
+    logger.debug(options)
 
-    const keysData = keys.data()
-    const keysFilename = keys.filename()
-    fs.writeFileSync(keysFilename, keysData)
+    let optionEnvFile = options.envFile // can be undefined
+    if (!optionEnvFile) {
+      const dir = './'
+      optionEnvFile = helpers.findEnvFiles('./') // find permitted .env* files in current directory
+    } else if (!Array.isArray(optionEnvFile)) {
+      optionEnvFile = [optionEnvFile]
+    }
 
-    const vaultData = vault.data()
-    const vaultFilename = vault.filename()
-    fs.writeFileSync(vaultFilename, vaultData)
+    try {
+      logger.verbose(`generating .env.keys from ${optionEnvFile}`)
+
+      const dotenvKeys = (dotenv.configDotenv({ path: '.env.keys' }).parsed || {})
+
+      // iterate over each .env, .env.production, etc
+      for (const envFilepath of optionEnvFile) {
+        const filepath = helpers.resolvePath(envFilepath)
+        const environment = helpers.guessEnvironment(filepath)
+        const key = `DOTENV_KEY_${environment.toUpperCase()}`
+
+        let value = dotenvKeys[key]
+
+        // first time seeing new DOTENV_KEY_${environment}
+        if (!value || value.length === 0) {
+          logger.verbose(`generating ${key}`)
+          value = helpers.generateDotenvKey(environment)
+          logger.verbose(`generating ${key} as ${value}`)
+
+          dotenvKeys[key] = value
+        } else {
+          logger.verbose(`existing ${key}`)
+          logger.debug(`existing ${key} as ${value}`)
+        }
+      }
+
+      let keysData = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
+  #/   DOTENV_KEYs. DO NOT commit to source control   /
+  #/   [how it works](https://dotenv.org/env-keys)    /
+  #/--------------------------------------------------/\n`
+
+      for (const key in dotenvKeys) {
+        const value = dotenvKeys[key]
+        keysData += `${key}="${value}"\n`
+      }
+
+      fs.writeFileSync('.env.keys', keysData)
+    } catch (e) {
+      logger.error(e)
+    }
+
+    try {
+      logger.verbose(`generating .env.vault from ${optionEnvFile}`)
+    } catch (e) {
+
+    }
+
+    // try {
+    //   const keysData = keys.data()
+    //   const keysFilename = keys.filename()
+    //   fs.writeFileSync(keysFilename, keysData)
+    // } catch (e) {
+    //   logger.warn(e)
+    // }
+
+    // try {
+    //   const vaultData = vault.data()
+    //   const vaultFilename = vault.filename()
+    //   fs.writeFileSync(vaultFilename, vaultData)
+    // } catch (e) {
+    //   logger.warn(e)
+    // }
+
+    // logger.info(`encrypting`)
   })
 
 program.parse(process.argv)

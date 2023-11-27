@@ -38,7 +38,7 @@ const data = function () {
   return data
 }
 
-const _parseEncryptionKeyFromDotenvKey = function(dotenvKey) {
+const _parseEncryptionKeyFromDotenvKey = function (dotenvKey) {
   // Parse DOTENV_KEY. Format is a URI
   const uri = new URL(dotenvKey)
 
@@ -51,7 +51,7 @@ const _parseEncryptionKeyFromDotenvKey = function(dotenvKey) {
   return Buffer.from(key.slice(-64), 'hex')
 }
 
-const _encrypt = function(key, message) {
+const _encrypt = function (key, message) {
   // set up nonce
   const nonce = this._generateNonce()
 
@@ -71,15 +71,11 @@ const _encrypt = function(key, message) {
   return Buffer.from(ciphertext, 'hex').toString('base64')
 }
 
-const _generateNonce = function() {
+const _generateNonce = function () {
   return crypto.randomBytes(this._nonceBytes())
 }
 
-const _keyBytes = function() {
-  return 32
-}
-
-const _nonceBytes = function() {
+const _nonceBytes = function () {
   return 12
 }
 
