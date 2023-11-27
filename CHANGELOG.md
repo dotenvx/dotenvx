@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-`encrypt` 🔐 ([#1](https://github.com/dotenv/dotenv/pull/1))
+`encrypt` 🔐 ([#1](https://github.com/dotenvx/dotenvx/pull/1))
 
 ## 0.3.9 and prior
 
