@@ -9,6 +9,7 @@ const ENCODING = 'utf8'
 
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
+const keys = require('./keys')
 const packageJson = require('./../shared/packageJson')
 const main = require('./../lib/main')
 
@@ -48,6 +49,7 @@ program
   .description(packageJson.description)
   .version(packageJson.version)
 
+// dotenvx run -- node index.js
 program.command('run')
   .description('inject env variables into your application process')
   .option('-f, --env-file <paths...>', 'path to your env file', '.env')
@@ -105,6 +107,18 @@ program.command('run')
 
       helpers.executeCommand(subCommand, env)
     }
+  })
+
+// dotenvx encrypt
+program.command('encrypt')
+  .description('encrypt .env.* to .env.vault')
+  .action(function () {
+    logger.info('encrypting')
+
+    const data = keys.data()
+    const filename = keys.filename()
+
+    fs.writeFileSync(filename, data)
   })
 
 program.parse(process.argv)
