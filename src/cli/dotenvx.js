@@ -10,7 +10,6 @@ const ENCODING = 'utf8'
 
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
-const vault = require('./vault')
 const packageJson = require('./../shared/packageJson')
 const main = require('./../lib/main')
 
@@ -120,7 +119,6 @@ program.command('encrypt')
 
     let optionEnvFile = options.envFile // can be undefined
     if (!optionEnvFile) {
-      const dir = './'
       optionEnvFile = helpers.findEnvFiles('./') // find permitted .env* files in current directory
     } else if (!Array.isArray(optionEnvFile)) {
       optionEnvFile = [optionEnvFile]
@@ -143,7 +141,7 @@ program.command('encrypt')
         if (!value || value.length === 0) {
           logger.verbose(`generating ${key}`)
           value = helpers.generateDotenvKey(environment)
-          logger.verbose(`generating ${key} as ${value}`)
+          logger.debug(`generating ${key} as ${value}`)
 
           dotenvKeys[key] = value
         } else {
@@ -165,29 +163,52 @@ program.command('encrypt')
       fs.writeFileSync('.env.keys', keysData)
     } catch (e) {
       logger.error(e)
+      throw e
     }
 
     try {
       logger.verbose(`generating .env.vault from ${optionEnvFile}`)
+
+      const dotenvKeys = (dotenv.configDotenv({ path: '.env.keys' }).parsed || {})
+      const dotenvVaults = (dotenv.configDotenv({ path: '.env.vault' }).parsed || {})
+
+      // iterate over each .env, .env.production, etc
+      for (const envFilepath of optionEnvFile) {
+        const filepath = helpers.resolvePath(envFilepath)
+        const environment = helpers.guessEnvironment(filepath)
+        const vault = `DOTENV_VAULT_${environment.toUpperCase()}`
+
+        let value = dotenvVaults[vault]
+        const dotenvKey = dotenvKeys[`DOTENV_KEY_${environment.toUpperCase()}`]
+
+        // TODO. this needs to instead see if there are any changes
+        if (!value || value.length === 0) {
+          logger.verbose(`encrypting ${vault}`)
+          value = helpers.encryptFile(filepath, dotenvKey, ENCODING)
+          logger.verbose(`encrypting ${vault} as ${value}`)
+
+          dotenvVaults[vault] = value
+        } else {
+          logger.verbose(`existing ${vault}`)
+          logger.debug(`existing ${vault} as ${value}`)
+        }
+      }
+
+      let vaultData = `#/-------------------.env.vault---------------------/
+#/         cloud-agnostic vaulting standard         /
+#/   [how it works](https://dotenv.org/env-vault)   /
+#/--------------------------------------------------/\n\n`
+
+      for (const vault in dotenvVaults) {
+        const value = dotenvVaults[vault]
+        vaultData += `${vault}="${value}"\n\n`
+      }
+
+      fs.writeFileSync('.env.vault', vaultData)
     } catch (e) {
-
+      logger.error(e)
+      throw e
     }
-
-    // try {
-    //   const keysData = keys.data()
-    //   const keysFilename = keys.filename()
-    //   fs.writeFileSync(keysFilename, keysData)
-    // } catch (e) {
-    //   logger.warn(e)
-    // }
-
-    // try {
-    //   const vaultData = vault.data()
-    //   const vaultFilename = vault.filename()
-    //   fs.writeFileSync(vaultFilename, vaultData)
-    // } catch (e) {
-    //   logger.warn(e)
-    // }
 
     // logger.info(`encrypting`)
   })
