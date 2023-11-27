@@ -13,17 +13,7 @@ const parse = function (src) {
   return result
 }
 
-const populateOld = function (processEnv, parsed, options = {}) {
-  const result = dotenv.populate(processEnv, parsed, options = {})
-
-  logger.debug(process.env)
-
-  return result
-}
-
-const populate = function(parsed = {}, overload = false) {
-  const processEnv = process.env
-
+const populate = function (processEnv = {}, parsed = {}, overload = false) {
   if (typeof parsed !== 'object') {
     throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to populate')
   }
@@ -31,7 +21,7 @@ const populate = function(parsed = {}, overload = false) {
   const populated = new Set()
   const preExisting = new Set()
 
-  // set process.env
+  // set processEnv
   for (const key of Object.keys(parsed)) {
     if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
       if (overload === true) {
@@ -56,8 +46,8 @@ const populate = function(parsed = {}, overload = false) {
   }
 
   return {
-    populated: populated,
-    preExisting: preExisting
+    populated,
+    preExisting
   }
 }
 

@@ -4,7 +4,8 @@ const dotenv = require('dotenv')
 
 // Mocking the logger and dotenv modules
 jest.mock('./../../src/shared/logger', () => ({
-  debug: jest.fn()
+  debug: jest.fn(),
+  verbose: jest.fn()
 }))
 
 jest.mock('dotenv', () => ({
@@ -36,14 +37,33 @@ describe('main.js tests', () => {
     expect(result).toEqual(parsedResult)
   })
 
-  test('populate should call dotenv.populate and log process.env', () => {
+  test('populate', () => {
     const processEnv = {}
-    const parsed = { SAMPLE_VAR: 'SAMPLE_VALUE' }
-    const options = {}
+    const parsed = { HELLO: 'World' }
 
-    populate(processEnv, parsed, options)
+    const result = populate(processEnv, parsed)
 
-    expect(dotenv.populate).toHaveBeenCalledWith(processEnv, parsed, options)
-    expect(logger.debug).toHaveBeenCalledWith(process.env)
+    expect([...result.populated]).toEqual(['HELLO'])
+  })
+
+  test('populate key already exists', () => {
+    const processEnv = { HELLO: 'exists' }
+    const parsed = { HELLO: 'World' }
+
+    const result = populate(processEnv, parsed)
+
+    expect([...result.populated]).toEqual([])
+    expect([...result.preExisting]).toEqual(['HELLO'])
+  })
+
+  test('populate key already exists but overload true', () => {
+    const processEnv = { HELLO: 'exists' }
+    const parsed = { HELLO: 'World' }
+    const overload = true
+
+    const result = populate(processEnv, parsed, overload)
+
+    expect([...result.populated]).toEqual(['HELLO'])
+    expect([...result.preExisting]).toEqual([])
   })
 })

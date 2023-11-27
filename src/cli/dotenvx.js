@@ -66,7 +66,7 @@ program.command('run')
 
     const env = {}
     const readableFilepaths = new Set()
-    let populated = new Set()
+    const populated = new Set()
 
     for (const envFilepath of optionEnvFile) {
       const filepath = helpers.resolvePath(envFilepath)
@@ -81,10 +81,10 @@ program.command('run')
         const parsed = main.parse(src)
 
         logger.debug(`Populating env from ${filepath}`)
-        const result = main.populate(parsed, options.overload)
+        const result = main.populate(process.env, parsed, options.overload)
 
         readableFilepaths.add(envFilepath)
-        result.populated.forEach(key => populated.add(key));
+        result.populated.forEach(key => populated.add(key))
       } catch (e) {
         logger.warn(e)
       }
