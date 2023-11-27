@@ -99,7 +99,6 @@ program.command('run')
     const commandIndex = process.argv.indexOf('--')
     if (commandIndex === -1 || commandIndex === process.argv.length - 1) {
       logger.error('at least one argument is required after the run command, received 0.')
-      logger.error('exiting')
       process.exit(1)
     } else {
       const subCommand = process.argv.slice(commandIndex + 1)
@@ -117,10 +116,8 @@ program.command('encrypt')
     logger.debug('configuring options')
     logger.debug(options)
 
-    let optionEnvFile = options.envFile // can be undefined
-    if (!optionEnvFile) {
-      optionEnvFile = helpers.findEnvFiles('./') // find permitted .env* files in current directory
-    } else if (!Array.isArray(optionEnvFile)) {
+    let optionEnvFile = options.envFile
+    if (!Array.isArray(optionEnvFile)) {
       optionEnvFile = [optionEnvFile]
     }
 
@@ -129,9 +126,12 @@ program.command('encrypt')
 
       const dotenvKeys = (dotenv.configDotenv({ path: '.env.keys' }).parsed || {})
 
-      // iterate over each .env, .env.production, etc
       for (const envFilepath of optionEnvFile) {
         const filepath = helpers.resolvePath(envFilepath)
+        if (!fs.existsSync(filepath)) {
+          throw new Error(`file does not exist: ${filepath}`)
+        }
+
         const environment = helpers.guessEnvironment(filepath)
         const key = `DOTENV_KEY_${environment.toUpperCase()}`
 
@@ -163,7 +163,7 @@ program.command('encrypt')
       fs.writeFileSync('.env.keys', keysData)
     } catch (e) {
       logger.error(e)
-      throw e
+      process.exit(1)
     }
 
     try {
@@ -172,25 +172,23 @@ program.command('encrypt')
       const dotenvKeys = (dotenv.configDotenv({ path: '.env.keys' }).parsed || {})
       const dotenvVaults = (dotenv.configDotenv({ path: '.env.vault' }).parsed || {})
 
-      // iterate over each .env, .env.production, etc
       for (const envFilepath of optionEnvFile) {
         const filepath = helpers.resolvePath(envFilepath)
         const environment = helpers.guessEnvironment(filepath)
         const vault = `DOTENV_VAULT_${environment.toUpperCase()}`
 
-        let value = dotenvVaults[vault]
+        let ciphertext = dotenvVaults[vault]
         const dotenvKey = dotenvKeys[`DOTENV_KEY_${environment.toUpperCase()}`]
 
-        // TODO. this needs to instead see if there are any changes
-        if (!value || value.length === 0) {
+        if (!ciphertext || ciphertext.length === 0 || helpers.changed(ciphertext, dotenvKey, filepath, ENCODING)) {
           logger.verbose(`encrypting ${vault}`)
-          value = helpers.encryptFile(filepath, dotenvKey, ENCODING)
-          logger.verbose(`encrypting ${vault} as ${value}`)
+          ciphertext = helpers.encryptFile(filepath, dotenvKey, ENCODING)
+          logger.verbose(`encrypting ${vault} as ${ciphertext}`)
 
-          dotenvVaults[vault] = value
+          dotenvVaults[vault] = ciphertext
         } else {
           logger.verbose(`existing ${vault}`)
-          logger.debug(`existing ${vault} as ${value}`)
+          logger.debug(`existing ${vault} as ${ciphertext}`)
         }
       }
 
@@ -201,14 +199,18 @@ program.command('encrypt')
 
       for (const vault in dotenvVaults) {
         const value = dotenvVaults[vault]
+        const environment = vault.replace('DOTENV_VAULT_', '').toLowerCase()
+        vaultData += `# ${environment}\n`
         vaultData += `${vault}="${value}"\n\n`
       }
 
       fs.writeFileSync('.env.vault', vaultData)
     } catch (e) {
       logger.error(e)
-      throw e
+      process.exit(1)
     }
+
+    logger.info(`encrypted ${optionEnvFile} to .env.vault`)
 
     // logger.info(`encrypting`)
   })

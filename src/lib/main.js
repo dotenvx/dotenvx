@@ -5,6 +5,10 @@ const config = function (options) {
   return dotenv.config(options)
 }
 
+const decrypt = function (encrypted, keyStr) {
+  return dotenv.decrypt(encrypted, keyStr)
+}
+
 const parse = function (src) {
   const result = dotenv.parse(src)
 
@@ -53,6 +57,7 @@ const write = function (processEnv = {}, parsed = {}, overload = false) {
 
 module.exports = {
   config,
+  decrypt,
   parse,
   write
 }

@@ -2,6 +2,10 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 const { spawn } = require('child_process')
+const xxhash = require('xxhashjs')
+const XXHASH_SEED = 0xABCD
+
+const main = require('./../lib/main')
 
 const RESERVED_ENV_FILES = ['.env.vault', '.env.projects', '.env.keys', '.env.me', '.env.x']
 
@@ -93,6 +97,18 @@ const encrypt = function (key, message) {
   return Buffer.from(ciphertext, 'hex').toString('base64')
 }
 
+const changed = function (ciphertext, dotenvKey, filepath, encoding) {
+  const key = this._parseEncryptionKeyFromDotenvKey(dotenvKey)
+  const decrypted = main.decrypt(ciphertext, key)
+  const raw = fs.readFileSync(filepath, encoding)
+
+  return this.hash(decrypted) !== this.hash(raw)
+}
+
+const hash = function (str) {
+  return xxhash.h32(str, XXHASH_SEED).toString(16)
+}
+
 const _parseEncryptionKeyFromDotenvKey = function (dotenvKey) {
   // Parse DOTENV_KEY. Format is a URI
   const uri = new URL(dotenvKey)
@@ -123,6 +139,8 @@ module.exports = {
   generateDotenvKey,
   encryptFile,
   encrypt,
+  changed,
+  hash,
   _parseEncryptionKeyFromDotenvKey,
   _generateNonce,
   _nonceBytes
