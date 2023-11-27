@@ -157,7 +157,12 @@ $ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
 
 ## Encrypt Your Env Files
 
-WIP
+```
+dotenvx encrypt
+```
+
+> This will encrypt your `.env` file to a `.env.vault` file. Commit your `.env.vault` file safely to code.
+> This will also generate a `.env.keys` file. Do NOT commit this file to code. Keep your `.env.keys` secret. 🤫
 
 &nbsp;
 
