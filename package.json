@@ -26,7 +26,8 @@
   "dependencies": {
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
     "jest": "^29.7.0",

@@ -5,6 +5,10 @@ const config = function (options) {
   return dotenv.config(options)
 }
 
+const decrypt = function (encrypted, keyStr) {
+  return dotenv.decrypt(encrypted, keyStr)
+}
+
 const parse = function (src) {
   const result = dotenv.parse(src)
 
@@ -13,12 +17,12 @@ const parse = function (src) {
   return result
 }
 
-const populate = function (processEnv = {}, parsed = {}, overload = false) {
+const write = function (processEnv = {}, parsed = {}, overload = false) {
   if (typeof parsed !== 'object') {
-    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to populate')
+    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to write')
   }
 
-  const populated = new Set()
+  const written = new Set()
   const preExisting = new Set()
 
   // set processEnv
@@ -26,7 +30,7 @@ const populate = function (processEnv = {}, parsed = {}, overload = false) {
     if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
       if (overload === true) {
         processEnv[key] = parsed[key]
-        populated.add(key)
+        written.add(key)
 
         logger.verbose(`${key} set`)
         logger.debug(`${key} set to ${parsed[key]}`)
@@ -38,7 +42,7 @@ const populate = function (processEnv = {}, parsed = {}, overload = false) {
       }
     } else {
       processEnv[key] = parsed[key]
-      populated.add(key)
+      written.add(key)
 
       logger.verbose(`${key} set`)
       logger.debug(`${key} set to ${parsed[key]}`)
@@ -46,13 +50,14 @@ const populate = function (processEnv = {}, parsed = {}, overload = false) {
   }
 
   return {
-    populated,
+    written,
     preExisting
   }
 }
 
 module.exports = {
   config,
+  decrypt,
   parse,
-  populate
+  write
 }
