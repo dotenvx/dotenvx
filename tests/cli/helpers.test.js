@@ -1,10 +1,8 @@
-const { resolvePath, executeCommand, pluralize, findEnvFiles, guessEnvironment, generateDotenvKey, encrypt, _parseEncryptionKeyFromDotenvKey, changed } = require('./../../src/cli/helpers')
+const { resolvePath, pluralize, findEnvFiles, guessEnvironment, generateDotenvKey, encrypt, _parseEncryptionKeyFromDotenvKey } = require('./../../src/cli/helpers')
 
 const fs = require('fs')
-const crypto = require('crypto')
-const logger = require('./../../src/shared/logger')
 
-NONCE_BYTES = 12
+const NONCE_BYTES = 12
 
 // Mocking
 jest.mock('fs')

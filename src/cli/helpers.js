@@ -112,7 +112,12 @@ const hash = function (str) {
 
 const _parseEncryptionKeyFromDotenvKey = function (dotenvKey) {
   // Parse DOTENV_KEY. Format is a URI
-  const uri = new URL(dotenvKey)
+  let uri
+  try {
+    uri = new URL(dotenvKey)
+  } catch (e) {
+    throw new Error(`INVALID_DOTENV_KEY: ${e.message}`)
+  }
 
   // Get decrypt key
   const key = uri.password
@@ -121,6 +126,31 @@ const _parseEncryptionKeyFromDotenvKey = function (dotenvKey) {
   }
 
   return Buffer.from(key.slice(-64), 'hex')
+}
+
+const _parseCipherTextFromDotenvKeyAndParsedVault = function (dotenvKey, parsedVault) {
+  // Parse DOTENV_KEY. Format is a URI
+  let uri
+  try {
+    uri = new URL(dotenvKey)
+  } catch (e) {
+    throw new Error(`INVALID_DOTENV_KEY: ${e.message}`)
+  }
+
+  // Get environment
+  const environment = uri.searchParams.get('environment')
+  if (!environment) {
+    throw new Error('INVALID_DOTENV_KEY: Missing environment part')
+  }
+
+  // Get ciphertext payload
+  const environmentKey = `DOTENV_VAULT_${environment.toUpperCase()}`
+  const ciphertext = parsedVault[environmentKey] // DOTENV_VAULT_PRODUCTION
+  if (!ciphertext) {
+    throw new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: cannot locate environment ${environmentKey} in your .env.vault file`)
+  }
+
+  return ciphertext
 }
 
 module.exports = {
@@ -134,5 +164,6 @@ module.exports = {
   encrypt,
   changed,
   hash,
-  _parseEncryptionKeyFromDotenvKey
+  _parseEncryptionKeyFromDotenvKey,
+  _parseCipherTextFromDotenvKeyAndParsedVault
 }
