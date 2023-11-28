@@ -205,7 +205,9 @@ $ dotenvx run --env-file=.env.production -- node index.js
 Hello production
 ```
 
-Combine multiple `.env` files if you like.
+That's it. 🌴
+
+It's straightforward but also flexible. Combine multiple `.env` files if you like.
 
 ```
 # .env.local
