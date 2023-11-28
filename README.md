@@ -302,7 +302,7 @@ brew install dotenvx/brew/dotenvx
 
 ### Other Ways to Install
 
-#### npm
+#### 1. global npm
 
 After `brew`, installing globally using [`npm`](https://www.npmjs.com/package/@dotenvx/dotenvx) is easiest:
 
@@ -310,7 +310,7 @@ After `brew`, installing globally using [`npm`](https://www.npmjs.com/package/@d
 npm install @dotenvx/dotenvx --global
 ```
 
-#### package.json
+#### 2. local npm
 
 Or install in your `package.json`:
 
@@ -318,34 +318,25 @@ Or install in your `package.json`:
 npm i @dotenvx/dotenvx --save
 ```
 ```json
-"scripts": {
-  "start": "./node_modules/.bin/dotenvx run -- nodex index.js"
+{
+  "scripts": {
+    "start": "./node_modules/.bin/dotenvx run -- node index.js"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "^0.6.0"
+  }
 }
 ```
 
-#### binary
+#### 3. standalone binary
 
 Or download it directly as a standalone binary:
 
 ```sh
-curl -fsS https://dotenvx.sh/ | sh
-```
-
-```sh
-# download it to `./dotenvx`
+# download it to `/user/local/bin/dotenvx`
 curl -fsS https://dotenvx.sh/ | sh
 
 # check it works
-./dotenvx help
-
-# move it to `/usr/local/bin/dotenvx`
-sudo install -m 755 dotenvx /usr/local/bin
-
-# check it still works
-/usr/local/bin/dotenvx help
-
-# check it is in your path
-which dotenv
 dotenvx help
 ```
 
