@@ -286,6 +286,11 @@ $ dotenvx encrypt
 [dotenvx][INFO]     * .env.keys file holds your decryption DOTENV_KEYs
 [dotenvx][INFO]     * DO NOT commit .env.keys to code
 [dotenvx][INFO]     * share .env.keys file over secure channels only
+
+$ DOTENV_KEY='dotenv://:key_abc123@dotenvx.com/vault/.env.vault?environment=development' dotenvx run -- node index.js
+[dotenvx][INFO] injecting 1 environment variable from encrypted .env.vault
+Hello World
+
 > :-]
 ```
 
