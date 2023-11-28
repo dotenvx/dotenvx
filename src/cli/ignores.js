@@ -15,7 +15,7 @@ class Generic {
 
   run () {
     if (!fs.existsSync(this.filename)) {
-      if (this.touchFile) {
+      if (this.touchFile === true) {
         fs.writeFileSync(this.filename, '')
       } else {
         return
@@ -64,4 +64,4 @@ class AppendToIgnores {
   }
 }
 
-module.exports = { AppendToIgnores }
+module.exports = { AppendToIgnores, Generic }
