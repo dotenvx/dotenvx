@@ -194,14 +194,14 @@ Pass the `--env-file` flag (shorthand `-f`) to run any environment from a `.env.
 
 ```sh
 $ dotenvx run --env-file=.env.production -- node index.js
-[dotenvx][INFO] injecting 12 environment variables into your application process
+[dotenvx][INFO] injecting 12 environment variables from .env.production
 ```
 
 Combine multiple `.env` files if you like.
 
 ```
 $ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
-[dotenvx][INFO] injecting 13 environment variables into your application process
+[dotenvx][INFO] injecting 13 environment variables from .env.local,.env
 ```
 
 &nbsp;
@@ -256,7 +256,7 @@ Run it again.
 
 ```sh
 $ dotenvx run -- node index.js
-[dotenvx][INFO] injecting 0 environment variables into your application process
+[dotenvx][INFO] injecting 0 environment variables from .env
 Hello undefined
 ```
 
@@ -283,7 +283,7 @@ One last time. [Le tired](https://youtu.be/kCpjgl2baLs?t=45).
 
 ```sh
 $ dotenvx run -- node index.js
-[dotenvx][INFO] injecting 1 environment variable into your application process
+[dotenvx][INFO] injecting 1 environment variable from .env
 Hello World
 ```
 
