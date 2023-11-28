@@ -286,13 +286,117 @@ $ dotenvx encrypt
 [dotenvx][INFO]     * .env.keys file holds your decryption DOTENV_KEYs
 [dotenvx][INFO]     * DO NOT commit .env.keys to code
 [dotenvx][INFO]     * share .env.keys file over secure channels only
+> :-]
+```
 
-$ DOTENV_KEY='dotenv://:key_abc123@dotenvx.com/vault/.env.vault?environment=development' dotenvx run -- node index.js
+> Load env from encrypted .env.vault file
+
+```sh
+$ DOTENV_KEY='dotenv://:key_abc123@dotenvx.com/vault/.env.vault?environment=production' dotenvx run -- node index.js
 [dotenvx][INFO] injecting 1 environment variable from encrypted .env.vault
-Hello World
+Hello production
 
 > :-]
 ```
+
+More examples
+
+* <details><summary>AWS Lambda</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>Digital Ocean</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>Docker</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+
+* <details><summary>Fly.io</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>Heroku</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>Laravel Forge</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>Netlify</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>Railway</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>Render</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>Vercel</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>CircleCI</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
+
+* <details><summary>GitHub Actions</summary><br>
+
+  ```sh
+  coming soon
+  ```
+
+  </details>
 
 &nbsp;
 
