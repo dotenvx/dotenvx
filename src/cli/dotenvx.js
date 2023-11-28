@@ -211,8 +211,6 @@ program.command('encrypt')
     }
 
     logger.info(`encrypted ${optionEnvFile} to .env.vault`)
-
-    // logger.info(`encrypting`)
   })
 
 program.parse(process.argv)

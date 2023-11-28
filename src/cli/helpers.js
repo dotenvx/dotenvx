@@ -4,6 +4,7 @@ const crypto = require('crypto')
 const { spawn } = require('child_process')
 const xxhash = require('xxhashjs')
 const XXHASH_SEED = 0xABCD
+const NONCE_BYTES = 12
 
 const main = require('./../lib/main')
 
@@ -69,17 +70,17 @@ const generateDotenvKey = function (environment) {
 }
 
 const encryptFile = function (filepath, dotenvKey, encoding) {
-  const key = this._parseEncryptionKeyFromDotenvKey(dotenvKey)
+  const key = _parseEncryptionKeyFromDotenvKey(dotenvKey)
   const message = fs.readFileSync(filepath, encoding)
 
-  const ciphertext = this.encrypt(key, message)
+  const ciphertext = encrypt(key, message)
 
   return ciphertext
 }
 
 const encrypt = function (key, message) {
   // set up nonce
-  const nonce = this._generateNonce()
+  const nonce = crypto.randomBytes(NONCE_BYTES)
 
   // set up cipher
   const cipher = crypto.createCipheriv('aes-256-gcm', key, nonce)
@@ -98,11 +99,11 @@ const encrypt = function (key, message) {
 }
 
 const changed = function (ciphertext, dotenvKey, filepath, encoding) {
-  const key = this._parseEncryptionKeyFromDotenvKey(dotenvKey)
+  const key = _parseEncryptionKeyFromDotenvKey(dotenvKey)
   const decrypted = main.decrypt(ciphertext, key)
   const raw = fs.readFileSync(filepath, encoding)
 
-  return this.hash(decrypted) !== this.hash(raw)
+  return hash(decrypted) !== hash(raw)
 }
 
 const hash = function (str) {
@@ -122,14 +123,6 @@ const _parseEncryptionKeyFromDotenvKey = function (dotenvKey) {
   return Buffer.from(key.slice(-64), 'hex')
 }
 
-const _generateNonce = function () {
-  return crypto.randomBytes(this._nonceBytes())
-}
-
-const _nonceBytes = function () {
-  return 12
-}
-
 module.exports = {
   resolvePath,
   executeCommand,
@@ -141,7 +134,5 @@ module.exports = {
   encrypt,
   changed,
   hash,
-  _parseEncryptionKeyFromDotenvKey,
-  _generateNonce,
-  _nonceBytes
+  _parseEncryptionKeyFromDotenvKey
 }
