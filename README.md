@@ -190,48 +190,58 @@ More examples
 
 ## Multiple Environments
 
-Create a `.env.production` file.
+Create a `.env.production` file and use `--env-file` to load it.
 
 ```ini
 # .env.production
 HELLO="production"
 ```
-
-Use the `--env-file` flag to load production.
-
 ```sh
 $ dotenvx run --env-file=.env.production -- node index.js
-[dotenvx][INFO] injecting 1 environment variable from .env.production
 Hello production
+> ^^
 ```
 
-That's it. 🌴
+That's it. It's straightforward, yet flexible.
 
-It's straightforward but also flexible. Combine multiple `.env` files if you like.
+More examples
 
-```
-# .env.local
-HELLO="local"
-```
+* <details><summary>multiple `.env` files</summary><br>
 
-```
-# .env
-HELLO="World"
-```
+  ```
+  # .env.local
+  HELLO="local"
+  ```
 
-```sh
-$ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
-[dotenvx][INFO] injecting 1 environment variable from .env.local,.env
-Hello local
-```
+  ```
+  # .env
+  HELLO="World"
+  ```
 
-Pass `overload` to have the last file's env override the first file's.
+  ```sh
+  $ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
+  Hello local
+  ```
 
-```sh
-$ dotenvx run --env-file=.env.local --env-file=.env --overload -- node index.js
-[dotenvx][INFO] injecting 1 environment variable from .env.local,.env
-Hello World
-```
+  </details>
+
+* <details><summary>`--overload` flag</summary><br>
+  ```
+  # .env.local
+  HELLO="local"
+  ```
+
+  ```
+  # .env
+  HELLO="World"
+  ```
+
+  ```sh
+  $ dotenvx run --env-file=.env.local --env-file=.env --overload -- node index.js
+  Hello World
+  ```
+
+  </details>
 
 &nbsp;
 
