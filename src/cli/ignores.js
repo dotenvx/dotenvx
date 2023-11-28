@@ -38,25 +38,25 @@ class Git {
 }
 
 class Docker {
-  run() {
+  run () {
     new Generic('.dockerignore').run()
   }
 }
 
 class Npm {
-  run() {
+  run () {
     new Generic('.npmignore').run()
   }
 }
 
 class Vercel {
-  run() {
+  run () {
     new Generic('.vercelignore').run()
   }
 }
 
 class AppendToIgnores {
-  run() {
+  run () {
     new Docker().run()
     new Git().run()
     new Npm().run()
