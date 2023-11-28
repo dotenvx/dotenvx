@@ -7,14 +7,10 @@ const transports = winston.transports
 
 const packageJson = require('./packageJson')
 
-function pad (word) {
-  return word.padEnd(9, ' ')
-}
-
 const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
   const formattedMessage = typeof message === 'object' ? JSON.stringify(message) : message
 
-  return `[dotenvx@${packageJson.version}]${pad(`[${level.toUpperCase()}]`)} ${formattedMessage}`
+  return `[dotenvx@${packageJson.version}][${level.toUpperCase()}] ${formattedMessage}`
 })
 
 const logger = createLogger({
