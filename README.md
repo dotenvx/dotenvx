@@ -291,7 +291,7 @@ $ dotenvx encrypt
 
 &nbsp;
 
-> Then load env from encrypted .env.vault file
+> Then load env from encrypted `.env.vault` file
 
 ```sh
 $ DOTENV_KEY='dotenv://:key_abc123@dotenvx.com/vault/.env.vault?environment=production' dotenvx run -- node index.js
