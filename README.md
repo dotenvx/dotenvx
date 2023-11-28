@@ -197,8 +197,8 @@ $ dotenvx run --env-file=.env.production -- node index.js
 Hello production
 > ^^
 ```
-> 1. Create `.env.production` file
-> 2. Use `--env-file` flag
+> * Create `.env.production` file
+> * Use `--env-file` flag
 >
 > It's straightforward, yet flexible.
 
