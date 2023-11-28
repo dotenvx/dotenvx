@@ -9,6 +9,7 @@ const ENCODING = 'utf8'
 
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
+const { AppendToIgnores } = require('./ignores')
 const packageJson = require('./../shared/packageJson')
 const main = require('./../lib/main')
 
@@ -19,6 +20,8 @@ program
   .option('-v, --verbose', 'sets log level to verbose')
   .option('-d, --debug', 'sets log level to debug')
   .hook('preAction', (thisCommand, actionCommand) => {
+    new AppendToIgnores().run()
+
     const options = thisCommand.opts()
 
     if (options.logLevel) {

@@ -21,7 +21,7 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "dependencies": {
     "commander": "^11.1.0",
