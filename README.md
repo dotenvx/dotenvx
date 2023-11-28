@@ -192,33 +192,25 @@ More examples
 
 Create a `.env.production` file and use `--env-file` to load it.
 
-```ini
-# .env.production
-HELLO="production"
-```
 ```sh
+$ echo "HELLO=production" > .env.production
+
 $ dotenvx run --env-file=.env.production -- node index.js
 Hello production
 > ^^
 ```
 
-That's it. It's straightforward, yet flexible.
+It's straightforward, yet flexible.
 
 More examples
 
 * <details><summary>multiple `.env` files</summary><br>
 
-  ```
-  # .env.local
-  HELLO="local"
-  ```
-
-  ```
-  # .env
-  HELLO="World"
-  ```
-
   ```sh
+  $ echo "HELLO=local" > .env.local
+
+  $ echo "HELLO=World" > .env
+
   $ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
   Hello local
   ```
@@ -226,17 +218,11 @@ More examples
   </details>
 
 * <details><summary>`--overload` flag</summary><br>
-  ```
-  # .env.local
-  HELLO="local"
-  ```
-
-  ```
-  # .env
-  HELLO="World"
-  ```
-
   ```sh
+  $ echo "HELLO=local" > .env.local
+
+  $ echo "HELLO=World" > .env
+
   $ dotenvx run --env-file=.env.local --env-file=.env --overload -- node index.js
   Hello World
   ```
