@@ -262,7 +262,7 @@ More examples
 
 ## Encrypt Your Env Files
 
-> Generate encrypted `.env.vault` file and populate `.env.keys` file containing decryption `DOTENV_KEY`s
+> Run `dotenvx encrypt` to generate `.env.vault` and `.env.keys` file.
 ```
 $ echo "HELLO=World" > .env
 
