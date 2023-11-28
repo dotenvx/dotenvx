@@ -190,8 +190,6 @@ More examples
 
 ## Multiple Environments
 
-Create a `.env.production` file and use `--env-file` to load it.
-
 ```sh
 $ echo "HELLO=production" > .env.production
 
@@ -199,8 +197,10 @@ $ dotenvx run --env-file=.env.production -- node index.js
 Hello production
 > ^^
 ```
-
-It's straightforward, yet flexible.
+> 1. Create `.env.production` file
+> 2. Use `--env-file` flag
+>
+> It's straightforward, yet flexible.
 
 More examples
 
