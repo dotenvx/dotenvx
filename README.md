@@ -270,18 +270,22 @@ $ echo "HELLO=production" > .env.production
 
 $ dotenvx encrypt
 [dotenvx][INFO] encrypted .env,.env.production to .env.vault
-[dotenvx][INFO] 
+[dotenvx][INFO]
 [dotenvx][INFO] try it out:
-[dotenvx][INFO] 
+[dotenvx][INFO]
 [dotenvx][INFO]     DOTENV_KEY='<DOTENV_KEY_ENVIRONMENT>' dotenvx run -- node index.js
-[dotenvx][INFO] 
+[dotenvx][INFO]
 [dotenvx][INFO] next:
-[dotenvx][INFO] 
-[dotenvx][INFO]     1. commit `.env.vault` safely to code
-[dotenvx][INFO]     2. set `DOTENV_KEY` on server or ci
+[dotenvx][INFO]
+[dotenvx][INFO]     1. commit .env.vault safely to code
+[dotenvx][INFO]     2. set DOTENV_KEY on server (or ci)
 [dotenvx][INFO]     3. push your code
-[dotenvx][INFO] 
-[dotenvx][INFO]     tip: DO NOT commit `.env.keys` file. it holds your decryption DOTENV_KEYs
+[dotenvx][INFO]
+[dotenvx][INFO] tips:
+[dotenvx][INFO]
+[dotenvx][INFO]     * .env.keys file holds your decryption DOTENV_KEYs
+[dotenvx][INFO]     * DO NOT commit .env.keys to code
+[dotenvx][INFO]     * share .env.keys file over secure channels only
 > :-]
 ```
 
