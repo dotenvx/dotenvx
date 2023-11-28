@@ -269,7 +269,7 @@ $ echo "HELLO=production" > .env.production
 
 $ dotenvx encrypt
 [dotenvx][INFO] encrypted .env,.env.production to .env.vault
-> 🔐
+> :-]
 ```
 
 > This will encrypt your `.env` file to a `.env.vault` file. Commit your `.env.vault` file safely to code.
