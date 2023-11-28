@@ -83,7 +83,18 @@ More examples
   ```
 
   </details>
+* <details><summary>.NET 🔵</summary><br>
 
+  ```sh
+  $ dotnet new console -n HelloWorld -o HelloWorld
+  $ cd HelloWorld
+  $ echo 'Console.WriteLine($"Hello {Environment.GetEnvironmentVariable("HELLO")}");' > Program.cs && echo "HELLO=World" > .env
+
+  $ dotenvx run -- dotnet run
+  Hello World
+  ```
+
+  </details>
 * <details><summary>Frameworks ▲</summary><br>
 
   ```sh
