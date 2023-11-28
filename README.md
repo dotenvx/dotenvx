@@ -262,6 +262,7 @@ More examples
 
 ## Encrypt Your Env Files
 
+> Generate encrypted `.env.vault` file and populate `.env.keys` file containing decryption `DOTENV_KEY`s
 ```
 $ echo "HELLO=World" > .env
 
@@ -269,11 +270,20 @@ $ echo "HELLO=production" > .env.production
 
 $ dotenvx encrypt
 [dotenvx][INFO] encrypted .env,.env.production to .env.vault
+[dotenvx][INFO] 
+[dotenvx][INFO] try it out:
+[dotenvx][INFO] 
+[dotenvx][INFO]     DOTENV_KEY='<DOTENV_KEY_ENVIRONMENT>' dotenvx run -- node index.js
+[dotenvx][INFO] 
+[dotenvx][INFO] next:
+[dotenvx][INFO] 
+[dotenvx][INFO]     1. commit `.env.vault` safely to code
+[dotenvx][INFO]     2. set `DOTENV_KEY` on server or ci
+[dotenvx][INFO]     3. push your code
+[dotenvx][INFO] 
+[dotenvx][INFO]     tip: DO NOT commit `.env.keys` file. it holds your decryption DOTENV_KEYs
 > :-]
 ```
-
-> This will encrypt your `.env` file to a `.env.vault` file. Commit your `.env.vault` file safely to code.
-> This will also generate a `.env.keys` file. Do NOT commit this file to code. Keep your `.env.keys` secret. 🤫
 
 &nbsp;
 
