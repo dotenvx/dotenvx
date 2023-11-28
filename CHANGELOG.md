@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.0...main)
 
+## 0.6.1
+
+### Changed
+
+removed the `pad` on the logging level. didn't look good when running in default INFO mode.
+
 ## 0.6.0
 
 ### Added
