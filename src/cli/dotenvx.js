@@ -9,6 +9,7 @@ const ENCODING = 'utf8'
 
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
+const { AppendToGitIgnore } = require('./ignores')
 const packageJson = require('./../shared/packageJson')
 const main = require('./../lib/main')
 
@@ -168,6 +169,9 @@ program.command('encrypt')
   .description('encrypt .env.* to .env.vault')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', helpers.findEnvFiles('./'))
   .action(function () {
+    // append to .gitignore
+    new AppendToGitIgnore().run()
+
     const options = this.opts()
     logger.debug('configuring options')
     logger.debug(options)
