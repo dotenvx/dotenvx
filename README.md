@@ -146,6 +146,35 @@ More examples
   ```
 
   </details>
+* <details><summary>npm</summary><br>
+
+  ```sh
+  $ npm install @dotenvx/dotenvx --save
+  ```
+
+  ```json
+  {
+    "scripts": {
+      "start": "./node_modules/.bin/dotenvx run -- node index.js"
+    },
+    "dependencies": {
+      "@dotenvx/dotenvx": "^0.5.0"
+    }
+  }
+  ```
+
+  ```sh
+  $ npm run start
+
+  > start
+  > ./node_modules/.bin/dotenvx run -- node index.js
+
+  [dotenvx][INFO] injecting 1 environment variable from .env
+  Hello World
+  ```
+
+  </details>
+
 * <details><summary>Git</summary><br>
 
   ```sh
@@ -165,14 +194,14 @@ Pass the `--env-file` flag (shorthand `-f`) to run any environment from a `.env.
 
 ```sh
 $ dotenvx run --env-file=.env.production -- node index.js
-[dotenvx][INFO] Injecting 12 production environment variables into your application process
+[dotenvx][INFO] injecting 12 environment variables into your application process
 ```
 
 Combine multiple `.env` files if you like.
 
 ```
 $ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
-[dotenvx][INFO] Injecting 12 local, 1 development environment variables into your application process
+[dotenvx][INFO] injecting 13 environment variables into your application process
 ```
 
 &nbsp;
@@ -210,7 +239,7 @@ Run it with `dotenvx`.
 
 ```sh
 $ dotenvx run -- node index.js
-[dotenvx@x.x.x][WARN] ENOENT: no such file or directory, open '/../../.env'
+[dotenvx][WARN] ENOENT: no such file or directory, open '/../../.env'
 Hello undefined
 ```
 
@@ -227,7 +256,7 @@ Run it again.
 
 ```sh
 $ dotenvx run -- node index.js
-[dotenvx@x.x.x][INFO] Injecting 0 environment variables into your application process
+[dotenvx][INFO] injecting 0 environment variables into your application process
 Hello undefined
 ```
 
@@ -235,10 +264,10 @@ Hrm, still undefined. Pass the `--debug` flag to debug the issue. I'll give you 
 
 ```sh
 $ dotenvx run --debug -- node index.js
-[dotenvx@x.x.x][VERBOSE] Loading env from /../../.env
-[dotenvx@x.x.x][DEBUG] Reading env from /../../.env
-[dotenvx@x.x.x][DEBUG] Parsing env from /../../.env
-[dotenvx@x.x.x][DEBUG] {"JELLO":"World"}
+[dotenvx][VERBOSE] Loading env from /../../.env
+[dotenvx][DEBUG] Reading env from /../../.env
+[dotenvx][DEBUG] Parsing env from /../../.env
+[dotenvx][DEBUG] {"JELLO":"World"}
 
 # Oops, HELLO not JELLO ^^
 ```
@@ -254,7 +283,7 @@ One last time. [Le tired](https://youtu.be/kCpjgl2baLs?t=45).
 
 ```sh
 $ dotenvx run -- node index.js
-[dotenvx@x.x.x][INFO] Injecting 1 environment variable into your application process
+[dotenvx][INFO] injecting 1 environment variable into your application process
 Hello World
 ```
 
@@ -291,7 +320,6 @@ npx @dotenvx/dotenvx help
 npm i @dotenvx/dotenvx --save
 ```
 ```json
-// package.json
 "scripts": {
   "start": "./node_modules/.bin/dotenvx run -- nodex index.js"
 }
