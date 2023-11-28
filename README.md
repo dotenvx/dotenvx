@@ -308,13 +308,7 @@ brew install dotenvx/brew/dotenvx
 npm install @dotenvx/dotenvx --global
 ```
 
-2. Or use with [`npx`](https://www.npmjs.com/package/npx):
-
-```sh
-npx @dotenvx/dotenvx help
-```
-
-3. Or install in your `package.json`
+2. Or install in your `package.json`
 
 ```sh
 npm i @dotenvx/dotenvx --save
