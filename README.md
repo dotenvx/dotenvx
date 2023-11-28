@@ -402,6 +402,8 @@ More examples
 
 &nbsp;
 
+---
+
 ## Usage
 
 ### Guide
