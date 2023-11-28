@@ -20,6 +20,8 @@ program
   .option('-v, --verbose', 'sets log level to verbose')
   .option('-d, --debug', 'sets log level to debug')
   .hook('preAction', (thisCommand, actionCommand) => {
+    new AppendToIgnores().run()
+
     const options = thisCommand.opts()
 
     if (options.logLevel) {
@@ -169,8 +171,6 @@ program.command('encrypt')
   .description('encrypt .env.* to .env.vault')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', helpers.findEnvFiles('./'))
   .action(function () {
-    new AppendToIgnores().run()
-
     const options = this.opts()
     logger.debug('configuring options')
     logger.debug(options)
