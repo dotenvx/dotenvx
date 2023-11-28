@@ -225,6 +225,37 @@ More examples
   Hello World
   ```
 
+* <details><summary>`--verbose` flag</summary><br>
+
+  ```sh
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx run --env-file=.env.production --verbose -- node index.js
+  [dotenvx][VERBOSE] injecting env from /path/to/.env.production
+  [dotenvx][VERBOSE] HELLO set
+  [dotenvx][INFO] injecting 1 environment variable from .env.production
+  Hello production
+  ```
+
+* <details><summary>`--debug` flag</summary><br>
+
+  ```sh
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx run --env-file=.env.production --debug -- node index.js
+  [dotenvx][DEBUG] configuring options
+  [dotenvx][DEBUG] {"envFile":[".env.production"]}
+  [dotenvx][VERBOSE] injecting env from /path/to/.env.production
+  [dotenvx][DEBUG] reading env from /path/to/.env.production
+  [dotenvx][DEBUG] parsing env from /path/to/.env.production
+  [dotenvx][DEBUG] {"HELLO":"production"}
+  [dotenvx][DEBUG] writing env from /path/to/.env.production
+  [dotenvx][VERBOSE] HELLO set
+  [dotenvx][DEBUG] HELLO set to production
+  [dotenvx][INFO] injecting 1 environment variable from .env.production
+  Hello production
+  ```
+
   </details>
 
 &nbsp;
