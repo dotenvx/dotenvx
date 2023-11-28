@@ -2,9 +2,9 @@
 
 *a better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
-* run anywhere (cross-platform)
-* multi-environment
-* encrypted envs
+* [run anywhere](#run-anywhere) (cross-platform)
+* [multi-environment](#multiple-environments)
+* [encrypted envs](#encrypt-your-env-files)
 
 &nbsp;
 
@@ -190,18 +190,45 @@ More examples
 
 ## Multiple Environments
 
-Pass the `--env-file` flag (shorthand `-f`) to run any environment from a `.env.environment` file.
+Create a `.env.production` file.
+
+```ini
+# .env.production
+HELLO="production"
+```
+
+Use the `--env-file` flag to load production.
 
 ```sh
 $ dotenvx run --env-file=.env.production -- node index.js
-[dotenvx][INFO] injecting 12 environment variables from .env.production
+[dotenvx][INFO] injecting 1 environment variable from .env.production
+Hello production
 ```
 
 Combine multiple `.env` files if you like.
 
 ```
+# .env.local
+HELLO="local"
+```
+
+```
+# .env
+HELLO="World"
+```
+
+```sh
 $ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
-[dotenvx][INFO] injecting 13 environment variables from .env.local,.env
+[dotenvx][INFO] injecting 1 environment variable from .env.local,.env
+Hello local
+```
+
+Pass `overload` to have the last file's env override the first file's.
+
+```sh
+$ dotenvx run --env-file=.env.local --env-file=.env --overload -- node index.js
+[dotenvx][INFO] injecting 1 environment variable from .env.local,.env
+Hello World
 ```
 
 &nbsp;
