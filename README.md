@@ -192,7 +192,7 @@ More examples
 
 > Create a `.env.production` file and use `--env-file` to load it. It's straightforward, yet flexible.
 ```sh
-$ echo "HELLO=production" > .env.production
+$ echo "HELLO=production" > .env.production && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run --env-file=.env.production -- node index.js
 Hello production
@@ -264,7 +264,7 @@ More examples
 
 > Encrypt your secrets to a `.env.vault` file.
 ```
-$ echo "HELLO=World" > .env
+$ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ echo "HELLO=production" > .env.production
 
