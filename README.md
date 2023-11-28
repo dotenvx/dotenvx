@@ -73,6 +73,17 @@ More examples
   ```
 
   </details>
+* <details><summary>Java ☕️</summary><br>
+
+  ```sh
+  $ echo 'public class Index { public static void main(String[] args) { System.out.println("Hello " + System.getenv("HELLO")); } }' > index.java
+
+  $ dotenvx run -- java index.java
+  Hello World
+  ```
+
+  </details>
+
 * <details><summary>Frameworks ▲</summary><br>
 
   ```sh
