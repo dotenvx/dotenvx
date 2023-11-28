@@ -2,13 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.1...main)
 
 ## 0.6.1
 
 ### Changed
 
-removed the `pad` on the logging level. didn't look good when running in default INFO mode.
+removed the `pad` on the logging level. didn't look good when running in default INFO mode. ([#4](https://github.com/dotenvx/dotenvx/pull/4))
 
 ## 0.6.0
 
