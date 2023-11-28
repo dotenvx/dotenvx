@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.5.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.0...main)
+
+## 0.6.0
+
+### Added
+
+prevent committing a `.env*` file to code. append to `.gitignore`, `.dockerignore`, `.vercelignore`, and `.npmignore` 🗂️ ([#3](https://github.com/dotenvx/dotenvx/pull/3))
 
 ## 0.5.0
 
