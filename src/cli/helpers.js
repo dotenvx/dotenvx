@@ -4,6 +4,7 @@ const crypto = require('crypto')
 const { spawn } = require('child_process')
 const xxhash = require('xxhashjs')
 const XXHASH_SEED = 0xABCD
+const NONCE_BYTES = 12
 
 const main = require('./../lib/main')
 
@@ -69,17 +70,17 @@ const generateDotenvKey = function (environment) {
 }
 
 const encryptFile = function (filepath, dotenvKey, encoding) {
-  const key = this._parseEncryptionKeyFromDotenvKey(dotenvKey)
+  const key = _parseEncryptionKeyFromDotenvKey(dotenvKey)
   const message = fs.readFileSync(filepath, encoding)
 
-  const ciphertext = this.encrypt(key, message)
+  const ciphertext = encrypt(key, message)
 
   return ciphertext
 }
 
 const encrypt = function (key, message) {
   // set up nonce
-  const nonce = this._generateNonce()
+  const nonce = crypto.randomBytes(NONCE_BYTES)
 
   // set up cipher
   const cipher = crypto.createCipheriv('aes-256-gcm', key, nonce)
@@ -98,11 +99,11 @@ const encrypt = function (key, message) {
 }
 
 const changed = function (ciphertext, dotenvKey, filepath, encoding) {
-  const key = this._parseEncryptionKeyFromDotenvKey(dotenvKey)
+  const key = _parseEncryptionKeyFromDotenvKey(dotenvKey)
   const decrypted = main.decrypt(ciphertext, key)
   const raw = fs.readFileSync(filepath, encoding)
 
-  return this.hash(decrypted) !== this.hash(raw)
+  return hash(decrypted) !== hash(raw)
 }
 
 const hash = function (str) {
@@ -111,7 +112,12 @@ const hash = function (str) {
 
 const _parseEncryptionKeyFromDotenvKey = function (dotenvKey) {
   // Parse DOTENV_KEY. Format is a URI
-  const uri = new URL(dotenvKey)
+  let uri
+  try {
+    uri = new URL(dotenvKey)
+  } catch (e) {
+    throw new Error(`INVALID_DOTENV_KEY: ${e.message}`)
+  }
 
   // Get decrypt key
   const key = uri.password
@@ -122,12 +128,29 @@ const _parseEncryptionKeyFromDotenvKey = function (dotenvKey) {
   return Buffer.from(key.slice(-64), 'hex')
 }
 
-const _generateNonce = function () {
-  return crypto.randomBytes(this._nonceBytes())
-}
+const _parseCipherTextFromDotenvKeyAndParsedVault = function (dotenvKey, parsedVault) {
+  // Parse DOTENV_KEY. Format is a URI
+  let uri
+  try {
+    uri = new URL(dotenvKey)
+  } catch (e) {
+    throw new Error(`INVALID_DOTENV_KEY: ${e.message}`)
+  }
 
-const _nonceBytes = function () {
-  return 12
+  // Get environment
+  const environment = uri.searchParams.get('environment')
+  if (!environment) {
+    throw new Error('INVALID_DOTENV_KEY: Missing environment part')
+  }
+
+  // Get ciphertext payload
+  const environmentKey = `DOTENV_VAULT_${environment.toUpperCase()}`
+  const ciphertext = parsedVault[environmentKey] // DOTENV_VAULT_PRODUCTION
+  if (!ciphertext) {
+    throw new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: cannot locate environment ${environmentKey} in your .env.vault file`)
+  }
+
+  return ciphertext
 }
 
 module.exports = {
@@ -142,6 +165,5 @@ module.exports = {
   changed,
   hash,
   _parseEncryptionKeyFromDotenvKey,
-  _generateNonce,
-  _nonceBytes
+  _parseCipherTextFromDotenvKeyAndParsedVault
 }

@@ -2,7 +2,6 @@
 
 const fs = require('fs')
 const { Command } = require('commander')
-const dotenv = require('dotenv')
 const program = new Command()
 
 // constants
@@ -59,40 +58,97 @@ program.command('run')
     logger.debug('configuring options')
     logger.debug(options)
 
-    // convert to array if needed
-    let optionEnvFile = options.envFile
-    if (!Array.isArray(optionEnvFile)) {
-      optionEnvFile = [optionEnvFile]
-    }
+    // load from .env.vault file
+    if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
+      const filepath = helpers.resolvePath('.env.vault')
 
-    const env = {}
-    const readableFilepaths = new Set()
-    const written = new Set()
+      if (!fs.existsSync(filepath)) {
+        logger.error(`you set DOTENV_KEY but your .env.vault file is missing: ${filepath}`)
+      } else {
+        logger.verbose(`injecting encrypted env from ${filepath}`)
 
-    for (const envFilepath of optionEnvFile) {
-      const filepath = helpers.resolvePath(envFilepath)
+        try {
+          logger.debug(`reading encrypted env from ${filepath}`)
+          const src = fs.readFileSync(filepath, { encoding: ENCODING })
 
-      logger.verbose(`injecting env from ${filepath}`)
+          logger.debug(`parsing encrypted env from ${filepath}`)
+          const parsedVault = main.parse(src)
 
-      try {
-        logger.debug(`reading env from ${filepath}`)
-        const src = fs.readFileSync(filepath, { encoding: ENCODING })
+          logger.debug(`decrypting encrypted env from ${filepath}`)
+          // handle scenario for comma separated keys - for use with key rotation
+          // example: DOTENV_KEY="dotenv://:key_1234@dotenv.org/vault/.env.vault?environment=prod,dotenv://:key_7890@dotenv.org/vault/.env.vault?environment=prod"
+          const dotenvKeys = process.env.DOTENV_KEY.split(',')
+          const length = dotenvKeys.length
 
-        logger.debug(`parsing env from ${filepath}`)
-        const parsed = main.parse(src)
+          let decrypted
+          for (let i = 0; i < length; i++) {
+            try {
+              // Get full dotenvKey
+              const dotenvKey = dotenvKeys[i].trim()
 
-        logger.debug(`writing env from ${filepath}`)
-        const result = main.write(process.env, parsed, options.overload)
+              const key = helpers._parseEncryptionKeyFromDotenvKey(dotenvKey)
+              const ciphertext = helpers._parseCipherTextFromDotenvKeyAndParsedVault(dotenvKey, parsedVault)
 
-        readableFilepaths.add(envFilepath)
-        result.written.forEach(key => written.add(key))
-      } catch (e) {
-        logger.warn(e)
+              // Decrypt
+              decrypted = main.decrypt(ciphertext, key)
+
+              break
+            } catch (error) {
+              // last key
+              if (i + 1 >= length) {
+                throw error
+              }
+              // try next key
+            }
+          }
+          logger.debug(decrypted)
+
+          logger.debug(`parsing decrypted env from ${filepath}`)
+          const parsed = main.parse(decrypted)
+
+          logger.debug(`writing decrypted env from ${filepath}`)
+          const result = main.write(process.env, parsed, options.overload)
+
+          logger.info(`injecting ${result.written.size} environment ${helpers.pluralize('variable', result.written.size)} from encrypted .env.vault`)
+        } catch (e) {
+          logger.error(e)
+        }
       }
-    }
+    } else {
+      // convert to array if needed
+      let optionEnvFile = options.envFile
+      if (!Array.isArray(optionEnvFile)) {
+        optionEnvFile = [optionEnvFile]
+      }
 
-    if (readableFilepaths.size > 0) {
-      logger.info(`injecting ${written.size} environment ${helpers.pluralize('variable', written.size)} from ${[...readableFilepaths]}`)
+      const readableFilepaths = new Set()
+      const written = new Set()
+
+      for (const envFilepath of optionEnvFile) {
+        const filepath = helpers.resolvePath(envFilepath)
+
+        logger.verbose(`injecting env from ${filepath}`)
+
+        try {
+          logger.debug(`reading env from ${filepath}`)
+          const src = fs.readFileSync(filepath, { encoding: ENCODING })
+
+          logger.debug(`parsing env from ${filepath}`)
+          const parsed = main.parse(src)
+
+          logger.debug(`writing env from ${filepath}`)
+          const result = main.write(process.env, parsed, options.overload)
+
+          readableFilepaths.add(envFilepath)
+          result.written.forEach(key => written.add(key))
+        } catch (e) {
+          logger.warn(e)
+        }
+      }
+
+      if (readableFilepaths.size > 0) {
+        logger.info(`injecting ${written.size} environment ${helpers.pluralize('variable', written.size)} from ${[...readableFilepaths]}`)
+      }
     }
 
     // Extract command and arguments after '--'
@@ -103,7 +159,7 @@ program.command('run')
     } else {
       const subCommand = process.argv.slice(commandIndex + 1)
 
-      helpers.executeCommand(subCommand, env)
+      helpers.executeCommand(subCommand, process.env)
     }
   })
 
@@ -124,7 +180,7 @@ program.command('encrypt')
     try {
       logger.verbose(`generating .env.keys from ${optionEnvFile}`)
 
-      const dotenvKeys = (dotenv.configDotenv({ path: '.env.keys' }).parsed || {})
+      const dotenvKeys = (main.configDotenv({ path: '.env.keys' }).parsed || {})
 
       for (const envFilepath of optionEnvFile) {
         const filepath = helpers.resolvePath(envFilepath)
@@ -169,8 +225,8 @@ program.command('encrypt')
     try {
       logger.verbose(`generating .env.vault from ${optionEnvFile}`)
 
-      const dotenvKeys = (dotenv.configDotenv({ path: '.env.keys' }).parsed || {})
-      const dotenvVaults = (dotenv.configDotenv({ path: '.env.vault' }).parsed || {})
+      const dotenvKeys = (main.configDotenv({ path: '.env.keys' }).parsed || {})
+      const dotenvVaults = (main.configDotenv({ path: '.env.vault' }).parsed || {})
 
       for (const envFilepath of optionEnvFile) {
         const filepath = helpers.resolvePath(envFilepath)
@@ -211,8 +267,6 @@ program.command('encrypt')
     }
 
     logger.info(`encrypted ${optionEnvFile} to .env.vault`)
-
-    // logger.info(`encrypting`)
   })
 
 program.parse(process.argv)

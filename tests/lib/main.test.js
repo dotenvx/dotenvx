@@ -14,7 +14,7 @@ jest.mock('dotenv', () => ({
   write: jest.fn()
 }))
 
-describe('main.js tests', () => {
+describe('lib/main.js tests', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
