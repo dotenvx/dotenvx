@@ -14,7 +14,7 @@
 ```sh
 brew install dotenvx/brew/dotenvx
 ```
-> * [other ways to install](#other-ways-to-install)
+> * [other ways to install](https://dotenvx.com/docs/install)
 
 &nbsp;
 
@@ -478,58 +478,9 @@ Hello World
 
 &nbsp;
 
-
-## Install
-
-Installing with [`brew`](https://brew.sh) is most straight forward:
-
-```sh
-brew install dotenvx/brew/dotenvx
-```
-
-### Other Ways to Install
-
-#### 1. global npm
-
-After `brew`, installing globally using [`npm`](https://www.npmjs.com/package/@dotenvx/dotenvx) is easiest:
-
-```sh
-npm install @dotenvx/dotenvx --global
-```
-
-#### 2. local npm
-
-Or install in your `package.json`:
-
-```sh
-npm i @dotenvx/dotenvx --save
-```
-```json
-{
-  "scripts": {
-    "start": "./node_modules/.bin/dotenvx run -- node index.js"
-  },
-  "dependencies": {
-    "@dotenvx/dotenvx": "^0.6.0"
-  }
-}
-```
-
-#### 3. standalone binary
-
-Or download it directly as a standalone binary:
-
-```sh
-# download it to `/user/local/bin/dotenvx`
-curl -fsS https://dotenvx.sh/ | sh
-
-# check it works
-dotenvx help
-```
-
 ## Contributing
 
-If you have questions or feedback:
+You can fork this repo and create [pull requests](https://github.com/dotenvx/dotenvx/pulls) or if you have questions or feedback:
 
 * [github.com/dotenvx/dotenvx](https://github.com/dotenvx/dotenvx/issues) - bugs and discussions
 * [@dotenvx 𝕏](https://x.com/dotenvx) (DMs are open)
