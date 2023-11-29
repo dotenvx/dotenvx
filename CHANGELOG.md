@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.3...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.4...main)
+
+## 0.6.4
+
+### Added
+
+added tagged images to [hub.docker.com/u/dotenv](https://hub.docker.com/r/dotenv/dotenvx/tags)
 
 ## 0.6.3
 
