@@ -18,164 +18,163 @@ jobs:
       - run: npm test
 
   # run only on semantic version tag
-  # release:
-  #   needs: test
-  #   if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: true
-  #   steps:
-  #     - name: checkout
-  #       uses: actions/checkout@v4
+  release:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
 
-  #     # GITHUB_ENV operates like a .env file
-  #     - name: extract version
-  #       run: |
-  #         VERSION=${GITHUB_REF#refs/tags/}
-  #         CLEAN_VERSION=${VERSION#v}
-  #         echo "VERSION=$VERSION" >> $GITHUB_ENV
-  #         echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+      # GITHUB_ENV operates like a .env file
+      - name: extract version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
 
-  #     - name: node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 16.x
+      - name: node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
 
-  #     # https://news.ycombinator.com/item?id=32388964
-  #     # https://github.com/procursusteam/ldid
-  #     # https://www.pulumi.com/blog/nodejs-binaries-with-pkg/
-  #     # https://github.com/pulumi/pulumi-aws-static-website/blob/main/.github/workflows/release.yaml
-  #     - name: ldid for macos binary building
-  #       uses: MOZGIII/install-ldid-action@v1
-  #       with:
-  #         tag: v2.1.5-procursus2
+      # https://news.ycombinator.com/item?id=32388964
+      # https://github.com/procursusteam/ldid
+      # https://www.pulumi.com/blog/nodejs-binaries-with-pkg/
+      # https://github.com/pulumi/pulumi-aws-static-website/blob/main/.github/workflows/release.yaml
+      - name: ldid for macos binary building
+        uses: MOZGIII/install-ldid-action@v1
+        with:
+          tag: v2.1.5-procursus2
 
-  #     - name: npm install
-  #       run: npm install
+      - name: npm install
+        run: npm install
 
-  #     - name: pkg
-  #       run: |
-  #         echo "pkg-ing"
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-amd64/dotenvx
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-x86_64/dotenvx
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/dotenvx
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/dotenvx
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-x86_64/dotenvx
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-aarch64/dotenvx
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenvx.exe
-  #         ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenvx.exe
-  #         echo "dist-ing"
-  #         mkdir -p dist
-  #         mkdir -p dist2
-  #         mkdir -p dist2/${{ env.VERSION }}
-  #         mkdir -p dist2/latest
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
-  #         tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
-  #         tar --gzip -cf ./dist/dotenvx-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
-  #         tar --gzip -cf ./dist/dotenvx-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
-  #         tar --gzip -cf ./dist/dotenvx-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
-  #         tar --gzip -cf ./dist/dotenvx-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
-  #         tar --gzip -cf ./dist/dotenvx-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
-  #         tar --gzip -cf ./dist/dotenvx-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
-  #         tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
-  #         tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
-  #         tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
-  #         tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
-  #         tar --gzip -cf ./dist2/latest/dotenvx-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
-
-  #     - name: create release
-  #       uses: softprops/action-gh-release@v1
-  #       with:
-  #         files: |
-  #           dist/*.tar.gz
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-  #     # - name: gen checksums
-  #     #   uses: wangzuo/action-release-checksums@v1
-  #     - name: checkout dotenvx/releases repo
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: "dotenvx/releases"
-  #         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-  #         path: "releases"
-  #     - name: copy dist2 files to release repo
-  #       run: |
-  #         mkdir -p releases/${{ env.VERSION }}
-  #         mkdir -p releases/latest
-  #         cp -r dist2/* releases/
-  #         echo "${{ env.CLEAN_VERSION }}" > releases/VERSION
-  #     - name: commit and push
-  #       run: |
-  #         cd releases
-  #         git config --global user.name 'motdotenv'
-  #         git config --global user.email 'mot@dotenv.org'
-  #         git add .
-  #         git commit -m "${{ env.VERSION }}"
-  #         git push
-  # homebrew:
-  #   needs: release
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: true
-  #   steps:
-  #     # https://github.com/Justintime50/homebrew-releaser
-  #     - name: homebrew releaser
-  #       uses: Justintime50/homebrew-releaser@v1
-  #       with:
-  #         debug: false
-  #         homebrew_owner: dotenvx
-  #         homebrew_tap: homebrew-brew
-  #         formula_folder: Formula
-  #         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-  #         commit_owner: motdotenv
-  #         commit_email: mot@dotenv.org
-  #         install: 'bin.install "dotenvx"; bin.install_symlink "dotenvx" => "git-dotenvx";'
-  #         test: 'system bin/"dotenvx", "--version";'
-  #         target_darwin_amd64: true
-  #         target_darwin_arm64: true
-  #         target_linux_amd64: true
-  #         target_linux_arm64: true
-  #         update_readme_table: true
-  # npm:
-  #   needs: release
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     # Setup .npmrc file to publish to npm
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '16.x'
-  #         registry-url: 'https://registry.npmjs.org'
-  #         scope: '@dotenvx'
-  #     - run: npm publish
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: pkg
+        run: |
+          echo "pkg-ing"
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-amd64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-x86_64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-x86_64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-aarch64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenvx.exe
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenvx.exe
+          echo "dist-ing"
+          mkdir -p dist
+          mkdir -p dist2
+          mkdir -p dist2/${{ env.VERSION }}
+          mkdir -p dist2/latest
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz README.md -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz README.md -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz README.md -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-amd64.tar.gz README.md -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-x86_64.tar.gz README.md -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-arm64.tar.gz README.md -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-aarch64.tar.gz README.md -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-windows-amd64.tar.gz README.md -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-windows-x86_64.tar.gz README.md -C bin/windows-x86_64/ .
+      - name: create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      # - name: gen checksums
+      #   uses: wangzuo/action-release-checksums@v1
+      - name: checkout dotenvx/releases repo
+        uses: actions/checkout@v4
+        with:
+          repository: "dotenvx/releases"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: "releases"
+      - name: copy dist2 files to release repo
+        run: |
+          mkdir -p releases/${{ env.VERSION }}
+          mkdir -p releases/latest
+          cp -r dist2/* releases/
+          echo "${{ env.CLEAN_VERSION }}" > releases/VERSION
+      - name: commit and push
+        run: |
+          cd releases
+          git config --global user.name 'motdotenv'
+          git config --global user.email 'mot@dotenv.org'
+          git add .
+          git commit -m "${{ env.VERSION }}"
+          git push
+  homebrew:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      # https://github.com/Justintime50/homebrew-releaser
+      - name: homebrew releaser
+        uses: Justintime50/homebrew-releaser@v1
+        with:
+          debug: false
+          homebrew_owner: dotenvx
+          homebrew_tap: homebrew-brew
+          formula_folder: Formula
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          commit_owner: motdotenv
+          commit_email: mot@dotenv.org
+          install: 'bin.install "dotenvx"; bin.install_symlink "dotenvx" => "git-dotenvx";'
+          test: 'system bin/"dotenvx", "--version";'
+          target_darwin_amd64: true
+          target_darwin_arm64: true
+          target_linux_amd64: true
+          target_linux_arm64: true
+          update_readme_table: true
+  npm:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@dotenvx'
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   docker:
-    # needs: release
+    needs: release
     runs-on: ubuntu-latest
     steps:
       # GITHUB_ENV operates like a .env file
