@@ -36,7 +36,7 @@ More examples
 * <details><summary>Python 🐍</summary><br>
 
   ```sh
-  $ echo 'import os;print("Hello " + os.getenv("HELLO", ""))' > index.py
+  $ echo "HELLO=World" > .env && echo 'import os;print("Hello " + os.getenv("HELLO", ""))' > index.py
 
   $ dotenvx run -- python3 index.py
   Hello World
@@ -46,7 +46,7 @@ More examples
 * <details><summary>PHP 🐘</summary><br>
 
   ```sh
-  $ echo '<?php echo "Hello {$_SERVER["HELLO"]}\n";' > index.php
+  $ echo "HELLO=World" > .env && echo '<?php echo "Hello {$_SERVER["HELLO"]}\n";' > index.php
 
   $ dotenvx run -- php index.php
   Hello World
@@ -56,7 +56,7 @@ More examples
 * <details><summary>Ruby 💎</summary><br>
 
   ```sh
-  $ echo 'puts "Hello #{ENV["HELLO"]}"' > index.rb
+  $ echo "HELLO=World" > .env && echo 'puts "Hello #{ENV["HELLO"]}"' > index.rb
 
   $ dotenvx run -- ruby index.rb
   Hello World
@@ -66,7 +66,7 @@ More examples
 * <details><summary>Rust 🦀</summary><br>
 
   ```sh
-  $ echo 'fn main() {let hello = std::env::var("HELLO").unwrap_or("".to_string());println!("Hello {hello}");}' > src/main.rs
+  $ echo "HELLO=World" > .env && echo 'fn main() {let hello = std::env::var("HELLO").unwrap_or("".to_string());println!("Hello {hello}");}' > src/main.rs
 
   $ dotenvx run -- cargo run
   Hello World
@@ -76,7 +76,7 @@ More examples
 * <details><summary>Java ☕️</summary><br>
 
   ```sh
-  $ echo 'public class Index { public static void main(String[] args) { System.out.println("Hello " + System.getenv("HELLO")); } }' > index.java
+  $ echo "HELLO=World" > .env && echo 'public class Index { public static void main(String[] args) { System.out.println("Hello " + System.getenv("HELLO")); } }' > index.java
 
   $ dotenvx run -- java index.java
   Hello World
@@ -88,7 +88,7 @@ More examples
   ```sh
   $ dotnet new console -n HelloWorld -o HelloWorld
   $ cd HelloWorld
-  $ echo 'Console.WriteLine($"Hello {Environment.GetEnvironmentVariable("HELLO")}");' > Program.cs && echo "HELLO=World" > .env
+  $ echo "HELLO=World" > .env && echo 'Console.WriteLine($"Hello {Environment.GetEnvironmentVariable("HELLO")}");' > Program.cs && echo "HELLO=World" > .env
 
   $ dotenvx run -- dotnet run
   Hello World
