@@ -195,6 +195,12 @@ jobs:
           push: true
           tags: dotenv/dotenvx:latest
           platforms: linux/amd64,linux/arm64
+      - name: Build and push tag
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: dotenv/dotenvx:${{ env.CLEAN_VERSION }}
+          platforms: linux/amd64,linux/arm64
       - uses: actions/checkout@v4
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v3
