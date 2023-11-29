@@ -210,9 +210,9 @@ program.command('encrypt')
       }
 
       let keysData = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
-  #/   DOTENV_KEYs. DO NOT commit to source control   /
-  #/   [how it works](https://dotenv.org/env-keys)    /
-  #/--------------------------------------------------/\n`
+#/   DOTENV_KEYs. DO NOT commit to source control   /
+#/   [how it works](https://dotenv.org/env-keys)    /
+#/--------------------------------------------------/\n`
 
       for (const key in dotenvKeys) {
         const value = dotenvKeys[key]
