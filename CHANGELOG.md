@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.3...main)
+
+## 0.6.3
+
+### Changed
+
+fixed the `.env.keys` file comment. spacing was off. ([#6](https://github.com/dotenvx/dotenvx/pull/6))
 
 ## 0.6.2
 
