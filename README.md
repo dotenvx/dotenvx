@@ -4,7 +4,7 @@
 
 * [run anywhere](#run-anywhere) (cross-platform)
 * [multi-environment](#multiple-environments)
-* [encrypted envs](#encrypt-your-env-files)
+* [encrypted envs](#encryption)
 
 &nbsp;
 
@@ -260,7 +260,7 @@ More examples
 
 &nbsp;
 
-## Encrypt Your Env Files
+## Encryption
 
 > Encrypt your secrets to a `.env.vault` file.
 ```
