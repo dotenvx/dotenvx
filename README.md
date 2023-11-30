@@ -412,13 +412,9 @@ More examples
 
 &nbsp;
 
----
-
 ## Guides
 
 * [Quickstart guide](https://dotenvx.com/docs)
-
-&nbsp;
 
 ## Contributing
 
