@@ -414,7 +414,8 @@ More examples
 
 ## Guides
 
-* [Quickstart guide](https://dotenvx.com/docs)
+* [dotenvx/docs](https://dotenvx.com/docs)
+* [quickstart guide](https://dotenvx.com/docs/quickstart)
 
 ## Contributing
 
