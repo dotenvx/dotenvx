@@ -63,6 +63,16 @@ More examples
   ```
 
   </details>
+* <details><summary>Go 🐹</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env && echo 'package main; import ("fmt"; "os"); func main() { fmt.Printf("Hello %s\n", os.Getenv("HELLO")) }' > main.go
+
+  $ dotenvx run -- go run main.go
+  Hello World
+  ```
+
+  </details>
 * <details><summary>Rust 🦀</summary><br>
 
   ```sh
