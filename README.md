@@ -414,77 +414,9 @@ More examples
 
 ---
 
-## Usage
+## Guides
 
-### Guide
-
-Begin by creating a simple 'hello world' program.
-
-```js
-// index.js
-console.log(`Hello ${process.env.HELLO}`)
-```
-
-Run it.
-
-```js
-$ node index.js
-Hello undefined
-```
-
-Run it with `dotenvx`.
-
-```sh
-$ dotenvx run -- node index.js
-[dotenvx][WARN] ENOENT: no such file or directory, open '/../../.env'
-Hello undefined
-```
-
-It warns you when there is no `.env` file (pass the `--quiet` flag to suppress these warnings).
-
-Create the `.env` file.
-
-```ini
-# env
-JELLO="World"
-```
-
-Run it again.
-
-```sh
-$ dotenvx run -- node index.js
-[dotenvx][INFO] injecting 0 environment variables from .env
-Hello undefined
-```
-
-Hrm, still undefined. Pass the `--debug` flag to debug the issue. I'll give you a hint: 🍮
-
-```sh
-$ dotenvx run --debug -- node index.js
-[dotenvx][VERBOSE] Loading env from /../../.env
-[dotenvx][DEBUG] Reading env from /../../.env
-[dotenvx][DEBUG] Parsing env from /../../.env
-[dotenvx][DEBUG] {"JELLO":"World"}
-
-# Oops, HELLO not JELLO ^^
-```
-
-Fix your `.env` file.
-
-```ini
-# .env
-HELLO="World"
-```
-
-One last time. [Le tired](https://youtu.be/kCpjgl2baLs?t=45).
-
-```sh
-$ dotenvx run -- node index.js
-[dotenvx][INFO] injecting 1 environment variable from .env
-Hello World
-```
-
-🎉 It worked!
+* [Quickstart guide](https://dotenvx.com/docs)
 
 &nbsp;
 
