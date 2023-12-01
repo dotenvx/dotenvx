@@ -276,7 +276,7 @@ More examples
 
 ## Encryption
 
-> Encrypt your secrets to a `.env.vault` file.
+> Encrypt your secrets to a `.env.vault` file and load your secrets in an encrypted manner from that – recommended for production and ci.
 ```
 $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
@@ -285,13 +285,7 @@ $ echo "HELLO=production" > .env.production
 $ dotenvx encrypt
 [dotenvx][info] encrypted to .env.vault (.env,.env.production)
 [dotenvx][info] key added to .env.keys (DOTENV_KEY_PRODUCTION)
-```
 
-&nbsp;
-
-> Then load env from encrypted `.env.vault` file
-
-```sh
 $ DOTENV_KEY='<dotenv_key_production>' dotenvx run -- node index.js
 [dotenvx][info] loading env (1) from encrypted .env.vault
 Hello production
