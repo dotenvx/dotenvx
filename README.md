@@ -276,7 +276,7 @@ More examples
 
 ## Encryption
 
-> Encrypt your secrets to a `.env.vault` file and load your secrets in an encrypted manner from that – recommended for production and ci.
+> Encrypt your secrets to a `.env.vault` file and load from it (recommended for production and ci).
 ```sh
 $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
