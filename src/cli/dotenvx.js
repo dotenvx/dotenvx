@@ -180,6 +180,8 @@ program.command('encrypt')
       optionEnvFile = [optionEnvFile]
     }
 
+    const addedKeys = new Set()
+
     try {
       logger.verbose(`generating .env.keys from ${optionEnvFile}`)
 
@@ -203,6 +205,8 @@ program.command('encrypt')
           logger.debug(`generating ${key} as ${value}`)
 
           dotenvKeys[key] = value
+
+          addedKeys.add(key) // for info logging to user
         } else {
           logger.verbose(`existing ${key}`)
           logger.debug(`existing ${key} as ${value}`)
@@ -269,7 +273,10 @@ program.command('encrypt')
       process.exit(1)
     }
 
-    logger.info(`encrypted ${optionEnvFile} to .env.vault`)
+    logger.info(`encrypted to .env.vault (${optionEnvFile})`)
+    if (addedKeys.size > 0) {
+      logger.info(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
+    }
     logger.verbose('')
     logger.verbose('try it out:')
     logger.verbose('')
