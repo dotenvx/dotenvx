@@ -10,7 +10,7 @@ const packageJson = require('./packageJson')
 const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
   const formattedMessage = typeof message === 'object' ? JSON.stringify(message) : message
 
-  return `[dotenvx@${packageJson.version}][${level.toUpperCase()}] ${formattedMessage}`
+  return `[dotenvx@${packageJson.version}][${level.toLowerCase()}] ${formattedMessage}`
 })
 
 const logger = createLogger({

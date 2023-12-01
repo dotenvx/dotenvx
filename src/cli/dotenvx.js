@@ -53,7 +53,7 @@ program
 
 // dotenvx run -- node index.js
 program.command('run')
-  .description('inject env variables into your application process')
+  .description('load env into your application process')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
   .action(function () {
@@ -68,7 +68,7 @@ program.command('run')
       if (!fs.existsSync(filepath)) {
         logger.error(`you set DOTENV_KEY but your .env.vault file is missing: ${filepath}`)
       } else {
-        logger.verbose(`injecting encrypted env from ${filepath}`)
+        logger.verbose(`loading env from encrypted ${filepath}`)
 
         try {
           logger.debug(`reading encrypted env from ${filepath}`)
@@ -112,7 +112,7 @@ program.command('run')
           logger.debug(`writing decrypted env from ${filepath}`)
           const result = main.write(process.env, parsed, options.overload)
 
-          logger.info(`injecting ${result.written.size} environment ${helpers.pluralize('variable', result.written.size)} from encrypted .env.vault`)
+          logger.info(`loading env (${result.written.size}) from encrypted .env.vault`)
         } catch (e) {
           logger.error(e)
         }
@@ -130,7 +130,7 @@ program.command('run')
       for (const envFilepath of optionEnvFile) {
         const filepath = helpers.resolvePath(envFilepath)
 
-        logger.verbose(`injecting env from ${filepath}`)
+        logger.verbose(`loading env from ${filepath}`)
 
         try {
           logger.debug(`reading env from ${filepath}`)
@@ -150,7 +150,7 @@ program.command('run')
       }
 
       if (readableFilepaths.size > 0) {
-        logger.info(`injecting ${written.size} environment ${helpers.pluralize('variable', written.size)} from ${[...readableFilepaths]}`)
+        logger.info(`loading env (${written.size}) from ${[...readableFilepaths]}`)
       }
     }
 
@@ -180,6 +180,8 @@ program.command('encrypt')
       optionEnvFile = [optionEnvFile]
     }
 
+    const addedKeys = new Set()
+
     try {
       logger.verbose(`generating .env.keys from ${optionEnvFile}`)
 
@@ -203,6 +205,8 @@ program.command('encrypt')
           logger.debug(`generating ${key} as ${value}`)
 
           dotenvKeys[key] = value
+
+          addedKeys.add(key) // for info logging to user
         } else {
           logger.verbose(`existing ${key}`)
           logger.debug(`existing ${key} as ${value}`)
@@ -269,23 +273,26 @@ program.command('encrypt')
       process.exit(1)
     }
 
-    logger.info(`encrypted ${optionEnvFile} to .env.vault`)
-    logger.info('')
-    logger.info('try it out:')
-    logger.info('')
-    logger.info('    DOTENV_KEY=\'<DOTENV_KEY_ENVIRONMENT>\' dotenvx run -- node index.js')
-    logger.info('')
-    logger.info('next:')
-    logger.info('')
-    logger.info('    1. commit .env.vault safely to code')
-    logger.info('    2. set DOTENV_KEY on server (or ci)')
-    logger.info('    3. push your code')
-    logger.info('')
-    logger.info('tips:')
-    logger.info('')
-    logger.info('    * .env.keys file holds your decryption DOTENV_KEYs')
-    logger.info('    * DO NOT commit .env.keys to code')
-    logger.info('    * share .env.keys file over secure channels only')
+    logger.info(`encrypted to .env.vault (${optionEnvFile})`)
+    if (addedKeys.size > 0) {
+      logger.info(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
+    }
+    logger.verbose('')
+    logger.verbose('try it out:')
+    logger.verbose('')
+    logger.verbose('    DOTENV_KEY=\'<DOTENV_KEY_ENVIRONMENT>\' dotenvx run -- node index.js')
+    logger.verbose('')
+    logger.verbose('next:')
+    logger.verbose('')
+    logger.verbose('    1. commit .env.vault safely to code')
+    logger.verbose('    2. set DOTENV_KEY on server (or ci)')
+    logger.verbose('    3. push your code')
+    logger.verbose('')
+    logger.verbose('tips:')
+    logger.verbose('')
+    logger.verbose('    * .env.keys file holds your decryption DOTENV_KEYs')
+    logger.verbose('    * DO NOT commit .env.keys to code')
+    logger.verbose('    * share .env.keys file over secure channels only')
   })
 
 program.parse(process.argv)
