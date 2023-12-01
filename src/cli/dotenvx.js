@@ -53,7 +53,7 @@ program
 
 // dotenvx run -- node index.js
 program.command('run')
-  .description('inject env variables into your application process')
+  .description('load env into your application process')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
   .action(function () {
@@ -68,7 +68,7 @@ program.command('run')
       if (!fs.existsSync(filepath)) {
         logger.error(`you set DOTENV_KEY but your .env.vault file is missing: ${filepath}`)
       } else {
-        logger.verbose(`injecting encrypted env from ${filepath}`)
+        logger.verbose(`loading env from encrypted ${filepath}`)
 
         try {
           logger.debug(`reading encrypted env from ${filepath}`)
@@ -112,7 +112,7 @@ program.command('run')
           logger.debug(`writing decrypted env from ${filepath}`)
           const result = main.write(process.env, parsed, options.overload)
 
-          logger.info(`injecting ${result.written.size} environment ${helpers.pluralize('variable', result.written.size)} from encrypted .env.vault`)
+          logger.info(`loading env (${result.written.size}) from encrypted .env.vault`)
         } catch (e) {
           logger.error(e)
         }
@@ -130,7 +130,7 @@ program.command('run')
       for (const envFilepath of optionEnvFile) {
         const filepath = helpers.resolvePath(envFilepath)
 
-        logger.verbose(`injecting env from ${filepath}`)
+        logger.verbose(`loading env from ${filepath}`)
 
         try {
           logger.debug(`reading env from ${filepath}`)
@@ -150,7 +150,7 @@ program.command('run')
       }
 
       if (readableFilepaths.size > 0) {
-        logger.info(`injecting ${written.size} environment ${helpers.pluralize('variable', written.size)} from ${[...readableFilepaths]}`)
+        logger.info(`loading env (${written.size}) from ${[...readableFilepaths]}`)
       }
     }
 
