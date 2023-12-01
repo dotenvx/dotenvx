@@ -9,6 +9,7 @@ const ENCODING = 'utf8'
 
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
+const examples = require('./examples')
 const { AppendToIgnores } = require('./ignores')
 const packageJson = require('./../shared/packageJson')
 const main = require('./../lib/main')
@@ -53,7 +54,8 @@ program
 
 // dotenvx run -- node index.js
 program.command('run')
-  .description('load env into your application process')
+  .description('inject env at runtime (example: `dotenvx run -- your-cmd`)')
+  .addHelpText('after', examples.run)
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
   .action(function () {
@@ -169,6 +171,7 @@ program.command('run')
 // dotenvx encrypt
 program.command('encrypt')
   .description('encrypt .env.* to .env.vault')
+  .addHelpText('after', examples.encrypt)
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', helpers.findEnvFiles('./'))
   .action(function () {
     const options = this.opts()

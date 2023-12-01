@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.5...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.6...main)
+
+## 0.6.6
+
+## Added
+
+help includes a command example as well as a full working 'try it out' example ([#8](https://github.com/dotenvx/dotenvx/pull/8))
 
 ## 0.6.5
 
