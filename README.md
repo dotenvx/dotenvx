@@ -292,7 +292,7 @@ $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx encrypt
 [dotenvx][info] encrypted to .env.vault (.env,.env.production)
-[dotenvx][info] key added to .env.keys (DOTENV_KEY_PRODUCTION)
+[dotenvx][info] keys added to .env.keys (DOTENV_KEY_PRODUCTION,DOTENV_KEY_PRODUCTION)
 
 $ DOTENV_KEY='<dotenv_key_production>' dotenvx run -- node index.js
 [dotenvx][info] loading env (1) from encrypted .env.vault
