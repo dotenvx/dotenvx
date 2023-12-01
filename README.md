@@ -2,9 +2,9 @@
 
 *a better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
-* [run anywhere](#run-anywhere) (cross-platform)
-* [multi-environment](#multiple-environments)
-* [encrypted envs](#encryption)
+* run anywhere (cross-platform)
+* multi-environment
+* encrypted envs
 
 &nbsp;
 
@@ -202,9 +202,11 @@ More examples
 
 > Create a `.env.production` file and use `--env-file` to load it. It's straightforward, yet flexible.
 ```sh
-$ echo "HELLO=production" > .env.production && echo "console.log('Hello ' + process.env.HELLO)" > index.js
+$ echo "HELLO=production" > .env.production
+$ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run --env-file=.env.production -- node index.js
+[dotenvx][INFO] loading env (1) from .env.production
 Hello production
 > ^^
 ```
@@ -219,6 +221,7 @@ More examples
   $ echo "HELLO=World" > .env
 
   $ dotenvx run --env-file=.env.local --env-file=.env -- node index.js
+  [dotenvx][INFO] loading env (1) from .env.local,.env
   Hello local
   ```
 
@@ -232,6 +235,7 @@ More examples
   $ echo "HELLO=World" > .env
 
   $ dotenvx run --env-file=.env.local --env-file=.env --overload -- node index.js
+  [dotenvx][INFO] loading env (1) from .env.local,.env
   Hello World
   ```
 
@@ -243,7 +247,7 @@ More examples
   $ dotenvx run --env-file=.env.production --verbose -- node index.js
   [dotenvx][VERBOSE] injecting env from /path/to/.env.production
   [dotenvx][VERBOSE] HELLO set
-  [dotenvx][INFO] injecting 1 environment variable from .env.production
+  [dotenvx][INFO] loading env (1) from .env.production
   Hello production
   ```
 
@@ -262,7 +266,7 @@ More examples
   [dotenvx][DEBUG] writing env from /path/to/.env.production
   [dotenvx][VERBOSE] HELLO set
   [dotenvx][DEBUG] HELLO set to production
-  [dotenvx][INFO] injecting 1 environment variable from .env.production
+  [dotenvx][INFO] loading env (1) from .env.production
   Hello production
   ```
 
@@ -279,24 +283,8 @@ $ echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" 
 $ echo "HELLO=production" > .env.production
 
 $ dotenvx encrypt
-[dotenvx][INFO] encrypted .env,.env.production to .env.vault
-[dotenvx][INFO]
-[dotenvx][INFO] try it out:
-[dotenvx][INFO]
-[dotenvx][INFO]     DOTENV_KEY='<DOTENV_KEY_ENVIRONMENT>' dotenvx run -- node index.js
-[dotenvx][INFO]
-[dotenvx][INFO] next:
-[dotenvx][INFO]
-[dotenvx][INFO]     1. commit .env.vault safely to code
-[dotenvx][INFO]     2. set DOTENV_KEY on server (or ci)
-[dotenvx][INFO]     3. push your code
-[dotenvx][INFO]
-[dotenvx][INFO] tips:
-[dotenvx][INFO]
-[dotenvx][INFO]     * .env.keys file holds your decryption DOTENV_KEYs
-[dotenvx][INFO]     * DO NOT commit .env.keys to code
-[dotenvx][INFO]     * share .env.keys file over secure channels only
-> :-]
+[dotenvx][INFO] encrypted to .env.vault (.env,.env.production)
+[dotenvx][INFO] key added to .env.keys (DOTENV_KEY_PRODUCTION)
 ```
 
 &nbsp;
@@ -304,11 +292,10 @@ $ dotenvx encrypt
 > Then load env from encrypted `.env.vault` file
 
 ```sh
-$ DOTENV_KEY='dotenv://:key_abc123@dotenvx.com/vault/.env.vault?environment=production' dotenvx run -- node index.js
-[dotenvx][INFO] injecting 1 environment variable from encrypted .env.vault
+$ DOTENV_KEY='<dotenv_key_production>' dotenvx run -- node index.js
+[dotenvx][INFO] loading env (1) from encrypted .env.vault
 Hello production
-
-> :-]
+^ :-]
 ```
 
 More examples
