@@ -126,7 +126,8 @@ jobs:
           git config --global user.email 'mot@dotenv.org'
           git add .
           git commit -m "${{ env.VERSION }}"
-          git push
+          git tag "${{ env.VERSION }}"
+          git push origin HEAD --tags
   homebrew:
     needs: release
     runs-on: ubuntu-latest
