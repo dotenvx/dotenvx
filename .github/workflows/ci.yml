@@ -88,15 +88,6 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz -C bin/linux-amd64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz -C bin/linux-arm64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz -C bin/windows-amd64/ .
-          tar --gzip -cf ./dist2/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
@@ -124,12 +115,10 @@ jobs:
           path: "releases"
       - name: copy dist2 files to release repo
         run: |
-          mkdir -p releases/${{ env.VERSION }}
           mkdir -p releases/latest
           cp -r dist2/* releases/
           echo "${{ env.CLEAN_VERSION }}" > releases/VERSION
           cp README.md releases/latest/README.md
-          cp README.md releases/${{ env.VERSION }}/README.md
       - name: commit and push
         run: |
           cd releases
