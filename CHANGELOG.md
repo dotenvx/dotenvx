@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Patched
 
-do not log when error code is 0 ([#11](https://github.com/dotenvx/dotenvx/pull/11))
+do not log when error code is 0 ([#12](https://github.com/dotenvx/dotenvx/pull/12))
 
 ## 0.6.9
 
