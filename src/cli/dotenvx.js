@@ -237,10 +237,12 @@ program.command('encrypt')
       process.exit(1)
     }
 
+    // used later in logging to user
+    const dotenvKeys = (main.configDotenv({ path: '.env.keys' }).parsed || {})
+
     try {
       logger.verbose(`generating .env.vault from ${optionEnvFile}`)
 
-      const dotenvKeys = (main.configDotenv({ path: '.env.keys' }).parsed || {})
       const dotenvVaults = (main.configDotenv({ path: '.env.vault' }).parsed || {})
 
       for (const envFilepath of optionEnvFile) {
@@ -292,10 +294,18 @@ program.command('encrypt')
     if (addedKeys.size > 0) {
       logger.info(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
     }
-    logger.verbose('')
-    logger.verbose('try it out:')
-    logger.verbose('')
-    logger.verbose('    DOTENV_KEY=\'<DOTENV_KEY_ENVIRONMENT>\' dotenvx run -- node index.js')
+
+    if (addedVaults.size > 0) {
+      const DOTENV_VAULT_X = [...addedVaults][addedVaults.size - 1]
+      const DOTENV_KEY_X = DOTENV_VAULT_X.replace('_VAULT_', '_KEY_')
+      const tryKey = dotenvKeys[DOTENV_KEY_X] || '<dotenv_key_environment>'
+
+      logger.info('')
+      logger.info('next, try it:')
+      logger.info('')
+      logger.info(`  [DOTENV_KEY='${tryKey}' dotenvx run -- your-cmd]`)
+    }
+
     logger.verbose('')
     logger.verbose('next:')
     logger.verbose('')
