@@ -3,12 +3,15 @@ const path = require('path')
 const crypto = require('crypto')
 const { spawn } = require('child_process')
 const xxhash = require('xxhashjs')
+
 const XXHASH_SEED = 0xABCD
 const NONCE_BYTES = 12
 
 const main = require('./../lib/main')
+const logger = require('./../shared/logger')
 
 const RESERVED_ENV_FILES = ['.env.vault', '.env.projects', '.env.keys', '.env.me', '.env.x']
+const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
 
 // resolve path based on current running process location
 const resolvePath = function (filepath) {
@@ -23,6 +26,12 @@ const executeCommand = function (subCommand, env) {
   })
 
   subprocess.on('close', (code) => {
+    logger.error(`command [${subCommand.join(' ')}] failed`)
+    logger.error('')
+    logger.error(`  try without dotenvx: [${subCommand.join(' ')}]`)
+    logger.error('')
+    logger.error('if that succeeds, then dotenvx is the culprit. report issue:')
+    logger.error(`<${REPORT_ISSUE_LINK}>`)
     process.exit(code)
   })
 
