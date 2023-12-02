@@ -26,16 +26,27 @@ const executeCommand = function (subCommand, env) {
   })
 
   subprocess.on('close', (code) => {
+    if (code > 0) {
+      logger.error(`command [${subCommand.join(' ')}] failed (code: ${code})`)
+      logger.error('')
+      logger.error(`  try without dotenvx: [${subCommand.join(' ')}]`)
+      logger.error('')
+      logger.error('if that succeeds, then dotenvx is the culprit. report issue:')
+      logger.error(`<${REPORT_ISSUE_LINK}>`)
+    }
+
+    process.exit(code)
+  })
+
+  subprocess.on('error', (err) => {
+    logger.error(err)
     logger.error(`command [${subCommand.join(' ')}] failed`)
     logger.error('')
     logger.error(`  try without dotenvx: [${subCommand.join(' ')}]`)
     logger.error('')
     logger.error('if that succeeds, then dotenvx is the culprit. report issue:')
     logger.error(`<${REPORT_ISSUE_LINK}>`)
-    process.exit(code)
-  })
 
-  subprocess.on('error', (_err) => {
     process.exit(1)
   })
 }
