@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.7...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.8...main)
+
+## 0.6.8
+
+### Added
+
+added help text when user's command fails. include link to report issue ([#10](https://github.com/dotenvx/dotenvx/pull/10))
 
 ## 0.6.7
 
@@ -13,13 +19,13 @@ added next step help message when running `dotenvx run` with no argument ([#9](h
 
 ## 0.6.6
 
-## Added
+### Added
 
 help includes a command example as well as a full working 'try it out' example ([#8](https://github.com/dotenvx/dotenvx/pull/8))
 
 ## 0.6.5
 
-## Changed
+### Changed
 
 made the info messaging more succinct ([#7](https://github.com/dotenvx/dotenvx/pull/7))
 
