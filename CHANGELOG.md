@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.11...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.12...main)
+
+## 0.6.12
+
+### Changed
+
+do not package README alongside binary. adds noise to a user's machine. keep their machine shiny. ([#14](https://github.com/dotenvx/dotenvx/pull/14))
 
 ## 0.6.11
 
