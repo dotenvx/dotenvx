@@ -187,6 +187,8 @@ program.command('encrypt')
     }
 
     const addedKeys = new Set()
+    const addedVaults = new Set()
+    const addedEnvFilepaths = new Set()
 
     try {
       logger.verbose(`generating .env.keys from ${optionEnvFile}`)
@@ -255,6 +257,9 @@ program.command('encrypt')
           logger.verbose(`encrypting ${vault} as ${ciphertext}`)
 
           dotenvVaults[vault] = ciphertext
+
+          addedVaults.add(vault) // for info logging to user
+          addedEnvFilepaths.add(envFilepath) // for info logging to user
         } else {
           logger.verbose(`existing ${vault}`)
           logger.debug(`existing ${vault} as ${ciphertext}`)
@@ -279,7 +284,11 @@ program.command('encrypt')
       process.exit(1)
     }
 
-    logger.info(`encrypted to .env.vault (${optionEnvFile})`)
+    if (addedEnvFilepaths.size > 0) {
+      logger.info(`encrypted to .env.vault (${[...addedEnvFilepaths]})`)
+    } else {
+      logger.info(`no changes (${optionEnvFile})`)
+    }
     if (addedKeys.size > 0) {
       logger.info(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
     }
