@@ -1,14 +1,17 @@
 const run = function () {
   return `
-Example:
+Examples:
 
-  \`\`\`sh
-  $ dotenvx run -- your-cmd
+  \`\`\`
+  $ dotenvx run -- npm run dev
+  $ dotenvx run -- flask --app index run
+  $ dotenvx run -- php artisan serve
+  $ dotenvx run -- bin/rails s
   \`\`\`
 
 Try it:
 
-  \`\`\`sh
+  \`\`\`
   $ echo "HELLO=World" > .env
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
@@ -21,15 +24,15 @@ Try it:
 
 const encrypt = function () {
   return `
-Example:
+Examples:
 
-  \`\`\`sh
+  \`\`\`
   $ dotenvx encrypt
   \`\`\`
 
 Try it:
 
-  \`\`\`sh
+  \`\`\`
   $ echo "HELLO=World" > .env
   $ echo "HELLO=production" > .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js

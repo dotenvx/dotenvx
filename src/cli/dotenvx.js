@@ -54,7 +54,7 @@ program
 
 // dotenvx run -- node index.js
 program.command('run')
-  .description('inject env at runtime (example: `dotenvx run -- your-cmd`)')
+  .description('inject env at runtime [dotenvx run -- your-command-here]')
   .addHelpText('after', examples.run)
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
@@ -159,7 +159,10 @@ program.command('run')
     // Extract command and arguments after '--'
     const commandIndex = process.argv.indexOf('--')
     if (commandIndex === -1 || commandIndex === process.argv.length - 1) {
-      logger.error('at least one argument is required after the run command, received 0.')
+      logger.error('missing command after [dotenvx run --]')
+      logger.error('')
+      logger.error('  get help: [dotenvx help run]')
+      logger.error('  or try:   [dotenvx run -- npm run dev]')
       process.exit(1)
     } else {
       const subCommand = process.argv.slice(commandIndex + 1)
