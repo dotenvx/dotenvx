@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.8...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.9...main)
+
+## 0.6.9
+
+tell user when no changes to re-encrypt ([#11](https://github.com/dotenvx/dotenvx/pull/11))
 
 ## 0.6.8
 
