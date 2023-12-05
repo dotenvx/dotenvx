@@ -53,7 +53,7 @@ program.command('run')
   .addHelpText('after', examples.run)
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
-  .action(require('./commands/run')
+  .action(require('./actions/run'))
 
 // dotenvx encrypt
 program.command('encrypt')
