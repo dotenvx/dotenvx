@@ -1,9 +1,5 @@
 const { Command } = require('commander')
 
-function login() {
-  console.log('Logging into hub...')
-}
-
 const hub = new Command('hub')
 
 hub
@@ -11,9 +7,7 @@ hub
 
 hub
   .command('login')
-  .description('Login to the hub')
-  .action(function () {
-    console.log('logging into hub')
-  })
+  .description('login to hub')
+  .action(require('./../actions/hub/login'))
 
 module.exports = hub
