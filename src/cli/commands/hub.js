@@ -7,7 +7,8 @@ hub
 
 hub
   .command('login')
-  .description('login to hub')
+  .description('authenticate to dotenvx hub')
+  .option('-h, --hostname <url>', 'set hostname', 'https://hub.dotenvx.com')
   .action(require('./../actions/hub/login'))
 
 module.exports = hub

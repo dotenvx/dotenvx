@@ -173,6 +173,16 @@ const _parseCipherTextFromDotenvKeyAndParsedVault = function (dotenvKey, parsedV
   return ciphertext
 }
 
+const formatCode = function (str) {
+  const parts = []
+
+  for (let i = 0; i < str.length; i += 4) {
+    parts.push(str.substring(i, i + 4))
+  }
+
+  return parts.join('-')
+}
+
 module.exports = {
   resolvePath,
   executeCommand,
@@ -184,6 +194,7 @@ module.exports = {
   encrypt,
   changed,
   hash,
+  formatCode,
   _parseEncryptionKeyFromDotenvKey,
   _parseCipherTextFromDotenvKeyAndParsedVault
 }
