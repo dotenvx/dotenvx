@@ -5,7 +5,7 @@ const main = require('./../../lib/main')
 
 const ENCODING = 'utf8'
 
-function run() {
+function run () {
   const options = this.opts()
   logger.debug('configuring options')
   logger.debug(options)

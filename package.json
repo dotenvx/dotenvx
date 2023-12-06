@@ -30,6 +30,7 @@
     "conf": "^10.2.0",
     "dotenv": "^16.3.1",
     "open": "^8.4.2",
+    "ora": "^5.4.1",
     "qrcode-terminal": "^0.12.0",
     "winston": "^3.11.0",
     "xxhashjs": "^0.2.2"

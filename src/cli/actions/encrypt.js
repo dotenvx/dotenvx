@@ -6,7 +6,7 @@ const main = require('./../../lib/main')
 // constants
 const ENCODING = 'utf8'
 
-function encrypt() {
+function encrypt () {
   const options = this.opts()
   logger.debug('configuring options')
   logger.debug(options)
