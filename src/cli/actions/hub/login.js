@@ -7,7 +7,7 @@ const { confirm } = require('@inquirer/prompts')
 const logger = require('./../../../shared/logger')
 const helpers = require('./../../helpers')
 
-const OAUTH_CLIENT_ID = 'IMPLEMENT'
+const OAUTH_CLIENT_ID = 'oac_dotenvxcli'
 const spinner = ora('waiting on user authorization')
 
 async function pollTokenUrl (tokenUrl, deviceCode, interval) {
@@ -90,9 +90,17 @@ async function login () {
       spinner.start()
     }
   } catch (error) {
-    spinner.start()
-    spinner.fail(error)
-    process.exit(1)
+    if (error.response && error.response.data) {
+      logger.debug(error.response.data)
+
+      spinner.start()
+      spinner.fail(error.response.data.error_description)
+      process.exit(1)
+    } else {
+      spinner.start()
+      spinner.fail(error.toString())
+      process.exit(1)
+    }
   }
 }
 
