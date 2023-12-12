@@ -26,6 +26,7 @@
   "dependencies": {
     "@inquirer/prompts": "^3.3.0",
     "axios": "^1.6.2",
+    "clipboardy": "^2.3.0",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
     "dotenv": "^16.3.1",

@@ -2,6 +2,7 @@ const ora = require('ora')
 const open = require('open')
 const axios = require('axios')
 const qrcode = require('qrcode-terminal')
+const clipboardy = require('clipboardy')
 const { confirm } = require('@inquirer/prompts')
 
 const logger = require('./../../../shared/logger')
@@ -71,6 +72,8 @@ async function login () {
     const verificationUri = data.verification_uri
     const interval = data.interval
 
+    try { clipboardy.writeSync(userCode) } catch (_e) {}
+
     logger.info('next:')
     logger.info('')
     logger.info(`  1. copy your one-time code ${helpers.formatCode(userCode)}`)
@@ -82,7 +85,7 @@ async function login () {
     pollTokenUrl(tokenUrl, deviceCode, interval)
 
     // optionally allow user to open browser
-    const answer = await confirm({ message: `press Enter to open [${verificationUri}] in your browser...` })
+    const answer = await confirm({ message: `press Enter to open [${verificationUri}] and enter code [${helpers.formatCode(userCode)}]...` })
 
     if (answer) {
       await open(verificationUri)
