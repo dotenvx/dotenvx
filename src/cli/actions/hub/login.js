@@ -5,6 +5,7 @@ const qrcode = require('qrcode-terminal')
 const clipboardy = require('clipboardy')
 const { confirm } = require('@inquirer/prompts')
 
+const store = require('./../../../shared/store')
 const logger = require('./../../../shared/logger')
 const helpers = require('./../../helpers')
 
@@ -25,7 +26,8 @@ async function pollTokenUrl (tokenUrl, deviceCode, interval) {
 
     if (response.data.access_token) {
       spinner.start()
-      spinner.succeed('IMPLEMENT NEXT') // place in conf
+      store.set('DOTENVX_TOKEN', response.data.access_token)
+      spinner.succeed(`IMPLEMENT NEXT: ${response.data.access_token}`) // place in conf
       process.exit(0)
     } else {
       // continue polling if no access_token. shouldn't ever get here it server is implemented correctly
@@ -60,7 +62,7 @@ async function login () {
   const deviceCodeUrl = `${hostname}/oauth/device/code`
   const tokenUrl = `${hostname}/oauth/token`
 
-  logger.info('logging you in...')
+  logger.blank('logging you in...')
 
   try {
     const response = await axios.post(deviceCodeUrl, {
@@ -74,11 +76,6 @@ async function login () {
 
     try { clipboardy.writeSync(userCode) } catch (_e) {}
 
-    logger.info('next:')
-    logger.info('')
-    logger.info(`  1. copy your one-time code ${helpers.formatCode(userCode)}`)
-    logger.info(`  2. then open [${verificationUri}]`)
-    logger.info('  (or scan qr code)')
     qrcode.generate(verificationUri, { small: true })
 
     // begin polling

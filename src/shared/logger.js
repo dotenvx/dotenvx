@@ -7,14 +7,30 @@ const transports = winston.transports
 
 const packageJson = require('./packageJson')
 
+const levels = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  blank: 2,
+  http: 3,
+  verbose: 4,
+  debug: 5,
+  silly: 6
+}
+
 const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
   const formattedMessage = typeof message === 'object' ? JSON.stringify(message) : message
 
-  return `[dotenvx@${packageJson.version}][${level.toLowerCase()}] ${formattedMessage}`
+  if (level === 'blank') {
+    return formattedMessage
+  } else {
+    return `[dotenvx@${packageJson.version}][${level.toLowerCase()}] ${formattedMessage}`
+  }
 })
 
 const logger = createLogger({
   level: 'info',
+  levels,
   format: combine(
     dotenvxFormat
   ),
