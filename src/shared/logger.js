@@ -23,7 +23,7 @@ const levels = {
 
 const error = chalk.bold.red
 const warn = chalk.keyword('orange')
-const http = chalk.keyword('green') // TODO
+const http = chalk.keyword('green')
 const success = chalk.keyword('olive') // yellow-ish tint that 'looks' like dotenv
 const verbose = chalk.keyword('magenta')
 const debug = chalk.keyword('magenta')
@@ -42,6 +42,8 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return success(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
     case 'info':
       return formattedMessage
+    case 'http':
+      return http(formattedMessage)
     case 'verbose':
       return verbose(formattedMessage)
     case 'debug':

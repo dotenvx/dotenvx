@@ -32,6 +32,10 @@ const confStore = new Conf({
   }
 })
 
+const getHostname = function () {
+  return confStore.get('DOTENVX_HOSTNAME') || 'https://hub.dotenvx.com'
+}
+
 const getToken = function () {
   return confStore.get('DOTENVX_TOKEN')
 }
@@ -47,7 +51,20 @@ const setToken = function (fullUsername, accessToken) {
   return accessToken
 }
 
+const setHostname = function (hostname) {
+  confStore.set('DOTENVX_HOSTNAME', hostname)
+
+  return hostname
+}
+
+const configPath = function () {
+  return confStore.path
+}
+
 module.exports = {
+  getHostname,
   getToken,
-  setToken
+  setHostname,
+  setToken,
+  configPath
 }

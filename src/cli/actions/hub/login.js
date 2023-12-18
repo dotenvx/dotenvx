@@ -13,7 +13,7 @@ const OAUTH_CLIENT_ID = 'oac_dotenvxcli'
 const spinner = ora('waiting on user authorization')
 
 async function pollTokenUrl (tokenUrl, deviceCode, interval) {
-  logger.debug(`POST ${tokenUrl} with deviceCode ${deviceCode} at interval ${interval}`)
+  logger.http(`POST ${tokenUrl} with deviceCode ${deviceCode} at interval ${interval}`)
 
   try {
     const response = await axios.post(tokenUrl, {
@@ -22,12 +22,13 @@ async function pollTokenUrl (tokenUrl, deviceCode, interval) {
       grant_type: 'urn:ietf:params:oauth:grant-type:device_code'
     })
 
-    logger.debug(response.data)
+    logger.http(response.data)
 
     if (response.data.access_token) {
       spinner.start()
       store.setToken(response.data.full_username, response.data.access_token)
-      spinner.succeed(`IMPLEMENT NEXT: ${response.data.access_token}`) // place in conf
+      store.setHostname(response.data.hostname)
+      spinner.succeed(`logged in as ${response.data.username}`)
       process.exit(0)
     } else {
       // continue polling if no access_token. shouldn't ever get here it server is implemented correctly
@@ -35,7 +36,7 @@ async function pollTokenUrl (tokenUrl, deviceCode, interval) {
     }
   } catch (error) {
     if (error.response && error.response.data) {
-      logger.debug(error.response.data)
+      logger.http(error.response.data)
 
       // continue polling if authorization_pending
       if (error.response.data.error === 'authorization_pending') {
@@ -55,8 +56,7 @@ async function pollTokenUrl (tokenUrl, deviceCode, interval) {
 
 async function login () {
   const options = this.opts()
-  logger.debug('configuring options')
-  logger.debug(options)
+  logger.debug(`options: ${JSON.stringify(options)}`)
 
   const hostname = options.hostname
   const deviceCodeUrl = `${hostname}/oauth/device/code`
@@ -89,7 +89,7 @@ async function login () {
     }
   } catch (error) {
     if (error.response && error.response.data) {
-      logger.debug(error.response.data)
+      logger.http(error.response.data)
 
       spinner.start()
       spinner.fail(error.response.data.error_description)

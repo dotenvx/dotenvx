@@ -8,8 +8,7 @@ const ENCODING = 'utf8'
 
 function encrypt () {
   const options = this.opts()
-  logger.debug('configuring options')
-  logger.debug(options)
+  logger.debug(`options: ${JSON.stringify(options)}`)
 
   let optionEnvFile = options.envFile
   if (!Array.isArray(optionEnvFile)) {
