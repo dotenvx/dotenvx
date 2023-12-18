@@ -12,7 +12,27 @@ function convertFullUsernameToEnvFormat(fullUsername) {
   return fullUsername
     .toUpperCase()
     .replace(/\//g, '_') // Replace all slashes with underscores
-    .concat('_DOTENVX_TOKEN'); // Append '_DOTENVX_TOKEN' at the end
+    .concat('_DOTENVX_TOKEN') // Append '_DOTENVX_TOKEN' at the end
+}
+
+function findFirstMatchingKey(data) {
+  const dotenvxTokenValue = data.DOTENVX_TOKEN
+
+  for (const [key, value] of Object.entries(data)) {
+    if (key !== 'DOTENVX_TOKEN' && value === dotenvxTokenValue) {
+      return key
+    }
+  }
+
+  return null // Return null if no matching key is found
+}
+
+function parseUsernameFromTokenKey(key) {
+  // Remove the leading GH_/GL_ and trailing '_DOTENVX_TOKEN'
+  const modifiedKey = key.replace(/^(GH_|GL_)/, '').replace(/_DOTENVX_TOKEN$/, '')
+
+  // Convert to lowercase
+  return modifiedKey.toLowerCase()
 }
 
 const confStore = new Conf({
@@ -34,6 +54,19 @@ const confStore = new Conf({
 
 const getHostname = function () {
   return confStore.get('DOTENVX_HOSTNAME') || 'https://hub.dotenvx.com'
+}
+
+const getUsername = function () {
+  // 1. get token
+  const token = this.getToken()
+  // 2. lookup key with that same token
+  const key = findFirstMatchingKey(confStore.store)
+
+  if (key) {
+    return parseUsernameFromTokenKey(key)
+  } else {
+    return null
+  }
 }
 
 const getToken = function () {
@@ -64,6 +97,7 @@ const configPath = function () {
 module.exports = {
   getHostname,
   getToken,
+  getUsername,
   setHostname,
   setToken,
   configPath

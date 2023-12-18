@@ -19,4 +19,9 @@ hub
   .option('-h, --hostname <url>', 'set hostname', 'https://hub.dotenvx.com')
   .action(require('./../actions/hub/token'))
 
+hub
+  .command('status')
+  .description('display logged in user')
+  .action(require('./../actions/hub/status'))
+
 module.exports = hub
