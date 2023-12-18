@@ -26,7 +26,7 @@ async function pollTokenUrl (tokenUrl, deviceCode, interval) {
 
     if (response.data.access_token) {
       spinner.start()
-      store.set('DOTENVX_TOKEN', response.data.access_token)
+      store.setToken(response.data.full_username, response.data.access_token)
       spinner.succeed(`IMPLEMENT NEXT: ${response.data.access_token}`) // place in conf
       process.exit(0)
     } else {
@@ -62,8 +62,6 @@ async function login () {
   const deviceCodeUrl = `${hostname}/oauth/device/code`
   const tokenUrl = `${hostname}/oauth/token`
 
-  logger.blank('logging you in...')
-
   try {
     const response = await axios.post(deviceCodeUrl, {
       client_id: OAUTH_CLIENT_ID
@@ -76,7 +74,7 @@ async function login () {
 
     try { clipboardy.writeSync(userCode) } catch (_e) {}
 
-    qrcode.generate(verificationUri, { small: true })
+    // qrcode.generate(verificationUri, { small: true }) // too verbose
 
     // begin polling
     pollTokenUrl(tokenUrl, deviceCode, interval)
