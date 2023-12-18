@@ -16,7 +16,7 @@ Try it:
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -- node index.js
-  [dotenvx][info] loading env (1) from .env
+  [dotenvx] injecting env (1) from .env
   Hello World
   \`\`\`
   `
@@ -38,11 +38,11 @@ Try it:
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx encrypt
-  [dotenvx][info] encrypted to .env.vault (.env,.env.production)
-  [dotenvx][info] keys added to .env.keys (DOTENV_KEY_PRODUCTION,DOTENV_KEY_PRODUCTION)
+  encrypted to .env.vault (.env,.env.production)
+  keys added to .env.keys (DOTENV_KEY_PRODUCTION,DOTENV_KEY_PRODUCTION)
 
   $ DOTENV_KEY='<dotenv_key_production>' dotenvx run -- node index.js
-  [dotenvx][info] loading env (1) from encrypted .env.vault
+  [dotenvx] injecting env (1) from encrypted .env.vault
   Hello production
   \`\`\`
   `
