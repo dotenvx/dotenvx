@@ -133,7 +133,7 @@ function encrypt () {
     logger.info('')
     logger.info('next, try it:')
     logger.info('')
-    logger.info(`  [DOTENV_KEY='${tryKey}' dotenvx run -- your-cmd]`)
+    logger.info(`  [DOTENV_KEY='${tryKey}' dotenvx run -- command]`)
   }
 
   logger.verbose('')
@@ -143,7 +143,7 @@ function encrypt () {
   logger.verbose('    2. set DOTENV_KEY on server (or ci)')
   logger.verbose('    3. push your code')
   logger.verbose('')
-  logger.verbose('tips:')
+  logger.verbose('protips:')
   logger.verbose('')
   logger.verbose('    * .env.keys file holds your decryption DOTENV_KEYs')
   logger.verbose('    * DO NOT commit .env.keys to code')

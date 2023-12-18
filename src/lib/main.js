@@ -21,9 +21,9 @@ const parse = function (src) {
   return result
 }
 
-const write = function (processEnv = {}, parsed = {}, overload = false) {
+const inject = function (processEnv = {}, parsed = {}, overload = false) {
   if (typeof parsed !== 'object') {
-    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to write')
+    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to inject')
   }
 
   const written = new Set()
@@ -41,8 +41,8 @@ const write = function (processEnv = {}, parsed = {}, overload = false) {
       } else {
         preExisting.add(key)
 
-        logger.verbose(`${key} pre-exists`)
-        logger.debug(`${key} pre-exists as ${processEnv[key]}`)
+        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
+        logger.debug(`${key} pre-exists as ${processEnv[key]} (protip: use --overload to override)`)
       }
     } else {
       processEnv[key] = parsed[key]
@@ -64,5 +64,5 @@ module.exports = {
   configDotenv,
   decrypt,
   parse,
-  write
+  inject
 }

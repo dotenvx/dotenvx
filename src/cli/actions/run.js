@@ -7,8 +7,7 @@ const ENCODING = 'utf8'
 
 function run () {
   const options = this.opts()
-  logger.debug('configuring options')
-  logger.debug(options)
+  logger.debug(`options: ${JSON.stringify(options)}`)
 
   // load from .env.vault file
   if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
@@ -20,10 +19,7 @@ function run () {
       logger.verbose(`loading env from encrypted ${filepath}`)
 
       try {
-        logger.debug(`reading encrypted env from ${filepath}`)
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
-
-        logger.debug(`parsing encrypted env from ${filepath}`)
         const parsedVault = main.parse(src)
 
         logger.debug(`decrypting encrypted env from ${filepath}`)
@@ -54,14 +50,10 @@ function run () {
           }
         }
         logger.debug(decrypted)
-
-        logger.debug(`parsing decrypted env from ${filepath}`)
         const parsed = main.parse(decrypted)
+        const result = main.inject(process.env, parsed, options.overload)
 
-        logger.debug(`writing decrypted env from ${filepath}`)
-        const result = main.write(process.env, parsed, options.overload)
-
-        logger.info(`loading env (${result.written.size}) from encrypted .env.vault`)
+        logger.successv(`injecting env (${result.written.size}) from encrypted .env.vault`)
       } catch (e) {
         logger.error(e)
       }
@@ -82,14 +74,9 @@ function run () {
       logger.verbose(`loading env from ${filepath}`)
 
       try {
-        logger.debug(`reading env from ${filepath}`)
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
-
-        logger.debug(`parsing env from ${filepath}`)
         const parsed = main.parse(src)
-
-        logger.debug(`writing env from ${filepath}`)
-        const result = main.write(process.env, parsed, options.overload)
+        const result = main.inject(process.env, parsed, options.overload)
 
         readableFilepaths.add(envFilepath)
         result.written.forEach(key => written.add(key))
@@ -99,7 +86,7 @@ function run () {
     }
 
     if (readableFilepaths.size > 0) {
-      logger.info(`loading env (${written.size}) from ${[...readableFilepaths]}`)
+      logger.successv(`injecting env (${written.size}) from ${[...readableFilepaths]}`)
     }
   }
 
