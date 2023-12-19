@@ -1,12 +1,19 @@
 const fs = require('fs')
+
+const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
-const main = require('./../../lib/main')
+const createSpinner = require('./../../shared/createSpinner')
+
+const spinner = createSpinner('encrypting')
 
 // constants
 const ENCODING = 'utf8'
 
-function encrypt () {
+async function encrypt () {
+  spinner.start()
+  await helpers.sleep(500) // better dx
+
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -19,6 +26,13 @@ function encrypt () {
   const addedVaults = new Set()
   const addedEnvFilepaths = new Set()
 
+  // must be at least one .env* file
+  if (optionEnvFile.length < 1) {
+    spinner.fail('no .env* files found')
+    logger.help('? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]')
+    process.exit(1)
+  }
+
   try {
     logger.verbose(`generating .env.keys from ${optionEnvFile}`)
 
@@ -27,7 +41,9 @@ function encrypt () {
     for (const envFilepath of optionEnvFile) {
       const filepath = helpers.resolvePath(envFilepath)
       if (!fs.existsSync(filepath)) {
-        throw new Error(`file does not exist: ${filepath}`)
+        spinner.fail(`file does not exist at [${filepath}]`)
+        logger.help(`? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx encrypt]`)
+        process.exit(1)
       }
 
       const environment = helpers.guessEnvironment(filepath)
@@ -61,8 +77,8 @@ function encrypt () {
     }
 
     fs.writeFileSync('.env.keys', keysData)
-  } catch (e) {
-    logger.error(e)
+  } catch (error) {
+    spinner.fail(error.message)
     process.exit(1)
   }
 
@@ -111,42 +127,43 @@ function encrypt () {
 
     fs.writeFileSync('.env.vault', vaultData)
   } catch (e) {
-    logger.error(e)
+    spinner.fail(e.message)
     process.exit(1)
   }
 
   if (addedEnvFilepaths.size > 0) {
-    logger.info(`encrypted to .env.vault (${[...addedEnvFilepaths]})`)
+    spinner.succeed(`encrypted to .env.vault (${[...addedEnvFilepaths]})`)
+    logger.help2(`ℹ commit .env.vault to code: [git commit -am ".env.vault"]`)
   } else {
-    logger.info(`no changes (${optionEnvFile})`)
+    spinner.done(`no changes (${optionEnvFile})`)
   }
+
   if (addedKeys.size > 0) {
-    logger.info(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
+    spinner.succeed(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
+    logger.help2(`ℹ push .env.keys up to hub: [dotenvx hub push]`)
   }
+
 
   if (addedVaults.size > 0) {
     const DOTENV_VAULT_X = [...addedVaults][addedVaults.size - 1]
     const DOTENV_KEY_X = DOTENV_VAULT_X.replace('_VAULT_', '_KEY_')
     const tryKey = dotenvKeys[DOTENV_KEY_X] || '<dotenv_key_environment>'
 
-    logger.info('')
-    logger.info('next, try it:')
-    logger.info('')
-    logger.info(`  [DOTENV_KEY='${tryKey}' dotenvx run -- command]`)
+    logger.help2(`ℹ run [DOTENV_KEY='${tryKey}' dotenvx run -- command] to test decryption locally`)
   }
 
-  logger.verbose('')
-  logger.verbose('next:')
-  logger.verbose('')
-  logger.verbose('    1. commit .env.vault safely to code')
-  logger.verbose('    2. set DOTENV_KEY on server (or ci)')
-  logger.verbose('    3. push your code')
-  logger.verbose('')
-  logger.verbose('protips:')
-  logger.verbose('')
-  logger.verbose('    * .env.keys file holds your decryption DOTENV_KEYs')
-  logger.verbose('    * DO NOT commit .env.keys to code')
-  logger.verbose('    * share .env.keys file over secure channels only')
+  // logger.verbose('')
+  // logger.verbose('next:')
+  // logger.verbose('')
+  // logger.verbose('    1. commit .env.vault safely to code')
+  // logger.verbose('    2. set DOTENV_KEY on server (or ci)')
+  // logger.verbose('    3. push your code')
+  // logger.verbose('')
+  // logger.verbose('protips:')
+  // logger.verbose('')
+  // logger.verbose('    * .env.keys file holds your decryption DOTENV_KEYs')
+  // logger.verbose('    * DO NOT commit .env.keys to code')
+  // logger.verbose('    * share .env.keys file over secure channels only')
 }
 
 module.exports = encrypt

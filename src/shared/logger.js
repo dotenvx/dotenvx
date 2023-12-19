@@ -14,6 +14,8 @@ const levels = {
   success: 2,
   successv: 2,
   info: 2,
+  help: 2,
+  help2: 2,
   blank: 2,
   http: 3,
   verbose: 4,
@@ -23,11 +25,13 @@ const levels = {
 
 const error = chalk.bold.red
 const warn = chalk.keyword('orange')
-const http = chalk.keyword('green')
 const success = chalk.keyword('green')
 const successv = chalk.keyword('olive') // yellow-ish tint that 'looks' like dotenv
-const verbose = chalk.keyword('magenta')
-const debug = chalk.keyword('magenta')
+const help = chalk.keyword('blue')
+const help2 = chalk.keyword('gray')
+const http = chalk.keyword('green')
+const verbose = chalk.keyword('plum')
+const debug = chalk.keyword('plum')
 
 const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
   const formattedMessage = typeof message === 'object' ? JSON.stringify(message) : message
@@ -43,6 +47,10 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return successv(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
     case 'info':
       return formattedMessage
+    case 'help':
+      return help(formattedMessage)
+    case 'help2':
+      return help2(formattedMessage)
     case 'http':
       return http(formattedMessage)
     case 'verbose':

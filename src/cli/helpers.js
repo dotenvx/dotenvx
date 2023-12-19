@@ -13,6 +13,10 @@ const logger = require('./../shared/logger')
 const RESERVED_ENV_FILES = ['.env.vault', '.env.projects', '.env.keys', '.env.me', '.env.x']
 const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
 
+const sleep = function (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 // resolve path based on current running process location
 const resolvePath = function (filepath) {
   return path.resolve(process.cwd(), filepath)
@@ -184,6 +188,7 @@ const formatCode = function (str) {
 }
 
 module.exports = {
+  sleep,
   resolvePath,
   executeCommand,
   pluralize,

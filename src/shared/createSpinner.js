@@ -7,6 +7,7 @@ const createSpinner = function(initialMessage = '') {
   return {
     start: (message) => spinner.start(message),
     succeed: (message) => spinner.succeed(chalk.keyword('green')(message)),
+    done: (message) => spinner.succeed(message),
     fail: (message) => spinner.fail(chalk.bold.red(message))
   }
 }

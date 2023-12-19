@@ -5,12 +5,14 @@ const qrcode = require('qrcode-terminal')
 const clipboardy = require('clipboardy')
 const { confirm } = require('@inquirer/prompts')
 
+const createSpinner = require('./../../../shared/createSpinner')
 const store = require('./../../../shared/store')
 const logger = require('./../../../shared/logger')
 const helpers = require('./../../helpers')
 
 const OAUTH_CLIENT_ID = 'oac_dotenvxcli'
-const spinner = ora('waiting on user authorization')
+
+const spinner = createSpinner('waiting on user authorization')
 
 async function pollTokenUrl (tokenUrl, deviceCode, interval) {
   logger.http(`POST ${tokenUrl} with deviceCode ${deviceCode} at interval ${interval}`)
