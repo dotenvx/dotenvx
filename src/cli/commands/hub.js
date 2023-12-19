@@ -14,6 +14,12 @@ hub
   .action(require('./../actions/hub/login'))
 
 hub
+  .command('push')
+  .description('push .env.keys to dotenvx hub')
+  .option('-h, --hostname <url>', 'set hostname', store.getHostname())
+  .action(require('./../actions/hub/push'))
+
+hub
   .command('token')
   .description('print the auth token dotenvx hub is configured to use')
   .option('-h, --hostname <url>', 'set hostname', 'https://hub.dotenvx.com')
