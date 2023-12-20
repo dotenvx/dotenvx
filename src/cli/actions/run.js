@@ -53,7 +53,7 @@ function run () {
         const parsed = main.parse(decrypted)
         const result = main.inject(process.env, parsed, options.overload)
 
-        logger.successv(`injecting env (${result.written.size}) from encrypted .env.vault`)
+        logger.successv(`injecting env (${result.injected.size}) from encrypted .env.vault`)
       } catch (e) {
         logger.error(e)
       }
@@ -66,7 +66,7 @@ function run () {
     }
 
     const readableFilepaths = new Set()
-    const written = new Set()
+    const injected = new Set()
 
     for (const envFilepath of optionEnvFile) {
       const filepath = helpers.resolvePath(envFilepath)
@@ -79,14 +79,14 @@ function run () {
         const result = main.inject(process.env, parsed, options.overload)
 
         readableFilepaths.add(envFilepath)
-        result.written.forEach(key => written.add(key))
+        result.injected.forEach(key => injected.add(key))
       } catch (e) {
         logger.warn(e)
       }
     }
 
     if (readableFilepaths.size > 0) {
-      logger.successv(`injecting env (${written.size}) from ${[...readableFilepaths]}`)
+      logger.successv(`injecting env (${injected.size}) from ${[...readableFilepaths]}`)
     }
   }
 

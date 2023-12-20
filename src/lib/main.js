@@ -26,7 +26,7 @@ const inject = function (processEnv = {}, parsed = {}, overload = false) {
     throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to inject')
   }
 
-  const written = new Set()
+  const injected = new Set()
   const preExisting = new Set()
 
   // set processEnv
@@ -34,7 +34,7 @@ const inject = function (processEnv = {}, parsed = {}, overload = false) {
     if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
       if (overload === true) {
         processEnv[key] = parsed[key]
-        written.add(key)
+        injected.add(key)
 
         logger.verbose(`${key} set`)
         logger.debug(`${key} set to ${parsed[key]}`)
@@ -46,7 +46,7 @@ const inject = function (processEnv = {}, parsed = {}, overload = false) {
       }
     } else {
       processEnv[key] = parsed[key]
-      written.add(key)
+      injected.add(key)
 
       logger.verbose(`${key} set`)
       logger.debug(`${key} set to ${parsed[key]}`)
@@ -54,7 +54,7 @@ const inject = function (processEnv = {}, parsed = {}, overload = false) {
   }
 
   return {
-    written,
+    injected,
     preExisting
   }
 }
