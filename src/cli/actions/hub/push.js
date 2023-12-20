@@ -58,20 +58,20 @@ async function push () {
 
   if (!isGitRepository()) {
     spinner.fail('oops, must be a git repository')
-    logger.help('? create one with [git init .], [git add .], and [git commit -am "Initial commit"]')
+    logger.help('? create one with [git init .]')
     process.exit(1)
   }
 
   const remoteOriginUrl = getRemoteOriginUrl()
   if (!remoteOriginUrl) {
     spinner.fail('oops, must have a remote origin (git remote -v)')
-    logger.help('? create it at [github.com] and then run [git remote add origin git@github.com:username/repository.git]')
+    logger.help('? create it at [github.com/new] and then run [git remote add origin git@github.com:username/repository.git]')
     process.exit(1)
   }
 
   if (!isGithub(remoteOriginUrl)) {
     spinner.fail('oops, must be a github.com remote origin (git remote -v)')
-    logger.help('? create it at [github.com] and then run [git remote add origin git@github.com:username/repository.git]')
+    logger.help('? create it at [github.com/new] and then run [git remote add origin git@github.com:username/repository.git]')
     logger.help2('ℹ need support for other origins? [please tell us](https://github.com/dotenvx/dotenvx/issues)')
     process.exit(1)
   }
@@ -104,6 +104,9 @@ async function push () {
     if (error.response && error.response.data) {
       logger.http(error.response.data)
       spinner.fail(error.response.data.error.message)
+      if (error.response.status === 404) {
+        logger.help(`? try visiting [${hostname}gh/${usernameRepository}] in your browser`)
+      }
       process.exit(1)
     } else {
       spinner.fail(error.toString())
@@ -112,10 +115,6 @@ async function push () {
   }
 
   spinner.succeed(`[${usernameRepository}]`)
-
-  // 3. check if repo is avail to user on hub
-  // 4. if not, fail and warn
-  // 5. push .env.keys to that repo
 }
 
 module.exports = push
