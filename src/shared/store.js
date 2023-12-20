@@ -1,13 +1,13 @@
 const Conf = require('conf')
 const main = require('./../lib/main')
 
-function jsonToEnv(json) {
-  return Object.entries(json).map(function([key, value]) {
+function jsonToEnv (json) {
+  return Object.entries(json).map(function ([key, value]) {
     return key + '=' + `"${value}"`
   }).join('\n')
 }
 
-function convertFullUsernameToEnvFormat(fullUsername) {
+function convertFullUsernameToEnvFormat (fullUsername) {
   // gh/motdotla => GH_MOTDOTLA_DOTENVX_TOKEN
   return fullUsername
     .toUpperCase()
@@ -15,7 +15,7 @@ function convertFullUsernameToEnvFormat(fullUsername) {
     .concat('_DOTENVX_TOKEN') // Append '_DOTENVX_TOKEN' at the end
 }
 
-function findFirstMatchingKey(data) {
+function findFirstMatchingKey (data) {
   const dotenvxTokenValue = data.DOTENVX_TOKEN
 
   for (const [key, value] of Object.entries(data)) {
@@ -27,7 +27,7 @@ function findFirstMatchingKey(data) {
   return null // Return null if no matching key is found
 }
 
-function parseUsernameFromTokenKey(key) {
+function parseUsernameFromTokenKey (key) {
   // Remove the leading GH_/GL_ and trailing '_DOTENVX_TOKEN'
   const modifiedKey = key.replace(/^(GH_|GL_)/, '').replace(/_DOTENVX_TOKEN$/, '')
 
@@ -43,11 +43,11 @@ const confStore = new Conf({
   projectSuffix: '',
   fileExtension: '',
   // in the spirit of dotenv and format inherently puts limits on config complexity
-  serialize: function(json) {
+  serialize: function (json) {
     return jsonToEnv(json)
   },
   // Convert .env format to an object
-  deserialize: function(env) {
+  deserialize: function (env) {
     return main.parse(env)
   }
 })

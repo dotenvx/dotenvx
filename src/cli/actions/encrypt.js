@@ -133,16 +133,15 @@ async function encrypt () {
 
   if (addedEnvFilepaths.size > 0) {
     spinner.succeed(`encrypted to .env.vault (${[...addedEnvFilepaths]})`)
-    logger.help2(`ℹ commit .env.vault to code: [git commit -am ".env.vault"]`)
+    logger.help2('ℹ commit .env.vault to code: [git commit -am ".env.vault"]')
   } else {
     spinner.done(`no changes (${optionEnvFile})`)
   }
 
   if (addedKeys.size > 0) {
     spinner.succeed(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
-    logger.help2(`ℹ push .env.keys up to hub: [dotenvx hub push]`)
+    logger.help2('ℹ push .env.keys up to hub: [dotenvx hub push]')
   }
-
 
   if (addedVaults.size > 0) {
     const DOTENV_VAULT_X = [...addedVaults][addedVaults.size - 1]

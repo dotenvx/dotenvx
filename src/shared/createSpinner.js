@@ -1,7 +1,7 @@
 const ora = require('ora')
 const chalk = require('chalk')
 
-const createSpinner = function(initialMessage = '') {
+const createSpinner = function (initialMessage = '') {
   const spinner = ora(initialMessage)
 
   return {

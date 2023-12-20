@@ -12,7 +12,7 @@ const spinner = createSpinner('pushing')
 // constants
 const ENCODING = 'utf8'
 
-function isGitRepository() {
+function isGitRepository () {
   try {
     // Redirect standard error to null to suppress Git error messages
     const result = execSync('git rev-parse --is-inside-work-tree 2> /dev/null').toString().trim()
@@ -22,7 +22,7 @@ function isGitRepository() {
   }
 }
 
-function getRemoteOriginUrl() {
+function getRemoteOriginUrl () {
   try {
     const url = execSync('git remote get-url origin 2> /dev/null').toString().trim()
     return url
@@ -31,13 +31,13 @@ function getRemoteOriginUrl() {
   }
 }
 
-function isGithub(url) {
+function isGithub (url) {
   return url.includes('github.com')
 }
 
-function extractUsernameRepository(url) {
+function extractUsernameRepository (url) {
   // Removing the protocol part and splitting by slashes and colons
-    // Removing the protocol part and .git suffix, then splitting by slashes and colons
+  // Removing the protocol part and .git suffix, then splitting by slashes and colons
   const parts = url.replace(/(^\w+:|^)\/\//, '').replace(/\.git$/, '').split(/[/:]/)
 
   // Extract the 'username/repository' part
