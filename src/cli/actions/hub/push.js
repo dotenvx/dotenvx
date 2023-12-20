@@ -98,8 +98,6 @@ async function push () {
       }
     }
     const response = await axios.post(pushUrl, postData, options)
-
-    console.log(response.data)
   } catch (error) {
     if (error.response && error.response.data) {
       logger.http(error.response.data)
@@ -114,7 +112,7 @@ async function push () {
     }
   }
 
-  spinner.succeed(`[${usernameRepository}]`)
+  spinner.succeed(`pushed [${usernameRepository}]`)
 }
 
 module.exports = push
