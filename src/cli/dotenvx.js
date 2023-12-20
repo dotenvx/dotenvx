@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const updateNotifier = require('update-notifier')
 const { Command } = require('commander')
 const program = new Command()
 
@@ -8,6 +9,9 @@ const helpers = require('./helpers')
 const examples = require('./examples')
 const { AppendToIgnores } = require('./ignores')
 const packageJson = require('./../shared/packageJson')
+
+// once a day check for any updates
+updateNotifier({ pkg: packageJson }).notify()
 
 // global log levels
 program
