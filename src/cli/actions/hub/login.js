@@ -1,7 +1,5 @@
-const ora = require('ora')
 const open = require('open')
 const axios = require('axios')
-const qrcode = require('qrcode-terminal')
 const clipboardy = require('clipboardy')
 const { confirm } = require('@inquirer/prompts')
 

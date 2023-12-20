@@ -97,7 +97,7 @@ async function push () {
         Authorization: `Bearer ${oauthToken}`
       }
     }
-    const response = await axios.post(pushUrl, postData, options)
+    await axios.post(pushUrl, postData, options)
   } catch (error) {
     if (error.response && error.response.data) {
       logger.http(error.response.data)

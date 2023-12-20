@@ -57,9 +57,6 @@ const getHostname = function () {
 }
 
 const getUsername = function () {
-  // 1. get token
-  const token = this.getToken()
-  // 2. lookup key with that same token
   const key = findFirstMatchingKey(confStore.store)
 
   if (key) {
