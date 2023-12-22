@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.13...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.0...main)
+
+## 0.7.0
+
+### Added
+
+handle `SIGINT` ([#17](https://github.com/dotenvx/dotenvx/pull/17))
 
 ## 0.6.13
 
