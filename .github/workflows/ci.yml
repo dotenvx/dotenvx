@@ -65,6 +65,8 @@ jobs:
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-aarch64/dotenvx
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenvx.exe
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenvx.exe
+          echo "change ownership"
+          sudo chown -R root:root bin/
           echo "dist-ing"
           mkdir -p dist
           mkdir -p dist2

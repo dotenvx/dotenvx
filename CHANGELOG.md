@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.3...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.4...main)
+
+## 0.7.4
+
+### Changed
+
+Create binaries with root:root defaults. ([#21](https://github.com/dotenvx/dotenvx/pull/21))
 
 ## 0.7.3
 
