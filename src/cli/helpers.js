@@ -30,10 +30,14 @@ const executeCommand = async function (subCommand, env) {
   let subprocess
   const sigintHandler = () => {
     logger.debug('received SIGINT')
+    logger.debug('checking subprocess')
+    logger.debug(subprocess)
 
     if (subprocess) {
       logger.debug('sending SIGINT to subprocess')
       subprocess.kill('SIGINT') // Send SIGINT to the subprocess
+    } else {
+      logger.debug('no subprocess to send SIGINT to')
     }
   }
 
@@ -42,7 +46,7 @@ const executeCommand = async function (subCommand, env) {
   }
 
   try {
-    const subprocess = execa(subCommand[0], subCommand.slice(1), {
+    subprocess = execa(subCommand[0], subCommand.slice(1), {
       stdio: 'inherit',
       env: { ...process.env, ...env }
     })
