@@ -20,7 +20,7 @@ jobs:
   # run only on semantic version tag
   release:
     needs: test
-    # if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
+    if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -72,65 +72,64 @@ jobs:
           mkdir -p dist2
           mkdir -p dist2/${{ env.VERSION }}
           mkdir -p dist2/latest
-          # 
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz -C bin/linux-amd64/ .
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz -C bin/linux-arm64/ .
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz -C bin/windows-amd64/ .
-          #           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
-          #           tar --gzip -cf ./dist/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
-          #           tar --gzip -cf ./dist/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
-          #           tar --gzip -cf ./dist/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
-          #           tar --gzip -cf ./dist/dotenvx-linux-amd64.tar.gz -C bin/linux-amd64/ .
-          #           tar --gzip -cf ./dist/dotenvx-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
-          #           tar --gzip -cf ./dist/dotenvx-linux-arm64.tar.gz -C bin/linux-arm64/ .
-          #           tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
-          #           tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
-          #           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-linux-amd64.tar.gz -C bin/linux-amd64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-linux-arm64.tar.gz -C bin/linux-arm64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
-          #           tar --gzip -cf ./dist2/latest/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
-          #       - name: create release
-          #         uses: softprops/action-gh-release@v1
-          #         with:
-          #           files: |
-          #             dist/*.tar.gz
-          #           body: "see [CHANGELOG](https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md)"
-          #         env:
-          #           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          #       # - name: gen checksums
-          #       #   uses: wangzuo/action-release-checksums@v1
-          #       - name: checkout dotenvx/releases repo
-          #         uses: actions/checkout@v4
-          #         with:
-          #           repository: "dotenvx/releases"
-          #           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          #           path: "releases"
-          #       - name: copy dist2 files to release repo
-          #         run: |
-          #           mkdir -p releases/latest
-          #           cp -r dist2/* releases/
-          #           echo "${{ env.CLEAN_VERSION }}" > releases/VERSION
-          #           cp README.md releases/latest/README.md
-          #       - name: commit and push
-          #         run: |
-          #           cd releases
-          #           git config --global user.name 'motdotenv'
-          #           git config --global user.email 'mot@dotenv.org'
-          #           git add .
-          #           git commit -m "${{ env.VERSION }}"
-          #           git tag "${{ env.VERSION }}"
-          #           git push origin HEAD --tags
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-amd64.tar.gz -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-amd64.tar.gz -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-arm64.tar.gz -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-amd64.tar.gz -C bin/linux-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-arm64.tar.gz -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
+      - name: create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.tar.gz
+          body: "see [CHANGELOG](https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      # - name: gen checksums
+      #   uses: wangzuo/action-release-checksums@v1
+      - name: checkout dotenvx/releases repo
+        uses: actions/checkout@v4
+        with:
+          repository: "dotenvx/releases"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: "releases"
+      - name: copy dist2 files to release repo
+        run: |
+          mkdir -p releases/latest
+          cp -r dist2/* releases/
+          echo "${{ env.CLEAN_VERSION }}" > releases/VERSION
+          cp README.md releases/latest/README.md
+      - name: commit and push
+        run: |
+          cd releases
+          git config --global user.name 'motdotenv'
+          git config --global user.email 'mot@dotenv.org'
+          git add .
+          git commit -m "${{ env.VERSION }}"
+          git tag "${{ env.VERSION }}"
+          git push origin HEAD --tags
   homebrew:
     needs: release
     runs-on: ubuntu-latest
