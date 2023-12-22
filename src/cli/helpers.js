@@ -19,12 +19,26 @@ const resolvePath = function (filepath) {
 }
 
 const executeCommand = async function (subCommand, env) {
+  const signals = [
+    'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
+    'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
+  ]
+
+  logger.debug(`executing subcommand ${subCommand}`)
+
   // handler for SIGINT
   let subprocess
   const sigintHandler = () => {
+    logger.debug('received SIGINT')
+
     if (subprocess) {
+      logger.debug('sending SIGINT to subprocess')
       subprocess.kill('SIGINT') // Send SIGINT to the subprocess
     }
+  }
+
+  const handleOtherSignal = (signal) => {
+    logger.debug(`received ${signal}`)
   }
 
   try {
@@ -35,10 +49,15 @@ const executeCommand = async function (subCommand, env) {
 
     process.on('SIGINT', sigintHandler)
 
+    signals.forEach(signal => {
+      process.on(signal, () => handleOtherSignal(signal))
+    })
+
     // Wait for the subprocess to finish
     const { exitCode } = await subprocess
 
     if (exitCode !== 0) {
+      logger.debug(`received exitCode ${exitCode}`)
       throw new Error(`Command failed with exit code ${exitCode}`)
     }
   } catch (error) {
