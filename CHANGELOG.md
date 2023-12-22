@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.1...main)
 
+## 0.7.2
+
+### Added
+
+`debug` other signals send to execa process ([#18](https://github.com/dotenvx/dotenvx/pull/18))
+
 ## 0.7.1
 
 ### Changed
