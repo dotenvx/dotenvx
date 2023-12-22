@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
+const execa = require('execa')
 const crypto = require('crypto')
-const { spawn } = require('child_process')
 const xxhash = require('xxhashjs')
 
 const XXHASH_SEED = 0xABCD
@@ -18,16 +18,33 @@ const resolvePath = function (filepath) {
   return path.resolve(process.cwd(), filepath)
 }
 
-const executeCommand = function (subCommand, env) {
-  const subprocess = spawn(subCommand[0], subCommand.slice(1), {
-    stdio: 'inherit',
-    shell: true,
-    env: { ...process.env, ...env }
-  })
+const executeCommand = async function (subCommand, env) {
+  // handler for SIGINT
+  let subprocess
+  const sigintHandler = () => {
+    if (subprocess) {
+      subprocess.kill('SIGINT') // Send SIGINT to the subprocess
+    }
+  }
 
-  subprocess.on('close', (code) => {
-    if (code > 0) {
-      logger.error(`command [${subCommand.join(' ')}] failed (code: ${code})`)
+  try {
+    const subprocess = execa(subCommand[0], subCommand.slice(1), {
+      stdio: 'inherit',
+      env: { ...process.env, ...env }
+    })
+
+    process.on('SIGINT', sigintHandler)
+
+    // Wait for the subprocess to finish
+    const { exitCode } = await subprocess
+
+    if (exitCode !== 0) {
+      throw new Error(`Command failed with exit code ${exitCode}`)
+    }
+  } catch (error) {
+    if (error.signal !== 'SIGINT') {
+      logger.error(error.message)
+      logger.error(`command [${subCommand.join(' ')}] failed`)
       logger.error('')
       logger.error(`  try without dotenvx: [${subCommand.join(' ')}]`)
       logger.error('')
@@ -35,20 +52,12 @@ const executeCommand = function (subCommand, env) {
       logger.error(`<${REPORT_ISSUE_LINK}>`)
     }
 
-    process.exit(code)
-  })
-
-  subprocess.on('error', (err) => {
-    logger.error(err)
-    logger.error(`command [${subCommand.join(' ')}] failed`)
-    logger.error('')
-    logger.error(`  try without dotenvx: [${subCommand.join(' ')}]`)
-    logger.error('')
-    logger.error('if that succeeds, then dotenvx is the culprit. report issue:')
-    logger.error(`<${REPORT_ISSUE_LINK}>`)
-
-    process.exit(1)
-  })
+    // Exit with the error code from the subprocess, or 1 if unavailable
+    process.exit(error.exitCode || 1)
+  } finally {
+    // Clean up: Remove the SIGINT handler
+    process.removeListener('SIGINT', sigintHandler)
+  }
 }
 
 const pluralize = function (word, count) {

@@ -58,7 +58,7 @@ program.command('run')
   .addHelpText('after', examples.run)
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
-  .action(function () {
+  .action(async function () {
     const options = this.opts()
     logger.debug('configuring options')
     logger.debug(options)
@@ -167,7 +167,7 @@ program.command('run')
     } else {
       const subCommand = process.argv.slice(commandIndex + 1)
 
-      helpers.executeCommand(subCommand, process.env)
+      await helpers.executeCommand(subCommand, process.env)
     }
   })
 
