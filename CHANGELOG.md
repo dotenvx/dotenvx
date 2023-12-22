@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.3...main)
+
+## 0.7.3
+
+### Added
+
+Tell user about undefined subprocess with additional `debug` logs ([#19](https://github.com/dotenvx/dotenvx/pull/19))
 
 ## 0.7.2
 
