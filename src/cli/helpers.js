@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
-const { spawn } = require('child_process')
+const { spawn, execSync } = require('child_process')
 const xxhash = require('xxhashjs')
 
 const XXHASH_SEED = 0xABCD
@@ -187,6 +187,24 @@ const formatCode = function (str) {
   return parts.join('-')
 }
 
+const getRemoteOriginUrl = function () {
+  try {
+    const url = execSync('git remote get-url origin 2> /dev/null').toString().trim()
+    return url
+  } catch (_error) {
+    return null
+  }
+}
+
+const extractUsernameRepository = function (url) {
+  // Removing the protocol part and splitting by slashes and colons
+  // Removing the protocol part and .git suffix, then splitting by slashes and colons
+  const parts = url.replace(/(^\w+:|^)\/\//, '').replace(/\.git$/, '').split(/[/:]/)
+
+  // Extract the 'username/repository' part
+  return parts.slice(-2).join('/')
+}
+
 module.exports = {
   sleep,
   resolvePath,
@@ -200,6 +218,8 @@ module.exports = {
   changed,
   hash,
   formatCode,
+  getRemoteOriginUrl,
+  extractUsernameRepository,
   _parseEncryptionKeyFromDotenvKey,
   _parseCipherTextFromDotenvKeyAndParsedVault
 }

@@ -20,6 +20,12 @@ hub
   .action(require('./../actions/hub/push'))
 
 hub
+  .command('open')
+  .description('view repository on dotenvx hub')
+  .option('-h, --hostname <url>', 'set hostname', store.getHostname())
+  .action(require('./../actions/hub/open'))
+
+hub
   .command('token')
   .description('print the auth token dotenvx hub is configured to use')
   .option('-h, --hostname <url>', 'set hostname', 'https://hub.dotenvx.com')

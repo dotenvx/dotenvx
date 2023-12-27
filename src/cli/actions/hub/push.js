@@ -22,26 +22,8 @@ function isGitRepository () {
   }
 }
 
-function getRemoteOriginUrl () {
-  try {
-    const url = execSync('git remote get-url origin 2> /dev/null').toString().trim()
-    return url
-  } catch (_error) {
-    return null
-  }
-}
-
 function isGithub (url) {
   return url.includes('github.com')
-}
-
-function extractUsernameRepository (url) {
-  // Removing the protocol part and splitting by slashes and colons
-  // Removing the protocol part and .git suffix, then splitting by slashes and colons
-  const parts = url.replace(/(^\w+:|^)\/\//, '').replace(/\.git$/, '').split(/[/:]/)
-
-  // Extract the 'username/repository' part
-  return parts.slice(-2).join('/')
 }
 
 // Create a simple-git instance for the current directory
@@ -55,6 +37,7 @@ async function push () {
   const hostname = options.hostname
   const pushUrl = `${hostname}/v1/push`
   const keysFilename = '.env.keys'
+  const vaultFilename = '.env.vault'
 
   if (!isGitRepository()) {
     spinner.fail('oops, must be a git repository')
@@ -62,7 +45,7 @@ async function push () {
     process.exit(1)
   }
 
-  const remoteOriginUrl = getRemoteOriginUrl()
+  const remoteOriginUrl = helpers.getRemoteOriginUrl()
   if (!remoteOriginUrl) {
     spinner.fail('oops, must have a remote origin (git remote -v)')
     logger.help('? create it at [github.com/new] and then run [git remote add origin git@github.com:username/repository.git]')
@@ -83,14 +66,23 @@ async function push () {
     process.exit(1)
   }
 
+  if (!fs.existsSync(vaultFilename)) {
+    spinner.fail('oops, missing .env.vault file')
+    logger.help('? generate one with [dotenvx encrypt]')
+    logger.help2('ℹ a .env.vault file holds encrypted secrets per environment')
+    process.exit(1)
+  }
+
   const oauthToken = store.getToken()
   const dotenvKeysContent = fs.readFileSync(keysFilename, ENCODING)
-  const usernameRepository = extractUsernameRepository(remoteOriginUrl)
+  const dotenvVaultContent = fs.readFileSync(vaultFilename, ENCODING)
+  const usernameRepository = helpers.extractUsernameRepository(remoteOriginUrl)
 
   try {
     const postData = {
       username_repository: usernameRepository,
-      DOTENV_KEYS: dotenvKeysContent
+      DOTENV_KEYS: dotenvKeysContent,
+      DOTENV_VAULT: dotenvVaultContent
     }
     const options = {
       headers: {
@@ -113,6 +105,7 @@ async function push () {
   }
 
   spinner.succeed(`pushed [${usernameRepository}]`)
+  logger.help2('ℹ run [dotenvx hub open] to view on hub')
 }
 
 module.exports = push
