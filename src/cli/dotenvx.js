@@ -11,7 +11,10 @@ const { AppendToIgnores } = require('./ignores')
 const packageJson = require('./../shared/packageJson')
 
 // once a day check for any updates
-updateNotifier({ pkg: packageJson }).notify()
+const notifier = updateNotifier({ pkg: packageJson })
+if (notifier.update) {
+  logger.warn(`Update available ${notifier.update.current} → ${notifier.update.latest} [see changelog](dotenvx.com/changelog)`);
+}
 
 // global log levels
 program

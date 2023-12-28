@@ -24,7 +24,7 @@ const levels = {
 }
 
 const error = chalk.bold.red
-const warn = chalk.keyword('orange')
+const warn = chalk.keyword('orangered')
 const success = chalk.keyword('green')
 const successv = chalk.keyword('olive') // yellow-ish tint that 'looks' like dotenv
 const help = chalk.keyword('blue')
