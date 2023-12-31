@@ -11,9 +11,9 @@ async function open () {
 
   const hostname = options.hostname
   const remoteOriginUrl = helpers.getRemoteOriginUrl()
-  const usernameRepository = helpers.extractUsernameRepository(remoteOriginUrl)
+  const usernameName = helpers.extractUsernameName(remoteOriginUrl)
 
-  const openUrl = `${hostname}/gh/${usernameRepository}`
+  const openUrl = `${hostname}/gh/${usernameName}`
 
   // optionally allow user to open browser
   const answer = await confirm({ message: `press Enter to open [${openUrl}]...` })
@@ -26,7 +26,7 @@ async function open () {
 
     await openBrowser(openUrl)
 
-    spinner.succeed(`opened [${usernameRepository}]`)
+    spinner.succeed(`opened [${usernameName}]`)
   }
 }
 

@@ -196,7 +196,7 @@ const getRemoteOriginUrl = function () {
   }
 }
 
-const extractUsernameRepository = function (url) {
+const extractUsernameName = function (url) {
   // Removing the protocol part and splitting by slashes and colons
   // Removing the protocol part and .git suffix, then splitting by slashes and colons
   const parts = url.replace(/(^\w+:|^)\/\//, '').replace(/\.git$/, '').split(/[/:]/)
@@ -219,7 +219,7 @@ module.exports = {
   hash,
   formatCode,
   getRemoteOriginUrl,
-  extractUsernameRepository,
+  extractUsernameName,
   _parseEncryptionKeyFromDotenvKey,
   _parseCipherTextFromDotenvKeyAndParsedVault
 }

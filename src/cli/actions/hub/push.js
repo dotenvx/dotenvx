@@ -76,11 +76,11 @@ async function push () {
   const oauthToken = store.getToken()
   const dotenvKeysContent = fs.readFileSync(keysFilename, ENCODING)
   const dotenvVaultContent = fs.readFileSync(vaultFilename, ENCODING)
-  const usernameRepository = helpers.extractUsernameRepository(remoteOriginUrl)
+  const usernameName = helpers.extractUsernameName(remoteOriginUrl)
 
   try {
     const postData = {
-      username_repository: usernameRepository,
+      username_name: usernameName,
       DOTENV_KEYS: dotenvKeysContent,
       DOTENV_VAULT: dotenvVaultContent
     }
@@ -95,7 +95,7 @@ async function push () {
       logger.http(error.response.data)
       spinner.fail(error.response.data.error.message)
       if (error.response.status === 404) {
-        logger.help(`? try visiting [${hostname}gh/${usernameRepository}] in your browser`)
+        logger.help(`? try visiting [${hostname}gh/${usernameName}] in your browser`)
       }
       process.exit(1)
     } else {
@@ -104,7 +104,7 @@ async function push () {
     }
   }
 
-  spinner.succeed(`pushed [${usernameRepository}]`)
+  spinner.succeed(`pushed [${usernameName}]`)
   logger.help2('ℹ run [dotenvx hub open] to view on hub')
 }
 
