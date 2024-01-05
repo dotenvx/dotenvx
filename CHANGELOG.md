@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.4...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.8.2...main)
+
+## 0.8.2
+
+### Changed
+
+Change path to axios in attempt for `pkg` to build correctly.
 
 ## 0.8.1
 

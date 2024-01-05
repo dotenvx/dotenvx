@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { execSync } = require('child_process')
-const axios = require('axios')
+const axios = require('./../../../../node_modules/axios/dist/node/axios.cjs')
 
 const store = require('./../../../shared/store')
 const logger = require('./../../../shared/logger')
