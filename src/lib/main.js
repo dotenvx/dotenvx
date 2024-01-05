@@ -21,12 +21,12 @@ const parse = function (src) {
   return result
 }
 
-const write = function (processEnv = {}, parsed = {}, overload = false) {
+const inject = function (processEnv = {}, parsed = {}, overload = false) {
   if (typeof parsed !== 'object') {
-    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to write')
+    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to inject')
   }
 
-  const written = new Set()
+  const injected = new Set()
   const preExisting = new Set()
 
   // set processEnv
@@ -34,19 +34,19 @@ const write = function (processEnv = {}, parsed = {}, overload = false) {
     if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
       if (overload === true) {
         processEnv[key] = parsed[key]
-        written.add(key)
+        injected.add(key)
 
         logger.verbose(`${key} set`)
         logger.debug(`${key} set to ${parsed[key]}`)
       } else {
         preExisting.add(key)
 
-        logger.verbose(`${key} pre-exists`)
-        logger.debug(`${key} pre-exists as ${processEnv[key]}`)
+        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
+        logger.debug(`${key} pre-exists as ${processEnv[key]} (protip: use --overload to override)`)
       }
     } else {
       processEnv[key] = parsed[key]
-      written.add(key)
+      injected.add(key)
 
       logger.verbose(`${key} set`)
       logger.debug(`${key} set to ${parsed[key]}`)
@@ -54,7 +54,7 @@ const write = function (processEnv = {}, parsed = {}, overload = false) {
   }
 
   return {
-    written,
+    injected,
     preExisting
   }
 }
@@ -64,5 +64,5 @@ module.exports = {
   configDotenv,
   decrypt,
   parse,
-  write
+  inject
 }

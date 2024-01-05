@@ -1,4 +1,4 @@
-const { config, parse, write } = require('./../../src/lib/main')
+const { config, parse, inject } = require('./../../src/lib/main')
 const logger = require('./../../src/shared/logger')
 const dotenv = require('dotenv')
 
@@ -11,7 +11,7 @@ jest.mock('./../../src/shared/logger', () => ({
 jest.mock('dotenv', () => ({
   config: jest.fn(),
   parse: jest.fn(),
-  write: jest.fn()
+  inject: jest.fn()
 }))
 
 describe('lib/main.js tests', () => {
@@ -37,33 +37,33 @@ describe('lib/main.js tests', () => {
     expect(result).toEqual(parsedResult)
   })
 
-  test('write', () => {
+  test('inject', () => {
     const processEnv = {}
     const parsed = { HELLO: 'World' }
 
-    const result = write(processEnv, parsed)
+    const result = inject(processEnv, parsed)
 
-    expect([...result.written]).toEqual(['HELLO'])
+    expect([...result.injected]).toEqual(['HELLO'])
   })
 
-  test('write key already exists', () => {
+  test('inject key already exists', () => {
     const processEnv = { HELLO: 'exists' }
     const parsed = { HELLO: 'World' }
 
-    const result = write(processEnv, parsed)
+    const result = inject(processEnv, parsed)
 
-    expect([...result.written]).toEqual([])
+    expect([...result.injected]).toEqual([])
     expect([...result.preExisting]).toEqual(['HELLO'])
   })
 
-  test('write key already exists but overload true', () => {
+  test('inject key already exists but overload true', () => {
     const processEnv = { HELLO: 'exists' }
     const parsed = { HELLO: 'World' }
     const overload = true
 
-    const result = write(processEnv, parsed, overload)
+    const result = inject(processEnv, parsed, overload)
 
-    expect([...result.written]).toEqual(['HELLO'])
+    expect([...result.injected]).toEqual(['HELLO'])
     expect([...result.preExisting]).toEqual([])
   })
 })

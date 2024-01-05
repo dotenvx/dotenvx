@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const execa = require('execa')
 const crypto = require('crypto')
+const { execSync } = require('child_process')
 const xxhash = require('xxhashjs')
 
 const XXHASH_SEED = 0xABCD
@@ -12,6 +13,10 @@ const logger = require('./../shared/logger')
 
 const RESERVED_ENV_FILES = ['.env.vault', '.env.projects', '.env.keys', '.env.me', '.env.x']
 const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
+
+const sleep = function (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
 
 // resolve path based on current running process location
 const resolvePath = function (filepath) {
@@ -205,7 +210,36 @@ const _parseCipherTextFromDotenvKeyAndParsedVault = function (dotenvKey, parsedV
   return ciphertext
 }
 
+const formatCode = function (str) {
+  const parts = []
+
+  for (let i = 0; i < str.length; i += 4) {
+    parts.push(str.substring(i, i + 4))
+  }
+
+  return parts.join('-')
+}
+
+const getRemoteOriginUrl = function () {
+  try {
+    const url = execSync('git remote get-url origin 2> /dev/null').toString().trim()
+    return url
+  } catch (_error) {
+    return null
+  }
+}
+
+const extractUsernameName = function (url) {
+  // Removing the protocol part and splitting by slashes and colons
+  // Removing the protocol part and .git suffix, then splitting by slashes and colons
+  const parts = url.replace(/(^\w+:|^)\/\//, '').replace(/\.git$/, '').split(/[/:]/)
+
+  // Extract the 'username/repository' part
+  return parts.slice(-2).join('/')
+}
+
 module.exports = {
+  sleep,
   resolvePath,
   executeCommand,
   pluralize,
@@ -216,6 +250,9 @@ module.exports = {
   encrypt,
   changed,
   hash,
+  formatCode,
+  getRemoteOriginUrl,
+  extractUsernameName,
   _parseEncryptionKeyFromDotenvKey,
   _parseCipherTextFromDotenvKeyAndParsedVault
 }

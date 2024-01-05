@@ -1,4 +1,4 @@
-const { resolvePath, pluralize, findEnvFiles, guessEnvironment, generateDotenvKey, encrypt, _parseEncryptionKeyFromDotenvKey } = require('./../../src/cli/helpers')
+const { resolvePath, pluralize, findEnvFiles, guessEnvironment, generateDotenvKey, encrypt, _parseEncryptionKeyFromDotenvKey, formatCode } = require('./../../src/cli/helpers')
 
 const fs = require('fs')
 
@@ -180,5 +180,12 @@ describe('cli/helpers.js tests', () => {
       expect(decoded.length).toBeGreaterThan(message.length)
       expect(decoded.substr(0, NONCE_BYTES * 2).length).toBe(NONCE_BYTES * 2)
     })
+  })
+
+  describe('#formatCode', () => {
+    const rawCode = 'ABCD1234'
+    const result = formatCode(rawCode)
+
+    expect(result).toBe('ABCD-1234')
   })
 })
