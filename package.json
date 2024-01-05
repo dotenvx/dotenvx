@@ -1,5 +1,5 @@
 {
-  "version": "0.6.13",
+  "version": "0.7.4",
   "name": "@dotenvx/dotenvx",
   "description": "a better dotenv–from the creator of `dotenv`",
   "author": "@motdotla",
@@ -35,6 +35,7 @@
     "ora": "^5.4.1",
     "qrcode-terminal": "^0.12.0",
     "update-notifier": "^5.1.0",
+    "execa": "^5.1.1",
     "winston": "^3.11.0",
     "xxhashjs": "^0.2.2"
   },

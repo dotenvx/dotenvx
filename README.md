@@ -113,6 +113,16 @@ More examples
   ```
 
   </details>
+* <details><summary>Bash 🖥️</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx run --quiet -- sh -c 'echo $HELLO'
+  World
+  ```
+
+  </details>
 * <details><summary>Frameworks ▲</summary><br>
 
   ```sh

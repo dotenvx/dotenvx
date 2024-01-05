@@ -2,7 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.6.13...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.4...main)
+
+## 0.7.4
+
+### Changed
+
+Create binaries with root:root defaults. ([#21](https://github.com/dotenvx/dotenvx/pull/21))
+
+## 0.7.3
+
+### Added
+
+Tell user about undefined subprocess with additional `debug` logs ([#19](https://github.com/dotenvx/dotenvx/pull/19))
+
+## 0.7.2
+
+### Added
+
+`debug` other signals send to execa process ([#18](https://github.com/dotenvx/dotenvx/pull/18))
+
+## 0.7.1
+
+### Changed
+
+Fix missed package.json#version
+
+## 0.7.0
+
+### Added
+
+handle `SIGINT` ([#17](https://github.com/dotenvx/dotenvx/pull/17))
 
 ## 0.6.13
 
