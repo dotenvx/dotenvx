@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.4...main)
 
+## 0.8.0
+
+### Added
+
+Added [hub](https://hub.dotenvx.com) support. 🎉 ([#16](https://github.com/dotenvx/dotenvx/pull/16))
+
 ## 0.7.4
 
 ### Changed
