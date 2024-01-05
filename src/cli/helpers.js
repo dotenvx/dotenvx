@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const execa = require('execa')
 const crypto = require('crypto')
-const { spawn, execSync } = require('child_process')
+const { execSync } = require('child_process')
 const xxhash = require('xxhashjs')
 
 const XXHASH_SEED = 0xABCD
