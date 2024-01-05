@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.7.4...main)
 
+## 0.8.1
+
+### Added
+
+Add axios (missing) to `package-lock.json`
+
 ## 0.8.0
 
 ### Added
