@@ -5,7 +5,7 @@ const main = require('./../../lib/main')
 
 const ENCODING = 'utf8'
 
-function run () {
+async function run () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -101,7 +101,7 @@ function run () {
   } else {
     const subCommand = process.argv.slice(commandIndex + 1)
 
-    helpers.executeCommand(subCommand, process.env)
+    await helpers.executeCommand(subCommand, process.env)
   }
 }
 
