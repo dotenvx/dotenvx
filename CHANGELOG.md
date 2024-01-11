@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
-Patched `helpers.guessEnvironment` bug when filepath contained a `.` in the folder name. 🐞 ([#17](https://github.com/dotenvx/dotenvx/pull/17))
+Patched `helpers.guessEnvironment` bug when filepath contained a `.` in the folder name. 🐞 ([#23](https://github.com/dotenvx/dotenvx/pull/23))
 
 ## 0.8.2
 
