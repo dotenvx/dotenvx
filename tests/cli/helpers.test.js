@@ -106,6 +106,12 @@ describe('cli/helpers.js tests', () => {
     test('should handle empty string correctly', () => {
       expect(guessEnvironment('')).toBe('development')
     })
+
+    test('should return correct environment for full filepaths that have dots elsewhere in them', () => {
+      expect(guessEnvironment('/Users/scottmotte/Code/dotenvx/dotenvx.sh/.env.production')).toBe('production')
+      expect(guessEnvironment('/Users/scottmotte/Code/dotenvx/dotenvx.sh/.env.test')).toBe('test')
+      expect(guessEnvironment('/Users/scottmotte/Code/dotenvx/dotenvx.sh/.env.staging')).toBe('staging')
+    })
   })
 
   describe('#generateDotenvKey', () => {
