@@ -109,9 +109,10 @@ const findEnvFiles = function (directory) {
   return envFiles
 }
 
-const guessEnvironment = function (file) {
-  const splitFile = file.split('.')
-  const possibleEnvironment = splitFile[2] // ['', 'env', environment']
+const guessEnvironment = function (filepath) {
+  const filename = path.basename(filepath)
+  const parts = filename.split('.')
+  const possibleEnvironment = parts[2] // ['', 'env', environment', 'previous']
 
   if (!possibleEnvironment || possibleEnvironment.length === 0) {
     return 'development'
