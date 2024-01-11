@@ -1,5 +1,5 @@
 const open = require('open')
-const axios = require('./../../../../node_modules/axios/dist/node/axios.cjs')
+const axios = require('./../../../shared/axios')
 const clipboardy = require('clipboardy')
 const { confirm } = require('@inquirer/prompts')
 
