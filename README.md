@@ -348,7 +348,13 @@ More examples
 * <details><summary>Heroku</summary><br>
 
   ```sh
-  coming soon
+  # add the buildpack
+  heroku buildpacks:add https://github.com/dotenvx/heroku-buildpack-dotenvx -a your-app
+  
+  # configure your Procfile to preface dotenvx run -- in front of your app run command
+  web: dotenvx run -- node index.js
+  web: dotenvx run -- node bin/rails server
+  # etc..
   ```
 
   </details>
