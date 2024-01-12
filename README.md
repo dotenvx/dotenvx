@@ -359,7 +359,7 @@ More examples
   web: dotenvx run -- node index.js
   ```
 
-  <small><a href="https://github.com/dotenvx/heroku-buildpack-dotenvx">buildpack docs</a></small>
+  <sub><a href="https://github.com/dotenvx/heroku-buildpack-dotenvx">buildpack docs</a></sub>
 
   </details>
 
