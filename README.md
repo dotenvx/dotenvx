@@ -347,13 +347,13 @@ More examples
 
 * <details><summary>Heroku</summary><br>
 
-  Add the buildpack, installing the `dotenvx` binary to your heroku deployment.
+  > Add the buildpack, installing the `dotenvx` binary to your heroku deployment.
 
   ```sh
   heroku buildpacks:add https://github.com/dotenvx/heroku-buildpack-dotenvx
   ```
 
-  Use it in your Procfile.
+  > Use it in your Procfile.
 
   ```sh
   web: dotenvx run -- node index.js
