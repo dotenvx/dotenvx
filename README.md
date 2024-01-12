@@ -359,6 +359,8 @@ More examples
   web: dotenvx run -- node index.js
   ```
 
+  <small><a href="https://github.com/dotenvx/heroku-buildpack-dotenvx">buildpack docs</a></small>
+
   </details>
 
 * <details><summary>Laravel Forge</summary><br>
