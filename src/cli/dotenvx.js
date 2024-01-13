@@ -56,7 +56,7 @@ program
 
 // dotenvx run -- node index.js
 program.command('run')
-  .description('inject env at runtime [dotenvx run -- your-command-here]')
+  .description('inject env at runtime [dotenvx run -- yourcommand]')
   .addHelpText('after', examples.run)
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')

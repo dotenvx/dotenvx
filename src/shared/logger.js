@@ -11,6 +11,7 @@ const packageJson = require('./packageJson')
 const levels = {
   error: 0,
   warn: 1,
+  warnv: 1,
   success: 2,
   successv: 2,
   info: 2,
@@ -41,6 +42,8 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return error(formattedMessage)
     case 'warn':
       return warn(formattedMessage)
+    case 'warnv':
+      return warn(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'

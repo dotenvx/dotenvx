@@ -6,6 +6,9 @@ const main = require('./../../lib/main')
 const ENCODING = 'utf8'
 
 async function run () {
+  const commandArgs = this.args
+  logger.debug(`process command [${commandArgs.join(' ')}]`)
+
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -81,7 +84,19 @@ async function run () {
         readableFilepaths.add(envFilepath)
         result.injected.forEach(key => injected.add(key))
       } catch (e) {
-        logger.warn(e)
+        switch (e.code) {
+          // missing .env
+          case 'ENOENT':
+            logger.warnv(`missing .env file (${filepath})`)
+            logger.help(`? in development: add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
+            logger.help('? for production: set [DOTENV_KEY] on your server and re-deploy')
+            break
+
+          // unhandled error
+          default:
+            logger.warn(e)
+            break
+        }
       }
     }
 
@@ -99,9 +114,8 @@ async function run () {
     logger.error('  or try:   [dotenvx run -- npm run dev]')
     process.exit(1)
   } else {
-    const subCommand = process.argv.slice(commandIndex + 1)
-
-    await helpers.executeCommand(subCommand, process.env)
+    // const commandArgs = process.argv.slice(commandIndex + 1)
+    await helpers.executeCommand(commandArgs, process.env)
   }
 }
 
