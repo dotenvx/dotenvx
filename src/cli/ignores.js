@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const FORMATS = ['.env*', '!.env.vault', '.flaskenv*']
+const FORMATS = ['.env*', '!.env.vault']
 
 class Generic {
   constructor (filename, touchFile = false) {

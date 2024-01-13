@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.8.4...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.9.0...main)
+
+## 0.9.0
+
+### Changed
+
+Remove `.flaskenv` from appends ([#27](https://github.com/dotenvx/dotenvx/pull/27))
 
 ## 0.8.4
 

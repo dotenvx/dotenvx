@@ -12,7 +12,7 @@ describe('cli/ignores.js tests', () => {
         const generic = new Generic('testfile', true)
         expect(generic.filename).toBe('testfile')
         expect(generic.touchFile).toBe(true)
-        expect(generic.formats).toEqual(['.env*', '!.env.vault', '.flaskenv*'])
+        expect(generic.formats).toEqual(['.env*', '!.env.vault'])
       })
     })
 
