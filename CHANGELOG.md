@@ -8,8 +8,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
-Remove `.flaskenv` from appends ([#27](https://github.com/dotenvx/dotenvx/pull/27))
-Improved error message when .env file is missing ([#28](https://github.com/dotenvx/dotenvx/pull/28))
+* Remove `.flaskenv` from appends ([#27](https://github.com/dotenvx/dotenvx/pull/27))
+* Improved error message when .env file is missing ([#28](https://github.com/dotenvx/dotenvx/pull/28))
 
 ## 0.8.4
 
