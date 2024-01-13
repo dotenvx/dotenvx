@@ -23,26 +23,26 @@ const resolvePath = function (filepath) {
   return path.resolve(process.cwd(), filepath)
 }
 
-const executeCommand = async function (subCommand, env) {
+const executeCommand = async function (commandArgs, env) {
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
     'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
   ]
 
-  logger.debug(`executing subcommand ${subCommand}`)
+  logger.debug(`executing process command [${commandArgs.join(' ')}]`)
 
   // handler for SIGINT
-  let subprocess
+  let commandProcess
   const sigintHandler = () => {
     logger.debug('received SIGINT')
-    logger.debug('checking subprocess')
-    logger.debug(subprocess)
+    logger.debug('checking command process')
+    logger.debug(commandProcess)
 
-    if (subprocess) {
-      logger.debug('sending SIGINT to subprocess')
-      subprocess.kill('SIGINT') // Send SIGINT to the subprocess
+    if (commandProcess) {
+      logger.debug('sending SIGINT to command process')
+      commandProcess.kill('SIGINT') // Send SIGINT to the command process
     } else {
-      logger.debug('no subprocess to send SIGINT to')
+      logger.debug('no command process to send SIGINT to')
     }
   }
 
@@ -51,7 +51,7 @@ const executeCommand = async function (subCommand, env) {
   }
 
   try {
-    subprocess = execa(subCommand[0], subCommand.slice(1), {
+    commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
       stdio: 'inherit',
       env: { ...process.env, ...env }
     })
@@ -62,8 +62,8 @@ const executeCommand = async function (subCommand, env) {
       process.on(signal, () => handleOtherSignal(signal))
     })
 
-    // Wait for the subprocess to finish
-    const { exitCode } = await subprocess
+    // Wait for the command process to finish
+    const { exitCode } = await commandProcess
 
     if (exitCode !== 0) {
       logger.debug(`received exitCode ${exitCode}`)
@@ -72,15 +72,15 @@ const executeCommand = async function (subCommand, env) {
   } catch (error) {
     if (error.signal !== 'SIGINT') {
       logger.error(error.message)
-      logger.error(`command [${subCommand.join(' ')}] failed`)
+      logger.error(`command [${commandArgs.join(' ')}] failed`)
       logger.error('')
-      logger.error(`  try without dotenvx: [${subCommand.join(' ')}]`)
+      logger.error(`  try without dotenvx: [${commandArgs.join(' ')}]`)
       logger.error('')
       logger.error('if that succeeds, then dotenvx is the culprit. report issue:')
       logger.error(`<${REPORT_ISSUE_LINK}>`)
     }
 
-    // Exit with the error code from the subprocess, or 1 if unavailable
+    // Exit with the error code from the command process, or 1 if unavailable
     process.exit(error.exitCode || 1)
   } finally {
     // Clean up: Remove the SIGINT handler
