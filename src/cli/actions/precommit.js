@@ -68,8 +68,8 @@ function precommit () {
   }
 }
 
-function installPrecommitHook() {
-  const hookScript = `#!/bin/sh\ndotenvx precommit\n`
+function installPrecommitHook () {
+  const hookScript = '#!/bin/sh\ndotenvx precommit\n'
   const hookPath = path.join('.git', 'hooks', 'pre-commit')
 
   try {
