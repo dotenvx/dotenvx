@@ -48,7 +48,18 @@ Try it:
   `
 }
 
+const precommit = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx precommit
+  \`\`\`
+  `
+}
+
 module.exports = {
   run,
-  encrypt
+  encrypt,
+  precommit
 }

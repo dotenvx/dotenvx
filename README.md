@@ -426,6 +426,32 @@ More examples
 * [dotenvx/docs](https://dotenvx.com/docs)
 * [quickstart guide](https://dotenvx.com/docs/quickstart)
 
+## Pre-commit
+
+You can prevent `.env` files from being committed to code with this pre-commit hook.
+
+Place this in `.git/hooks/pre-commit`
+
+```
+#!/bin/sh
+dotenvx precommit --quiet
+
+# Check dotenvx precommit exit status
+if [ $? -ne 0 ]; then
+  echo "dotenvx pre-commit failed. run [dotenvx precommit] for more information"
+  exit 1
+fi
+exit 0
+```
+
+Make sure to make it executable.
+
+```
+chmod +x .git/hooks/pre-commit
+```
+
+You can simulate the pre-commit hook by running `dotenvx precommit` locally.
+
 ## Contributing
 
 You can fork this repo and create [pull requests](https://github.com/dotenvx/dotenvx/pulls) or if you have questions or feedback:
