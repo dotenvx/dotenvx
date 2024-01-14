@@ -7,7 +7,6 @@ const program = new Command()
 const logger = require('./../shared/logger')
 const helpers = require('./helpers')
 const examples = require('./examples')
-const { AppendToIgnores } = require('./ignores')
 const packageJson = require('./../shared/packageJson')
 
 // once a day check for any updates
@@ -23,8 +22,6 @@ program
   .option('-v, --verbose', 'sets log level to verbose')
   .option('-d, --debug', 'sets log level to debug')
   .hook('preAction', (thisCommand, actionCommand) => {
-    new AppendToIgnores().run()
-
     const options = thisCommand.opts()
 
     if (options.logLevel) {
@@ -68,6 +65,12 @@ program.command('encrypt')
   .addHelpText('after', examples.encrypt)
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', helpers.findEnvFiles('./'))
   .action(require('./actions/encrypt'))
+
+// dotenvx precommit
+program.command('precommit')
+  .description('dotenvx precommit check')
+  .addHelpText('after', examples.precommit)
+  .action(require('./actions/precommit'))
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
