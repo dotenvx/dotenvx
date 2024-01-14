@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 
 const ignore = require('ignore')
 
@@ -9,6 +10,12 @@ function precommit () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  // 0. handle the --install flag
+  if (options.install) {
+    installPrecommitHook()
+    return
+  }
+
   // 1. check for .gitignore file
   if (!fs.existsSync('.gitignore')) {
     logger.errorvp('.gitignore missing')
@@ -16,6 +23,7 @@ function precommit () {
     process.exit(1)
   }
 
+  // 2. check .env* files against .gitignore file
   let warningCount = 0
   const ig = ignore().add(fs.readFileSync('.gitignore').toString())
   const files = fs.readdirSync(process.cwd())
@@ -46,16 +54,46 @@ function precommit () {
         default:
           logger.errorvp(`${file} not properly gitignored`)
           logger.help2(`? add ${file} to .gitignore with [echo ".env*" >> .gitignore]`)
-          process.exit(1)
+          process.exit(1) // 3.1 exit early with error code
           break
       }
     }
   })
 
+  // 3. outpout success
   if (warningCount > 0) {
-    logger.successvp(`looks good (with ${helpers.pluralize('warning', warningCount)})`)
+    logger.successvp(`success (with ${helpers.pluralize('warning', warningCount)})`)
   } else {
-    logger.successvp('looks good')
+    logger.successvp('success')
+  }
+}
+
+function installPrecommitHook() {
+  const hookScript = `#!/bin/sh\ndotenvx precommit\n`
+  const hookPath = path.join('.git', 'hooks', 'pre-commit')
+
+  try {
+    // Check if the pre-commit file already exists
+    if (fs.existsSync(hookPath)) {
+      // Read the existing content of the file
+      const existingContent = fs.readFileSync(hookPath, 'utf8')
+
+      // Check if 'dotenvx precommit' already exists in the file
+      if (!existingContent.includes('dotenvx precommit')) {
+        // Append 'dotenvx precommit' to the existing file
+        fs.appendFileSync(hookPath, '\n' + hookScript)
+        logger.successvp(`dotenvx precommit appended [${hookPath}]`)
+      } else {
+        logger.warnvp(`dotenvx precommit exists [${hookPath}]`)
+      }
+    } else {
+      // If the pre-commit file doesn't exist, create a new one with the hookScript
+      fs.writeFileSync(hookPath, hookScript)
+      fs.chmodSync(hookPath, '755') // Make the file executable
+      logger.successvp(`dotenvx precommit installed [${hookPath}]`)
+    }
+  } catch (err) {
+    logger.errorvp(`Failed to modify pre-commit hook: ${err.message}`)
   }
 }
 

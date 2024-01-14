@@ -54,6 +54,14 @@ Examples:
 
   \`\`\`
   $ dotenvx precommit
+  $ dotenvx precommit --install
+  \`\`\`
+
+Try it:
+
+  \`\`\`
+  $ dotenvx precommit
+  [dotenvx@0.10.0][precommit] success
   \`\`\`
   `
 }

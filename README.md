@@ -430,27 +430,21 @@ More examples
 
 You can prevent `.env` files from being committed to code with this pre-commit hook.
 
-Place this in `.git/hooks/pre-commit`
-
 ```
-#!/bin/sh
-dotenvx precommit --quiet
-
-# Check dotenvx precommit exit status
-if [ $? -ne 0 ]; then
-  echo "dotenvx pre-commit failed. run [dotenvx precommit] for more information"
-  exit 1
-fi
-exit 0
+dotenvx precommit --install
 ```
 
-Make it executable.
+Run without the `--install` flag to preview output.
 
 ```
-chmod +x .git/hooks/pre-commit
+dotenvx precommit
 ```
 
-You can simulate the pre-commit hook by running `dotenvx precommit` locally.
+To ignore the pre-commit hook run your git commit with the `--no-verify` flag.
+
+```
+git commit -am "msg" --no-verify
+```
 
 ## Contributing
 

@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Changed
 
 * Adjust `precommit` verbosity and coloring
+* Add `--install` flag to precommit - installs to `.git/hooks/pre-commit` ([#31](https://github.com/dotenvx/dotenvx/pull/31))
 
 ## 0.10.0
 
