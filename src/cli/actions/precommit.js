@@ -3,9 +3,8 @@ const fs = require('fs')
 const ignore = require('ignore')
 
 const logger = require('./../../shared/logger')
-const helpers = require('./../helpers')
 
-async function precommit () {
+function precommit () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
