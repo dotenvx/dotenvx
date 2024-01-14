@@ -70,6 +70,7 @@ program.command('encrypt')
 program.command('precommit')
   .description('dotenvx precommit check')
   .addHelpText('after', examples.precommit)
+  .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(require('./actions/precommit'))
 
 // dotenvx hub
