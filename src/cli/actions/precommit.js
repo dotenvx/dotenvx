@@ -15,6 +15,7 @@ function precommit () {
     process.exit(1)
   }
 
+  let exitCode = 0
   const ig = ignore().add(fs.readFileSync('.gitignore').toString())
   const files = fs.readdirSync(process.cwd())
   const dotenvFiles = files.filter(file => file.match(/^\.env(\..+)?$/))
@@ -45,11 +46,13 @@ function precommit () {
         default:
           logger.error(`${file} not properly gitignored`)
           logger.help(`? add ${file} to .gitignore with [echo ".env*" >> .gitignore]`)
-          process.exit(1)
+          exitCode = 1
           break
       }
     }
   })
+
+  process.exit(exitCode)
 }
 
 module.exports = precommit
