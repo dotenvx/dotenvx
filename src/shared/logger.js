@@ -10,10 +10,14 @@ const packageJson = require('./packageJson')
 
 const levels = {
   error: 0,
+  errorv: 0,
+  errorvp: 0,
   warn: 1,
   warnv: 1,
+  warnvp: 1,
   success: 2,
   successv: 2,
+  successvp: 2,
   info: 2,
   help: 2,
   help2: 2,
@@ -40,14 +44,22 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
   switch (level.toLowerCase()) {
     case 'error':
       return error(formattedMessage)
+    case 'errorv':
+      return error(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
+    case 'errorvp':
+      return error(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'warn':
       return warn(formattedMessage)
     case 'warnv':
       return warn(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
+    case 'warnvp':
+      return warn(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'
       return successv(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
+    case 'successvp': // success with 'version' and precommit
+      return success(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'info':
       return formattedMessage
     case 'help':

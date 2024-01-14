@@ -3,6 +3,7 @@ const fs = require('fs')
 const ignore = require('ignore')
 
 const logger = require('./../../shared/logger')
+const helpers = require('./../helpers')
 
 function precommit () {
   const options = this.opts()
@@ -10,12 +11,12 @@ function precommit () {
 
   // 1. check for .gitignore file
   if (!fs.existsSync('.gitignore')) {
-    logger.error('.gitignore missing')
-    logger.help('? add it with [touch .gitignore]')
+    logger.errorvp('.gitignore missing')
+    logger.help2('? add it with [touch .gitignore]')
     process.exit(1)
   }
 
-  let exitCode = 0
+  let warningCount = 0
   const ig = ignore().add(fs.readFileSync('.gitignore').toString())
   const files = fs.readdirSync(process.cwd())
   const dotenvFiles = files.filter(file => file.match(/^\.env(\..+)?$/))
@@ -24,35 +25,38 @@ function precommit () {
     if (ig.ignores(file)) {
       switch (file) {
         case '.env.example':
-          logger.warn(`${file} (currently ignored but should not be)`)
-          logger.help(`? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`)
+          warningCount += 1
+          logger.warnv(`${file} (currently ignored but should not be)`)
+          logger.help2(`? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`)
           break
         case '.env.vault':
-          logger.warn(`${file} (currently ignored but should not be)`)
-          logger.help(`? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`)
+          warningCount += 1
+          logger.warnv(`${file} (currently ignored but should not be)`)
+          logger.help2(`? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`)
           break
         default:
-          logger.success(file)
           break
       }
     } else {
       switch (file) {
         case '.env.example':
-          logger.success('.env.example') // should not be ignored
           break
         case '.env.vault':
-          logger.success('.env.vault') // should not be ignored
           break
         default:
-          logger.error(`${file} not properly gitignored`)
-          logger.help(`? add ${file} to .gitignore with [echo ".env*" >> .gitignore]`)
-          exitCode = 1
+          logger.errorvp(`${file} not properly gitignored`)
+          logger.help2(`? add ${file} to .gitignore with [echo ".env*" >> .gitignore]`)
+          process.exit(1)
           break
       }
     }
   })
 
-  process.exit(exitCode)
+  if (warningCount > 0) {
+    logger.successvp(`looks good (with ${helpers.pluralize('warning', warningCount)})`)
+  } else {
+    logger.successvp('looks good')
+  }
 }
 
 module.exports = precommit
