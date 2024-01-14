@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.9.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.0...main)
+
+## 0.10.0
+
+### Added
+
+* Added `dotenvx precommit` command and instructions for git pre-commit hook ([#30](https://github.com/dotenvx/dotenvx/pull/30))
 
 ## 0.9.0
 
