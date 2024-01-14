@@ -4,19 +4,14 @@ const ignore = require('ignore')
 
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
-const createSpinner = require('./../../shared/createSpinner')
 
 async function precommit () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   // 1. check for .gitignore file
-  let spinner
   if (!fs.existsSync('.gitignore')) {
-    spinner = createSpinner('.gitignore')
-    spinner.start()
-    await helpers.sleep(500) // better dx
-    spinner.fail('.gitignore missing')
+    logger.error('.gitignore missing')
     logger.help('? add it with [touch .gitignore]')
     process.exit(1)
   }
@@ -26,32 +21,30 @@ async function precommit () {
   const dotenvFiles = files.filter(file => file.match(/^\.env(\..+)?$/))
   dotenvFiles.forEach(file => {
     // check if that file is being ignored
-    spinner = createSpinner(file)
-    spinner.start()
     if (ig.ignores(file)) {
       switch (file) {
         case '.env.example':
-          spinner.warn(`${file} (currently ignored but should not be)`)
+          logger.warn(`${file} (currently ignored but should not be)`)
           logger.help(`? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`)
           break
         case '.env.vault':
-          spinner.warn(`${file} (currently ignored but should not be)`)
+          logger.warn(`${file} (currently ignored but should not be)`)
           logger.help(`? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`)
           break
         default:
-          spinner.succeed(file)
+          logger.success(file)
           break
       }
     } else {
       switch (file) {
         case '.env.example':
-          spinner.succeed('.env.example') // should not be ignored
+          logger.success('.env.example') // should not be ignored
           break
         case '.env.vault':
-          spinner.succeed('.env.vault') // should not be ignored
+          logger.success('.env.vault') // should not be ignored
           break
         default:
-          spinner.fail(file)
+          logger.error(`${file} not properly gitignored`)
           logger.help(`? add ${file} to .gitignore with [echo ".env*" >> .gitignore]`)
           process.exit(1)
           break

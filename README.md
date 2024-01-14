@@ -434,14 +434,13 @@ Place this in `.git/hooks/pre-commit`
 
 ```
 #!/bin/sh
-dotenvx precommit
+dotenvx precommit --quiet
 
 # Check dotenvx precommit exit status
 if [ $? -ne 0 ]; then
-  echo "dotenvx precommit failed"
+  echo "dotenvx pre-commit failed. run [dotenvx precommit] for more information"
   exit 1
 fi
-
 exit 0
 ```
 
@@ -450,6 +449,8 @@ Make sure to make it executable.
 ```
 chmod +x .git/hooks/pre-commit
 ```
+
+You can simulate the pre-commit hook by running `dotenvx precommit` locally.
 
 ## Contributing
 
