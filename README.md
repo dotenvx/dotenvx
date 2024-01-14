@@ -444,7 +444,7 @@ fi
 exit 0
 ```
 
-Make sure to make it executable.
+Make it executable.
 
 ```
 chmod +x .git/hooks/pre-commit
