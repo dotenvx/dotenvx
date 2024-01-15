@@ -359,7 +359,7 @@ More examples
   web: dotenvx run -- node index.js
   ```
 
-  [heroku guide →](https://dotenvx.com/docs/platforms/heroku)
+  [see heroku guide](https://dotenvx.com/docs/platforms/heroku)
 
   </details>
 
