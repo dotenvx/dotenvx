@@ -421,6 +421,18 @@ More examples
 
 &nbsp;
 
+## Hub
+
+> Integrate tightly with [GitHub](https://github.com)
+```sh
+$ dotenvx hub login
+$ dotenvx hub push
+```
+
+more details coming soon.
+
+&nbsp;
+
 ## Guides
 
 * [dotenvx/docs](https://dotenvx.com/docs)
