@@ -423,7 +423,7 @@ More examples
 
 ## Hub
 
-> Integrate tightly with [GitHub](https://github.com)
+> Integrate tightly with [GitHub](https://github.com) 🐙
 ```sh
 $ dotenvx hub login
 $ dotenvx hub push
