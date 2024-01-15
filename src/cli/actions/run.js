@@ -90,7 +90,7 @@ async function run () {
         switch (e.code) {
           // missing .env
           case 'ENOENT':
-            logger.warnv(`missing .env file (${filepath})`)
+            logger.warnv(`missing ${envFilepath} file (${filepath})`)
             logger.help(`? in development: add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
             logger.help('? for production: set [DOTENV_KEY] on your server and re-deploy')
             break
