@@ -347,6 +347,8 @@ More examples
 
 * <details><summary>Heroku</summary><br>
 
+  [heroku guide](https://dotenvx.com/docs/platforms/heroku)
+
   > Add the buildpack, installing the `dotenvx` binary to your heroku deployment.
 
   ```sh
@@ -358,10 +360,6 @@ More examples
   ```sh
   web: dotenvx run -- node index.js
   ```
-
-  ---
-
-  [heroku guide](https://dotenvx.com/docs/platforms/heroku)
 
   </details>
 
