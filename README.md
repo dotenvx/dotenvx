@@ -479,9 +479,26 @@ More examples
 
 * <details><summary>GitHub Actions</summary><br>
 
+  > Add the `dotenvx` binary to GitHub Actions
+
   ```sh
-  coming soon
+  name: build
+  on: [push]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: curl -fsS https://dotenvx.sh/ | sh
+      - run: dotenvx run -- node build.js
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
   ```
+
+  see [github actions guide](https://dotenvx.com/docs/cis/github-actions)
 
   </details>
 
