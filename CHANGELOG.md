@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.3...main)
+
+## 0.10.3
+
+* Add help notice for ci (when .env file not present) ([#33](https://github.com/dotenvx/pull/33))
 
 ## 0.10.2
 
