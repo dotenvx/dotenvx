@@ -69,7 +69,17 @@ function precommit () {
 }
 
 function installPrecommitHook () {
-  const hookScript = '#!/bin/sh\ndotenvx precommit\n'
+  const hookScript = `#!/bin/sh
+
+if ! command -v dotenvx &> /dev/null
+then
+  echo "[dotenvx][precommit] 'dotenvx' command not found"
+  echo "[dotenvx][precommit] ? install it with [brew install dotenvx/brew/dotenvx]"
+  echo "[dotenvx][precommit] ? other install options [https://dotenvx.com/docs/install]"
+  exit 1
+fi
+
+dotenvx precommit`
   const hookPath = path.join('.git', 'hooks', 'pre-commit')
 
   try {
