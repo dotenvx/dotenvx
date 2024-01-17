@@ -32,6 +32,8 @@ Hello World
 > :-D
 ```
 
+see [extended quickstart guide](https://dotenvx.com/docs/quickstart)
+
 More examples
 
 * <details><summary>Python 🐍</summary><br>
@@ -44,6 +46,8 @@ More examples
   Hello World
   ```
 
+  see [extended python guide](https://dotenvx.com/docs/quickstart)
+
   </details>
 * <details><summary>PHP 🐘</summary><br>
 
@@ -54,6 +58,8 @@ More examples
   $ dotenvx run -- php index.php
   Hello World
   ```
+
+  see [extended php guide](https://dotenvx.com/docs/quickstart)
 
   </details>
 * <details><summary>Ruby 💎</summary><br>
@@ -66,6 +72,8 @@ More examples
   Hello World
   ```
 
+  see [extended ruby guide](https://dotenvx.com/docs/quickstart)
+
   </details>
 * <details><summary>Go 🐹</summary><br>
 
@@ -77,6 +85,8 @@ More examples
   Hello World
   ```
 
+  see [extended go guide](https://dotenvx.com/docs/quickstart)
+
   </details>
 * <details><summary>Rust 🦀</summary><br>
 
@@ -87,6 +97,8 @@ More examples
   $ dotenvx run -- cargo run
   Hello World
   ```
+
+  see [extended rust guide](https://dotenvx.com/docs/quickstart)
 
   </details>
 * <details><summary>Java ☕️</summary><br>
@@ -132,6 +144,8 @@ More examples
   $ dotenvx run -- php artisan serve
   ```
 
+  see [framework guides](https://dotenvx.com/docs#frameworks)
+
   </details>
 * <details><summary>Docker 🐳</summary><br>
 
@@ -148,20 +162,46 @@ More examples
   CMD ["dotenvx", "run", "--", "echo", "Hello $HELLO"]
   ```
 
+  see [docker guide](https://dotenvx.com/docs/platforms/docker)
+
   </details>
 
 * <details><summary>CI/CDs 🐙</summary><br>
 
-  ```sh
-  examples coming soon
+  ```yaml
+  name: build
+  on: [push]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: curl -fsS https://dotenvx.sh/ | sh
+      - run: dotenvx run -- node build.js
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
   ```
+
+  see [github actions guide](https://dotenvx.com/docs/cis/github-actions)
 
   </details>
 * <details><summary>Platforms</summary><br>
 
   ```sh
-  examples coming soon
+  # heroku
+  heroku buildpacks:add https://github.com/dotenvx/heroku-buildpack-dotenvx
+
+  # docker
+  RUN curl -fsS https://dotenvx.sh/ | sh
+
+  # vercel
+  npm install @dotenvx/dotenvx --save
   ```
+
+  see [platform guides](https://dotenvx.com/docs#platforms)
 
   </details>
 * <details><summary>npx</summary><br>
