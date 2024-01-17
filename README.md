@@ -448,9 +448,24 @@ More examples
 
 * <details><summary>Vercel</summary><br>
 
+  > Add the `dotenvx` npm module
+
   ```sh
-  coming soon
+  npm install @dotenvx/dotenvx --save
   ```
+
+  > Use it in your `package.json scripts`
+
+  ```json
+  "scripts": {
+    "dotenvx": "dotenvx",
+    "dev": "dotenvx run -- next dev --turbo",
+    "build": "dotenvx run -- next build",
+    "start": "dotenvx run -- next start"
+  },
+  ```
+
+  see [vercel guide](https://dotenvx.com/docs/platforms/vercel)
 
   </details>
 
