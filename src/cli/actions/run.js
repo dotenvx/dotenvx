@@ -93,6 +93,7 @@ async function run () {
             logger.warnv(`missing ${envFilepath} file (${filepath})`)
             logger.help(`? in development: add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
             logger.help('? for production: set [DOTENV_KEY] on your server and re-deploy')
+            logger.help('? for ci: set [DOTENV_KEY] on your ci and re-build')
             break
 
           // unhandled error
