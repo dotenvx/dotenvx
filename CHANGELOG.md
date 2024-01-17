@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 0.10.3
 
+* If dotenvx is missing tell user how to install it from pre-commit ([#34](https://github.com/dotenvx/pull/34))
 * Add help notice for ci (when .env file not present) ([#33](https://github.com/dotenvx/pull/33))
 
 ## 0.10.2
