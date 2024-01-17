@@ -521,6 +521,8 @@ more details coming soon.
 * [dotenvx/docs](https://dotenvx.com/docs)
 * [quickstart guide](https://dotenvx.com/docs/quickstart)
 
+&nbsp;
+
 ## Pre-commit
 
 You can prevent `.env` files from being committed to code with this pre-commit hook.
@@ -540,6 +542,8 @@ To ignore the pre-commit hook run your git commit with the `--no-verify` flag.
 ```
 git commit -am "msg" --no-verify
 ```
+
+&nbsp;
 
 ## Contributing
 
