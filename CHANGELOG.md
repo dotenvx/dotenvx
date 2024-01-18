@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.3...main)
 
+## 0.10.4
+
+* Add `predockerbuild` command to preventu including `.env` file in your docker builds ([#35](https://github.com/dotenvx/pull/35))
+
 ## 0.10.3
 
 * If dotenvx is missing tell user how to install it from pre-commit ([#34](https://github.com/dotenvx/pull/34))

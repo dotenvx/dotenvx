@@ -11,7 +11,7 @@ function predockerbuild () {
 
   // 1. check for .dockerignore file
   if (!fs.existsSync('.dockerignore')) {
-    logger.errorvp('.dockerignore missing')
+    logger.errorvpd('.dockerignore missing')
     logger.help2('? add it with [touch .dockerignore]')
     process.exit(1)
   }
@@ -45,7 +45,7 @@ function predockerbuild () {
         case '.env.vault':
           break
         default:
-          logger.errorvp(`${file} not properly dockerignored`)
+          logger.errorvpd(`${file} not properly dockerignored`)
           logger.help2(`? add ${file} to .dockerignore with [echo ".env*" >> .dockerignore]`)
           process.exit(1) // 3.1 exit early with error code
           break
@@ -55,9 +55,9 @@ function predockerbuild () {
 
   // 3. outpout success
   if (warningCount > 0) {
-    logger.successvp(`success (with ${helpers.pluralize('warning', warningCount)})`)
+    logger.successvpd(`success (with ${helpers.pluralize('warning', warningCount)})`)
   } else {
-    logger.successvp('success')
+    logger.successvpd('success')
   }
 }
 
