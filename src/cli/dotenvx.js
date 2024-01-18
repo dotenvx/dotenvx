@@ -79,7 +79,6 @@ program.command('predockerbuild')
   .addHelpText('after', examples.precommit)
   .action(require('./actions/precommit'))
 
-
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
 
