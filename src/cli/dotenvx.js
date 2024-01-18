@@ -68,10 +68,17 @@ program.command('encrypt')
 
 // dotenvx precommit
 program.command('precommit')
-  .description('dotenvx precommit check')
+  .description('prevent committing .env files to code')
   .addHelpText('after', examples.precommit)
   .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(require('./actions/precommit'))
+
+// dotenvx predockerbuild
+program.command('predockerbuild')
+  .description('prevent including .env files in docker build')
+  .addHelpText('after', examples.precommit)
+  .action(require('./actions/precommit'))
+
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
