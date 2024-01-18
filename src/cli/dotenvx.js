@@ -73,11 +73,11 @@ program.command('precommit')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(require('./actions/precommit'))
 
-// dotenvx predockerbuild
-program.command('predockerbuild')
-  .description('prevent including .env files in docker build')
-  .addHelpText('after', examples.predockerbuild)
-  .action(require('./actions/predockerbuild'))
+// dotenvx prebuild
+program.command('prebuild')
+  .description('prevent including .env files in docker builds')
+  .addHelpText('after', examples.prebuild)
+  .action(require('./actions/prebuild'))
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))

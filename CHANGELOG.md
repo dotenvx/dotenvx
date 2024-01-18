@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.3...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.5...main)
+
+## 0.10.5
+
+* Rename `predockerbuild` command to `prebuild` ([#36](https://github.com/dotenvx/pull/36))
 
 ## 0.10.4
 
-* Add `predockerbuild` command to preventu including `.env` file in your docker builds ([#35](https://github.com/dotenvx/pull/35))
+* Add `predockerbuild` command to prevent including `.env` file in your docker builds ([#35](https://github.com/dotenvx/pull/35))
 
 ## 0.10.3
 

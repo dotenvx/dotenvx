@@ -5,13 +5,13 @@ const ignore = require('ignore')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
 
-function predockerbuild () {
+function prebuild () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   // 1. check for .dockerignore file
   if (!fs.existsSync('.dockerignore')) {
-    logger.errorvpd('.dockerignore missing')
+    logger.errorvpb('.dockerignore missing')
     logger.help2('? add it with [touch .dockerignore]')
     process.exit(1)
   }
@@ -45,7 +45,7 @@ function predockerbuild () {
         case '.env.vault':
           break
         default:
-          logger.errorvpd(`${file} not properly dockerignored`)
+          logger.errorvpb(`${file} not properly dockerignored`)
           logger.help2(`? add ${file} to .dockerignore with [echo ".env*" >> .dockerignore]`)
           process.exit(1) // 3.1 exit early with error code
           break
@@ -55,10 +55,10 @@ function predockerbuild () {
 
   // 3. outpout success
   if (warningCount > 0) {
-    logger.successvpd(`success (with ${helpers.pluralize('warning', warningCount)})`)
+    logger.successvpb(`success (with ${helpers.pluralize('warning', warningCount)})`)
   } else {
-    logger.successvpd('success')
+    logger.successvpb('success')
   }
 }
 
-module.exports = predockerbuild
+module.exports = prebuild

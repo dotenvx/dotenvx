@@ -12,15 +12,15 @@ const levels = {
   error: 0,
   errorv: 0,
   errorvp: 0,
-  errorvpd: 0,
+  errorvpb: 0,
   warn: 1,
   warnv: 1,
   warnvp: 1,
-  warnvpd: 1,
+  warnvpb: 1,
   success: 2,
   successv: 2,
   successvp: 2,
-  successvpd: 2,
+  successvpb: 2,
   info: 2,
   help: 2,
   help2: 2,
@@ -51,24 +51,24 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return error(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
     case 'errorvp':
       return error(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
-    case 'errorvpd':
-      return error(`[dotenvx@${packageJson.version}][predockerbuild] ${formattedMessage}`)
+    case 'errorvpb':
+      return error(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     case 'warn':
       return warn(formattedMessage)
     case 'warnv':
       return warn(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
     case 'warnvp':
       return warn(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
-    case 'warnvpd':
-      return warn(`[dotenvx@${packageJson.version}][predockerbuild] ${formattedMessage}`)
+    case 'warnvpb':
+      return warn(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'
       return successv(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
     case 'successvp': // success with 'version' and precommit
       return success(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
-    case 'successvpd': // success with 'version' and precommit
-      return success(`[dotenvx@${packageJson.version}][predockerbuild] ${formattedMessage}`)
+    case 'successvpb': // success with 'version' and precommit
+      return success(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     case 'info':
       return formattedMessage
     case 'help':

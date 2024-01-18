@@ -66,19 +66,19 @@ Try it:
   `
 }
 
-const predockerbuild = function () {
+const prebuild = function () {
   return `
 Examples:
 
   \`\`\`
-  $ dotenvx predockerbuild
+  $ dotenvx prebuild
   \`\`\`
 
 Try it:
 
   \`\`\`
-  $ dotenvx predockerbuild
-  [dotenvx@0.10.0][predockerbuild] success
+  $ dotenvx prebuild
+  [dotenvx@0.10.0][prebuild] success
   \`\`\`
   `
 }
@@ -87,5 +87,5 @@ module.exports = {
   run,
   encrypt,
   precommit,
-  predockerbuild
+  prebuild
 }
