@@ -76,7 +76,7 @@ program.command('precommit')
 // dotenvx predockerbuild
 program.command('predockerbuild')
   .description('prevent including .env files in docker build')
-  .addHelpText('after', examples.precommit)
+  .addHelpText('after', examples.predockerbuild)
   .action(require('./actions/predockerbuild'))
 
 // dotenvx hub

@@ -66,8 +66,26 @@ Try it:
   `
 }
 
+const predockerbuild = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx predockerbuild
+  \`\`\`
+
+Try it:
+
+  \`\`\`
+  $ dotenvx predockerbuild
+  [dotenvx@0.10.0][predockerbuild] success
+  \`\`\`
+  `
+}
+
 module.exports = {
   run,
   encrypt,
-  precommit
+  precommit,
+  predockerbuild
 }
