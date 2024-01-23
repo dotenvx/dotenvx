@@ -135,6 +135,14 @@ More examples
   ```
 
   </details>
+* <details><summary>Cron ⏰</summary><br>
+
+  ```sh
+  # run every day at 8am
+  0 8 * * * dotenvx run -- /path/to/myscript.sh
+  ```
+
+  </details>
 * <details><summary>Frameworks ▲</summary><br>
 
   ```sh
