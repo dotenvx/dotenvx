@@ -2,22 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.5...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.6...main)
+
+## 0.10.6
+
+### Changed
+
+* Improve error message when decryption fails ([#40](https://github.com/dotenvx/dotenvx/pull/40))
 
 ## 0.10.5
+
+### Changed
 
 * Rename `predockerbuild` command to `prebuild` ([#36](https://github.com/dotenvx/pull/36))
 
 ## 0.10.4
 
+### Added
+
 * Add `predockerbuild` command to prevent including `.env` file in your docker builds ([#35](https://github.com/dotenvx/pull/35))
 
 ## 0.10.3
+
+### Changed
 
 * If dotenvx is missing tell user how to install it from pre-commit ([#34](https://github.com/dotenvx/pull/34))
 * Add help notice for ci (when .env file not present) ([#33](https://github.com/dotenvx/pull/33))
 
 ## 0.10.2
+
+### Changed
 
 * Improve error message when custom `--env-file` passed ([#32](https://github.com/dotenvx/pull/32))
 
