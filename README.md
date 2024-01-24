@@ -25,12 +25,14 @@ console.log(`Hello ${process.env.HELLO}`)
 
 &nbsp;
 
-Or install globally as a cli (unlocks using dotenv for ANY language, framework, or platform)
+Or install globally
 
 ```sh
 brew install dotenvx/brew/dotenvx
 ```
 > * [other global ways to install](https://dotenvx.com/docs/install)
+
+Installing globally as a cli unlocks dotenv for ANY language, framework, or platform. 💥 I recommend using dotenv this way going forward. – [motdotla](https://github.com/motdotla)
 
 &nbsp;
 
