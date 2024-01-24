@@ -11,10 +11,40 @@
 
 ### Quickstart
 
+Install it.
+
+```sh
+npm install @dotenvx/dotenvx --save
+```
+
+Use it in code just like `dotenv`.
+
+```js
+// index.js
+require('@dotenvx/dotenvx').config()
+```
+
+Add it to your `package.json` to run cli commands.
+
+```json
+{
+  "scripts": {
+    "dotenvx": "dotenvx"
+  }
+}
+```
+```sh
+npm run dotenvx encrypt
+```
+
+&nbsp;
+
+Or install globally as a cli (unlocks using dotenv for ANY language, framework, or platform)
+
 ```sh
 brew install dotenvx/brew/dotenvx
 ```
-> * [other ways to install](https://dotenvx.com/docs/install)
+> * [other global ways to install](https://dotenvx.com/docs/install)
 
 &nbsp;
 
