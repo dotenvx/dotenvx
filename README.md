@@ -11,30 +11,14 @@
 
 ### Quickstart
 
-Install it.
+Install and use it in code just like `dotenv`.
 
 ```sh
 npm install @dotenvx/dotenvx --save
 ```
-
-Use it in code just like `dotenv`.
-
 ```js
 // index.js
 require('@dotenvx/dotenvx').config()
-```
-
-Add it to your `package.json` to run cli commands.
-
-```json
-{
-  "scripts": {
-    "dotenvx": "dotenvx"
-  }
-}
-```
-```sh
-npm run dotenvx encrypt
 ```
 
 &nbsp;
