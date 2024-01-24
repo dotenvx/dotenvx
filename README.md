@@ -357,6 +357,33 @@ More examples
   ```
 
   </details>
+* <details><summary>`--quiet` flag</summary><br>
+
+  Use `--quiet` to suppress all output (except errors).
+
+  ```sh
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx run --env-file=.env.production --quiet -- node index.js
+  Hello production
+  ```
+
+  </details>
+* <details><summary>`--log-level` flag</summary><br>
+
+  Set `--log-level` to whatever you wish. For example, to supress warnings (risky), set log level to `error`:
+
+  ```sh
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx run --env-file=.env.production --log-level=error -- node index.js
+  Hello production
+  ```
+
+  Available log levels are `error, warn, info, verbose, debug, silly`
+
+  </details>
+
 
 &nbsp;
 
