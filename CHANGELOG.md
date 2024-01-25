@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.10.6...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.11.0...main)
+
+## 0.11.0
+
+### Removed
+
+* no longer append to `*ignore` files automatically. too invasive. will provide as separate cli command ([#45](https://github.com/dotenvx/dotenvx/pull/45))
 
 ## 0.10.6
 
