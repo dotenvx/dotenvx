@@ -2,13 +2,10 @@ const fs = require('fs')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
 const main = require('./../../lib/main')
-const { AppendToIgnores } = require('./../ignores')
 
 const ENCODING = 'utf8'
 
 async function run () {
-  new AppendToIgnores().run()
-
   const commandArgs = this.args
   logger.debug(`process command [${commandArgs.join(' ')}]`)
 

@@ -4,7 +4,6 @@ const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
 const createSpinner = require('./../../shared/createSpinner')
-const { AppendToIgnores } = require('./../ignores')
 
 const spinner = createSpinner('encrypting')
 
@@ -12,8 +11,6 @@ const spinner = createSpinner('encrypting')
 const ENCODING = 'utf8'
 
 async function encrypt () {
-  new AppendToIgnores().run()
-
   spinner.start()
   await helpers.sleep(500) // better dx
 
