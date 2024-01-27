@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.12.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.13.0...main)
+
+## 0.13.0
+
+### Added
+
+* Added `decrypt` command. Decrypt `.env.vault` to prospective `.env*` files. `.env.keys` must be present. ([#48](https://github.com/dotenvx/dotenvx/pull/48))
 
 ## 0.12.0
 
