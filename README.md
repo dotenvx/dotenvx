@@ -614,10 +614,10 @@ $ dotenvx hub push
 
 > Keep your `.env` files safe
 
+* [`dotenvx genexample`](https://dotenvx.com/docs/features/genexample) – generate `.env.example` file
 * [`dotenvx gitignore`](https://dotenvx.com/docs/features/gitignore) – gitignore your `.env` files
-* [`dotenvx precommit`](https://dotenvx.com/docs/features/precommit) – prevent `.env` files from being committed to code
 * [`dotenvx prebuild`](https://dotenvx.com/docs/features/prebuild) – prevent `.env` files from being built into your docker container
-* `dotenvx genexample` – generate `.env.example` file (coming soon)
+* [`dotenvx precommit`](https://dotenvx.com/docs/features/precommit) – prevent `.env` files from being committed to code
 
 &nbsp;
 
