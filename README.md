@@ -610,6 +610,10 @@ more details coming soon.
 
 &nbsp;
 
+---
+
+&nbsp;
+
 ## More features
 
 > Keep your `.env` files safe
