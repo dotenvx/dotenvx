@@ -150,19 +150,6 @@ async function encrypt () {
 
     logger.help2(`ℹ run [DOTENV_KEY='${tryKey}' dotenvx run -- yourcommand] to test decryption locally`)
   }
-
-  // logger.verbose('')
-  // logger.verbose('next:')
-  // logger.verbose('')
-  // logger.verbose('    1. commit .env.vault safely to code')
-  // logger.verbose('    2. set DOTENV_KEY on server (or ci)')
-  // logger.verbose('    3. push your code')
-  // logger.verbose('')
-  // logger.verbose('protips:')
-  // logger.verbose('')
-  // logger.verbose('    * .env.keys file holds your decryption DOTENV_KEYs')
-  // logger.verbose('    * DO NOT commit .env.keys to code')
-  // logger.verbose('    * share .env.keys file over secure channels only')
 }
 
 module.exports = encrypt
