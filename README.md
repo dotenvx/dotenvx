@@ -489,7 +489,7 @@ More examples
 
   </details>
 
-* <details><summary>Netlify 🥅</summary><br>
+* <details><summary>Netlify 🔷</summary><br>
 
   > Add the `dotenvx` npm module
 
@@ -571,7 +571,7 @@ More examples
 
   </details>
 
-* <details><summary>GitHub Actions</summary><br>
+* <details><summary>GitHub Actions 🐙</summary><br>
 
   > Add the `dotenvx` binary to GitHub Actions
 
