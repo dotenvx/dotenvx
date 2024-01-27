@@ -610,10 +610,6 @@ $ dotenvx hub push
 
 &nbsp;
 
----
-
-&nbsp;
-
 ## More features
 
 > Keep your `.env` files safe
