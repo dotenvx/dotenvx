@@ -64,7 +64,6 @@ function gitignore () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-
   logger.verbose('appending to .gitignore')
   new Git().run()
 
