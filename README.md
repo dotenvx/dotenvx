@@ -612,7 +612,7 @@ more details coming soon.
 
 ## More features
 
-> dotenvx includes additional safety and convenience features
+> Keep your `.env` files safe
 
 * [`dotenvx gitignore`](https://dotenvx.com/docs/features/gitignore) – gitignore your `.env` files
 * [`dotenvx precommit`](https://dotenvx.com/docs/features/precommit) – prevent `.env` files from being committed to code
