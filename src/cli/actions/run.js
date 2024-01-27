@@ -84,18 +84,18 @@ async function run () {
         readableFilepaths.add(envFilepath)
         result.injected.forEach(key => injected.add(key))
       } catch (e) {
+        // calculate development help message depending on state of repo
+        const vaultFilepath = helpers.resolvePath('.env.vault')
+        let developmentHelp = `? in development: add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`
+        if (fs.existsSync(vaultFilepath)) {
+          developmentHelp = `? in development: use [dotenvx decrypt] to decrypt .env.vault to .env and then re-run [dotenvx run -- ${commandArgs.join(' ')}]`
+        }
+
         switch (e.code) {
           // missing .env
           case 'ENOENT':
             logger.warnv(`missing ${envFilepath} file (${filepath})`)
-
-            const vaultFilepath = helpers.resolvePath('.env.vault')
-            if (fs.existsSync(vaultFilepath)) {
-              logger.help(`? in development: use [dotenvx decrypt] to decrypt .env.vault to .env and then re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
-            } else {
-              logger.help(`? in development: add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
-            }
-
+            logger.help(developmentHelp)
             logger.help('? for production: set [DOTENV_KEY] on your server and re-deploy')
             logger.help('? for ci: set [DOTENV_KEY] on your ci and re-build')
             break
