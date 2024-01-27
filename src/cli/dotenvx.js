@@ -69,8 +69,13 @@ program.command('encrypt')
 // dotenvx decrypt
 program.command('decrypt')
   .description('decrypt .env.vault to .env*')
-  .addHelpText('after', examples.encrypt)
   .action(require('./actions/decrypt'))
+
+// dotenvx gitignore
+program.command('gitignore')
+  .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
+  .addHelpText('after', examples.gitignore)
+  .action(require('./actions/gitignore'))
 
 // dotenvx precommit
 program.command('precommit')
@@ -85,11 +90,11 @@ program.command('prebuild')
   .addHelpText('after', examples.prebuild)
   .action(require('./actions/prebuild'))
 
-// dotenvx gitignore
-program.command('gitignore')
-  .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
-  .addHelpText('after', examples.gitignore)
-  .action(require('./actions/gitignore'))
+// dotenvx genexample
+program.command('genexample')
+  .description('generate .env.example')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .action(require('./actions/genexample'))
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
