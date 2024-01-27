@@ -38,24 +38,28 @@ class Generic {
 
 class Git {
   run () {
+    logger.verbose('appending to .gitignore')
     new Generic('.gitignore', true).run()
   }
 }
 
 class Docker {
   run () {
+    logger.verbose('appending to .dockerignore (if existing)')
     new Generic('.dockerignore').run()
   }
 }
 
 class Npm {
   run () {
+    logger.verbose('appending to .npmignore (if existing)')
     new Generic('.npmignore').run()
   }
 }
 
 class Vercel {
   run () {
+    logger.verbose('appending to .vercelignore (if existing)')
     new Generic('.vercelignore').run()
   }
 }
@@ -64,16 +68,9 @@ function gitignore () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  logger.verbose('appending to .gitignore')
   new Git().run()
-
-  logger.verbose('appending to .dockerignore (if existing)')
   new Docker().run()
-
-  logger.verbose('appending to .npmignore (if existing)')
   new Npm().run()
-
-  logger.verbose('appending to .vercelignore (if existing)')
   new Vercel().run()
 
   logger.success('done')
