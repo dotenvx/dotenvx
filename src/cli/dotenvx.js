@@ -79,6 +79,12 @@ program.command('prebuild')
   .addHelpText('after', examples.prebuild)
   .action(require('./actions/prebuild'))
 
+// dotenvx gitignore
+program.command('gitignore')
+  .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
+  .addHelpText('after', examples.gitignore)
+  .action(require('./actions/gitignore'))
+
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
 

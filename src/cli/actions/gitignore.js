@@ -1,6 +1,7 @@
 const fs = require('fs')
 
 const FORMATS = ['.env*', '!.env.vault']
+const logger = require('./../../shared/logger')
 
 class Generic {
   constructor (filename, touchFile = false) {
@@ -16,6 +17,8 @@ class Generic {
   run () {
     if (!fs.existsSync(this.filename)) {
       if (this.touchFile === true) {
+        logger.info(`creating ${this.filename}`)
+
         fs.writeFileSync(this.filename, '')
       } else {
         return
@@ -25,6 +28,8 @@ class Generic {
     const lines = fs.readFileSync(this.filename, 'utf8').split(/\r?\n/)
     this.formats.forEach(format => {
       if (!lines.includes(format.trim())) {
+        logger.info(`appending ${format} to ${this.filename}`)
+
         this.append(format)
       }
     })
@@ -55,13 +60,24 @@ class Vercel {
   }
 }
 
-class AppendToIgnores {
-  run () {
-    new Docker().run()
-    new Git().run()
-    new Npm().run()
-    new Vercel().run()
-  }
+function gitignore () {
+  const options = this.opts()
+  logger.debug(`options: ${JSON.stringify(options)}`)
+
+
+  logger.verbose('appending to .gitignore')
+  new Git().run()
+
+  logger.verbose('appending to .dockerignore (if existing)')
+  new Docker().run()
+
+  logger.verbose('appending to .npmignore (if existing)')
+  new Npm().run()
+
+  logger.verbose('appending to .vercelignore (if existing)')
+  new Vercel().run()
+
+  logger.success('done')
 }
 
-module.exports = { AppendToIgnores, Generic }
+module.exports = gitignore
