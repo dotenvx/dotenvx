@@ -66,6 +66,12 @@ program.command('encrypt')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', helpers.findEnvFiles('./'))
   .action(require('./actions/encrypt'))
 
+// dotenvx decrypt
+program.command('decrypt')
+  .description('decrypt .env.vault to .env*')
+  .addHelpText('after', examples.encrypt)
+  .action(require('./actions/decrypt'))
+
 // dotenvx precommit
 program.command('precommit')
   .description('prevent committing .env files to code')
