@@ -610,32 +610,25 @@ more details coming soon.
 
 &nbsp;
 
-## Guides
+## More features
 
-* [dotenvx/docs](https://dotenvx.com/docs)
-* [quickstart guide](https://dotenvx.com/docs/quickstart)
+* [`dotenvx gitignore`](https://dotenvx.com/docs/features/gitignore) – gitignore your `.env` files
+* [`dotenvx precommit`](https://dotenvx.com/docs/features/precommit) – prevent `.env` files from being committed to code
+* [`dotenvx prebuild`](https://dotenvx.com/docs/features/prebuild) – prevent `.env` files from being built into your docker container
 
 &nbsp;
 
-## Pre-commit
+## Guides
 
-You can prevent `.env` files from being committed to code with this pre-commit hook.
-
-```
-dotenvx precommit --install
-```
-
-Run without the `--install` flag to preview output.
-
-```
-dotenvx precommit
-```
-
-To ignore the pre-commit hook run your git commit with the `--no-verify` flag.
-
-```
-git commit -am "msg" --no-verify
-```
+* [quickstart guide](https://dotenvx.com/docs/quickstart)
+  * [run anywhere guide](https://dotenvx.com/docs/quickstart/run)
+  * [multi-environment guide](https://dotenvx.com/docs/quickstart/environments)
+  * [encrypted envs guide](https://dotenvx.com/docs/quickstart/encryption)
+* [dotenvx/docs](https://dotenvx.com/docs)
+  * [languages](https://dotenvx.com/docs#languages)
+  * [frameworks](https://dotenvx.com/docs#frameworks)
+  * [platforms](https://dotenvx.com/docs#platforms)
+  * [ci/cd](https://dotenvx.com/docs#cis)
 
 &nbsp;
 
