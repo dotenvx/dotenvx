@@ -423,7 +423,7 @@ More examples
 
   </details>
 
-* <details><summary>Docker</summary><br>
+* <details><summary>Docker 🐳</summary><br>
 
   > Add the `dotenvx` binary to your Dockerfile
 
@@ -443,7 +443,7 @@ More examples
 
   </details>
 
-* <details><summary>Fly.io</summary><br>
+* <details><summary>Fly.io 🎈</summary><br>
 
   > Add the `dotenvx` binary to your Dockerfile
 
@@ -463,7 +463,7 @@ More examples
 
   </details>
 
-* <details><summary>Heroku</summary><br>
+* <details><summary>Heroku 🟣</summary><br>
 
   > Add the buildpack, installing the `dotenvx` binary to your heroku deployment.
 
@@ -489,15 +489,30 @@ More examples
 
   </details>
 
-* <details><summary>Netlify</summary><br>
+* <details><summary>Netlify 🥅</summary><br>
+
+  > Add the `dotenvx` npm module
 
   ```sh
-  coming soon
+  npm install @dotenvx/dotenvx --save
   ```
+
+  > Use it in your `package.json scripts`
+
+  ```json
+  "scripts": {
+    "dotenvx": "dotenvx",
+    "dev": "dotenvx run -- next dev --turbo",
+    "build": "dotenvx run -- next build",
+    "start": "dotenvx run -- next start"
+  },
+  ```
+
+  see [netlify guide](https://dotenvx.com/docs/platforms/netlify)
 
   </details>
 
-* <details><summary>Railway</summary><br>
+* <details><summary>Railway 🚄</summary><br>
 
   > Add the `dotenvx` binary to your Dockerfile
 
@@ -525,7 +540,7 @@ More examples
 
   </details>
 
-* <details><summary>Vercel</summary><br>
+* <details><summary>Vercel ▲</summary><br>
 
   > Add the `dotenvx` npm module
 
