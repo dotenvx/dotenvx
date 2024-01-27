@@ -600,13 +600,13 @@ More examples
 
 ## Hub
 
-> Integrate tightly with [GitHub](https://github.com) 🐙
+> Integrate tightly with [GitHub](https://github.com) 🐙 and as a team
 ```sh
 $ dotenvx hub login
 $ dotenvx hub push
 ```
 
-more details coming soon.
+**beta**: more details coming soon.
 
 &nbsp;
 
