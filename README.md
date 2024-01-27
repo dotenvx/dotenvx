@@ -445,9 +445,21 @@ More examples
 
 * <details><summary>Fly.io</summary><br>
 
+  > Add the `dotenvx` binary to your Dockerfile
+
   ```sh
-  coming soon
+  # Install dotenvx
+  RUN curl -fsS https://dotenvx.sh/ | sh
   ```
+
+  > Use it in your Dockerfile CMD
+
+  ```sh
+  # Prepend dotenvx run
+  CMD ["dotenvx", "run", "--", "node", "index.js"]
+  ```
+
+  see [fly guide](https://dotenvx.com/docs/platforms/fly)
 
   </details>
 
@@ -487,9 +499,21 @@ More examples
 
 * <details><summary>Railway</summary><br>
 
+  > Add the `dotenvx` binary to your Dockerfile
+
   ```sh
-  coming soon
+  # Install dotenvx
+  RUN curl -fsS https://dotenvx.sh/ | sh
   ```
+
+  > Use it in your Dockerfile CMD
+
+  ```sh
+  # Prepend dotenvx run
+  CMD ["dotenvx", "run", "--", "node", "index.js"]
+  ```
+
+  see [railway guide](https://dotenvx.com/docs/platforms/railway)
 
   </details>
 
