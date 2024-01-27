@@ -83,9 +83,27 @@ Try it:
   `
 }
 
+const gitignore = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx gitignore
+  \`\`\`
+
+Try it:
+
+  \`\`\`
+  $ dotenvx gitignore
+  done
+  \`\`\`
+  `
+}
+
 module.exports = {
   run,
   encrypt,
   precommit,
-  prebuild
+  prebuild,
+  gitignore
 }
