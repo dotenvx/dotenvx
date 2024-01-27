@@ -95,7 +95,7 @@ Try it:
 
   \`\`\`
   $ dotenvx gitignore
-  [dotenvx@0.10.0][gitignore] success
+  done
   \`\`\`
   `
 }

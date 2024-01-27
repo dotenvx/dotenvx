@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.11.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.12.0...main)
+
+## 0.12.0
+
+### Added
+
+* Append to `.gitignore` with `gitignore` command (also `.dockerignore`, `.npmignore`, and `.vercelignore` if existing) ([#47](https://github.com/dotenvx/dotenvx/pull/47))
 
 ## 0.11.0
 
