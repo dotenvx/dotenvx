@@ -36,7 +36,7 @@
     "open": "^8.4.2",
     "ora": "^5.4.1",
     "qrcode-terminal": "^0.12.0",
-    "update-notifier": "^7.0.0",
+    "update-notifier": "^5.1.0",
     "winston": "^3.11.0",
     "xxhashjs": "^0.2.2"
   },
