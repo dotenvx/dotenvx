@@ -612,18 +612,21 @@ more details coming soon.
 
 ## More features
 
+> dotenvx includes additional safety and convenience features
+
 * [`dotenvx gitignore`](https://dotenvx.com/docs/features/gitignore) – gitignore your `.env` files
 * [`dotenvx precommit`](https://dotenvx.com/docs/features/precommit) – prevent `.env` files from being committed to code
 * [`dotenvx prebuild`](https://dotenvx.com/docs/features/prebuild) – prevent `.env` files from being built into your docker container
+* `dotenvx genexample` – generate `.env.example` file (coming soon)
 
 &nbsp;
 
 ## Guides
 
-* [quickstart guide](https://dotenvx.com/docs/quickstart)
-  * [run anywhere guide](https://dotenvx.com/docs/quickstart/run)
-  * [multi-environment guide](https://dotenvx.com/docs/quickstart/environments)
-  * [encrypted envs guide](https://dotenvx.com/docs/quickstart/encryption)
+* [quickstart guides](https://dotenvx.com/docs/quickstart)
+  * [run anywhere](https://dotenvx.com/docs/quickstart/run)
+  * [multi-environment](https://dotenvx.com/docs/quickstart/environments)
+  * [encrypted envs](https://dotenvx.com/docs/quickstart/encryption)
 * [dotenvx/docs](https://dotenvx.com/docs)
   * [languages](https://dotenvx.com/docs#languages)
   * [frameworks](https://dotenvx.com/docs#frameworks)
