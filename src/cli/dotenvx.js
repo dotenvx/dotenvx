@@ -71,11 +71,23 @@ program.command('decrypt')
   .description('decrypt .env.vault to .env*')
   .action(require('./actions/decrypt'))
 
+// dotenvx genexample
+program.command('genexample')
+  .description('generate .env.example')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .action(require('./actions/genexample'))
+
 // dotenvx gitignore
 program.command('gitignore')
   .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
   .addHelpText('after', examples.gitignore)
   .action(require('./actions/gitignore'))
+
+// dotenvx prebuild
+program.command('prebuild')
+  .description('prevent including .env files in docker builds')
+  .addHelpText('after', examples.prebuild)
+  .action(require('./actions/prebuild'))
 
 // dotenvx precommit
 program.command('precommit')
@@ -84,17 +96,10 @@ program.command('precommit')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(require('./actions/precommit'))
 
-// dotenvx prebuild
-program.command('prebuild')
-  .description('prevent including .env files in docker builds')
-  .addHelpText('after', examples.prebuild)
-  .action(require('./actions/prebuild'))
-
-// dotenvx genexample
-program.command('genexample')
-  .description('generate .env.example')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
-  .action(require('./actions/genexample'))
+// dotenvx scan
+program.command('scan')
+  .description('scan for leaked secrets')
+  .action(require('./actions/scan'))
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
