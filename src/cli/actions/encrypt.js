@@ -68,7 +68,7 @@ async function encrypt () {
 
     let keysData = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
 #/   DOTENV_KEYs. DO NOT commit to source control   /
-#/   [how it works](https://dotenv.org/env-keys)    /
+#/   [how it works](https://dotenvx.com/env-keys)   /
 #/--------------------------------------------------/\n`
 
     for (const key in dotenvKeys) {
@@ -115,7 +115,7 @@ async function encrypt () {
 
     let vaultData = `#/-------------------.env.vault---------------------/
 #/         cloud-agnostic vaulting standard         /
-#/   [how it works](https://dotenv.org/env-vault)   /
+#/   [how it works](https://dotenvx.com/env-vault)  /
 #/--------------------------------------------------/\n\n`
 
     for (const vault in dotenvVaults) {

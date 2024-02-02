@@ -27,7 +27,7 @@ async function run () {
 
         logger.debug(`decrypting encrypted env from ${filepath}`)
         // handle scenario for comma separated keys - for use with key rotation
-        // example: DOTENV_KEY="dotenv://:key_1234@dotenv.org/vault/.env.vault?environment=prod,dotenv://:key_7890@dotenv.org/vault/.env.vault?environment=prod"
+        // example: DOTENV_KEY="dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=prod,dotenv://:key_7890@dotenvx.com/vault/.env.vault?environment=prod"
         const dotenvKeys = process.env.DOTENV_KEY.split(',')
         const length = dotenvKeys.length
 
