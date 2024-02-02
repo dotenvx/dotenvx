@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.14.1...main)
 
+* use `dotenvx.com` ([#56](https://github.com/dotenvx/dotenvx/pull/56))
+
 ## 0.14.1
 
 ### Changed
