@@ -1,5 +1,5 @@
 const open = require('open')
-const axios = require('./../../../shared/axios')
+const { request } = require('undici')
 const clipboardy = require('clipboardy')
 const { confirm } = require('@inquirer/prompts')
 
@@ -16,41 +16,44 @@ async function pollTokenUrl (tokenUrl, deviceCode, interval) {
   logger.http(`POST ${tokenUrl} with deviceCode ${deviceCode} at interval ${interval}`)
 
   try {
-    const response = await axios.post(tokenUrl, {
-      client_id: OAUTH_CLIENT_ID,
-      device_code: deviceCode,
-      grant_type: 'urn:ietf:params:oauth:grant-type:device_code'
+    const response = await request(tokenUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        client_id: OAUTH_CLIENT_ID,
+        device_code: deviceCode,
+        grant_type: 'urn:ietf:params:oauth:grant-type:device_code'
+      })
     })
 
-    logger.http(response.data)
+    const responseData = await response.body.json()
 
-    if (response.data.access_token) {
+    logger.http(responseData)
+
+    if (response.statusCode !== 200) {
+      // continue polling if authorization_pending
+      if (responseData.error === 'authorization_pending') {
+        setTimeout(() => pollTokenUrl(tokenUrl, deviceCode, interval), interval * 1000)
+      } else {
+        spinner.start()
+        spinner.fail(responseData.error_description)
+        process.exit(1)
+      }
+    }
+
+    if (responseData.access_token) {
       spinner.start()
-      store.setToken(response.data.full_username, response.data.access_token)
-      store.setHostname(response.data.hostname)
-      spinner.succeed(`logged in as ${response.data.username}`)
+      store.setToken(responseData.full_username, responseData.access_token)
+      store.setHostname(responseData.hostname)
+      spinner.succeed(`logged in as ${responseData.username}`)
       process.exit(0)
     } else {
       // continue polling if no access_token. shouldn't ever get here it server is implemented correctly
       setTimeout(() => pollTokenUrl(tokenUrl, deviceCode, interval), interval * 1000)
     }
   } catch (error) {
-    if (error.response && error.response.data) {
-      logger.http(error.response.data)
-
-      // continue polling if authorization_pending
-      if (error.response.data.error === 'authorization_pending') {
-        setTimeout(() => pollTokenUrl(tokenUrl, deviceCode, interval), interval * 1000)
-      } else {
-        spinner.start()
-        spinner.fail(error.response.data.error_description)
-        process.exit(1)
-      }
-    } else {
-      spinner.start()
-      spinner.fail(error)
-      process.exit(1)
-    }
+    spinner.start()
+    spinner.fail(error.toString())
+    process.exit(1)
   }
 }
 
@@ -63,10 +66,21 @@ async function login () {
   const tokenUrl = `${hostname}/oauth/token`
 
   try {
-    const response = await axios.post(deviceCodeUrl, {
-      client_id: OAUTH_CLIENT_ID
+    const response = await request(deviceCodeUrl, {
+      method: 'POST',
+      body: JSON.stringify({ client_id: OAUTH_CLIENT_ID })
     })
-    const data = response.data
+
+    const responseData = await response.body.json()
+
+    if (response.statusCode !== 200) {
+      logger.http(responseData)
+
+      spinner.start()
+      spinner.fail(responseData.error_description)
+      process.exit(1)
+    }
+
     const deviceCode = data.device_code
     const userCode = data.user_code
     const verificationUri = data.verification_uri
@@ -88,17 +102,9 @@ async function login () {
       spinner.start()
     }
   } catch (error) {
-    if (error.response && error.response.data) {
-      logger.http(error.response.data)
-
-      spinner.start()
-      spinner.fail(error.response.data.error_description)
-      process.exit(1)
-    } else {
-      spinner.start()
-      spinner.fail(error.toString())
-      process.exit(1)
-    }
+    spinner.start()
+    spinner.fail(error.toString())
+    process.exit(1)
   }
 }
 
