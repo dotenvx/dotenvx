@@ -53,7 +53,7 @@ async function run () {
           }
         }
         logger.debug(decrypted)
-        const parsed = main.parse(decrypted)
+        const parsed = main.parseExpand(decrypted)
         const result = main.inject(process.env, parsed, options.overload)
 
         logger.successv(`injecting env (${result.injected.size}) from encrypted .env.vault`)
@@ -78,7 +78,7 @@ async function run () {
 
       try {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
-        const parsed = main.parse(src)
+        const parsed = main.parseExpand(src)
         const result = main.inject(process.env, parsed, options.overload)
 
         readableFilepaths.add(envFilepath)
