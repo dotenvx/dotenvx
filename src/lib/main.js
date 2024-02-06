@@ -1,5 +1,6 @@
 const logger = require('./../shared/logger')
 const dotenv = require('dotenv')
+const dotenvExpand = require('dotenv-expand')
 
 const config = function (options) {
   return dotenv.config(options)
@@ -29,6 +30,27 @@ const configDotenv = function (options) {
 
 const parse = function (src) {
   const result = dotenv.parse(src)
+
+  logger.debug(result)
+
+  return result
+}
+
+const parseExpand = function (src) {
+  const parsed = dotenv.parse(src)
+  const expandPlease = {
+    ignoreProcessEnv: true, // https://github.com/motdotla/dotenv-expand?tab=readme-ov-file#ignoreprocessenv
+    parsed: { ...parsed, ...process.env } // must merge process.env in order to use pre-existing envs for expansion of parsed object
+  }
+  const expanded = dotenvExpand.expand(expandPlease).parsed
+
+  // but then for logging only log the original keys existing in parsed. this feels unnecessarily complex - like dotenv-expand should support the ability to inject additional `process.env` or objects as it sees fit to the object it wants to expand
+  const result = {}
+  for (const key in parsed) {
+    if (Object.prototype.hasOwnProperty.call(expanded, key)) {
+      result[key] = expanded[key]
+    }
+  }
 
   logger.debug(result)
 
@@ -78,5 +100,6 @@ module.exports = {
   configDotenv,
   decrypt,
   parse,
+  parseExpand,
   inject
 }

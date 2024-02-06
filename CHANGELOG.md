@@ -2,8 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.14.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.15.0...main)
 
+## 0.15.0
+
+* add expansion ([#60](https://github.com/dotenvx/dotenvx/pull/60))
 * use `dotenvx.com` ([#56](https://github.com/dotenvx/dotenvx/pull/56))
 
 ## 0.14.1

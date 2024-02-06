@@ -281,6 +281,23 @@ More examples
   ```
 
   </details>
+* <details><summary>Variable Expansion</summary><br>
+
+  Reference and expand variables already on your machine for use in your .env file.
+
+  ```ini
+  DATABASE_URL="postgres://${USER}@localhost/my_database"
+  ```
+  ```js
+  console.log('DATABASE_URL', process.env.DATABASE_URL)
+  ```
+  ```sh
+  $ USER=username dotenvx run --debug -- node index.js
+  [dotenvx@0.14.1] injecting env (1) from .env
+  DATABASE_URL postgres://username@localhost/my_database
+  ```
+
+  </details>
 
 &nbsp;
 
