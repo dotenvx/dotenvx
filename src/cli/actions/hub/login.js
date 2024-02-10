@@ -18,6 +18,9 @@ async function pollTokenUrl (tokenUrl, deviceCode, interval) {
   try {
     const response = await request(tokenUrl, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         client_id: OAUTH_CLIENT_ID,
         device_code: deviceCode,
@@ -68,6 +71,9 @@ async function login () {
   try {
     const response = await request(deviceCodeUrl, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ client_id: OAUTH_CLIENT_ID })
     })
 
@@ -81,10 +87,10 @@ async function login () {
       process.exit(1)
     }
 
-    const deviceCode = data.device_code
-    const userCode = data.user_code
-    const verificationUri = data.verification_uri
-    const interval = data.interval
+    const deviceCode = responseData.device_code
+    const userCode = responseData.user_code
+    const verificationUri = responseData.verification_uri
+    const interval = responseData.interval
 
     try { clipboardy.writeSync(userCode) } catch (_e) {}
 

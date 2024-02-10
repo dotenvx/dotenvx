@@ -82,7 +82,8 @@ async function push () {
     const response = await request(pushUrl, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${oauthToken}`
+        Authorization: `Bearer ${oauthToken}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         username_name: usernameName,
