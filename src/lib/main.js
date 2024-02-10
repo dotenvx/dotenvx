@@ -39,7 +39,7 @@ const parse = function (src) {
 const parseExpand = function (src) {
   const parsed = dotenv.parse(src)
   const expandPlease = {
-    ignoreProcessEnv: true, // https://github.com/motdotla/dotenv-expand?tab=readme-ov-file#ignoreprocessenv
+    processEnv: {}, // https://github.com/motdotla/dotenv-expand?tab=readme-ov-file#processenv
     parsed: { ...parsed, ...process.env } // must merge process.env in order to use pre-existing envs for expansion of parsed object
   }
   const expanded = dotenvExpand.expand(expandPlease).parsed
