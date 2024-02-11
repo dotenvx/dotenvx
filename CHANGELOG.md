@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.15.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.15.3...main)
+
+## 0.15.3
+
+* 🐞 fix undici readablestream error ([#65](https://github.com/dotenvx/dotenvx/pull/65))
 
 ## 0.15.2
 
