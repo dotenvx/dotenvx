@@ -32,7 +32,7 @@ async function pollTokenUrl (tokenUrl, deviceCode, interval) {
 
     logger.http(responseData)
 
-    if (response.statusCode !== 200) {
+    if (response.statusCode >= 400) {
       // continue polling if authorization_pending
       if (responseData.error === 'authorization_pending') {
         setTimeout(() => pollTokenUrl(tokenUrl, deviceCode, interval), interval * 1000)
@@ -79,7 +79,7 @@ async function login () {
 
     const responseData = await response.body.json()
 
-    if (response.statusCode !== 200) {
+    if (response.statusCode >= 400) {
       logger.http(responseData)
 
       spinner.start()
