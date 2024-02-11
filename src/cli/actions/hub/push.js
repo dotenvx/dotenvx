@@ -94,7 +94,7 @@ async function push () {
 
     const responseData = await response.body.json()
 
-    if (response.statusCode !== 200) {
+    if (response.statusCode >= 400) {
       logger.http(responseData)
       spinner.fail(responseData.error.message)
       if (response.statusCode === 404) {
