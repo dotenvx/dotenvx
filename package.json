@@ -26,7 +26,6 @@
   "funding": "Have you seen dotenvx.com? run anywhere, cross-platform, and encrypted envs.",
   "dependencies": {
     "@inquirer/prompts": "^3.3.0",
-    "axios": "^1.6.2",
     "chalk": "^4.1.2",
     "clipboardy": "^2.3.0",
     "commander": "^11.1.0",
@@ -37,6 +36,7 @@
     "ignore": "^5.3.0",
     "open": "^8.4.2",
     "ora": "^5.4.1",
+    "undici": "^6.6.2",
     "update-notifier": "^5.1.0",
     "winston": "^3.11.0",
     "xxhashjs": "^0.2.2"

@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { execSync } = require('child_process')
-const axios = require('./../../../shared/axios')
+const { request } = require('undici')
 
 const store = require('./../../../shared/store')
 const logger = require('./../../../shared/logger')
@@ -79,29 +79,32 @@ async function push () {
   const usernameName = helpers.extractUsernameName(remoteOriginUrl)
 
   try {
-    const postData = {
-      username_name: usernameName,
-      DOTENV_KEYS: dotenvKeysContent,
-      DOTENV_VAULT: dotenvVaultContent
-    }
-    const options = {
+    const response = await request(pushUrl, {
+      method: 'POST',
       headers: {
-        Authorization: `Bearer ${oauthToken}`
-      }
-    }
-    await axios.post(pushUrl, postData, options)
-  } catch (error) {
-    if (error.response && error.response.data) {
-      logger.http(error.response.data)
-      spinner.fail(error.response.data.error.message)
-      if (error.response.status === 404) {
+        Authorization: `Bearer ${oauthToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username_name: usernameName,
+        DOTENV_KEYS: dotenvKeysContent,
+        DOTENV_VAULT: dotenvVaultContent
+      })
+    })
+
+    const responseData = await response.body.json()
+
+    if (response.statusCode !== 200) {
+      logger.http(responseData)
+      spinner.fail(responseData.error.message)
+      if (response.statusCode === 404) {
         logger.help(`? try visiting [${hostname}gh/${usernameName}] in your browser`)
       }
       process.exit(1)
-    } else {
-      spinner.fail(error.toString())
-      process.exit(1)
     }
+  } catch (error) {
+    spinner.fail(error.toString())
+    process.exit(1)
   }
 
   spinner.succeed(`pushed [${usernameName}]`)
