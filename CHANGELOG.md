@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 0.15.2
 
+* switch from axios to undici ([#59](https://github.com/dotenvx/dotenvx/pull/59))
 * bump `dotenv-expand` ([#63](https://github.com/dotenvx/dotenvx/pull/63))
 
 ## 0.15.1
