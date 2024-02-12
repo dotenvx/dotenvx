@@ -36,11 +36,20 @@ const parse = function (src) {
   return result
 }
 
-const parseExpand = function (src) {
+const parseExpand = function (src, overload) {
   const parsed = dotenv.parse(src)
+
+  // consider moving this logic straight into dotenv-expand
+  let inputParsed = {}
+  if (overload) {
+    inputParsed = { ...process.env, ...parsed }
+  } else {
+    inputParsed = { ...parsed, ...process.env }
+  }
+
   const expandPlease = {
-    processEnv: {}, // https://github.com/motdotla/dotenv-expand?tab=readme-ov-file#processenv
-    parsed: { ...parsed, ...process.env } // must merge process.env in order to use pre-existing envs for expansion of parsed object
+    processEnv: {},
+    parsed: inputParsed
   }
   const expanded = dotenvExpand.expand(expandPlease).parsed
 
