@@ -78,7 +78,7 @@ async function run () {
 
       try {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
-        const parsed = main.parseExpand(src)
+        const parsed = main.parseExpand(src, options.overload)
         const result = main.inject(process.env, parsed, options.overload)
 
         readableFilepaths.add(envFilepath)
