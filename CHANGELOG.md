@@ -2,22 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.15.3...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.15.4...main)
+
+## 0.15.4
+
+### Changed
+
+* 🐞 patch `--overload` flag logic ([#66](https://github.com/dotenvx/dotenvx/pull/66))
 
 ## 0.15.3
+
+### Changed
 
 * 🐞 fix undici readablestream error ([#65](https://github.com/dotenvx/dotenvx/pull/65))
 
 ## 0.15.2
+
+### Changed
 
 * switch from axios to undici ([#59](https://github.com/dotenvx/dotenvx/pull/59))
 * bump `dotenv-expand` ([#63](https://github.com/dotenvx/dotenvx/pull/63))
 
 ## 0.15.1
 
+### Changed
+
 * use improved dotenv expansion ([#62](https://github.com/dotenvx/dotenvx/pull/62))
 
 ## 0.15.0
+
+### Added
 
 * add expansion ([#60](https://github.com/dotenvx/dotenvx/pull/60))
 * use `dotenvx.com` ([#56](https://github.com/dotenvx/dotenvx/pull/56))
