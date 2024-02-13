@@ -14,7 +14,8 @@ async function run () {
 
   // load from .env.vault file
   if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
-    const filepath = helpers.resolvePath('.env.vault')
+    const envVaultFilepath = options.envVaultFile // .env.vault
+    const filepath = helpers.resolvePath(envVaultFilepath)
 
     if (!fs.existsSync(filepath)) {
       logger.error(`you set DOTENV_KEY but your .env.vault file is missing: ${filepath}`)
