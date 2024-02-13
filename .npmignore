@@ -6,8 +6,3 @@ node_modules/
 dist/*
 .env*
 !.env.vault
-
-# for test purposes
-!tests/.env
-!tests/.env.local
-!tests/.env.vault
