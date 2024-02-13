@@ -21,7 +21,7 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "jest --verbose"
+    "test": "tap tests/**/*.js --100 -Rspec"
   },
   "funding": "Have you seen dotenvx.com? run anywhere, cross-platform, and encrypted envs.",
   "dependencies": {
@@ -30,7 +30,7 @@
     "clipboardy": "^2.3.0",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
-    "dotenv": "^16.4.2",
+    "dotenv": "^16.4.4",
     "dotenv-expand": "^11.0.3",
     "execa": "^5.1.1",
     "ignore": "^5.3.0",
@@ -42,15 +42,10 @@
     "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
-    "jest-mock-process": "^2.0.0",
     "pkg": "^5.8.1",
-    "standard": "^17.1.0"
-  },
-  "standard": {
-    "env": [
-      "jest"
-    ]
+    "sinon": "^14.0.1",
+    "standard": "^17.1.0",
+    "tap": "^16.3.0"
   },
   "publishConfig": {
     "access": "public"

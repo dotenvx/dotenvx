@@ -1,4 +1,7 @@
 .DS_Store
+.nyc_output
+.tap
+coverage/
 node_modules/
 dist/*
 .env*
