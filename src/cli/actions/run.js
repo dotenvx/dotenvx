@@ -57,7 +57,7 @@ async function run () {
         const parsed = main.parseExpand(decrypted)
         const result = main.inject(process.env, parsed, options.overload)
 
-        logger.successv(`injecting env (${result.injected.size}) from encrypted .env.vault`)
+        logger.successv(`injecting env (${result.injected.size}) from encrypted ${envVaultFilepath}`)
       } catch (e) {
         logger.error(e)
       }
