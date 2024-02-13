@@ -7,8 +7,9 @@ const t = require('tap')
 
 const dotenvx = require('../../src/lib/main')
 
-t.beforeEach(() => {
-  delete process.env.BASIC // reset
+t.beforeEach((ct) => {
+  // important, clear process.env before each test
+  process.env = {}
 })
 
 t.test('takes string for path option', ct => {
