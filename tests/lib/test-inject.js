@@ -41,3 +41,19 @@ t.test('inject key already exists with overload', ct => {
 
   ct.end()
 })
+
+t.test('inject when parsed is not an object', ct => {
+  const processEnv = { HELLO: 'exists' }
+  const parsed = 'string'
+
+  try {
+    dotenvx.inject(processEnv, parsed)
+
+    t.fail('inject should throw error')
+  } catch (error) {
+    t.pass(' threw an error')
+    t.equal(error.message, 'OBJECT_REQUIRED: Please check the parsed argument being passed to inject')
+  }
+
+  ct.end()
+})
