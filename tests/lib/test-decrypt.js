@@ -1,8 +1,5 @@
-const capcon = require('capture-console')
 const sinon = require('sinon')
-const fs = require('fs')
 const t = require('tap')
-const chalk = require('chalk')
 
 const dotenvx = require('../../src/lib/main')
 
@@ -40,9 +37,7 @@ t.test('incorrect key', ct => {
   const encrypted = 's7NYXa809k/bVSPwIAmJhPJmEGTtU0hG58hOZy7I0ix6y5HP8LsHBsZCYC/gw5DDFy5DgOcyd18R'
   const keyStr = 'aacaa26504cd70a6fef9801901c3981538563a1767c297cb8416e8a38c62fe00'
 
-  const stdout = capcon.interceptStdout(() => {
-    dotenvx.decrypt(encrypted, keyStr)
-  })
+  dotenvx.decrypt(encrypted, keyStr)
 
   t.ok(exitStub.calledWith(1), 'process.exit(1) should be called')
 

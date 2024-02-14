@@ -3,7 +3,6 @@ const t = require('tap')
 
 const dotenvx = require('../../src/lib/main')
 
-const testPath = 'test/.env'
 const src = fs.readFileSync('tests/.env', { encoding: 'utf8' })
 
 const parsed = dotenvx.parse(src)
