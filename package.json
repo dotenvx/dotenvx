@@ -33,7 +33,7 @@
     "commander": "^11.1.0",
     "conf": "^10.2.0",
     "dotenv": "^16.4.4",
-    "dotenv-expand": "^11.0.3",
+    "dotenv-expand": "^11.0.4",
     "execa": "^5.1.1",
     "ignore": "^5.3.0",
     "open": "^8.4.2",
