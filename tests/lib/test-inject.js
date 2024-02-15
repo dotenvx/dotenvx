@@ -57,3 +57,12 @@ t.test('inject when parsed is not an object', ct => {
 
   ct.end()
 })
+
+t.test('inject with no arguments', ct => {
+  const res = dotenvx.inject()
+
+  ct.deepEqual([...res.injected], [])
+  ct.deepEqual([...res.preExisting], [])
+
+  ct.end()
+})
