@@ -83,8 +83,6 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return debug(formattedMessage)
     case 'blank': // custom
       return formattedMessage
-    default: // handle uncaught
-      return formattedMessage
   }
 })
 

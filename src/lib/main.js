@@ -56,9 +56,7 @@ const parseExpand = function (src, overload) {
   // but then for logging only log the original keys existing in parsed. this feels unnecessarily complex - like dotenv-expand should support the ability to inject additional `process.env` or objects as it sees fit to the object it wants to expand
   const result = {}
   for (const key in parsed) {
-    if (Object.prototype.hasOwnProperty.call(expanded, key)) {
-      result[key] = expanded[key]
-    }
+    result[key] = expanded[key]
   }
 
   logger.debug(result)
