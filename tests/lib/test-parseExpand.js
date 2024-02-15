@@ -1,5 +1,4 @@
 const capcon = require('capture-console')
-const fs = require('fs')
 const t = require('tap')
 const chalk = require('chalk')
 
@@ -131,4 +130,3 @@ t.test('debugs parsed info only - does not include keys from process.env', ct =>
 
   ct.end()
 })
-
