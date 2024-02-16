@@ -1,5 +1,10 @@
+const globSync = require('glob').globSync
+
+// options is optional
 function ls () {
-  console.log('ls: implement')
+  const envFiles = globSync('**/.env*', { ignore: 'node_modules/**' })
+
+  console.log(envFiles)
 }
 
 module.exports = ls
