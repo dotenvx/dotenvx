@@ -97,6 +97,11 @@ program.command('genexample')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .action(require('./actions/genexample'))
 
+// dotenvx ls
+program.command('ls')
+  .description('print all .env files in a tree structure')
+  .action(require('./actions/ls'))
+
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
 
