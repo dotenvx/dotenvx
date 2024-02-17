@@ -13,10 +13,12 @@ class Precommit {
 
       return true
     }
+
+    logger.info('implement')
   }
 
   /* istanbul ignore next */
-  _installPrecommitHook() {
+  _installPrecommitHook () {
     new InstallPrecommitHook().run()
   }
 }
