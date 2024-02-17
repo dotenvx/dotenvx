@@ -106,9 +106,7 @@ const inject = function (processEnv = {}, parsed = {}, overload = false) {
 }
 
 const ls = function (directory) {
-  const ls = new Ls(directory)
-
-  return ls.run()
+  return new Ls(directory).run()
 }
 
 module.exports = {

@@ -11,7 +11,7 @@ t.test('#run', ct => {
   ]
   const tree = new ArrayToTree(arr).run()
 
-  t.same(tree, {
+  ct.same(tree, {
     '.env': {},
     sub1: {
       sub2: {

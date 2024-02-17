@@ -17,7 +17,7 @@ t.test('#run', ct => {
     'tests/monorepo-example/apps/app1/.env'
   ]
 
-  t.same(envFiles, expected)
+  ct.same(envFiles, expected)
 
   ct.end()
 })
@@ -32,7 +32,7 @@ t.test('#run (with directory argument)', ct => {
     'apps/app1/.env'
   ]
 
-  t.same(envFiles, expected)
+  ct.same(envFiles, expected)
 
   ct.end()
 })
@@ -47,7 +47,7 @@ t.test('#run (with someow malformed directory argument)', ct => {
     'apps/app1/.env'
   ]
 
-  t.same(envFiles, expected)
+  ct.same(envFiles, expected)
 
   ct.end()
 })
@@ -67,7 +67,7 @@ t.test('#_filepaths', ct => {
     'tests/monorepo-example/apps/app1/.env'
   ]
 
-  t.same(envFiles, expected)
+  ct.same(envFiles, expected)
 
   ct.end()
 })
