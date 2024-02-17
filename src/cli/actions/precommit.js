@@ -1,14 +1,19 @@
 const fs = require('fs')
 const path = require('path')
-
 const ignore = require('ignore')
 
 const logger = require('./../../shared/logger')
+
 const helpers = require('./../helpers')
+
+const Precommit = require('./../../lib/services/precommit')
 
 function precommit () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
+
+  const precommit = new Precommit(options)
+  precommit.run()
 
   // 0. handle the --install flag
   if (options.install) {

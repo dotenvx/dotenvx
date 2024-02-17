@@ -2,6 +2,9 @@ const logger = require('./../shared/logger')
 const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 
+// services
+const Ls = require('./services/ls')
+
 const config = function (options) {
   return dotenv.config(options)
 }
@@ -102,11 +105,16 @@ const inject = function (processEnv = {}, parsed = {}, overload = false) {
   }
 }
 
+const ls = function (directory) {
+  return new Ls(directory).run()
+}
+
 module.exports = {
   config,
   configDotenv,
   decrypt,
   parse,
   parseExpand,
-  inject
+  inject,
+  ls
 }
