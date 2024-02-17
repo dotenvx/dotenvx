@@ -60,6 +60,7 @@ t.test('#run (does not exist) creates', ct => {
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
   const writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
+  const chmodSyncStub = sinon.stub(fs, 'chmodSync')
 
   existsStub.returns(false)
 
@@ -69,10 +70,12 @@ t.test('#run (does not exist) creates', ct => {
 
   ct.equal(stdout, `${chalk.keyword('green')(`[dotenvx@${packageJson.version}][precommit] dotenvx precommit installed [.git/hooks/pre-commit]`)}\n`)
   t.ok(writeFileSyncStub.called, 'fs.writeFileSync should be called')
+  t.ok(chmodSyncStub.called, 'fs.chomdSyncStub should be called')
 
   // restore stubs
   existsStub.restore()
   writeFileSyncStub.restore()
+  chmodSyncStub.restore()
 
   ct.end()
 })
