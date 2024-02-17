@@ -1,10 +1,21 @@
-const globSync = require('glob').globSync
+const treeify = require('object-treeify')
 
-// options is optional
+const Ls = require('./../../lib/services/ls')
+const ArrayToTree = require('./../../lib/helpers/arrayToTree')
+const logger = require('./../../shared/logger')
+
 function ls () {
-  const envFiles = globSync('**/.env*', { ignore: 'node_modules/**' })
+  const options = this.opts()
+  logger.debug(`options: ${JSON.stringify(options)}`)
 
-  console.log(envFiles)
+  const ls = new Ls()
+  const filepaths = ls.run()
+  logger.debug(`filepaths: ${JSON.stringify(filepaths)}`)
+
+  const tree = new ArrayToTree(filepaths).run()
+  logger.debug(`tree: ${JSON.stringify(tree)}`)
+
+  logger.info(treeify(tree))
 }
 
 module.exports = ls
