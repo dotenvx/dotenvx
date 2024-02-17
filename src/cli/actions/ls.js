@@ -5,7 +5,9 @@ const logger = require('./../../shared/logger')
 const Ls = require('./../../lib/services/ls')
 const ArrayToTree = require('./../../lib/helpers/arrayToTree')
 
-function ls () {
+function ls (directory) {
+  logger.debug(`directory: ${directory}`)
+
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
