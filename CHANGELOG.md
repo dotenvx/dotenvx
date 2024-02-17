@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.16.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.17.0...main)
+
+## 0.17.0
+
+### Added
+
+* Added `ls` command to list all your `.env*` files ([#80](https://github.com/dotenvx/dotenvx/pull/80))
 
 ## 0.16.0
 
