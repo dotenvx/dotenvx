@@ -1,7 +1,9 @@
+const path = require('path')
 const globSync = require('glob').globSync
 
 class Ls {
-  constructor () {
+  constructor (directory = null) {
+    this.cwd = directory ? path.resolve(directory) : './'
     this.ignore = ['node_modules/**', '.git/**']
   }
 
@@ -10,7 +12,11 @@ class Ls {
   }
 
   _filepaths () {
-    const options = { ignore: this.ignore }
+    const options = {
+      ignore: this.ignore,
+      cwd: this.cwd // context dirctory for globSync
+    }
+
     return globSync('**/.env*', options)
   }
 }

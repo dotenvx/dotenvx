@@ -13,3 +13,4 @@ dist/*
 !tests/.env.local
 !tests/.env.multiline
 !tests/.env.vault
+!tests/monorepo-example/**/.env*

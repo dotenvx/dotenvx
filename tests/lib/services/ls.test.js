@@ -12,7 +12,39 @@ t.test('#run', ct => {
     'tests/.env.multiline',
     'tests/.env.local',
     'tests/.env.expand',
-    'tests/.env'
+    'tests/.env',
+    'tests/monorepo-example/apps/app2/.env',
+    'tests/monorepo-example/apps/app1/.env'
+  ]
+
+  t.same(envFiles, expected)
+
+  ct.end()
+})
+
+t.test('#run (with directory argument)', ct => {
+  const ls = new Ls('./tests/monorepo-example/')
+
+  const envFiles = ls.run()
+
+  const expected = [
+    'apps/app2/.env',
+    'apps/app1/.env'
+  ]
+
+  t.same(envFiles, expected)
+
+  ct.end()
+})
+
+t.test('#run (with someow malformed directory argument)', ct => {
+  const ls = new Ls('tests/monorepo-example')
+
+  const envFiles = ls.run()
+
+  const expected = [
+    'apps/app2/.env',
+    'apps/app1/.env'
   ]
 
   t.same(envFiles, expected)
@@ -30,7 +62,9 @@ t.test('#_filepaths', ct => {
     'tests/.env.multiline',
     'tests/.env.local',
     'tests/.env.expand',
-    'tests/.env'
+    'tests/.env',
+    'tests/monorepo-example/apps/app2/.env',
+    'tests/monorepo-example/apps/app1/.env'
   ]
 
   t.same(envFiles, expected)
