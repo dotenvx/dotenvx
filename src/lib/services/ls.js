@@ -1,7 +1,7 @@
 const globSync = require('glob').globSync
 
 class Ls {
-  constructor() {
+  constructor () {
     this.ignore = ['node_modules/**', '.git/**']
   }
 

@@ -13,9 +13,9 @@ t.test('#run', ct => {
 
   t.same(tree, {
     '.env': {},
-    'sub1': {
-      'sub2': {
-        'sub3': {
+    sub1: {
+      sub2: {
+        sub3: {
           '.env': {}
         },
         '.env': {}

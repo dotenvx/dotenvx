@@ -1,5 +1,5 @@
 class ArrayToTree {
-  constructor(arr) {
+  constructor (arr) {
     this.arr = arr
   }
 
