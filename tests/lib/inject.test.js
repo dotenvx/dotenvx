@@ -8,8 +8,8 @@ t.test('inject', ct => {
 
   const res = dotenvx.inject(processEnv, parsed)
 
-  ct.deepEqual([...res.injected], ['HELLO'])
-  ct.deepEqual([...res.preExisting], [])
+  ct.same([...res.injected], ['HELLO'])
+  ct.same([...res.preExisting], [])
   ct.equal(processEnv.HELLO, 'World')
 
   ct.end()
@@ -21,8 +21,8 @@ t.test('inject key already exists', ct => {
 
   const res = dotenvx.inject(processEnv, parsed)
 
-  ct.deepEqual([...res.injected], [])
-  ct.deepEqual([...res.preExisting], ['HELLO'])
+  ct.same([...res.injected], [])
+  ct.same([...res.preExisting], ['HELLO'])
   ct.equal(processEnv.HELLO, 'exists')
 
   ct.end()
@@ -35,8 +35,8 @@ t.test('inject key already exists with overload', ct => {
 
   const res = dotenvx.inject(processEnv, parsed, overload)
 
-  ct.deepEqual([...res.injected], ['HELLO'])
-  ct.deepEqual([...res.preExisting], [])
+  ct.same([...res.injected], ['HELLO'])
+  ct.same([...res.preExisting], [])
   ct.equal(processEnv.HELLO, 'World')
 
   ct.end()
@@ -61,8 +61,8 @@ t.test('inject when parsed is not an object', ct => {
 t.test('inject with no arguments', ct => {
   const res = dotenvx.inject()
 
-  ct.deepEqual([...res.injected], [])
-  ct.deepEqual([...res.preExisting], [])
+  ct.same([...res.injected], [])
+  ct.same([...res.preExisting], [])
 
   ct.end()
 })

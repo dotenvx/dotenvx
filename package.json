@@ -21,7 +21,7 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap 'tests/**/*.test.js' --100 -Rspec",
+    "test": "tap 'tests/**/*.test.js' --100",
     "prerelease": "npm test",
     "release": "standard-version"
   },

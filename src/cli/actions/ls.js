@@ -1,8 +1,9 @@
 const treeify = require('object-treeify')
 
+const logger = require('./../../shared/logger')
+
 const Ls = require('./../../lib/services/ls')
 const ArrayToTree = require('./../../lib/helpers/arrayToTree')
-const logger = require('./../../shared/logger')
 
 function ls () {
   const options = this.opts()
