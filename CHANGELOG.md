@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* Added `ls` command to list all your `.env*` files ([#80](https://github.com/dotenvx/dotenvx/pull/80))
+* added `ls` command to list all your `.env*` files ([#80](https://github.com/dotenvx/dotenvx/pull/80))
+* added `--env-file` option `ls` ([#82](https://github.com/dotenvx/dotenvx/pull/82))
 
 ## 0.16.0
 

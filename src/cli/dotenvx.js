@@ -101,6 +101,7 @@ program.command('genexample')
 program.command('ls')
   .description('print all .env files in a tree structure')
   .argument('[directory]', 'directory to list .env files from', '.')
+  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
   .action(require('./actions/ls'))
 
 // dotenvx hub

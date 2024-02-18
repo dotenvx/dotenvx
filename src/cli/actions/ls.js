@@ -12,7 +12,7 @@ function ls (directory) {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const filepaths = main.ls(directory)
+  const filepaths = main.ls(directory, options.envFile)
   logger.debug(`filepaths: ${JSON.stringify(filepaths)}`)
 
   const tree = new ArrayToTree(filepaths).run()

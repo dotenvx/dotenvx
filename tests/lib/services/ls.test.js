@@ -71,3 +71,39 @@ t.test('#_filepaths', ct => {
 
   ct.end()
 })
+
+t.test('#_patterns', ct => {
+  const ls = new Ls()
+
+  const patterns = ls._patterns()
+
+  const expected = '**/.env*'
+
+  ct.same(patterns, expected)
+
+  ct.end()
+})
+
+t.test('#_patterns (envFile set to string)', ct => {
+  const ls = new Ls(undefined, '.env')
+
+  const patterns = ls._patterns()
+
+  const expected = '**/.env'
+
+  ct.same(patterns, expected)
+
+  ct.end()
+})
+
+t.test('#_patterns (envFile set to array)', ct => {
+  const ls = new Ls(undefined, ['.env.keys'])
+
+  const patterns = ls._patterns()
+
+  const expected = ['**/.env.keys']
+
+  ct.same(patterns, expected)
+
+  ct.end()
+})
