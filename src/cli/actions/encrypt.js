@@ -10,7 +10,9 @@ const spinner = createSpinner('encrypting')
 // constants
 const ENCODING = 'utf8'
 
-async function encrypt () {
+async function encrypt (directory) {
+  logger.debug(`directory: ${directory}`)
+
   spinner.start()
   await helpers.sleep(500) // better dx
 
