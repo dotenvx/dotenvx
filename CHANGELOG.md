@@ -2,20 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.17.0...main)
-
-## 0.17.0
-
-### Added
-
-* added `ls` command to list all your `.env*` files ([#80](https://github.com/dotenvx/dotenvx/pull/80))
-* added `--env-file` option `ls` ([#82](https://github.com/dotenvx/dotenvx/pull/82))
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.16.0...main)
 
 ## 0.16.0
 
 ### Added
 
-* Optionally specify `--env-vault-file` path to `.env.vault` (defaults to `.env.vault`) ([#73](https://github.com/dotenvx/dotenvx/pull/73))
+* added `ls` command to list all your `.env*` files ([#80](https://github.com/dotenvx/dotenvx/pull/80))
+* added `--env-file` option `ls` ([#82](https://github.com/dotenvx/dotenvx/pull/82))
+* optionally specify `--env-vault-file` path to `.env.vault` (defaults to `.env.vault`) ([#73](https://github.com/dotenvx/dotenvx/pull/73))
 
 ## 0.15.4
 
