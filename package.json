@@ -25,7 +25,7 @@
     "prerelease": "npm test",
     "release": "standard-version"
   },
-  "funding": "Have you seen dotenvx.com? run anywhere, cross-platform, and encrypted envs.",
+  "funding": "https://dotenvx.com",
   "dependencies": {
     "@inquirer/prompts": "^3.3.0",
     "chalk": "^4.1.2",
