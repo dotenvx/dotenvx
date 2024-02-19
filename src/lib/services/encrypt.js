@@ -1,14 +1,15 @@
 const path = require('path')
 
-const DotenvKeys = require('../helpers/dotenvKeys')
+const DotenvKeys = require('./../helpers/dotenvKeys')
 
 class Encrypt {
-  constructor (directory = '.') {
+  constructor (directory = '.', envFile = '.env') {
     this.directory = directory
+    this.envFile = envFile
   }
 
   run () {
-    const { envKeys, addedKeys, existingKeys } = new DotenvKeys(this.directory).run()
+    const { envKeys, addedKeys, existingKeys } = new DotenvKeys(this.directory, this.envFile).run()
 
     return {
       envKeys: envKeys,

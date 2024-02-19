@@ -2,21 +2,32 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 
-const { configDotenv } = require('./../main')
+const dotenv = require('dotenv')
 
 class DotenvKeys {
-  constructor (directory = '.') {
+  constructor (directory = './', envFile = '.env') {
     this.directory = directory
     this.envKeysFilepath = path.resolve(this.directory, '.env.keys')
-    this.envFilepaths = ['.env'] // implement
+    this.envFile = envFile
   }
 
   run () {
+    if (this.envFile.length < 1) {
+      const code = 'DOTENV_MISSING_ENV_FILE'
+      const message = 'no .env* files found'
+      const help = `? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]`
+
+      const error = new Error(message)
+      error.code = code
+      error.help = help
+      throw error
+    }
+
     const addedKeys = new Set()
     const existingKeys = new Set()
     const dotenvKeys = this._parsedDotenvKeys()
 
-    for (const envFilepath of this.envFilepaths) {
+    for (const envFilepath of this._envFilepaths()) {
       const filepath = path.resolve(this.directory, envFilepath)
 
       if (!fs.existsSync(filepath)) {
@@ -27,7 +38,6 @@ class DotenvKeys {
         const error = new Error(message)
         error.code = code
         error.help = help
-
         throw error
       }
 
@@ -70,7 +80,7 @@ class DotenvKeys {
       path: this.envKeysFilepath
     }
 
-    return configDotenv(options).parsed || {}
+    return dotenv.configDotenv(options).parsed || {}
   }
 
   _guessEnvironment (filepath) {
@@ -89,6 +99,14 @@ class DotenvKeys {
     const rand = crypto.randomBytes(32).toString('hex')
 
     return `dotenv://:key_${rand}@dotenvx.com/vault/.env.vault?environment=${environment.toLowerCase()}`
+  }
+
+  _envFilepaths () {
+    if (!Array.isArray(this.envFile)) {
+      return [this.envFile]
+    }
+
+    return this.envFile
   }
 }
 

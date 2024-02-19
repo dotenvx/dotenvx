@@ -11,78 +11,50 @@ const spinner = createSpinner('encrypting')
 const ENCODING = 'utf8'
 
 async function encrypt (directory) {
-  logger.debug(`directory: ${directory}`)
-
   spinner.start()
   await helpers.sleep(500) // better dx
+
+  logger.debug(`directory: ${directory}`)
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  let optionEnvFile = options.envFile
+  let optionEnvFile = options.envFile || helpers.findEnvFiles(directory)
+
+  let finalAddedKeys = []
+
+  try {
+    const { envKeys, addedKeys, existingKeys } = main.encrypt(directory, optionEnvFile)
+
+    finalAddedKeys = addedKeys
+
+    logger.verbose(`generating .env.keys from ${optionEnvFile}`)
+
+    if (addedKeys.length > 0) {
+      logger.verbose(`generated ${addedKeys}`)
+    }
+    if (existingKeys.length > 0) {
+      logger.verbose(`existing ${existingKeys}`)
+    }
+
+    fs.writeFileSync('.env.keys', envKeys)
+  } catch (error) {
+    spinner.fail(error.message)
+    if (error.help) {
+      logger.help(error.help)
+    }
+    if (error.code) {
+      logger.debug(`ERROR_CODE: ${error.code}`)
+    }
+    process.exit(1)
+  }
+
   if (!Array.isArray(optionEnvFile)) {
     optionEnvFile = [optionEnvFile]
   }
 
-  const addedKeys = new Set()
   const addedVaults = new Set()
   const addedEnvFilepaths = new Set()
-
-  // must be at least one .env* file
-  if (optionEnvFile.length < 1) {
-    spinner.fail('no .env* files found')
-    logger.help('? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]')
-    process.exit(1)
-  }
-
-  try {
-    logger.verbose(`generating .env.keys from ${optionEnvFile}`)
-
-    const dotenvKeys = (main.configDotenv({ path: '.env.keys' }).parsed || {})
-
-    for (const envFilepath of optionEnvFile) {
-      const filepath = helpers.resolvePath(envFilepath)
-      if (!fs.existsSync(filepath)) {
-        spinner.fail(`file does not exist at [${filepath}]`)
-        logger.help(`? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx encrypt]`)
-        process.exit(1)
-      }
-
-      const environment = helpers.guessEnvironment(filepath)
-      const key = `DOTENV_KEY_${environment.toUpperCase()}`
-
-      let value = dotenvKeys[key]
-
-      // first time seeing new DOTENV_KEY_${environment}
-      if (!value || value.length === 0) {
-        logger.verbose(`generating ${key}`)
-        value = helpers.generateDotenvKey(environment)
-        logger.debug(`generating ${key} as ${value}`)
-
-        dotenvKeys[key] = value
-
-        addedKeys.add(key) // for info logging to user
-      } else {
-        logger.verbose(`existing ${key}`)
-        logger.debug(`existing ${key} as ${value}`)
-      }
-    }
-
-    let keysData = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
-#/   DOTENV_KEYs. DO NOT commit to source control   /
-#/   [how it works](https://dotenvx.com/env-keys)   /
-#/--------------------------------------------------/\n`
-
-    for (const key in dotenvKeys) {
-      const value = dotenvKeys[key]
-      keysData += `${key}="${value}"\n`
-    }
-
-    fs.writeFileSync('.env.keys', keysData)
-  } catch (error) {
-    spinner.fail(error.message)
-    process.exit(1)
-  }
 
   // used later in logging to user
   const dotenvKeys = (main.configDotenv({ path: '.env.keys' }).parsed || {})
@@ -140,8 +112,8 @@ async function encrypt (directory) {
     spinner.done(`no changes (${optionEnvFile})`)
   }
 
-  if (addedKeys.size > 0) {
-    spinner.succeed(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
+  if (finalAddedKeys.length > 0) {
+    spinner.succeed(`${helpers.pluralize('key', finalAddedKeys.length)} added to .env.keys (${finalAddedKeys})`)
     logger.help2('ℹ push .env.keys up to hub: [dotenvx hub push]')
   }
 

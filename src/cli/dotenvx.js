@@ -65,7 +65,7 @@ program.command('encrypt')
   .description('encrypt .env.* to .env.vault')
   .addHelpText('after', examples.encrypt)
   .argument('[directory]', 'directory to encrypt', '.')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', helpers.findEnvFiles('./'))
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(require('./actions/encrypt'))
 
 // dotenvx decrypt
