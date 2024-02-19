@@ -41,7 +41,7 @@ t.test('#run (filepath does not exist)', ct => {
   } catch (error) {
     ct.same(error.code, 'DOTENV_FILE_DOES_NOT_EXIST')
     ct.same(error.message, `file does not exist at [${path.resolve('.env')}]`)
-    ct.same(error.help, '? add it with [echo \"HELLO=World\" > .env] and then run [dotenvx encrypt]')
+    ct.same(error.help, '? add it with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]')
   }
 
   existsSyncStub.restore()
@@ -52,7 +52,6 @@ t.test('#run (filepath does not exist)', ct => {
 t.test('#run (.env.keys file already had that DOTENV_KEY_environment)', ct => {
   const directory = 'tests/monorepo-example/apps/backend'
   const { envKeys, addedKeys, existingKeys } = new DotenvKeys(directory).run()
-
 
   const expectedEnvKeys = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
 #/   DOTENV_KEYs. DO NOT commit to source control   /
@@ -83,7 +82,7 @@ t.test('#_parsedDotenvKeys (returns parsed keys file when directory passed conta
   const parsed = dotenvKeys._parsedDotenvKeys()
 
   const output = {
-    "DOTENV_KEY_DEVELOPMENT": "dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development"
+    DOTENV_KEY_DEVELOPMENT: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
   }
 
   ct.same(parsed, output)
