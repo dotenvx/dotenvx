@@ -1,56 +1,27 @@
-const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 
-const dotenv = require('dotenv')
-
 class DotenvKeys {
-  constructor (directory = './', envFile = '.env') {
-    this.directory = directory
-    this.envKeysFilepath = path.resolve(this.directory, '.env.keys')
-    this.envFile = envFile
+  constructor (envFilepaths = [], dotenvKeys = {}) {
+    this.envFilepaths = envFilepaths // pass .env* filepaths to be encrypted
+    this.dotenvKeys = dotenvKeys // pass current parsed dotenv keys from .env.keys file
   }
 
   run () {
-    if (this.envFile.length < 1) {
-      const code = 'DOTENV_MISSING_ENV_FILE'
-      const message = 'no .env* files found'
-      const help = `? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]`
-
-      const error = new Error(message)
-      error.code = code
-      error.help = help
-      throw error
-    }
-
     const addedKeys = new Set()
     const existingKeys = new Set()
-    const dotenvKeys = this._parsedDotenvKeys()
 
-    for (const envFilepath of this._envFilepaths()) {
-      const filepath = path.resolve(this.directory, envFilepath)
-
-      if (!fs.existsSync(filepath)) {
-        const code = 'DOTENV_FILE_DOES_NOT_EXIST'
-        const message = `file does not exist at [${filepath}]`
-        const help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx encrypt]`
-
-        const error = new Error(message)
-        error.code = code
-        error.help = help
-        throw error
-      }
-
-      const environment = this._guessEnvironment(filepath)
+    for (const envFilepath of this.envFilepaths) {
+      const environment = this._guessEnvironment(envFilepath)
       const key = `DOTENV_KEY_${environment.toUpperCase()}`
 
-      let value = dotenvKeys[key]
+      let value = this.dotenvKeys[key]
 
       // first time seeing new DOTENV_KEY_${environment}
       if (!value || value.length === 0) {
         value = this._generateDotenvKey(environment)
 
-        dotenvKeys[key] = value
+        this.dotenvKeys[key] = value
 
         addedKeys.add(key) // for info logging to user
       } else {
@@ -63,24 +34,16 @@ class DotenvKeys {
 #/   [how it works](https://dotenvx.com/env-keys)   /
 #/--------------------------------------------------/\n`
 
-    for (const key in dotenvKeys) {
-      const value = dotenvKeys[key]
+    for (const key in this.dotenvKeys) {
+      const value = this.dotenvKeys[key]
       keysData += `${key}="${value}"\n`
     }
 
     return {
-      envKeys: keysData, // return set as array
+      envKeys: keysData,
       addedKeys: [...addedKeys], // return set as array
-      existingKeys: [...existingKeys]
+      existingKeys: [...existingKeys] // return set as array
     }
-  }
-
-  _parsedDotenvKeys () {
-    const options = {
-      path: this.envKeysFilepath
-    }
-
-    return dotenv.configDotenv(options).parsed || {}
   }
 
   _guessEnvironment (filepath) {
@@ -99,14 +62,6 @@ class DotenvKeys {
     const rand = crypto.randomBytes(32).toString('hex')
 
     return `dotenv://:key_${rand}@dotenvx.com/vault/.env.vault?environment=${environment.toLowerCase()}`
-  }
-
-  _envFilepaths () {
-    if (!Array.isArray(this.envFile)) {
-      return [this.envFile]
-    }
-
-    return this.envFile
   }
 }
 

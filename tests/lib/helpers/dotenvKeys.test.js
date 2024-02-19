@@ -1,18 +1,18 @@
 const t = require('tap')
-const fs = require('fs')
-const path = require('path')
 const sinon = require('sinon')
 const crypto = require('crypto')
 
 const DotenvKeys = require('../../../src/lib/helpers/dotenvKeys')
 
-t.test('#run', ct => {
-  const existsSyncStub = sinon.stub(fs, 'existsSync').returns(true)
+t.test('#run (.env and no .env.keys yet)', ct => {
   const randomBytesStub = sinon.stub(crypto, 'randomBytes')
   const fakeRandomValue = 'ac300a21c59058c422c18dba8dc9892a537a63e156af14b5c5ef14810dc71f20'
   randomBytesStub.returns(Buffer.from(fakeRandomValue, 'hex'))
 
-  const { envKeys, addedKeys, existingKeys } = new DotenvKeys().run()
+  const envFilepaths = ['.env']
+  const dotenvKeys = {}
+
+  const { envKeys, addedKeys, existingKeys } = new DotenvKeys(envFilepaths, dotenvKeys).run()
 
   const expectedEnvKeys = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
 #/   DOTENV_KEYs. DO NOT commit to source control   /
@@ -25,104 +25,29 @@ DOTENV_KEY_DEVELOPMENT="dotenv://:key_ac300a21c59058c422c18dba8dc9892a537a63e156
   ct.same(addedKeys, ['DOTENV_KEY_DEVELOPMENT'])
   ct.same(existingKeys, [])
 
-  existsSyncStub.restore()
   randomBytesStub.restore()
 
   ct.end()
 })
 
-t.test('#run (filepath does not exist)', ct => {
-  const existsSyncStub = sinon.stub(fs, 'existsSync').returns(false)
-
-  try {
-    new DotenvKeys().run()
-
-    ct.fail('should have raised an error but did not')
-  } catch (error) {
-    ct.same(error.code, 'DOTENV_FILE_DOES_NOT_EXIST')
-    ct.same(error.message, `file does not exist at [${path.resolve('.env')}]`)
-    ct.same(error.help, '? add it with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]')
+t.test('#run (.env and .env.keys already exists with DOTENV_KEY_environment)', ct => {
+  const envFilepaths = ['.env']
+  const dotenvKeys = {
+    'DOTENV_KEY_DEVELOPMENT': 'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development'
   }
 
-  existsSyncStub.restore()
-
-  ct.end()
-})
-
-t.test('#run (envFile empty array)', ct => {
-  const existsSyncStub = sinon.stub(fs, 'existsSync').returns(true)
-
-  try {
-    new DotenvKeys(undefined, []).run()
-
-    ct.fail('should have raised an error but did not')
-  } catch (error) {
-    ct.same(error.code, 'DOTENV_MISSING_ENV_FILE')
-    ct.same(error.message, 'no .env* files found')
-    ct.same(error.help, '? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]')
-  }
-
-  existsSyncStub.restore()
-
-  ct.end()
-})
-
-t.test('#run (.env.keys file already had that DOTENV_KEY_environment)', ct => {
-  const directory = 'tests/monorepo-example/apps/backend'
-  const { envKeys, addedKeys, existingKeys } = new DotenvKeys(directory).run()
+  const { envKeys, addedKeys, existingKeys } = new DotenvKeys(envFilepaths, dotenvKeys).run()
 
   const expectedEnvKeys = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
 #/   DOTENV_KEYs. DO NOT commit to source control   /
 #/   [how it works](https://dotenvx.com/env-keys)   /
 #/--------------------------------------------------/
-DOTENV_KEY_DEVELOPMENT="dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development"
+DOTENV_KEY_DEVELOPMENT="dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development"
 `
 
   ct.same(envKeys, expectedEnvKeys)
   ct.same(addedKeys, [])
   ct.same(existingKeys, ['DOTENV_KEY_DEVELOPMENT'])
-
-  ct.end()
-})
-
-t.test('#run (.env.keys file already had that DOTENV_KEY_environment AND .envFile option sent as an array)', ct => {
-  const directory = 'tests/monorepo-example/apps/backend'
-  const { envKeys, addedKeys, existingKeys } = new DotenvKeys(directory, ['.env']).run()
-
-  const expectedEnvKeys = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
-#/   DOTENV_KEYs. DO NOT commit to source control   /
-#/   [how it works](https://dotenvx.com/env-keys)   /
-#/--------------------------------------------------/
-DOTENV_KEY_DEVELOPMENT="dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development"
-`
-
-  ct.same(envKeys, expectedEnvKeys)
-  ct.same(addedKeys, [])
-  ct.same(existingKeys, ['DOTENV_KEY_DEVELOPMENT'])
-
-  ct.end()
-})
-
-
-t.test('#_parsedDotenvKeys (returns empty when no keys file)', ct => {
-  const dotenvKeys = new DotenvKeys()
-  const parsed = dotenvKeys._parsedDotenvKeys()
-
-  ct.same(parsed, {})
-
-  ct.end()
-})
-
-t.test('#_parsedDotenvKeys (returns parsed keys file when directory passed containing .env.keys file)', ct => {
-  const directory = 'tests/monorepo-example/apps/backend'
-  const dotenvKeys = new DotenvKeys(directory)
-  const parsed = dotenvKeys._parsedDotenvKeys()
-
-  const output = {
-    DOTENV_KEY_DEVELOPMENT: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
-  }
-
-  ct.same(parsed, output)
 
   ct.end()
 })
