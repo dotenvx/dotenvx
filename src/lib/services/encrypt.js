@@ -6,7 +6,18 @@ class Encrypt {
   }
 
   run () {
-    return 'implement'
+    return {
+      envKeys: this.envKeys(),
+      envVault: this.envVault()
+    }
+  }
+
+  envKeys () {
+    return '<env keys file>'
+  }
+
+  envVault () {
+    return '<env vault file>'
   }
 }
 

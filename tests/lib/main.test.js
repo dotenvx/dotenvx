@@ -11,8 +11,9 @@ t.test('ls calls Ls.run', ct => {
     'tests/.env.local',
     'tests/.env.expand',
     'tests/.env',
-    'tests/monorepo-example/apps/app2/.env',
-    'tests/monorepo-example/apps/app1/.env'
+    'tests/monorepo-example/apps/frontend/.env',
+    'tests/monorepo-example/apps/backend/.env.keys',
+    'tests/monorepo-example/apps/backend/.env'
   ]
 
   ct.same(envFiles, expected)
