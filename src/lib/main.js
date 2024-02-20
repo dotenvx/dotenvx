@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 
 // services
+const Encrypt = require('./services/encrypt')
 const Ls = require('./services/ls')
 
 const config = function (options) {
@@ -105,6 +106,10 @@ const inject = function (processEnv = {}, parsed = {}, overload = false) {
   }
 }
 
+const encrypt = function (directory, envFile) {
+  return new Encrypt(directory, envFile).run()
+}
+
 const ls = function (directory, envFile) {
   return new Ls(directory, envFile).run()
 }
@@ -116,5 +121,6 @@ module.exports = {
   parse,
   parseExpand,
   inject,
-  ls
+  ls,
+  encrypt
 }

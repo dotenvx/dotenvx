@@ -5,7 +5,6 @@ const { Command } = require('commander')
 const program = new Command()
 
 const logger = require('./../shared/logger')
-const helpers = require('./helpers')
 const examples = require('./examples')
 const packageJson = require('./../shared/packageJson')
 
@@ -64,7 +63,8 @@ program.command('run')
 program.command('encrypt')
   .description('encrypt .env.* to .env.vault')
   .addHelpText('after', examples.encrypt)
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', helpers.findEnvFiles('./'))
+  .argument('[directory]', 'directory to encrypt', '.')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(require('./actions/encrypt'))
 
 // dotenvx decrypt

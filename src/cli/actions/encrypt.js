@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 
 const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
@@ -7,148 +8,75 @@ const createSpinner = require('./../../shared/createSpinner')
 
 const spinner = createSpinner('encrypting')
 
-// constants
-const ENCODING = 'utf8'
-
-async function encrypt () {
+async function encrypt (directory) {
   spinner.start()
   await helpers.sleep(500) // better dx
+
+  logger.debug(`directory: ${directory}`)
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  let optionEnvFile = options.envFile
-  if (!Array.isArray(optionEnvFile)) {
-    optionEnvFile = [optionEnvFile]
-  }
-
-  const addedKeys = new Set()
-  const addedVaults = new Set()
-  const addedEnvFilepaths = new Set()
-
-  // must be at least one .env* file
-  if (optionEnvFile.length < 1) {
-    spinner.fail('no .env* files found')
-    logger.help('? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]')
-    process.exit(1)
-  }
+  const optionEnvFile = options.envFile || helpers.findEnvFiles(directory)
 
   try {
+    const {
+      dotenvKeys,
+      dotenvKeysFile,
+      addedKeys,
+      existingKeys,
+      dotenvVaultFile,
+      addedVaults,
+      existingVaults,
+      addedDotenvFilenames
+    } = main.encrypt(directory, optionEnvFile)
+
     logger.verbose(`generating .env.keys from ${optionEnvFile}`)
+    if (addedKeys.length > 0) {
+      logger.verbose(`generated ${addedKeys}`)
+    }
+    if (existingKeys.length > 0) {
+      logger.verbose(`existing ${existingKeys}`)
+    }
+    fs.writeFileSync(path.resolve(directory, '.env.keys'), dotenvKeysFile)
 
-    const dotenvKeys = (main.configDotenv({ path: '.env.keys' }).parsed || {})
+    logger.verbose(`generating .env.vault from ${optionEnvFile}`)
+    if (addedVaults.length > 0) {
+      logger.verbose(`encrypting ${addedVaults}`)
+    }
+    if (existingVaults.length > 0) {
+      logger.verbose(`existing ${existingVaults}`)
+    }
+    fs.writeFileSync(path.resolve(directory, '.env.vault'), dotenvVaultFile)
 
-    for (const envFilepath of optionEnvFile) {
-      const filepath = helpers.resolvePath(envFilepath)
-      if (!fs.existsSync(filepath)) {
-        spinner.fail(`file does not exist at [${filepath}]`)
-        logger.help(`? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx encrypt]`)
-        process.exit(1)
-      }
-
-      const environment = helpers.guessEnvironment(filepath)
-      const key = `DOTENV_KEY_${environment.toUpperCase()}`
-
-      let value = dotenvKeys[key]
-
-      // first time seeing new DOTENV_KEY_${environment}
-      if (!value || value.length === 0) {
-        logger.verbose(`generating ${key}`)
-        value = helpers.generateDotenvKey(environment)
-        logger.debug(`generating ${key} as ${value}`)
-
-        dotenvKeys[key] = value
-
-        addedKeys.add(key) // for info logging to user
-      } else {
-        logger.verbose(`existing ${key}`)
-        logger.debug(`existing ${key} as ${value}`)
-      }
+    if (addedDotenvFilenames.length > 0) {
+      spinner.succeed(`encrypted to .env.vault (${addedDotenvFilenames})`)
+      logger.help2('ℹ commit .env.vault to code: [git commit -am ".env.vault"]')
+    } else {
+      spinner.done(`no changes (${optionEnvFile})`)
     }
 
-    let keysData = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
-#/   DOTENV_KEYs. DO NOT commit to source control   /
-#/   [how it works](https://dotenvx.com/env-keys)   /
-#/--------------------------------------------------/\n`
-
-    for (const key in dotenvKeys) {
-      const value = dotenvKeys[key]
-      keysData += `${key}="${value}"\n`
+    if (addedKeys.length > 0) {
+      spinner.succeed(`${helpers.pluralize('key', addedKeys.length)} added to .env.keys (${addedKeys})`)
+      logger.help2('ℹ push .env.keys up to hub: [dotenvx hub push]')
     }
 
-    fs.writeFileSync('.env.keys', keysData)
+    if (addedVaults.length > 0) {
+      const DOTENV_VAULT_X = addedVaults[addedVaults.length - 1]
+      const DOTENV_KEY_X = DOTENV_VAULT_X.replace('_VAULT_', '_KEY_')
+      const tryKey = dotenvKeys[DOTENV_KEY_X] || '<dotenv_key_environment>'
+
+      logger.help2(`ℹ run [DOTENV_KEY='${tryKey}' dotenvx run -- yourcommand] to test decryption locally`)
+    }
   } catch (error) {
     spinner.fail(error.message)
-    process.exit(1)
-  }
-
-  // used later in logging to user
-  const dotenvKeys = (main.configDotenv({ path: '.env.keys' }).parsed || {})
-
-  try {
-    logger.verbose(`generating .env.vault from ${optionEnvFile}`)
-
-    const dotenvVaults = (main.configDotenv({ path: '.env.vault' }).parsed || {})
-
-    for (const envFilepath of optionEnvFile) {
-      const filepath = helpers.resolvePath(envFilepath)
-      const environment = helpers.guessEnvironment(filepath)
-      const vault = `DOTENV_VAULT_${environment.toUpperCase()}`
-
-      let ciphertext = dotenvVaults[vault]
-      const dotenvKey = dotenvKeys[`DOTENV_KEY_${environment.toUpperCase()}`]
-
-      if (!ciphertext || ciphertext.length === 0 || helpers.changed(ciphertext, dotenvKey, filepath, ENCODING)) {
-        logger.verbose(`encrypting ${vault}`)
-        ciphertext = helpers.encryptFile(filepath, dotenvKey, ENCODING)
-        logger.verbose(`encrypting ${vault} as ${ciphertext}`)
-
-        dotenvVaults[vault] = ciphertext
-
-        addedVaults.add(vault) // for info logging to user
-        addedEnvFilepaths.add(envFilepath) // for info logging to user
-      } else {
-        logger.verbose(`existing ${vault}`)
-        logger.debug(`existing ${vault} as ${ciphertext}`)
-      }
+    if (error.help) {
+      logger.help(error.help)
     }
-
-    let vaultData = `#/-------------------.env.vault---------------------/
-#/         cloud-agnostic vaulting standard         /
-#/   [how it works](https://dotenvx.com/env-vault)  /
-#/--------------------------------------------------/\n\n`
-
-    for (const vault in dotenvVaults) {
-      const value = dotenvVaults[vault]
-      const environment = vault.replace('DOTENV_VAULT_', '').toLowerCase()
-      vaultData += `# ${environment}\n`
-      vaultData += `${vault}="${value}"\n\n`
+    if (error.code) {
+      logger.debug(`ERROR_CODE: ${error.code}`)
     }
-
-    fs.writeFileSync('.env.vault', vaultData)
-  } catch (e) {
-    spinner.fail(e.message)
     process.exit(1)
-  }
-
-  if (addedEnvFilepaths.size > 0) {
-    spinner.succeed(`encrypted to .env.vault (${[...addedEnvFilepaths]})`)
-    logger.help2('ℹ commit .env.vault to code: [git commit -am ".env.vault"]')
-  } else {
-    spinner.done(`no changes (${optionEnvFile})`)
-  }
-
-  if (addedKeys.size > 0) {
-    spinner.succeed(`${helpers.pluralize('key', addedKeys.size)} added to .env.keys (${[...addedKeys]})`)
-    logger.help2('ℹ push .env.keys up to hub: [dotenvx hub push]')
-  }
-
-  if (addedVaults.size > 0) {
-    const DOTENV_VAULT_X = [...addedVaults][addedVaults.size - 1]
-    const DOTENV_KEY_X = DOTENV_VAULT_X.replace('_VAULT_', '_KEY_')
-    const tryKey = dotenvKeys[DOTENV_KEY_X] || '<dotenv_key_environment>'
-
-    logger.help2(`ℹ run [DOTENV_KEY='${tryKey}' dotenvx run -- yourcommand] to test decryption locally`)
   }
 }
 
