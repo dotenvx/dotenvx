@@ -34,8 +34,7 @@ class DotenvKeys {
 #/   [how it works](https://dotenvx.com/env-keys)   /
 #/--------------------------------------------------/\n`
 
-    for (const key in this.dotenvKeys) {
-      const value = this.dotenvKeys[key]
+    for (const [key, value] of Object.entries(this.dotenvKeys)) {
       keysData += `${key}="${value}"\n`
     }
 

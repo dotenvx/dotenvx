@@ -10,9 +10,9 @@ t.test('#run (.env and no .env.keys yet)', ct => {
   randomBytesStub.returns(Buffer.from(fakeRandomValue, 'hex'))
 
   const envFilepaths = ['.env']
-  const dotenvKeys = {}
+  const inputDotenvKeys = {}
 
-  const { dotenvKeysFile, addedKeys, existingKeys } = new DotenvKeys(envFilepaths, dotenvKeys).run()
+  const { dotenvKeys, dotenvKeysFile, addedKeys, existingKeys } = new DotenvKeys(envFilepaths, inputDotenvKeys).run()
 
   const expectedDotenvKeysFile = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
 #/   DOTENV_KEYs. DO NOT commit to source control   /
@@ -21,6 +21,7 @@ t.test('#run (.env and no .env.keys yet)', ct => {
 DOTENV_KEY_DEVELOPMENT="dotenv://:key_ac300a21c59058c422c18dba8dc9892a537a63e156af14b5c5ef14810dc71f20@dotenvx.com/vault/.env.vault?environment=development"
 `
 
+  ct.same(dotenvKeys, { DOTENV_KEY_DEVELOPMENT: 'dotenv://:key_ac300a21c59058c422c18dba8dc9892a537a63e156af14b5c5ef14810dc71f20@dotenvx.com/vault/.env.vault?environment=development' })
   ct.same(dotenvKeysFile, expectedDotenvKeysFile)
   ct.same(addedKeys, ['DOTENV_KEY_DEVELOPMENT'])
   ct.same(existingKeys, [])

@@ -16,7 +16,7 @@ class DotenvVault {
   run () {
     const addedVaults = new Set()
     const existingVaults = new Set()
-    const addedDotenvFilepaths = new Set()
+    const addedDotenvFilenames = new Set()
 
     for (const [filepath, raw] of Object.entries(this.dotenvFiles)) {
       const environment = this._guessEnvironment(filepath)
@@ -29,7 +29,8 @@ class DotenvVault {
         ciphertext = this._encrypt(dotenvKey, raw)
         this.dotenvVaults[vault] = ciphertext
         addedVaults.add(vault) // for info logging to user
-        addedDotenvFilepaths.add(filepath) // for info logging to user
+
+        addedDotenvFilenames.add(path.basename(filepath)) // for info logging to user
       } else {
         existingVaults.add(vault) // for info logging to user
       }
@@ -40,8 +41,7 @@ class DotenvVault {
 #/   [how it works](https://dotenvx.com/env-vault)  /
 #/--------------------------------------------------/\n\n`
 
-    for (const vault in this.dotenvVaults) {
-      const value = this.dotenvVaults[vault]
+    for (const [vault, value] of Object.entries(this.dotenvVaults)) {
       const environment = vault.replace('DOTENV_VAULT_', '').toLowerCase()
       vaultData += `# ${environment}\n`
       vaultData += `${vault}="${value}"\n\n`
@@ -51,7 +51,7 @@ class DotenvVault {
       dotenvVaultFile: vaultData,
       addedVaults: [...addedVaults], // return set as array
       existingVaults: [...existingVaults], // return set as array
-      addedDotenvFilepaths: [...addedDotenvFilepaths] // return set as array
+      addedDotenvFilenames: [...addedDotenvFilenames] // return set as array
     }
   }
 

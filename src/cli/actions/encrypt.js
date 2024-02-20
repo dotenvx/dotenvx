@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 
 const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
@@ -27,7 +28,7 @@ async function encrypt (directory) {
       dotenvVaultFile,
       addedVaults,
       existingVaults,
-      addedDotenvFilepaths
+      addedDotenvFilenames
     } = main.encrypt(directory, optionEnvFile)
 
     logger.verbose(`generating .env.keys from ${optionEnvFile}`)
@@ -37,7 +38,7 @@ async function encrypt (directory) {
     if (existingKeys.length > 0) {
       logger.verbose(`existing ${existingKeys}`)
     }
-    fs.writeFileSync('.env.keys', dotenvKeysFile)
+    fs.writeFileSync(path.resolve(directory, '.env.keys'), dotenvKeysFile)
 
     logger.verbose(`generating .env.vault from ${optionEnvFile}`)
     if (addedVaults.length > 0) {
@@ -46,10 +47,10 @@ async function encrypt (directory) {
     if (existingVaults.length > 0) {
       logger.verbose(`existing ${existingVaults}`)
     }
-    fs.writeFileSync('.env.vault', dotenvVaultFile)
+    fs.writeFileSync(path.resolve(directory, '.env.vault'), dotenvVaultFile)
 
-    if (addedDotenvFilepaths.length > 0) {
-      spinner.succeed(`encrypted to .env.vault (${addedDotenvFilepaths})`)
+    if (addedDotenvFilenames.length > 0) {
+      spinner.succeed(`encrypted to .env.vault (${addedDotenvFilenames})`)
       logger.help2('ℹ commit .env.vault to code: [git commit -am ".env.vault"]')
     } else {
       spinner.done(`no changes (${optionEnvFile})`)

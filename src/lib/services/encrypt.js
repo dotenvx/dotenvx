@@ -70,7 +70,7 @@ class Encrypt {
       dotenvVaultFile,
       addedVaults,
       existingVaults,
-      addedDotenvFilepaths
+      addedDotenvFilenames
     } = new DotenvVault(dotenvFiles, dotenvKeys, parsedDotenvVaults).run()
 
     return {
@@ -83,7 +83,7 @@ class Encrypt {
       dotenvVaultFile,
       addedVaults,
       existingVaults,
-      addedDotenvFilepaths
+      addedDotenvFilenames
     }
   }
 

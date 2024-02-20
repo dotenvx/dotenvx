@@ -12,7 +12,7 @@ t.test('#run', ct => {
     dotenvVaultFile,
     addedVaults,
     existingVaults,
-    addedDotenvFilepaths
+    addedDotenvFilenames
   } = new Encrypt('tests/monorepo-example/apps/backend', ['.env']).run()
 
   const expectedDotenvKeysFile = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
@@ -39,7 +39,7 @@ DOTENV_VAULT_DEVELOPMENT="TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6
   ct.same(dotenvVaultFile, expectedDotenvVaultFile)
   ct.same(addedVaults, [])
   ct.same(existingVaults, ['DOTENV_VAULT_DEVELOPMENT'])
-  ct.same(addedDotenvFilepaths, [])
+  ct.same(addedDotenvFilenames, [])
 
   ct.end()
 })
@@ -50,14 +50,14 @@ t.test('#run (when no .env.vault or .env.keys yet)', ct => {
     existingKeys,
     addedVaults,
     existingVaults,
-    addedDotenvFilepaths
+    addedDotenvFilenames
   } = new Encrypt('tests/monorepo-example/apps/frontend', ['.env']).run()
 
   ct.same(addedKeys, ['DOTENV_KEY_DEVELOPMENT'])
   ct.same(existingKeys, [])
   ct.same(addedVaults, ['DOTENV_VAULT_DEVELOPMENT'])
   ct.same(existingVaults, [])
-  ct.same(addedDotenvFilepaths, [path.resolve('tests/monorepo-example/apps/frontend/.env')])
+  ct.same(addedDotenvFilenames, ['.env'])
 
   ct.end()
 })

@@ -21,7 +21,7 @@ t.test('#run', ct => {
     dotenvVaultFile,
     addedVaults,
     existingVaults,
-    addedDotenvFilepaths
+    addedDotenvFilenames
   } = dotenvVault.run()
 
   const expectedDotenvVaultFile = `#/-------------------.env.vault---------------------/
@@ -37,7 +37,7 @@ DOTENV_VAULT_DEVELOPMENT="ORIXlJHy1ECtFSWskFcdz15YGnYD5dHLxBpoIGHzqAzukLO7zLUo"
   ct.same(dotenvVaultFile, expectedDotenvVaultFile)
   ct.same(addedVaults, ['DOTENV_VAULT_DEVELOPMENT'])
   ct.same(existingVaults, [])
-  ct.same(addedDotenvFilepaths, ['.env'])
+  ct.same(addedDotenvFilenames, ['.env'])
 
   encryptStub.restore()
 
@@ -61,7 +61,7 @@ t.test('#run (vault already exists with same value)', ct => {
     dotenvVaultFile,
     addedVaults,
     existingVaults,
-    addedDotenvFilepaths
+    addedDotenvFilenames
   } = dotenvVault.run()
 
   const expectedDotenvVaultFile = `#/-------------------.env.vault---------------------/
@@ -77,7 +77,7 @@ DOTENV_VAULT_DEVELOPMENT="ORIXlJHy1ECtFSWskFcdz15YGnYD5dHLxBpoIGHzqAzukLO7zLUo"
   ct.same(dotenvVaultFile, expectedDotenvVaultFile)
   ct.same(addedVaults, [])
   ct.same(existingVaults, ['DOTENV_VAULT_DEVELOPMENT'])
-  ct.same(addedDotenvFilepaths, [])
+  ct.same(addedDotenvFilenames, [])
 
   ct.end()
 })
