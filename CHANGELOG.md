@@ -10,6 +10,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 * added `[directory]` argument to `encrypt`. for example, in your nx repo from root `dotenvx encrypt apps/backend` will encrypt .env* files in that directory and manage the `.env.keys` and `.env.vault` in that directory as well ([#82](https://github.com/dotenvx/dotenvx/pull/82))
 
+## 0.16.1
+
+### Changed
+
+* bumped `dotenv` version to fix `encrypt` bug
+
 ## 0.16.0
 
 ### Added
