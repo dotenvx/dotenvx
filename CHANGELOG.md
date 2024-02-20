@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.16.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.17.0...main)
+
+## 0.17.0
+
+### Added
+
+* added `[directory]` argument to `encrypt`. for example, in your nx repo from root `dotenvx encrypt apps/backend` will encrypt .env* files in that directory and manage the `.env.keys` and `.env.vault` in that directory as well ([#82](https://github.com/dotenvx/dotenvx/pull/82))
 
 ## 0.16.0
 
