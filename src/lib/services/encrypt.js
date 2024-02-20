@@ -100,7 +100,7 @@ class Encrypt {
       path: this.envKeysFilepath
     }
 
-    return dotenv.configDotenv(options).parsed || {}
+    return dotenv.configDotenv(options).parsed
   }
 
   _parsedDotenvVault () {
@@ -108,7 +108,7 @@ class Encrypt {
       path: this.envVaultFilepath
     }
 
-    return dotenv.configDotenv(options).parsed || {}
+    return dotenv.configDotenv(options).parsed
   }
 }
 
