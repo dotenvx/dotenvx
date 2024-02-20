@@ -61,8 +61,8 @@ async function encrypt (directory) {
       logger.help2('ℹ push .env.keys up to hub: [dotenvx hub push]')
     }
 
-    if (addedVaults.size > 0) {
-      const DOTENV_VAULT_X = addedVaults[addedVaults.size - 1]
+    if (addedVaults.length > 0) {
+      const DOTENV_VAULT_X = addedVaults[addedVaults.length - 1]
       const DOTENV_KEY_X = DOTENV_VAULT_X.replace('_VAULT_', '_KEY_')
       const tryKey = dotenvKeys[DOTENV_KEY_X] || '<dotenv_key_environment>'
 
