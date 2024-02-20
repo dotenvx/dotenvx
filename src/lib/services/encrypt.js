@@ -5,12 +5,15 @@ const dotenv = require('dotenv')
 const DotenvKeys = require('./../helpers/dotenvKeys')
 const DotenvVault = require('./../helpers/dotenvVault')
 
+const ENCODING = 'utf8'
+
 class Encrypt {
   constructor (directory = '.', envFile = '.env') {
     this.directory = directory
     this.envFile = envFile
     // calculated
     this.envKeysFilepath = path.resolve(this.directory, '.env.keys')
+    this.envVaultFilepath = path.resolve(this.directory, '.env.vault')
   }
 
   run () {
@@ -25,7 +28,8 @@ class Encrypt {
       throw error
     }
 
-    const dotenvKeys = this._parsedDotenvKeys()
+    const parsedDotenvKeys = this._parsedDotenvKeys()
+    const parsedDotenvVaults = this._parsedDotenvVault()
     const envFilepaths = this._envFilepaths()
 
     // build filepaths to be passed to DotenvKeys
@@ -48,29 +52,39 @@ class Encrypt {
 
     // generate .env.keys string
     const {
-      envKeys,
+      dotenvKeys,
+      dotenvKeysFile,
       addedKeys,
       existingKeys
-    } = new DotenvKeys([...uniqueEnvFilepaths], dotenvKeys).run()
+    } = new DotenvKeys([...uniqueEnvFilepaths], parsedDotenvKeys).run()
 
-    // const { envVault, addedVaults, existingVaults, addedEnvFilepaths, dotenvKeys } = new DotenvVault(this.directory, this.envFile).run()
+    // build look up of .env filepaths and their raw content
+    const dotenvFiles = {}
+    for (const filepath of [...uniqueEnvFilepaths]) {
+      const raw = fs.readFileSync(filepath, ENCODING)
+      dotenvFiles[filepath] = raw
+    }
+
+    // generate .env.vault string
+    const {
+      dotenvVaultFile,
+      addedVaults,
+      existingVaults,
+      addedDotenvFilepaths
+    } = new DotenvVault(dotenvFiles, dotenvKeys, parsedDotenvVaults).run()
 
     return {
       // from DotenvKeys
-      envKeys: envKeys,
+      dotenvKeys: dotenvKeys,
+      dotenvKeysFile: dotenvKeysFile,
       addedKeys: addedKeys,
       existingKeys: existingKeys,
       // from DotenvVault
-      // envVault: envVault,
-      // addedVaults: addedVaults,
-      // existingVaults: existingVaults,
-      // addedEnvFilepaths: addedEnvFilepaths,
-      // dotenvKeys: dotenvKeys
+      dotenvVaultFile: dotenvVaultFile,
+      addedVaults: addedVaults,
+      existingVaults: existingVaults,
+      addedDotenvFilepaths: addedDotenvFilepaths
     }
-  }
-
-  envVault () {
-    return '<env vault file>'
   }
 
   _envFilepaths () {
@@ -84,6 +98,14 @@ class Encrypt {
   _parsedDotenvKeys () {
     const options = {
       path: this.envKeysFilepath
+    }
+
+    return dotenv.configDotenv(options).parsed || {}
+  }
+
+  _parsedDotenvVault () {
+    const options = {
+      path: this.envVaultFilepath
     }
 
     return dotenv.configDotenv(options).parsed || {}

@@ -197,7 +197,6 @@ t.test('can write to a different object rather than process.env', ct => {
   const env = dotenvx.config({ path: testPath, processEnv: myObject })
 
   ct.equal(env.parsed.BASIC, 'basic')
-  console.log('logging', process.env.BASIC)
   ct.equal(process.env.BASIC, 'other')
   ct.equal(myObject.BASIC, 'basic')
 

@@ -1,12 +1,12 @@
 const t = require('tap')
 const sinon = require('sinon')
 
-const dotenvx = require('../../src/lib/main')
+const main = require('../../src/lib/main')
 
-const DotenvKeys = require('../../src/lib/helpers/dotenvKeys')
+const Encrypt = require('../../src/lib/services/encrypt')
 
 t.test('ls calls Ls.run', ct => {
-  const envFiles = dotenvx.ls()
+  const envFiles = main.ls()
 
   const expected = [
     'tests/.env.vault',
@@ -15,6 +15,7 @@ t.test('ls calls Ls.run', ct => {
     'tests/.env.expand',
     'tests/.env',
     'tests/monorepo-example/apps/frontend/.env',
+    'tests/monorepo-example/apps/backend/.env.vault',
     'tests/monorepo-example/apps/backend/.env.keys',
     'tests/monorepo-example/apps/backend/.env'
   ]
@@ -25,16 +26,14 @@ t.test('ls calls Ls.run', ct => {
 })
 
 t.test('encrypt calls Encrypt.run', ct => {
-  dotenvKeysRunStub = sinon.stub(DotenvKeys.prototype, 'run')
-  dotenvKeysRunStub.returns({ envKeys: '<.env.keys content>', addedKeys: ['DOTENV_KEY_DEVELOPMENT'], existingKeys: [] })
+  encryptRunStub = sinon.stub(Encrypt.prototype, 'run')
+  encryptRunStub.returns({})
 
-  const { envKeys, addedKeys, existingKeys, envVault } = dotenvx.encrypt()
+  main.encrypt()
 
-  ct.same(envKeys, '<.env.keys content>')
-  ct.same(addedKeys, ['DOTENV_KEY_DEVELOPMENT'])
-  ct.same(existingKeys, [])
+  t.ok(encryptRunStub.called, 'new Encrypt().run() called')
 
-  dotenvKeysRunStub.restore()
+  encryptRunStub.restore()
 
   ct.end()
 })

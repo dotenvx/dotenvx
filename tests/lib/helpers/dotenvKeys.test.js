@@ -12,16 +12,16 @@ t.test('#run (.env and no .env.keys yet)', ct => {
   const envFilepaths = ['.env']
   const dotenvKeys = {}
 
-  const { envKeys, addedKeys, existingKeys } = new DotenvKeys(envFilepaths, dotenvKeys).run()
+  const { dotenvKeysFile, addedKeys, existingKeys } = new DotenvKeys(envFilepaths, dotenvKeys).run()
 
-  const expectedEnvKeys = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
+  const expectedDotenvKeysFile = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
 #/   DOTENV_KEYs. DO NOT commit to source control   /
 #/   [how it works](https://dotenvx.com/env-keys)   /
 #/--------------------------------------------------/
 DOTENV_KEY_DEVELOPMENT="dotenv://:key_ac300a21c59058c422c18dba8dc9892a537a63e156af14b5c5ef14810dc71f20@dotenvx.com/vault/.env.vault?environment=development"
 `
 
-  ct.same(envKeys, expectedEnvKeys)
+  ct.same(dotenvKeysFile, expectedDotenvKeysFile)
   ct.same(addedKeys, ['DOTENV_KEY_DEVELOPMENT'])
   ct.same(existingKeys, [])
 
@@ -33,19 +33,19 @@ DOTENV_KEY_DEVELOPMENT="dotenv://:key_ac300a21c59058c422c18dba8dc9892a537a63e156
 t.test('#run (.env and .env.keys already exists with DOTENV_KEY_environment)', ct => {
   const envFilepaths = ['.env']
   const dotenvKeys = {
-    'DOTENV_KEY_DEVELOPMENT': 'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development'
+    DOTENV_KEY_DEVELOPMENT: 'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development'
   }
 
-  const { envKeys, addedKeys, existingKeys } = new DotenvKeys(envFilepaths, dotenvKeys).run()
+  const { dotenvKeysFile, addedKeys, existingKeys } = new DotenvKeys(envFilepaths, dotenvKeys).run()
 
-  const expectedEnvKeys = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
+  const expectedDotenvKeysFile = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
 #/   DOTENV_KEYs. DO NOT commit to source control   /
 #/   [how it works](https://dotenvx.com/env-keys)   /
 #/--------------------------------------------------/
 DOTENV_KEY_DEVELOPMENT="dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development"
 `
 
-  ct.same(envKeys, expectedEnvKeys)
+  ct.same(dotenvKeysFile, expectedDotenvKeysFile)
   ct.same(addedKeys, [])
   ct.same(existingKeys, ['DOTENV_KEY_DEVELOPMENT'])
 

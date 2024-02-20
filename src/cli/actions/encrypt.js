@@ -7,9 +7,6 @@ const createSpinner = require('./../../shared/createSpinner')
 
 const spinner = createSpinner('encrypting')
 
-// constants
-const ENCODING = 'utf8'
-
 async function encrypt (directory) {
   spinner.start()
   await helpers.sleep(500) // better dx
@@ -22,7 +19,17 @@ async function encrypt (directory) {
   let optionEnvFile = options.envFile || helpers.findEnvFiles(directory)
 
   try {
-    const { envKeys, addedKeys, existingKeys, envVault, addedVaults, existingVaults, addedEnvFilepaths, dotenvKeys } = main.encrypt(directory, optionEnvFile)
+    const {
+      dotenvKeys,
+      dotenvKeysFile,
+      addedKeys,
+      existingKeys,
+      dotenvVaultFile,
+      addedVaults,
+      existingVaults,
+      addedDotenvFilepaths
+    } = main.encrypt(directory, optionEnvFile)
+
     logger.verbose(`generating .env.keys from ${optionEnvFile}`)
     if (addedKeys.length > 0) {
       logger.verbose(`generated ${addedKeys}`)
@@ -30,7 +37,7 @@ async function encrypt (directory) {
     if (existingKeys.length > 0) {
       logger.verbose(`existing ${existingKeys}`)
     }
-    fs.writeFileSync('.env.keys', envKeys)
+    fs.writeFileSync('.env.keys', dotenvKeysFile)
 
     logger.verbose(`generating .env.vault from ${optionEnvFile}`)
     if (addedVaults.length > 0) {
@@ -39,10 +46,10 @@ async function encrypt (directory) {
     if (existingVaults.length > 0) {
       logger.verbose(`existing ${existingVaults}`)
     }
-    fs.writeFileSync('.env.vault', envVault)
+    fs.writeFileSync('.env.vault', dotenvVaultFile)
 
-    if (addedEnvFilepaths.length > 0) {
-      spinner.succeed(`encrypted to .env.vault (${addedEnvFilepaths})`)
+    if (addedDotenvFilepaths.length > 0) {
+      spinner.succeed(`encrypted to .env.vault (${addedDotenvFilepaths})`)
       logger.help2('ℹ commit .env.vault to code: [git commit -am ".env.vault"]')
     } else {
       spinner.done(`no changes (${optionEnvFile})`)

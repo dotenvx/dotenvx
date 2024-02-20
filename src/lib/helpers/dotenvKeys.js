@@ -11,8 +11,8 @@ class DotenvKeys {
     const addedKeys = new Set()
     const existingKeys = new Set()
 
-    for (const envFilepath of this.envFilepaths) {
-      const environment = this._guessEnvironment(envFilepath)
+    for (const filepath of this.envFilepaths) {
+      const environment = this._guessEnvironment(filepath)
       const key = `DOTENV_KEY_${environment.toUpperCase()}`
 
       let value = this.dotenvKeys[key]
@@ -40,7 +40,8 @@ class DotenvKeys {
     }
 
     return {
-      envKeys: keysData,
+      dotenvKeys: this.dotenvKeys,
+      dotenvKeysFile: keysData,
       addedKeys: [...addedKeys], // return set as array
       existingKeys: [...existingKeys] // return set as array
     }

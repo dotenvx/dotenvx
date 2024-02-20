@@ -1,23 +1,89 @@
 const t = require('tap')
+const path = require('path')
 const sinon = require('sinon')
-const DotenvKeys = require('../../../src/lib/helpers/dotenvKeys')
 
 const Encrypt = require('../../../src/lib/services/encrypt')
 
 t.test('#run', ct => {
-  dotenvKeysRunStub = sinon.stub(DotenvKeys.prototype, 'run')
-  dotenvKeysRunStub.returns({ envKeys: '<.env.keys content>', addedKeys: ['DOTENV_KEY_DEVELOPMENT'], existingKeys: [] })
+  const {
+    dotenvKeys,
+    dotenvKeysFile,
+    addedKeys,
+    existingKeys,
+    dotenvVaultFile,
+    addedVaults,
+    existingVaults,
+    addedDotenvFilepaths
+  } = new Encrypt('tests/monorepo-example/apps/backend', ['.env']).run()
 
-  const { envKeys, addedKeys, existingKeys, envVault } = new Encrypt().run()
+  const expectedDotenvKeysFile = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
+#/   DOTENV_KEYs. DO NOT commit to source control   /
+#/   [how it works](https://dotenvx.com/env-keys)   /
+#/--------------------------------------------------/
+DOTENV_KEY_DEVELOPMENT="dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development"
+`
 
-  ct.same(envKeys, '<.env.keys content>')
-  ct.same(addedKeys, ['DOTENV_KEY_DEVELOPMENT'])
-  ct.same(existingKeys, [])
-
-  dotenvKeysRunStub.restore()
+  ct.same(dotenvKeys, { DOTENV_KEY_DEVELOPMENT: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development' })
+  ct.same(dotenvKeysFile, expectedDotenvKeysFile)
+  ct.same(addedKeys, [])
+  ct.same(existingKeys, ['DOTENV_KEY_DEVELOPMENT'])
 
   ct.end()
 })
+
+t.test('#run (.env as string)', ct => {
+  const {
+    dotenvKeys,
+    dotenvKeysFile,
+    addedKeys,
+    existingKeys,
+    dotenvVaultFile,
+    addedVaults,
+    existingVaults,
+    addedDotenvFilepaths
+  } = new Encrypt('tests/monorepo-example/apps/backend', '.env').run()
+
+  const expectedDotenvKeysFile = `#/!!!!!!!!!!!!!!!!!!!.env.keys!!!!!!!!!!!!!!!!!!!!!!/
+#/   DOTENV_KEYs. DO NOT commit to source control   /
+#/   [how it works](https://dotenvx.com/env-keys)   /
+#/--------------------------------------------------/
+DOTENV_KEY_DEVELOPMENT="dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development"
+`
+
+  ct.same(dotenvKeys, { DOTENV_KEY_DEVELOPMENT: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development' })
+  ct.same(dotenvKeysFile, expectedDotenvKeysFile)
+  ct.same(addedKeys, [])
+  ct.same(existingKeys, ['DOTENV_KEY_DEVELOPMENT'])
+
+  ct.end()
+})
+
+t.test('#run (empty envFile)', ct => {
+  try {
+    new Encrypt('tests/monorepo-example/apps/backend', []).run()
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.code, 'MISSING_ENV_FILES')
+    ct.same(error.message, 'no .env* files found')
+    ct.same(error.help, '? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]')
+  }
+
+  ct.end()
+})
+
+t.test('#run (envFile not found)', ct => {
+  try {
+    new Encrypt('tests/monorepo-example/apps/backend', ['.env.notfound']).run()
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.code, 'MISSING_ENV_FILE')
+    ct.same(error.message, `file does not exist at [${path.resolve('tests/monorepo-example/apps/backend/.env.notfound')}]`)
+    ct.same(error.help, '? add it with [echo "HELLO=World" > .env.notfound] and then run [dotenvx encrypt]')
+  }
+
+  ct.end()
+})
+
 
 // t.test('#run (filepath does not exist)', ct => {
 //   const existsSyncStub = sinon.stub(fs, 'existsSync').returns(false)
@@ -79,4 +145,20 @@ t.test('#_parsedDotenvKeys (returns parsed keys file when directory passed conta
   ct.end()
 })
 
+t.test('#_parsedDotenvVault (returns empty when no vault file)', ct => {
+  const encrypt = new Encrypt()
+  const parsed = encrypt._parsedDotenvVault()
 
+  ct.same(parsed, {})
+
+  ct.end()
+})
+
+t.test('#_parsedDotenvVault (returns parsed vaults when directory passed contains .env.vault)', ct => {
+  const encrypt = new Encrypt('tests/monorepo-example/apps/backend')
+  const parsed = encrypt._parsedDotenvVault()
+
+  ct.same(parsed, { DOTENV_VAULT_DEVELOPMENT: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u' })
+
+  ct.end()
+})
