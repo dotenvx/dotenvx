@@ -20,7 +20,7 @@ class Encrypt {
     if (this.envFile.length < 1) {
       const code = 'MISSING_ENV_FILES'
       const message = 'no .env* files found'
-      const help = `? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]`
+      const help = '? add one with [echo "HELLO=World" > .env] and then run [dotenvx encrypt]'
 
       const error = new Error(message)
       error.code = code
@@ -75,15 +75,15 @@ class Encrypt {
 
     return {
       // from DotenvKeys
-      dotenvKeys: dotenvKeys,
-      dotenvKeysFile: dotenvKeysFile,
-      addedKeys: addedKeys,
-      existingKeys: existingKeys,
+      dotenvKeys,
+      dotenvKeysFile,
+      addedKeys,
+      existingKeys,
       // from DotenvVault
-      dotenvVaultFile: dotenvVaultFile,
-      addedVaults: addedVaults,
-      existingVaults: existingVaults,
-      addedDotenvFilepaths: addedDotenvFilepaths
+      dotenvVaultFile,
+      addedVaults,
+      existingVaults,
+      addedDotenvFilepaths
     }
   }
 

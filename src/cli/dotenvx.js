@@ -5,7 +5,6 @@ const { Command } = require('commander')
 const program = new Command()
 
 const logger = require('./../shared/logger')
-const helpers = require('./helpers')
 const examples = require('./examples')
 const packageJson = require('./../shared/packageJson')
 

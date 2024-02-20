@@ -16,7 +16,7 @@ async function encrypt (directory) {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  let optionEnvFile = options.envFile || helpers.findEnvFiles(directory)
+  const optionEnvFile = options.envFile || helpers.findEnvFiles(directory)
 
   try {
     const {

@@ -26,7 +26,7 @@ t.test('ls calls Ls.run', ct => {
 })
 
 t.test('encrypt calls Encrypt.run', ct => {
-  encryptRunStub = sinon.stub(Encrypt.prototype, 'run')
+  const encryptRunStub = sinon.stub(Encrypt.prototype, 'run')
   encryptRunStub.returns({})
 
   main.encrypt()
