@@ -104,6 +104,14 @@ program.command('ls')
   .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
   .action(require('./actions/ls'))
 
+// dotenvx get
+program.command('get')
+  .description('Return a single environment variable value')
+  .argument('<key>', 'environment variable name')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .option('-o, --overload', 'override existing env variables')
+  .action(require('./actions/get'))
+
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
 
