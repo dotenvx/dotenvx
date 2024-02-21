@@ -21,9 +21,9 @@ class Get {
     const expandedEnv = { ...clonedEnv }
     const expandOptions = {
       processEnv: expandedEnv,
-      parsed: parsed
+      parsed
     }
-    dotenvExpand.expand(expandOptions).parsed
+    dotenvExpand.expand(expandOptions)
 
     if (!this.key) {
       // if user wants to return ALL envs (even prior set on machine)
