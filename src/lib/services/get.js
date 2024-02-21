@@ -1,4 +1,5 @@
 const dotenv = require('dotenv')
+const dotenvExpand = require('dotenv-expand')
 
 class Get {
   constructor (key, envFile = '.env', overload = false) {
@@ -16,17 +17,24 @@ class Get {
     }
     const parsed = dotenv.config(options).parsed
 
+    const expandedEnv = { ...clonedEnv }
+    const expandOptions = {
+      processEnv: expandedEnv,
+      parsed: parsed
+    }
+    dotenvExpand.expand(expandOptions).parsed
+
     if (!this.key) {
       const result = {}
 
       for (const key of Object.keys(parsed)) {
-        result[key] = clonedEnv[key]
+        result[key] = expandedEnv[key]
       }
 
       return result
     }
 
-    return clonedEnv[this.key]
+    return expandedEnv[this.key]
   }
 }
 

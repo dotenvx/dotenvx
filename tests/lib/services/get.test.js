@@ -90,3 +90,34 @@ t.test('#run (no key and process.env already exists on machine)', ct => {
 
   ct.end()
 })
+
+t.test('#run expansion', ct => {
+  const value = new Get('BASIC_EXPAND', 'tests/.env.expand').run()
+
+  ct.same(value, 'basic')
+
+  ct.end()
+})
+
+t.test('#run expansion with pre-existing', ct => {
+  process.env.BASIC = 'existing'
+
+  const value = new Get('BASIC_EXPAND', 'tests/.env.expand').run()
+
+  ct.same(value, 'existing')
+
+  ct.end()
+})
+
+t.test('#run does not expand something from process.env that looks expandable', ct => {
+  process.env.BASIC = 'existing'
+  process.env.LOOKS_EXPANDABLE = '$basic' // not expandable because is already on machine with this value. common scenario are pas$words.
+
+  const value = new Get('BASIC_EXPAND', 'tests/.env.expand').run()
+  ct.same(value, 'existing')
+
+  const value2 = new Get('LOOKS_EXPANDABLE', 'tests/.env.expand').run()
+  ct.same(value2, '$basic')
+
+  ct.end()
+})
