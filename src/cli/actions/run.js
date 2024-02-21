@@ -1,9 +1,102 @@
 const fs = require('fs')
+const execa = require('execa')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
 const main = require('./../../lib/main')
+const parseEncryptionKeyFromDotenvKey = require('./../../lib/helpers/parseEncryptionKeyFromDotenvKey')
 
 const ENCODING = 'utf8'
+const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
+
+const executeCommand = async function (commandArgs, env) {
+  const signals = [
+    'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
+    'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
+  ]
+
+  logger.debug(`executing process command [${commandArgs.join(' ')}]`)
+
+  // handler for SIGINT
+  let commandProcess
+  const sigintHandler = () => {
+    logger.debug('received SIGINT')
+    logger.debug('checking command process')
+    logger.debug(commandProcess)
+
+    if (commandProcess) {
+      logger.debug('sending SIGINT to command process')
+      commandProcess.kill('SIGINT') // Send SIGINT to the command process
+    } else {
+      logger.debug('no command process to send SIGINT to')
+    }
+  }
+
+  const handleOtherSignal = (signal) => {
+    logger.debug(`received ${signal}`)
+  }
+
+  try {
+    commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
+      stdio: 'inherit',
+      env: { ...process.env, ...env }
+    })
+
+    process.on('SIGINT', sigintHandler)
+
+    signals.forEach(signal => {
+      process.on(signal, () => handleOtherSignal(signal))
+    })
+
+    // Wait for the command process to finish
+    const { exitCode } = await commandProcess
+
+    if (exitCode !== 0) {
+      logger.debug(`received exitCode ${exitCode}`)
+      throw new Error(`Command failed with exit code ${exitCode}`)
+    }
+  } catch (error) {
+    if (error.signal !== 'SIGINT') {
+      logger.error(error.message)
+      logger.error(`command [${commandArgs.join(' ')}] failed`)
+      logger.error('')
+      logger.error(`  try without dotenvx: [${commandArgs.join(' ')}]`)
+      logger.error('')
+      logger.error('if that succeeds, then dotenvx is the culprit. report issue:')
+      logger.error(`<${REPORT_ISSUE_LINK}>`)
+    }
+
+    // Exit with the error code from the command process, or 1 if unavailable
+    process.exit(error.exitCode || 1)
+  } finally {
+    // Clean up: Remove the SIGINT handler
+    process.removeListener('SIGINT', sigintHandler)
+  }
+}
+
+const _parseCipherTextFromDotenvKeyAndParsedVault = function (dotenvKey, parsedVault) {
+  // Parse DOTENV_KEY. Format is a URI
+  let uri
+  try {
+    uri = new URL(dotenvKey)
+  } catch (e) {
+    throw new Error(`INVALID_DOTENV_KEY: ${e.message}`)
+  }
+
+  // Get environment
+  const environment = uri.searchParams.get('environment')
+  if (!environment) {
+    throw new Error('INVALID_DOTENV_KEY: Missing environment part')
+  }
+
+  // Get ciphertext payload
+  const environmentKey = `DOTENV_VAULT_${environment.toUpperCase()}`
+  const ciphertext = parsedVault[environmentKey] // DOTENV_VAULT_PRODUCTION
+  if (!ciphertext) {
+    throw new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: cannot locate environment ${environmentKey} in your .env.vault file`)
+  }
+
+  return ciphertext
+}
 
 async function run () {
   const commandArgs = this.args
@@ -38,8 +131,8 @@ async function run () {
             // Get full dotenvKey
             const dotenvKey = dotenvKeys[i].trim()
 
-            const key = helpers._parseEncryptionKeyFromDotenvKey(dotenvKey)
-            const ciphertext = helpers._parseCipherTextFromDotenvKeyAndParsedVault(dotenvKey, parsedVault)
+            const key = parseEncryptionKeyFromDotenvKey(dotenvKey)
+            const ciphertext = _parseCipherTextFromDotenvKeyAndParsedVault(dotenvKey, parsedVault)
 
             // Decrypt
             decrypted = main.decrypt(ciphertext, key)
@@ -124,7 +217,7 @@ async function run () {
     process.exit(1)
   } else {
     // const commandArgs = process.argv.slice(commandIndex + 1)
-    await helpers.executeCommand(commandArgs, process.env)
+    await executeCommand(commandArgs, process.env)
   }
 }
 
