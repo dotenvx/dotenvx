@@ -64,7 +64,7 @@ async function encrypt (directory) {
     if (addedVaults.length > 0) {
       const DOTENV_VAULT_X = addedVaults[addedVaults.length - 1]
       const DOTENV_KEY_X = DOTENV_VAULT_X.replace('_VAULT_', '_KEY_')
-      const tryKey = dotenvKeys[DOTENV_KEY_X] || '<dotenv_key_environment>'
+      const tryKey = dotenvKeys[DOTENV_KEY_X]
 
       logger.help2(`ℹ run [DOTENV_KEY='${tryKey}' dotenvx run -- yourcommand] to test decryption locally`)
     }

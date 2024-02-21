@@ -6,6 +6,7 @@ node_modules/
 dist/*
 .env*
 !.env.vault
+tests/tmp
 
 # for test purposes
 !tests/.env
