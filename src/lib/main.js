@@ -5,6 +5,7 @@ const dotenvExpand = require('dotenv-expand')
 // services
 const Encrypt = require('./services/encrypt')
 const Ls = require('./services/ls')
+const Get = require('./services/get')
 
 const config = function (options) {
   return dotenv.config(options)
@@ -114,6 +115,10 @@ const ls = function (directory, envFile) {
   return new Ls(directory, envFile).run()
 }
 
+const get = function (key, envFile, overload, all) {
+  return new Get(key, envFile, overload, all).run()
+}
+
 module.exports = {
   config,
   configDotenv,
@@ -121,6 +126,7 @@ module.exports = {
   parse,
   parseExpand,
   inject,
+  encrypt,
   ls,
-  encrypt
+  get
 }

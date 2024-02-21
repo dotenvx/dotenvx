@@ -7,20 +7,6 @@ const helpers = require('./../helpers')
 const createSpinner = require('./../../shared/createSpinner')
 const spinner = createSpinner('encrypting')
 
-const RESERVED_ENV_FILES = ['.env.vault', '.env.project', '.env.keys', '.env.me', '.env.x']
-
-const findEnvFiles = function (directory) {
-  const files = fs.readdirSync(directory)
-
-  const envFiles = files.filter(file =>
-    file.startsWith('.env') &&
-    !file.endsWith('.previous') &&
-    !RESERVED_ENV_FILES.includes(file)
-  )
-
-  return envFiles
-}
-
 async function encrypt (directory) {
   spinner.start()
   await helpers.sleep(500) // better dx
@@ -29,8 +15,6 @@ async function encrypt (directory) {
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
-
-  const optionEnvFile = options.envFile || findEnvFiles(directory)
 
   try {
     const {
@@ -41,10 +25,11 @@ async function encrypt (directory) {
       dotenvVaultFile,
       addedVaults,
       existingVaults,
-      addedDotenvFilenames
-    } = main.encrypt(directory, optionEnvFile)
+      addedDotenvFilenames,
+      envFile
+    } = main.encrypt(directory, options.envFile)
 
-    logger.verbose(`generating .env.keys from ${optionEnvFile}`)
+    logger.verbose(`generating .env.keys from ${envFile}`)
     if (addedKeys.length > 0) {
       logger.verbose(`generated ${addedKeys}`)
     }
@@ -53,7 +38,7 @@ async function encrypt (directory) {
     }
     fs.writeFileSync(path.resolve(directory, '.env.keys'), dotenvKeysFile)
 
-    logger.verbose(`generating .env.vault from ${optionEnvFile}`)
+    logger.verbose(`generating .env.vault from ${envFile}`)
     if (addedVaults.length > 0) {
       logger.verbose(`encrypting ${addedVaults}`)
     }
@@ -66,7 +51,7 @@ async function encrypt (directory) {
       spinner.succeed(`encrypted to .env.vault (${addedDotenvFilenames})`)
       logger.help2('ℹ commit .env.vault to code: [git commit -am ".env.vault"]')
     } else {
-      spinner.done(`no changes (${optionEnvFile})`)
+      spinner.done(`no changes (${envFile})`)
     }
 
     if (addedKeys.length > 0) {

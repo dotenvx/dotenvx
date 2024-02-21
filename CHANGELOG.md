@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.17.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.18.0...main)
+
+## 0.18.0
+
+### Added
+
+* added `get` command, optionally pass `--env-file` flag(s) to `get`, optionally pass `--overload`, and optionally pass `--pretty-print`. usage: `dotenvx get HELLO` => `World` ([#89](https://github.com/dotenvx/dotenvx/pull/89))
 
 ## 0.17.1
 
