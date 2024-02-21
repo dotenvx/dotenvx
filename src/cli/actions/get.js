@@ -9,7 +9,7 @@ function get (key) {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const value = main.get(key, options.envFile).run()
+  const value = main.get(key, options.envFile, options.overload).run()
   logger.debug(`value: ${value}`)
 
   logger.blank(value)
