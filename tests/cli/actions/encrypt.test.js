@@ -45,69 +45,69 @@ t.test('encrypt (when different error not having help or code occurs)', async ct
 
 t.test('encrypt (when .env file exists)', async ct => {
   // setup
-  try { fs.rmdirSync('tests/tmp', { recursive: true }) } catch (_e) {}
-  fs.mkdirSync('tests/tmp')
-  fs.writeFileSync('tests/tmp/.env', 'HELLO=World')
+  try { fs.rmdirSync('tmp', { recursive: true }) } catch (_e) {}
+  fs.mkdirSync('tmp')
+  fs.writeFileSync('tmp/.env', 'HELLO=World')
 
   // run encrypt
   const fakeContext = { opts: sinon.stub().returns({}) }
-  await encrypt.call(fakeContext, 'tests/tmp')
+  await encrypt.call(fakeContext, 'tmp')
 
-  const envVault = dotenv.configDotenv({ path: 'tests/tmp/.env.vault' }).parsed
-  const envKeys = dotenv.configDotenv({ path: 'tests/tmp/.env.keys' }).parsed
+  const envVault = dotenv.configDotenv({ path: 'tmp/.env.vault' }).parsed
+  const envKeys = dotenv.configDotenv({ path: 'tmp/.env.keys' }).parsed
 
   t.ok(envVault.DOTENV_VAULT_DEVELOPMENT, '.env.vault contains DOTENV_VAULT_DEVELOPMENT')
   t.ok(envKeys.DOTENV_KEY_DEVELOPMENT, '.env.keys contains DOTENV_KEY_DEVELOPMENT')
 
   // cleanup
-  fs.rmdirSync('tests/tmp', { recursive: true })
+  fs.rmdirSync('tmp', { recursive: true })
 
   ct.end()
 })
 
 t.test('encrypt (when .env and .env.keys exists)', async ct => {
   // setup
-  try { fs.rmdirSync('tests/tmp', { recursive: true }) } catch (_e) {}
-  fs.mkdirSync('tests/tmp')
-  fs.writeFileSync('tests/tmp/.env', 'HELLO=World')
-  fs.writeFileSync('tests/tmp/.env.keys', 'DOTENV_KEY_DEVELOPMENT="dotenv://:key_3a0eefe9cdda9b597825ebabc7c8c2e455963ca1efad639a0a6a143d9f4dd84b@dotenvx.com/vault/.env.vault?environment=development"')
+  try { fs.rmdirSync('tmp', { recursive: true }) } catch (_e) {}
+  fs.mkdirSync('tmp')
+  fs.writeFileSync('tmp/.env', 'HELLO=World')
+  fs.writeFileSync('tmp/.env.keys', 'DOTENV_KEY_DEVELOPMENT="dotenv://:key_3a0eefe9cdda9b597825ebabc7c8c2e455963ca1efad639a0a6a143d9f4dd84b@dotenvx.com/vault/.env.vault?environment=development"')
 
   // run encrypt
   const fakeContext = { opts: sinon.stub().returns({}) }
-  await encrypt.call(fakeContext, 'tests/tmp')
+  await encrypt.call(fakeContext, 'tmp')
 
-  const envVault = dotenv.configDotenv({ path: 'tests/tmp/.env.vault' }).parsed
-  const envKeys = dotenv.configDotenv({ path: 'tests/tmp/.env.keys' }).parsed
+  const envVault = dotenv.configDotenv({ path: 'tmp/.env.vault' }).parsed
+  const envKeys = dotenv.configDotenv({ path: 'tmp/.env.keys' }).parsed
 
   t.ok(envVault.DOTENV_VAULT_DEVELOPMENT, '.env.vault contains DOTENV_VAULT_DEVELOPMENT')
   t.ok(envKeys.DOTENV_KEY_DEVELOPMENT, '.env.keys contains DOTENV_KEY_DEVELOPMENT')
 
   // cleanup
-  fs.rmdirSync('tests/tmp', { recursive: true })
+  fs.rmdirSync('tmp', { recursive: true })
 
   ct.end()
 })
 
 t.test('encrypt (when .env, .env.keys, and .env.vault exists)', async ct => {
   // setup
-  try { fs.rmdirSync('tests/tmp', { recursive: true }) } catch (_e) {}
-  fs.mkdirSync('tests/tmp')
-  fs.writeFileSync('tests/tmp/.env', 'HELLO=World')
-  fs.writeFileSync('tests/tmp/.env.keys', 'DOTENV_KEY_DEVELOPMENT="dotenv://:key_3a0eefe9cdda9b597825ebabc7c8c2e455963ca1efad639a0a6a143d9f4dd84b@dotenvx.com/vault/.env.vault?environment=development"')
-  fs.writeFileSync('tests/tmp/.env.vault', 'DOTENV_VAULT_DEVELOPMENT="VLl5KNUU23zt4inKfw7eLx4/CkJGhf51z5lpTiWkWPeH6433Yq0r"')
+  try { fs.rmdirSync('tmp', { recursive: true }) } catch (_e) {}
+  fs.mkdirSync('tmp')
+  fs.writeFileSync('tmp/.env', 'HELLO=World')
+  fs.writeFileSync('tmp/.env.keys', 'DOTENV_KEY_DEVELOPMENT="dotenv://:key_3a0eefe9cdda9b597825ebabc7c8c2e455963ca1efad639a0a6a143d9f4dd84b@dotenvx.com/vault/.env.vault?environment=development"')
+  fs.writeFileSync('tmp/.env.vault', 'DOTENV_VAULT_DEVELOPMENT="VLl5KNUU23zt4inKfw7eLx4/CkJGhf51z5lpTiWkWPeH6433Yq0r"')
 
   // run encrypt
   const fakeContext = { opts: sinon.stub().returns({}) }
-  await encrypt.call(fakeContext, 'tests/tmp')
+  await encrypt.call(fakeContext, 'tmp')
 
-  const envVault = dotenv.configDotenv({ path: 'tests/tmp/.env.vault' }).parsed
-  const envKeys = dotenv.configDotenv({ path: 'tests/tmp/.env.keys' }).parsed
+  const envVault = dotenv.configDotenv({ path: 'tmp/.env.vault' }).parsed
+  const envKeys = dotenv.configDotenv({ path: 'tmp/.env.keys' }).parsed
 
   t.ok(envVault.DOTENV_VAULT_DEVELOPMENT, '.env.vault contains DOTENV_VAULT_DEVELOPMENT')
   t.ok(envKeys.DOTENV_KEY_DEVELOPMENT, '.env.keys contains DOTENV_KEY_DEVELOPMENT')
 
   // cleanup
-  fs.rmdirSync('tests/tmp', { recursive: true })
+  fs.rmdirSync('tmp', { recursive: true })
 
   ct.end()
 })

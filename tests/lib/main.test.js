@@ -6,18 +6,18 @@ const main = require('../../src/lib/main')
 const Encrypt = require('../../src/lib/services/encrypt')
 
 t.test('ls calls Ls.run', ct => {
-  const envFiles = main.ls()
+  const envFiles = main.ls('tests')
 
   const expected = [
-    'tests/.env.vault',
-    'tests/.env.multiline',
-    'tests/.env.local',
-    'tests/.env.expand',
-    'tests/.env',
-    'tests/monorepo-example/apps/frontend/.env',
-    'tests/monorepo-example/apps/backend/.env.vault',
-    'tests/monorepo-example/apps/backend/.env.keys',
-    'tests/monorepo-example/apps/backend/.env'
+    '.env.vault',
+    '.env.multiline',
+    '.env.local',
+    '.env.expand',
+    '.env',
+    'monorepo-example/apps/frontend/.env',
+    'monorepo-example/apps/backend/.env.vault',
+    'monorepo-example/apps/backend/.env.keys',
+    'monorepo-example/apps/backend/.env'
   ]
 
   ct.same(envFiles, expected)
