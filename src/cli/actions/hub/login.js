@@ -6,11 +6,20 @@ const { confirm } = require('@inquirer/prompts')
 const createSpinner = require('./../../../shared/createSpinner')
 const store = require('./../../../shared/store')
 const logger = require('./../../../shared/logger')
-const helpers = require('./../../helpers')
 
 const OAUTH_CLIENT_ID = 'oac_dotenvxcli'
 
 const spinner = createSpinner('waiting on user authorization')
+
+const formatCode = function (str) {
+  const parts = []
+
+  for (let i = 0; i < str.length; i += 4) {
+    parts.push(str.substring(i, i + 4))
+  }
+
+  return parts.join('-')
+}
 
 async function pollTokenUrl (tokenUrl, deviceCode, interval) {
   logger.http(`POST ${tokenUrl} with deviceCode ${deviceCode} at interval ${interval}`)
@@ -100,7 +109,7 @@ async function login () {
     pollTokenUrl(tokenUrl, deviceCode, interval)
 
     // optionally allow user to open browser
-    const answer = await confirm({ message: `press Enter to open [${verificationUri}] and enter code [${helpers.formatCode(userCode)}]...` })
+    const answer = await confirm({ message: `press Enter to open [${verificationUri}] and enter code [${formatCode(userCode)}]...` })
 
     if (answer) {
       await open(verificationUri)

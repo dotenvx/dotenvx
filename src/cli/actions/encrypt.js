@@ -5,8 +5,21 @@ const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
 const createSpinner = require('./../../shared/createSpinner')
-
 const spinner = createSpinner('encrypting')
+
+const RESERVED_ENV_FILES = ['.env.vault', '.env.project', '.env.keys', '.env.me', '.env.x']
+
+const findEnvFiles = function (directory) {
+  const files = fs.readdirSync(directory)
+
+  const envFiles = files.filter(file =>
+    file.startsWith('.env') &&
+    !file.endsWith('.previous') &&
+    !RESERVED_ENV_FILES.includes(file)
+  )
+
+  return envFiles
+}
 
 async function encrypt (directory) {
   spinner.start()
@@ -17,7 +30,7 @@ async function encrypt (directory) {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const optionEnvFile = options.envFile || helpers.findEnvFiles(directory)
+  const optionEnvFile = options.envFile || findEnvFiles(directory)
 
   try {
     const {
@@ -64,7 +77,7 @@ async function encrypt (directory) {
     if (addedVaults.length > 0) {
       const DOTENV_VAULT_X = addedVaults[addedVaults.length - 1]
       const DOTENV_KEY_X = DOTENV_VAULT_X.replace('_VAULT_', '_KEY_')
-      const tryKey = dotenvKeys[DOTENV_KEY_X] || '<dotenv_key_environment>'
+      const tryKey = dotenvKeys[DOTENV_KEY_X]
 
       logger.help2(`ℹ run [DOTENV_KEY='${tryKey}' dotenvx run -- yourcommand] to test decryption locally`)
     }

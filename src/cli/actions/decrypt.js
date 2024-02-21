@@ -4,6 +4,7 @@ const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
 const createSpinner = require('./../../shared/createSpinner')
+const parseEncryptionKeyFromDotenvKey = require('./../../lib/helpers/parseEncryptionKeyFromDotenvKey')
 
 const spinner = createSpinner('decrypting')
 
@@ -50,7 +51,7 @@ async function decrypt () {
 
     // give warning if not found
     if (ciphertext && ciphertext.length >= 1) {
-      const key = helpers._parseEncryptionKeyFromDotenvKey(value.trim())
+      const key = parseEncryptionKeyFromDotenvKey(value.trim())
 
       // Decrypt
       const decrypted = main.decrypt(ciphertext, key)

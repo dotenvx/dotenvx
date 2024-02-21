@@ -3,20 +3,20 @@ const t = require('tap')
 const Ls = require('../../../src/lib/services/ls')
 
 t.test('#run', ct => {
-  const ls = new Ls()
+  const ls = new Ls('./tests')
 
   const envFiles = ls.run()
 
   const expected = [
-    'tests/.env.vault',
-    'tests/.env.multiline',
-    'tests/.env.local',
-    'tests/.env.expand',
-    'tests/.env',
-    'tests/monorepo-example/apps/frontend/.env',
-    'tests/monorepo-example/apps/backend/.env.vault',
-    'tests/monorepo-example/apps/backend/.env.keys',
-    'tests/monorepo-example/apps/backend/.env'
+    '.env.vault',
+    '.env.multiline',
+    '.env.local',
+    '.env.expand',
+    '.env',
+    'monorepo-example/apps/frontend/.env',
+    'monorepo-example/apps/backend/.env.vault',
+    'monorepo-example/apps/backend/.env.keys',
+    'monorepo-example/apps/backend/.env'
   ]
 
   ct.same(envFiles, expected)
@@ -59,20 +59,20 @@ t.test('#run (with someow malformed directory argument)', ct => {
 })
 
 t.test('#_filepaths', ct => {
-  const ls = new Ls()
+  const ls = new Ls('./tests')
 
   const envFiles = ls._filepaths()
 
   const expected = [
-    'tests/.env.vault',
-    'tests/.env.multiline',
-    'tests/.env.local',
-    'tests/.env.expand',
-    'tests/.env',
-    'tests/monorepo-example/apps/frontend/.env',
-    'tests/monorepo-example/apps/backend/.env.vault',
-    'tests/monorepo-example/apps/backend/.env.keys',
-    'tests/monorepo-example/apps/backend/.env'
+    '.env.vault',
+    '.env.multiline',
+    '.env.local',
+    '.env.expand',
+    '.env',
+    'monorepo-example/apps/frontend/.env',
+    'monorepo-example/apps/backend/.env.vault',
+    'monorepo-example/apps/backend/.env.keys',
+    'monorepo-example/apps/backend/.env'
   ]
 
   ct.same(envFiles, expected)
