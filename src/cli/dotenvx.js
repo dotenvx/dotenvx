@@ -110,6 +110,7 @@ program.command('get')
   .argument('[key]', 'environment variable name')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
+  .option('-a, --all', 'include all machine envs as well')
   .action(require('./actions/get'))
 
 // dotenvx hub

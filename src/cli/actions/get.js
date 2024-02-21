@@ -8,7 +8,7 @@ function get (key) {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const value = main.get(key, options.envFile, options.overload)
+  const value = main.get(key, options.envFile, options.overload, options.all)
   logger.blank(value)
 }
 

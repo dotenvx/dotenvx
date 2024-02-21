@@ -2,10 +2,11 @@ const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 
 class Get {
-  constructor (key, envFile = '.env', overload = false) {
+  constructor (key, envFile = '.env', overload = false, all = false) {
     this.key = key
     this.envFile = envFile
     this.overload = overload
+    this.all = all
   }
 
   run () {
@@ -25,8 +26,13 @@ class Get {
     dotenvExpand.expand(expandOptions).parsed
 
     if (!this.key) {
-      const result = {}
+      // if user wants to return ALL envs (even prior set on machine)
+      if (this.all) {
+        return expandedEnv
+      }
 
+      // typical scenario - return only envs that were identified in the .env file
+      const result = {}
       for (const key of Object.keys(parsed)) {
         result[key] = expandedEnv[key]
       }

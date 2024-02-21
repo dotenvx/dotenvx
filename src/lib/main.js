@@ -115,8 +115,8 @@ const ls = function (directory, envFile) {
   return new Ls(directory, envFile).run()
 }
 
-const get = function (key, envFile, overload) {
-  return new Get(key, envFile, overload).run()
+const get = function (key, envFile, overload, all) {
+  return new Get(key, envFile, overload, all).run()
 }
 
 module.exports = {
