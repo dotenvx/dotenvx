@@ -56,6 +56,18 @@ see [extended quickstart guide](https://dotenvx.com/docs/quickstart)
 
 More examples
 
+* <details><summary>TypeScript 📘</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.ts
+
+  $ dotenvx run -- npx ts-node index.ts
+  Hello World
+  ```
+
+  </details>
+
 * <details><summary>Python 🐍</summary><br>
 
   ```sh
