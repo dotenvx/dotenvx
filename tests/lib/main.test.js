@@ -4,24 +4,18 @@ const sinon = require('sinon')
 const main = require('../../src/lib/main')
 
 const Encrypt = require('../../src/lib/services/encrypt')
+const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
 
 t.test('ls calls Ls.run', ct => {
-  const envFiles = main.ls('tests')
+  const lsRunStub = sinon.stub(Ls.prototype, 'run')
+  lsRunStub.returns({})
 
-  const expected = [
-    '.env.vault',
-    '.env.multiline',
-    '.env.local',
-    '.env.expand',
-    '.env',
-    'monorepo/apps/frontend/.env',
-    'monorepo/apps/backend/.env.vault',
-    'monorepo/apps/backend/.env.keys',
-    'monorepo/apps/backend/.env'
-  ]
+  main.ls()
 
-  ct.same(envFiles, expected)
+  t.ok(lsRunStub.called, 'new Ls().run() called')
+
+  lsRunStub.restore()
 
   ct.end()
 })
