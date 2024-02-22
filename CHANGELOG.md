@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.18.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.19.0...main)
+
+## 0.19.0
+
+### Added
+
+* added `scan` command to scan for possible leaked secrets in your code ([#90](https://github.com/dotenvx/dotenvx/pull/90))
 
 ## 0.18.0
 

@@ -97,6 +97,11 @@ program.command('genexample')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .action(require('./actions/genexample'))
 
+// dotenvx scan
+program.command('scan')
+  .description('scan for leaked secrets')
+  .action(require('./actions/scan'))
+
 // dotenvx ls
 program.command('ls')
   .description('print all .env files in a tree structure')
