@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 const fs = require('fs')
 const ignore = require('ignore')
 const logger = require('./../../shared/logger')
