@@ -167,7 +167,14 @@ async function run () {
       logger.verbose(`loading env from ${filepath} (${path.resolve(filepath)})`)
 
       if (file.error) {
-        logger.warnv(file.error)
+        if (file.error.code === 'MISSING_ENV_FILE') {
+          logger.warnv(file.error)
+          logger.help(`? in development: add one with [echo "HELLO=World" > ${filepath}] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
+          logger.help('? for production: set [DOTENV_KEY] on your server and re-deploy')
+          logger.help('? for ci: set [DOTENV_KEY] on your ci and re-build')
+        } else {
+          logger.warnv(file.error)
+        }
       } else {
         // debug parsed
         const parsed = file.parsed
@@ -192,51 +199,6 @@ async function run () {
     if (readableFilepaths.length > 0) {
       logger.successv(`injecting env (${uniqueInjectedKeys.length}) from ${readableFilepaths}`)
     }
-
-    // iterate over each file
-    // give helpful logging of what happened
-
-    // const readableFilepaths = new Set()
-    // const injected = new Set()
-
-    // for (const envFilepath of optionEnvFile) {
-    //   const filepath = helpers.resolvePath(envFilepath)
-
-    //   logger.verbose(`loading env from ${filepath}`)
-
-    //   try {
-    //     const src = fs.readFileSync(filepath, { encoding: ENCODING })
-    //     const parsed = main.parseExpand(src, options.overload)
-    //     const result = main.inject(process.env, parsed, options.overload)
-
-    //     readableFilepaths.add(envFilepath)
-    //     result.injected.forEach(key => injected.add(key))
-    //   } catch (e) {
-    //     // calculate development help message depending on state of repo
-    //     const vaultFilepath = helpers.resolvePath('.env.vault')
-    //     let developmentHelp = `? in development: add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`
-    //     if (fs.existsSync(vaultFilepath)) {
-    //       developmentHelp = `? in development: use [dotenvx decrypt] to decrypt .env.vault to .env and then re-run [dotenvx run -- ${commandArgs.join(' ')}]`
-    //     }
-
-    //     switch (e.code) {
-    //       // missing .env
-    //       case 'ENOENT':
-    //         logger.warnv(`missing ${envFilepath} file (${filepath})`)
-    //         logger.help(developmentHelp)
-    //         logger.help('? for production: set [DOTENV_KEY] on your server and re-deploy')
-    //         logger.help('? for ci: set [DOTENV_KEY] on your ci and re-build')
-    //         break
-
-    //       // unhandled error
-    //       default:
-    //         logger.warn(e)
-    //         break
-    //     }
-    //   }
-    // }
-
-
   }
 
   // Extract command and arguments after '--'
