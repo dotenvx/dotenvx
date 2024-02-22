@@ -16,7 +16,7 @@ async function scan () {
   }
 
   try {
-    const { stderr, stdout, exitCode } = await execa('gitleaks', ['detect', '-v'])
+    const { stderr } = await execa('gitleaks', ['detect', '-v'])
     logger.blank(stderr) // gitleaks sends output as stderr for strange reason
   } catch (error) {
     logger.error(error.message)
