@@ -21,7 +21,7 @@ class RunDefault {
 
     for (const envFilepath of envFilepaths) {
       const row = {}
-      row['filepath'] = envFilepath
+      row.filepath = envFilepath
 
       const filepath = path.resolve(envFilepath)
       console.log('filepath', filepath)
@@ -31,11 +31,11 @@ class RunDefault {
         readableFilepaths.add(envFilepath)
 
         const parsed = this._parseExpand(src)
-        row['parsed'] = parsed
+        row.parsed = parsed
 
         const { injected, preExisted } = this._inject(process.env, parsed)
-        row['injected'] = injected
-        row['preExisted'] = preExisted
+        row.injected = injected
+        row.preExisted = preExisted
 
         for (const key of Object.keys(injected)) {
           uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
@@ -45,9 +45,9 @@ class RunDefault {
           const error = new Error(`missing ${envFilepath} file (${filepath})`)
           error.code = 'MISSING_ENV_FILE'
 
-          row['error'] = error
+          row.error = error
         } else {
-          row['error'] = e
+          row.error = e
         }
       }
 
@@ -55,7 +55,7 @@ class RunDefault {
     }
 
     return {
-      files: files,
+      files,
       readableFilepaths: [...readableFilepaths], // array
       uniqueInjectedKeys: [...uniqueInjectedKeys]
     }

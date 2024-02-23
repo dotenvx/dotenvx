@@ -61,14 +61,14 @@ t.test('#run (finds .env file)', ct => {
   } = new RunDefault('tests/monorepo/apps/frontend/.env').run()
 
   ct.same(files, [{
-    filepath: "tests/monorepo/apps/frontend/.env",
+    filepath: 'tests/monorepo/apps/frontend/.env',
     parsed: {
-      HELLO: "frontend"
+      HELLO: 'frontend'
     },
     injected: {
-      HELLO: "frontend",
+      HELLO: 'frontend'
     },
-    preExisted: {},
+    preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
   ct.same(uniqueInjectedKeys, ['HELLO'])
@@ -84,14 +84,14 @@ t.test('#run (finds .env file as array)', ct => {
   } = new RunDefault(['tests/monorepo/apps/frontend/.env']).run()
 
   ct.same(files, [{
-    filepath: "tests/monorepo/apps/frontend/.env",
+    filepath: 'tests/monorepo/apps/frontend/.env',
     parsed: {
-      HELLO: "frontend"
+      HELLO: 'frontend'
     },
     injected: {
-      HELLO: "frontend",
+      HELLO: 'frontend'
     },
-    preExisted: {},
+    preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
   ct.same(uniqueInjectedKeys, ['HELLO'])
@@ -112,14 +112,14 @@ t.test('#run (finds .env file but HELLO already exists)', ct => {
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(files, [{
-    filepath: "tests/monorepo/apps/frontend/.env",
+    filepath: 'tests/monorepo/apps/frontend/.env',
     parsed: {
-      HELLO: "World"
+      HELLO: 'World'
     },
     injected: {},
     preExisted: {
-      HELLO: "World"
-    },
+      HELLO: 'World'
+    }
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
   ct.same(uniqueInjectedKeys, [])
@@ -140,14 +140,14 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(files, [{
-    filepath: "tests/monorepo/apps/frontend/.env",
+    filepath: 'tests/monorepo/apps/frontend/.env',
     parsed: {
-      HELLO: "frontend"
+      HELLO: 'frontend'
     },
     injected: {
-      HELLO: "frontend"
+      HELLO: 'frontend'
     },
-    preExisted: {},
+    preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
   ct.same(uniqueInjectedKeys, ['HELLO'])
@@ -212,9 +212,6 @@ t.test('#_inject with pre-existing but overload is false', ct => {
 })
 
 t.test('#_inject with no arguments', ct => {
-  const processEnv = {}
-  const parsed = {}
-
   const runDefault = new RunDefault('tests/monorepo/apps/frontend/.env', null, false)
 
   const { injected, preExisted } = runDefault._inject()
