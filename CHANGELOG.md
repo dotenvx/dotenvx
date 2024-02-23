@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.19.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.20.0...main)
+
+## 0.20.0
+
+### Changed
+
+* added `--env` flag. for example, `dotenvx --env="HELLO=World" -- yourcommand` ([#94](https://github.com/dotenvx/dotenvx/pull/94))
 
 ## 0.19.1
 
