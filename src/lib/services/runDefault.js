@@ -6,8 +6,9 @@ const dotenvExpand = require('dotenv-expand')
 const ENCODING = 'utf8'
 
 class RunDefault {
-  constructor (envFile, overload) {
+  constructor (envFile = '.env', env, overload = false) {
     this.envFile = envFile
+    this.env = env
     this.overload = overload
   }
 
@@ -17,11 +18,14 @@ class RunDefault {
     const uniqueInjectedKeys = new Set()
 
     const envFilepaths = this._envFilepaths()
+
     for (const envFilepath of envFilepaths) {
       const row = {}
       row['filepath'] = envFilepath
 
       const filepath = path.resolve(envFilepath)
+      console.log('filepath', filepath)
+
       try {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
         readableFilepaths.add(envFilepath)
@@ -97,7 +101,7 @@ class RunDefault {
 
     // set processEnv
     for (const key of Object.keys(parsed)) {
-      if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
+      if (processEnv[key]) {
         if (this.overload === true) {
           processEnv[key] = parsed[key]
 
