@@ -196,9 +196,11 @@ async function run () {
       }
     }
 
+    let msg = `injecting env (${uniqueInjectedKeys.length})`
     if (readableFilepaths.length > 0) {
-      logger.successv(`injecting env (${uniqueInjectedKeys.length}) from ${readableFilepaths}`)
+      msg += ` from ${readableFilepaths}`
     }
+    logger.successv(msg)
   }
 
   // Extract command and arguments after '--'

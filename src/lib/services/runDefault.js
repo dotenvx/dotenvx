@@ -6,26 +6,47 @@ const dotenvExpand = require('dotenv-expand')
 const ENCODING = 'utf8'
 
 class RunDefault {
-  constructor (envFile = '.env', env, overload = false) {
+  constructor (envFile = '.env', env = [], overload = false) {
     this.envFile = envFile
     this.env = env
     this.overload = overload
   }
 
   run () {
+    const strings = []
     const files = []
     const readableFilepaths = new Set()
     const uniqueInjectedKeys = new Set()
 
-    const envFilepaths = this._envFilepaths()
+    const envs = this._envs()
+    for (const env of envs) {
+      const row = {}
+      row.string = env
 
+      try {
+        const parsed = this._parseExpand(env)
+        row.parsed = parsed
+
+        const { injected, preExisted } = this._inject(process.env, parsed)
+        row.injected = injected
+        row.preExisted = preExisted
+
+        for (const key of Object.keys(injected)) {
+          uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
+        }
+      } catch (e) {
+        row.error = e
+      }
+
+      strings.push(row)
+    }
+
+    const envFilepaths = this._envFilepaths()
     for (const envFilepath of envFilepaths) {
       const row = {}
       row.filepath = envFilepath
 
       const filepath = path.resolve(envFilepath)
-      console.log('filepath', filepath)
-
       try {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
         readableFilepaths.add(envFilepath)
@@ -56,6 +77,7 @@ class RunDefault {
 
     return {
       files,
+      strings,
       readableFilepaths: [...readableFilepaths], // array
       uniqueInjectedKeys: [...uniqueInjectedKeys]
     }
@@ -67,6 +89,14 @@ class RunDefault {
     }
 
     return this.envFile
+  }
+
+  _envs () {
+    if (!Array.isArray(this.env)) {
+      return [this.env]
+    }
+
+    return this.env
   }
 
   _parseExpand (src) {

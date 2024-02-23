@@ -221,3 +221,27 @@ t.test('#_inject with no arguments', ct => {
 
   ct.end()
 })
+
+t.test('#run (with envs as string)', ct => {
+  const {
+    strings,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new RunDefault([], 'HELLO=string').run()
+
+  ct.same(strings, [{
+    string: 'HELLO=string',
+    parsed: {
+      HELLO: 'string'
+    },
+    injected: {
+      HELLO: 'string'
+    },
+    preExisted: {}
+  }])
+  ct.same(readableFilepaths, [])
+  ct.same(uniqueInjectedKeys, ['HELLO'])
+
+  ct.end()
+})
+
