@@ -56,6 +56,7 @@ program.command('run')
   .addHelpText('after', examples.run)
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-fv, --env-vault-file <path>', 'path to your .env.vault file', '.env.vault')
+  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")')
   .option('-o, --overload', 'override existing env variables')
   .action(require('./actions/run'))
 
