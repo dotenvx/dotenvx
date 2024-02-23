@@ -39,7 +39,11 @@ const executeCommand = async function (commandArgs, env) {
   }
 
   try {
-    commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
+    const systemCommandPath = execa.sync('which', [commandArgs[0]]).stdout
+    logger.debug(`system command path [${systemCommandPath}]`)
+
+    // commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
+    commandProcess = execa(systemCommandPath, commandArgs.slice(1), {
       stdio: 'inherit',
       env: { ...process.env, ...env }
     })
