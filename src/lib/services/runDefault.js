@@ -5,6 +5,8 @@ const dotenvExpand = require('dotenv-expand')
 
 const ENCODING = 'utf8'
 
+const inject = require('./../helpers/inject')
+
 class RunDefault {
   constructor (envFile = '.env', env = [], overload = false) {
     this.envFile = envFile
@@ -27,7 +29,7 @@ class RunDefault {
         const parsed = this._parseExpand(env)
         row.parsed = parsed
 
-        const { injected, preExisted } = this._inject(process.env, parsed)
+        const { injected, preExisted } = inject(process.env, parsed, this.overload)
         row.injected = injected
         row.preExisted = preExisted
 
@@ -54,7 +56,7 @@ class RunDefault {
         const parsed = this._parseExpand(src)
         row.parsed = parsed
 
-        const { injected, preExisted } = this._inject(process.env, parsed)
+        const { injected, preExisted } = inject(process.env, parsed, this.overload)
         row.injected = injected
         row.preExisted = preExisted
 
@@ -123,32 +125,6 @@ class RunDefault {
     }
 
     return result
-  }
-
-  _inject (processEnv = {}, parsed = {}) {
-    const injected = {}
-    const preExisted = {}
-
-    // set processEnv
-    for (const key of Object.keys(parsed)) {
-      if (processEnv[key]) {
-        if (this.overload === true) {
-          processEnv[key] = parsed[key]
-
-          injected[key] = parsed[key] // track injected key/value
-        } else {
-          preExisted[key] = processEnv[key] // track preExisted key/value
-        }
-      } else {
-        processEnv[key] = parsed[key]
-        injected[key] = parsed[key] // track injected key/value
-      }
-    }
-
-    return {
-      injected,
-      preExisted
-    }
   }
 }
 

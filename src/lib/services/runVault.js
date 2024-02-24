@@ -3,6 +3,7 @@ const path = require('path')
 const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 
+const inject = require('./../helpers/inject')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const DotenvVault = require('./../helpers/dotenvVault')
 
@@ -61,7 +62,7 @@ class RunVault {
 
     // parse this. it's the equivalent of the .env file
     const parsed = this._parseExpand(decrypted)
-    const { injected, preExisted } = this._inject(process.env, parsed)
+    const { injected, preExisted } = inject(process.env, parsed, this.overload)
 
     for (const key of Object.keys(injected)) {
       uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
@@ -128,32 +129,6 @@ class RunVault {
     }
 
     return result
-  }
-
-  _inject (processEnv = {}, parsed = {}) {
-    const injected = {}
-    const preExisted = {}
-
-    // set processEnv
-    for (const key of Object.keys(parsed)) {
-      if (processEnv[key]) {
-        if (this.overload === true) {
-          processEnv[key] = parsed[key]
-
-          injected[key] = parsed[key] // track injected key/value
-        } else {
-          preExisted[key] = processEnv[key] // track preExisted key/value
-        }
-      } else {
-        processEnv[key] = parsed[key]
-        injected[key] = parsed[key] // track injected key/value
-      }
-    }
-
-    return {
-      injected,
-      preExisted
-    }
   }
 }
 
