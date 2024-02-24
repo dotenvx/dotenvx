@@ -162,8 +162,8 @@ More examples
   ```sh
   $ echo "HELLO=World" > .env
 
-  $ dotenvx run --quiet -- sh -c 'echo $HELLO'
-  World
+  $ dotenvx run --quiet -- sh -c 'echo Hello $HELLO'
+  Hello World
   ```
 
   </details>
