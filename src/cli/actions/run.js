@@ -7,6 +7,7 @@ const main = require('./../../lib/main')
 const parseEncryptionKeyFromDotenvKey = require('./../../lib/helpers/parseEncryptionKeyFromDotenvKey')
 
 const RunDefault = require('./../../lib/services/runDefault')
+const RunVault = require('./../../lib/services/runVault')
 
 const ENCODING = 'utf8'
 const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
@@ -114,6 +115,8 @@ async function run () {
 
   // load from .env.vault file
   if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
+    const {} = new RunVault(options.envVaultFile, process.env.DOTENV_KEY).run()
+
     const envVaultFilepath = options.envVaultFile // .env.vault
     const filepath = helpers.resolvePath(envVaultFilepath)
 
@@ -164,7 +167,7 @@ async function run () {
     }
   } else {
     const {
-      files,
+      envVaultFile,
       readableFilepaths,
       uniqueInjectedKeys
     } = new RunDefault(options.envFile, options.env, options.overload).run()
