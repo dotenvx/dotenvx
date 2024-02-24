@@ -3,16 +3,16 @@ const path = require('path')
 const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 
-const parseEncryptionKeyFromDotenvKey = require('./../helpers/parseEncryptionKeyFromDotenvKey')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const DotenvVault = require('./../helpers/dotenvVault')
 
 const ENCODING = 'utf8'
 
 class RunVault {
-  constructor(envVaultFile = '.env.vault', DOTENV_KEY = '') {
+  constructor (envVaultFile = '.env.vault', DOTENV_KEY = '', overload = false) {
     this.envVaultFile = envVaultFile
     this.DOTENV_KEY = DOTENV_KEY
+    this.overload = overload
   }
 
   run () {
@@ -69,7 +69,11 @@ class RunVault {
 
     return {
       envVaultFile: this.envVaultFile, // filepath
-      dotenvKeys: dotenvKeys,
+      dotenvKeys,
+      decrypted,
+      parsed,
+      injected,
+      preExisted,
       uniqueInjectedKeys: [...uniqueInjectedKeys]
     }
   }
@@ -79,7 +83,6 @@ class RunVault {
   }
 
   _decrypted (dotenvKey, parsedVault) {
-    const key = parseEncryptionKeyFromDotenvKey(dotenvKey)
     const environment = parseEnvironmentFromDotenvKey(dotenvKey)
 
     // DOTENV_KEY_PRODUCTION

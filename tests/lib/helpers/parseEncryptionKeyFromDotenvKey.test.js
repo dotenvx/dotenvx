@@ -6,7 +6,7 @@ t.test('#parseEncryptionKeyFromDotenvKey', ct => {
   const dotenvKey = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=other'
 
   const key = parseEncryptionKeyFromDotenvKey(dotenvKey) // buffer hex
-  const expected =  Buffer.from('e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34', 'hex')
+  const expected = Buffer.from('e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34', 'hex')
 
   ct.same(key, expected)
 
