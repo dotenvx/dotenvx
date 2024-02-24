@@ -4,6 +4,7 @@ const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 
 const inject = require('./../helpers/inject')
+const parseExpand = require('./../helpers/parseExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const DotenvVault = require('./../helpers/dotenvVault')
 
@@ -61,7 +62,7 @@ class RunVault {
     }
 
     // parse this. it's the equivalent of the .env file
-    const parsed = this._parseExpand(decrypted)
+    const parsed = parseExpand(decrypted, this.overload)
     const { injected, preExisted } = inject(process.env, parsed, this.overload)
 
     for (const key of Object.keys(injected)) {
@@ -103,32 +104,6 @@ class RunVault {
   _parsedVault (filepath) {
     const src = fs.readFileSync(filepath, { encoding: ENCODING })
     return dotenv.parse(src)
-  }
-
-  _parseExpand (src) {
-    const parsed = dotenv.parse(src)
-
-    // consider moving this logic straight into dotenv-expand
-    let inputParsed = {}
-    if (this.overload) {
-      inputParsed = { ...process.env, ...parsed }
-    } else {
-      inputParsed = { ...parsed, ...process.env }
-    }
-
-    const expandPlease = {
-      processEnv: {},
-      parsed: inputParsed
-    }
-    const expanded = dotenvExpand.expand(expandPlease).parsed
-
-    // but then for logging only log the original keys existing in parsed. this feels unnecessarily complex - like dotenv-expand should support the ability to inject additional `process.env` or objects as it sees fit to the object it wants to expand
-    const result = {}
-    for (const key in parsed) {
-      result[key] = expanded[key]
-    }
-
-    return result
   }
 }
 
