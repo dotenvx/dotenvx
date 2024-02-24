@@ -163,7 +163,11 @@ async function run () {
       }
     }
   } else {
-    const { files, readableFilepaths, uniqueInjectedKeys } = new RunDefault(options.envFile, options.env, options.overload).run()
+    const {
+      files,
+      readableFilepaths,
+      uniqueInjectedKeys
+    } = new RunDefault(options.envFile, options.env, options.overload).run()
 
     for (const file of files) {
       const filepath = file.filepath
