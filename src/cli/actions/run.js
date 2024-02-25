@@ -92,7 +92,7 @@ async function run () {
         injected,
         preExisted,
         uniqueInjectedKeys
-      } = new RunVault(options.envVaultFile, process.env.DOTENV_KEY, options.overload).run()
+      } = new RunVault(options.envVaultFile, options.env, process.env.DOTENV_KEY, options.overload).run()
 
       logger.verbose(`loading env from encrypted ${envVaultFile} (${path.resolve(envVaultFile)})`)
       logger.debug(`decrypting encrypted env from ${envVaultFile} (${path.resolve(envVaultFile)})`)
