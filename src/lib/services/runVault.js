@@ -3,9 +3,9 @@ const path = require('path')
 const dotenv = require('dotenv')
 
 const inject = require('./../helpers/inject')
+const decrypt = require('./../helpers/decrypt')
 const parseExpand = require('./../helpers/parseExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
-const DotenvVault = require('./../helpers/dotenvVault')
 
 const ENCODING = 'utf8'
 
@@ -96,8 +96,7 @@ class RunVault {
       throw error
     }
 
-    const dotenvVault = new DotenvVault()
-    return dotenvVault._decrypt(dotenvKey, ciphertext)
+    return decrypt(ciphertext, dotenvKey)
   }
 
   _parsedVault (filepath) {
