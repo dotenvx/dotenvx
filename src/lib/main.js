@@ -7,6 +7,7 @@ const Encrypt = require('./services/encrypt')
 const Ls = require('./services/ls')
 const Get = require('./services/get')
 
+// proxies to dotenv
 const config = function (options) {
   return dotenv.config(options)
 }
@@ -19,6 +20,7 @@ const parse = function (src) {
   return dotenv.parse(src)
 }
 
+// actions related
 const encrypt = function (directory, envFile) {
   return new Encrypt(directory, envFile).run()
 }
@@ -31,6 +33,7 @@ const get = function (key, envFile, overload, all) {
   return new Get(key, envFile, overload, all).run()
 }
 
+// misc/cleanup
 const decrypt = function (encrypted, keyStr) {
   try {
     return dotenv.decrypt(encrypted, keyStr)
@@ -49,51 +52,15 @@ const decrypt = function (encrypted, keyStr) {
   }
 }
 
-const inject = function (processEnv = {}, parsed = {}, overload = false) {
-  if (typeof parsed !== 'object') {
-    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to inject')
-  }
-
-  const injected = new Set()
-  const preExisting = new Set()
-
-  // set processEnv
-  for (const key of Object.keys(parsed)) {
-    if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
-      if (overload === true) {
-        processEnv[key] = parsed[key]
-        injected.add(key)
-
-        logger.verbose(`${key} set`)
-        logger.debug(`${key} set to ${parsed[key]}`)
-      } else {
-        preExisting.add(key)
-
-        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-        logger.debug(`${key} pre-exists as ${processEnv[key]} (protip: use --overload to override)`)
-      }
-    } else {
-      processEnv[key] = parsed[key]
-      injected.add(key)
-
-      logger.verbose(`${key} set`)
-      logger.debug(`${key} set to ${parsed[key]}`)
-    }
-  }
-
-  return {
-    injected,
-    preExisting
-  }
-}
-
 module.exports = {
+  // dotenv proxies
   config,
   configDotenv,
-  decrypt,
   parse,
-  inject,
+  // actions related
   encrypt,
   ls,
-  get
+  get,
+  // misc/cleanup
+  decrypt
 }
