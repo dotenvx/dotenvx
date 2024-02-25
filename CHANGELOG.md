@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.20.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.20.2...main)
+
+## 0.20.2
+
+### Added
+
+* added support for `--env` flag on the `.env.vault` decryption portion of `run` ([#101](https://github.com/dotenvx/dotenvx/pull/101))
 
 ## 0.20.1
 
