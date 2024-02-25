@@ -1,5 +1,6 @@
 const t = require('tap')
 const sinon = require('sinon')
+const dotenv = require('dotenv')
 
 const main = require('../../src/lib/main')
 
@@ -8,40 +9,66 @@ const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
 
 t.test('ls calls Ls.run', ct => {
-  const lsRunStub = sinon.stub(Ls.prototype, 'run')
-  lsRunStub.returns({})
+  const stub = sinon.stub(Ls.prototype, 'run')
+  stub.returns({})
 
   main.ls()
 
-  t.ok(lsRunStub.called, 'new Ls().run() called')
+  t.ok(stub.called, 'new Ls().run() called')
 
-  lsRunStub.restore()
+  stub.restore()
 
   ct.end()
 })
 
 t.test('encrypt calls Encrypt.run', ct => {
-  const encryptRunStub = sinon.stub(Encrypt.prototype, 'run')
-  encryptRunStub.returns({})
+  const stub = sinon.stub(Encrypt.prototype, 'run')
+  stub.returns({})
 
   main.encrypt()
 
-  t.ok(encryptRunStub.called, 'new Encrypt().run() called')
+  t.ok(stub.called, 'new Encrypt().run() called')
 
-  encryptRunStub.restore()
+  stub.restore()
 
   ct.end()
 })
 
 t.test('get calls Get.run', ct => {
-  const getRunStub = sinon.stub(Get.prototype, 'run')
-  getRunStub.returns({})
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({})
 
   main.get()
 
-  t.ok(getRunStub.called, 'new Get().run() called')
+  t.ok(stub.called, 'new Get().run() called')
 
-  getRunStub.restore()
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('configDotenv calls dotenv.configDotenv', ct => {
+  const stub = sinon.stub(dotenv, 'configDotenv')
+  stub.returns({})
+
+  main.configDotenv()
+
+  t.ok(stub.called, 'dotenv.configDotenv() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('parse calls dotenv.parse', ct => {
+  const stub = sinon.stub(dotenv, 'parse')
+  stub.returns({})
+
+  main.parse()
+
+  t.ok(stub.called, 'dotenv.parse() called')
+
+  stub.restore()
 
   ct.end()
 })
