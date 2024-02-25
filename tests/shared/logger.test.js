@@ -232,3 +232,16 @@ t.test('logger.error', (ct) => {
 
   ct.end()
 })
+
+t.test('logger.blank as object', (ct) => {
+  const message = { key: 'value' }
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.blank(message)
+  })
+
+  ct.equal(stdout, `${JSON.stringify({ key: 'value' })}\n`)
+
+  ct.end()
+})
+

@@ -11,6 +11,26 @@ const config = function (options) {
   return dotenv.config(options)
 }
 
+const configDotenv = function (options) {
+  return dotenv.configDotenv(options)
+}
+
+const parse = function (src) {
+  return dotenv.parse(src)
+}
+
+const encrypt = function (directory, envFile) {
+  return new Encrypt(directory, envFile).run()
+}
+
+const ls = function (directory, envFile) {
+  return new Ls(directory, envFile).run()
+}
+
+const get = function (key, envFile, overload, all) {
+  return new Get(key, envFile, overload, all).run()
+}
+
 const decrypt = function (encrypted, keyStr) {
   try {
     return dotenv.decrypt(encrypted, keyStr)
@@ -27,46 +47,6 @@ const decrypt = function (encrypted, keyStr) {
         throw e
     }
   }
-}
-
-const configDotenv = function (options) {
-  return dotenv.configDotenv(options)
-}
-
-const parse = function (src) {
-  const result = dotenv.parse(src)
-
-  logger.debug(result)
-
-  return result
-}
-
-const parseExpand = function (src, overload) {
-  const parsed = dotenv.parse(src)
-
-  // consider moving this logic straight into dotenv-expand
-  let inputParsed = {}
-  if (overload) {
-    inputParsed = { ...process.env, ...parsed }
-  } else {
-    inputParsed = { ...parsed, ...process.env }
-  }
-
-  const expandPlease = {
-    processEnv: {},
-    parsed: inputParsed
-  }
-  const expanded = dotenvExpand.expand(expandPlease).parsed
-
-  // but then for logging only log the original keys existing in parsed. this feels unnecessarily complex - like dotenv-expand should support the ability to inject additional `process.env` or objects as it sees fit to the object it wants to expand
-  const result = {}
-  for (const key in parsed) {
-    result[key] = expanded[key]
-  }
-
-  logger.debug(result)
-
-  return result
 }
 
 const inject = function (processEnv = {}, parsed = {}, overload = false) {
@@ -107,24 +87,11 @@ const inject = function (processEnv = {}, parsed = {}, overload = false) {
   }
 }
 
-const encrypt = function (directory, envFile) {
-  return new Encrypt(directory, envFile).run()
-}
-
-const ls = function (directory, envFile) {
-  return new Ls(directory, envFile).run()
-}
-
-const get = function (key, envFile, overload, all) {
-  return new Get(key, envFile, overload, all).run()
-}
-
 module.exports = {
   config,
   configDotenv,
   decrypt,
   parse,
-  parseExpand,
   inject,
   encrypt,
   ls,

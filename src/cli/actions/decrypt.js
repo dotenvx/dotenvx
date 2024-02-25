@@ -37,8 +37,8 @@ async function decrypt () {
     process.exit(1)
   }
 
-  const dotenvKeys = (main.configDotenv({ path: keysFilepath }).parsed || {})
-  const dotenvVault = (main.configDotenv({ path: vaultFilepath }).parsed || {})
+  const dotenvKeys = (configDotenv({ path: keysFilepath }).parsed || {})
+  const dotenvVault = (configDotenv({ path: vaultFilepath }).parsed || {})
 
   Object.entries(dotenvKeys).forEach(([dotenvKey, value]) => {
     // determine environment

@@ -1,9 +1,9 @@
 const fs = require('fs')
 const helpers = require('./../helpers')
-const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
 const createSpinner = require('./../../shared/createSpinner')
 
+const dotenv = require('dotenv')
 const spinner = createSpinner('generating')
 
 const ENCODING = 'utf8'
@@ -37,7 +37,7 @@ async function genexample () {
 
     try {
       const src = fs.readFileSync(filepath, { encoding: ENCODING })
-      const parsed = main.parse(src)
+      const parsed = dotenv.parse(src)
       Object.keys(parsed).forEach(key => { keys.add(key) })
     } catch (e) {
       // calculate development help message depending on state of repo
@@ -69,7 +69,7 @@ async function genexample () {
     fs.writeFileSync(exampleFilename, `# ${exampleFilename}\n`)
   }
 
-  const currentEnvExample = (main.configDotenv({ path: exampleFilepath }).parsed || {})
+  const currentEnvExample = (configDotenv({ path: exampleFilepath }).parsed || {})
   const keysArray = Array.from(keys)
 
   keysArray.forEach(key => {
