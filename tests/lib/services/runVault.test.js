@@ -215,7 +215,6 @@ t.test('#run (with envs as string)', ct => {
   const {
     envVaultFile,
     strings,
-    dotenvKeys,
     injected,
     uniqueInjectedKeys
   } = new RunVault(filepath, ['HELLO=string'], DOTENV_KEY).run()
@@ -243,7 +242,6 @@ t.test('#run (with envs as string and overload)', ct => {
   const {
     envVaultFile,
     strings,
-    dotenvKeys,
     injected,
     uniqueInjectedKeys
   } = new RunVault(filepath, ['HELLO=string'], DOTENV_KEY, true).run()
@@ -271,7 +269,6 @@ t.test('#run (with envs as string not an array)', ct => {
   const {
     envVaultFile,
     strings,
-    dotenvKeys,
     injected,
     uniqueInjectedKeys
   } = new RunVault(filepath, 'HELLO=string', DOTENV_KEY).run()
@@ -292,4 +289,3 @@ t.test('#run (with envs as string not an array)', ct => {
 
   ct.end()
 })
-
