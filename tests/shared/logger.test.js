@@ -244,4 +244,3 @@ t.test('logger.blank as object', (ct) => {
 
   ct.end()
 })
-

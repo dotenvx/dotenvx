@@ -1,11 +1,11 @@
 const logger = require('./../shared/logger')
 const dotenv = require('dotenv')
-const dotenvExpand = require('dotenv-expand')
 
 // services
 const Encrypt = require('./services/encrypt')
 const Ls = require('./services/ls')
 const Get = require('./services/get')
+const Genexample = require('./services/genexample')
 
 // proxies to dotenv
 const config = function (options) {
@@ -27,6 +27,10 @@ const encrypt = function (directory, envFile) {
 
 const ls = function (directory, envFile) {
   return new Ls(directory, envFile).run()
+}
+
+const genexample = function (directory, envFile) {
+  return new Genexample(directory, envFile).run()
 }
 
 const get = function (key, envFile, overload, all) {
@@ -61,6 +65,7 @@ module.exports = {
   encrypt,
   ls,
   get,
+  genexample,
   // misc/cleanup
   decrypt
 }
