@@ -10,9 +10,10 @@ const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFrom
 const ENCODING = 'utf8'
 
 class RunVault {
-  constructor (envVaultFile = '.env.vault', DOTENV_KEY = '', overload = false) {
-    this.envVaultFile = envVaultFile
+  constructor (envVaultFile = '.env.vault', env = [], DOTENV_KEY = '', overload = false) {
     this.DOTENV_KEY = DOTENV_KEY
+    this.envVaultFile = envVaultFile
+    this.env = env
     this.overload = overload
   }
 
@@ -34,17 +35,32 @@ class RunVault {
       throw error
     }
 
+    const strings = []
     const uniqueInjectedKeys = new Set()
 
-    const parsedVault = this._parsedVault(filepath) // { "DOTENV_VAULT_DEVELOPMENT": "<ciphertext>" }
+    const envs = this._envs()
+    for (const env of envs) {
+      const row = {}
+      row.string = env
 
-    // handle scenario for comma separated keys - for use with key rotation
-    // example: DOTENV_KEY="dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=prod,dotenv://:key_7890@dotenvx.com/vault/.env.vault?environment=prod"
-    const dotenvKeys = this._dotenvKeys()
-    const length = dotenvKeys.length
+      const parsed = parseExpand(env, this.overload)
+      row.parsed = parsed
+
+      const { injected, preExisted } = inject(process.env, parsed, this.overload)
+      row.injected = injected
+      row.preExisted = preExisted
+
+      for (const key of Object.keys(injected)) {
+        uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
+      }
+
+      strings.push(row)
+    }
 
     let decrypted
-    for (let i = 0; i < length; i++) {
+    const dotenvKeys = this._dotenvKeys()
+    const parsedVault = this._parsedVault(filepath)
+    for (let i = 0; i < dotenvKeys.length; i++) {
       try {
         const dotenvKey = dotenvKeys[i].trim() // dotenv://key_1234@...?environment=prod
 
@@ -53,7 +69,7 @@ class RunVault {
         break
       } catch (error) {
         // last key
-        if (i + 1 >= length) {
+        if (i + 1 >= dotenvKeys.length) {
           throw error
         }
         // try next key
@@ -70,6 +86,7 @@ class RunVault {
 
     return {
       envVaultFile: this.envVaultFile, // filepath
+      strings,
       dotenvKeys,
       decrypted,
       parsed,
@@ -79,6 +96,8 @@ class RunVault {
     }
   }
 
+  // handle scenario for comma separated keys - for use with key rotation
+  // example: DOTENV_KEY="dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=prod,dotenv://:key_7890@dotenvx.com/vault/.env.vault?environment=prod"
   _dotenvKeys () {
     return this.DOTENV_KEY.split(',')
   }
@@ -99,9 +118,18 @@ class RunVault {
     return decrypt(ciphertext, dotenvKey)
   }
 
+  // { "DOTENV_VAULT_DEVELOPMENT": "<ciphertext>" }
   _parsedVault (filepath) {
     const src = fs.readFileSync(filepath, { encoding: ENCODING })
     return dotenv.parse(src)
+  }
+
+  _envs () {
+    if (!Array.isArray(this.env)) {
+      return [this.env]
+    }
+
+    return this.env
   }
 }
 

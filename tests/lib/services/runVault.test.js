@@ -43,7 +43,7 @@ t.test('#run (incorrect/failed-decryption DOTENV_KEY argument)', ct => {
   const DOTENV_KEY = 'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development'
 
   try {
-    new RunVault(filepath, DOTENV_KEY).run()
+    new RunVault(filepath, [], DOTENV_KEY).run()
 
     ct.fail('should have raised an error but did not')
   } catch (error) {
@@ -66,7 +66,7 @@ t.test('#run (partly failed-decryption DOTENV_KEY argument second key succeeds. 
     envVaultFile,
     dotenvKeys,
     uniqueInjectedKeys
-  } = new RunVault(filepath, DOTENV_KEY).run()
+  } = new RunVault(filepath, [], DOTENV_KEY).run()
 
   ct.same(envVaultFile, filepath)
   ct.same(dotenvKeys, ['dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development', 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'])
@@ -83,7 +83,7 @@ t.test('#run (.env.vault and DOTENV_KEY)', ct => {
     envVaultFile,
     dotenvKeys,
     uniqueInjectedKeys
-  } = new RunVault(filepath, DOTENV_KEY).run()
+  } = new RunVault(filepath, [], DOTENV_KEY).run()
 
   ct.same(envVaultFile, filepath)
   ct.same(dotenvKeys, [DOTENV_KEY])
@@ -102,7 +102,7 @@ t.test('#run (.env.vault and DOTENV_KEY and machine env already set)', ct => {
     envVaultFile,
     dotenvKeys,
     uniqueInjectedKeys
-  } = new RunVault(filepath, DOTENV_KEY).run()
+  } = new RunVault(filepath, [], DOTENV_KEY).run()
 
   ct.same(envVaultFile, filepath)
   ct.same(dotenvKeys, [DOTENV_KEY])
@@ -122,7 +122,7 @@ t.test('#run (.env.vault and DOTENV_KEY and machine env already set but overload
     envVaultFile,
     dotenvKeys,
     uniqueInjectedKeys
-  } = new RunVault(filepath, DOTENV_KEY, true).run()
+  } = new RunVault(filepath, [], DOTENV_KEY, true).run()
 
   ct.same(envVaultFile, filepath)
   ct.same(dotenvKeys, [DOTENV_KEY])
@@ -135,7 +135,7 @@ t.test('#run (.env.vault and DOTENV_KEY and machine env already set but overload
 t.test('#_dotenvKeys', ct => {
   const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
 
-  const runVault = new RunVault('tests/monorepo/apps/backend/.env.vault', DOTENV_KEY)
+  const runVault = new RunVault('tests/monorepo/apps/backend/.env.vault', [], DOTENV_KEY)
 
   const results = runVault._dotenvKeys()
 
@@ -147,7 +147,7 @@ t.test('#_dotenvKeys', ct => {
 t.test('#_dotenvKeys (separated by comma)', ct => {
   const DOTENV_KEY = 'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development,dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
 
-  const runVault = new RunVault('tests/monorepo/apps/backend/.env.vault', DOTENV_KEY)
+  const runVault = new RunVault('tests/monorepo/apps/backend/.env.vault', [], DOTENV_KEY)
 
   const results = runVault._dotenvKeys()
 
@@ -174,7 +174,7 @@ t.test('#_decrypted', ct => {
   const envVaultFile = 'tests/monorepo/apps/backend/.env.vault'
   const filepath = path.resolve(envVaultFile)
 
-  const runVault = new RunVault(envVaultFile, dotenvKey)
+  const runVault = new RunVault(envVaultFile, [], dotenvKey)
   const parsedVault = runVault._parsedVault(filepath)
 
   const decrypted = runVault._decrypted(dotenvKey, parsedVault)
@@ -192,7 +192,7 @@ t.test('#_decrypted (can\'t find environment)', ct => {
   const envVaultFile = 'tests/monorepo/apps/backend/.env.vault'
   const filepath = path.resolve(envVaultFile)
 
-  const runVault = new RunVault(envVaultFile, dotenvKey)
+  const runVault = new RunVault(envVaultFile, [], dotenvKey)
   const parsedVault = runVault._parsedVault(filepath)
 
   try {
@@ -205,6 +205,87 @@ t.test('#_decrypted (can\'t find environment)', ct => {
 
     ct.same(error, exampleError)
   }
+
+  ct.end()
+})
+
+t.test('#run (with envs as string)', ct => {
+  const filepath = 'tests/monorepo/apps/backend/.env.vault'
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+  const {
+    envVaultFile,
+    strings,
+    injected,
+    uniqueInjectedKeys
+  } = new RunVault(filepath, ['HELLO=string'], DOTENV_KEY).run()
+
+  ct.same(strings, [{
+    string: 'HELLO=string',
+    parsed: {
+      HELLO: 'string'
+    },
+    injected: {
+      HELLO: 'string'
+    },
+    preExisted: {}
+  }])
+  ct.same(envVaultFile, filepath)
+  ct.same(injected, {})
+  ct.same(uniqueInjectedKeys, ['HELLO'])
+
+  ct.end()
+})
+
+t.test('#run (with envs as string and overload)', ct => {
+  const filepath = 'tests/monorepo/apps/backend/.env.vault'
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+  const {
+    envVaultFile,
+    strings,
+    injected,
+    uniqueInjectedKeys
+  } = new RunVault(filepath, ['HELLO=string'], DOTENV_KEY, true).run()
+
+  ct.same(strings, [{
+    string: 'HELLO=string',
+    parsed: {
+      HELLO: 'string'
+    },
+    injected: {
+      HELLO: 'string'
+    },
+    preExisted: {}
+  }])
+  ct.same(envVaultFile, filepath)
+  ct.same(injected, { HELLO: 'backend' })
+  ct.same(uniqueInjectedKeys, ['HELLO'])
+
+  ct.end()
+})
+
+t.test('#run (with envs as string not an array)', ct => {
+  const filepath = 'tests/monorepo/apps/backend/.env.vault'
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+  const {
+    envVaultFile,
+    strings,
+    injected,
+    uniqueInjectedKeys
+  } = new RunVault(filepath, 'HELLO=string', DOTENV_KEY).run()
+
+  ct.same(strings, [{
+    string: 'HELLO=string',
+    parsed: {
+      HELLO: 'string'
+    },
+    injected: {
+      HELLO: 'string'
+    },
+    preExisted: {}
+  }])
+  ct.same(envVaultFile, filepath)
+  ct.same(injected, {})
+  ct.same(uniqueInjectedKeys, ['HELLO'])
 
   ct.end()
 })
