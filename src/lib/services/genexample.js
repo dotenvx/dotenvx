@@ -57,15 +57,11 @@ class Genexample {
     }
 
     const currentEnvExample = dotenv.configDotenv({ path: exampleFilepath }).parsed
-
-    console.log(currentEnvExample)
-
     const injected = {}
     const preExisted = {}
 
     for (const key of [...keys]) {
-      console.log(key, currentEnvExample[key])
-      if (currentEnvExample[key]) {
+      if (key in currentEnvExample) {
         preExisted[key] = currentEnvExample[key]
       } else {
         envExampleFile += `${key}=""\n`
