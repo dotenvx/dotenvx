@@ -1,9 +1,10 @@
 const fs = require('fs')
 const path = require('path')
-const dotenv = require('dotenv')
-const dotenvExpand = require('dotenv-expand')
 
 const ENCODING = 'utf8'
+
+const inject = require('./../helpers/inject')
+const parseExpand = require('./../helpers/parseExpand')
 
 class RunDefault {
   constructor (envFile = '.env', env = [], overload = false) {
@@ -24,10 +25,10 @@ class RunDefault {
       row.string = env
 
       try {
-        const parsed = this._parseExpand(env)
+        const parsed = parseExpand(env, this.overload)
         row.parsed = parsed
 
-        const { injected, preExisted } = this._inject(process.env, parsed)
+        const { injected, preExisted } = inject(process.env, parsed, this.overload)
         row.injected = injected
         row.preExisted = preExisted
 
@@ -51,10 +52,10 @@ class RunDefault {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
         readableFilepaths.add(envFilepath)
 
-        const parsed = this._parseExpand(src)
+        const parsed = parseExpand(src, this.overload)
         row.parsed = parsed
 
-        const { injected, preExisted } = this._inject(process.env, parsed)
+        const { injected, preExisted } = inject(process.env, parsed, this.overload)
         row.injected = injected
         row.preExisted = preExisted
 
@@ -97,58 +98,6 @@ class RunDefault {
     }
 
     return this.env
-  }
-
-  _parseExpand (src) {
-    const parsed = dotenv.parse(src)
-
-    // consider moving this logic straight into dotenv-expand
-    let inputParsed = {}
-    if (this.overload) {
-      inputParsed = { ...process.env, ...parsed }
-    } else {
-      inputParsed = { ...parsed, ...process.env }
-    }
-
-    const expandPlease = {
-      processEnv: {},
-      parsed: inputParsed
-    }
-    const expanded = dotenvExpand.expand(expandPlease).parsed
-
-    // but then for logging only log the original keys existing in parsed. this feels unnecessarily complex - like dotenv-expand should support the ability to inject additional `process.env` or objects as it sees fit to the object it wants to expand
-    const result = {}
-    for (const key in parsed) {
-      result[key] = expanded[key]
-    }
-
-    return result
-  }
-
-  _inject (processEnv = {}, parsed = {}) {
-    const injected = {}
-    const preExisted = {}
-
-    // set processEnv
-    for (const key of Object.keys(parsed)) {
-      if (processEnv[key]) {
-        if (this.overload === true) {
-          processEnv[key] = parsed[key]
-
-          injected[key] = parsed[key] // track injected key/value
-        } else {
-          preExisted[key] = processEnv[key] // track preExisted key/value
-        }
-      } else {
-        processEnv[key] = parsed[key]
-        injected[key] = parsed[key] // track injected key/value
-      }
-    }
-
-    return {
-      injected,
-      preExisted
-    }
   }
 }
 

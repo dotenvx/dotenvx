@@ -1,14 +1,10 @@
-const fs = require('fs')
 const path = require('path')
 const execa = require('execa')
 const logger = require('./../../shared/logger')
-const helpers = require('./../helpers')
-const main = require('./../../lib/main')
-const parseEncryptionKeyFromDotenvKey = require('./../../lib/helpers/parseEncryptionKeyFromDotenvKey')
 
 const RunDefault = require('./../../lib/services/runDefault')
+const RunVault = require('./../../lib/services/runVault')
 
-const ENCODING = 'utf8'
 const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
 
 const executeCommand = async function (commandArgs, env) {
@@ -80,31 +76,6 @@ const executeCommand = async function (commandArgs, env) {
   }
 }
 
-const _parseCipherTextFromDotenvKeyAndParsedVault = function (dotenvKey, parsedVault) {
-  // Parse DOTENV_KEY. Format is a URI
-  let uri
-  try {
-    uri = new URL(dotenvKey)
-  } catch (e) {
-    throw new Error(`INVALID_DOTENV_KEY: ${e.message}`)
-  }
-
-  // Get environment
-  const environment = uri.searchParams.get('environment')
-  if (!environment) {
-    throw new Error('INVALID_DOTENV_KEY: Missing environment part')
-  }
-
-  // Get ciphertext payload
-  const environmentKey = `DOTENV_VAULT_${environment.toUpperCase()}`
-  const ciphertext = parsedVault[environmentKey] // DOTENV_VAULT_PRODUCTION
-  if (!ciphertext) {
-    throw new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: cannot locate environment ${environmentKey} in your .env.vault file`)
-  }
-
-  return ciphertext
-}
-
 async function run () {
   const commandArgs = this.args
   logger.debug(`process command [${commandArgs.join(' ')}]`)
@@ -114,56 +85,46 @@ async function run () {
 
   // load from .env.vault file
   if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
-    const envVaultFilepath = options.envVaultFile // .env.vault
-    const filepath = helpers.resolvePath(envVaultFilepath)
+    try {
+      const {
+        envVaultFile,
+        parsed,
+        injected,
+        preExisted,
+        uniqueInjectedKeys
+      } = new RunVault(options.envVaultFile, process.env.DOTENV_KEY, options.overload).run()
 
-    if (!fs.existsSync(filepath)) {
-      logger.error(`you set DOTENV_KEY but your .env.vault file is missing: ${filepath}`)
-    } else {
-      logger.verbose(`loading env from encrypted ${filepath}`)
+      logger.verbose(`loading env from encrypted ${envVaultFile} (${path.resolve(envVaultFile)})`)
+      logger.debug(`decrypting encrypted env from ${envVaultFile} (${path.resolve(envVaultFile)})`)
 
-      try {
-        const src = fs.readFileSync(filepath, { encoding: ENCODING })
-        const parsedVault = main.parse(src)
+      // debug parsed
+      logger.debug(parsed)
 
-        logger.debug(`decrypting encrypted env from ${filepath}`)
-        // handle scenario for comma separated keys - for use with key rotation
-        // example: DOTENV_KEY="dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=prod,dotenv://:key_7890@dotenvx.com/vault/.env.vault?environment=prod"
-        const dotenvKeys = process.env.DOTENV_KEY.split(',')
-        const length = dotenvKeys.length
+      // verbose/debug injected key/value
+      for (const [key, value] of Object.entries(injected)) {
+        logger.verbose(`${key} set`)
+        logger.debug(`${key} set to ${value}`)
+      }
 
-        let decrypted
-        for (let i = 0; i < length; i++) {
-          try {
-            // Get full dotenvKey
-            const dotenvKey = dotenvKeys[i].trim()
+      // verbose/debug preExisted key/value
+      for (const [key, value] of Object.entries(preExisted)) {
+        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
+        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
+      }
 
-            const key = parseEncryptionKeyFromDotenvKey(dotenvKey)
-            const ciphertext = _parseCipherTextFromDotenvKeyAndParsedVault(dotenvKey, parsedVault)
-
-            // Decrypt
-            decrypted = main.decrypt(ciphertext, key)
-
-            break
-          } catch (error) {
-            // last key
-            if (i + 1 >= length) {
-              throw error
-            }
-            // try next key
-          }
-        }
-        logger.debug(decrypted)
-        const parsed = main.parseExpand(decrypted)
-        const result = main.inject(process.env, parsed, options.overload)
-
-        logger.successv(`injecting env (${result.injected.size}) from encrypted ${envVaultFilepath}`)
-      } catch (e) {
-        logger.error(e)
+      logger.successv(`injecting env (${uniqueInjectedKeys.length}) from encrypted ${envVaultFile}`)
+    } catch (error) {
+      logger.error(error.message)
+      if (error.help) {
+        logger.help(error.help)
       }
     }
   } else {
-    const { files, readableFilepaths, uniqueInjectedKeys } = new RunDefault(options.envFile, options.env, options.overload).run()
+    const {
+      files,
+      readableFilepaths,
+      uniqueInjectedKeys
+    } = new RunDefault(options.envFile, options.env, options.overload).run()
 
     for (const file of files) {
       const filepath = file.filepath
