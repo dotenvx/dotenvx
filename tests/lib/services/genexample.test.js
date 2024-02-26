@@ -7,17 +7,36 @@ t.test('#run', ct => {
   const genexample = new Genexample('tests/monorepo/apps/frontend')
 
   const {
-    content,
+    envExampleFile,
     injected,
-    preExisted,
+    preExisted
   } = genexample.run()
 
   const output = `# .env.example
 HELLO=""
 `
-  ct.same(content, output)
+  ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })
   ct.same(preExisted, {})
+
+  ct.end()
+})
+
+t.test('#run (.env.example already exists)', ct => {
+  const genexample = new Genexample('tests/monorepo/apps/backend')
+
+  const {
+    envExampleFile,
+    injected,
+    preExisted
+  } = genexample.run()
+
+  const output = `# .env.example
+HELLO=""
+`
+  ct.same(envExampleFile, output)
+  ct.same(injected, {})
+  ct.same(preExisted, { HELLO: '' })
 
   ct.end()
 })
@@ -26,21 +45,20 @@ t.test('#run (string envFile)', ct => {
   const genexample = new Genexample('tests/monorepo/apps/frontend', '.env')
 
   const {
-    content,
+    envExampleFile,
     injected,
-    preExisted,
+    preExisted
   } = genexample.run()
 
   const output = `# .env.example
 HELLO=""
 `
-  ct.same(content, output)
+  ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })
   ct.same(preExisted, {})
 
   ct.end()
 })
-
 
 t.test('#run (cant find directory)', ct => {
   try {

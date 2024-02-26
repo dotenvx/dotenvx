@@ -1,5 +1,4 @@
 const fs = require('fs')
-const dotenv = require('dotenv')
 const main = require('./../../lib/main')
 const helpers = require('./../helpers')
 const logger = require('./../../shared/logger')
@@ -23,9 +22,7 @@ async function genexample (directory) {
       envExampleFile,
       envFile,
       exampleFilepath,
-      addedKeys,
-      injected,
-      preExisted
+      addedKeys
     } = main.genexample(directory, options.envFile)
 
     logger.verbose(`loading env from ${envFile}`)

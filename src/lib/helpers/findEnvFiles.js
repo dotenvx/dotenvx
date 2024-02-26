@@ -22,7 +22,6 @@ function findEnvFiles (directory) {
       throw e
     }
   }
-
 }
 
 module.exports = findEnvFiles

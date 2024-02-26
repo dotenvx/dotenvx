@@ -1,4 +1,5 @@
 const fs = require('fs')
+const dotenv = require('dotenv')
 
 const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
@@ -37,8 +38,8 @@ async function decrypt () {
     process.exit(1)
   }
 
-  const dotenvKeys = (configDotenv({ path: keysFilepath }).parsed || {})
-  const dotenvVault = (configDotenv({ path: vaultFilepath }).parsed || {})
+  const dotenvKeys = dotenv.configDotenv({ path: keysFilepath }).parsed
+  const dotenvVault = dotenv.configDotenv({ path: vaultFilepath }).parsed
 
   Object.entries(dotenvKeys).forEach(([dotenvKey, value]) => {
     // determine environment
