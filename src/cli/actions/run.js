@@ -4,6 +4,7 @@ const logger = require('./../../shared/logger')
 
 const RunDefault = require('./../../lib/services/runDefault')
 const RunVault = require('./../../lib/services/runVault')
+const helpers = require('./../helpers')
 
 const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
 
@@ -35,7 +36,9 @@ const executeCommand = async function (commandArgs, env) {
   }
 
   try {
-    const systemCommandPath = execa.sync('which', [commandArgs[0]]).stdout
+    const systemCommandPath = helpers.isWindows()
+      ? execa.sync("where.exe", [commandArgs[0]]).stdout
+      : execa.sync('which', [commandArgs[0]]).stdout
     logger.debug(`system command path [${systemCommandPath}]`)
 
     // commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
