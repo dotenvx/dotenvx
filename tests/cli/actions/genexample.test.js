@@ -28,6 +28,34 @@ t.test('genexample calls main.genexample', async ct => {
   t.ok(stub.called, 'main.genexample() called')
   t.ok(fsStub.called, 'fs.writeFileSync() called')
   stub.restore()
+  fsStub.restore()
+
+  ct.end()
+})
+
+t.test('genexample calls main.genexample (no addedKeys changes)', async ct => {
+  const stub = sinon.stub(main, 'genexample')
+  stub.returns({
+    envExampleFile: '',
+    envFile: '.env.example',
+    exampleFilepath: '.env.example',
+    addedKeys: []
+  })
+
+  const fsStub = sinon.stub(fs, 'writeFileSync')
+
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = {
+    opts: optsStub
+  }
+
+  // Call the ls function with the fake context
+  await genexample.call(fakeContext, '.')
+
+  t.ok(stub.called, 'main.genexample() called')
+  t.ok(fsStub.called, 'fs.writeFileSync() called')
+  stub.restore()
+  fsStub.restore()
 
   ct.end()
 })
