@@ -37,17 +37,10 @@ const extractUsernameName = function (url) {
   return parts.slice(-2).join('/')
 }
 
-const isWindows = function () {
-  // Snippet taken from cross-env
-  // https://github.com/kentcdodds/cross-env/blob/master/src/is-windows.js
-  return process.platform === 'win32' || /^(msys|cygwin)$/.test(process.env.OSTYPE)
-}
-
 module.exports = {
   sleep,
   resolvePath,
   pluralize,
   getRemoteOriginUrl,
-  extractUsernameName,
-  isWindows
+  extractUsernameName
 }

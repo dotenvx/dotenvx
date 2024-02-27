@@ -1,5 +1,6 @@
 const path = require('path')
 const execa = require('execa')
+const which = require('which')
 const logger = require('./../../shared/logger')
 
 const RunDefault = require('./../../lib/services/runDefault')
@@ -36,10 +37,9 @@ const executeCommand = async function (commandArgs, env) {
   }
 
   try {
-    const systemCommandPath = helpers.isWindows()
-      ? execa.sync("where.exe", [commandArgs[0]]).stdout
-      : execa.sync('which', [commandArgs[0]]).stdout
-    logger.debug(`system command path [${systemCommandPath}]`)
+    const systemCommandPath = which.sync(`${commandArgs[0]}`)
+
+    logger.debug(`expanding process command to [${systemCommandPath} ${commandArgs.slice(1).join(' ')}]`)
 
     // commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
     commandProcess = execa(systemCommandPath, commandArgs.slice(1), {
