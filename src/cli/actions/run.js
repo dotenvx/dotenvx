@@ -5,7 +5,6 @@ const logger = require('./../../shared/logger')
 
 const RunDefault = require('./../../lib/services/runDefault')
 const RunVault = require('./../../lib/services/runVault')
-const helpers = require('./../helpers')
 
 const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
 
