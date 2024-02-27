@@ -85,6 +85,18 @@ DOTENV_KEY_DEVELOPMENT="dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da658
   ct.end()
 })
 
+t.test('#run (non-existant directory)', ct => {
+  try {
+    new Encrypt('tests/monorepo/apps/backendzzzz').run()
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.code, 'MISSING_DIRECTORY')
+    ct.same(error.message, 'missing directory (tests/monorepo/apps/backendzzzz)')
+  }
+
+  ct.end()
+})
+
 t.test('#run (empty envFile)', ct => {
   try {
     new Encrypt('tests/monorepo/apps/backend', []).run()

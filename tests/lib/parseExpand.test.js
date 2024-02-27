@@ -1,8 +1,6 @@
-const capcon = require('capture-console')
 const t = require('tap')
-const chalk = require('chalk')
 
-const dotenvx = require('../../src/lib/main')
+const parseExpand = require('../../src/lib/helpers/parseExpand')
 const logger = require('../../src/shared/logger')
 
 t.beforeEach((ct) => {
@@ -13,7 +11,7 @@ t.beforeEach((ct) => {
 
 t.test('returns object', ct => {
   const dotenv = { parsed: {} }
-  const parsed = dotenvx.parseExpand(dotenv)
+  const parsed = parseExpand(dotenv)
 
   t.ok(parsed instanceof Object, 'should be an object')
 
@@ -26,7 +24,7 @@ t.test('expands environment variables', ct => {
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = dotenvx.parseExpand(src)
+  const parsed = parseExpand(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -42,7 +40,7 @@ t.test('expands environment variables (pre-existing no overload)', ct => {
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = dotenvx.parseExpand(src)
+  const parsed = parseExpand(src)
 
   ct.equal(parsed.BASIC, 'pre-existing')
   ct.equal(parsed.BASIC_EXPAND, 'pre-existing')
@@ -58,7 +56,7 @@ t.test('expands environment variables (pre-existing when overload is true)', ct 
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = dotenvx.parseExpand(src, true)
+  const parsed = parseExpand(src, true)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -73,7 +71,7 @@ t.test('uses environment variables existing already on the machine for expansion
     MACHINE_EXPAND=\${MACHINE}
     MACHINE_EXPAND_SIMPLE=$MACHINE
   `
-  const parsed = dotenvx.parseExpand(src)
+  const parsed = parseExpand(src)
 
   ct.equal(parsed.MACHINE_EXPAND, 'machine')
   ct.equal(parsed.MACHINE_EXPAND_SIMPLE, 'machine')
@@ -87,46 +85,9 @@ t.test('only returns keys part of the original input. process.env is used for he
     MACHINE_EXPAND=\${MACHINE}
     MACHINE_EXPAND_SIMPLE=$MACHINE
   `
-  const parsed = dotenvx.parseExpand(src)
+  const parsed = parseExpand(src)
 
   ct.equal(parsed.MACHINE, undefined)
-
-  ct.end()
-})
-
-t.test('debugs parsed info', ct => {
-  logger.level = 'debug'
-
-  const src = `
-    BASIC=basic
-    BASIC_EXPAND=\${BASIC}
-    BASIC_EXPAND_SIMPLE=$BASIC
-  `
-
-  const stdout = capcon.interceptStdout(() => {
-    dotenvx.parseExpand(src)
-  })
-
-  ct.equal(stdout, `${chalk.keyword('plum')('{"BASIC":"basic","BASIC_EXPAND":"basic","BASIC_EXPAND_SIMPLE":"basic"}')}\n`)
-
-  ct.end()
-})
-
-t.test('debugs parsed info only - does not include keys from process.env', ct => {
-  logger.level = 'debug'
-  process.env.MACHINE = 'machine'
-
-  const src = `
-    BASIC=basic
-    BASIC_EXPAND=\${BASIC}
-    BASIC_EXPAND_SIMPLE=$BASIC
-  `
-
-  const stdout = capcon.interceptStdout(() => {
-    dotenvx.parseExpand(src)
-  })
-
-  ct.equal(stdout, `${chalk.keyword('plum')('{"BASIC":"basic","BASIC_EXPAND":"basic","BASIC_EXPAND_SIMPLE":"basic"}')}\n`)
 
   ct.end()
 })

@@ -95,6 +95,7 @@ program.command('prebuild')
 // dotenvx genexample
 program.command('genexample')
   .description('generate .env.example')
+  .argument('[directory]', 'directory to generate from', '.')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .action(require('./actions/genexample'))
 

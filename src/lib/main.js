@@ -1,16 +1,43 @@
 const logger = require('./../shared/logger')
 const dotenv = require('dotenv')
-const dotenvExpand = require('dotenv-expand')
 
 // services
 const Encrypt = require('./services/encrypt')
 const Ls = require('./services/ls')
 const Get = require('./services/get')
+const Genexample = require('./services/genexample')
 
+// proxies to dotenv
 const config = function (options) {
   return dotenv.config(options)
 }
 
+const configDotenv = function (options) {
+  return dotenv.configDotenv(options)
+}
+
+const parse = function (src) {
+  return dotenv.parse(src)
+}
+
+// actions related
+const encrypt = function (directory, envFile) {
+  return new Encrypt(directory, envFile).run()
+}
+
+const ls = function (directory, envFile) {
+  return new Ls(directory, envFile).run()
+}
+
+const genexample = function (directory, envFile) {
+  return new Genexample(directory, envFile).run()
+}
+
+const get = function (key, envFile, overload, all) {
+  return new Get(key, envFile, overload, all).run()
+}
+
+// misc/cleanup
 const decrypt = function (encrypted, keyStr) {
   try {
     return dotenv.decrypt(encrypted, keyStr)
@@ -29,104 +56,16 @@ const decrypt = function (encrypted, keyStr) {
   }
 }
 
-const configDotenv = function (options) {
-  return dotenv.configDotenv(options)
-}
-
-const parse = function (src) {
-  const result = dotenv.parse(src)
-
-  logger.debug(result)
-
-  return result
-}
-
-const parseExpand = function (src, overload) {
-  const parsed = dotenv.parse(src)
-
-  // consider moving this logic straight into dotenv-expand
-  let inputParsed = {}
-  if (overload) {
-    inputParsed = { ...process.env, ...parsed }
-  } else {
-    inputParsed = { ...parsed, ...process.env }
-  }
-
-  const expandPlease = {
-    processEnv: {},
-    parsed: inputParsed
-  }
-  const expanded = dotenvExpand.expand(expandPlease).parsed
-
-  // but then for logging only log the original keys existing in parsed. this feels unnecessarily complex - like dotenv-expand should support the ability to inject additional `process.env` or objects as it sees fit to the object it wants to expand
-  const result = {}
-  for (const key in parsed) {
-    result[key] = expanded[key]
-  }
-
-  logger.debug(result)
-
-  return result
-}
-
-const inject = function (processEnv = {}, parsed = {}, overload = false) {
-  if (typeof parsed !== 'object') {
-    throw new Error('OBJECT_REQUIRED: Please check the parsed argument being passed to inject')
-  }
-
-  const injected = new Set()
-  const preExisting = new Set()
-
-  // set processEnv
-  for (const key of Object.keys(parsed)) {
-    if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
-      if (overload === true) {
-        processEnv[key] = parsed[key]
-        injected.add(key)
-
-        logger.verbose(`${key} set`)
-        logger.debug(`${key} set to ${parsed[key]}`)
-      } else {
-        preExisting.add(key)
-
-        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-        logger.debug(`${key} pre-exists as ${processEnv[key]} (protip: use --overload to override)`)
-      }
-    } else {
-      processEnv[key] = parsed[key]
-      injected.add(key)
-
-      logger.verbose(`${key} set`)
-      logger.debug(`${key} set to ${parsed[key]}`)
-    }
-  }
-
-  return {
-    injected,
-    preExisting
-  }
-}
-
-const encrypt = function (directory, envFile) {
-  return new Encrypt(directory, envFile).run()
-}
-
-const ls = function (directory, envFile) {
-  return new Ls(directory, envFile).run()
-}
-
-const get = function (key, envFile, overload, all) {
-  return new Get(key, envFile, overload, all).run()
-}
-
 module.exports = {
+  // dotenv proxies
   config,
   configDotenv,
-  decrypt,
   parse,
-  parseExpand,
-  inject,
+  // actions related
   encrypt,
   ls,
-  get
+  get,
+  genexample,
+  // misc/cleanup
+  decrypt
 }

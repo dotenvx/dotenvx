@@ -25,9 +25,9 @@ t.test('encrypt (when .env file does not exist)', async ct => {
 
 t.test('encrypt (when different error not having help or code occurs)', async ct => {
   const mainStub = sinon.stub(main, 'encrypt').throws(new Error('other error'))
+  const exitStub = sinon.stub(process, 'exit')
 
   const optsStub = sinon.stub().returns({})
-  const exitStub = sinon.stub(process, 'exit')
   const fakeContext = {
     opts: optsStub
   }

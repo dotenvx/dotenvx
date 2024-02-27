@@ -6,12 +6,13 @@ const DotenvKeys = require('./../helpers/dotenvKeys')
 const DotenvVault = require('./../helpers/dotenvVault')
 
 const ENCODING = 'utf8'
-const RESERVED_ENV_FILES = ['.env.vault', '.env.project', '.env.keys', '.env.me', '.env.x']
+
+const findEnvFiles = require('../helpers/findEnvFiles')
 
 class Encrypt {
   constructor (directory = '.', envFile) {
     this.directory = directory
-    this.envFile = envFile || this._findEnvFiles()
+    this.envFile = envFile || findEnvFiles(directory)
     // calculated
     this.envKeysFilepath = path.resolve(this.directory, '.env.keys')
     this.envVaultFilepath = path.resolve(this.directory, '.env.vault')
@@ -111,17 +112,6 @@ class Encrypt {
     }
 
     return dotenv.configDotenv(options).parsed
-  }
-
-  _findEnvFiles () {
-    const files = fs.readdirSync(this.directory)
-    const envFiles = files.filter(file =>
-      file.startsWith('.env') &&
-      !file.endsWith('.previous') &&
-      !RESERVED_ENV_FILES.includes(file)
-    )
-
-    return envFiles
   }
 }
 

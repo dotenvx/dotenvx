@@ -1,10 +1,10 @@
 const fs = require('fs')
+const dotenv = require('dotenv')
 
-const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
 const createSpinner = require('./../../shared/createSpinner')
-const parseEncryptionKeyFromDotenvKey = require('./../../lib/helpers/parseEncryptionKeyFromDotenvKey')
+const libDecrypt = require('./../../lib/helpers/decrypt')
 
 const spinner = createSpinner('decrypting')
 
@@ -37,8 +37,8 @@ async function decrypt () {
     process.exit(1)
   }
 
-  const dotenvKeys = (main.configDotenv({ path: keysFilepath }).parsed || {})
-  const dotenvVault = (main.configDotenv({ path: vaultFilepath }).parsed || {})
+  const dotenvKeys = dotenv.configDotenv({ path: keysFilepath }).parsed
+  const dotenvVault = dotenv.configDotenv({ path: vaultFilepath }).parsed
 
   Object.entries(dotenvKeys).forEach(([dotenvKey, value]) => {
     // determine environment
@@ -51,10 +51,8 @@ async function decrypt () {
 
     // give warning if not found
     if (ciphertext && ciphertext.length >= 1) {
-      const key = parseEncryptionKeyFromDotenvKey(value.trim())
-
       // Decrypt
-      const decrypted = main.decrypt(ciphertext, key)
+      const decrypted = libDecrypt(ciphertext, value.trim())
 
       // envFilename
       let envFilename = `.env.${environment}`
