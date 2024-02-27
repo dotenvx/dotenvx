@@ -37,9 +37,13 @@ const executeCommand = async function (commandArgs, env) {
   }
 
   try {
-    const systemCommandPath = which.sync(`${commandArgs[0]}`)
-
-    logger.debug(`expanding process command to [${systemCommandPath} ${commandArgs.slice(1).join(' ')}]`)
+    let systemCommandPath = commandArgs[0]
+    try {
+      systemCommandPath = which.sync(`${commandArgs[0]}`)
+      logger.debug(`expanding process command to [${systemCommandPath} ${commandArgs.slice(1).join(' ')}]`)
+    } catch (e) {
+      logger.debug(`could not expand process command. using [${systemCommandPath} ${commandArgs.slice(1).join(' ')}]`)
+    }
 
     // commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
     commandProcess = execa(systemCommandPath, commandArgs.slice(1), {
