@@ -1,6 +1,5 @@
 const t = require('tap')
 const sinon = require('sinon')
-const dotenv = require('dotenv')
 
 const main = require('../../../src/lib/main')
 const ls = require('../../../src/cli/actions/ls')

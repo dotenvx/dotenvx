@@ -1,7 +1,6 @@
 const t = require('tap')
 const fs = require('fs')
 const sinon = require('sinon')
-const dotenv = require('dotenv')
 
 const main = require('../../../src/lib/main')
 const genexample = require('../../../src/cli/actions/genexample')
@@ -22,7 +21,7 @@ t.test('genexample calls main.genexample', async ct => {
     opts: optsStub
   }
 
-  // Call the ls function with the fake context
+  // Call the genexample function with the fake context
   await genexample.call(fakeContext, '.')
 
   t.ok(stub.called, 'main.genexample() called')
@@ -49,13 +48,57 @@ t.test('genexample calls main.genexample (no addedKeys changes)', async ct => {
     opts: optsStub
   }
 
-  // Call the ls function with the fake context
+  // Call the genexample function with the fake context
   await genexample.call(fakeContext, '.')
 
   t.ok(stub.called, 'main.genexample() called')
   t.ok(fsStub.called, 'fs.writeFileSync() called')
   stub.restore()
   fsStub.restore()
+
+  ct.end()
+})
+
+t.test('genexample calls main.genexample (other error)', async ct => {
+  const stub = sinon.stub(main, 'genexample').throws(new Error('other error'))
+  const exitStub = sinon.stub(process, 'exit')
+
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = {
+    opts: optsStub
+  }
+
+  // Call the genexample function with the fake context
+  await genexample.call(fakeContext, '.')
+
+  ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
+
+  stub.restore()
+  exitStub.restore()
+
+  ct.end()
+})
+
+t.test('genexample calls main.genexample (error with code and help message)', async ct => {
+  const error = new Error('message')
+  error.help = 'help message'
+  error.code = 'CODE'
+
+  const stub = sinon.stub(main, 'genexample').throws(error)
+  const exitStub = sinon.stub(process, 'exit')
+
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = {
+    opts: optsStub
+  }
+
+  // Call the genexample function with the fake context
+  await genexample.call(fakeContext, '.')
+
+  ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
+
+  stub.restore()
+  exitStub.restore()
 
   ct.end()
 })

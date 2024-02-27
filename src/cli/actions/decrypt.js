@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const logger = require('./../../shared/logger')
 const helpers = require('./../helpers')
 const createSpinner = require('./../../shared/createSpinner')
-const decrypt = require('./../../lib/helpers/decrypt')
+const libDecrypt = require('./../../lib/helpers/decrypt')
 
 const spinner = createSpinner('decrypting')
 
@@ -52,7 +52,7 @@ async function decrypt () {
     // give warning if not found
     if (ciphertext && ciphertext.length >= 1) {
       // Decrypt
-      const decrypted = decrypt(ciphertext, value.trim())
+      const decrypted = libDecrypt(ciphertext, value.trim())
 
       // envFilename
       let envFilename = `.env.${environment}`
