@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 0.21.0
 
+### Added
+
+* expose `genexample` function on `lib/main.js` for export convenience ([#102](https://github.com/dotenvx/dotenvx/pull/102))
+
+### Changed
+
+* rely on `which` npm module to find system command path for user inputted command(s) ([#105](https://github.com/dotenvx/dotenvx/pull/105))
+
 ### Removed
 
 * remove `main.inject` function ([#102](https://github.com/dotenvx/dotenvx/pull/102))
