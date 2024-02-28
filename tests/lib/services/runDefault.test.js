@@ -155,6 +155,29 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
   ct.end()
 })
 
+t.test('#run (command substitution)', ct => {
+  const {
+    files,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new RunDefault('tests/.env.eval').run()
+
+  ct.same(files, [{
+    filepath: 'tests/.env.eval',
+    parsed: {
+      HELLO: 'world'
+    },
+    injected: {
+      HELLO: 'world'
+    },
+    preExisted: {}
+  }])
+  ct.same(readableFilepaths, ['tests/.env.eval'])
+  ct.same(uniqueInjectedKeys, ['HELLO'])
+
+  ct.end()
+})
+
 t.test('#run (with envs as string)', ct => {
   const {
     strings,
