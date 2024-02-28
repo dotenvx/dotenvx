@@ -1,5 +1,6 @@
 const logger = require('./../shared/logger')
 const dotenv = require('dotenv')
+const dotenvExpand = require('dotenv-expand')
 
 // services
 const Encrypt = require('./services/encrypt')
@@ -9,7 +10,15 @@ const Genexample = require('./services/genexample')
 
 // proxies to dotenv
 const config = function (options) {
-  return dotenv.config(options)
+  const env = dotenv.config(options)
+
+  // if processEnv passed also pass to expand
+  if (options.processEnv) {
+    env.processEnv = options.processEnv
+  }
+  const expanded = dotenvExpand.expand(env)
+
+  return expanded
 }
 
 const configDotenv = function (options) {

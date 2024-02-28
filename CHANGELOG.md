@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.21.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.22.0...main)
+
+## 0.22.0
+
+### Added
+
+* `require('@dotenvx/dotenvx').config()` expands/interpolates variables. this is different than `require('dotenv').config()` which does not do this. however, this behavior for this project matches the `run` command behavior
 
 ## 0.21.0
 
