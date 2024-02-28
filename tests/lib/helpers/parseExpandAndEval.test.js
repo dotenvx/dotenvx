@@ -76,6 +76,42 @@ TWO=hiya
 t.test('#parseExpandAndEval command substitutes', ct => {
   src = 'HELLO=$(echo world)'
 
+  const parsed = parseExpandAndEval(src)
+
+  ct.same(parsed, { HELLO: 'world' })
+
+  ct.end()
+})
+
+t.test('#parseExpandAndEval command substitutes (already set in processEnv to same value)', ct => {
+  process.env.HELLO = '$(echo world)'
+
+  src = 'HELLO=$(echo world)'
+
+  const parsed = parseExpandAndEval(src)
+
+  ct.same(parsed, { HELLO: 'world' })
+
+  ct.end()
+})
+
+t.test('#parseExpandAndEval machine command already set', ct => {
+  process.env.HELLO = '$(echo machine)'
+
+  src = 'HELLO=$(echo world)'
+
+  const parsed = parseExpandAndEval(src)
+
+  ct.same(parsed, { HELLO: 'machine' })
+
+  ct.end()
+})
+
+t.test('#parseExpandAndEval machine command already set but overload true', ct => {
+  process.env.HELLO = '$(echo machine)'
+
+  src = 'HELLO=$(echo world)'
+
   const parsed = parseExpandAndEval(src, true)
 
   ct.same(parsed, { HELLO: 'world' })
