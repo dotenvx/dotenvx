@@ -19,10 +19,10 @@ t.test('#run', ct => {
 t.test('#run (install: true)', ct => {
   const precommit = new Precommit({ install: true })
   const installPrecommitHookStub = sinon.stub(precommit, '_installPrecommitHook')
+  installPrecommitHookStub.returns({ successMessage: 'success' })
 
-  const result = precommit.run()
+  precommit.run()
 
-  t.equal(result, true)
   t.ok(installPrecommitHookStub.called, '_installPrecommitHook should be called')
 
   installPrecommitHookStub.restore()

@@ -6,8 +6,28 @@ function precommit () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const precommit = new Precommit(options)
-  precommit.run()
+  try {
+    const {
+      successMessage,
+      warnings
+    } = new Precommit(options).run()
+
+    for (const warning of warnings) {
+      logger.warnv(warning.message)
+      if (warning.help) {
+        logger.help(warning.help)
+      }
+    }
+
+    logger.successvp(successMessage)
+  } catch (error) {
+    logger.errorvp(error.message)
+    if (error.help) {
+      logger.help(error.help)
+    }
+
+    process.exit(1)
+  }
 }
 
 module.exports = precommit

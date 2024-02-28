@@ -1,9 +1,8 @@
 /* istanbul ignore file */
 const fs = require('fs')
 const ignore = require('ignore')
-const logger = require('./../../shared/logger')
-const helpers = require('./../../cli/helpers')
 
+const pluralize = require('./../helpers/pluralize')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 
 class Precommit {
@@ -13,66 +12,59 @@ class Precommit {
 
   run () {
     if (this.install) {
-      this._installPrecommitHook()
+      const {
+        successMessage
+      } = this._installPrecommitHook()
 
-      return true
-    }
-
-    // 1. check for .gitignore file
-    if (!fs.existsSync('.gitignore')) {
-      logger.errorvp('.gitignore missing')
-      logger.help2('? add it with [touch .gitignore]')
-      process.exit(1)
-    }
-
-    // 2. check .env* files against .gitignore file
-    let warningCount = 0
-    const ig = ignore().add(fs.readFileSync('.gitignore').toString())
-    const files = fs.readdirSync(process.cwd())
-    const dotenvFiles = files.filter(file => file.match(/^\.env(\..+)?$/))
-    dotenvFiles.forEach(file => {
-      // check if that file is being ignored
-      if (ig.ignores(file)) {
-        switch (file) {
-          case '.env.example':
-            warningCount += 1
-            logger.warnv(`${file} (currently ignored but should not be)`)
-            logger.help2(`? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`)
-            break
-          case '.env.vault':
-            warningCount += 1
-            logger.warnv(`${file} (currently ignored but should not be)`)
-            logger.help2(`? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`)
-            break
-          default:
-            break
-        }
-      } else {
-        switch (file) {
-          case '.env.example':
-            break
-          case '.env.vault':
-            break
-          default:
-            logger.errorvp(`${file} not properly gitignored`)
-            logger.help2(`? add ${file} to .gitignore with [echo ".env*" >> .gitignore]`)
-            process.exit(1) // 3.1 exit early with error code
-            break
-        }
+      return {
+        successMessage,
+        warnings: []
       }
-    })
-
-    // 3. outpout success
-    if (warningCount > 0) {
-      logger.successvp(`success (with ${helpers.pluralize('warning', warningCount)})`)
     } else {
-      logger.successvp('success')
+      const warnings = []
+
+      // 1. check for .gitignore file
+      if (!fs.existsSync('.gitignore')) {
+        const error = new Error('.gitignore missing')
+        error.help = '? add it with [touch .gitignore]'
+        throw error
+      }
+
+      // 2. check .env* files against .gitignore file
+      const ig = ignore().add(fs.readFileSync('.gitignore').toString())
+      const files = fs.readdirSync(process.cwd())
+      const dotenvFiles = files.filter(file => file.match(/^\.env(\..+)?$/))
+      dotenvFiles.forEach(file => {
+        // check if that file is being ignored
+        if (ig.ignores(file)) {
+          if (file === '.env.example' || file === '.env.vault') {
+            const warning = new Error(`${file} (currently ignored but should not be)`)
+            warning.help = `? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`
+            warnings.push(warning)
+          }
+        } else {
+          if (file !== '.env.example' && file !== '.env.vault') {
+            const error = new Error(`${file} not properly gitignored`)
+            error.help = `? add ${file} to .gitignore with [echo ".env*" >> .gitignore]`
+            throw error
+          }
+        }
+      })
+
+      let successMessage = 'success'
+      if (warnings.length > 0) {
+        successMessage = `success (with ${pluralize('warning', warnings.length)})`
+      }
+
+      return {
+        successMessage,
+        warnings
+      }
     }
   }
 
-  /* istanbul ignore next */
   _installPrecommitHook () {
-    new InstallPrecommitHook().run()
+    return new InstallPrecommitHook().run()
   }
 }
 

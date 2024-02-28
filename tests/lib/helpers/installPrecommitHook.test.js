@@ -1,10 +1,6 @@
 const t = require('tap')
 const fs = require('fs')
 const sinon = require('sinon')
-const chalk = require('chalk')
-const capcon = require('capture-console')
-
-const packageJson = require('../../../src/shared/packageJson')
 
 const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitHook')
 
@@ -17,11 +13,9 @@ t.test('#run (exists and already includes dotenvx precommit) does nothing', ct =
   existsStub.returns(true)
   currentHookStub.returns('dotenvx precommit')
 
-  const stdout = capcon.interceptStdout(() => {
-    installPrecommitHook.run()
-  })
+  const { successMessage } = installPrecommitHook.run()
 
-  ct.equal(stdout, `${chalk.keyword('orangered')(`[dotenvx@${packageJson.version}][precommit] dotenvx precommit exists [.git/hooks/pre-commit]`)}\n`)
+  ct.same(successMessage, 'dotenvx precommit exists [.git/hooks/pre-commit]')
 
   // restore stubs
   existsStub.restore()
@@ -40,11 +34,10 @@ t.test('#run (exists but does not include dotenvx precommit) appends', ct => {
   existsStub.returns(true)
   currentHookStub.returns('') // empty file
 
-  const stdout = capcon.interceptStdout(() => {
-    installPrecommitHook.run()
-  })
+  const { successMessage } = installPrecommitHook.run()
 
-  ct.equal(stdout, `${chalk.keyword('green')(`[dotenvx@${packageJson.version}][precommit] dotenvx precommit appended [.git/hooks/pre-commit]`)}\n`)
+  ct.same(successMessage, 'dotenvx precommit appended [.git/hooks/pre-commit]')
+
   t.ok(appendFileSyncStub.called, 'fs.appendFileSync should be called')
 
   // restore stubs
@@ -64,11 +57,10 @@ t.test('#run (does not exist) creates', ct => {
 
   existsStub.returns(false)
 
-  const stdout = capcon.interceptStdout(() => {
-    installPrecommitHook.run()
-  })
+  const { successMessage } = installPrecommitHook.run()
 
-  ct.equal(stdout, `${chalk.keyword('green')(`[dotenvx@${packageJson.version}][precommit] dotenvx precommit installed [.git/hooks/pre-commit]`)}\n`)
+  ct.same(successMessage, 'dotenvx precommit installed [.git/hooks/pre-commit]')
+
   t.ok(writeFileSyncStub.called, 'fs.writeFileSync should be called')
   t.ok(chmodSyncStub.called, 'fs.chomdSyncStub should be called')
 
@@ -88,11 +80,12 @@ t.test('#run (fs throws an error) logs error', ct => {
 
   existsStub.returns(false)
 
-  const stdout = capcon.interceptStdout(() => {
+  try {
     installPrecommitHook.run()
-  })
-
-  ct.equal(stdout, `${chalk.bold.red(`[dotenvx@${packageJson.version}][precommit] failed to modify pre-commit hook: Mock Error`)}\n`)
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.message, 'failed to modify pre-commit hook: Mock Error')
+  }
 
   // restore stubs
   existsStub.restore()
