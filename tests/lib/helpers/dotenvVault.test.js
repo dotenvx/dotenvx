@@ -57,7 +57,7 @@ t.test('#run (personal environment variable)', ct => {
   const parsed = dotenv.parse(dotenvVaultFile)
   const decryptedContent = decrypt(parsed.DOTENV_VAULT_DEVELOPMENT, dotenvKey)
 
-  ct.same(decryptedContent, 'HELLO=World')
+  ct.same(decryptedContent, 'HELLO=World\n')
   ct.same(addedVaults, ['DOTENV_VAULT_DEVELOPMENT'])
   ct.same(existingVaults, [])
   ct.same(addedDotenvFilenames, ['.env'])
