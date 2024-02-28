@@ -14,7 +14,7 @@ class Precommit {
     if (this.install) {
       const {
         successMessage
-      } = new InstallPrecommitHook().run()
+      } = this._installPrecommitHook()
 
       return {
         successMessage,
@@ -61,6 +61,10 @@ class Precommit {
         warnings
       }
     }
+  }
+
+  _installPrecommitHook () {
+    return new InstallPrecommitHook().run()
   }
 }
 
