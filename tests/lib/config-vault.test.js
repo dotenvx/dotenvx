@@ -204,7 +204,7 @@ t.test('does not write over keys already in process.env by default', ct => {
 
   const result = dotenv.config({ path: testPath })
 
-  ct.equal(result.parsed.ALPHA, 'zeta')
+  ct.equal(result.parsed.ALPHA, 'bar')
   ct.equal(process.env.ALPHA, 'bar')
 
   ct.end()

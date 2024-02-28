@@ -13,7 +13,7 @@ const config = function (options) {
   const env = dotenv.config(options)
 
   // if processEnv passed also pass to expand
-  if (options.processEnv) {
+  if (options && options.processEnv) {
     env.processEnv = options.processEnv
   }
   const expanded = dotenvExpand.expand(env)
