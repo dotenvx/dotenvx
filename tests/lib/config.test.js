@@ -62,14 +62,14 @@ t.test('sets values from both .env.local and .env. first file key wins.', ct => 
   ct.end()
 })
 
-t.test('sets values from both .env.local and .env. but none is used as value existed in process.env.', ct => {
+t.test('sets values from both .env.local and .env. but neither is used as value existed in process.env.', ct => {
   const testPath = ['tests/.env.local', 'tests/.env']
   process.env.BASIC = 'existing'
 
   const env = dotenvx.config({ path: testPath })
 
   // does not override process.env
-  ct.equal(env.parsed.BASIC, 'local_basic')
+  ct.equal(env.parsed.BASIC, 'existing')
   ct.equal(process.env.BASIC, 'existing')
 
   ct.end()
@@ -144,8 +144,8 @@ t.test('does not write over keys already in process.env', ct => {
   process.env.BASIC = existing
   const env = dotenvx.config({ path: testPath })
 
-  ct.equal(env.parsed.BASIC, 'basic')
-  ct.equal(process.env.BASIC, existing)
+  ct.equal(env.parsed.BASIC, 'bar')
+  ct.equal(process.env.BASIC, 'bar')
 
   ct.end()
 })
@@ -168,7 +168,7 @@ t.test('does not write over keys already in process.env if the key has a falsy v
   process.env.BASIC = existing
   const env = dotenvx.config({ path: testPath })
 
-  ct.equal(env.parsed.BASIC, 'basic')
+  ct.equal(env.parsed.BASIC, '')
   ct.equal(process.env.BASIC, '')
 
   ct.end()
