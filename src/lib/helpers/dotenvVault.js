@@ -3,6 +3,7 @@ const path = require('path')
 const encrypt = require('./encrypt')
 const changed = require('./changed')
 const guessEnvironment = require('./guessEnvironment')
+const removePersonal = require('./removePersonal')
 
 class DotenvVault {
   constructor (dotenvFiles = {}, dotenvKeys = {}, dotenvVaults = {}) {
@@ -23,8 +24,10 @@ class DotenvVault {
       let ciphertext = this.dotenvVaults[vault]
       const dotenvKey = this.dotenvKeys[`DOTENV_KEY_${environment.toUpperCase()}`]
 
-      if (!ciphertext || ciphertext.length === 0 || changed(ciphertext, raw, dotenvKey)) {
-        ciphertext = encrypt(raw, dotenvKey)
+      const cleanRaw = removePersonal(raw)
+
+      if (!ciphertext || ciphertext.length === 0 || changed(ciphertext, cleanRaw, dotenvKey)) {
+        ciphertext = encrypt(cleanRaw, dotenvKey)
         this.dotenvVaults[vault] = ciphertext
         addedVaults.add(vault) // for info logging to user
 

@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.22.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.23.0...main)
+
+## 0.23.0
+
+* support personal environment variables. anything after the comment `# personal.dotenvx.com` will be considered personal and will not be encrypted to .env.vault ([#110](https://github.com/dotenvx/dotenvx/pull/110))
 
 ## 0.22.0
 
