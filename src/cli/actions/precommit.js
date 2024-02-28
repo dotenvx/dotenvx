@@ -12,12 +12,10 @@ function precommit () {
       warnings
     } = new Precommit(options).run()
 
-    if (warnings.length > 0) {
-      for (warning of warnings) {
-        logger.warnv(warning.message)
-        if (warning.help) {
-          logger.help(warning.help)
-        }
+    for (const warning of warnings) {
+      logger.warnv(warning.message)
+      if (warning.help) {
+        logger.help(warning.help)
       }
     }
 

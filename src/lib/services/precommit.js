@@ -13,7 +13,7 @@ class Precommit {
   run () {
     if (this.install) {
       const {
-        successMessage,
+        successMessage
       } = new InstallPrecommitHook().run()
 
       return {
