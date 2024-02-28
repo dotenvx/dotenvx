@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* `require('@dotenvx/dotenvx').config()` expands/interpolates variables. this is different than `require('dotenv').config()` which does not do this. however, this behavior for this project matches the `run` command behavior
+* `require('@dotenvx/dotenvx').config()` expands/interpolates variables. this matches the behavior of `run`. (note that this behavior differs from the original `require('dotenv').config()` ([#107](https://github.com/dotenvx/dotenvx/pull/107))
 
 ## 0.21.0
 
