@@ -11,6 +11,7 @@ tests/tmp
 # for test purposes
 !tests/.env
 !tests/.env.expand
+!tests/.env.eval
 !tests/.env.local
 !tests/.env.multiline
 !tests/.env.vault
