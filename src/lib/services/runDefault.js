@@ -4,7 +4,7 @@ const path = require('path')
 const ENCODING = 'utf8'
 
 const inject = require('./../helpers/inject')
-const parseExpand = require('./../helpers/parseExpand')
+const parseExpandAndEval = require('./../helpers/parseExpandAndEval')
 
 class RunDefault {
   constructor (envFile = '.env', env = [], overload = false) {
@@ -25,7 +25,7 @@ class RunDefault {
       row.string = env
 
       try {
-        const parsed = parseExpand(env, this.overload)
+        const parsed = parseExpandAndEval(env, this.overload)
         row.parsed = parsed
 
         const { injected, preExisted } = inject(process.env, parsed, this.overload)
@@ -52,7 +52,7 @@ class RunDefault {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
         readableFilepaths.add(envFilepath)
 
-        const parsed = parseExpand(src, this.overload)
+        const parsed = parseExpandAndEval(src, this.overload)
         row.parsed = parsed
 
         const { injected, preExisted } = inject(process.env, parsed, this.overload)

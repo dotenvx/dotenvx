@@ -8,6 +8,9 @@ const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Genexample = require('./services/genexample')
 
+// helpers
+const dotenvEval = require('./helpers/dotenvEval')
+
 // proxies to dotenv
 const config = function (options) {
   const env = dotenv.config(options)
@@ -18,7 +21,13 @@ const config = function (options) {
   }
   const expanded = dotenvExpand.expand(env)
 
-  return expanded
+  // if processEnv passed also pass to eval
+  if (options && options.processEnv) {
+    expanded.processEnv = options.processEnv
+  }
+  const evaluated = dotenvEval.eval(expanded)
+
+  return evaluated
 }
 
 const configDotenv = function (options) {

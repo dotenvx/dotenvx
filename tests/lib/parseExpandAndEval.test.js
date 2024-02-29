@@ -1,17 +1,15 @@
 const t = require('tap')
 
-const parseExpand = require('../../src/lib/helpers/parseExpand')
-const logger = require('../../src/shared/logger')
+const parseExpandAndEval = require('../../src/lib/helpers/parseExpandAndEval')
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
-  logger.level = 'info'
 })
 
 t.test('returns object', ct => {
   const dotenv = { parsed: {} }
-  const parsed = parseExpand(dotenv)
+  const parsed = parseExpandAndEval(dotenv)
 
   t.ok(parsed instanceof Object, 'should be an object')
 
@@ -24,7 +22,7 @@ t.test('expands environment variables', ct => {
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseExpand(src)
+  const parsed = parseExpandAndEval(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -40,7 +38,7 @@ t.test('expands environment variables (pre-existing no overload)', ct => {
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseExpand(src)
+  const parsed = parseExpandAndEval(src)
 
   ct.equal(parsed.BASIC, 'pre-existing')
   ct.equal(parsed.BASIC_EXPAND, 'pre-existing')
@@ -56,7 +54,7 @@ t.test('expands environment variables (pre-existing when overload is true)', ct 
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseExpand(src, true)
+  const parsed = parseExpandAndEval(src, true)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -71,7 +69,7 @@ t.test('uses environment variables existing already on the machine for expansion
     MACHINE_EXPAND=\${MACHINE}
     MACHINE_EXPAND_SIMPLE=$MACHINE
   `
-  const parsed = parseExpand(src)
+  const parsed = parseExpandAndEval(src)
 
   ct.equal(parsed.MACHINE_EXPAND, 'machine')
   ct.equal(parsed.MACHINE_EXPAND_SIMPLE, 'machine')
@@ -85,7 +83,7 @@ t.test('only returns keys part of the original input. process.env is used for he
     MACHINE_EXPAND=\${MACHINE}
     MACHINE_EXPAND_SIMPLE=$MACHINE
   `
-  const parsed = parseExpand(src)
+  const parsed = parseExpandAndEval(src)
 
   ct.equal(parsed.MACHINE, undefined)
 
