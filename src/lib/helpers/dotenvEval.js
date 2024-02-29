@@ -8,11 +8,6 @@ function interpolate (value, processEnv, parsed) {
   const matches = value.match(/\$\([^()]+\)/) || []
 
   return matches.reduce(function (newValue, match) {
-    // return original value if match not wrapped in $(..)
-    if (!(match[0] === '$' && match[1] === '(' && match[match.length - 1] === ')')) {
-      return newValue
-    }
-
     // get command
     const command = match.substring(2, match.length - 1)
     // execute command
