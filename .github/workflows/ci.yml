@@ -17,6 +17,19 @@ jobs:
       - run: npm run standard
       - run: npm test
 
+  test-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - run: npm install
+      - run: npm run standard
+      - run: npm test
+
   # run only on semantic version tag
   release:
     needs: test
