@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 
 const inject = require('./../helpers/inject')
 const decrypt = require('./../helpers/decrypt')
-const parseExpand = require('./../helpers/parseExpand')
+const parseExpandAndEval = require('./../helpers/parseExpandAndEval')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 
 const ENCODING = 'utf8'
@@ -43,7 +43,7 @@ class RunVault {
       const row = {}
       row.string = env
 
-      const parsed = parseExpand(env, this.overload)
+      const parsed = parseExpandAndEval(env, this.overload)
       row.parsed = parsed
 
       const { injected, preExisted } = inject(process.env, parsed, this.overload)
@@ -77,7 +77,7 @@ class RunVault {
     }
 
     // parse this. it's the equivalent of the .env file
-    const parsed = parseExpand(decrypted, this.overload)
+    const parsed = parseExpandAndEval(decrypted, this.overload)
     const { injected, preExisted } = inject(process.env, parsed, this.overload)
 
     for (const key of Object.keys(injected)) {
