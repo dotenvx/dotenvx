@@ -21,7 +21,7 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap 'tests/**/*.test.js' --100",
+    "test": "tap run --show-full-coverage",
     "prerelease": "npm test",
     "release": "standard-version"
   },
@@ -53,7 +53,7 @@
     "sinon": "^14.0.1",
     "standard": "^17.1.0",
     "standard-version": "^9.5.0",
-    "tap": "^16.3.0"
+    "tap": "^18.7.0"
   },
   "publishConfig": {
     "access": "public"
