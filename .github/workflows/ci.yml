@@ -266,18 +266,18 @@ jobs:
         run: brew install dotenvx/brew/dotenvx
       - name: verify dotenvx run/get
         run: |
-          echo "HELLO=Ubuntu" > .env
+          echo "HELLO=Mac" > .env
           echo "console.log('Hello ' + process.env.HELLO)" > index.js
           EXPECTED_MESSAGE=$(dotenvx run --quiet -- node index.js)
           echo $EXPECTED_MESSAGE
-          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
-            echo "posttest dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+          if [ "$EXPECTED_MESSAGE" != "Hello Mac" ]; then
+            echo "posttest dotenvx run failure: expected Hello Mac, got $EXPECTED_MESSAGE"
             exit 1
           fi
           EXPECTED_VALUE=$(dotenvx get HELLO)
           echo $EXPECTED_VALUE
-          if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
-            echo "posttest dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+          if [ "$EXPECTED_VALUE" != "Mac" ]; then
+            echo "posttest dotenvx get failure: expected Mac, got $EXPECTED_VALUE"
             exit 1
           fi
   postrelease-ubuntu:
@@ -346,17 +346,17 @@ jobs:
           fi
       - name: verify dotenvx run/get
         run: |
-          echo "HELLO=Ubuntu" > .env
+          echo "HELLO=Mac" > .env
           echo "console.log('Hello ' + process.env.HELLO)" > index.js
           EXPECTED_MESSAGE=$(dotenvx run --quiet -- node index.js)
           echo $EXPECTED_MESSAGE
-          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
-            echo "posttest dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+          if [ "$EXPECTED_MESSAGE" != "Hello Mac" ]; then
+            echo "posttest dotenvx run failure: expected Hello Mac, got $EXPECTED_MESSAGE"
             exit 1
           fi
           EXPECTED_VALUE=$(dotenvx get HELLO)
           echo $EXPECTED_VALUE
-          if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
-            echo "posttest dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+          if [ "$EXPECTED_VALUE" != "Mac" ]; then
+            echo "posttest dotenvx get failure: expected Mac, got $EXPECTED_VALUE"
             exit 1
           fi
