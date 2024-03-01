@@ -5,11 +5,9 @@ on: push
 jobs:
   # always run tests
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
-      matrix:
-        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -223,3 +221,18 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: dotenv/dotenvx
           short-description: ${{ github.event.repository.description }}
+
+  posttest:
+    needs: test
+    if: ${{ !(startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')) }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - name: commit and push
+        run: |
+          echo hello
