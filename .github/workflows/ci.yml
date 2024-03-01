@@ -235,17 +235,7 @@ jobs:
           node-version: 16.x
       - name: install dotenvx
         run: curl -fsS https://dotenvx.sh/ | sh
-      - name: verify version
-        run: |
-          RELEASED_VERSION=$(dotenvx --version)
-          EXPECTED_VERSION=$(node -p "require('./package.json').version")
-          echo $RELEASED_VERSION
-          echo $EXPECTED_VERSION
-          if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
-            echo "posttest version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
-            exit 1
-          fi
-      - name: verify dotenvx run
+      - name: verify dotenvx run/get
         run: |
           echo "HELLO=Ubuntu" > .env
           echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -255,9 +245,6 @@ jobs:
             echo "posttest dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
             exit 1
           fi
-      - name: verify dotenvx get
-        run: |
-          echo "HELLO=Ubuntu" > .env
           EXPECTED_VALUE=$(dotenvx get HELLO)
           echo $EXPECTED_VALUE
           if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
@@ -277,6 +264,36 @@ jobs:
           node-version: 16.x
       - name: install dotenvx
         run: brew install dotenvx/brew/dotenvx
+      - name: verify dotenvx run/get
+        run: |
+          echo "HELLO=Ubuntu" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "posttest dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+          EXPECTED_VALUE=$(dotenvx get HELLO)
+          echo $EXPECTED_VALUE
+          if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
+            echo "posttest dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+            exit 1
+          fi
+  postrelease-ubuntu:
+    needs: [homebrew, npm, docker]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - name: sleep
+        run: sleep 60
+      - name: install dotenvx
+        run: curl -fsS https://dotenvx.sh/ | sh
       - name: verify version
         run: |
           RELEASED_VERSION=$(dotenvx --version)
@@ -287,7 +304,7 @@ jobs:
             echo "posttest version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
             exit 1
           fi
-      - name: verify dotenvx run
+      - name: verify dotenvx run/get
         run: |
           echo "HELLO=Ubuntu" > .env
           echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -297,9 +314,46 @@ jobs:
             echo "posttest dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
             exit 1
           fi
-      - name: verify dotenvx get
+          EXPECTED_VALUE=$(dotenvx get HELLO)
+          echo $EXPECTED_VALUE
+          if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
+            echo "posttest dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+            exit 1
+          fi
+  postrelease-mac:
+    needs: [homebrew, npm, docker]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - name: sleep
+        run: sleep 60
+      - name: install dotenvx
+        run: curl -fsS https://dotenvx.sh/ | sh
+      - name: verify version
+        run: |
+          RELEASED_VERSION=$(dotenvx --version)
+          EXPECTED_VERSION=$(node -p "require('./package.json').version")
+          echo $RELEASED_VERSION
+          echo $EXPECTED_VERSION
+          if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "posttest version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+            exit 1
+          fi
+      - name: verify dotenvx run/get
         run: |
           echo "HELLO=Ubuntu" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "posttest dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
           EXPECTED_VALUE=$(dotenvx get HELLO)
           echo $EXPECTED_VALUE
           if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
