@@ -233,6 +233,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16.x
-      - name: commit and push
+      - name: install dotenvx
+        run: curl -fsS https://dotenvx.sh/ | sh
+      - name: hello
         run: |
-          echo hello
+          dotenvx --version
