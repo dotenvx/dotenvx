@@ -235,6 +235,13 @@ jobs:
           node-version: 16.x
       - name: install dotenvx
         run: curl -fsS https://dotenvx.sh/ | sh
-      - name: hello
+      - name: verify version
         run: |
-          dotenvx --version
+          RELEASED_VERSION=$(dotenvx --version)
+          EXPECTED_VERSION=$(node -p "require('./package.json').version")
+          echo $RELEASED_VERSION
+          echo $EXPECTED_VERSION
+          if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "posttest version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+            exit 1
+          fi
