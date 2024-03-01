@@ -333,7 +333,7 @@ jobs:
       - name: sleep
         run: sleep 60
       - name: install dotenvx
-        run: curl -fsS https://dotenvx.sh/ | sh
+        run: brew install dotenvx/brew/dotenvx
       - name: verify version
         run: |
           RELEASED_VERSION=$(dotenvx --version)
