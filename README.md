@@ -298,18 +298,37 @@ More examples
   Reference and expand variables already on your machine for use in your .env file.
 
   ```ini
-  DATABASE_URL="postgres://${USER}@localhost/my_database"
+  USERNAME="username"
+  DATABASE_URL="postgres://${USERNAME}@localhost/my_database"
   ```
   ```js
   console.log('DATABASE_URL', process.env.DATABASE_URL)
   ```
   ```sh
-  $ USER=username dotenvx run --debug -- node index.js
-  [dotenvx@0.14.1] injecting env (1) from .env
+  $ dotenvx run --debug -- node index.js
+  [dotenvx@0.14.1] injecting env (2) from .env
   DATABASE_URL postgres://username@localhost/my_database
   ```
 
   </details>
+* <details><summary>Command Substitution</summary><br>
+
+  Add the output of a command to one of your variables in your .env file.
+
+  ```ini
+  DATABASE_URL="postgres://$(whoami)@localhost/my_database"
+  ```
+  ```js
+  console.log('DATABASE_URL', process.env.DATABASE_URL)
+  ```
+  ```sh
+  $ dotenvx run --debug -- node index.js
+  [dotenvx@0.14.1] injecting env (1) from .env
+  DATABASE_URL postgres://yourusername@localhost/my_database
+  ```
+
+  </details>
+
 
 &nbsp;
 
