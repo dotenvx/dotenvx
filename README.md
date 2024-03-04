@@ -58,11 +58,28 @@ More examples
 
 * <details><summary>TypeScript 📘</summary><br>
 
+  ```json
+  // package.json
+  {
+    "type": "module",
+    "dependencies": {
+      "chalk": "^5.3.0"
+    }
+  }
+  ```
+
+  ```js
+  // index.ts
+  import chalk from 'chalk'
+  console.log(chalk.blue(`Hello ${process.env.HELLO}`))
+  ```
+
   ```sh
+  $ npm install
   $ echo "HELLO=World" > .env
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.ts
 
-  $ dotenvx run -- npx ts-node index.ts
+  $ dotenvx run -- npx tsx index.ts
   Hello World
   ```
 
