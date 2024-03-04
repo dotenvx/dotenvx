@@ -298,10 +298,12 @@ More examples
   Reference and expand variables already on your machine for use in your .env file.
 
   ```ini
+  # .env
   USERNAME="username"
   DATABASE_URL="postgres://${USERNAME}@localhost/my_database"
   ```
   ```js
+  // index.js
   console.log('DATABASE_URL', process.env.DATABASE_URL)
   ```
   ```sh
@@ -316,9 +318,11 @@ More examples
   Add the output of a command to one of your variables in your .env file.
 
   ```ini
+  # .env
   DATABASE_URL="postgres://$(whoami)@localhost/my_database"
   ```
   ```js
+  // index.js
   console.log('DATABASE_URL', process.env.DATABASE_URL)
   ```
   ```sh
