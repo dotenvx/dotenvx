@@ -77,7 +77,6 @@ More examples
   ```sh
   $ npm install
   $ echo "HELLO=World" > .env
-  $ echo "console.log('Hello ' + process.env.HELLO)" > index.ts
 
   $ dotenvx run -- npx tsx index.ts
   Hello World
