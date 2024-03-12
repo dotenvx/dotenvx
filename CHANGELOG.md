@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.24.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.25.0...main)
+
+## 0.25.0
+
+* expand `hub push` with `[directory]` option. use for monorepos. for example: `dotenvx hub push apps/backend` ([#121](https://github.com/dotenvx/dotenvx/pull/121))
 
 ## 0.24.0
 
