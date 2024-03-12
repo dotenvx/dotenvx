@@ -16,6 +16,7 @@ hub
 hub
   .command('push')
   .description('push .env.keys to dotenvx hub')
+  .argument('[directory]', 'directory to push', '.')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(require('./../actions/hub/push'))
 

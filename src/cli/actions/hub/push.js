@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 const { execSync } = require('child_process')
 const { request } = require('undici')
 
@@ -27,17 +28,21 @@ function isGithub (url) {
 }
 
 // Create a simple-git instance for the current directory
-async function push () {
+async function push (directory) {
   spinner.start()
   await helpers.sleep(500) // better dx
+
+  // debug args
+  logger.debug(`directory: ${directory}`)
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const hostname = options.hostname
   const pushUrl = `${hostname}/v1/push`
-  const keysFilename = '.env.keys'
-  const vaultFilename = '.env.vault'
+
+  const envKeysFilepath = `${directory}/.env.keys`
+  const envVaultFilepath = `${directory}/.env.vault`
 
   if (!isGitRepository()) {
     spinner.fail('oops, must be a git repository')
@@ -59,14 +64,14 @@ async function push () {
     process.exit(1)
   }
 
-  if (!fs.existsSync(keysFilename)) {
+  if (!fs.existsSync(envKeysFilepath)) {
     spinner.fail('oops, missing .env.keys file')
     logger.help('? generate one with [dotenvx encrypt]')
     logger.help2('ℹ a .env.keys file holds decryption keys for a .env.vault file')
     process.exit(1)
   }
 
-  if (!fs.existsSync(vaultFilename)) {
+  if (!fs.existsSync(envVaultFilepath)) {
     spinner.fail('oops, missing .env.vault file')
     logger.help('? generate one with [dotenvx encrypt]')
     logger.help2('ℹ a .env.vault file holds encrypted secrets per environment')
@@ -74,8 +79,8 @@ async function push () {
   }
 
   const oauthToken = store.getToken()
-  const dotenvKeysContent = fs.readFileSync(keysFilename, ENCODING)
-  const dotenvVaultContent = fs.readFileSync(vaultFilename, ENCODING)
+  const dotenvKeysContent = fs.readFileSync(envKeysFilepath, ENCODING)
+  const dotenvVaultContent = fs.readFileSync(envVaultFilepath, ENCODING)
   const usernameName = helpers.extractUsernameName(remoteOriginUrl)
 
   try {
@@ -88,7 +93,7 @@ async function push () {
       body: JSON.stringify({
         username_name: usernameName,
         DOTENV_KEYS: dotenvKeysContent,
-        DOTENV_VAULT: dotenvVaultContent
+        filepath: envKeysFilepath
       })
     })
 
