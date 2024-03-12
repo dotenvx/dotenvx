@@ -1,5 +1,4 @@
 const fs = require('fs')
-const path = require('path')
 const { execSync } = require('child_process')
 const { request } = require('undici')
 
@@ -80,7 +79,7 @@ async function push (directory) {
 
   const oauthToken = store.getToken()
   const dotenvKeysContent = fs.readFileSync(envKeysFilepath, ENCODING)
-  const dotenvVaultContent = fs.readFileSync(envVaultFilepath, ENCODING)
+  // const dotenvVaultContent = fs.readFileSync(envVaultFilepath, ENCODING)
   const usernameName = helpers.extractUsernameName(remoteOriginUrl)
 
   try {
