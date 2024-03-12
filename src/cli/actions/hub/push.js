@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { execSync } = require('child_process')
+const path = require('path')
 const { request } = require('undici')
 
 const store = require('./../../../shared/store')
@@ -7,24 +7,15 @@ const logger = require('./../../../shared/logger')
 const helpers = require('./../../helpers')
 const createSpinner = require('./../../../shared/createSpinner')
 
+const isGitRepo = require('./../../../lib/helpers/isGitRepo')
+const isGithub = require('./../../../lib/helpers/isGithub')
+const gitUrl = require('./../../../lib/helpers/gitUrl')
+const gitRoot = require('./../../../lib/helpers/gitRoot')
+
 const spinner = createSpinner('pushing')
 
 // constants
 const ENCODING = 'utf8'
-
-function isGitRepository () {
-  try {
-    // Redirect standard error to null to suppress Git error messages
-    const result = execSync('git rev-parse --is-inside-work-tree 2> /dev/null').toString().trim()
-    return result === 'true'
-  } catch (_error) {
-    return false
-  }
-}
-
-function isGithub (url) {
-  return url.includes('github.com')
-}
 
 // Create a simple-git instance for the current directory
 async function push (directory) {
@@ -34,53 +25,52 @@ async function push (directory) {
   // debug args
   logger.debug(`directory: ${directory}`)
 
+  // debug opts
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const hostname = options.hostname
-  const pushUrl = `${hostname}/v1/push`
-
-  const envKeysFilepath = `${directory}/.env.keys`
-  const envVaultFilepath = `${directory}/.env.vault`
-
-  if (!isGitRepository()) {
+  // must be a git repo
+  if (!isGitRepo()) {
     spinner.fail('oops, must be a git repository')
     logger.help('? create one with [git init .]')
     process.exit(1)
   }
-
-  const remoteOriginUrl = helpers.getRemoteOriginUrl()
-  if (!remoteOriginUrl) {
+  // must be a git root
+  const gitroot = gitRoot()
+  if (!gitroot) {
+    spinner.fail('oops, could not determine git repository\'s root')
+    logger.help('? create one with [git init .]')
+    process.exit(1)
+  }
+  // must have a remote origin url
+  const giturl = gitUrl()
+  if (!giturl) {
     spinner.fail('oops, must have a remote origin (git remote -v)')
     logger.help('? create it at [github.com/new] and then run [git remote add origin git@github.com:username/repository.git]')
     process.exit(1)
   }
-
-  if (!isGithub(remoteOriginUrl)) {
+  // must be a github remote
+  if (!isGithub(giturl)) {
     spinner.fail('oops, must be a github.com remote origin (git remote -v)')
     logger.help('? create it at [github.com/new] and then run [git remote add origin git@github.com:username/repository.git]')
     logger.help2('ℹ need support for other origins? [please tell us](https://github.com/dotenvx/dotenvx/issues)')
     process.exit(1)
   }
 
+  const envKeysFilepath = path.join(directory, '.env.keys')
   if (!fs.existsSync(envKeysFilepath)) {
     spinner.fail('oops, missing .env.keys file')
-    logger.help('? generate one with [dotenvx encrypt]')
+    logger.help(`? generate one with [dotenvx encrypt${directory ? ` ${directory}` : ''}]`)
     logger.help2('ℹ a .env.keys file holds decryption keys for a .env.vault file')
     process.exit(1)
   }
 
-  if (!fs.existsSync(envVaultFilepath)) {
-    spinner.fail('oops, missing .env.vault file')
-    logger.help('? generate one with [dotenvx encrypt]')
-    logger.help2('ℹ a .env.vault file holds encrypted secrets per environment')
-    process.exit(1)
-  }
-
+  const hostname = options.hostname
+  const pushUrl = `${hostname}/v1/push`
   const oauthToken = store.getToken()
   const dotenvKeysContent = fs.readFileSync(envKeysFilepath, ENCODING)
-  // const dotenvVaultContent = fs.readFileSync(envVaultFilepath, ENCODING)
-  const usernameName = helpers.extractUsernameName(remoteOriginUrl)
+  const usernameName = helpers.extractUsernameName(giturl)
+  const relativeEnvKeysFilepath = path.relative(gitroot, path.join(process.cwd(), directory, '.env.keys')).replace(/\\/g, '/') // smartly determine path/to/.env.keys file from repository root - where user is cd-ed inside a folder or at repo root
 
   try {
     const response = await request(pushUrl, {
@@ -92,7 +82,7 @@ async function push (directory) {
       body: JSON.stringify({
         username_name: usernameName,
         DOTENV_KEYS: dotenvKeysContent,
-        filepath: envKeysFilepath
+        filepath: relativeEnvKeysFilepath
       })
     })
 
