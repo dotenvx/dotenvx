@@ -322,7 +322,7 @@ jobs:
           fi
   postrelease-mac:
     needs: [homebrew, npm, docker]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: true
     steps:
