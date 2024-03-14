@@ -9,7 +9,7 @@ function parseExpandAndEval (src, overload) {
   // eval parsed only. do NOT eval process.env ever. too risky/dangerous.
   const inputParsed = {
     processEnv: {},
-    parsed: parsed
+    parsed
   }
   const evaled = dotenvEval.eval(inputParsed).parsed
 
