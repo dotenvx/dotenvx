@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.25.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.25.1...main)
+
+## 0.25.1
+
+* 🐞 patch bug with evaluate commands. do not attempt to evaluate risky preset envs in `process.env`. evaluate only what's set in a `.env*` file ([#125](https://github.com/dotenvx/dotenvx/pull/125))
 
 ## 0.25.0
 

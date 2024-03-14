@@ -83,31 +83,43 @@ t.test('#parseExpandAndEval command substitutes', ct => {
   ct.end()
 })
 
-t.test('#parseExpandAndEval command substitutes (already set in processEnv to same value)', ct => {
+t.test('#parseExpandAndEval command does not substitute (already set in processEnv to same value)', ct => {
   process.env.HELLO = '$(echo world)'
 
   src = 'HELLO=$(echo world)'
 
   const parsed = parseExpandAndEval(src)
 
+  ct.same(parsed, { HELLO: '$(echo world)' })
+
+  ct.end()
+})
+
+t.test('#parseExpandAndEval command does substitute (already set in processEnv to same value) because overload true', ct => {
+  process.env.HELLO = '$(echo world)'
+
+  src = 'HELLO=$(echo world)'
+
+  const parsed = parseExpandAndEval(src, true)
+
   ct.same(parsed, { HELLO: 'world' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval machine command already set', ct => {
+t.test('#parseExpandAndEval machine command does not substitute (holman dotfiles issue https://github.com/dotenvx/dotenvx/issues/123)', ct => {
   process.env.HELLO = '$(echo machine)'
 
   src = 'HELLO=$(echo world)'
 
   const parsed = parseExpandAndEval(src)
 
-  ct.same(parsed, { HELLO: 'machine' })
+  ct.same(parsed, { HELLO: '$(echo machine)' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval machine command already set but overload true', ct => {
+t.test('#parseExpandAndEval machine command does not substitute (holman dotfiles issue https://github.com/dotenvx/dotenvx/issues/123) overload true', ct => {
   process.env.HELLO = '$(echo machine)'
 
   src = 'HELLO=$(echo world)'
