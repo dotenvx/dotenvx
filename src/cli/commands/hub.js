@@ -21,6 +21,13 @@ hub
   .action(require('./../actions/hub/push'))
 
 hub
+  .command('pull')
+  .description('pull .env.keys from dotenvx hub')
+  .argument('[directory]', 'directory to pull', '.')
+  .option('-h, --hostname <url>', 'set hostname', store.getHostname())
+  .action(require('./../actions/hub/pull'))
+
+hub
   .command('open')
   .description('view repository on dotenvx hub')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
