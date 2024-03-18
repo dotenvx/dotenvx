@@ -68,7 +68,6 @@ async function pull (directory) {
   const hostname = options.hostname
   const pullUrl = `${hostname}/v1/pull`
   const oauthToken = store.getToken()
-  const dotenvKeysContent = fs.readFileSync(envKeysFilepath, ENCODING)
   const usernameName = helpers.extractUsernameName(giturl)
   const relativeEnvKeysFilepath = path.relative(gitroot, path.join(process.cwd(), directory, '.env.keys')).replace(/\\/g, '/') // smartly determine path/to/.env.keys file from repository root - where user is cd-ed inside a folder or at repo root
 
@@ -81,7 +80,6 @@ async function pull (directory) {
       },
       body: JSON.stringify({
         username_name: usernameName,
-        DOTENV_KEYS: dotenvKeysContent,
         filepath: relativeEnvKeysFilepath
       })
     })
@@ -97,16 +95,17 @@ async function pull (directory) {
       process.exit(1)
     }
 
-    // TODO
-    // write the responseData here
-    //
+    if (fs.existsSync(envKeysFilepath) && fs.readFileSync(envKeysFilepath, ENCODING) === responseData.DOTENV_KEYS) {
+      spinner.done(`no changes (${envKeysFilepath})`)
+    } else {
+      fs.writeFileSync(envKeysFilepath, responseData.DOTENV_KEYS)
+      spinner.succeed(`pulled [${usernameName}]`)
+      logger.help2(`ℹ run [cat ${envKeysFilepath}] to view locally`)
+    }
   } catch (error) {
     spinner.fail(error.toString())
     process.exit(1)
   }
-
-  spinner.succeed(`pulled [${usernameName}]`)
-  logger.help2(`ℹ run [cat ${envKeysFilepath}] to view locally`)
 }
 
 module.exports = pull
