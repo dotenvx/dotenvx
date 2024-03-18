@@ -58,13 +58,6 @@ async function pull (directory) {
   }
 
   const envKeysFilepath = path.join(directory, '.env.keys')
-  // if (!fs.existsSync(envKeysFilepath)) {
-  //   spinner.fail('oops, missing .env.keys file')
-  //   logger.help(`? generate one with [dotenvx encrypt${directory ? ` ${directory}` : ''}]`)
-  //   logger.help2('ℹ a .env.keys file holds decryption keys for a .env.vault file')
-  //   process.exit(1)
-  // }
-
   const hostname = options.hostname
   const pullUrl = `${hostname}/v1/pull`
   const oauthToken = store.getToken()
