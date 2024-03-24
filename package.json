@@ -28,8 +28,8 @@
   "funding": "https://dotenvx.com",
   "dependencies": {
     "@inquirer/prompts": "^3.3.0",
+    "arch": "^2.1.1",
     "chalk": "^4.1.2",
-    "clipboardy": "^3.0.0",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
     "dotenv": "^16.4.5",
@@ -37,6 +37,7 @@
     "execa": "^5.1.1",
     "glob": "^10.3.10",
     "ignore": "^5.3.0",
+    "is-wsl": "^2.1.1",
     "object-treeify": "1.1.33",
     "open": "^8.4.2",
     "ora": "^5.4.1",

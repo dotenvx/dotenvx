@@ -1,6 +1,6 @@
 const open = require('open')
 const { request } = require('undici')
-const clipboardy = require('clipboardy')
+const clipboardy = require('./../../../lib/helpers/clipboardy')
 const { confirm } = require('@inquirer/prompts')
 
 const createSpinner = require('./../../../shared/createSpinner')
