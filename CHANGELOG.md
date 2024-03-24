@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.26.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.27.0...main)
+
+## 0.27.0
+
+* move `clipboardy` into `lib/helpers` for more control and to support commonjs going forward (sindre has dropped support and many mature systems still require commonjs for their infra and have need of dotenvx). ([#137](https://github.com/dotenvx/dotenvx/pull/137))
 
 ## 0.26.0
 
