@@ -1,5 +1,5 @@
 {
-  "version": "0.26.0",
+  "version": "0.27.0",
   "name": "@dotenvx/dotenvx",
   "description": "a better dotenv–from the creator of `dotenv`",
   "author": "@motdotla",
@@ -53,7 +53,7 @@
     "package-json": "^7.0.0",
     "pupa": "^2.1.1",
     "semver": "^7.3.4",
-		"semver-diff": "^3.1.1",
+    "semver-diff": "^3.1.1",
     "undici": "^5.28.3",
     "which": "^4.0.0",
     "winston": "^3.11.0",
