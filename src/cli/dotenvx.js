@@ -9,8 +9,7 @@ const examples = require('./examples')
 const packageJson = require('./../shared/packageJson')
 
 // once a day check for any updates
-// const notifier = updateNotifier({ pkg: packageJson })
-const notifier = updateNotifier({ pkg: { name: '@dotenvx/dotenvx', version: '0.1.0' }, updateCheckInterval: 1 })
+const notifier = updateNotifier({ pkg: packageJson })
 if (notifier.update) {
   logger.warn(`Update available ${notifier.update.current} → ${notifier.update.latest} [see changelog](dotenvx.com/changelog)`)
 }
