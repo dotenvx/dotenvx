@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const updateNotifier = require('update-notifier')
+const updateNotifier = require('./../lib/helpers/updateNotifier')
 const { Command } = require('commander')
 const program = new Command()
 

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 0.27.0
 
+* move `update-notifier` into `lib/helpers` for more control over `got` lib ([#138](https://github.com/dotenvx/dotenvx/pull/138))
 * move `clipboardy` into `lib/helpers` for more control and to support commonjs going forward (sindre has dropped support and many mature systems still require commonjs for their infra and have need of dotenvx). ([#137](https://github.com/dotenvx/dotenvx/pull/137))
 
 ## 0.26.0
