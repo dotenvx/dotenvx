@@ -5,21 +5,20 @@
 const { spawn } = require('child_process')
 const path = require('path')
 const { format } = require('util')
-const importLazy = require('import-lazy')(require)
 
-const configstore = importLazy('configstore')
-const chalk = importLazy('chalk')
-const semver = importLazy('semver')
-const semverDiff = importLazy('semver-diff')
-const latestVersion = importLazy('latest-version')
-const isNpm = importLazy('is-npm')
-const isInstalledGlobally = importLazy('is-installed-globally')
-const isYarnGlobal = importLazy('is-yarn-global')
-const hasYarn = importLazy('has-yarn')
-const boxen = importLazy('boxen')
-const xdgBasedir = importLazy('xdg-basedir')
-const isCi = importLazy('is-ci')
-const pupa = importLazy('pupa')
+const configstore = require('configstore')
+const chalk = require('chalk')
+const semver = require('semver')
+const semverDiff = require('semver-diff')
+const latestVersion = require('./latestVersion')
+const isNpm = require('is-npm')
+const isInstalledGlobally = require('is-installed-globally')
+const isYarnGlobal = require('is-yarn-global')
+const hasYarn = require('has-yarn')
+const boxen = require('boxen')
+const xdgBasedir = require('xdg-basedir')
+const isCi = require('is-ci')
+const pupa = require('pupa')
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
@@ -43,12 +42,12 @@ class UpdateNotifier {
     this.packageName = options.pkg.name
     this.packageVersion = options.pkg.version
     this.updateCheckInterval = typeof options.updateCheckInterval === 'number' ? options.updateCheckInterval : ONE_DAY
-    this.disabled = 'NO_UPDATE_NOTIFIER' in process.env || process.env.NODE_ENV === 'test' || process.argv.includes('--no-update-notifier') || isCi()
+    this.disabled = 'NO_UPDATE_NOTIFIER' in process.env || process.env.NODE_ENV === 'test' || process.argv.includes('--no-update-notifier') || isCi
     this.shouldNotifyInNpmScript = options.shouldNotifyInNpmScript
 
     if (!this.disabled) {
       try {
-        const ConfigStore = configstore()
+        const ConfigStore = configstore
         this.config = new ConfigStore(`update-notifier-${this.packageName}`, {
           optOut: false,
           // Init with the current time so the first check is only
@@ -57,18 +56,16 @@ class UpdateNotifier {
         })
       } catch {
         // Expecting error code EACCES or EPERM
-        const message = chalk().yellow(format(' %s update check failed ', options.pkg.name)) + format('\n Try running with %s or get access ', chalk().cyan('sudo')) + '\n to the local update config store via \n' + chalk().cyan(format(' sudo chown -R $USER:$(id -gn $USER) %s ', xdgBasedir().config))
+        const message = chalk.yellow(format(' %s update check failed ', options.pkg.name)) + format('\n Try running with %s or get access ', chalk.cyan('sudo')) + '\n to the local update config store via \n' + chalk.cyan(format(' sudo chown -R $USER:$(id -gn $USER) %s ', xdgBasedir.config))
         process.on('exit', () => {
-          console.error(boxen()(message, { align: 'center' }))
+          console.error(boxen(message, { align: 'center' }))
         })
       }
     }
   }
 
   check () {
-    if (
-      !this.config || this.config.get('optOut') || this.disabled
-    ) {
+    if (!this.config || this.config.get('optOut') || this.disabled) {
       return
     }
 
@@ -96,25 +93,25 @@ class UpdateNotifier {
 
   async fetchInfo () {
     const { distTag } = this.options
-    const latest = await latestVersion()(this.packageName, { version: distTag })
+    const latest = await latestVersion(this.packageName, { version: distTag })
 
     return {
       latest,
       current: this.packageVersion,
-      type: semverDiff()(this.packageVersion, latest) || distTag,
+      type: semverDiff(this.packageVersion, latest) || distTag,
       name: this.packageName
     }
   }
 
   notify (options) {
-    const suppressForNpm = !this.shouldNotifyInNpmScript && isNpm().isNpmOrYarn
-    if (!process.stdout.isTTY || suppressForNpm || !this.update || !semver().gt(this.update.latest, this.update.current)) {
+    const suppressForNpm = !this.shouldNotifyInNpmScript && isNpm.isNpmOrYarn
+    if (!process.stdout.isTTY || suppressForNpm || !this.update || !semver.gt(this.update.latest, this.update.current)) {
       return this
     }
 
     options = {
-      isGlobal: isInstalledGlobally(),
-      isYarnGlobal: isYarnGlobal()(),
+      isGlobal: isInstalledGlobally,
+      isYarnGlobal: isYarnGlobal(),
       ...options
     }
 
@@ -123,13 +120,13 @@ class UpdateNotifier {
       installCommand = `yarn global add ${this.packageName}`
     } else if (options.isGlobal) {
       installCommand = `npm i -g ${this.packageName}`
-    } else if (hasYarn()()) {
+    } else if (hasYarn()) {
       installCommand = `yarn add ${this.packageName}`
     } else {
       installCommand = `npm i ${this.packageName}`
     }
 
-    const defaultTemplate = 'Update available ' + chalk().dim('{currentVersion}') + chalk().reset(' → ') + chalk().green('{latestVersion}') + ' \nRun ' + chalk().cyan('{updateCommand}') + ' to update'
+    const defaultTemplate = 'Update available ' + chalk.dim('{currentVersion}') + chalk.reset(' → ') + chalk.green('{latestVersion}') + ' \nRun ' + chalk.cyan('{updateCommand}') + ' to update'
     const template = options.message || defaultTemplate
 
     options.boxenOptions = options.boxenOptions || {
@@ -140,8 +137,8 @@ class UpdateNotifier {
       borderStyle: 'round'
     }
 
-    const message = boxen()(
-      pupa()(template, {
+    const message = boxen(
+      pupa(template, {
         packageName: this.packageName,
         currentVersion: this.update.current,
         latestVersion: this.update.latest,
