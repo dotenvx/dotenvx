@@ -3,7 +3,6 @@ name: ci
 on: push
 
 jobs:
-  # always run tests
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -16,6 +15,7 @@ jobs:
       - run: npm install
       - run: npm run standard
       - run: npm run test
+      - run: npm audit --omit=dev
 
   # test-windows:
   #   runs-on: windows-latest
