@@ -707,7 +707,7 @@ $ dotenvx hub push
 
 #### Why am I getting the error `node: .env: not found`?
 
-You are using Node and it recently added a differing implementation of `--env-file` flag support. Rather than warn on a missing `.env`, file like dotenv has historically done, it raises an error: `node: .env: not found`.
+You are using Node and it recently added a differing implementation of `--env-file` flag support. Rather than warn on a missing `.env` file (like dotenv has historically done), it raises an error: `node: .env: not found`.
 
 To fix, replace `--env-file` with `-f`. For example:
 
