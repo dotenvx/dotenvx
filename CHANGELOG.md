@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.27.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.27.1...main)
+
+## 0.27.1
+
+* provide `.zip` download option for windows executable ([#140](https://github.com/dotenvx/dotenvx/pull/140))
+* remove `got` from top level deps ([#139](https://github.com/dotenvx/dotenvx/pull/139))
 
 ## 0.27.0
 
