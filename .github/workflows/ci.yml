@@ -324,4 +324,18 @@ jobs:
         run: |
           curl -L -o dotenvx-windows-x86_64.zip https://github.com/dotenvx/releases/blob/main/latest/dotenvx-windows-x86_64.zip?raw=true
           Expand-Archive -Path dotenvx-windows-x86_64.zip -DestinationPath .\dotenvx
-          .\dotenvx\bin\windows-x86_64\dotenvx.exe
+      - name: verify version
+        run: |
+          $versionOutput = .\dotenvx\bin\windows-x86_64\dotenvx.exe --version
+          Write-Output "dotenvx version: $versionOutput"
+        shell: pwsh
+        # run: |
+        #   RELEASED_VERSION=$(.\dotenvx\bin\windows-x86_64\dotenvx --version)
+        #   EXPECTED_VERSION=$(node -p "require('./package.json').version")
+        #   echo $RELEASED_VERSION
+        #   echo $EXPECTED_VERSION
+        #   if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
+        #     echo "posttest version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+        #     exit 1
+        #   fi
+
