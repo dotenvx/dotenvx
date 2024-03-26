@@ -334,3 +334,21 @@ jobs:
             Write-Output "postrelease version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
             exit 1
           }
+        shell: pwsh
+      - name: verify dotenvx run/get
+        run: |
+          "HELLO=Windows" | Out-File -FilePath .env
+          "console.log('Hello ' + process.env.HELLO)" | Out-File -FilePath index.js
+          $EXPECTED_MESSAGE = .\dotenvx\bin\windows-x86_64\dotenvx.exe run --quiet -- node index.js
+          Write-Output "Expected Message: $EXPECTED_MESSAGE"
+          if ($EXPECTED_MESSAGE -ne "Hello Windows") {
+            Write-Output "postrelease dotenvx run failure: expected 'Hello Windows', got '$EXPECTED_MESSAGE'"
+            exit 1
+          }
+          $EXPECTED_VALUE = .\dotenvx\bin\windows-x86_64\dotenvx.exe get HELLO
+          Write-Output "Expected Value: $EXPECTED_VALUE"
+          if ($EXPECTED_VALUE -ne "Windows") {
+            Write-Output "postrelease dotenvx get failure: expected 'Windows', got '$EXPECTED_VALUE'"
+            exit 1
+          }
+        shell: pwsh
