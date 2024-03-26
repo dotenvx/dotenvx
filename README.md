@@ -32,7 +32,7 @@ brew install dotenvx/brew/dotenvx
 ```
 > * [other global ways to install](https://dotenvx.com/docs/install)
 >
-> Installing globally as a cli unlocks dotenv for ANY language, framework, or platform. 💥
+> Intall globally as a cli to unlock dotenv for ANY language, framework, or platform. 💥
 >
 > I am using (and recommending) this approach going forward. – [motdotla](https://github.com/motdotla)
 
