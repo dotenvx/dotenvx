@@ -309,7 +309,7 @@ jobs:
             exit 1
           fi
   postrelease-windows:
-    # needs: [homebrew, npm, docker]
+    needs: [homebrew, npm, docker]
     runs-on: windows-latest
     strategy:
       fail-fast: true
@@ -326,7 +326,7 @@ jobs:
           Expand-Archive -Path dotenvx-windows-x86_64.zip -DestinationPath .\dotenvx
       - name: verify version
         run: |
-          $RELEASED_VERSION = .\dotenvx\bin\windows-x86_64\dotenvx.exe --version
+          $RELEASED_VERSION = .\dotenvx\dotenvx.exe --version
           $EXPECTED_VERSION = node -p "require('./package.json').version"
           Write-Output "released version: $RELEASED_VERSION"
           Write-Output "expected version: $EXPECTED_VERSION"
@@ -339,13 +339,13 @@ jobs:
         run: |
           "HELLO=Windows" | Out-File -FilePath .env
           "console.log('Hello ' + process.env.HELLO)" | Out-File -FilePath index.js
-          $EXPECTED_MESSAGE = .\dotenvx\bin\windows-x86_64\dotenvx.exe run --quiet -- node index.js
+          $EXPECTED_MESSAGE = .\dotenvx\dotenvx.exe run --quiet -- node index.js
           Write-Output "Expected Message: $EXPECTED_MESSAGE"
           if ($EXPECTED_MESSAGE -ne "Hello Windows") {
             Write-Output "postrelease dotenvx run failure: expected 'Hello Windows', got '$EXPECTED_MESSAGE'"
             exit 1
           }
-          $EXPECTED_VALUE = .\dotenvx\bin\windows-x86_64\dotenvx.exe get HELLO
+          $EXPECTED_VALUE = .\dotenvx\dotenvx.exe get HELLO
           Write-Output "Expected Value: $EXPECTED_VALUE"
           if ($EXPECTED_VALUE -ne "Windows") {
             Write-Output "postrelease dotenvx get failure: expected 'Windows', got '$EXPECTED_VALUE'"
