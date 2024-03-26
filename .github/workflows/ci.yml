@@ -94,6 +94,8 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
+          zip -r ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.zip bin/windows-amd64/
+          zip -r ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip bin/windows-x86_64/
           tar --gzip -cf ./dist/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
@@ -103,6 +105,8 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
+          zip -r ./dist/dotenvx-windows-amd64.zip bin/windows-amd64/
+          zip -r ./dist/dotenvx-windows-x86_64.zip bin/windows-x86_64/
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
