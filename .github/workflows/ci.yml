@@ -123,6 +123,7 @@ jobs:
         with:
           files: |
             dist/*.tar.gz
+            dist/*.zip
           body: "see [CHANGELOG](https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md)"
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
