@@ -112,6 +112,8 @@ jobs:
           tar --gzip -cf ./dist2/latest/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
+          zip -r ./dist2/latest/dotenvx-windows-amd64.zip bin/windows-amd64/
+          zip -r ./dist2/latest/dotenvx-windows-x86_64.zip bin/windows-x86_64/
       - name: create release
         uses: softprops/action-gh-release@v1
         with:
