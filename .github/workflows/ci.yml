@@ -308,3 +308,20 @@ jobs:
             echo "posttest dotenvx get failure: expected Mac, got $EXPECTED_VALUE"
             exit 1
           fi
+  postrelease-windows:
+    # needs: [homebrew, npm, docker]
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - name: sleep
+        run: sleep 60
+      - name: install dotenvx
+        run: |
+          curl -L -o dotenvx-windows-x86_64.zip https://github.com/dotenvx/releases/blob/main/latest/dotenvx-windows-x86_64.zip?raw=true
+          Expand-Archive -Path dotenvx-windows-x86_64.zip -DestinationPath .\dotenvx
+          .\dotenvx\dotenvx.exe
