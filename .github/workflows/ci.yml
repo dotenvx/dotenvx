@@ -94,8 +94,8 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
-          zip -r ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.zip bin/windows-amd64/
-          zip -r ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip bin/windows-x86_64/
+          zip -j ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.zip bin/windows-amd64/dotenvx.exe
+          zip -j ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip bin/windows-x86_64/dotenvx.exe
           tar --gzip -cf ./dist/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
@@ -105,8 +105,8 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
-          zip -r ./dist/dotenvx-windows-amd64.zip bin/windows-amd64/
-          zip -r ./dist/dotenvx-windows-x86_64.zip bin/windows-x86_64/
+          zip -j ./dist/dotenvx-windows-amd64.zip bin/windows-amd64/dotenvx.exe
+          zip -j ./dist/dotenvx-windows-x86_64.zip bin/windows-x86_64/dotenvx.exe
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
@@ -116,8 +116,8 @@ jobs:
           tar --gzip -cf ./dist2/latest/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
-          zip -r ./dist2/latest/dotenvx-windows-amd64.zip bin/windows-amd64/
-          zip -r ./dist2/latest/dotenvx-windows-x86_64.zip bin/windows-x86_64/
+          zip -j ./dist2/latest/dotenvx-windows-amd64.zip bin/windows-amd64/dotenvx.exe
+          zip -j ./dist2/latest/dotenvx-windows-x86_64.zip bin/windows-x86_64/dotenvx.exe
       - name: create release
         uses: softprops/action-gh-release@v1
         with:
@@ -249,7 +249,7 @@ jobs:
           echo $RELEASED_VERSION
           echo $EXPECTED_VERSION
           if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
-            echo "posttest version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+            echo "postrelease version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
             exit 1
           fi
       - name: verify dotenvx run/get
@@ -259,13 +259,13 @@ jobs:
           EXPECTED_MESSAGE=$(dotenvx run --quiet -- node index.js)
           echo $EXPECTED_MESSAGE
           if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
-            echo "posttest dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            echo "postrelease dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
             exit 1
           fi
           EXPECTED_VALUE=$(dotenvx get HELLO)
           echo $EXPECTED_VALUE
           if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
-            echo "posttest dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+            echo "postrelease dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
             exit 1
           fi
   postrelease-mac:
@@ -289,7 +289,7 @@ jobs:
           echo $RELEASED_VERSION
           echo $EXPECTED_VERSION
           if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
-            echo "posttest version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+            echo "postrelease version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
             exit 1
           fi
       - name: verify dotenvx run/get
@@ -299,12 +299,56 @@ jobs:
           EXPECTED_MESSAGE=$(dotenvx run --quiet -- node index.js)
           echo $EXPECTED_MESSAGE
           if [ "$EXPECTED_MESSAGE" != "Hello Mac" ]; then
-            echo "posttest dotenvx run failure: expected Hello Mac, got $EXPECTED_MESSAGE"
+            echo "postrelease dotenvx run failure: expected Hello Mac, got $EXPECTED_MESSAGE"
             exit 1
           fi
           EXPECTED_VALUE=$(dotenvx get HELLO)
           echo $EXPECTED_VALUE
           if [ "$EXPECTED_VALUE" != "Mac" ]; then
-            echo "posttest dotenvx get failure: expected Mac, got $EXPECTED_VALUE"
+            echo "postrelease dotenvx get failure: expected Mac, got $EXPECTED_VALUE"
             exit 1
           fi
+  postrelease-windows:
+    needs: [homebrew, npm, docker]
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - name: sleep
+        run: sleep 60
+      - name: install dotenvx
+        run: |
+          curl -L -o dotenvx-windows-x86_64.zip https://github.com/dotenvx/releases/blob/main/latest/dotenvx-windows-x86_64.zip?raw=true
+          Expand-Archive -Path dotenvx-windows-x86_64.zip -DestinationPath .\dotenvx
+      - name: verify version
+        run: |
+          $RELEASED_VERSION = .\dotenvx\dotenvx.exe --version
+          $EXPECTED_VERSION = node -p "require('./package.json').version"
+          Write-Output "released version: $RELEASED_VERSION"
+          Write-Output "expected version: $EXPECTED_VERSION"
+          if ($RELEASED_VERSION -ne $EXPECTED_VERSION) {
+            Write-Output "postrelease version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+            exit 1
+          }
+        shell: pwsh
+      - name: verify dotenvx run/get
+        run: |
+          "HELLO=Windows" | Out-File -FilePath .env
+          "console.log('Hello ' + process.env.HELLO)" | Out-File -FilePath index.js
+          $EXPECTED_MESSAGE = .\dotenvx\dotenvx.exe run --quiet -- node index.js
+          Write-Output "Expected Message: $EXPECTED_MESSAGE"
+          if ($EXPECTED_MESSAGE -ne "Hello Windows") {
+            Write-Output "postrelease dotenvx run failure: expected 'Hello Windows', got '$EXPECTED_MESSAGE'"
+            exit 1
+          }
+          $EXPECTED_VALUE = .\dotenvx\dotenvx.exe get HELLO
+          Write-Output "Expected Value: $EXPECTED_VALUE"
+          if ($EXPECTED_VALUE -ne "Windows") {
+            Write-Output "postrelease dotenvx get failure: expected 'Windows', got '$EXPECTED_VALUE'"
+            exit 1
+          }
+        shell: pwsh
