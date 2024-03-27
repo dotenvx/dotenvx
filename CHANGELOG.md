@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.27.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.27.2...main)
+
+## 0.27.2
+
+* add windows postrelease step to check `dotenvx.exe` is functional after release ([#141](https://github.com/dotenvx/dotenvx/pull/141))
 
 ## 0.27.1
 
