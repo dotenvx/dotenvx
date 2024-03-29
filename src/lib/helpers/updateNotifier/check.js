@@ -1,5 +1,6 @@
 'use strict'
 const { UpdateNotifier } = require('../updateNotifier')
+const { confStore } = require('../../shared/store')
 
 const options = JSON.parse(process.argv[2])
 
@@ -12,10 +13,10 @@ const updateNotifier = new UpdateNotifier(options);
   const update = await updateNotifier.fetchInfo()
 
   // Only update the last update check time on success
-  updateNotifier.config.set('lastUpdateCheck', Date.now())
+  confStore.set('update-notifier-lastUpdateCheck', Date.now())
 
   if (update.isOutdated) {
-    updateNotifier.config.set('update', update)
+    confStore.set('update-notifier-update', update)
   }
 
   // Call process exit explicitly to terminate the child process,
