@@ -27,7 +27,7 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
-    "@inquirer/prompts": "^3.3.0",
+    "@inquirer/confirm": "^2.0.17",
     "arch": "^2.1.1",
     "boxen": "^5.0.0",
     "chalk": "^4.1.2",
