@@ -69,6 +69,7 @@
     "tap": "^18.7.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }
