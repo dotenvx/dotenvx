@@ -1,9 +1,9 @@
 'use strict'
-let updateNotifier = require('../updateNotifier')
+const { UpdateNotifier } = require('../updateNotifier')
 
 const options = JSON.parse(process.argv[2])
 
-updateNotifier = new updateNotifier.UpdateNotifier(options);
+const updateNotifier = new UpdateNotifier(options);
 
 (async () => {
   // Exit process when offline
@@ -14,7 +14,7 @@ updateNotifier = new updateNotifier.UpdateNotifier(options);
   // Only update the last update check time on success
   updateNotifier.config.set('lastUpdateCheck', Date.now())
 
-  if (update.type && update.type !== 'latest') {
+  if (update.isOutdated) {
     updateNotifier.config.set('update', update)
   }
 

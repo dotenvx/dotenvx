@@ -9,7 +9,6 @@ const { format } = require('util')
 const configstore = require('configstore')
 const chalk = require('chalk')
 const semver = require('semver')
-const semverDiff = require('semver-diff')
 const latestVersion = require('./latestVersion')
 const isNpm = require('is-npm')
 const isInstalledGlobally = require('is-installed-globally')
@@ -98,7 +97,7 @@ class UpdateNotifier {
     return {
       latest,
       current: this.packageVersion,
-      type: semverDiff(this.packageVersion, latest) || distTag,
+      isOutdated: semver.gt(latest, this.packageVersion),
       name: this.packageName
     }
   }
