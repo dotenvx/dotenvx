@@ -93,7 +93,7 @@ class UpdateNotifier {
 
   async fetchInfo () {
     const { distTag } = this.options
-    const latest = await latestVersion(this.packageName, { version: distTag })
+    const latest = await latestVersion(this.packageName, distTag)
 
     return {
       latest,
