@@ -15,7 +15,6 @@ const isInstalledGlobally = require('is-installed-globally')
 const isYarnGlobal = require('is-yarn-global')
 const hasYarn = require('has-yarn')
 const boxen = require('boxen')
-const isCi = require('is-ci')
 const pupa = require('pupa')
 
 const ONE_DAY = 1000 * 60 * 60 * 24
@@ -40,7 +39,6 @@ class UpdateNotifier {
     this.packageName = options.pkg.name
     this.packageVersion = options.pkg.version
     this.updateCheckInterval = typeof options.updateCheckInterval === 'number' ? options.updateCheckInterval : ONE_DAY
-    this.disabled = 'NO_UPDATE_NOTIFIER' in process.env || process.env.NODE_ENV === 'test' || process.argv.includes('--no-update-notifier') || isCi
     this.shouldNotifyInNpmScript = options.shouldNotifyInNpmScript
   }
 
@@ -69,7 +67,7 @@ class UpdateNotifier {
 
   async fetchInfo () {
     const { distTag } = this.options
-    const latest = await latestVersion(this.packageName, distTag) ?? this.packageVersion
+    const latest = await latestVersion(this.packageName, distTag) || this.packageVersion
 
     return {
       latest,
