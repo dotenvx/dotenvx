@@ -9,7 +9,7 @@ const { confStore } = require('../../shared/store')
 
 const chalk = require('chalk')
 const semver = require('semver')
-const latestVersion = require('./latestVersion')
+const RemoteVersion = require('./remoteVersion')
 const isNpm = require('is-npm')
 const isInstalledGlobally = require('is-installed-globally')
 const isYarnGlobal = require('is-yarn-global')
@@ -66,13 +66,12 @@ class UpdateNotifier {
   }
 
   async fetchInfo () {
-    const { distTag } = this.options
-    const latest = await latestVersion(this.packageName, distTag) || this.packageVersion
+    const remoteVersion = await RemoteVersion().run() // example: 0.22.0
 
     return {
-      latest,
+      latest: remoteVersion,
       current: this.packageVersion,
-      isOutdated: semver.gt(latest, this.packageVersion),
+      isOutdated: semver.gt(remoteVersion, this.packageVersion),
       name: this.packageName
     }
   }

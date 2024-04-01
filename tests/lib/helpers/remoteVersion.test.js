@@ -1,7 +1,7 @@
 const t = require('tap')
 const packageJson = require('../../../src/lib/helpers/packageJson')
 
-const LatestVersion = require('../../../src/lib/helpers/latestVersion')
+const RemoteVersion = require('../../../src/lib/helpers/remoteVersion')
 
 const { MockAgent, setGlobalDispatcher } = require('undici')
 
@@ -19,9 +19,9 @@ t.test('#run', async ct => {
     version: 'X.X.X'
   })
 
-  const latestVersion = await new LatestVersion().run()
+  const remoteVersion = await new RemoteVersion().run()
 
-  ct.same(latestVersion, 'X.X.X')
+  ct.same(remoteVersion, 'X.X.X')
 
   ct.end()
 })
@@ -34,9 +34,9 @@ t.test('#run 404 status and return packageJson.version', async ct => {
   }).reply(404, {
   })
 
-  const latestVersion = await new LatestVersion().run()
+  const remoteVersion = await new RemoteVersion().run()
 
-  ct.same(latestVersion, packageJson.version)
+  ct.same(remoteVersion, packageJson.version)
 
   ct.end()
 })
@@ -51,9 +51,9 @@ t.test('#run network error', async ct => {
     code: 'ENOTFOUND'
   })
 
-  const latestVersion = await new LatestVersion().run()
+  const remoteVersion = await new RemoteVersion().run()
 
-  ct.same(latestVersion, packageJson.version)
+  ct.same(remoteVersion, packageJson.version)
 
   ct.end()
 })

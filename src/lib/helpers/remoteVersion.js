@@ -2,14 +2,14 @@ const { request } = require('undici')
 
 const packageJson = require('./packageJson')
 
-class LatestVersion {
+class RemoteVersion {
   constructor () {
     this.packageName = '@dotenvx/dotenvx'
     this.tag = 'latest'
   }
 
   /**
-  * Returns the latest version of a package under a certain tag
+  * Returns the latest version of this package
   * @returns {Promise<string?>}
   */
   async run () {
@@ -39,4 +39,4 @@ class LatestVersion {
   }
 }
 
-module.exports = LatestVersion
+module.exports = RemoteVersion
