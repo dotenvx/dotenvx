@@ -45,10 +45,6 @@ class UpdateNotifier {
   }
 
   check () {
-    if (confStore.get('update-notifier-optOut') || this.disabled) {
-      return
-    }
-
     this.update = confStore.get('update-notifier-update')
 
     if (this.update) {
