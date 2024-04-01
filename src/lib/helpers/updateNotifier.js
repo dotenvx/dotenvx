@@ -4,19 +4,17 @@
 'use strict'
 const { spawn } = require('child_process')
 const path = require('path')
-const { format } = require('util')
 
-const configstore = require('configstore')
+const { confStore } = require('../../shared/store')
+
 const chalk = require('chalk')
 const semver = require('semver')
-const semverDiff = require('semver-diff')
 const latestVersion = require('./latestVersion')
 const isNpm = require('is-npm')
 const isInstalledGlobally = require('is-installed-globally')
 const isYarnGlobal = require('is-yarn-global')
 const hasYarn = require('has-yarn')
 const boxen = require('boxen')
-const xdgBasedir = require('xdg-basedir')
 const isCi = require('is-ci')
 const pupa = require('pupa')
 
@@ -44,43 +42,25 @@ class UpdateNotifier {
     this.updateCheckInterval = typeof options.updateCheckInterval === 'number' ? options.updateCheckInterval : ONE_DAY
     this.disabled = 'NO_UPDATE_NOTIFIER' in process.env || process.env.NODE_ENV === 'test' || process.argv.includes('--no-update-notifier') || isCi
     this.shouldNotifyInNpmScript = options.shouldNotifyInNpmScript
-
-    if (!this.disabled) {
-      try {
-        const ConfigStore = configstore
-        this.config = new ConfigStore(`update-notifier-${this.packageName}`, {
-          optOut: false,
-          // Init with the current time so the first check is only
-          // after the set interval, so not to bother users right away
-          lastUpdateCheck: Date.now()
-        })
-      } catch {
-        // Expecting error code EACCES or EPERM
-        const message = chalk.yellow(format(' %s update check failed ', options.pkg.name)) + format('\n Try running with %s or get access ', chalk.cyan('sudo')) + '\n to the local update config store via \n' + chalk.cyan(format(' sudo chown -R $USER:$(id -gn $USER) %s ', xdgBasedir.config))
-        process.on('exit', () => {
-          console.error(boxen(message, { align: 'center' }))
-        })
-      }
-    }
   }
 
   check () {
-    if (!this.config || this.config.get('optOut') || this.disabled) {
+    if (confStore.get('update-notifier-optOut') || this.disabled) {
       return
     }
 
-    this.update = this.config.get('update')
+    this.update = confStore.get('update-notifier-update')
 
     if (this.update) {
       // Use the real latest version instead of the cached one
       this.update.current = this.packageVersion
 
       // Clear cached information
-      this.config.delete('update')
+      confStore.delete('update-notifier-update')
     }
 
     // Only check for updates on a set interval
-    if (Date.now() - this.config.get('lastUpdateCheck') < this.updateCheckInterval) {
+    if (Date.now() - confStore.get('update-notifier-lastUpdateCheck') < this.updateCheckInterval) {
       return
     }
 
@@ -98,7 +78,7 @@ class UpdateNotifier {
     return {
       latest,
       current: this.packageVersion,
-      type: semverDiff(this.packageVersion, latest) || distTag,
+      isOutdated: semver.gt(latest, this.packageVersion),
       name: this.packageName
     }
   }

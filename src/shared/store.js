@@ -92,6 +92,7 @@ const configPath = function () {
 }
 
 module.exports = {
+  confStore,
   getHostname,
   getToken,
   getUsername,

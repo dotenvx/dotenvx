@@ -27,13 +27,12 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
-    "@inquirer/prompts": "^3.3.0",
+    "@inquirer/confirm": "^2.0.17",
     "arch": "^2.1.1",
     "boxen": "^5.0.0",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
-    "configstore": "^5.0.1",
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",
     "execa": "^5.1.1",
@@ -50,11 +49,9 @@
     "ora": "^5.4.1",
     "pupa": "^2.1.1",
     "semver": "^7.3.4",
-    "semver-diff": "^3.1.1",
     "undici": "^5.28.3",
     "which": "^4.0.0",
     "winston": "^3.11.0",
-    "xdg-basedir": "^4.0.0",
     "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
