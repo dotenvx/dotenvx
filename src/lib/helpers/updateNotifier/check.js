@@ -1,4 +1,3 @@
-'use strict'
 const { UpdateNotifier } = require('../updateNotifier')
 const { confStore } = require('../../shared/store')
 

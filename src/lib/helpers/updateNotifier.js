@@ -1,7 +1,3 @@
-// based on "update-notifier" by Sindre Sorhus (https://github.com/sindresorhus/update-notifier)
-// licensed under the MIT License (see [license](https://github.com/yeoman/update-notifier/blob/v5.1.0/license) file for details).
-
-'use strict'
 const { spawn } = require('child_process')
 const path = require('path')
 
@@ -10,12 +6,6 @@ const { confStore } = require('../../shared/store')
 const chalk = require('chalk')
 const semver = require('semver')
 const RemoteVersion = require('./remoteVersion')
-const isNpm = require('is-npm')
-const isInstalledGlobally = require('is-installed-globally')
-const isYarnGlobal = require('is-yarn-global')
-const hasYarn = require('has-yarn')
-const boxen = require('boxen')
-const pupa = require('pupa')
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
@@ -39,7 +29,6 @@ class UpdateNotifier {
     this.packageName = options.pkg.name
     this.packageVersion = options.pkg.version
     this.updateCheckInterval = typeof options.updateCheckInterval === 'number' ? options.updateCheckInterval : ONE_DAY
-    this.shouldNotifyInNpmScript = options.shouldNotifyInNpmScript
   }
 
   check () {
@@ -74,66 +63,6 @@ class UpdateNotifier {
       isOutdated: semver.gt(remoteVersion, this.packageVersion),
       name: this.packageName
     }
-  }
-
-  notify (options) {
-    const suppressForNpm = !this.shouldNotifyInNpmScript && isNpm.isNpmOrYarn
-    if (!process.stdout.isTTY || suppressForNpm || !this.update || !semver.gt(this.update.latest, this.update.current)) {
-      return this
-    }
-
-    options = {
-      isGlobal: isInstalledGlobally,
-      isYarnGlobal: isYarnGlobal(),
-      ...options
-    }
-
-    let installCommand
-    if (options.isYarnGlobal) {
-      installCommand = `yarn global add ${this.packageName}`
-    } else if (options.isGlobal) {
-      installCommand = `npm i -g ${this.packageName}`
-    } else if (hasYarn()) {
-      installCommand = `yarn add ${this.packageName}`
-    } else {
-      installCommand = `npm i ${this.packageName}`
-    }
-
-    const defaultTemplate = 'Update available ' + chalk.dim('{currentVersion}') + chalk.reset(' → ') + chalk.green('{latestVersion}') + ' \nRun ' + chalk.cyan('{updateCommand}') + ' to update'
-    const template = options.message || defaultTemplate
-
-    options.boxenOptions = options.boxenOptions || {
-      padding: 1,
-      margin: 1,
-      align: 'center',
-      borderColor: 'yellow',
-      borderStyle: 'round'
-    }
-
-    const message = boxen(
-      pupa(template, {
-        packageName: this.packageName,
-        currentVersion: this.update.current,
-        latestVersion: this.update.latest,
-        updateCommand: installCommand
-      }),
-      options.boxenOptions
-    )
-
-    if (options.defer === false) {
-      console.error(message)
-    } else {
-      process.on('exit', () => {
-        console.error(message)
-      })
-
-      process.on('SIGINT', () => {
-        console.error('')
-        process.exit()
-      })
-    }
-
-    return this
   }
 }
 
