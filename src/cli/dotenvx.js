@@ -6,7 +6,7 @@ const program = new Command()
 
 const logger = require('./../shared/logger')
 const examples = require('./examples')
-const packageJson = require('./../shared/packageJson')
+const packageJson = require('./../lib/helpers/packageJson')
 
 // once a day check for any updates
 const notifier = updateNotifier({ pkg: packageJson })

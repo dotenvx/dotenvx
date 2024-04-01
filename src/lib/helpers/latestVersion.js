@@ -1,28 +1,42 @@
-'use strict'
-
 const { request } = require('undici')
 
-/**
- * Returns the latest version of a package under a certain tag
- * @param {string} packageName
- * @param {string} tag
- * @returns {Promise<string?>}
- */
-const latestVersion = async (packageName, tag) => {
-  const response = await request(`https://registry.npmjs.org/${packageName}/${tag}`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*',
-      'Content-Type': 'application/json'
-    }
-  })
+const packageJson = require('./packageJson')
 
-  if (response.statusCode !== 200) {
-    return null
+class LatestVersion {
+  constructor () {
+    this.packageName = '@dotenvx/dotenvx'
+    this.tag = 'latest'
   }
 
-  const data = await response.body.json()
-  return data.version
+  /**
+  * Returns the latest version of a package under a certain tag
+  * @returns {Promise<string?>}
+  */
+  async run () {
+    return await this._npmVersion()
+  }
+
+  async _npmVersion () {
+    try {
+      const response = await request(`https://registry.npmjs.org/${this.packageName}/${this.tag}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*',
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.statusCode !== 200) {
+        return packageJson.version
+      }
+
+      const data = await response.body.json()
+
+      return data.version
+    } catch (_error) {
+      return packageJson.version
+    }
+  }
 }
 
-module.exports = latestVersion
+module.exports = LatestVersion

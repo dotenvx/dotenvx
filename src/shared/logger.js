@@ -6,7 +6,7 @@ const combine = winston.format.combine
 const createLogger = winston.createLogger
 const transports = winston.transports
 
-const packageJson = require('./packageJson')
+const packageJson = require('./../lib/helpers/packageJson')
 
 const levels = {
   error: 0,
