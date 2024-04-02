@@ -7,6 +7,7 @@ const Encrypt = require('./services/encrypt')
 const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Genexample = require('./services/genexample')
+const Settings = require('./services/settings')
 
 // helpers
 const dotenvEval = require('./helpers/dotenvEval')
@@ -55,6 +56,10 @@ const get = function (key, envFile, overload, all) {
   return new Get(key, envFile, overload, all).run()
 }
 
+const settings = function () {
+  return new Settings().run()
+}
+
 // misc/cleanup
 const decrypt = function (encrypted, keyStr) {
   try {
@@ -84,6 +89,7 @@ module.exports = {
   ls,
   get,
   genexample,
+  settings,
   // misc/cleanup
   decrypt
 }
