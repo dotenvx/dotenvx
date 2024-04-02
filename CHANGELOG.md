@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 0.27.2
 
-* add windows postrelease step to check `dotenvx.exe` is functional after release ([#141](https://github.com/dotenvx/dotenvx/pull/141))
+* add windows postrelease step to check that `dotenvx.exe` is functional immediately after release ([#141](https://github.com/dotenvx/dotenvx/pull/141))
+* switch to our own update notice mechanism (eliminating multiple deps) ([#151](https://github.com/dotenvx/dotenvx/pull/151))
 
 ## 0.27.1
 
