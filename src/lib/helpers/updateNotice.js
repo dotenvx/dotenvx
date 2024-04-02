@@ -7,7 +7,7 @@ const packageJson = require('./packageJson')
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
-class UpdateNotifier {
+class UpdateNotice {
   constructor () {
     this.latestVersion = store.getLatestVersion()
     this.latestVersionLastChecked = store.getLatestVersionLastChecked()
@@ -29,11 +29,11 @@ class UpdateNotifier {
     }
 
     // Spawn a detached process
-    spawn(process.execPath, [path.join(__dirname, './updateNotifier/check.js')], {
+    spawn(process.execPath, [path.join(__dirname, './updateNotice/check.js')], {
       detached: true,
       stdio: 'ignore'
     }).unref()
   }
 }
 
-module.exports = UpdateNotifier
+module.exports = UpdateNotice
