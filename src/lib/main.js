@@ -89,6 +89,7 @@ module.exports = {
   ls,
   get,
   genexample,
+  // settings
   settings,
   // misc/cleanup
   decrypt

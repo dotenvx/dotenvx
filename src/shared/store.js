@@ -1,5 +1,5 @@
 const Conf = require('conf')
-const main = require('./../lib/main')
+const dotenv = require('dotenv')
 const packageJson = require('./../lib/helpers/packageJson')
 
 function jsonToEnv (json) {
@@ -49,7 +49,7 @@ const confStore = new Conf({
   },
   // Convert .env format to an object
   deserialize: function (env) {
-    return main.parse(env)
+    return dotenv.parse(env)
   }
 })
 

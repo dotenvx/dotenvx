@@ -9,11 +9,11 @@ const examples = require('./examples')
 const packageJson = require('./../lib/helpers/packageJson')
 
 // once a day check for any updates
-const notice = new UpdateNotice()
-notice.check()
-if (notice.update) {
-  logger.warn(`Update available ${notice.packageVersion} → ${notice.latestVersion} [see changelog](dotenvx.com/changelog)`)
-}
+// const notice = new UpdateNotice()
+// notice.check()
+// if (notice.update) {
+//   logger.warn(`Update available ${notice.packageVersion} → ${notice.latestVersion} [see changelog](dotenvx.com/changelog)`)
+// }
 
 // global log levels
 program
@@ -125,6 +125,7 @@ program.command('get')
 // dotenvx settings
 program.command('settings')
   .description('print current dotenvx settings')
+  .option('-pp, --pretty-print', 'pretty print output')
   .action(require('./actions/settings'))
 
 // dotenvx hub
