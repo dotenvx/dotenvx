@@ -12,7 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16.x
-      - run: npm install
+          cache: npm
+      - run: npm ci
       - run: npm run standard
       - run: npm run test
       - run: npm audit --omit=dev
@@ -26,7 +27,8 @@ jobs:
   #     - uses: actions/setup-node@v4
   #       with:
   #         node-version: 16.x
-  #     - run: npm install
+  #         cache: npm
+  #     - run: npm ci
   #     - run: npm run standard
   #     - run: npm test
 
@@ -53,6 +55,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 16.x
+          cache: npm
 
       # https://news.ycombinator.com/item?id=32388964
       # https://github.com/procursusteam/ldid
@@ -64,7 +67,7 @@ jobs:
           tag: v2.1.5-procursus2
 
       - name: npm install
-        run: npm install
+        run: npm ci
 
       - name: pkg
         run: |
