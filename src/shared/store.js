@@ -1,5 +1,6 @@
 const Conf = require('conf')
 const main = require('./../lib/main')
+const packageJson = require('./../lib/helpers/packageJson')
 
 function jsonToEnv (json) {
   return Object.entries(json).map(function ([key, value]) {
@@ -70,6 +71,14 @@ const getToken = function () {
   return confStore.get('DOTENVX_TOKEN')
 }
 
+const getLatestVersion = function () {
+  return confStore.get('DOTENVX_LATEST_VERSION') || packageJson.version
+}
+
+const getLatestVersionLastChecked = function () {
+  return parseInt(confStore.get('DOTENVX_LATEST_VERSION_LAST_CHECKED') || 0)
+}
+
 const setToken = function (fullUsername, accessToken) {
   // current logged in user
   confStore.set('DOTENVX_TOKEN', accessToken)
@@ -87,6 +96,14 @@ const setHostname = function (hostname) {
   return hostname
 }
 
+const setLatestVersion = function (version) {
+  return confStore.set('DOTENVX_LATEST_VERSION', version)
+}
+
+const setLatestVersionLastChecked = function (dateNow) {
+  return confStore.set('DOTENVX_LATEST_VERSION_LAST_CHECKED', dateNow)
+}
+
 const configPath = function () {
   return confStore.path
 }
@@ -96,7 +113,11 @@ module.exports = {
   getHostname,
   getToken,
   getUsername,
+  getLatestVersion,
+  getLatestVersionLastChecked,
   setHostname,
   setToken,
+  setLatestVersion,
+  setLatestVersionLastChecked,
   configPath
 }

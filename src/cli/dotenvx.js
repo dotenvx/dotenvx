@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const updateNotifier = require('./../lib/helpers/updateNotifier')
+const UpdateNotifier = require('./../lib/helpers/updateNotifier')
 const { Command } = require('commander')
 const program = new Command()
 
@@ -9,9 +9,10 @@ const examples = require('./examples')
 const packageJson = require('./../lib/helpers/packageJson')
 
 // once a day check for any updates
-const notifier = updateNotifier({ pkg: packageJson })
-if (notifier.update) {
-  logger.warn(`Update available ${notifier.update.current} → ${notifier.update.latest} [see changelog](dotenvx.com/changelog)`)
+const updateNotifier = new UpdateNotifier()
+updateNotifier.check()
+if (updateNotifier.update) {
+  logger.warn(`Update available ${updateNotifier.packageVersion} → ${updateNotifier.latestVersion} [see changelog](dotenvx.com/changelog)`)
 }
 
 // global log levels
