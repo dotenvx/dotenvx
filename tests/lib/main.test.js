@@ -8,6 +8,7 @@ const Encrypt = require('../../src/lib/services/encrypt')
 const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
 const Genexample = require('../../src/lib/services/genexample')
+const Settings = require('../../src/lib/services/settings')
 
 t.test('config calls dotenv.config', ct => {
   const stub = sinon.stub(dotenv, 'config')
@@ -87,7 +88,20 @@ t.test('get calls Get.run', ct => {
   ct.end()
 })
 
-t.test('get calls Genexample.run', ct => {
+t.test('settings calls Settings.run', ct => {
+  const stub = sinon.stub(Settings.prototype, 'run')
+  stub.returns({})
+
+  main.settings()
+
+  t.ok(stub.called, 'new Settings().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('genexample calls Genexample.run', ct => {
   const stub = sinon.stub(Genexample.prototype, 'run')
   stub.returns({})
 
