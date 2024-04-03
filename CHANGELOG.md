@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.27.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.28.0...main)
+
+## 0.28.0
+
+* add `dotenvx settings` command to list your current settings. in the future we'll provide ways to modify these settings as dotenvx's functionality grows ([#153](https://github.com/dotenvx/dotenvx/pull/153))
 
 ## 0.27.2
 
