@@ -54,9 +54,6 @@ class RunVault {
         uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
 
-      console.log(row.injected)
-      console.log(row.preExisted)
-
       strings.push(row)
     }
 
