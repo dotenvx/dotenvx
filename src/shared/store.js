@@ -97,11 +97,15 @@ const setHostname = function (hostname) {
 }
 
 const setLatestVersion = function (version) {
-  return confStore.set('DOTENVX_LATEST_VERSION', version)
+  confStore.set('DOTENVX_LATEST_VERSION', version)
+
+  return version
 }
 
 const setLatestVersionLastChecked = function (dateNow) {
-  return confStore.set('DOTENVX_LATEST_VERSION_LAST_CHECKED', dateNow)
+  confStore.set('DOTENVX_LATEST_VERSION_LAST_CHECKED', dateNow)
+
+  return dateNow
 }
 
 const configPath = function () {
