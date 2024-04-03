@@ -114,13 +114,20 @@ program.command('ls')
 
 // dotenvx get
 program.command('get')
-  .description('Return environment variable(s)')
+  .description('return environment variable(s)')
   .argument('[key]', 'environment variable name')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-o, --overload', 'override existing env variables')
   .option('-a, --all', 'include all machine envs as well')
   .option('-pp, --pretty-print', 'pretty print output')
   .action(require('./actions/get'))
+
+// dotenvx settings
+program.command('settings')
+  .description('print current dotenvx settings')
+  .argument('[key]', 'settings name')
+  .option('-pp, --pretty-print', 'pretty print output')
+  .action(require('./actions/settings'))
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
