@@ -96,7 +96,6 @@ t.test('store.getLatestVersion when none yet set', (ct) => {
   ct.end()
 })
 
-
 t.test('store.getLatestVersionLastChecked', (ct) => {
   const result = store.getLatestVersionLastChecked()
 
