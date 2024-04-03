@@ -125,6 +125,7 @@ program.command('get')
 // dotenvx settings
 program.command('settings')
   .description('print current dotenvx settings')
+  .argument('[key]', 'settings name')
   .option('-pp, --pretty-print', 'pretty print output')
   .action(require('./actions/settings'))
 

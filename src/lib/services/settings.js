@@ -1,14 +1,24 @@
 const store = require('./../../shared/store')
 
 class Settings {
+  constructor (key = null) {
+    this.key = key
+  }
+
   run () {
-    // returns json format of dotenvx.settings
-    return this._store()
+    const store = this._store()
+
+    if (this.key) {
+      return store[this.key]
+    }
+
+    // json of dotenvx.settings
+    return store
   }
 
   _store () {
     const h = {
-      DOTENVX_SETTINGS_PATH: store.configPath()
+      DOTENVX_SETTINGS_FILEPATH: store.configPath()
     }
 
     return { ...h, ...store.confStore.store }

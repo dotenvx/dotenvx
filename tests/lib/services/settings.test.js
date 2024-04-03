@@ -25,6 +25,7 @@ t.beforeEach((ct) => {
 })
 
 t.afterEach((ct) => {
+  store.confStore.set.restore()
   store.confStore.path = originalPath
   store.confStore.store = originalStore
 })
@@ -32,9 +33,17 @@ t.afterEach((ct) => {
 t.test('#run', ct => {
   const json = new Settings().run()
 
-  ct.same(json.DOTENVX_SETTINGS_PATH, '/tmp/.env')
+  ct.same(json.DOTENVX_SETTINGS_FILEPATH, '/tmp/.env')
   ct.same(json.DOTENVX_TOKEN, 'dxo_1234')
   ct.same(json.DOTENVX_HOSTNAME, 'https://mocked.dotenvx.com')
+
+  ct.end()
+})
+
+t.test('#run with key', ct => {
+  const result = new Settings('DOTENVX_TOKEN').run()
+
+  ct.same(result, 'dxo_1234')
 
   ct.end()
 })

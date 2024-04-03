@@ -56,8 +56,8 @@ const get = function (key, envFile, overload, all) {
   return new Get(key, envFile, overload, all).run()
 }
 
-const settings = function () {
-  return new Settings().run()
+const settings = function (key = null) {
+  return new Settings(key).run()
 }
 
 // misc/cleanup
