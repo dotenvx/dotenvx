@@ -89,6 +89,9 @@ async function run () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  // sortedOpts
+  logger.debug(`sortedOpts: ${JSON.stringify(this.sortedOpts)}`)
+
   // load from .env.vault file
   if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
     try {

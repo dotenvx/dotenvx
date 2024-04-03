@@ -15,6 +15,15 @@ if (notice.update) {
   logger.warn(`Update available ${notice.packageVersion} → ${notice.latestVersion} [see changelog](dotenvx.com/changelog)`)
 }
 
+// for use with run
+const sortedOpts = []
+function recordOpt (type) {
+  return function (value, previous) {
+    sortedOpts.push({ type, value })
+    return previous.concat([value])
+  }
+}
+
 // global log levels
 program
   .option('-l, --log-level <level>', 'set log level', 'info')
@@ -52,14 +61,19 @@ program
   .version(packageJson.version)
 
 // dotenvx run -- node index.js
+const runAction = require('./actions/run')
 program.command('run')
   .description('inject env at runtime [dotenvx run -- yourcommand]')
   .addHelpText('after', examples.run)
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', recordOpt('envFile'), [])
   .option('-fv, --env-vault-file <path>', 'path to your .env.vault file', '.env.vault')
-  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")')
+  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', recordOpt('env'), [])
   .option('-o, --overload', 'override existing env variables')
-  .action(require('./actions/run'))
+  .action(function (...args) {
+    this.sortedOpts = sortedOpts
+
+    runAction.apply(this, args)
+  })
 
 // dotenvx encrypt
 program.command('encrypt')
