@@ -110,7 +110,7 @@ class RunDefault {
     this.processedEnvs.push(row)
   }
 
-  _injectEnvVaultFile(envVaultFilepath) {
+  _injectEnvVaultFile (envVaultFilepath) {
     const row = {}
     row.type = TYPE_ENV_VAULT_FILE
     row.filepath = envVaultFilepath
