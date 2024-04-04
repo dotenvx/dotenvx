@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.29.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.29.1...main)
+
+## 0.29.1
+
+* patch situation where `DOTENV_KEY` is present and `--env-file` flag is set. assume to still look for `.env.vault` file as first in line ([#157](https://github.com/dotenvx/dotenvx/pull/157))
 
 ## 0.29.0
 
