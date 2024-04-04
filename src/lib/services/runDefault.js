@@ -2,18 +2,16 @@ const fs = require('fs')
 const path = require('path')
 
 const ENCODING = 'utf8'
-const DEFAULT_ENVS = [{ type: 'envFile', value: '.env' }]
+const TYPE_ENV = 'env'
+const TYPE_ENV_FILE = 'envFile'
+const DEFAULT_ENVS = [{ type: TYPE_ENV_FILE, value: '.env' }]
 
 const inject = require('./../helpers/inject')
 const parseExpandAndEval = require('./../helpers/parseExpandAndEval')
 
 class RunDefault {
   constructor (envs = [], overload = false) {
-    if (!envs || envs.length <= 0) {
-      this.envs = DEFAULT_ENVS // default to .env file expectation
-    } else {
-      this.envs = envs
-    }
+    this.envs = this._determineEnvs(envs)
     this.overload = overload
 
     this.processedEnvs = []
@@ -30,9 +28,9 @@ class RunDefault {
     //   { type: 'env', value: 'HELLO=three' }
     // ]
     for (const env of this.envs) {
-      if (env.type === 'env') {
+      if (env.type === TYPE_ENV) {
         this._injectEnv(env.value)
-      } else if (env.type === 'envFile') {
+      } else if (env.type === TYPE_ENV_FILE) {
         this._injectEnvFile(env.value)
       }
     }
@@ -47,7 +45,7 @@ class RunDefault {
 
   _injectEnv (env) {
     const row = {}
-    row.type = 'env'
+    row.type = TYPE_ENV
     row.string = env
 
     try {
@@ -71,7 +69,7 @@ class RunDefault {
 
   _injectEnvFile (envFilepath) {
     const row = {}
-    row.type = 'envFile'
+    row.type = TYPE_ENV_FILE
     row.filepath = envFilepath
 
     const filepath = path.resolve(envFilepath)
@@ -105,6 +103,26 @@ class RunDefault {
 
   _inject (processEnv, parsed, overload) {
     return inject(processEnv, parsed, overload)
+  }
+
+  _determineEnvs (envs = []) {
+    if (!envs || envs.length <= 0) {
+      return DEFAULT_ENVS // default to .env file expectation
+    } else {
+      let hasAtLeastOneEnvFile = false
+
+      for (const env of envs) {
+        if (env.type === TYPE_ENV_FILE) {
+          hasAtLeastOneEnvFile = true
+        }
+      }
+
+      if (hasAtLeastOneEnvFile) {
+        return envs
+      } else {
+        return [...DEFAULT_ENVS, ...envs]
+      }
+    }
   }
 }
 

@@ -209,23 +209,33 @@ t.test('#run (with envs as string)', ct => {
     { type: 'env', value: 'HELLO=string' }
   ]
 
+  // it should still prepend a type 'envFile': value: '.env'
   const {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
   } = new RunDefault(envs).run()
 
-  ct.same(processedEnvs, [{
-    type: 'env',
-    string: 'HELLO=string',
-    parsed: {
-      HELLO: 'string'
+  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  exampleError.code = 'MISSING_ENV_FILE'
+  ct.same(processedEnvs, [
+    {
+      type: 'envFile',
+      filepath: '.env',
+      error: exampleError
     },
-    injected: {
-      HELLO: 'string'
-    },
-    preExisted: {}
-  }])
+    {
+      type: 'env',
+      string: 'HELLO=string',
+      parsed: {
+        HELLO: 'string'
+      },
+      injected: {
+        HELLO: 'string'
+      },
+      preExisted: {}
+    }
+  ])
   ct.same(readableFilepaths, [])
   ct.same(uniqueInjectedKeys, ['HELLO'])
 
@@ -237,6 +247,8 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
     { type: 'env', value: 'HELLO=string' }
   ]
 
+  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  exampleError.code = 'MISSING_ENV_FILE'
   const runDefault = new RunDefault(envs)
   const mockError = new Error('Mock Error')
   const injectStub = sinon.stub(runDefault, '_inject').throws(mockError)
@@ -245,14 +257,21 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
     processedEnvs
   } = runDefault.run()
 
-  ct.same(processedEnvs, [{
-    type: 'env',
-    string: 'HELLO=string',
-    error: mockError,
-    parsed: {
-      HELLO: 'string'
+  ct.same(processedEnvs, [
+    {
+      type: 'envFile',
+      filepath: '.env',
+      error: exampleError
+    },
+    {
+      type: 'env',
+      string: 'HELLO=string',
+      error: mockError,
+      parsed: {
+        HELLO: 'string'
+      }
     }
-  }])
+  ])
 
   injectStub.restore()
 
