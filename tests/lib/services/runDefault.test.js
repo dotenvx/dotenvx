@@ -2,6 +2,7 @@ const t = require('tap')
 const fs = require('fs')
 const path = require('path')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const RunDefault = require('../../../src/lib/services/runDefault')
 
@@ -54,11 +55,15 @@ t.test('#run (no arguments and some other error)', ct => {
 })
 
 t.test('#run (finds .env file)', ct => {
+  const envs = [
+    { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
+
+  ]
   const {
     files,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new RunDefault('tests/monorepo/apps/frontend/.env').run()
+  } = new RunDefault(envs).run()
 
   ct.same(files, [{
     filepath: 'tests/monorepo/apps/frontend/.env',
@@ -77,11 +82,14 @@ t.test('#run (finds .env file)', ct => {
 })
 
 t.test('#run (finds .env file as array)', ct => {
+  const envs = [
+    { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
+  ]
   const {
     files,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new RunDefault(['tests/monorepo/apps/frontend/.env']).run()
+  } = new RunDefault(envs).run()
 
   ct.same(files, [{
     filepath: 'tests/monorepo/apps/frontend/.env',
@@ -102,11 +110,15 @@ t.test('#run (finds .env file as array)', ct => {
 t.test('#run (finds .env file but HELLO already exists)', ct => {
   process.env.HELLO = 'World'
 
+  const envs = [
+    { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
+  ]
+
   const {
     files,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new RunDefault('tests/monorepo/apps/frontend/.env').run()
+  } = new RunDefault(envs).run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
@@ -130,11 +142,15 @@ t.test('#run (finds .env file but HELLO already exists)', ct => {
 t.test('#run (finds .env file but HELLO already exists but overload is on)', ct => {
   process.env.HELLO = 'World'
 
+  const envs = [
+    { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
+  ]
+
   const {
     files,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new RunDefault('tests/monorepo/apps/frontend/.env', null, true).run()
+  } = new RunDefault(envs, true).run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
@@ -156,11 +172,15 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
 })
 
 t.test('#run (command substitution)', ct => {
+  const envs = [
+    { type: 'envFile', value: 'tests/.env.eval' }
+  ]
+
   const {
     files,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new RunDefault('tests/.env.eval').run()
+  } = new RunDefault(envs).run()
 
   ct.same(files, [{
     filepath: 'tests/.env.eval',
@@ -179,11 +199,15 @@ t.test('#run (command substitution)', ct => {
 })
 
 t.test('#run (with envs as string)', ct => {
+  const envs = [
+    { type: 'env', value: 'HELLO=string' }
+  ]
+
   const {
     strings,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new RunDefault([], 'HELLO=string').run()
+  } = new RunDefault(envs).run()
 
   ct.same(strings, [{
     string: 'HELLO=string',
@@ -197,6 +221,34 @@ t.test('#run (with envs as string)', ct => {
   }])
   ct.same(readableFilepaths, [])
   ct.same(uniqueInjectedKeys, ['HELLO'])
+
+  ct.end()
+})
+
+t.test('#run (with envs as string and errors somehow from inject)', ct => {
+  const envs = [
+    { type: 'env', value: 'HELLO=string' }
+  ]
+
+  const runDefault = new RunDefault(envs)
+  const mockError = new Error('Mock Error')
+  const injectStub = sinon.stub(runDefault, '_inject').throws(mockError)
+
+  const {
+    strings,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = runDefault.run()
+
+  ct.same(strings, [{
+    string: 'HELLO=string',
+    error: mockError,
+    parsed: {
+      HELLO: "string"
+    }
+  }])
+
+  injectStub.restore()
 
   ct.end()
 })

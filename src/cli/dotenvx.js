@@ -16,10 +16,10 @@ if (notice.update) {
 }
 
 // for use with run
-const sortedOpts = []
-function recordOpt (type) {
+const envs = []
+function collectEnvs (type) {
   return function (value, previous) {
-    sortedOpts.push({ type, value })
+    envs.push({ type, value })
     return previous.concat([value])
   }
 }
@@ -65,12 +65,12 @@ const runAction = require('./actions/run')
 program.command('run')
   .description('inject env at runtime [dotenvx run -- yourcommand]')
   .addHelpText('after', examples.run)
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', recordOpt('envFile'), [])
+  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fv, --env-vault-file <path>', 'path to your .env.vault file', '.env.vault')
-  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', recordOpt('env'), [])
   .option('-o, --overload', 'override existing env variables')
   .action(function (...args) {
-    this.sortedOpts = sortedOpts
+    this.envs = envs
 
     runAction.apply(this, args)
   })

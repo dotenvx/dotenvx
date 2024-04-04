@@ -89,8 +89,8 @@ async function run () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  // sortedOpts
-  logger.debug(`sortedOpts: ${JSON.stringify(this.sortedOpts)}`)
+  const envs = this.envs
+  logger.debug(`envs: ${JSON.stringify(envs)}`)
 
   // load from .env.vault file
   if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
@@ -133,7 +133,7 @@ async function run () {
       files,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new RunDefault(options.envFile, options.env, options.overload).run()
+    } = new RunDefault(envs, options.overload).run()
 
     for (const file of files) {
       const filepath = file.filepath
