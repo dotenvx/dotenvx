@@ -16,11 +16,9 @@ class RunDefault {
     }
     this.overload = overload
 
-    this.strings = []
-    this.files = []
-
     this.processedEnvs = []
     this.readableFilepaths = new Set()
+    this.readableStrings = new Set()
     this.uniqueInjectedKeys = new Set()
   }
 
@@ -40,9 +38,8 @@ class RunDefault {
     }
 
     return {
-      files: this.files,
-      strings: this.strings,
       processedEnvs: this.processedEnvs,
+      readableStrings: [...this.readableStrings],
       readableFilepaths: [...this.readableFilepaths],
       uniqueInjectedKeys: [...this.uniqueInjectedKeys]
     }
@@ -56,6 +53,7 @@ class RunDefault {
     try {
       const parsed = parseExpandAndEval(env)
       row.parsed = parsed
+      this.readableStrings.add(env)
 
       const { injected, preExisted } = this._inject(process.env, parsed, this.overload)
       row.injected = injected
@@ -69,7 +67,6 @@ class RunDefault {
     }
 
     this.processedEnvs.push(row)
-    this.strings.push(row) // deprecate
   }
 
   _injectEnvFile (envFilepath) {
@@ -104,7 +101,6 @@ class RunDefault {
     }
 
     this.processedEnvs.push(row)
-    this.files.push(row)
   }
 
   _inject (processEnv, parsed, overload) {

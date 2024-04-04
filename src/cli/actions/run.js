@@ -90,7 +90,6 @@ async function run () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
-  logger.debug(`envs: ${JSON.stringify(envs)}`)
 
   // load from .env.vault file
   if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
@@ -130,39 +129,44 @@ async function run () {
     }
   } else {
     const {
-      files,
+      processedEnvs,
+      readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
     } = new RunDefault(envs, options.overload).run()
 
-    for (const file of files) {
-      const filepath = file.filepath
+    for (const processedEnv of processedEnvs) {
+      if (processedEnv.type === 'envFile') {
+        logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
+      }
 
-      logger.verbose(`loading env from ${filepath} (${path.resolve(filepath)})`)
+      if (processedEnv.type === 'env') {
+        logger.verbose(`loading env from string (${processedEnv.string})`)
+      }
 
-      if (file.error) {
-        if (file.error.code === 'MISSING_ENV_FILE') {
-          logger.warnv(file.error)
-          logger.help(`? in development: add one with [echo "HELLO=World" > ${filepath}] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
+      if (processedEnv.error) {
+        if (processedEnv.error.code === 'MISSING_ENV_FILE') {
+          logger.warnv(processedEnv.error)
+          logger.help(`? in development: add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
           logger.help('? for production: set [DOTENV_KEY] on your server and re-deploy')
           logger.help('? for ci: set [DOTENV_KEY] on your ci and re-build')
         } else {
-          logger.warnv(file.error)
+          logger.warnv(processedEnv.error)
         }
       } else {
         // debug parsed
-        const parsed = file.parsed
+        const parsed = processedEnv.parsed
         logger.debug(parsed)
 
         // verbose/debug injected key/value
-        const injected = file.injected
+        const injected = processedEnv.injected
         for (const [key, value] of Object.entries(injected)) {
           logger.verbose(`${key} set`)
           logger.debug(`${key} set to ${value}`)
         }
 
         // verbose/debug preExisted key/value
-        const preExisted = file.preExisted
+        const preExisted = processedEnv.preExisted
         for (const [key, value] of Object.entries(preExisted)) {
           logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
           logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
@@ -171,9 +175,14 @@ async function run () {
     }
 
     let msg = `injecting env (${uniqueInjectedKeys.length})`
-    if (readableFilepaths.length > 0) {
+    if (readableFilepaths.length > 0 && readableStrings.length > 0) {
+      msg += ` from ${readableFilepaths} and --env flag${readableStrings.length > 1 ? 's' : ''}`
+    } else if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths}`
+    } else if (readableStrings.length > 0) {
+      msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
     }
+
     logger.successv(msg)
   }
 
