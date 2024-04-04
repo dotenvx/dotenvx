@@ -3,7 +3,7 @@ const execa = require('execa')
 const which = require('which')
 const logger = require('./../../shared/logger')
 
-const RunDefault = require('./../../lib/services/runDefault')
+const Run = require('./../../lib/services/run')
 
 const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
 
@@ -96,7 +96,7 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new RunDefault(envs, options.overload, process.env.DOTENV_KEY).run()
+    } = new Run(envs, options.overload, process.env.DOTENV_KEY).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {

@@ -14,7 +14,7 @@ const decrypt = require('./../helpers/decrypt')
 const parseExpandAndEval = require('./../helpers/parseExpandAndEval')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 
-class RunDefault {
+class Run {
   constructor (envs = [], overload = false, DOTENV_KEY = '') {
     this.envs = this._determineEnvs(envs, DOTENV_KEY)
     this.overload = overload
@@ -238,4 +238,4 @@ class RunDefault {
   }
 }
 
-module.exports = RunDefault
+module.exports = Run
