@@ -312,3 +312,320 @@ t.test('#run (mixed string and file)', ct => {
 
   ct.end()
 })
+
+t.test('#run DOTENV_KEY passed but .env.vault not found', ct => {
+  try {
+    new RunDefault([], false, '<dotenvkeyhere>').run()
+
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    const exampleError = new Error(`you set DOTENV_KEY but your .env.vault file is missing: ${path.resolve('.env.vault')}`)
+    exampleError.code = 'MISSING_ENV_VAULT_FILE'
+
+    ct.same(error, exampleError)
+  }
+
+  ct.end()
+})
+
+t.test('#run --env-vault-file but missing DOTENV_KEY', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+
+  try {
+    new RunDefault(envs, false, undefined).run()
+
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    const exampleError = new Error('your DOTENV_KEY appears to be blank: \'\'')
+    exampleError.code = 'MISSING_DOTENV_KEY'
+
+    ct.same(error, exampleError)
+  }
+
+  ct.end()
+})
+
+t.test('#run (incorrect/failed-decryption DOTENV_KEY argument)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development'
+
+  try {
+    new RunDefault(envs, false, DOTENV_KEY).run()
+
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    const exampleError = new Error('[DECRYPTION_FAILED] Unable to decrypt .env.vault with DOTENV_KEY.')
+    exampleError.help = '[DECRYPTION_FAILED] Run with debug flag [dotenvx run --debug -- yourcommand] or manually run [echo $DOTENV_KEY] to compare it to the one in .env.keys.'
+    exampleError.code = 'DECRYPTION_FAILED'
+    exampleError.debug = '[DECRYPTION_FAILED] DOTENV_KEY is dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development'
+
+    ct.same(error, exampleError)
+  }
+
+  ct.end()
+})
+
+t.test('#run (partly failed-decryption DOTENV_KEY argument second key succeeds. comma separated)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development,dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new RunDefault(envs, false, DOTENV_KEY).run()
+
+  ct.same(processedEnvs, [
+    {
+      type: 'envVaultFile',
+      filepath: 'tests/monorepo/apps/backend/.env.vault',
+      parsed: { HELLO: 'backend' },
+      injected: { HELLO: 'backend' },
+      preExisted: {}
+    }
+  ])
+
+  ct.same(readableFilepaths, ['tests/monorepo/apps/backend/.env.vault'])
+  ct.same(uniqueInjectedKeys, ['HELLO'])
+
+  ct.end()
+})
+
+t.test('#run (.env.vault and DOTENV_KEY)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new RunDefault(envs, false, DOTENV_KEY).run()
+
+  ct.same(processedEnvs, [
+    {
+      type: 'envVaultFile',
+      filepath: 'tests/monorepo/apps/backend/.env.vault',
+      parsed: { HELLO: 'backend' },
+      injected: { HELLO: 'backend' },
+      preExisted: {}
+    }
+  ])
+  ct.same(readableFilepaths, ['tests/monorepo/apps/backend/.env.vault'])
+  ct.same(uniqueInjectedKeys, ['HELLO'])
+
+  ct.end()
+})
+
+t.test('#run (.env.vault and DOTENV_KEY with errors somehow from inject)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+
+  const runDefault = new RunDefault(envs, false, DOTENV_KEY)
+  const mockError = new Error('Mock Error')
+  const injectStub = sinon.stub(runDefault, '_inject').throws(mockError)
+
+  const {
+    processedEnvs
+  } = runDefault.run()
+
+  ct.same(processedEnvs, [
+    {
+      type: 'envVaultFile',
+      filepath: 'tests/monorepo/apps/backend/.env.vault',
+      error: mockError,
+      parsed: {
+        HELLO: 'backend'
+      }
+    }
+  ])
+
+  injectStub.restore()
+
+  ct.end()
+})
+
+t.test('#run (.env.vault and DOTENV_KEY and machine env already set)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+
+  process.env.HELLO = 'machine'
+
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new RunDefault(envs, false, DOTENV_KEY).run()
+
+  ct.same(processedEnvs, [
+    {
+      type: 'envVaultFile',
+      filepath: 'tests/monorepo/apps/backend/.env.vault',
+      parsed: { HELLO: 'backend' },
+      injected: {},
+      preExisted: { HELLO: 'machine' }
+    }
+  ])
+  ct.same(readableFilepaths, ['tests/monorepo/apps/backend/.env.vault'])
+  ct.same(uniqueInjectedKeys, [])
+  ct.same(process.env.HELLO, 'machine')
+
+  ct.end()
+})
+
+t.test('#run (.env.vault and DOTENV_KEY and machine env already set but overload is true)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+
+  process.env.HELLO = 'machine'
+
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new RunDefault(envs, true, DOTENV_KEY).run()
+
+  ct.same(processedEnvs, [
+    {
+      type: 'envVaultFile',
+      filepath: 'tests/monorepo/apps/backend/.env.vault',
+      parsed: { HELLO: 'backend' },
+      injected: { HELLO: 'backend' },
+      preExisted: {}
+    }
+  ])
+  ct.same(readableFilepaths, ['tests/monorepo/apps/backend/.env.vault'])
+  ct.same(uniqueInjectedKeys, ['HELLO'])
+  ct.same(process.env.HELLO, 'backend')
+
+  ct.end()
+})
+
+t.test('#_dotenvKeys', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+
+  const runVault = new RunDefault(envs, false, DOTENV_KEY)
+  const results = runVault._dotenvKeys()
+
+  ct.same(results, [DOTENV_KEY])
+
+  ct.end()
+})
+
+t.test('#_dotenvKeys (separated by comma)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development,dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+  const runVault = new RunDefault(envs, false, DOTENV_KEY)
+
+  const results = runVault._dotenvKeys()
+
+  ct.same(results, [
+    'dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenvx.com/vault/.env.vault?environment=development',
+    'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+  ])
+
+  ct.end()
+})
+
+t.test('#_dotenvKeys (undefined)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const runVault = new RunDefault(envs, false)
+
+  const results = runVault._dotenvKeys()
+
+  ct.same(results, [''])
+
+  ct.end()
+})
+
+t.test('#_decrypted', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+  const envVaultFile = 'tests/monorepo/apps/backend/.env.vault'
+  const filepath = path.resolve(envVaultFile)
+
+  const runVault = new RunDefault(envs, false, DOTENV_KEY)
+  const parsedVault = runVault._parsedVault(filepath)
+
+  const decrypted = runVault._decrypted(DOTENV_KEY, parsedVault)
+
+  const expected = `# for testing purposes only
+HELLO="backend"
+`
+  ct.same(decrypted, expected)
+
+  ct.end()
+})
+
+t.test('#_decrypted (can\'t find environment)', ct => {
+  const envs = [
+    { type: 'envVaultFile', value: 'tests/monorepo/apps/backend/.env.vault' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=other'
+  const envVaultFile = 'tests/monorepo/apps/backend/.env.vault'
+  const filepath = path.resolve(envVaultFile)
+
+  const runVault = new RunDefault(envs, false, DOTENV_KEY)
+  const parsedVault = runVault._parsedVault(filepath)
+
+  try {
+    runVault._decrypted(DOTENV_KEY, parsedVault)
+
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    const exampleError = new Error('NOT_FOUND_DOTENV_ENVIRONMENT: cannot locate environment DOTENV_VAULT_OTHER in your .env.vault file')
+    exampleError.code = 'NOT_FOUND_DOTENV_ENVIRONMENT'
+
+    ct.same(error, exampleError)
+  }
+
+  ct.end()
+})
+
+t.test('#_determineEnvs when envs is empty array but DOTENV_KEY is set', ct => {
+  const envs = []
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+
+  const runVault = new RunDefault(envs, false, DOTENV_KEY)
+  const determinedEnvs = runVault._determineEnvs(envs, DOTENV_KEY)
+
+  ct.same(determinedEnvs, [{ type: 'envVaultFile', value: '.env.vault' }])
+
+  ct.end()
+})
+
+t.test('#_determineEnvs when envs is only --env flags but DOTENV_KEY is set', ct => {
+  const envs = [
+    { type: 'env', value: 'HELLO=string' }
+  ]
+  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+
+  const runVault = new RunDefault(envs, false, DOTENV_KEY)
+  const determinedEnvs = runVault._determineEnvs(envs, DOTENV_KEY)
+
+  ct.same(determinedEnvs, [{ type: 'envVaultFile', value: '.env.vault' }, { type: 'env', value: 'HELLO=string' }])
+
+  ct.end()
+})

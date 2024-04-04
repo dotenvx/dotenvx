@@ -92,50 +92,57 @@ async function run () {
   const envs = this.envs
 
   // load from .env.vault file
-  if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
-    try {
-      const {
-        envVaultFile,
-        parsed,
-        injected,
-        preExisted,
-        uniqueInjectedKeys
-      } = new RunVault(options.envVaultFile, options.env, process.env.DOTENV_KEY, options.overload).run()
+  // if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
+  //   try {
+  //     const {
+  //       envVaultFile,
+  //       parsed,
+  //       injected,
+  //       preExisted,
+  //       uniqueInjectedKeys
+  //     } = new RunVault(options.envVaultFile, options.env, process.env.DOTENV_KEY, options.overload).run()
 
-      logger.verbose(`loading env from encrypted ${envVaultFile} (${path.resolve(envVaultFile)})`)
-      logger.debug(`decrypting encrypted env from ${envVaultFile} (${path.resolve(envVaultFile)})`)
+  //     logger.verbose(`loading env from encrypted ${envVaultFile} (${path.resolve(envVaultFile)})`)
+  //     logger.debug(`decrypting encrypted env from ${envVaultFile} (${path.resolve(envVaultFile)})`)
 
-      // debug parsed
-      logger.debug(parsed)
+  //     // debug parsed
+  //     logger.debug(parsed)
 
-      // verbose/debug injected key/value
-      for (const [key, value] of Object.entries(injected)) {
-        logger.verbose(`${key} set`)
-        logger.debug(`${key} set to ${value}`)
-      }
+  //     // verbose/debug injected key/value
+  //     for (const [key, value] of Object.entries(injected)) {
+  //       logger.verbose(`${key} set`)
+  //       logger.debug(`${key} set to ${value}`)
+  //     }
 
-      // verbose/debug preExisted key/value
-      for (const [key, value] of Object.entries(preExisted)) {
-        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
-      }
+  //     // verbose/debug preExisted key/value
+  //     for (const [key, value] of Object.entries(preExisted)) {
+  //       logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
+  //       logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
+  //     }
 
-      logger.successv(`injecting env (${uniqueInjectedKeys.length}) from encrypted ${envVaultFile}`)
-    } catch (error) {
-      logger.error(error.message)
-      if (error.help) {
-        logger.help(error.help)
-      }
-    }
-  } else {
+  //     logger.successv(`injecting env (${uniqueInjectedKeys.length}) from encrypted ${envVaultFile}`)
+  //   } catch (error) {
+  //     logger.error(error.message)
+  //     if (error.help) {
+  //       logger.help(error.help)
+  //     }
+  //   }
+  // } else {
+
+  try {
     const {
       processedEnvs,
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new RunDefault(envs, options.overload).run()
+    } = new RunDefault(envs, options.overload, process.env.DOTENV_KEY).run()
 
     for (const processedEnv of processedEnvs) {
+      if (processedEnv.type === 'envVaultFile') {
+        logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
+        logger.debug(`decrypting encrypted env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
+      }
+
       if (processedEnv.type === 'envFile') {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
@@ -176,14 +183,19 @@ async function run () {
 
     let msg = `injecting env (${uniqueInjectedKeys.length})`
     if (readableFilepaths.length > 0 && readableStrings.length > 0) {
-      msg += ` from ${readableFilepaths} and --env flag${readableStrings.length > 1 ? 's' : ''}`
+      msg += ` from ${readableFilepaths.join(', ')}, and --env flag${readableStrings.length > 1 ? 's' : ''}`
     } else if (readableFilepaths.length > 0) {
-      msg += ` from ${readableFilepaths}`
+      msg += ` from ${readableFilepaths.join(', ')}`
     } else if (readableStrings.length > 0) {
       msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
     }
 
     logger.successv(msg)
+  } catch (error) {
+    logger.error(error.message)
+    if (error.help) {
+      logger.help(error.help)
+    }
   }
 
   // Extract command and arguments after '--'

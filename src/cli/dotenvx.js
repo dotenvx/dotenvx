@@ -67,7 +67,7 @@ program.command('run')
   .addHelpText('after', examples.run)
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fv, --env-vault-file <path>', 'path to your .env.vault file', '.env.vault')
+  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables')
   .action(function (...args) {
     this.envs = envs
