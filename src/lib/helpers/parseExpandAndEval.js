@@ -2,7 +2,7 @@ const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 const dotenvEval = require('./dotenvEval')
 
-function parseExpandAndEval (src, overload) {
+function parseExpandAndEval (src) {
   // parse
   const parsed = dotenv.parse(src)
 
@@ -13,16 +13,9 @@ function parseExpandAndEval (src, overload) {
   }
   const evaled = dotenvEval.eval(inputParsed).parsed
 
-  // consider moving this logic straight into dotenv-expand
-  let evalParsed = {}
-  if (overload) {
-    evalParsed = { ...process.env, ...evaled }
-  } else {
-    evalParsed = { ...evaled, ...process.env }
-  }
   const expandPlease = {
     processEnv: {},
-    parsed: evalParsed
+    parsed: { ...process.env, ...evaled } // always treat as overload, then later in the code the inject method takes care of actually setting on process.env via overload or not. this functions job is just to determine what the value would be
   }
   const expanded = dotenvExpand.expand(expandPlease).parsed
 

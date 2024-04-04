@@ -7,7 +7,6 @@ const DEFAULT_ENVS = [{ type: 'envFile', value: '.env' }]
 const inject = require('./../helpers/inject')
 const parseExpandAndEval = require('./../helpers/parseExpandAndEval')
 
-
 class RunDefault {
   constructor (envs = [], overload = false) {
     if (!envs || envs.length <= 0) {
@@ -19,6 +18,8 @@ class RunDefault {
 
     this.strings = []
     this.files = []
+
+    this.processedEnvs = []
     this.readableFilepaths = new Set()
     this.uniqueInjectedKeys = new Set()
   }
@@ -41,17 +42,19 @@ class RunDefault {
     return {
       files: this.files,
       strings: this.strings,
+      processedEnvs: this.processedEnvs,
       readableFilepaths: [...this.readableFilepaths],
       uniqueInjectedKeys: [...this.uniqueInjectedKeys]
     }
   }
 
-  _injectEnv(env) {
+  _injectEnv (env) {
     const row = {}
+    row.type = 'env'
     row.string = env
 
     try {
-      const parsed = parseExpandAndEval(env, this.overload)
+      const parsed = parseExpandAndEval(env)
       row.parsed = parsed
 
       const { injected, preExisted } = this._inject(process.env, parsed, this.overload)
@@ -65,11 +68,13 @@ class RunDefault {
       row.error = e
     }
 
-    this.strings.push(row)
+    this.processedEnvs.push(row)
+    this.strings.push(row) // deprecate
   }
 
-  _injectEnvFile(envFilepath) {
+  _injectEnvFile (envFilepath) {
     const row = {}
+    row.type = 'envFile'
     row.filepath = envFilepath
 
     const filepath = path.resolve(envFilepath)
@@ -77,7 +82,7 @@ class RunDefault {
       const src = fs.readFileSync(filepath, { encoding: ENCODING })
       this.readableFilepaths.add(envFilepath)
 
-      const parsed = parseExpandAndEval(src, this.overload)
+      const parsed = parseExpandAndEval(src)
       row.parsed = parsed
 
       const { injected, preExisted } = this._inject(process.env, parsed, this.overload)
@@ -98,10 +103,11 @@ class RunDefault {
       }
     }
 
+    this.processedEnvs.push(row)
     this.files.push(row)
   }
 
-  _inject(processEnv, parsed, overload) {
+  _inject (processEnv, parsed, overload) {
     return inject(processEnv, parsed, overload)
   }
 }

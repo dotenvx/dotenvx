@@ -22,16 +22,6 @@ t.test('#parseExpandAndEval machine value already set', ct => {
 
   const parsed = parseExpandAndEval(src)
 
-  ct.same(parsed, { HELLO: 'machine' })
-
-  ct.end()
-})
-
-t.test('#parseExpandAndEval machine value already set but overload true', ct => {
-  process.env.HELLO = 'machine'
-
-  const parsed = parseExpandAndEval(src, true)
-
   ct.same(parsed, { HELLO: 'World' })
 
   ct.end()
@@ -42,7 +32,7 @@ t.test('#parseExpandAndEval expands from process.env', ct => {
 
   src = 'HELLO=$EXPAND'
 
-  const parsed = parseExpandAndEval(src, true)
+  const parsed = parseExpandAndEval(src)
 
   ct.same(parsed, { HELLO: 'expanded' })
 
@@ -53,7 +43,7 @@ t.test('#parseExpandAndEval expands from self file', ct => {
   src = `HELLO=$EXPAND
 EXPAND=self`
 
-  const parsed = parseExpandAndEval(src, true)
+  const parsed = parseExpandAndEval(src)
 
   ct.same(parsed, { HELLO: 'self', EXPAND: 'self' })
 
@@ -66,7 +56,7 @@ ONE=$TWO
 TWO=hiya
 `
 
-  const parsed = parseExpandAndEval(src, true)
+  const parsed = parseExpandAndEval(src)
 
   ct.same(parsed, { HELLO: 'hiya', ONE: 'hiya', TWO: 'hiya' })
 
@@ -83,24 +73,12 @@ t.test('#parseExpandAndEval command substitutes', ct => {
   ct.end()
 })
 
-t.test('#parseExpandAndEval command does not substitute (already set in processEnv to same value)', ct => {
+t.test('#parseExpandAndEval command does substitute (already set in processEnv to same value)', ct => {
   process.env.HELLO = '$(echo world)'
 
   src = 'HELLO=$(echo world)'
 
   const parsed = parseExpandAndEval(src)
-
-  ct.same(parsed, { HELLO: '$(echo world)' })
-
-  ct.end()
-})
-
-t.test('#parseExpandAndEval command does substitute (already set in processEnv to same value) because overload true', ct => {
-  process.env.HELLO = '$(echo world)'
-
-  src = 'HELLO=$(echo world)'
-
-  const parsed = parseExpandAndEval(src, true)
 
   ct.same(parsed, { HELLO: 'world' })
 
@@ -113,18 +91,6 @@ t.test('#parseExpandAndEval machine command does not substitute (holman dotfiles
   src = 'HELLO=$(echo world)'
 
   const parsed = parseExpandAndEval(src)
-
-  ct.same(parsed, { HELLO: '$(echo machine)' })
-
-  ct.end()
-})
-
-t.test('#parseExpandAndEval machine command does not substitute (holman dotfiles issue https://github.com/dotenvx/dotenvx/issues/123) overload true', ct => {
-  process.env.HELLO = '$(echo machine)'
-
-  src = 'HELLO=$(echo world)'
-
-  const parsed = parseExpandAndEval(src, true)
 
   ct.same(parsed, { HELLO: 'world' })
 
@@ -155,7 +121,7 @@ t.test('expands environment variables', ct => {
   ct.end()
 })
 
-t.test('expands environment variables (pre-existing no overload)', ct => {
+t.test('expands environment variables (pre-existing but treats everything as overload)', ct => {
   process.env.BASIC = 'pre-existing'
   const src = `
     BASIC=basic
@@ -164,9 +130,9 @@ t.test('expands environment variables (pre-existing no overload)', ct => {
   `
   const parsed = parseExpandAndEval(src)
 
-  ct.equal(parsed.BASIC, 'pre-existing')
-  ct.equal(parsed.BASIC_EXPAND, 'pre-existing')
-  ct.equal(parsed.BASIC_EXPAND_SIMPLE, 'pre-existing')
+  ct.equal(parsed.BASIC, 'basic')
+  ct.equal(parsed.BASIC_EXPAND, 'basic')
+  ct.equal(parsed.BASIC_EXPAND_SIMPLE, 'basic')
 
   ct.end()
 })
@@ -178,7 +144,7 @@ t.test('expands environment variables (pre-existing when overload is true)', ct 
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseExpandAndEval(src, true)
+  const parsed = parseExpandAndEval(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')

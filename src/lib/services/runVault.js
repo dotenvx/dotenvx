@@ -43,7 +43,7 @@ class RunVault {
       const row = {}
       row.string = env
 
-      const parsed = parseExpandAndEval(env, this.overload)
+      const parsed = parseExpandAndEval(env)
       row.parsed = parsed
 
       const { injected, preExisted } = inject(process.env, parsed, this.overload)
@@ -77,7 +77,7 @@ class RunVault {
     }
 
     // parse this. it's the equivalent of the .env file
-    const parsed = parseExpandAndEval(decrypted, this.overload)
+    const parsed = parseExpandAndEval(decrypted)
     const { injected, preExisted } = inject(process.env, parsed, this.overload)
 
     for (const key of Object.keys(injected)) {
