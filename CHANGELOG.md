@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.28.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.29.0...main)
+
+## 0.29.0
+
+* respect order for `--env-file` and `--env` flag for how to apply variables (for example: `dotenvx run --env "HELLO=one" --env-file=.env` will prioritize `--env` flag. Add `--overload` here to prioritize `--env-file` or reverse the order.). you can now mix and match multiple flags in any complex order you wish and dotenvx will respect it. ([#155](https://github.com/dotenvx/dotenvx/pull/155))
 
 ## 0.28.0
 
