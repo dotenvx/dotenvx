@@ -185,16 +185,22 @@ class Run {
         return DEFAULT_ENVS // default to .env file expectation
       }
     } else {
-      let oneOrMoreFilesSpecified = false // can be .env or .env.vault type
+      let fileAlreadySpecified = false // can be .env or .env.vault type
 
       for (const env of envs) {
-        if (env.type === TYPE_ENV_FILE || env.type === TYPE_ENV_VAULT_FILE) {
-          oneOrMoreFilesSpecified = true
+        // if DOTENV_KEY set then we are checking if a .env.vault file is already specified
+        if (DOTENV_KEY.length > 0 && env.type === TYPE_ENV_VAULT_FILE) {
+          fileAlreadySpecified = true
+        }
+
+        // if DOTENV_KEY not set then we are checking if a .env file is already specified
+        if (DOTENV_KEY.length <= 0 && env.type === TYPE_ENV_FILE) {
+          fileAlreadySpecified = true
         }
       }
 
       // return early since envs array objects already contain 1 .env.vault or .env file
-      if (oneOrMoreFilesSpecified) {
+      if (fileAlreadySpecified) {
         return envs
       }
 
