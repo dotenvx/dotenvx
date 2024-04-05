@@ -52,8 +52,8 @@ const genexample = function (directory, envFile) {
   return new Genexample(directory, envFile).run()
 }
 
-const get = function (key, envFile, overload, all) {
-  return new Get(key, envFile, overload, all).run()
+const get = function (key, envs = [], overload = false, DOTENV_KEY = '', all = false) {
+  return new Get(key, envs, overload, DOTENV_KEY, all).run()
 }
 
 const settings = function (key = null) {
