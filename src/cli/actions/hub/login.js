@@ -1,7 +1,7 @@
 const open = require('open')
 const { request } = require('undici')
 const clipboardy = require('./../../../lib/helpers/clipboardy')
-const { confirm } = require('@inquirer/confirm')
+const confirm = require('@inquirer/confirm').default
 
 const createSpinner = require('./../../../shared/createSpinner')
 const store = require('./../../../shared/store')
