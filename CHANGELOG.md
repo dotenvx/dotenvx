@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.29.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.29.2...main)
+
+## 0.29.2
+
+* fix broken `hub login` and `hub open` ([#160](https://github.com/dotenvx/dotenvx/pull/160))
 
 ## 0.29.1
 
