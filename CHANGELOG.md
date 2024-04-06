@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.29.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.30.0...main)
+
+## 0.30.0
+
+* refactor `dotenvx get` to use `run` under the hood
+* `dotenvx get --quiet` will display the value no matter what (adds a `blank0` logger level) ([#161](https://github.com/dotenvx/dotenvx/pull/161))
 
 ## 0.29.2
 

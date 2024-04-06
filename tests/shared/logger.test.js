@@ -17,6 +17,18 @@ t.test('logger.blank', (ct) => {
   ct.end()
 })
 
+t.test('logger.blank0', (ct) => {
+  const message = 'message1'
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.blank0(message)
+  })
+
+  ct.equal(stdout, 'message1\n')
+
+  ct.end()
+})
+
 t.test('logger.debug', (ct) => {
   const message = 'message1'
 
