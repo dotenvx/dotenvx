@@ -15,10 +15,11 @@ const parseExpandAndEval = require('./../helpers/parseExpandAndEval')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 
 class Run {
-  constructor (envs = [], overload = false, DOTENV_KEY = '') {
+  constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
     this.envs = this._determineEnvs(envs, DOTENV_KEY)
     this.overload = overload
     this.DOTENV_KEY = DOTENV_KEY
+    this.processEnv = processEnv
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
@@ -62,7 +63,7 @@ class Run {
       row.parsed = parsed
       this.readableStrings.add(env)
 
-      const { injected, preExisted } = this._inject(process.env, parsed, this.overload)
+      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
       row.injected = injected
       row.preExisted = preExisted
 
@@ -89,7 +90,7 @@ class Run {
       const parsed = parseExpandAndEval(src)
       row.parsed = parsed
 
-      const { injected, preExisted } = this._inject(process.env, parsed, this.overload)
+      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
       row.injected = injected
       row.preExisted = preExisted
 
@@ -158,7 +159,7 @@ class Run {
       const parsed = parseExpandAndEval(decrypted)
       row.parsed = parsed
 
-      const { injected, preExisted } = this._inject(process.env, parsed, this.overload)
+      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
       row.injected = injected
       row.preExisted = preExisted
 

@@ -127,14 +127,21 @@ program.command('ls')
   .action(require('./actions/ls'))
 
 // dotenvx get
+const getAction = require('./actions/get')
 program.command('get')
   .description('return environment variable(s)')
   .argument('[key]', 'environment variable name')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables')
   .option('-a, --all', 'include all machine envs as well')
   .option('-pp, --pretty-print', 'pretty print output')
-  .action(require('./actions/get'))
+  .action(function (...args) {
+    this.envs = envs
+
+    getAction.apply(this, args)
+  })
 
 // dotenvx settings
 program.command('settings')

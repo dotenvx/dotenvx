@@ -1,46 +1,40 @@
-const dotenv = require('dotenv')
-const dotenvExpand = require('dotenv-expand')
+const Run = require('./run')
 
 class Get {
-  constructor (key, envFile = '.env', overload = false, all = false) {
+  constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false) {
     this.key = key
-    this.envFile = envFile
+    this.envs = envs
     this.overload = overload
+    this.DOTENV_KEY = DOTENV_KEY
     this.all = all
   }
 
   run () {
-    const clonedEnv = { ...process.env }
-    const options = {
-      processEnv: clonedEnv,
-      path: this.envFile,
-      override: this.overload
-    }
-    const parsed = dotenv.config(options).parsed
-
-    const expandedEnv = { ...clonedEnv }
-    const expandOptions = {
-      processEnv: expandedEnv,
-      parsed
-    }
-    dotenvExpand.expand(expandOptions)
+    const processEnv = { ...process.env }
+    const { processedEnvs } = new Run(this.envs, this.overload, this.DOTENV_KEY, processEnv).run()
 
     if (!this.key) {
       // if user wants to return ALL envs (even prior set on machine)
       if (this.all) {
-        return expandedEnv
+        return processEnv
       }
 
       // typical scenario - return only envs that were identified in the .env file
+      // iterate over all processedEnvs.parsed and grab from processEnv
       const result = {}
-      for (const key of Object.keys(parsed)) {
-        result[key] = expandedEnv[key]
+      for (const processedEnv of processedEnvs) {
+        // parsed means we saw the key in a file or --env flag. this effectively filters out any preset machine envs - while still respecting complex evaluating, expansion, and overload. in other words, the value might be the machine value because the key was displayed in a .env file
+        if (processedEnv.parsed) {
+          for (const key of Object.keys(processedEnv.parsed)) {
+            result[key] = processEnv[key]
+          }
+        }
       }
 
       return result
     }
 
-    return expandedEnv[this.key]
+    return processEnv[this.key]
   }
 }
 
