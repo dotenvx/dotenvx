@@ -1,8 +1,5 @@
 const Run = require('./run')
 
-const dotenv = require('dotenv')
-const dotenvExpand = require('dotenv-expand')
-
 class Get {
   constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false) {
     this.key = key
@@ -27,8 +24,10 @@ class Get {
       const result = {}
       for (const processedEnv of processedEnvs) {
         // parsed means we saw the key in a file or --env flag. this effectively filters out any preset machine envs - while still respecting complex evaluating, expansion, and overload. in other words, the value might be the machine value because the key was displayed in a .env file
-        for (const key of Object.keys(processedEnv.parsed)) {
-          result[key] = processEnv[key]
+        if (processedEnv.parsed) {
+          for (const key of Object.keys(processedEnv.parsed)) {
+            result[key] = processEnv[key]
+          }
         }
       }
 
