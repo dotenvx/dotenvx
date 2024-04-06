@@ -9,6 +9,7 @@ const transports = winston.transports
 const packageJson = require('./../lib/helpers/packageJson')
 
 const levels = {
+  blank0: 0,
   error: 0,
   errorv: 0,
   errorvp: 0,
@@ -45,6 +46,8 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
   const formattedMessage = typeof message === 'object' ? JSON.stringify(message) : message
 
   switch (level.toLowerCase()) {
+    case 'blank0': // special blank that always displays - even with quiet flag (for use with get action)
+      return formattedMessage
     case 'error':
       return error(formattedMessage)
     case 'errorv':
