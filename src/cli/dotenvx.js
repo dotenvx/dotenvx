@@ -12,7 +12,7 @@ const packageJson = require('./../lib/helpers/packageJson')
 const notice = new UpdateNotice()
 notice.check()
 if (notice.update) {
-  logger.warn(`Update available ${notice.packageVersion} → ${notice.latestVersion} [see changelog](dotenvx.com/changelog)`)
+  logger.warn(`Update available ${notice.packageVersion} → ${notice.latestVersion}\nchangelog: https://dotenvx.com/changelog`)
 }
 
 // global log levels

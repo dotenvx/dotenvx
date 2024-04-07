@@ -83,7 +83,7 @@ async function pull (directory) {
       logger.http(responseData)
       spinner.fail(responseData.error.message)
       if (response.statusCode === 404) {
-        logger.help(`? try visiting [${hostname}gh/${usernameName}] in your browser`)
+        logger.help(`? try visiting [${hostname}/gh/${usernameName}] in your browser`)
       }
       process.exit(1)
     }
