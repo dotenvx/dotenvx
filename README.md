@@ -686,6 +686,13 @@ $ dotenvx hub push
 * [`dotenvx gitignore`](https://dotenvx.com/docs/features/gitignore) – gitignore your `.env` files
 * [`dotenvx prebuild`](https://dotenvx.com/docs/features/prebuild) – prevent `.env` files from being built into your docker container
 * [`dotenvx precommit`](https://dotenvx.com/docs/features/precommit) – prevent `.env` files from being committed to code
+* [`dotenvx scan`](https://dotenvx.com/docs/features/scan) – scan for leaked secrets in code
+
+> Convenience
+
+* [`dotenvx get`](https://dotenvx.com/docs/features/get) – return a single environment variable
+* [`dotenvx ls`](https://dotenvx.com/docs/features/ls) – list all .env files in your repo
+* [`dotenvx settings`](https://dotenvx.com/docs/features/settings) – print current dotenvx settings
 
 &nbsp;
 

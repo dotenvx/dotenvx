@@ -5,7 +5,7 @@ const store = require('./../../shared/store')
 const hub = new Command('hub')
 
 hub
-  .description('Interact with the hub')
+  .description('interact with dotenvx hub')
 
 hub
   .command('login')

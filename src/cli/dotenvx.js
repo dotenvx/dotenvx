@@ -75,6 +75,23 @@ program.command('run')
     runAction.apply(this, args)
   })
 
+// dotenvx get
+const getAction = require('./actions/get')
+program.command('get')
+  .description('return a single environment variable')
+  .argument('[key]', 'environment variable name')
+  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
+  .option('-o, --overload', 'override existing env variables')
+  .option('-a, --all', 'include all machine envs as well')
+  .option('-pp, --pretty-print', 'pretty print output')
+  .action(function (...args) {
+    this.envs = envs
+
+    getAction.apply(this, args)
+  })
+
 // dotenvx encrypt
 program.command('encrypt')
   .description('encrypt .env.* to .env.vault')
@@ -88,18 +105,18 @@ program.command('decrypt')
   .description('decrypt .env.vault to .env*')
   .action(require('./actions/decrypt'))
 
+// dotenvx genexample
+program.command('genexample')
+  .description('generate .env.example')
+  .argument('[directory]', 'directory to generate from', '.')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .action(require('./actions/genexample'))
+
 // dotenvx gitignore
 program.command('gitignore')
   .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
   .addHelpText('after', examples.gitignore)
   .action(require('./actions/gitignore'))
-
-// dotenvx precommit
-program.command('precommit')
-  .description('prevent committing .env files to code')
-  .addHelpText('after', examples.precommit)
-  .option('-i, --install', 'install to .git/hooks/pre-commit')
-  .action(require('./actions/precommit'))
 
 // dotenvx prebuild
 program.command('prebuild')
@@ -107,12 +124,12 @@ program.command('prebuild')
   .addHelpText('after', examples.prebuild)
   .action(require('./actions/prebuild'))
 
-// dotenvx genexample
-program.command('genexample')
-  .description('generate .env.example')
-  .argument('[directory]', 'directory to generate from', '.')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
-  .action(require('./actions/genexample'))
+// dotenvx precommit
+program.command('precommit')
+  .description('prevent committing .env files to code')
+  .addHelpText('after', examples.precommit)
+  .option('-i, --install', 'install to .git/hooks/pre-commit')
+  .action(require('./actions/precommit'))
 
 // dotenvx scan
 program.command('scan')
@@ -125,23 +142,6 @@ program.command('ls')
   .argument('[directory]', 'directory to list .env files from', '.')
   .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
   .action(require('./actions/ls'))
-
-// dotenvx get
-const getAction = require('./actions/get')
-program.command('get')
-  .description('return environment variable(s)')
-  .argument('[key]', 'environment variable name')
-  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
-  .option('-o, --overload', 'override existing env variables')
-  .option('-a, --all', 'include all machine envs as well')
-  .option('-pp, --pretty-print', 'pretty print output')
-  .action(function (...args) {
-    this.envs = envs
-
-    getAction.apply(this, args)
-  })
 
 // dotenvx settings
 program.command('settings')
