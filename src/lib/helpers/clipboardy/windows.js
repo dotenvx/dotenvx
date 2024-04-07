@@ -1,9 +1,10 @@
 'use strict'
 const path = require('path')
 const execa = require('execa')
+const arch = require('arch')
 
 // Binaries from: https://github.com/sindresorhus/clipboardy/tree/v2.3.0
-const windowBinaryPath = process.arch === 'x64'
+const windowBinaryPath = arch() === 'x64'
   ? path.join(__dirname, './fallbacks/windows/clipboard_x86_64.exe')
   : path.join(__dirname, './fallbacks/windows/clipboard_i686.exe')
 
