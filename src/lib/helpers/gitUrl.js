@@ -1,10 +1,11 @@
-const { execSync } = require('child_process')
+const execa = require('execa')
 
 function gitUrl () {
   try {
     // Redirect standard error to null to suppress Git error messages
-    const url = execSync('git remote get-url origin 2> /dev/null').toString().trim()
-    return url
+    const raw = execa.sync('git', ['remote', 'get-url', 'origin'])
+    const result = raw.stdout.toString().trim()
+    return result
   } catch (_error) {
     return null
   }
