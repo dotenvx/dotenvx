@@ -3,13 +3,15 @@ const path = require('path')
 
 const main = require('./../../lib/main')
 const logger = require('./../../shared/logger')
-const helpers = require('./../helpers')
 const createSpinner = require('./../../shared/createSpinner')
+const sleep = require('./../../lib/helpers/sleep')
+const pluralize = require('./../../lib/helpers/pluralize')
+
 const spinner = createSpinner('encrypting')
 
 async function encrypt (directory) {
   spinner.start()
-  await helpers.sleep(500) // better dx
+  await sleep(500) // better dx
 
   logger.debug(`directory: ${directory}`)
 
@@ -55,7 +57,7 @@ async function encrypt (directory) {
     }
 
     if (addedKeys.length > 0) {
-      spinner.succeed(`${helpers.pluralize('key', addedKeys.length)} added to .env.keys (${addedKeys})`)
+      spinner.succeed(`${pluralize('key', addedKeys.length)} added to .env.keys (${addedKeys})`)
       logger.help2('ℹ push .env.keys up to hub: [dotenvx hub push]')
     }
 

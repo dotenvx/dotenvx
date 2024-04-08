@@ -3,13 +3,13 @@ const confirm = require('@inquirer/confirm').default
 
 const createSpinner = require('./../../../shared/createSpinner')
 const logger = require('./../../../shared/logger')
-const helpers = require('./../../helpers')
 
 const isGitRepo = require('./../../../lib/helpers/isGitRepo')
 const isGithub = require('./../../../lib/helpers/isGithub')
 const gitUrl = require('./../../../lib/helpers/gitUrl')
 const gitRoot = require('./../../../lib/helpers/gitRoot')
 const extractUsernameName = require('./../../../lib/helpers/extractUsernameName')
+const sleep = require('./../../../lib/helpers/sleep')
 
 const spinner = createSpinner('opening')
 
@@ -54,7 +54,7 @@ async function open () {
 
   if (answer) {
     spinner.start()
-    await helpers.sleep(500) // better dx
+    await sleep(500) // better dx
     await openBrowser(openUrl)
     spinner.succeed(`opened [${usernameName}]`)
   }

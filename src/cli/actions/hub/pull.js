@@ -4,7 +4,6 @@ const { request } = require('undici')
 
 const store = require('./../../../shared/store')
 const logger = require('./../../../shared/logger')
-const helpers = require('./../../helpers')
 const createSpinner = require('./../../../shared/createSpinner')
 
 const isGitRepo = require('./../../../lib/helpers/isGitRepo')
@@ -12,6 +11,7 @@ const isGithub = require('./../../../lib/helpers/isGithub')
 const gitUrl = require('./../../../lib/helpers/gitUrl')
 const gitRoot = require('./../../../lib/helpers/gitRoot')
 const extractUsernameName = require('./../../../lib/helpers/extractUsernameName')
+const sleep = require('./../../../lib/helpers/sleep')
 
 const spinner = createSpinner('pulling')
 
@@ -21,7 +21,7 @@ const ENCODING = 'utf8'
 // Create a simple-git instance for the current directory
 async function pull (directory) {
   spinner.start()
-  await helpers.sleep(500) // better dx
+  await sleep(500) // better dx
 
   // debug args
   logger.debug(`directory: ${directory}`)
