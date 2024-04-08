@@ -36,6 +36,23 @@ t.test('#decrypt (DECRYPTION_FAILED)', ct => {
   ct.end()
 })
 
+t.test('#decrypt (INVALID_CIPHERTEXT)', ct => {
+  const dotenvKey = 'dotenv://:key_ac300a21c59058c422c18dba8dc9892a537a63e156af14b5c5ef14810dc71f20@dotenvx.com/vault/.env.vault?environment=development'
+  const ciphertext = 'abc'
+
+  try {
+    decrypt(ciphertext, dotenvKey)
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.code, 'INVALID_CIPHERTEXT')
+    ct.same(error.message, '[INVALID_CIPHERTEXT] Unable to decrypt what appears to be invalid ciphertext.')
+    ct.same(error.help, '[INVALID_CIPHERTEXT] Run with debug flag [dotenvx run --debug -- yourcommand] or manually check .env.vault.')
+    ct.same(error.debug, '[INVALID_CIPHERTEXT] ciphertext is \'abc\'')
+  }
+
+  ct.end()
+})
+
 t.test('#decrypt (other error)', ct => {
   const dotenvKey = 'dotenv://:key_ac300a21c59058c422c18dba8dc9892a537a63e156af14b5c5ef14810dc71f20@dotenvx.com/vault/.env.vault?environment=development'
 
