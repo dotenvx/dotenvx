@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.30.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.31.0...main)
+
+## 0.31.0
+
+* add `hub logout` command ([#170](https://github.com/dotenvx/dotenvx/pull/170))
 
 ## 0.30.2
 
