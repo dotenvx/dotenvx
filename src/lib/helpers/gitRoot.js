@@ -1,10 +1,11 @@
-const { execSync } = require('child_process')
+const execa = require('execa')
 
 function gitRoot () {
   try {
     // Redirect standard error to null to suppress Git error messages
-    const root = execSync('git rev-parse --show-toplevel 2> /dev/null').toString().trim()
-    return root
+    const raw = execa.sync('git', ['rev-parse', '--show-toplevel'], { stderr: 'ignore' })
+    const result = raw.stdout.toString().trim()
+    return result
   } catch (_error) {
     return null
   }
