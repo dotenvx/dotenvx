@@ -111,3 +111,27 @@ t.test('encrypt (when .env, .env.keys, and .env.vault exists)', async ct => {
 
   ct.end()
 })
+
+t.test('encrypt (when .env, .env.keys, and .env.vault exists but .env.vault ciphertext is invalid)', async ct => {
+  // setup
+  try { fs.rmdirSync('tmp', { recursive: true }) } catch (_e) {}
+  fs.mkdirSync('tmp')
+  fs.writeFileSync('tmp/.env', 'HELLO=World')
+  fs.writeFileSync('tmp/.env.keys', 'DOTENV_KEY_DEVELOPMENT="dotenv://:key_3a0eefe9cdda9b597825ebabc7c8c2e455963ca1efad639a0a6a143d9f4dd84b@dotenvx.com/vault/.env.vault?environment=development"')
+  fs.writeFileSync('tmp/.env.vault', 'DOTENV_VAULT_DEVELOPMENT="invalid ciphertext"')
+
+  const exitStub = sinon.stub(process, 'exit')
+  const fakeContext = { opts: sinon.stub().returns({}) }
+
+  // run encrypt
+  await encrypt.call(fakeContext, 'tmp')
+
+  ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
+
+  // cleanup
+  fs.rmdirSync('tmp', { recursive: true })
+
+  exitStub.restore()
+
+  ct.end()
+})

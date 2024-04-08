@@ -4,7 +4,7 @@ function parseEncryptionKeyFromDotenvKey (dotenvKey) {
   try {
     uri = new URL(dotenvKey)
   } catch (e) {
-    throw new Error(`INVALID_DOTENV_KEY: ${e.message}`)
+    throw new Error('INVALID_DOTENV_KEY: Incomplete format. It should be a dotenv uri. (dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=development)')
   }
 
   // Get decrypt key
