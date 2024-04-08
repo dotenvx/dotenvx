@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.30.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.30.2...main)
 
-## 0.31.0
+## 0.30.2
 
-* remove windows warnings related to missing `git` or `git origin`
+* small fixes for windows users related to `hub open` and `hub push` ([#169](https://github.com/dotenvx/dotenvx/pull/169))
+
+## 0.30.1
+
+* remove windows warnings related to missing `git` or `git origin` ([#166](https://github.com/dotenvx/dotenvx/pull/166) [#167](https://github.com/dotenvx/dotenvx/pull/167))
 
 ## 0.30.0
 

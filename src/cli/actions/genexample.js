@@ -1,8 +1,9 @@
 const fs = require('fs')
 const main = require('./../../lib/main')
-const helpers = require('./../helpers')
 const logger = require('./../../shared/logger')
 const createSpinner = require('./../../shared/createSpinner')
+
+const sleep = require('./../../lib/helpers/sleep')
 
 const spinner = createSpinner('generating')
 
@@ -10,7 +11,7 @@ const ENCODING = 'utf8'
 
 async function genexample (directory) {
   spinner.start()
-  await helpers.sleep(500) // better dx
+  await sleep(500) // better dx
 
   logger.debug(`directory: ${directory}`)
 

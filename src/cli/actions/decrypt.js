@@ -2,9 +2,11 @@ const fs = require('fs')
 const dotenv = require('dotenv')
 
 const logger = require('./../../shared/logger')
-const helpers = require('./../helpers')
 const createSpinner = require('./../../shared/createSpinner')
+
 const libDecrypt = require('./../../lib/helpers/decrypt')
+const sleep = require('./../../lib/helpers/sleep')
+const resolvePath = require('./../../lib/helpers/resolvePath')
 
 const spinner = createSpinner('decrypting')
 
@@ -13,13 +15,13 @@ const ENCODING = 'utf8'
 
 async function decrypt () {
   spinner.start()
-  await helpers.sleep(500) // better dx
+  await sleep(500) // better dx
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const vaultFilepath = helpers.resolvePath('.env.vault')
-  const keysFilepath = helpers.resolvePath('.env.keys')
+  const vaultFilepath = resolvePath('.env.vault')
+  const keysFilepath = resolvePath('.env.keys')
   const changedEnvFilenames = new Set()
   const unchangedEnvFilenames = new Set()
 

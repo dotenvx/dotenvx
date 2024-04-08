@@ -3,7 +3,7 @@ const fs = require('fs')
 const ignore = require('ignore')
 
 const logger = require('./../../shared/logger')
-const helpers = require('./../helpers')
+const pluralize = require('./../../lib/helpers/pluralize')
 
 function prebuild () {
   const options = this.opts()
@@ -55,7 +55,7 @@ function prebuild () {
 
   // 3. outpout success
   if (warningCount > 0) {
-    logger.successvpb(`success (with ${helpers.pluralize('warning', warningCount)})`)
+    logger.successvpb(`success (with ${pluralize('warning', warningCount)})`)
   } else {
     logger.successvpb('success')
   }

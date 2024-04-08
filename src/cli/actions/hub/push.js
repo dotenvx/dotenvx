@@ -4,13 +4,14 @@ const { request } = require('undici')
 
 const store = require('./../../../shared/store')
 const logger = require('./../../../shared/logger')
-const helpers = require('./../../helpers')
 const createSpinner = require('./../../../shared/createSpinner')
 
 const isGitRepo = require('./../../../lib/helpers/isGitRepo')
 const isGithub = require('./../../../lib/helpers/isGithub')
 const gitUrl = require('./../../../lib/helpers/gitUrl')
 const gitRoot = require('./../../../lib/helpers/gitRoot')
+const extractUsernameName = require('./../../../lib/helpers/extractUsernameName')
+const sleep = require('./../../../lib/helpers/sleep')
 
 const spinner = createSpinner('pushing')
 
@@ -20,7 +21,7 @@ const ENCODING = 'utf8'
 // Create a simple-git instance for the current directory
 async function push (directory) {
   spinner.start()
-  await helpers.sleep(500) // better dx
+  await sleep(500) // better dx
 
   // debug args
   logger.debug(`directory: ${directory}`)
@@ -69,7 +70,7 @@ async function push (directory) {
   const pushUrl = `${hostname}/v1/push`
   const oauthToken = store.getToken()
   const dotenvKeysContent = fs.readFileSync(envKeysFilepath, ENCODING)
-  const usernameName = helpers.extractUsernameName(giturl)
+  const usernameName = extractUsernameName(giturl)
   const relativeEnvKeysFilepath = path.relative(gitroot, path.join(process.cwd(), directory, '.env.keys')).replace(/\\/g, '/') // smartly determine path/to/.env.keys file from repository root - where user is cd-ed inside a folder or at repo root
 
   try {
