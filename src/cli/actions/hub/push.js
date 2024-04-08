@@ -11,6 +11,7 @@ const isGitRepo = require('./../../../lib/helpers/isGitRepo')
 const isGithub = require('./../../../lib/helpers/isGithub')
 const gitUrl = require('./../../../lib/helpers/gitUrl')
 const gitRoot = require('./../../../lib/helpers/gitRoot')
+const extractUsernameName = require('./../../../lib/helpers/extractUsernameName')
 
 const spinner = createSpinner('pushing')
 
@@ -69,7 +70,7 @@ async function push (directory) {
   const pushUrl = `${hostname}/v1/push`
   const oauthToken = store.getToken()
   const dotenvKeysContent = fs.readFileSync(envKeysFilepath, ENCODING)
-  const usernameName = helpers.extractUsernameName(giturl)
+  const usernameName = extractUsernameName(giturl)
   const relativeEnvKeysFilepath = path.relative(gitroot, path.join(process.cwd(), directory, '.env.keys')).replace(/\\/g, '/') // smartly determine path/to/.env.keys file from repository root - where user is cd-ed inside a folder or at repo root
 
   try {
