@@ -1,6 +1,4 @@
 const openBrowser = require('open')
-const { request } = require('undici')
-const clipboardy = require('./../../../lib/helpers/clipboardy')
 const confirm = require('@inquirer/confirm').default
 
 const createSpinner = require('./../../../shared/createSpinner')
