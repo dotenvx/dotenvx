@@ -21,7 +21,7 @@ t.test('#parseEncryptionKeyFromDotenvKey (not url parseable)', ct => {
 
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    const exampleError = new Error('INVALID_DOTENV_KEY: Invalid URL')
+    const exampleError = new Error('INVALID_DOTENV_KEY: Incomplete format. It should be a dotenv uri. (dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=development)')
 
     ct.same(error, exampleError)
   }
