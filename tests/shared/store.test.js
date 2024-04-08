@@ -36,6 +36,14 @@ t.test('store.getHostname', (ct) => {
   ct.end()
 })
 
+t.test('store.deleteHostname', (ct) => {
+  const result = store.deleteHostname()
+
+  ct.equal(result, true)
+
+  ct.end()
+})
+
 t.test('store.getHostname when not set in settings', (ct) => {
   const mocked = {}
 
@@ -116,6 +124,14 @@ t.test('store.setToken', (ct) => {
   const result = store.setToken('gh/motdotla', 'dxo_9876')
 
   ct.equal(result, 'dxo_9876')
+
+  ct.end()
+})
+
+t.test('store.deleteToken', (ct) => {
+  const result = store.deleteToken()
+
+  ct.equal(result, true)
 
   ct.end()
 })
