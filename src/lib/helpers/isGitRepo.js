@@ -1,9 +1,9 @@
-const { execSync } = require('child_process')
+const execa = require('execa')
 
 function isGitRepo () {
   try {
-    // Redirect standard error to null to suppress Git error messages
-    const result = execSync('git rev-parse --is-inside-work-tree 2> /dev/null').toString().trim()
+    const raw = execa.sync('git', ['rev-parse', '--is-inside-work-tree'], { stderr: 'ignore' })
+    const result = raw.stdout.toString().trim()
     return result === 'true'
   } catch (_error) {
     return false
