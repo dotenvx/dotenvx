@@ -44,4 +44,10 @@ hub
   .description('display logged in user')
   .action(require('./../actions/hub/status'))
 
+hub
+  .command('logout')
+  .description('log out this machine from dotenvx hub')
+  .option('-h, --hostname <url>', 'set hostname', store.getHostname())
+  .action(require('./../actions/hub/logout'))
+
 module.exports = hub
