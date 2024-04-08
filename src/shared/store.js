@@ -108,6 +108,23 @@ const setLatestVersionLastChecked = function (dateNow) {
   return dateNow
 }
 
+const deleteToken = function () {
+  // memory user
+  const key = findFirstMatchingKey(confStore.store) // GH_MOTDOTLA_DOTENVX_TOKEN
+  confStore.delete(key)
+
+  // current logged in user
+  confStore.delete('DOTENVX_TOKEN')
+
+  return true
+}
+
+const deleteHostname = function () {
+  confStore.delete('DOTENVX_HOSTNAME')
+
+  return true
+}
+
 const configPath = function () {
   return confStore.path
 }
@@ -123,5 +140,7 @@ module.exports = {
   setToken,
   setLatestVersion,
   setLatestVersionLastChecked,
+  deleteToken,
+  deleteHostname,
   configPath
 }
