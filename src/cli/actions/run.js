@@ -5,8 +5,6 @@ const logger = require('./../../shared/logger')
 
 const Run = require('./../../lib/services/run')
 
-const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
-
 const executeCommand = async function (commandArgs, env) {
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
@@ -59,16 +57,15 @@ const executeCommand = async function (commandArgs, env) {
 
     if (exitCode !== 0) {
       logger.debug(`received exitCode ${exitCode}`)
-      throw new Error(`Command failed with exit code ${exitCode}`)
+      throw new Error(`Command exited with exit code ${exitCode}`)
     }
   } catch (error) {
-    if (error.signal !== 'SIGINT') {
-
-    }
-
+    console.log('error', error)
     if (error.signal !== 'SIGINT') {
       if (error.code === 'ENOENT') {
         logger.error(`Unknown command: ${error.command}`)
+      } else if (error.message.includes('Command failed with exit code 1')) {
+        logger.error(`Command exited with exit code 1: ${error.command}`)
       } else {
         logger.error(error.message)
       }
