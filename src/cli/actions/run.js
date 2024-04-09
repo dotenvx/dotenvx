@@ -60,14 +60,14 @@ const executeCommand = async function (commandArgs, env) {
       throw new Error(`Command exited with exit code ${exitCode}`)
     }
   } catch (error) {
-    console.log('error', error)
+    // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.
     if (error.signal !== 'SIGINT') {
       if (error.code === 'ENOENT') {
-        logger.error(`Unknown command: ${error.command}`)
+        logger.errornocolor(`Unknown command: ${error.command}`)
       } else if (error.message.includes('Command failed with exit code 1')) {
-        logger.error(`Command exited with exit code 1: ${error.command}`)
+        logger.errornocolor(`Command exited with exit code 1: ${error.command}`)
       } else {
-        logger.error(error.message)
+        logger.errornocolor(error.message)
       }
     }
 
