@@ -245,6 +245,18 @@ t.test('logger.error', (ct) => {
   ct.end()
 })
 
+t.test('logger.errornocolor', (ct) => {
+  const message = 'message1'
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.errornocolor(message)
+  })
+
+  ct.equal(stdout, 'message1\n')
+
+  ct.end()
+})
+
 t.test('logger.blank as object', (ct) => {
   const message = { key: 'value' }
 
