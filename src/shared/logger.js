@@ -14,6 +14,7 @@ const levels = {
   errorv: 0,
   errorvp: 0,
   errorvpb: 0,
+  errornocolor: 0,
   warn: 1,
   warnv: 1,
   warnvp: 1,
@@ -56,6 +57,8 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return error(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'errorvpb':
       return error(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
+    case 'errornocolor':
+      return formattedMessage
     case 'warn':
       return warn(formattedMessage)
     case 'warnv':

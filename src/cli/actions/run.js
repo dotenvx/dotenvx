@@ -5,8 +5,6 @@ const logger = require('./../../shared/logger')
 
 const Run = require('./../../lib/services/run')
 
-const REPORT_ISSUE_LINK = 'https://github.com/dotenvx/dotenvx/issues/new'
-
 const executeCommand = async function (commandArgs, env) {
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
@@ -43,7 +41,6 @@ const executeCommand = async function (commandArgs, env) {
       logger.debug(`could not expand process command. using [${systemCommandPath} ${commandArgs.slice(1).join(' ')}]`)
     }
 
-    // commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
     commandProcess = execa(systemCommandPath, commandArgs.slice(1), {
       stdio: 'inherit',
       env: { ...process.env, ...env }
@@ -60,17 +57,18 @@ const executeCommand = async function (commandArgs, env) {
 
     if (exitCode !== 0) {
       logger.debug(`received exitCode ${exitCode}`)
-      throw new Error(`Command failed with exit code ${exitCode}`)
+      throw new Error(`Command exited with exit code ${exitCode}`)
     }
   } catch (error) {
+    // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.
     if (error.signal !== 'SIGINT') {
-      logger.error(error.message)
-      logger.error(`command [${commandArgs.join(' ')}] failed`)
-      logger.error('')
-      logger.error(`  try without dotenvx: [${commandArgs.join(' ')}]`)
-      logger.error('')
-      logger.error('if that succeeds, then dotenvx is the culprit. report issue:')
-      logger.error(`<${REPORT_ISSUE_LINK}>`)
+      if (error.code === 'ENOENT') {
+        logger.errornocolor(`Unknown command: ${error.command}`)
+      } else if (error.message.includes('Command failed with exit code 1')) {
+        logger.errornocolor(`Command exited with exit code 1: ${error.command}`)
+      } else {
+        logger.errornocolor(error.message)
+      }
     }
 
     // Exit with the error code from the command process, or 1 if unavailable
