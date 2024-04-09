@@ -43,7 +43,6 @@ const executeCommand = async function (commandArgs, env) {
       logger.debug(`could not expand process command. using [${systemCommandPath} ${commandArgs.slice(1).join(' ')}]`)
     }
 
-    // commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
     commandProcess = execa(systemCommandPath, commandArgs.slice(1), {
       stdio: 'inherit',
       env: { ...process.env, ...env }
@@ -64,13 +63,15 @@ const executeCommand = async function (commandArgs, env) {
     }
   } catch (error) {
     if (error.signal !== 'SIGINT') {
-      logger.error(error.message)
-      logger.error(`command [${commandArgs.join(' ')}] failed`)
-      logger.error('')
-      logger.error(`  try without dotenvx: [${commandArgs.join(' ')}]`)
-      logger.error('')
-      logger.error('if that succeeds, then dotenvx is the culprit. report issue:')
-      logger.error(`<${REPORT_ISSUE_LINK}>`)
+
+    }
+
+    if (error.signal !== 'SIGINT') {
+      if (error.code === 'ENOENT') {
+        logger.error(`Unknown command: ${error.command}`)
+      } else {
+        logger.error(error.message)
+      }
     }
 
     // Exit with the error code from the command process, or 1 if unavailable
