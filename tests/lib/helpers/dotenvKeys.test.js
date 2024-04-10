@@ -53,25 +53,6 @@ DOTENV_KEY_DEVELOPMENT="dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
   ct.end()
 })
 
-t.test('#_guessEnvironment (.env)', ct => {
-  const dotenvKeys = new DotenvKeys()
-  const filepath = '.env'
-  const environment = dotenvKeys._guessEnvironment(filepath)
-
-  ct.same(environment, 'development')
-
-  ct.end()
-})
-
-t.test('#_guessEnvironment (.env.production)', ct => {
-  const dotenvKeys = new DotenvKeys()
-  const filepath = '.env.production'
-  const environment = dotenvKeys._guessEnvironment(filepath)
-
-  ct.same(environment, 'production')
-
-  ct.end()
-})
 
 t.test('#_generateDotenvKey (production)', ct => {
   const dotenvKeys = new DotenvKeys()

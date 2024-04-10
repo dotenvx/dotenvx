@@ -19,3 +19,30 @@ t.test('#guessEnvironment (.env.production)', ct => {
 
   ct.end()
 })
+
+t.test("#guessEnvironment (.env.local)", (ct) => {
+  const filepath = ".env.local";
+  const environment = guessEnvironment(filepath);
+
+  ct.same(environment, "local");
+
+  ct.end();
+});
+
+t.test("#guessEnvironment (.env.development.local)", (ct) => {
+  const filepath = ".env.development.local";
+  const environment = guessEnvironment(filepath);
+
+  ct.same(environment, "development_local");
+
+  ct.end();
+});
+
+t.test("#guessEnvironment (.env.development.production)", (ct) => {
+  const filepath = ".env.development.production";
+  const environment = guessEnvironment(filepath);
+
+  ct.same(environment, "development");
+
+  ct.end();
+});
