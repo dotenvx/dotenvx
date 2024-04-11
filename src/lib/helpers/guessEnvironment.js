@@ -8,7 +8,7 @@ function guessEnvironment (filepath) {
   if (possibleEnvironmentList.length === 0) {
     return 'development'
   }
-  
+
   if (possibleEnvironmentList.length === 1) {
     return possibleEnvironmentList[0]
   }
@@ -16,7 +16,7 @@ function guessEnvironment (filepath) {
   if (
     possibleEnvironmentList.length === 2
   ) {
-    return possibleEnvironmentList.join("_")
+    return possibleEnvironmentList.join('_')
   }
 
   return possibleEnvironmentList.slice(0, 2).join('_')

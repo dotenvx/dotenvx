@@ -1,7 +1,6 @@
-const path = require('path')
 const crypto = require('crypto')
 
-const guessEnvironment = require("./guessEnvironment");
+const guessEnvironment = require('./guessEnvironment')
 
 class DotenvKeys {
   constructor (envFilepaths = [], dotenvKeys = {}) {

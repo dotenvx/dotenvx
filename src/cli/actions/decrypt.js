@@ -58,7 +58,7 @@ async function decrypt () {
 
       // envFilename
       // replace _ with . to support filenames like .env.development.local
-      let envFilename = `.env.${environment.replace("_", ".")}`
+      let envFilename = `.env.${environment.replace('_', '.')}`
       if (environment === 'development') {
         envFilename = '.env'
       }

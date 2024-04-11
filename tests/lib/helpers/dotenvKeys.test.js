@@ -53,7 +53,6 @@ DOTENV_KEY_DEVELOPMENT="dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
   ct.end()
 })
 
-
 t.test('#_generateDotenvKey (production)', ct => {
   const dotenvKeys = new DotenvKeys()
   const environment = 'production'
