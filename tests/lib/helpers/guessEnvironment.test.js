@@ -42,7 +42,16 @@ t.test("#guessEnvironment (.env.development.production)", (ct) => {
   const filepath = ".env.development.production";
   const environment = guessEnvironment(filepath);
 
-  ct.same(environment, "development");
+  ct.same(environment, "development_production");
+
+  ct.end();
+});
+
+t.test("#guessEnvironment (.env.some.other.thing)", (ct) => {
+  const filepath = ".env.some.other.thing";
+  const environment = guessEnvironment(filepath);
+
+  ct.same(environment, "some_other");
 
   ct.end();
 });

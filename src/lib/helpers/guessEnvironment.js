@@ -14,13 +14,12 @@ function guessEnvironment (filepath) {
   }
 
   if (
-    possibleEnvironmentList.length === 2 &&
-    possibleEnvironmentList[possibleEnvironmentList.length - 1] === "local"
+    possibleEnvironmentList.length === 2
   ) {
     return possibleEnvironmentList.join("_")
   }
 
-  return possibleEnvironmentList[0]
+  return possibleEnvironmentList.slice(0, 2).join('_');
 }
 
 module.exports = guessEnvironment
