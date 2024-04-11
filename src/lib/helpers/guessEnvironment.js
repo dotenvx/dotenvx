@@ -19,7 +19,7 @@ function guessEnvironment (filepath) {
     return possibleEnvironmentList.join("_")
   }
 
-  return possibleEnvironmentList.slice(0, 2).join('_');
+  return possibleEnvironmentList.slice(0, 2).join('_')
 }
 
 module.exports = guessEnvironment

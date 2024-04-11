@@ -21,37 +21,37 @@ t.test('#guessEnvironment (.env.production)', ct => {
 })
 
 t.test("#guessEnvironment (.env.local)", (ct) => {
-  const filepath = ".env.local";
-  const environment = guessEnvironment(filepath);
+  const filepath = ".env.local"
+  const environment = guessEnvironment(filepath)
 
-  ct.same(environment, "local");
+  ct.same(environment, "local")
 
-  ct.end();
+  ct.end()
 });
 
 t.test("#guessEnvironment (.env.development.local)", (ct) => {
-  const filepath = ".env.development.local";
-  const environment = guessEnvironment(filepath);
+  const filepath = ".env.development.local"
+  const environment = guessEnvironment(filepath)
 
-  ct.same(environment, "development_local");
+  ct.same(environment, "development_local")
 
-  ct.end();
+  ct.end()
 });
 
 t.test("#guessEnvironment (.env.development.production)", (ct) => {
-  const filepath = ".env.development.production";
-  const environment = guessEnvironment(filepath);
+  const filepath = ".env.development.production"
+  const environment = guessEnvironment(filepath)
 
-  ct.same(environment, "development_production");
+  ct.same(environment, "development_production")
 
-  ct.end();
+  ct.end()
 });
 
 t.test("#guessEnvironment (.env.some.other.thing)", (ct) => {
-  const filepath = ".env.some.other.thing";
-  const environment = guessEnvironment(filepath);
+  const filepath = ".env.some.other.thing"
+  const environment = guessEnvironment(filepath)
 
-  ct.same(environment, "some_other");
+  ct.same(environment, "some_other")
 
-  ct.end();
+  ct.end()
 });
