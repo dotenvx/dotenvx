@@ -260,6 +260,19 @@ More examples
   see [platform guides](https://dotenvx.com/docs#platforms)
 
   </details>
+* <details><summary>Process Managers</summary><br>
+
+  ```js
+  // pm2
+  "scripts": {
+    "start": "dotenvx run -- pm2-runtime start ecosystem.config.js --env production"
+  },
+  ```
+
+  see [process manager guides](https://dotenvx.com/docs#process-managers)
+
+  </details>
+
 * <details><summary>npx</summary><br>
 
   ```sh
