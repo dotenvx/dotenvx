@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.32.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.33.0...main)
+
+## 0.33.0
+
+* add .env.vault support for `.env.something.something` (useful for Next.js pattern of .env.development.local) ([#174](https://github.com/dotenvx/dotenvx/pull/174))
 
 ## 0.32.0
 
