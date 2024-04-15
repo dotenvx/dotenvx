@@ -83,6 +83,36 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
+t.test('#run (finds .env file) with already falsy value', ct => {
+  process.env.HELLO = '' // falsy value
+
+  const envs = [
+    { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
+  ]
+
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new Run(envs).run()
+
+  ct.same(processedEnvs, [{
+    type: 'envFile',
+    filepath: 'tests/monorepo/apps/frontend/.env',
+    parsed: {
+      HELLO: 'frontend'
+    },
+    injected: {},
+    preExisted: {
+      HELLO: ''
+    }
+  }])
+  ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
+  ct.same(uniqueInjectedKeys, [])
+
+  ct.end()
+})
+
 t.test('#run (finds .env file as array)', ct => {
   const envs = [
     { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }

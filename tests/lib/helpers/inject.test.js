@@ -26,6 +26,18 @@ t.test('#inject with pre-existing', ct => {
   ct.end()
 })
 
+t.test('#inject with pre-existing falsy value', ct => {
+  const processEnv = { HELLO: '' }
+  const parsed = { HELLO: 'World' }
+
+  const { injected, preExisted } = inject(processEnv, parsed, false)
+
+  ct.same(injected, {})
+  ct.same(preExisted, { HELLO: '' })
+
+  ct.end()
+})
+
 t.test('#inject with pre-existing but overload is true', ct => {
   const processEnv = { HELLO: 'machine' }
   const parsed = { HELLO: 'World' }
