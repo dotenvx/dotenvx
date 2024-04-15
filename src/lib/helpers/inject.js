@@ -4,7 +4,7 @@ function inject (processEnv = {}, parsed = {}, overload = false) {
 
   // set processEnv
   for (const key of Object.keys(parsed)) {
-    if (processEnv[key]) {
+    if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
       if (overload === true) {
         processEnv[key] = parsed[key]
 
