@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.33.1...main)
 
+## 0.34.0
+
+* make `hub push` more forgiving by permitting full filepath like `hub push directory/.env.keys` ([#180](https://github.com/dotenvx/dotenvx/pull/180))
+
 ## 0.33.1
 
 * patch injection around falsy values ([#177](https://github.com/dotenvx/dotenvx/pull/177))
