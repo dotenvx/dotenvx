@@ -84,6 +84,19 @@ More examples
 
   </details>
 
+* <details><summary>Deno 🦕</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "console.log('Hello ' + Deno.env.get('HELLO'))" > index.ts
+
+  $ deno run --allow-env index.ts
+  Hello undefined
+
+  $ dotenvx run -- deno run --allow-env index.ts
+  Hello World
+  ```
+
 * <details><summary>Python 🐍</summary><br>
 
   ```sh
