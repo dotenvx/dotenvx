@@ -12,6 +12,7 @@ const gitUrl = require('./../../../lib/helpers/gitUrl')
 const gitRoot = require('./../../../lib/helpers/gitRoot')
 const extractUsernameName = require('./../../../lib/helpers/extractUsernameName')
 const sleep = require('./../../../lib/helpers/sleep')
+const forgivingDirectory = require('./../../../lib/helpers/forgivingDirectory')
 
 const spinner = createSpinner('pushing')
 
@@ -22,6 +23,8 @@ const ENCODING = 'utf8'
 async function push (directory) {
   spinner.start()
   await sleep(500) // better dx
+
+  directory = forgivingDirectory(directory)
 
   // debug args
   logger.debug(`directory: ${directory}`)
