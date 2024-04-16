@@ -97,6 +97,19 @@ More examples
   Hello World
   ```
 
+* <details><summary>Bun 🥟</summary><br>
+
+  ```sh
+  $ echo "HELLO=Test" > .env.test
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ bun index.js
+  Hello undefined
+
+  $ dotenvx run -f .env.test -- bun index.js
+  Hello Test
+  ```
+
 * <details><summary>Python 🐍</summary><br>
 
   ```sh
