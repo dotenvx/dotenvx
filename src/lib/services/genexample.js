@@ -51,7 +51,7 @@ class Genexample {
     const exampleFilename = '.env.example'
     const exampleFilepath = path.resolve(this.directory, exampleFilename)
     if (!fs.existsSync(exampleFilepath)) {
-      envExampleFile += `# ${exampleFilename}\n`
+      envExampleFile += `# ${exampleFilename} - generated with dotenvx\n`
     } else {
       envExampleFile = fs.readFileSync(exampleFilepath, ENCODING)
     }

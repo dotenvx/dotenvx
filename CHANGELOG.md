@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 ## 0.34.0
 
 * make `hub push` more forgiving by permitting full filepath like `hub push directory/.env.keys` ([#180](https://github.com/dotenvx/dotenvx/pull/180))
+* add note on generated `.env.example` ([#181](https://github.com/dotenvx/dotenvx/pull/181))
 
 ## 0.33.1
 
