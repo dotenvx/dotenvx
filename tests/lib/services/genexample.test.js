@@ -12,7 +12,7 @@ t.test('#run', ct => {
     preExisted
   } = genexample.run()
 
-  const output = `# .env.example
+  const output = `# .env.example - generated with dotenvx
 HELLO=""
 `
   ct.same(envExampleFile, output)
@@ -31,7 +31,7 @@ t.test('#run (.env.example already exists)', ct => {
     preExisted
   } = genexample.run()
 
-  const output = `# .env.example
+  const output = `# .env.example - generated with dotenvx
 HELLO=""
 `
   ct.same(envExampleFile, output)
@@ -50,7 +50,7 @@ t.test('#run (string envFile)', ct => {
     preExisted
   } = genexample.run()
 
-  const output = `# .env.example
+  const output = `# .env.example - generated with dotenvx
 HELLO=""
 `
   ct.same(envExampleFile, output)
