@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.33.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.34.0...main)
 
 ## 0.34.0
 
 * make `hub push` more forgiving by permitting full filepath like `hub push directory/.env.keys` ([#180](https://github.com/dotenvx/dotenvx/pull/180))
+* add note on generated `.env.example` ([#181](https://github.com/dotenvx/dotenvx/pull/181))
 
 ## 0.33.1
 
