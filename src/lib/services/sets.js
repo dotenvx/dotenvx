@@ -4,7 +4,7 @@ const path = require('path')
 const ENCODING = 'utf8'
 
 class Sets {
-  constructor (key, value, envFile) {
+  constructor (key, value, envFile = '.env') {
     this.key = key
     this.value = value
     this.envFile = envFile
@@ -34,16 +34,9 @@ class Sets {
 
       const filepath = path.resolve(envFilepath)
       try {
-        const src = fs.readFileSync(filepath, { encoding: ENCODING })
+        const formatted = this._keyValueFormatted(filepath)
+        fs.appendFileSync(filepath, formatted)
 
-        let keyValueWithNewline = `${this.key}="${this.value}"`
-        if (src.endsWith('\n')) {
-          keyValueWithNewline = keyValueWithNewline + '\n'
-        } else {
-          keyValueWithNewline = '\n' + keyValueWithNewline
-        }
-
-        fs.appendFileSync(filepath, keyValueWithNewline)
         this.settableFilepaths.add(envFilepath)
       } catch (e) {
         if (e.code === 'ENOENT') {
@@ -63,6 +56,19 @@ class Sets {
       processedEnvFiles: this.processedEnvFiles,
       settableFilepaths: [...this.settableFilepaths]
     }
+  }
+
+  _keyValueFormatted (filepath) {
+    const src = fs.readFileSync(filepath, { encoding: ENCODING })
+
+    let formatted = `${this.key}="${this.value}"`
+    if (src.endsWith('\n')) {
+      formatted = formatted + '\n'
+    } else {
+      formatted = '\n' + formatted
+    }
+
+    return formatted
   }
 
   _envFilepaths () {
