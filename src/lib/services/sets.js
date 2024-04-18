@@ -14,17 +14,6 @@ class Sets {
   }
 
   run () {
-    if (this.envFile.length < 1) {
-      const code = 'MISSING_ENV_FILES'
-      const message = 'no .env* files found'
-      const help = '? add one with [echo "HELLO=World" > .env] and then run [dotenvx genexample]'
-
-      const error = new Error(message)
-      error.code = code
-      error.help = help
-      throw error
-    }
-
     const envFilepaths = this._envFilepaths()
     for (const envFilepath of envFilepaths) {
       const row = {}
@@ -34,7 +23,8 @@ class Sets {
 
       const filepath = path.resolve(envFilepath)
       try {
-        const formatted = this._keyValueFormatted(filepath)
+        const src = fs.readFileSync(filepath, { encoding: ENCODING })
+        const formatted = this._keyValueFormatted(src)
         fs.appendFileSync(filepath, formatted)
 
         this.settableFilepaths.add(envFilepath)
@@ -58,9 +48,7 @@ class Sets {
     }
   }
 
-  _keyValueFormatted (filepath) {
-    const src = fs.readFileSync(filepath, { encoding: ENCODING })
-
+  _keyValueFormatted (src) {
     let formatted = `${this.key}="${this.value}"`
     if (src.endsWith('\n')) {
       formatted = formatted + '\n'
