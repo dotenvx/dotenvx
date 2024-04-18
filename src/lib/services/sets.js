@@ -1,17 +1,16 @@
 const fs = require('fs')
 const path = require('path')
-const dotenv = require('dotenv')
-
-const parseExpandAndEval = require('./../helpers/parseExpandAndEval')
 
 const ENCODING = 'utf8'
 
-class Set {
-  constructor (keyValue, envFile) {
-    this.keyValue = keyValue
+class Sets {
+  constructor (key, value, envFile) {
+    this.key = key
+    this.value = value
     this.envFile = envFile
 
     this.processedEnvFiles = []
+    this.settableFilepaths = new Set()
   }
 
   run () {
@@ -28,16 +27,16 @@ class Set {
 
     const envFilepaths = this._envFilepaths()
     for (const envFilepath of envFilepaths) {
-      const filepath = path.resolve(envFilepath)
-
       const row = {}
-      row.filepath = filepath
+      row.key = this.key
+      row.value = this.value
+      row.filepath = envFilepath
 
-      if (fs.existsSync(filepath)) {
+      const filepath = path.resolve(envFilepath)
+      try {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
-        const parsed = dotenv.parse(src)
 
-        let keyValueWithNewline = this.keyValue
+        let keyValueWithNewline = `${this.key}="${this.value}"`
         if (src.endsWith('\n')) {
           keyValueWithNewline = keyValueWithNewline + '\n'
         } else {
@@ -45,25 +44,24 @@ class Set {
         }
 
         fs.appendFileSync(filepath, keyValueWithNewline)
+        this.settableFilepaths.add(envFilepath)
+      } catch (e) {
+        if (e.code === 'ENOENT') {
+          const error = new Error(`missing ${envFilepath} file (${filepath})`)
+          error.code = 'MISSING_ENV_FILE'
 
-        row.created = parsed
-      } else {
-        const code = 'MISSING_ENV_FILE'
-        const message = `file does not exist at [${filepath}]`
-        const help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx genexample]`
-
-        const error = new Error(message)
-        error.code = code
-        error.help = help
-
-        row.error = error
+          row.error = error
+        } else {
+          row.error = e
+        }
       }
 
       this.processedEnvFiles.push(row)
     }
 
     return {
-      processedEnvFile: this.processedEnvFiles
+      processedEnvFiles: this.processedEnvFiles,
+      settableFilepaths: [...this.settableFilepaths]
     }
   }
 
@@ -76,4 +74,4 @@ class Set {
   }
 }
 
-module.exports = Set
+module.exports = Sets

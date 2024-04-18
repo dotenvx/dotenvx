@@ -2,22 +2,47 @@ const logger = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
 
-function set (keyValue) {
-  logger.debug(`keyValue: ${keyValue}`)
+function set (key, value) {
+  logger.debug(`key: ${key}`)
+  logger.debug(`value: ${value}`)
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
-
-  logger.blank0(keyValue)
 
   // 1. read .env file
   // 2. parse it for key/values ?
   // 3. locate if already an existing key?
   // 4. write/append the new key=value - start here
 
-  const result = main.set(keyValue, options.envFile)
+  try {
+    const {
+      processedEnvFiles,
+      settableFilepaths
+    } = main.set(key, value, options.envFile)
 
-  logger.blank(result)
+    for (const processedEnvFile of processedEnvFiles) {
+      logger.verbose(`setting for ${processedEnvFile.filepath}`)
+
+      if (processedEnvFile.error) {
+        if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
+          logger.warn(processedEnvFile.error)
+          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.filepath}] and re-run [dotenvx set]`)
+        } else {
+          logger.warn(processedEnvFile.error)
+        }
+      } else {
+        logger.verbose(`${processedEnvFile.key} set`)
+        logger.debug(`${processedEnvFile.key} set to ${processedEnvFile.value}`)
+      }
+    }
+
+    logger.success(`set ${key} (${settableFilepaths.join(', ')})`)
+  } catch (error) {
+    logger.error(error.message)
+    if (error.help) {
+      logger.help(error.help)
+    }
+  }
 
   // if (typeof value === 'object' && value !== null) {
   //   if (options.prettyPrint) {

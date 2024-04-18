@@ -95,7 +95,8 @@ program.command('get')
 // dotenvx set
 program.command('set')
   .description('set a single environment variable')
-  .argument('KEY=value', 'KEY=value')
+  .argument('KEY', 'KEY')
+  .argument('value', 'value')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .action(require('./actions/set'))
 
