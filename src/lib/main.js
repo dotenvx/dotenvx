@@ -6,6 +6,7 @@ const dotenvExpand = require('dotenv-expand')
 const Encrypt = require('./services/encrypt')
 const Ls = require('./services/ls')
 const Get = require('./services/get')
+const Set = require('./services/set')
 const Genexample = require('./services/genexample')
 const Settings = require('./services/settings')
 
@@ -56,6 +57,10 @@ const get = function (key, envs = [], overload = false, DOTENV_KEY = '', all = f
   return new Get(key, envs, overload, DOTENV_KEY, all).run()
 }
 
+const set = function (keyValue, envFile) {
+  return new Set(keyValue, envFile).run()
+}
+
 const settings = function (key = null) {
   return new Settings(key).run()
 }
@@ -88,6 +93,7 @@ module.exports = {
   encrypt,
   ls,
   get,
+  set,
   genexample,
   // settings
   settings,
