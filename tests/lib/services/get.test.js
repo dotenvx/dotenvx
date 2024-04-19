@@ -38,6 +38,17 @@ t.test('#run (missing key returns the entire processEnv as object)', ct => {
   ct.end()
 })
 
+t.test('#run (missing key returns empty string when fetching single key)', ct => {
+  const envs = [
+    { type: 'envFile', value: 'tests/.env.local' }
+  ]
+  const value = new Get('BAZ', envs).run()
+
+  ct.same(value, undefined)
+
+  ct.end()
+})
+
 t.test('#run', ct => {
   const envs = [
     { type: 'envFile', value: 'tests/.env' }
