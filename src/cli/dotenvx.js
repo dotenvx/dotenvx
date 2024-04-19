@@ -92,6 +92,14 @@ program.command('get')
     getAction.apply(this, args)
   })
 
+// dotenvx set
+program.command('set')
+  .description('set a single environment variable')
+  .argument('KEY', 'KEY')
+  .argument('value', 'value')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .action(require('./actions/set'))
+
 // dotenvx encrypt
 program.command('encrypt')
   .description('encrypt .env.* to .env.vault')
