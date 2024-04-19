@@ -17,7 +17,12 @@ function get (key) {
       logger.blank0(value)
     }
   } else {
-    logger.blank0(value)
+    if (value === undefined) {
+      logger.blank0('')
+      process.exit(1)
+    } else {
+      logger.blank0(value)
+    }
   }
 }
 
