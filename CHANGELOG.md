@@ -2,65 +2,105 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.34.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.35.0...main)
+
+## 0.35.0
+
+### Added
+
+* added `set` command, and optionally pass `--env-file` flag(s) to `set` usage: `dotenvx set HELLO World` ([#182](https://github.com/dotenvx/dotenvx/pull/182))
 
 ## 0.34.0
+
+### Changed
 
 * make `hub push` more forgiving by permitting full filepath like `hub push directory/.env.keys` ([#180](https://github.com/dotenvx/dotenvx/pull/180))
 * add note on generated `.env.example` ([#181](https://github.com/dotenvx/dotenvx/pull/181))
 
 ## 0.33.1
 
+### Changed
+
 * patch injection around falsy values ([#177](https://github.com/dotenvx/dotenvx/pull/177))
 
 ## 0.33.0
+
+### Added
 
 * add .env.vault support for `.env.something.something` (useful for Next.js pattern of .env.development.local) ([#174](https://github.com/dotenvx/dotenvx/pull/174))
 
 ## 0.32.0
 
+### Changed
+
 * quiet exit code 1 message ([#173](https://github.com/dotenvx/dotenvx/pull/173))
 
 ## 0.31.1
+
+### Changed
 
 * improve error messages ([#171](https://github.com/dotenvx/dotenvx/pull/171))
 
 ## 0.31.0
 
+### Added
+
 * add `hub logout` command ([#170](https://github.com/dotenvx/dotenvx/pull/170))
 
 ## 0.30.2
+
+### Changed
 
 * small fixes for windows users related to `hub open` and `hub push` ([#169](https://github.com/dotenvx/dotenvx/pull/169))
 
 ## 0.30.1
 
+### Changed
+
 * remove windows warnings related to missing `git` or `git origin` ([#166](https://github.com/dotenvx/dotenvx/pull/166) [#167](https://github.com/dotenvx/dotenvx/pull/167))
 
 ## 0.30.0
 
-* refactor `dotenvx get` to use `run` under the hood
+### Added
+
 * `dotenvx get --quiet` will display the value no matter what (adds a `blank0` logger level) ([#161](https://github.com/dotenvx/dotenvx/pull/161))
 
+### Changed
+
+* refactor `dotenvx get` to use `run` under the hood
+
 ## 0.29.2
+
+### Changed
 
 * fix broken `hub login` and `hub open` ([#160](https://github.com/dotenvx/dotenvx/pull/160))
 
 ## 0.29.1
 
+### Changed
+
 * patch situation where `DOTENV_KEY` is present and `--env-file` flag is set. assume to still look for `.env.vault` file as first in line ([#157](https://github.com/dotenvx/dotenvx/pull/157))
 
 ## 0.29.0
+
+### Changed
 
 * respect order for `--env-vault-file`, `--env-file` and `--env` flags (for example: `dotenvx run --env "HELLO=one" --env-file=.env` will prioritize `--env` flag. Add `--overload` here to prioritize `--env-file` or reverse the order.). you can now mix and match multiple flags in any complex order you wish and dotenvx will respect it. ([#155](https://github.com/dotenvx/dotenvx/pull/155))
 
 ## 0.28.0
 
+### Added
+
 * add `dotenvx settings` command to list your current settings. in the future we'll provide ways to modify these settings as dotenvx's functionality grows ([#153](https://github.com/dotenvx/dotenvx/pull/153))
 
 ## 0.27.2
 
+### Added
+
 * add windows postrelease step to check that `dotenvx.exe` is functional immediately after release ([#141](https://github.com/dotenvx/dotenvx/pull/141))
+
+### Changed
+
 * replace `package-json` with `undici` ([#146](https://github.com/dotenvx/dotenvx/pull/146))
 * prune redundant packages ([#148](https://github.com/dotenvx/dotenvx/pull/148))
 * return current version if remote version fails ([#149](https://github.com/dotenvx/dotenvx/pull/149))
@@ -68,31 +108,48 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 0.27.1
 
+### Added
+
 * provide `.zip` download option for windows executable ([#140](https://github.com/dotenvx/dotenvx/pull/140))
+
+### Removed
+
 * remove `got` from top level deps ([#139](https://github.com/dotenvx/dotenvx/pull/139))
 
 ## 0.27.0
+
+### Changed
 
 * move `update-notifier` into `lib/helpers` for more control over `got` lib ([#138](https://github.com/dotenvx/dotenvx/pull/138))
 * move `clipboardy` into `lib/helpers` for more control and to support commonjs going forward (sindre has dropped support and many mature systems still require commonjs for their infra and have need of dotenvx). ([#137](https://github.com/dotenvx/dotenvx/pull/137))
 
 ## 0.26.0
 
+### Added
+
 * add `hub pull` command to pull a repo's `.env.keys` down. ([#129](https://github.com/dotenvx/dotenvx/pull/129))
 
 ## 0.25.1
+
+### Changed
 
 * 🐞 patch bug with evaluate commands. do not attempt to evaluate risky preset envs in `process.env`. evaluate only what's set in a `.env*` file ([#125](https://github.com/dotenvx/dotenvx/pull/125))
 
 ## 0.25.0
 
+### Added
+
 * expand `hub push` with `[directory]` option. use for monorepos. for example: `dotenvx hub push apps/backend` ([#121](https://github.com/dotenvx/dotenvx/pull/121))
 
 ## 0.24.0
 
+### Added
+
 * add command substitution. for example `DATABASE_URL="postgres://$(whoami)@localhost/my_database"` ([#113](https://github.com/dotenvx/dotenvx/pull/113))
 
 ## 0.23.0
+
+### Added
 
 * support personal environment variables. anything after the comment `# personal.dotenvx.com` will be considered personal and will not be encrypted to .env.vault ([#110](https://github.com/dotenvx/dotenvx/pull/110))
 
