@@ -113,6 +113,11 @@ program.command('decrypt')
   .description('decrypt .env.vault to .env*')
   .action(require('./actions/decrypt'))
 
+// dotenvx status
+program.command('status')
+  .description('compare your .env* content(s) to your .env.vault decrypted content(s)')
+  .action(require('./actions/status'))
+
 // dotenvx genexample
 program.command('genexample')
   .description('generate .env.example')
