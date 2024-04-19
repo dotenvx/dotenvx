@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const dotenv = require('dotenv')
 
 const ENCODING = 'utf8'
 
@@ -24,8 +25,16 @@ class Sets {
       const filepath = path.resolve(envFilepath)
       try {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
-        const formatted = this._keyValueFormatted(src)
-        fs.appendFileSync(filepath, formatted)
+        const parsed = dotenv.parse(src)
+
+        let newSrc
+        if (Object.prototype.hasOwnProperty.call(parsed, this.key)) {
+          newSrc = this._srcReplaced(src)
+        } else {
+          newSrc = this._srcAppended(src)
+        }
+
+        fs.writeFileSync(filepath, newSrc)
 
         this.settableFilepaths.add(envFilepath)
       } catch (e) {
@@ -48,7 +57,22 @@ class Sets {
     }
   }
 
-  _keyValueFormatted (src) {
+  _envFilepaths () {
+    if (!Array.isArray(this.envFile)) {
+      return [this.envFile]
+    }
+
+    return this.envFile
+  }
+
+  _srcReplaced (src) {
+    // Regular expression to find the key and replace its value
+    const regex = new RegExp(`^${this.key}=.*$`, 'm')
+
+    return src.replace(regex, `${this.key}="${this.value}"`)
+  }
+
+  _srcAppended (src) {
     let formatted = `${this.key}="${this.value}"`
     if (src.endsWith('\n')) {
       formatted = formatted + '\n'
@@ -56,15 +80,7 @@ class Sets {
       formatted = '\n' + formatted
     }
 
-    return formatted
-  }
-
-  _envFilepaths () {
-    if (!Array.isArray(this.envFile)) {
-      return [this.envFile]
-    }
-
-    return this.envFile
+    return src + formatted
   }
 }
 
