@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.35.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.35.1...main)
+
+## 0.35.1
+
+### Changed
+
+* exit code `1` if `get KEY` not found/undefined ([#185](https://github.com/dotenvx/dotenvx/pull/185))
 
 ## 0.35.0
 
