@@ -9,11 +9,6 @@ function set (key, value) {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  // 1. read .env file
-  // 2. parse it for key/values ?
-  // 3. locate if already an existing key?
-  // 4. write/append the new key=value - start here
-
   try {
     const {
       processedEnvFiles,
@@ -43,16 +38,6 @@ function set (key, value) {
       logger.help(error.help)
     }
   }
-
-  // if (typeof value === 'object' && value !== null) {
-  //   if (options.prettyPrint) {
-  //     logger.blank0(JSON.stringify(value, null, 2))
-  //   } else {
-  //     logger.blank0(value)
-  //   }
-  // } else {
-  //   logger.blank0(value)
-  // }
 }
 
 module.exports = set
