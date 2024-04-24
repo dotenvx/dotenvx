@@ -111,6 +111,7 @@ program.command('encrypt')
 // dotenvx decrypt
 program.command('decrypt')
   .description('decrypt .env.vault to .env*')
+  .argument('[directory]', 'directory to decrypt', '.')
   .action(require('./actions/decrypt'))
 
 // dotenvx status
