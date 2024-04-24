@@ -21,7 +21,7 @@ class Decrypt {
   run () {
     if (!fs.existsSync(this.envVaultFilepath)) {
       const code = 'MISSING_ENV_VAULT_FILE'
-      const message = `.env.vault does not exist at [${this.envVaultFilepath}]`
+      const message = `missing .env.vault (${this.envVaultFilepath})`
       const help = `? generate one with [dotenvx encrypt ${this.directory}]`
 
       const error = new Error(message)
@@ -32,7 +32,7 @@ class Decrypt {
 
     if (!fs.existsSync(this.envKeysFilepath)) {
       const code = 'MISSING_ENV_KEYS_FILE'
-      const message = `.env.keys does not exist at [${this.envKeysFilepath}]`
+      const message = `missing .env.keys (${this.envKeysFilepath})`
       const help = '? a .env.keys file must be present in order to decrypt your .env.vault contents to .env file(s)'
 
       const error = new Error(message)
