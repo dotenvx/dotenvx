@@ -22,19 +22,19 @@ async function decrypt (directory) {
       processedEnvs,
       changedFilenames,
       unchangedFilenames
-    } = new Decrypt(directory).run()
+    } = new Decrypt(directory, options.environment).run()
 
     for (const env of processedEnvs) {
       if (env.warning) {
         const warning = env.warning
         logger.warn(warning.message)
-      }
-
-      if (env.shouldWrite) {
-        logger.debug(`writing ${env.filepath}`)
-        fs.writeFileSync(env.filepath, env.decrypted)
       } else {
-        logger.debug(`no changes for ${env.filename}`)
+        if (env.shouldWrite) {
+          logger.debug(`writing ${env.filepath}`)
+          fs.writeFileSync(env.filepath, env.decrypted)
+        } else {
+          logger.debug(`no changes for ${env.filename}`)
+        }
       }
     }
 
