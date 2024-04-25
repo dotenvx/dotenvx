@@ -76,7 +76,7 @@ class Decrypt {
 
     const row = {}
     row.environment = environment
-    row.dotenvKey = (value || '').trim()
+    row.dotenvKey = value ? value.trim() : value
     row.ciphertext = ciphertext
 
     if (ciphertext && ciphertext.length >= 1) {

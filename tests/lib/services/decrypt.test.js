@@ -17,11 +17,11 @@ HELLO="backend"
 `
 
   ct.same(processedEnvs, [{
-    environment: "development",
-    dotenvKey: "dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development",
-    ciphertext: "TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u",
+    environment: 'development',
+    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
+    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
     decrypted: expectedDecrypted,
-    filename: ".env",
+    filename: '.env',
     filepath: path.resolve('tests/monorepo/apps/backend/.env')
   }])
   ct.same(changedFilenames, [])
@@ -86,11 +86,11 @@ HELLO="backend"
 `
 
   ct.same(processedEnvs, [{
-    environment: "development",
-    dotenvKey: "dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development",
-    ciphertext: "TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u",
+    environment: 'development',
+    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
+    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
     decrypted: expectedDecrypted,
-    filename: ".env",
+    filename: '.env',
     filepath: path.resolve('tests/monorepo/apps/backend/.env'),
     shouldWrite: true
   }])
@@ -103,7 +103,7 @@ HELLO="backend"
 })
 
 t.test('#run (decrypted .env is different than current .env)', ct => {
-  originalReadFileSync = fs.readFileSync
+  const originalReadFileSync = fs.readFileSync
   const sandbox = sinon.createSandbox()
   sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
     if (filepath === path.resolve('tests/monorepo/apps/backend/.env')) {
@@ -124,11 +124,11 @@ HELLO="backend"
 `
 
   ct.same(processedEnvs, [{
-    environment: "development",
-    dotenvKey: "dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development",
-    ciphertext: "TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u",
+    environment: 'development',
+    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
+    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
     decrypted: expectedDecrypted,
-    filename: ".env",
+    filename: '.env',
     filepath: path.resolve('tests/monorepo/apps/backend/.env'),
     shouldWrite: true
   }])
@@ -141,7 +141,7 @@ HELLO="backend"
 })
 
 t.test('#run (.env.vault file is missing the DOTENV_VAULT_DEVELOPMENT key/value)', ct => {
-  originalReadFileSync = fs.readFileSync
+  const originalReadFileSync = fs.readFileSync
   const sandbox = sinon.createSandbox()
   sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
     if (filepath === path.resolve('tests/monorepo/apps/backend/.env.vault')) {
@@ -152,14 +152,12 @@ t.test('#run (.env.vault file is missing the DOTENV_VAULT_DEVELOPMENT key/value)
   })
 
   const {
-    processedEnvs,
-    changedFilenames,
-    unchangedFilenames
+    processedEnvs
   } = new Decrypt('tests/monorepo/apps/backend').run()
 
   ct.same(processedEnvs, [{
-    environment: "development",
-    dotenvKey: "dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development",
+    environment: 'development',
+    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
     ciphertext: undefined,
     warning: new Error(`DOTENV_VAULT_DEVELOPMENT missing in .env.vault: ${path.resolve('tests/monorepo/apps/backend/.env.vault')}`)
   }])
@@ -169,3 +167,42 @@ t.test('#run (.env.vault file is missing the DOTENV_VAULT_DEVELOPMENT key/value)
   ct.end()
 })
 
+t.test('#run (--environment argument)', ct => {
+  const {
+    processedEnvs,
+    changedFilenames,
+    unchangedFilenames
+  } = new Decrypt('tests/monorepo/apps/backend', ['development']).run()
+
+  const expectedDecrypted = `# for testing purposes only
+HELLO="backend"
+`
+
+  ct.same(processedEnvs, [{
+    environment: 'development',
+    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
+    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
+    decrypted: expectedDecrypted,
+    filename: '.env',
+    filepath: path.resolve('tests/monorepo/apps/backend/.env')
+  }])
+  ct.same(changedFilenames, [])
+  ct.same(unchangedFilenames, ['.env'])
+
+  ct.end()
+})
+
+t.test('#run (--environment argument where environment does not exist)', ct => {
+  const {
+    processedEnvs
+  } = new Decrypt('tests/monorepo/apps/backend', ['ci']).run()
+
+  ct.same(processedEnvs, [{
+    environment: 'ci',
+    dotenvKey: undefined,
+    ciphertext: undefined,
+    warning: new Error(`DOTENV_VAULT_CI missing in .env.vault: ${path.resolve('tests/monorepo/apps/backend/.env.vault')}`)
+  }])
+
+  ct.end()
+})
