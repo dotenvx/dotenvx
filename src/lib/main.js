@@ -62,8 +62,8 @@ const set = function (key, value, envFile) {
   return new Sets(key, value, envFile).run()
 }
 
-const status = function () {
-  return new Status().run()
+const status = function (directory) {
+  return new Status(directory).run()
 }
 
 const settings = function (key = null) {

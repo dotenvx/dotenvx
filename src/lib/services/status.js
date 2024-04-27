@@ -4,7 +4,6 @@ const diff = require('diff')
 const chalk = require('chalk')
 
 const Ls = require('./ls')
-const Run = require('./run')
 const Decrypt = require('./decrypt')
 
 const containsDirectory = require('./../helpers/containsDirectory')
@@ -13,37 +12,46 @@ const guessEnvironment = require('./../helpers/guessEnvironment')
 const ENCODING = 'utf8'
 
 class Status {
-  constructor () {
+  constructor (directory = '.') {
+    this.directory = directory
     this.changes = []
     this.nochanges = []
   }
 
   run () {
     // get list of .env files
-    const files = new Ls('./').run()
+    const files = new Ls(this.directory).run()
     // iterate over each one
-    for (const filepath of files) {
+    for (const filename of files) {
       // skip file if directory
-      if (containsDirectory(filepath)) {
+      if (containsDirectory(filename)) {
         continue
       }
 
       // skip file if .env.keys
-      if (filepath.endsWith('.env.keys')) {
+      if (filename.endsWith('.env.keys')) {
         continue
       }
 
       // skip file if .env.vault
-      if (filepath.endsWith('.env.vault')) {
+      if (filename.endsWith('.env.vault')) {
+        continue
+      }
+
+      // skip file if .env.example
+      if (filename.endsWith('.env.example')) {
         continue
       }
 
       // skip file if *.previous
-      if (filepath.endsWith('.previous')) {
+      if (filename.endsWith('.previous')) {
         continue
       }
 
+      const filepath = path.resolve(this.directory, filename)
+
       const row = {}
+      row.filename = filename
       row.filepath = filepath
       row.environment = guessEnvironment(filepath)
 
@@ -51,7 +59,7 @@ class Status {
       row.raw = fs.readFileSync(filepath, { encoding: ENCODING })
 
       // grab decrypted
-      const { processedEnvs } = new Decrypt('.', row.environment).run()
+      const { processedEnvs } = new Decrypt(this.directory, row.environment).run()
       row.decrypted = processedEnvs[0].decrypted
 
       // differences
@@ -74,7 +82,7 @@ class Status {
     }
   }
 
-  _colorizeDiff(part) {
+  _colorizeDiff (part) {
     // If the part was added, color it green
     if (part.added) {
       return chalk.green(part.value)
@@ -89,7 +97,7 @@ class Status {
     return part.value
   }
 
-  _hasChanges(differences) {
+  _hasChanges (differences) {
     return differences.some(part => part.added || part.removed)
   }
 }

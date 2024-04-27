@@ -118,6 +118,7 @@ program.command('decrypt')
 // dotenvx status
 program.command('status')
   .description('compare your .env* content(s) to your .env.vault decrypted content(s)')
+  .argument('[directory]', 'directory to check status against', '.')
   .action(require('./actions/status'))
 
 // dotenvx genexample
