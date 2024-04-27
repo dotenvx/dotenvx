@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.35.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.36.0...main)
+
+## 0.36.0
+
+* add `dotenvx status` command ([#186](https://github.com/dotenvx/dotenvx/pull/186))
+* add `dotenvx decrypt [directory]` argument option ([#186](https://github.com/dotenvx/dotenvx/pull/186))
+* add `dotenvx decrypt --environment` flag option ([#186](https://github.com/dotenvx/dotenvx/pull/186))
+* normalize windows `\` paths ([#186](https://github.com/dotenvx/dotenvx/pull/186))
 
 ## 0.35.1
 
