@@ -192,6 +192,32 @@ HELLO="backend"
   ct.end()
 })
 
+t.test('#run (--environment string argument)', ct => {
+  const {
+    processedEnvs,
+    changedFilenames,
+    unchangedFilenames
+  } = new Decrypt('tests/monorepo/apps/backend', 'development').run()
+
+  const expectedDecrypted = `# for testing purposes only
+HELLO="backend"
+`
+
+  ct.same(processedEnvs, [{
+    environment: 'development',
+    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
+    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
+    decrypted: expectedDecrypted,
+    filename: '.env',
+    filepath: path.resolve('tests/monorepo/apps/backend/.env')
+  }])
+  ct.same(changedFilenames, [])
+  ct.same(unchangedFilenames, ['.env'])
+
+  ct.end()
+})
+
+
 t.test('#run (--environment argument where environment does not exist)', ct => {
   const {
     processedEnvs

@@ -9,7 +9,7 @@ const libDecrypt = require('./../../lib/helpers/decrypt')
 class Decrypt {
   constructor (directory = '.', environment) {
     this.directory = directory
-    this.environment = environment || [] // empty array means assume all possible environments
+    this.environment = environment
 
     this.envKeysFilepath = path.resolve(this.directory, '.env.keys')
     this.envVaultFilepath = path.resolve(this.directory, '.env.vault')
@@ -44,10 +44,11 @@ class Decrypt {
 
     const dotenvKeys = dotenv.configDotenv({ path: this.envKeysFilepath }).parsed
     const dotenvVault = dotenv.configDotenv({ path: this.envVaultFilepath }).parsed
+    const environments = this._environments()
 
-    if (this.environment.length > 0) {
+    if (environments.length > 0) {
       // iterate over the environments
-      for (const environment of this.environment) {
+      for (const environment of environments) {
         const value = dotenvKeys[`DOTENV_KEY_${environment.toUpperCase()}`]
         const row = this._processRow(value, dotenvVault, environment)
 
@@ -107,6 +108,18 @@ class Decrypt {
     }
 
     return row
+  }
+
+  _environments () {
+    if (this.environment === undefined) {
+      return []
+    }
+
+    if (!Array.isArray(this.environment)) {
+      return [this.environment]
+    }
+
+    return this.environment
   }
 }
 

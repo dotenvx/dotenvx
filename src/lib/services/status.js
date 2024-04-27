@@ -1,13 +1,21 @@
+const fs = require('fs')
 const path = require('path')
+const diff = require('diff')
+const chalk = require('chalk')
 
 const Ls = require('./ls')
 const Run = require('./run')
+const Decrypt = require('./decrypt')
 
 const containsDirectory = require('./../helpers/containsDirectory')
+const guessEnvironment = require('./../helpers/guessEnvironment')
+
+const ENCODING = 'utf8'
 
 class Status {
   constructor () {
-    this.filteredFiles = []
+    this.changes = []
+    this.nochanges = []
   }
 
   run () {
@@ -35,39 +43,54 @@ class Status {
         continue
       }
 
-      // track
-      this.filteredFiles.push(filepath)
+      const row = {}
+      row.filepath = filepath
+      row.environment = guessEnvironment(filepath)
 
-      // unencrypted
-      const unencrypted = {}
-      const unencryptedEnvs = [
-        { type: 'envFile', value: filepath }
-      ]
-      new Run(unencryptedEnvs, false, '', unencrypted).run()
+      // grab raw
+      row.raw = fs.readFileSync(filepath, { encoding: ENCODING })
 
-      // encrypted
-      const encrypted = {}
-      const vaultFilepath = path.join(path.dirname(filepath), '.env.vault')
-      const encryptedEnvs = [
-        { type: 'envFile', value: vaultFilepath }
-      ]
-      new Run(encryptedEnvs, false, '', encrypted).run()
+      // grab decrypted
+      const { processedEnvs } = new Decrypt('.', row.environment).run()
+      row.decrypted = processedEnvs[0].decrypted
 
-      console.log('filepath', filepath)
-      console.log('unencrypted', unencrypted)
-      console.log('encrypted', encrypted)
+      // differences
+      row.differences = diff.diffWords(row.decrypted, row.raw)
 
-      // handle scenario when .env.keys does not exist
-      // handle scenario when .env.vault does not exist
-      // handle scenario when an environment does not exist in .env.keys
-      // handle scenario when an environment does not exist in .env.vault
+      // any changes?
+      const hasChanges = this._hasChanges(row.differences)
 
-      // compare it to the .env.vault file
+      if (hasChanges) {
+        row.coloredDiff = row.differences.map(this._colorizeDiff).join('')
+        this.changes.push(row)
+      } else {
+        this.nochanges.push(row)
+      }
     }
 
-    // decrypt the .env.vault associated with it
-    // iterate over the keys and compare to each other
-    return this.filteredFiles
+    return {
+      changes: this.changes,
+      nochanges: this.nochanges
+    }
+  }
+
+  _colorizeDiff(part) {
+    // If the part was added, color it green
+    if (part.added) {
+      return chalk.green(part.value)
+    }
+
+    // If the part was removed, color it red
+    if (part.removed) {
+      return chalk.red(part.value)
+    }
+
+    // No color for unchanged parts
+    return part.value
+  }
+
+  _hasChanges(differences) {
+    return differences.some(part => part.added || part.removed)
   }
 }
 
