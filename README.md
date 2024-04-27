@@ -732,6 +732,7 @@ $ dotenvx hub push
 * [`dotenvx get`](https://dotenvx.com/docs/features/get) – return a single environment variable
 * [`dotenvx set`](https://dotenvx.com/docs/features/set) – set a single environment variable
 * [`dotenvx ls`](https://dotenvx.com/docs/features/ls) – list all .env files in your repo
+* [`dotenvx status`](https://dotenvx.com/docs/features/status) – compare your .env* content(s) to your .env.vault decrypted content(s)
 * [`dotenvx settings`](https://dotenvx.com/docs/features/settings) – print current dotenvx settings
 
 &nbsp;

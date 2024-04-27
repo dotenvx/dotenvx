@@ -8,7 +8,7 @@ const Run = require('./../../lib/services/run')
 const executeCommand = async function (commandArgs, env) {
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-    'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
+    'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2'
   ]
 
   logger.debug(`executing process command [${commandArgs.join(' ')}]`)
@@ -25,6 +25,19 @@ const executeCommand = async function (commandArgs, env) {
       commandProcess.kill('SIGINT') // Send SIGINT to the command process
     } else {
       logger.debug('no command process to send SIGINT to')
+    }
+  }
+  // handler for SIGTERM
+  const sigtermHandler = () => {
+    logger.debug('received SIGTERM')
+    logger.debug('checking command process')
+    logger.debug(commandProcess)
+
+    if (commandProcess) {
+      logger.debug('sending SIGTERM to command process')
+      commandProcess.kill('SIGTERM') // Send SIGTEM to the command process
+    } else {
+      logger.debug('no command process to send SIGTERM to')
     }
   }
 
@@ -47,6 +60,7 @@ const executeCommand = async function (commandArgs, env) {
     })
 
     process.on('SIGINT', sigintHandler)
+    process.on('SIGTERM', sigtermHandler)
 
     signals.forEach(signal => {
       process.on(signal, () => handleOtherSignal(signal))
@@ -61,7 +75,7 @@ const executeCommand = async function (commandArgs, env) {
     }
   } catch (error) {
     // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.
-    if (error.signal !== 'SIGINT') {
+    if (error.signal !== 'SIGINT' && error.signal !== 'SIGTERM') {
       if (error.code === 'ENOENT') {
         logger.errornocolor(`Unknown command: ${error.command}`)
       } else if (error.message.includes('Command failed with exit code 1')) {
@@ -76,6 +90,8 @@ const executeCommand = async function (commandArgs, env) {
   } finally {
     // Clean up: Remove the SIGINT handler
     process.removeListener('SIGINT', sigintHandler)
+    // Clean up: Remove the SIGTERM handler
+    process.removeListener('SIGTERM', sigtermHandler)
   }
 }
 
