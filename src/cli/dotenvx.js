@@ -111,7 +111,15 @@ program.command('encrypt')
 // dotenvx decrypt
 program.command('decrypt')
   .description('decrypt .env.vault to .env*')
+  .argument('[directory]', 'directory to decrypt', '.')
+  .option('-e, --environment <environments...>', 'environment(s) to decrypt')
   .action(require('./actions/decrypt'))
+
+// dotenvx status
+program.command('status')
+  .description('compare your .env* content(s) to your .env.vault decrypted content(s)')
+  .argument('[directory]', 'directory to check status against', '.')
+  .action(require('./actions/status'))
 
 // dotenvx genexample
 program.command('genexample')

@@ -1,3 +1,5 @@
+const path = require('path')
+
 class ArrayToTree {
   constructor (arr) {
     this.arr = arr
@@ -7,7 +9,8 @@ class ArrayToTree {
     const tree = {}
 
     for (let i = 0; i < this.arr.length; i++) {
-      const parts = this.arr[i].split('/')
+      const normalizedPath = path.normalize(this.arr[i]) // normalize any strange paths
+      const parts = normalizedPath.split(path.sep) // use the platform-specific path segment separator
       let current = tree
 
       for (let j = 0; j < parts.length; j++) {
