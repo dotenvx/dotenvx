@@ -492,7 +492,7 @@ More examples
   </details>
 * <details><summary>`--convention` flag</summary><br>
 
-  Want to load envs conveniently usng the same convention Next.js uses? Set `--convention` to `nextjs`:
+  Want to load envs conveniently usng the same convention as Next.js? Set `--convention` to `nextjs`:
 
   ```sh
   $ echo "HELLO=development local" > .env.development.local
