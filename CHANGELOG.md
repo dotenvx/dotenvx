@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.36.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.36.2...main)
+
+## 0.36.2
+
+* improve `status` error message when decrypt fails or no `.env*` files ([#192](https://github.com/dotenvx/dotenvx/pull/192))
 
 ## 0.36.1
 
