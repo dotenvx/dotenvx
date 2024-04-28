@@ -5,6 +5,8 @@ const logger = require('./../../shared/logger')
 
 const Run = require('./../../lib/services/run')
 
+const conventions = require('./../../lib/helpers/conventions')
+
 const executeCommand = async function (commandArgs, env) {
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
@@ -102,33 +104,15 @@ async function run () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  let envs = []
-  // conventions (nextjs)
-  if (options.convention === 'nextjs') {
-    // https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order
-    const nodeEnv = process.env.NODE_ENV || 'development'
-
-    if (['development', 'test', 'production'].includes(nodeEnv)) {
-      envs.push({ type: 'envFile', value: `.env.${nodeEnv}.local` })
-    }
-
-    if (['development', 'production'].includes(nodeEnv)) {
-      envs.push({ type: 'envFile', value: '.env.local' })
-    }
-
-    if (['development', 'test', 'production'].includes(nodeEnv)) {
-      envs.push({ type: 'envFile', value: `.env.${nodeEnv}` })
-    }
-
-    if (['development', 'test', 'production'].includes(nodeEnv)) {
-      envs.push({ type: 'envFile', value: '.env' })
-    }
-    envs = envs.concat(this.envs)
-  } else {
-    envs = this.envs
-  }
-
   try {
+    let envs = []
+    // handle shorthand conventions - like --convention=nextjs
+    if (options.convention) {
+      envs = conventions(options.convention).concat(this.envs)
+    } else {
+      envs = this.envs
+    }
+
     const {
       processedEnvs,
       readableStrings,
