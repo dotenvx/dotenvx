@@ -102,7 +102,19 @@ async function run () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const envs = this.envs
+  let envs = []
+  // --nextjs shorthand
+  if (options.nextjs) {
+    const nodeEnv = process.env.NODE_ENV || 'development'
+
+    envs.push({ type: 'envFile', value: `.env.${nodeEnv}.local` })
+    envs.push({ type: 'envFile', value: '.env.local' })
+    envs.push({ type: 'envFile', value: `.env.${nodeEnv}` })
+    envs.push({ type: 'envFile', value: '.env' })
+    envs = envs.concat(this.envs)
+  } else {
+    envs = this.envs
+  }
 
   try {
     const {
