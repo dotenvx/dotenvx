@@ -2,10 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.36.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.37.0...main)
 
-## 0.36.2
+## 0.37.0
 
+* add `--convention nextjs` flag to `dotenvx run` ([#193](https://github.com/dotenvx/dotenvx/pull/193))
 * improve `status` error message when decrypt fails or no `.env*` files ([#192](https://github.com/dotenvx/dotenvx/pull/192))
 
 ## 0.36.1
