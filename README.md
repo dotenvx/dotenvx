@@ -492,7 +492,7 @@ More examples
   </details>
 * <details><summary>`--convention` flag</summary><br>
 
-  Set `--convention` to `nextjs` (more conventions available upon request):
+  Want to load envs conveniently usng the same convention Next.js uses? Set `--convention` to `nextjs`:
 
   ```sh
   $ echo "HELLO=development local" > .env.development.local
@@ -505,6 +505,8 @@ More examples
   ```
 
   See [next.js environment variable load order](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order)
+
+  (more conventions available upon request)
 
   </details>
 
