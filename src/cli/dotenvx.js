@@ -69,7 +69,7 @@ program.command('run')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables')
-  .option('--nextjs', 'load envs using nextjs methodology')
+  .option('-c, --convention <type>', 'shorthand to use the \'nextjs\' convention type', 'nextjs')
   .action(function (...args) {
     this.envs = envs
 

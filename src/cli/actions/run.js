@@ -103,14 +103,26 @@ async function run () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   let envs = []
-  // --nextjs shorthand
-  if (options.nextjs) {
+  // conventions (nextjs)
+  if (options.convention === 'nextjs') {
+    // https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order
     const nodeEnv = process.env.NODE_ENV || 'development'
 
-    envs.push({ type: 'envFile', value: `.env.${nodeEnv}.local` })
-    envs.push({ type: 'envFile', value: '.env.local' })
-    envs.push({ type: 'envFile', value: `.env.${nodeEnv}` })
-    envs.push({ type: 'envFile', value: '.env' })
+    if (['development', 'test', 'production'].includes(nodeEnv)) {
+      envs.push({ type: 'envFile', value: `.env.${nodeEnv}.local` })
+    }
+
+    if (['development', 'production'].includes(nodeEnv)) {
+      envs.push({ type: 'envFile', value: '.env.local' })
+    }
+
+    if (['development', 'test', 'production'].includes(nodeEnv)) {
+      envs.push({ type: 'envFile', value: `.env.${nodeEnv}` })
+    }
+
+    if (['development', 'test', 'production'].includes(nodeEnv)) {
+      envs.push({ type: 'envFile', value: '.env' })
+    }
     envs = envs.concat(this.envs)
   } else {
     envs = this.envs
