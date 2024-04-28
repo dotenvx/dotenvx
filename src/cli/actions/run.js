@@ -5,6 +5,8 @@ const logger = require('./../../shared/logger')
 
 const Run = require('./../../lib/services/run')
 
+const conventions = require('./../../lib/helpers/conventions')
+
 const executeCommand = async function (commandArgs, env) {
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
@@ -102,9 +104,15 @@ async function run () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const envs = this.envs
-
   try {
+    let envs = []
+    // handle shorthand conventions - like --convention=nextjs
+    if (options.convention) {
+      envs = conventions(options.convention).concat(this.envs)
+    } else {
+      envs = this.envs
+    }
+
     const {
       processedEnvs,
       readableStrings,
