@@ -8,11 +8,13 @@ const Status = require('../../../src/lib/services/status')
 t.test('#run', ct => {
   const {
     changes,
-    nochanges
+    nochanges,
+    untracked
   } = new Status('tests/monorepo/apps/backend').run()
 
   ct.same(changes, [])
   ct.same(nochanges[0].filename, '.env')
+  ct.same(untracked[0].filename, '.env.untracked')
 
   ct.end()
 })

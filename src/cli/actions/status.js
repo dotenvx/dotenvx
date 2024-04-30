@@ -10,10 +10,11 @@ function status (directory) {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    const { changes, nochanges } = main.status(directory)
+    const { changes, nochanges, untracked } = main.status(directory)
 
     const changeFilenames = []
     const nochangeFilenames = []
+    const untrackedFilenames = []
 
     for (const row of nochanges) {
       nochangeFilenames.push(row.filename)
@@ -49,6 +50,15 @@ function status (directory) {
     if (nochangeFilenames.length < 1 && changeFilenames.length < 1) {
       logger.warn('no .env* files.')
       logger.help('? add one with [echo "HELLO=World" > .env] and then run [dotenvx status]')
+    }
+
+    for (const row of untracked) {
+      untrackedFilenames.push(row.filename)
+    }
+
+    if (untrackedFilenames.length > 0) {
+      logger.warn(`untracked (${untrackedFilenames.join(', ')})`)
+      logger.help(`? track them with [dotenvx encrypt ${directory}]`)
     }
   } catch (error) {
     logger.error(error.message)
