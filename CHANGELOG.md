@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.37.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.37.1...main)
+
+## 0.37.1
+
+* warn when running `dotenvx status` against any untracked (not in .env.vault) files ([#196](https://github.com/dotenvx/dotenvx/pull/196))
 
 ## 0.37.0
 
