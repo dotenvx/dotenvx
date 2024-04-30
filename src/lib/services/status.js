@@ -16,6 +16,7 @@ class Status {
     this.directory = directory
     this.changes = []
     this.nochanges = []
+    this.untracked = [] // not tracked in .env.vault
   }
 
   run () {
@@ -60,7 +61,14 @@ class Status {
 
       // grab decrypted
       const { processedEnvs } = new Decrypt(this.directory, row.environment).run()
-      row.decrypted = processedEnvs[0].decrypted
+      const result = processedEnvs[0]
+
+      // handle warnings
+      row.decrypted = result.decrypted
+      if (result.warning) {
+        this.untracked.push(row)
+        continue
+      }
 
       // differences
       row.differences = diff.diffWords(row.decrypted, row.raw)
@@ -78,7 +86,8 @@ class Status {
 
     return {
       changes: this.changes,
-      nochanges: this.nochanges
+      nochanges: this.nochanges,
+      untracked: this.untracked
     }
   }
 
