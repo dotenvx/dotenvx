@@ -2,15 +2,16 @@ const logger = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
 
-function status (directory) {
+function status(directory, { ignoredFiles } ) {
   // debug args
   logger.debug(`directory: ${directory}`)
+  logger.debug(`ignoredFiles: ${ignoredFiles?.join(', ')}`)
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    const { changes, nochanges } = main.status(directory)
+    const { changes, nochanges } = main.status(directory, ignoredFiles)
 
     const changeFilenames = []
     const nochangeFilenames = []
@@ -51,6 +52,7 @@ function status (directory) {
       logger.help('? add one with [echo "HELLO=World" > .env] and then run [dotenvx status]')
     }
   } catch (error) {
+    console.error(error.stack);
     logger.error(error.message)
     if (error.help) {
       logger.help(error.help)
@@ -61,6 +63,7 @@ function status (directory) {
     if (error.code) {
       logger.debug(`ERROR_CODE: ${error.code}`)
     }
+
     process.exit(1)
   }
 }

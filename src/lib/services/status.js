@@ -12,8 +12,9 @@ const guessEnvironment = require('./../helpers/guessEnvironment')
 const ENCODING = 'utf8'
 
 class Status {
-  constructor (directory = '.') {
+  constructor (directory = '.', ignoredFiles = []) {
     this.directory = directory
+    this.ignoredFiles = ['.previous','.env.keys','.env.vault','.env.example'].concat(ignoredFiles)
     this.changes = []
     this.nochanges = []
   }
@@ -28,23 +29,9 @@ class Status {
         continue
       }
 
-      // skip file if .env.keys
-      if (filename.endsWith('.env.keys')) {
-        continue
-      }
 
-      // skip file if .env.vault
-      if (filename.endsWith('.env.vault')) {
-        continue
-      }
-
-      // skip file if .env.example
-      if (filename.endsWith('.env.example')) {
-        continue
-      }
-
-      // skip file if *.previous
-      if (filename.endsWith('.previous')) {
+      // skip file if found in ignoredFiles
+      if (this.ignoredFiles.some((pattern) => filename.endsWith(pattern))) {
         continue
       }
 

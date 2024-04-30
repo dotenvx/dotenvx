@@ -17,6 +17,23 @@ t.test('#run', ct => {
   ct.end()
 })
 
+t.test('#run (when ignoring .env.raw)', ct => {
+  try {
+    fs.writeFileSync(path.resolve('tests/monorepo/apps/backend/.env.raw'), 'SOME_KEY=1')
+    const {
+      changes,
+      nochanges
+    } = new Status('tests/monorepo/apps/backend', '.env.raw').run()
+
+    ct.same(changes, [])
+    ct.same(nochanges[0].filename, '.env')
+
+    ct.end()
+  } finally {
+    fs.unlinkSync(path.resolve('tests/monorepo/apps/backend/.env.raw'))
+  }
+})
+
 t.test('#run (when .env different than .env.vault contents)', ct => {
   const originalReadFileSync = fs.readFileSync
   const sandbox = sinon.createSandbox()

@@ -120,6 +120,7 @@ program.command('decrypt')
 program.command('status')
   .description('compare your .env* content(s) to your .env.vault decrypted content(s)')
   .argument('[directory]', 'directory to check status against', '.')
+  .option('-i, --ignoredFiles <fileName...>', 'files to ignore', [])
   .action(require('./actions/status'))
 
 // dotenvx genexample
