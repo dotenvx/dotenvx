@@ -7,12 +7,27 @@ let src = 'HELLO=World'
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
+
+  // reset
+  src = 'HELLO=World'
 })
 
 t.test('#parseDecryptEvalExpand', ct => {
   const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'World' })
+
+  ct.end()
+})
+
+t.test('#parseDecryptEvalExpand with encrypted value', ct => {
+  src = 'HELLO=encrypted:BA9cBZml/SqizWFcPJqiT+0EAeJ2Vlb4aKfrAma4G19sPHEYsIu9C0EhqM6CnTJRVX0srj1BW4a9k3XwbkLFGN1vmAUAVxzFsoEFyPXPJJ+dB8wzcVMim6Ako4+QmVWlSn2FR/wc6y6B'
+
+  process.env.DOTENV_PRIVATE_KEY = 'd607fffc83656d0658c6de64d1d9a10f5d0bfbcd437f2a93bd0e1afa5f192626'
+
+  const parsed = parseDecryptEvalExpand(src)
+
+  ct.same(parsed, { HELLO: 'Universe' })
 
   ct.end()
 })
