@@ -109,6 +109,8 @@ class Sets {
     }
 
     const sk = new PrivateKey()
+    // console.log(sk.publicKey.toHex())
+    // console.log('secret', sk.secret.toString('hex'))
     // TODO: write to .env file with the public key, and output the private key to the user
     return sk.publicKey.toHex()
   }

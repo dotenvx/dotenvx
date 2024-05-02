@@ -41,4 +41,21 @@ v1.command('set')
   .option('-c, --encrypt', 'encrypt value')
   .action(require('./../actions/set'))
 
+// dotenvx get
+const getAction = require('./../actions/get')
+v1.command('get')
+  .description('return a single environment variable')
+  .argument('[key]', 'environment variable name')
+  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
+  .option('-o, --overload', 'override existing env variables')
+  .option('-a, --all', 'include all machine envs as well')
+  .option('-pp, --pretty-print', 'pretty print output')
+  .action(function (...args) {
+    this.envs = envs
+
+    getAction.apply(this, args)
+  })
+
 module.exports = v1
