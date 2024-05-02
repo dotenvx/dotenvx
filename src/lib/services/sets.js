@@ -11,6 +11,7 @@ class Sets {
     this.value = value
     this.envFile = envFile
     this.encrypt = encrypt
+    this.DOTENV_PUBLIC_KEY = process.env.DOTENV_PUBLIC_KEY
 
     this.processedEnvFiles = []
     this.settableFilepaths = new Set()
@@ -28,6 +29,11 @@ class Sets {
       try {
         const src = fs.readFileSync(filepath, { encoding: ENCODING })
         const parsed = dotenv.parse(src)
+
+        // set DOTENV_PUBLIC_KEY
+        if (!this.DOTENV_PUBLIC_KEY || this.DOTENV_PUBLIC_KEY.length < 1) {
+          this.DOTENV_PUBLIC_KEY = parsed.DOTENV_PUBLIC_KEY
+        }
 
         let newSrc
         if (Object.prototype.hasOwnProperty.call(parsed, this.key)) {
@@ -90,12 +96,21 @@ class Sets {
       return value
     }
 
-    const sk = new PrivateKey()
-    const publicKey = sk.publicKey.toHex()
+    const publicKey = this._publicKey()
     const ciphertext = encrypt(publicKey, Buffer.from(value))
     const encoded = Buffer.from(ciphertext, 'hex').toString('base64') // base64 encode ciphertext
 
     return `encrypted:${encoded}`
+  }
+
+  _publicKey() {
+    if (this.DOTENV_PUBLIC_KEY && this.DOTENV_PUBLIC_KEY.length > 0) {
+      return this.DOTENV_PUBLIC_KEY
+    }
+
+    const sk = new PrivateKey()
+    // TODO: write to .env file with the public key, and output the private key to the user
+    return sk.publicKey.toHex()
   }
 }
 
