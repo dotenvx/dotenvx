@@ -2,7 +2,7 @@ const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 const dotenvEval = require('./dotenvEval')
 
-const { decrypt, PrivateKey } = require('eciesjs')
+const { decrypt } = require('eciesjs')
 
 function parseExpandAndEval (src) {
   // parse

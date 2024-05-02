@@ -91,7 +91,7 @@ class Sets {
     return src + formatted
   }
 
-  _encrypt(value) {
+  _encrypt (value) {
     if (!this.encrypt) {
       return value
     }
@@ -103,7 +103,7 @@ class Sets {
     return `encrypted:${encoded}`
   }
 
-  _publicKey() {
+  _publicKey () {
     if (this.DOTENV_PUBLIC_KEY && this.DOTENV_PUBLIC_KEY.length > 0) {
       return this.DOTENV_PUBLIC_KEY
     }
