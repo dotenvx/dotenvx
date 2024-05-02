@@ -11,7 +11,7 @@ const DEFAULT_ENV_VAULTS = [{ type: TYPE_ENV_VAULT_FILE, value: '.env.vault' }]
 
 const inject = require('./../helpers/inject')
 const decrypt = require('./../helpers/decrypt')
-const parseExpandAndEval = require('./../helpers/parseExpandAndEval')
+const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 
 class Run {
@@ -59,7 +59,7 @@ class Run {
     row.string = env
 
     try {
-      const parsed = parseExpandAndEval(env)
+      const parsed = parseDecryptEvalExpand(env)
       row.parsed = parsed
       this.readableStrings.add(env)
 
@@ -87,7 +87,7 @@ class Run {
       const src = fs.readFileSync(filepath, { encoding: ENCODING })
       this.readableFilepaths.add(envFilepath)
 
-      const parsed = parseExpandAndEval(src)
+      const parsed = parseDecryptEvalExpand(src)
       row.parsed = parsed
 
       const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
@@ -156,7 +156,7 @@ class Run {
 
     try {
       // parse this. it's the equivalent of the .env file
-      const parsed = parseExpandAndEval(decrypted)
+      const parsed = parseDecryptEvalExpand(decrypted)
       row.parsed = parsed
 
       const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)

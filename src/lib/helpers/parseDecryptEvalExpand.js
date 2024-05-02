@@ -4,10 +4,11 @@ const dotenvEval = require('./dotenvEval')
 
 const { decrypt } = require('eciesjs')
 
-function parseExpandAndEval (src) {
+function parseDecryptEvalExpand (src) {
   // parse
   const parsed = dotenv.parse(src)
 
+  // inline decrypt
   for (const key in parsed) {
     const value = parsed[key]
 
@@ -27,8 +28,6 @@ function parseExpandAndEval (src) {
       parsed[key] = decryptedValue
     }
   }
-
-  // iterate over parsed and check for any encrypted
 
   // eval parsed only. do NOT eval process.env ever. too risky/dangerous.
   const inputParsed = {
@@ -52,4 +51,4 @@ function parseExpandAndEval (src) {
   return result
 }
 
-module.exports = parseExpandAndEval
+module.exports = parseDecryptEvalExpand

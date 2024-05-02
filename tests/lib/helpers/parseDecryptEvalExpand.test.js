@@ -1,6 +1,6 @@
 const t = require('tap')
 
-const parseExpandAndEval = require('../../../src/lib/helpers/parseExpandAndEval')
+const parseDecryptEvalExpand = require('../../../src/lib/helpers/parseDecryptEvalExpand')
 
 let src = 'HELLO=World'
 
@@ -9,88 +9,88 @@ t.beforeEach((ct) => {
   process.env = {}
 })
 
-t.test('#parseExpandAndEval', ct => {
-  const parsed = parseExpandAndEval(src)
+t.test('#parseDecryptEvalExpand', ct => {
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'World' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval machine value already set', ct => {
+t.test('#parseDecryptEvalExpand machine value already set', ct => {
   process.env.HELLO = 'machine'
 
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'World' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval expands from process.env', ct => {
+t.test('#parseDecryptEvalExpand expands from process.env', ct => {
   process.env.EXPAND = 'expanded'
 
   src = 'HELLO=$EXPAND'
 
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'expanded' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval expands from self file', ct => {
+t.test('#parseDecryptEvalExpand expands from self file', ct => {
   src = `HELLO=$EXPAND
 EXPAND=self`
 
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'self', EXPAND: 'self' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval expands recursively from self file', ct => {
+t.test('#parseDecryptEvalExpand expands recursively from self file', ct => {
   src = `HELLO=$ONE
 ONE=$TWO
 TWO=hiya
 `
 
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'hiya', ONE: 'hiya', TWO: 'hiya' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval command substitutes', ct => {
+t.test('#parseDecryptEvalExpand command substitutes', ct => {
   src = 'HELLO=$(echo world)'
 
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'world' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval command does substitute (already set in processEnv to same value)', ct => {
+t.test('#parseDecryptEvalExpand command does substitute (already set in processEnv to same value)', ct => {
   process.env.HELLO = '$(echo world)'
 
   src = 'HELLO=$(echo world)'
 
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'world' })
 
   ct.end()
 })
 
-t.test('#parseExpandAndEval machine command does not substitute (holman dotfiles issue https://github.com/dotenvx/dotenvx/issues/123)', ct => {
+t.test('#parseDecryptEvalExpand machine command does not substitute (holman dotfiles issue https://github.com/dotenvx/dotenvx/issues/123)', ct => {
   process.env.HELLO = '$(echo machine)'
 
   src = 'HELLO=$(echo world)'
 
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'world' })
 
@@ -99,7 +99,7 @@ t.test('#parseExpandAndEval machine command does not substitute (holman dotfiles
 
 t.test('returns object', ct => {
   const dotenv = { parsed: {} }
-  const parsed = parseExpandAndEval(dotenv)
+  const parsed = parseDecryptEvalExpand(dotenv)
 
   t.ok(parsed instanceof Object, 'should be an object')
 
@@ -112,7 +112,7 @@ t.test('expands environment variables', ct => {
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -128,7 +128,7 @@ t.test('expands environment variables (pre-existing but treats everything as ove
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -144,7 +144,7 @@ t.test('expands environment variables (pre-existing when overload is true)', ct 
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -159,7 +159,7 @@ t.test('uses environment variables existing already on the machine for expansion
     MACHINE_EXPAND=\${MACHINE}
     MACHINE_EXPAND_SIMPLE=$MACHINE
   `
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.MACHINE_EXPAND, 'machine')
   ct.equal(parsed.MACHINE_EXPAND_SIMPLE, 'machine')
@@ -173,7 +173,7 @@ t.test('only returns keys part of the original input. process.env is used for he
     MACHINE_EXPAND=\${MACHINE}
     MACHINE_EXPAND_SIMPLE=$MACHINE
   `
-  const parsed = parseExpandAndEval(src)
+  const parsed = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.MACHINE, undefined)
 
