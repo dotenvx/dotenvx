@@ -13,7 +13,7 @@ function set (key, value) {
     const {
       processedEnvFiles,
       settableFilepaths
-    } = main.set(key, value, options.envFile)
+    } = main.set(key, value, options.envFile, options.encrypt)
 
     for (const processedEnvFile of processedEnvFiles) {
       logger.verbose(`setting for ${processedEnvFile.filepath}`)

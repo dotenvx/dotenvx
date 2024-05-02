@@ -2,13 +2,15 @@ const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
 
+const { encrypt, PrivateKey } = require('eciesjs')
 const ENCODING = 'utf8'
 
 class Sets {
-  constructor (key, value, envFile = '.env') {
+  constructor (key, value, envFile = '.env', encrypt = false) {
     this.key = key
     this.value = value
     this.envFile = envFile
+    this.encrypt = encrypt
 
     this.processedEnvFiles = []
     this.settableFilepaths = new Set()
@@ -69,11 +71,11 @@ class Sets {
     // Regular expression to find the key and replace its value
     const regex = new RegExp(`^${this.key}=.*$`, 'm')
 
-    return src.replace(regex, `${this.key}="${this.value}"`)
+    return src.replace(regex, `${this.key}="${this._encrypt(this.value)}"`)
   }
 
   _srcAppended (src) {
-    let formatted = `${this.key}="${this.value}"`
+    let formatted = `${this.key}="${this._encrypt(this.value)}"`
     if (src.endsWith('\n')) {
       formatted = formatted + '\n'
     } else {
@@ -81,6 +83,19 @@ class Sets {
     }
 
     return src + formatted
+  }
+
+  _encrypt(value) {
+    if (!this.encrypt) {
+      return value
+    }
+
+    const sk = new PrivateKey()
+    const publicKey = sk.publicKey.toHex()
+    const ciphertext = encrypt(publicKey, Buffer.from(value))
+    const encoded = Buffer.from(ciphertext, 'hex').toString('base64') // base64 encode ciphertext
+
+    return `encrypted:${encoded}`
   }
 }
 

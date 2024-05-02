@@ -169,5 +169,7 @@ program.command('settings')
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
+// dotenvx v1
+program.addCommand(require('./commands/v1'))
 
 program.parse(process.argv)
