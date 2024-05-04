@@ -18,7 +18,6 @@ t.test('#decryptValue', ct => {
 
 t.test('#decryptValue (does not start with encrypted:) returns raw value', ct => {
   const keyPair = new PrivateKey()
-  const publicKey = keyPair.publicKey.toHex()
   const privateKey = keyPair.secret.toString('hex')
 
   const decrypted = decryptValue('world', privateKey)
@@ -29,7 +28,6 @@ t.test('#decryptValue (does not start with encrypted:) returns raw value', ct =>
 
 t.test('#decryptValue (fails decryption) returns raw value', ct => {
   const keyPair = new PrivateKey()
-  const publicKey = keyPair.publicKey.toHex()
   const privateKey = keyPair.secret.toString('hex')
 
   const decrypted = decryptValue('encrypted:1234', privateKey)

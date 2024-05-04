@@ -1,6 +1,5 @@
 const t = require('tap')
 const fs = require('fs')
-const path = require('path')
 const sinon = require('sinon')
 
 const findOrCreatePublicKey = require('../../../src/lib/helpers/findOrCreatePublicKey')
@@ -20,8 +19,6 @@ t.afterEach((ct) => {
 
 t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is found', ct => {
   const {
-    envSrc,
-    keysSrc,
     publicKey,
     privateKey
   } = findOrCreatePublicKey('tests/monorepo/apps/encrypted/.env', 'tests/monorepo/apps/encrypted/.env.keys')

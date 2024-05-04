@@ -40,21 +40,21 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
 
   // publicKey
   const prependPublicKey = [
-    `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/`,
-    `#/            public-key encryption for .env files          /`,
-    `#/       [how it works](https://dotenvx.com/encryption)     /`,
-    `#/----------------------------------------------------------/`,
+    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+    '#/            public-key encryption for .env files          /',
+    '#/       [how it works](https://dotenvx.com/encryption)     /',
+    '#/----------------------------------------------------------/',
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
-    `# ${filename}`,
+    `# ${filename}`
   ].join('\n')
 
   // privateKey
   const firstTimeKeysSrc = [
-    `#/------------------!DOTENV_PRIVATE_KEYS!-------------------/`,
-    `#/ private decryption keys. DO NOT commit to source control /`,
-    `#/     [how it works](https://dotenvx.com/encryption)       /`,
-    `#/----------------------------------------------------------/`
+    '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
+    '#/ private decryption keys. DO NOT commit to source control /',
+    '#/     [how it works](https://dotenvx.com/encryption)       /',
+    '#/----------------------------------------------------------/'
   ].join('\n')
   const appendPrivateKey = [
     `# ${filename}`,
