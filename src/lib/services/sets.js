@@ -31,7 +31,8 @@ class Sets {
       try {
         let value = this.value
         if (this.encrypt) {
-          const { publicKey } = findOrCreatePublicKey(filepath)
+          const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          const { publicKey } = findOrCreatePublicKey(filepath, envKeysFilepath)
           value = encryptValue(value, publicKey)
         }
 

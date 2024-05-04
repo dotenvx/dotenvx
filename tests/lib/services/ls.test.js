@@ -15,6 +15,8 @@ t.test('#run', ct => {
     '.env.eval',
     '.env',
     'monorepo/apps/frontend/.env',
+    'monorepo/apps/encrypted/.env.keys',
+    'monorepo/apps/encrypted/.env',
     'monorepo/apps/backend/.env.vault',
     'monorepo/apps/backend/.env.untracked',
     'monorepo/apps/backend/.env.previous',
@@ -35,6 +37,8 @@ t.test('#run (with directory argument)', ct => {
 
   const expected = [
     'apps/frontend/.env',
+    'apps/encrypted/.env.keys',
+    'apps/encrypted/.env',
     'apps/backend/.env.vault',
     'apps/backend/.env.untracked',
     'apps/backend/.env.previous',
@@ -48,13 +52,15 @@ t.test('#run (with directory argument)', ct => {
   ct.end()
 })
 
-t.test('#run (with someow malformed directory argument)', ct => {
+t.test('#run (with somehow malformed directory argument)', ct => {
   const ls = new Ls('tests/monorepo')
 
   const envFiles = ls.run()
 
   const expected = [
     'apps/frontend/.env',
+    'apps/encrypted/.env.keys',
+    'apps/encrypted/.env',
     'apps/backend/.env.vault',
     'apps/backend/.env.untracked',
     'apps/backend/.env.previous',
@@ -81,6 +87,8 @@ t.test('#_filepaths', ct => {
     '.env.eval',
     '.env',
     'monorepo/apps/frontend/.env',
+    'monorepo/apps/encrypted/.env.keys',
+    'monorepo/apps/encrypted/.env',
     'monorepo/apps/backend/.env.vault',
     'monorepo/apps/backend/.env.untracked',
     'monorepo/apps/backend/.env.previous',

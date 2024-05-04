@@ -1,8 +1,7 @@
 const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 const dotenvEval = require('./dotenvEval')
-
-const { decrypt } = require('eciesjs')
+const decryptValue = require('./decryptValue')
 
 function parseDecryptEvalExpand (src) {
   // parse
@@ -13,19 +12,9 @@ function parseDecryptEvalExpand (src) {
     const value = parsed[key]
 
     // handle inline encrypted values
-    if (process.env.DOTENV_PRIVATE_KEY && value.startsWith('encrypted:')) {
+    if (process.env.DOTENV_PRIVATE_KEY) {
       // privateKey
-      const DOTENV_PRIVATE_KEY = process.env.DOTENV_PRIVATE_KEY
-      const privateKey = Buffer.from(DOTENV_PRIVATE_KEY, 'hex')
-
-      // values
-      const prefix = 'encrypted:'
-      const subtext = value.substring(prefix.length)
-      const ciphertext = Buffer.from(subtext, 'base64')
-
-      // decrypt and insert
-      const decryptedValue = decrypt(privateKey, ciphertext).toString()
-      parsed[key] = decryptedValue
+      parsed[key] = decryptValue(value, process.env.DOTENV_PRIVATE_KEY)
     }
   }
 
