@@ -15,6 +15,8 @@ function set (key, value) {
       settableFilepaths
     } = main.set(key, value, options.envFile, options.encrypt)
 
+    let atLeastOneSuccess = false
+
     for (const processedEnvFile of processedEnvFiles) {
       logger.verbose(`setting for ${processedEnvFile.filepath}`)
 
@@ -26,12 +28,15 @@ function set (key, value) {
           logger.warn(processedEnvFile.error)
         }
       } else {
+        atLeastOneSuccess = true
         logger.verbose(`${processedEnvFile.key} set`)
         logger.debug(`${processedEnvFile.key} set to ${processedEnvFile.value}`)
       }
     }
 
-    logger.success(`set ${key} (${settableFilepaths.join(', ')})`)
+    if (atLeastOneSuccess) {
+      logger.success(`set ${key} (${settableFilepaths.join(', ')})`)
+    }
   } catch (error) {
     logger.error(error.message)
     if (error.help) {
