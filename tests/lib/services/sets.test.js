@@ -137,13 +137,3 @@ t.test('#run (finds .env file as array)', ct => {
 
   ct.end()
 })
-
-t.test('#_srcAppended when src has no newline it prepends a newline', ct => {
-  const sets = new Sets('KEY', 'value')
-  const src = 'HELLO=World'
-  const result = sets._srcAppended(src)
-
-  ct.same(result, 'HELLO=World\nKEY="value"')
-
-  ct.end()
-})

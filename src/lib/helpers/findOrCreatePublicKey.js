@@ -14,7 +14,7 @@ function findOrCreatePublicKey (filepath) {
   // look for already present DOTENV_PUBLIC_KEY
   if (parsed.DOTENV_PUBLIC_KEY && parsed.DOTENV_PUBLIC_KEY.length > 0) {
     return {
-      src: src,
+      src,
       publicKey: parsed.DOTENV_PUBLIC_KEY,
       privateKey: null
     }
