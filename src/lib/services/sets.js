@@ -30,15 +30,20 @@ class Sets {
       const filepath = path.resolve(envFilepath)
       try {
         let value = this.value
+        let src = fs.readFileSync(filepath, { encoding: ENCODING })
         if (this.encrypt) {
           const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-          const { publicKey } = findOrCreatePublicKey(filepath, envKeysFilepath)
+          const {
+            publicKey,
+            envSrc
+          } = findOrCreatePublicKey(filepath, envKeysFilepath)
+          src = envSrc // overwrite the original read (because findOrCreatePublicKey) rewrite to it
           value = encryptValue(value, publicKey)
+          row.encryptedValue = value // useful
+          row.publicKey = publicKey
         }
 
-        const src = fs.readFileSync(filepath, { encoding: ENCODING })
         const newSrc = replace(src, this.key, value)
-
         fs.writeFileSync(filepath, newSrc)
 
         this.settableFilepaths.add(envFilepath)

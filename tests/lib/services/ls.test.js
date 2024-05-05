@@ -14,6 +14,7 @@ t.test('#run', ct => {
     '.env.expand',
     '.env.eval',
     '.env',
+    'monorepo/apps/unencrypted/.env',
     'monorepo/apps/frontend/.env',
     'monorepo/apps/encrypted/.env.keys',
     'monorepo/apps/encrypted/.env',
@@ -36,6 +37,7 @@ t.test('#run (with directory argument)', ct => {
   const envFiles = ls.run()
 
   const expected = [
+    'apps/unencrypted/.env',
     'apps/frontend/.env',
     'apps/encrypted/.env.keys',
     'apps/encrypted/.env',
@@ -58,6 +60,7 @@ t.test('#run (with somehow malformed directory argument)', ct => {
   const envFiles = ls.run()
 
   const expected = [
+    'apps/unencrypted/.env',
     'apps/frontend/.env',
     'apps/encrypted/.env.keys',
     'apps/encrypted/.env',
@@ -86,6 +89,7 @@ t.test('#_filepaths', ct => {
     '.env.expand',
     '.env.eval',
     '.env',
+    'monorepo/apps/unencrypted/.env',
     'monorepo/apps/frontend/.env',
     'monorepo/apps/encrypted/.env.keys',
     'monorepo/apps/encrypted/.env',
