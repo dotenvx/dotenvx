@@ -11,13 +11,14 @@ const DEFAULT_ENV_VAULTS = [{ type: TYPE_ENV_VAULT_FILE, value: '.env.vault' }]
 
 const inject = require('./../helpers/inject')
 const decrypt = require('./../helpers/decrypt')
+const parseKey = require('./../helpers/parseKey')
 const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 
 class Run {
   constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
-    this.envs = this._determineEnvs(envs, DOTENV_KEY)
+    this.envs = this._determineEnvs(envs, DOTENV_KEY, processEnv.DOTENV_PRIVATE_KEY)
     this.overload = overload
     this.DOTENV_KEY = DOTENV_KEY
     this.processEnv = processEnv
@@ -36,6 +37,7 @@ class Run {
     //   { type: 'envFile', value: '.env' },
     //   { type: 'env', value: 'HELLO=three' }
     // ]
+
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_VAULT_FILE) {
         this._injectEnvVaultFile(env.value)
@@ -179,8 +181,26 @@ class Run {
     return inject(processEnv, parsed, overload)
   }
 
-  _determineEnvs (envs = [], DOTENV_KEY = '') {
+  _determineEnvsFromDotenvPrivateKey (DOTENV_PRIVATE_KEY) {
+    const privateKeys = DOTENV_PRIVATE_KEY.split(',')
+
+    const envs = []
+    for (const privateKey of privateKeys) {
+      const { envFile } = parseKey(privateKey)
+
+      envs.push({ type: TYPE_ENV_FILE, value: envFile })
+    }
+
+    return envs
+  }
+
+  _determineEnvs (envs = [], DOTENV_KEY = '', DOTENV_PRIVATE_KEY = '') {
     if (!envs || envs.length <= 0) {
+      // if process.env.DOTENV_PRIVATE_KEY is set, determine .env* files to read using it
+      if (DOTENV_PRIVATE_KEY.length > 0) {
+        return this._determineEnvsFromDotenvPrivateKey(DOTENV_PRIVATE_KEY)
+      }
+
       if (DOTENV_KEY.length > 0) {
         // if DOTENV_KEY is set then default to look for .env.vault file
         return DEFAULT_ENV_VAULTS

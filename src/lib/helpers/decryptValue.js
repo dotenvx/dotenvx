@@ -8,18 +8,24 @@ function decryptValue (value, DOTENV_PRIVATE_KEY) {
     return value
   }
 
-  const { key } = parseKey(DOTENV_PRIVATE_KEY)
+  const privateKeys = DOTENV_PRIVATE_KEY.split(',')
 
-  const secret = Buffer.from(key, 'hex')
-  const encoded = value.substring(PREFIX.length)
-  const ciphertext = Buffer.from(encoded, 'base64')
+  let decryptedValue
+  for (const privateKey of privateKeys) {
+    const { key } = parseKey(privateKey)
+    const secret = Buffer.from(key, 'hex')
+    const encoded = value.substring(PREFIX.length)
+    const ciphertext = Buffer.from(encoded, 'base64')
 
-  try {
-    return decrypt(secret, ciphertext).toString()
-  } catch (error) {
-    // TODO: somehow surface these errors to the user's logs
-    return value
+    try {
+      decryptedValue = decrypt(secret, ciphertext).toString()
+      break
+    } catch (_error) {
+      // TODO: somehow surface these errors to the user's logs
+    }
   }
+
+  return decryptedValue || value
 }
 
 module.exports = decryptValue
