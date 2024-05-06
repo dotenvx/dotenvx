@@ -13,6 +13,7 @@ const inject = require('./../helpers/inject')
 const decrypt = require('./../helpers/decrypt')
 const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
+const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 
 class Run {
   constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
@@ -87,7 +88,8 @@ class Run {
       const src = fs.readFileSync(filepath, { encoding: ENCODING })
       this.readableFilepaths.add(envFilepath)
 
-      const parsed = parseDecryptEvalExpand(src)
+      const DOTENV_PRIVATE_KEY = smartDotenvPrivateKey(envFilepath)
+      const parsed = parseDecryptEvalExpand(src, DOTENV_PRIVATE_KEY)
       row.parsed = parsed
 
       const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
