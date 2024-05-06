@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
-const { PrivateKey } = require('eciesjs')
 
+const keyPair = require('./keyPair')
 const guessPrivateKeyName = require('./guessPrivateKeyName')
 
 const ENCODING = 'utf8'
@@ -34,9 +34,7 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
   }
 
   // generate key pair
-  const keyPair = new PrivateKey()
-  const publicKey = keyPair.publicKey.toHex()
-  const privateKey = keyPair.secret.toString('hex')
+  const { publicKey, privateKey } = keyPair(envFilepath)
 
   // publicKey
   const prependPublicKey = [
