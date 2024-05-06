@@ -1,6 +1,6 @@
 const { Command } = require('commander')
 
-const v1 = new Command('v1')
+const beta = new Command('beta')
 
 const examples = require('./../examples')
 
@@ -13,12 +13,12 @@ function collectEnvs (type) {
   }
 }
 
-v1
+beta
   .description('(beta) re-imagined asymmetric encryption for .env files at the value level. opt-in and mixed use.')
 
-// dotenvx v1 run -- node index.js
+// dotenvx beta run -- node index.js
 const runAction = require('./../actions/run')
-v1.command('run')
+beta.command('run')
   .description('inject env at runtime [dotenvx run -- yourcommand]')
   .addHelpText('after', examples.run)
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
@@ -33,7 +33,7 @@ v1.command('run')
   })
 
 // dotenvx set
-v1.command('set')
+beta.command('set')
   .description('set a single environment variable')
   .argument('KEY', 'KEY')
   .argument('value', 'value')
@@ -43,7 +43,7 @@ v1.command('set')
 
 // dotenvx get
 const getAction = require('./../actions/get')
-v1.command('get')
+beta.command('get')
   .description('return a single environment variable')
   .argument('[key]', 'environment variable name')
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
@@ -58,4 +58,4 @@ v1.command('get')
     getAction.apply(this, args)
   })
 
-module.exports = v1
+module.exports = beta

@@ -99,6 +99,7 @@ program.command('set')
   .argument('KEY', 'KEY')
   .argument('value', 'value')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .option('-c, --encrypt', 'encrypt value')
   .action(require('./actions/set'))
 
 // dotenvx encrypt
@@ -169,7 +170,7 @@ program.command('settings')
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
-// dotenvx v1
-program.addCommand(require('./commands/v1'))
+// dotenvx beta
+program.addCommand(require('./commands/beta'))
 
 program.parse(process.argv)
