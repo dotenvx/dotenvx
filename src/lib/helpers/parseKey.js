@@ -23,7 +23,6 @@ function parseKey (dotenvKey) {
     key,
     envFile
   }
-
 }
 
 module.exports = parseKey

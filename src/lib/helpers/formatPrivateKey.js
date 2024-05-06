@@ -1,4 +1,4 @@
-function formatPrivateKey(hex, filename) {
+function formatPrivateKey (hex, filename) {
   return `dotenv://:${hex}@dotenvx.com/privateKey?env-file=${filename}`
 }
 
