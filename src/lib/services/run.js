@@ -197,7 +197,7 @@ class Run {
   _determineEnvs (envs = [], DOTENV_KEY = '', DOTENV_PRIVATE_KEY = '') {
     if (!envs || envs.length <= 0) {
       // if process.env.DOTENV_PRIVATE_KEY is set, determine .env* files to read using it
-      if (DOTENV_PRIVATE_KEY.length > 0) {
+      if (DOTENV_PRIVATE_KEY && DOTENV_PRIVATE_KEY.length > 0) {
         return this._determineEnvsFromDotenvPrivateKey(DOTENV_PRIVATE_KEY)
       }
 

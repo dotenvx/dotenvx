@@ -25,8 +25,8 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is found', ct => {
     privateKey
   } = findOrCreatePublicKey(envFile, envKeysFile)
 
-  ct.same(publicKey, '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba')
-  ct.same(privateKey, 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
+  ct.same(publicKey, 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env')
+  ct.same(privateKey, 'dotenv://:ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1@dotenvx.com/privateKey?env-file=.env')
 
   ct.end()
 })

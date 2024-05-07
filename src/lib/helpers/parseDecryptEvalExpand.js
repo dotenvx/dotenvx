@@ -12,7 +12,7 @@ function parseDecryptEvalExpand (src, DOTENV_PRIVATE_KEY = '') {
     const value = parsed[key]
 
     // handle inline encrypted values
-    if (DOTENV_PRIVATE_KEY.length > 0) {
+    if (DOTENV_PRIVATE_KEY && DOTENV_PRIVATE_KEY.length > 0) {
       // privateKey
       parsed[key] = decryptValue(value, DOTENV_PRIVATE_KEY)
     }
