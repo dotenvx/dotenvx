@@ -83,6 +83,64 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
+t.test('#run (encrypted .env finds .env.keys next to itself)', ct => {
+  const envs = [
+    { type: 'envFile', value: 'tests/monorepo/apps/encrypted/.env' }
+  ]
+
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new Run(envs).run()
+
+  ct.same(processedEnvs, [{
+    type: 'envFile',
+    filepath: 'tests/monorepo/apps/encrypted/.env',
+    parsed: {
+      DOTENV_PUBLIC_KEY: 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env',
+      HELLO: 'encrypted'
+    },
+    injected: {
+      DOTENV_PUBLIC_KEY: 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env',
+      HELLO: 'encrypted'
+    },
+    preExisted: {}
+  }])
+  ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+  ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
+
+  ct.end()
+})
+
+t.test('#run when DOTENV_PRIVATE_KEY set and specifying path to env-file', ct => {
+  process.env.DOTENV_PRIVATE_KEY = 'dotenv://:ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1@dotenvx.com/privateKey?env-file=tests/monorepo/apps/encrypted/.env'
+
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new Run().run()
+
+  ct.same(processedEnvs, [{
+    type: 'envFile',
+    filepath: 'tests/monorepo/apps/encrypted/.env',
+    parsed: {
+      DOTENV_PUBLIC_KEY: 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env',
+      HELLO: 'encrypted'
+    },
+    injected: {
+      DOTENV_PUBLIC_KEY: 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env',
+      HELLO: 'encrypted'
+    },
+    preExisted: {}
+  }])
+  ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+  ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
+
+  ct.end()
+})
+
 t.test('#run (finds .env file) with already falsy value', ct => {
   process.env.HELLO = '' // falsy value
 

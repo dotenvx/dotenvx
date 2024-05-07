@@ -138,12 +138,40 @@ t.test('#run (finds .env file as array)', ct => {
   ct.end()
 })
 
-t.test('#_srcAppended when src has no newline it prepends a newline', ct => {
-  const sets = new Sets('KEY', 'value')
-  const src = 'HELLO=World'
-  const result = sets._srcAppended(src)
+t.test('#run (finds .env file) with --encrypt', ct => {
+  const envFile = 'tests/monorepo/apps/frontend/.env'
+  const {
+    processedEnvFiles,
+    settableFilepaths
+  } = new Sets('KEY', 'value', envFile, true).run()
 
-  ct.same(result, 'HELLO=World\nKEY="value"')
+  const row = processedEnvFiles[0]
+  const publicKey = row.publicKey
+  const encryptedValue = row.encryptedValue
+
+  ct.same(processedEnvFiles, [{
+    key: 'KEY',
+    value: 'value',
+    encryptedValue,
+    publicKey,
+    filepath: 'tests/monorepo/apps/frontend/.env'
+  }])
+  ct.same(settableFilepaths, ['tests/monorepo/apps/frontend/.env'])
+
+  const output = [
+    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+    '#/            public-key encryption for .env files          /',
+    '#/       [how it works](https://dotenvx.com/encryption)     /',
+    '#/----------------------------------------------------------/',
+    `DOTENV_PUBLIC_KEY="${publicKey}"`,
+    '',
+    '# .env',
+    '# for testing purposes only',
+    'HELLO="frontend"',
+    `KEY="${encryptedValue}"`
+  ].join('\n')
+
+  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(2), path.resolve(envFile), output + '\n')
 
   ct.end()
 })

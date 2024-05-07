@@ -1,10 +1,22 @@
 const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 const dotenvEval = require('./dotenvEval')
+const decryptValue = require('./decryptValue')
 
-function parseExpandAndEval (src) {
+function parseDecryptEvalExpand (src, DOTENV_PRIVATE_KEY = '') {
   // parse
   const parsed = dotenv.parse(src)
+
+  // inline decrypt
+  for (const key in parsed) {
+    const value = parsed[key]
+
+    // handle inline encrypted values
+    if (DOTENV_PRIVATE_KEY && DOTENV_PRIVATE_KEY.length > 0) {
+      // privateKey
+      parsed[key] = decryptValue(value, DOTENV_PRIVATE_KEY)
+    }
+  }
 
   // eval parsed only. do NOT eval process.env ever. too risky/dangerous.
   const inputParsed = {
@@ -28,4 +40,4 @@ function parseExpandAndEval (src) {
   return result
 }
 
-module.exports = parseExpandAndEval
+module.exports = parseDecryptEvalExpand

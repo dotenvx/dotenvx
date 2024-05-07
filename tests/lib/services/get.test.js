@@ -32,6 +32,7 @@ t.test('#run (missing key returns the entire processEnv as object)', ct => {
     { type: 'envFile', value: 'tests/.env.local' }
   ]
   const json = new Get(null, envs).run()
+  console.log('json', json)
 
   ct.same(json, { BASIC: 'local_basic', LOCAL: 'local' })
 

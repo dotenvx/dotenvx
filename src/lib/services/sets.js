@@ -1,15 +1,20 @@
 const fs = require('fs')
 const path = require('path')
-const dotenv = require('dotenv')
+
+const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
+const encryptValue = require('./../helpers/encryptValue')
+const replace = require('./../helpers/replace')
 
 const ENCODING = 'utf8'
 
 class Sets {
-  constructor (key, value, envFile = '.env') {
+  constructor (key, value, envFile = '.env', encrypt = false) {
     this.key = key
     this.value = value
     this.envFile = envFile
+    this.encrypt = encrypt
 
+    this.publicKey = null
     this.processedEnvFiles = []
     this.settableFilepaths = new Set()
   }
@@ -19,21 +24,26 @@ class Sets {
     for (const envFilepath of envFilepaths) {
       const row = {}
       row.key = this.key
-      row.value = this.value
       row.filepath = envFilepath
+      row.value = this.value
 
       const filepath = path.resolve(envFilepath)
       try {
-        const src = fs.readFileSync(filepath, { encoding: ENCODING })
-        const parsed = dotenv.parse(src)
-
-        let newSrc
-        if (Object.prototype.hasOwnProperty.call(parsed, this.key)) {
-          newSrc = this._srcReplaced(src)
-        } else {
-          newSrc = this._srcAppended(src)
+        let value = this.value
+        let src = fs.readFileSync(filepath, { encoding: ENCODING })
+        if (this.encrypt) {
+          const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          const {
+            publicKey,
+            envSrc
+          } = findOrCreatePublicKey(filepath, envKeysFilepath)
+          src = envSrc // overwrite the original read (because findOrCreatePublicKey) rewrite to it
+          value = encryptValue(value, publicKey)
+          row.encryptedValue = value // useful
+          row.publicKey = publicKey
         }
 
+        const newSrc = replace(src, this.key, value)
         fs.writeFileSync(filepath, newSrc)
 
         this.settableFilepaths.add(envFilepath)
@@ -63,24 +73,6 @@ class Sets {
     }
 
     return this.envFile
-  }
-
-  _srcReplaced (src) {
-    // Regular expression to find the key and replace its value
-    const regex = new RegExp(`^${this.key}=.*$`, 'm')
-
-    return src.replace(regex, `${this.key}="${this.value}"`)
-  }
-
-  _srcAppended (src) {
-    let formatted = `${this.key}="${this.value}"`
-    if (src.endsWith('\n')) {
-      formatted = formatted + '\n'
-    } else {
-      formatted = '\n' + formatted
-    }
-
-    return src + formatted
   }
 }
 

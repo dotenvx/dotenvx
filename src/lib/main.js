@@ -58,8 +58,8 @@ const get = function (key, envs = [], overload = false, DOTENV_KEY = '', all = f
   return new Get(key, envs, overload, DOTENV_KEY, all).run()
 }
 
-const set = function (key, value, envFile) {
-  return new Sets(key, value, envFile).run()
+const set = function (key, value, envFile, encrypt) {
+  return new Sets(key, value, envFile, encrypt).run()
 }
 
 const status = function (directory) {
