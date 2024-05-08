@@ -2,7 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.37.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.38.0...main)
+
+## 0.38.0
+
+### Changed
+
+* ⚠️ DEPRECATION NOTICE: the following commands are being moved. Please, update any code and muscle memory you have related to these:
+  * `dotenvx encrypt` => `dotenvx vault encrypt`
+  * `dotenvx decrypt` => `dotenvx vault decrypt`
+  * `dotenvx status` => `dotenvx vault status`
+
+### Added
+
+* 🎉 `--encrypt` flag for `dotenv set`. usage: `dotenvx set HELLO World --encrypt`
+
+This inlines encrypted value to your `.env` file.
+
+![](https://github.com/dotenvx/dotenvx/assets/3848/ef8974b4-44ad-408e-bfc9-7e1540f93be7)
+
+Further notes:
+
+* A keypair of `DOTENV_PUBLIC_KEY` and `DOTENV_PRIVATE_KEY` are generated.
+* `DOTENV_PUBLIC_KEY` lives in the `.env` file. You can safely share this with whomever you wish.
+* `DOTENV_PRIVATE_KEY` lives in your `.env.keys` file. Share this only with those you trust to decrypt your secrets.
+* These asymmetric keys are generated using the same elliptical curve Bitcoin uses - `secp256k1`.
+* If using encrypted `.env` files like this we recommend, and is safe, committing your `.env` file to code.
+* Tell your contributors to contribute a secret using the command `dotenvx set HELLO world --encrypt`.
+* Set your `DOTENV_PRIVATE_KEY` on your server to decrypt these values using `dotenvx run -- yourcommand`
+* You can repeat all this per environment by modifying your set command to `dotenvx set HELLO production -f .env.production --encrypt` (for example)
+* This solution is brand new, but I think it will now be the future. It removes the need for a difficult to read/understand `.env.vault` file. As a user you have much more control over combining encrypted .env files as you see fit - a limitation of `.env.vault`, and it makes seeing what changed (by KEY) easy in a Pull Request.
+* In time we will add better tooling for sharing the `.env.keys` but until then safely share with team members you trust. This is powerful for large open source projects that want to allow contributions without those contributors being able to decrypt values. They can add a secret but not decrypt it.
+* Be patient as we update our documentation to prioritize this improved encryption format for `.env` files.
 
 ## 0.37.1
 
