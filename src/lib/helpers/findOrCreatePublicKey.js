@@ -3,6 +3,7 @@ const path = require('path')
 const dotenv = require('dotenv')
 
 const keyPair = require('./keyPair')
+const guessPublicKeyName = require('./guessPublicKeyName')
 const guessPrivateKeyName = require('./guessPrivateKeyName')
 
 const ENCODING = 'utf8'
@@ -10,6 +11,7 @@ const ENCODING = 'utf8'
 function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
   // filename
   const filename = path.basename(envFilepath)
+  const publicKeyName = guessPublicKeyName(envFilepath)
   const privateKeyName = guessPrivateKeyName(envFilepath)
 
   // src
@@ -23,12 +25,12 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
   const envParsed = dotenv.parse(envSrc)
   const keysParsed = dotenv.parse(keysSrc)
 
-  // if DOTENV_PUBLIC_KEY already present then go no further
-  if (envParsed.DOTENV_PUBLIC_KEY && envParsed.DOTENV_PUBLIC_KEY.length > 0) {
+  // if DOTENV_PUBLIC_KEY_${environment} already present then go no further
+  if (envParsed[publicKeyName] && envParsed[publicKeyName].length > 0) {
     return {
       envSrc,
       keysSrc,
-      publicKey: envParsed.DOTENV_PUBLIC_KEY,
+      publicKey: envParsed[publicKeyName],
       privateKey: keysParsed[privateKeyName]
     }
   }
@@ -42,7 +44,7 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
     '#/            public-key encryption for .env files          /',
     '#/       [how it works](https://dotenvx.com/encryption)     /',
     '#/----------------------------------------------------------/',
-    `DOTENV_PUBLIC_KEY="${publicKey}"`,
+    `${publicKeyName}="${publicKey}"`,
     '',
     `# ${filename}`
   ].join('\n')
