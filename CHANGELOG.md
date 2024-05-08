@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * 🎉 `--encrypt` flag for `dotenv set`. usage: `dotenvx set HELLO World --encrypt`
 
-This inlines encrypted value to your `.env` file.
+This encrypts the values inside your `.env` file.
 
 ![](https://github.com/dotenvx/dotenvx/assets/3848/ef8974b4-44ad-408e-bfc9-7e1540f93be7)
 
