@@ -3,8 +3,8 @@ const fs = require('fs')
 const sinon = require('sinon')
 const dotenv = require('dotenv')
 
-const main = require('../../../src/lib/main')
-const encrypt = require('../../../src/cli/actions/encrypt')
+const main = require('../../../../src/lib/main')
+const encrypt = require('../../../../src/cli/actions/vault/encrypt')
 
 t.test('encrypt (when .env file does not exist)', async ct => {
   const optsStub = sinon.stub().returns({})
