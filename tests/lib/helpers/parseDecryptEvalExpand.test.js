@@ -23,9 +23,9 @@ t.test('#parseDecryptEvalExpand', ct => {
 t.test('#parseDecryptEvalExpand with encrypted value', ct => {
   src = 'HELLO=encrypted:BA9cBZml/SqizWFcPJqiT+0EAeJ2Vlb4aKfrAma4G19sPHEYsIu9C0EhqM6CnTJRVX0srj1BW4a9k3XwbkLFGN1vmAUAVxzFsoEFyPXPJJ+dB8wzcVMim6Ako4+QmVWlSn2FR/wc6y6B'
 
-  const DOTENV_PRIVATE_KEY = 'dotenv://:d607fffc83656d0658c6de64d1d9a10f5d0bfbcd437f2a93bd0e1afa5f192626@dotenvx.com/privateKey?env-file=.env'
+  const privateKey = 'd607fffc83656d0658c6de64d1d9a10f5d0bfbcd437f2a93bd0e1afa5f192626'
 
-  const parsed = parseDecryptEvalExpand(src, DOTENV_PRIVATE_KEY)
+  const parsed = parseDecryptEvalExpand(src, privateKey)
 
   ct.same(parsed, { HELLO: 'Universe' })
 

@@ -98,11 +98,11 @@ t.test('#run (encrypted .env finds .env.keys next to itself)', ct => {
     type: 'envFile',
     filepath: 'tests/monorepo/apps/encrypted/.env',
     parsed: {
-      DOTENV_PUBLIC_KEY: 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env',
+      DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted'
     },
     injected: {
-      DOTENV_PUBLIC_KEY: 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env',
+      DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted'
     },
     preExisted: {}
@@ -113,8 +113,13 @@ t.test('#run (encrypted .env finds .env.keys next to itself)', ct => {
   ct.end()
 })
 
-t.test('#run when DOTENV_PRIVATE_KEY set and specifying path to env-file', ct => {
-  process.env.DOTENV_PRIVATE_KEY = 'dotenv://:ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1@dotenvx.com/privateKey?env-file=tests/monorepo/apps/encrypted/.env'
+t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set', ct => {
+  const originalDirectory = process.cwd()
+
+  process.env.DOTENV_PRIVATE_KEY = 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1'
+
+  // change to the tests/monorepo/apps/encrypted directory to simulate correctly
+  process.chdir('tests/monorepo/apps/encrypted')
 
   const {
     processedEnvs,
@@ -124,19 +129,21 @@ t.test('#run when DOTENV_PRIVATE_KEY set and specifying path to env-file', ct =>
 
   ct.same(processedEnvs, [{
     type: 'envFile',
-    filepath: 'tests/monorepo/apps/encrypted/.env',
+    filepath: '.env',
     parsed: {
-      DOTENV_PUBLIC_KEY: 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env',
+      DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted'
     },
     injected: {
-      DOTENV_PUBLIC_KEY: 'dotenv://:03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba@dotenvx.com/publicKey?env-file=.env',
+      DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted'
     },
     preExisted: {}
   }])
-  ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+  ct.same(readableFilepaths, ['.env'])
   ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
+
+  process.chdir(originalDirectory)
 
   ct.end()
 })

@@ -11,6 +11,24 @@ t.test('#guessPrivateKeyName (.env)', ct => {
   ct.end()
 })
 
+t.test('#guessPrivateKeyName (.env)', ct => {
+  const filepath = 'some/path/to/.env'
+  const result = guessPrivateKeyName(filepath)
+
+  ct.same(result, 'DOTENV_PRIVATE_KEY')
+
+  ct.end()
+})
+
+t.test('#guessPrivateKeyName (.env.env)', ct => {
+  const filepath = '.env.env'
+  const result = guessPrivateKeyName(filepath)
+
+  ct.same(result, 'DOTENV_PRIVATE_KEY_ENV')
+
+  ct.end()
+})
+
 t.test('#guessPrivateKeyName (.env.production)', ct => {
   const filepath = '.env.production'
   const result = guessPrivateKeyName(filepath)

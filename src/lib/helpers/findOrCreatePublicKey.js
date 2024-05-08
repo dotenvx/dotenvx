@@ -34,7 +34,7 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
   }
 
   // generate key pair
-  const { publicKey, privateKey } = keyPair(envFilepath)
+  const { publicKey, privateKey } = keyPair()
 
   // publicKey
   const prependPublicKey = [

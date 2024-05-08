@@ -1,18 +1,16 @@
 const { decrypt } = require('eciesjs')
-const parseKey = require('./parseKey')
 
 const PREFIX = 'encrypted:'
 
-function decryptValue (value, DOTENV_PRIVATE_KEY) {
+function decryptValue (value, privateKey) {
   if (!value.startsWith(PREFIX)) {
     return value
   }
 
-  const privateKeys = DOTENV_PRIVATE_KEY.split(',')
+  const privateKeys = privateKey.split(',')
 
   let decryptedValue
-  for (const privateKey of privateKeys) {
-    const { key } = parseKey(privateKey)
+  for (const key of privateKeys) {
     const secret = Buffer.from(key, 'hex')
     const encoded = value.substring(PREFIX.length)
     const ciphertext = Buffer.from(encoded, 'base64')

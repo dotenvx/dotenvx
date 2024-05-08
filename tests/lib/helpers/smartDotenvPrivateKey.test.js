@@ -42,7 +42,7 @@ t.test('#smartDotenvPrivateKey when .env.keys present', ct => {
 
   const result = smartDotenvPrivateKey(filepath)
 
-  ct.same(result, 'dotenv://:ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1@dotenvx.com/privateKey?env-file=.env')
+  ct.same(result, 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
 
   ct.end()
 })

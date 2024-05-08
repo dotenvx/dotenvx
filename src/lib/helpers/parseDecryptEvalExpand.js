@@ -3,7 +3,7 @@ const dotenvExpand = require('dotenv-expand')
 const dotenvEval = require('./dotenvEval')
 const decryptValue = require('./decryptValue')
 
-function parseDecryptEvalExpand (src, DOTENV_PRIVATE_KEY = '') {
+function parseDecryptEvalExpand (src, privateKey = null) {
   // parse
   const parsed = dotenv.parse(src)
 
@@ -12,9 +12,9 @@ function parseDecryptEvalExpand (src, DOTENV_PRIVATE_KEY = '') {
     const value = parsed[key]
 
     // handle inline encrypted values
-    if (DOTENV_PRIVATE_KEY && DOTENV_PRIVATE_KEY.length > 0) {
+    if (privateKey && privateKey.length > 0) {
       // privateKey
-      parsed[key] = decryptValue(value, DOTENV_PRIVATE_KEY)
+      parsed[key] = decryptValue(value, privateKey)
     }
   }
 

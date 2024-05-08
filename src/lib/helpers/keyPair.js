@@ -1,16 +1,10 @@
-const path = require('path')
 const { PrivateKey } = require('eciesjs')
 
-const formatPublicKey = require('./formatPublicKey')
-const formatPrivateKey = require('./formatPrivateKey')
-
-function keyPair (envFilepath) {
-  const filename = path.basename(envFilepath)
-
+function keyPair () {
   const kp = new PrivateKey()
 
-  const publicKey = formatPublicKey(kp.publicKey.toHex(), filename)
-  const privateKey = formatPrivateKey(kp.secret.toString('hex'), filename)
+  const publicKey = kp.publicKey.toHex()
+  const privateKey = kp.secret.toString('hex')
 
   return {
     publicKey,
