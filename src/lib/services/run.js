@@ -92,7 +92,6 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
-      console.log('envFilepath', envFilepath)
       const privateKey = smartDotenvPrivateKey(envFilepath)
       const parsed = parseDecryptEvalExpand(src, privateKey)
       row.parsed = parsed
