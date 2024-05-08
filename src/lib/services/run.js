@@ -11,14 +11,15 @@ const DEFAULT_ENV_VAULTS = [{ type: TYPE_ENV_VAULT_FILE, value: '.env.vault' }]
 
 const inject = require('./../helpers/inject')
 const decrypt = require('./../helpers/decrypt')
-const parseKey = require('./../helpers/parseKey')
 const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
+const guessPrivateKeyFilename = require('./../helpers/guessPrivateKeyFilename')
 
 class Run {
   constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
-    this.envs = this._determineEnvs(envs, DOTENV_KEY, processEnv.DOTENV_PRIVATE_KEY)
+    this.dotenvPrivateKeyNames = Object.keys(processEnv).filter(key => key.startsWith('DOTENV_PRIVATE_KEY')) // important, must be first. used by determineEnvs
+    this.envs = this._determineEnvs(envs, DOTENV_KEY)
     this.overload = overload
     this.DOTENV_KEY = DOTENV_KEY
     this.processEnv = processEnv
@@ -90,8 +91,9 @@ class Run {
       const src = fs.readFileSync(filepath, { encoding: ENCODING })
       this.readableFilepaths.add(envFilepath)
 
-      const DOTENV_PRIVATE_KEY = smartDotenvPrivateKey(envFilepath)
-      const parsed = parseDecryptEvalExpand(src, DOTENV_PRIVATE_KEY)
+      // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
+      const privateKey = smartDotenvPrivateKey(envFilepath)
+      const parsed = parseDecryptEvalExpand(src, privateKey)
       row.parsed = parsed
 
       const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
@@ -181,24 +183,22 @@ class Run {
     return inject(processEnv, parsed, overload)
   }
 
-  _determineEnvsFromDotenvPrivateKey (DOTENV_PRIVATE_KEY) {
-    const privateKeys = DOTENV_PRIVATE_KEY.split(',')
-
+  _determineEnvsFromDotenvPrivateKey () {
     const envs = []
-    for (const privateKey of privateKeys) {
-      const { envFile } = parseKey(privateKey)
 
-      envs.push({ type: TYPE_ENV_FILE, value: envFile })
+    for (const privateKeyName of this.dotenvPrivateKeyNames) {
+      const filename = guessPrivateKeyFilename(privateKeyName)
+      envs.push({ type: TYPE_ENV_FILE, value: filename })
     }
 
     return envs
   }
 
-  _determineEnvs (envs = [], DOTENV_KEY = '', DOTENV_PRIVATE_KEY = '') {
+  _determineEnvs (envs = [], DOTENV_KEY = '') {
     if (!envs || envs.length <= 0) {
-      // if process.env.DOTENV_PRIVATE_KEY is set, determine .env* files to read using it
-      if (DOTENV_PRIVATE_KEY && DOTENV_PRIVATE_KEY.length > 0) {
-        return this._determineEnvsFromDotenvPrivateKey(DOTENV_PRIVATE_KEY)
+      // if process.env.DOTENV_PRIVATE_KEY or process.env.DOTENV_PRIVATE_KEY_${environment} is set, assume inline encryption methodology
+      if (this.dotenvPrivateKeyNames.length > 0) {
+        return this._determineEnvsFromDotenvPrivateKey()
       }
 
       if (DOTENV_KEY.length > 0) {
