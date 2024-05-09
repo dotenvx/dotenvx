@@ -639,19 +639,20 @@ This fix is easy. Replace `--env-file` with `-f`.
 
 #### What happened to the `.env.vault` file?
 
-We are sunsetting it. Encrypted values inside your already existing `.env` files work better.
+I've decided we should sunset it as a technological solution to this.
 
-The `.env.vault` file got us far and to this final solution, but it had limitations such as:
+The `.env.vault` file got us far, but it had limitations such as:
 
-* Pull Requests - it was difficult to tell which key had been changed
-* Security - there was no mechanism to give a teammate the ability to encrypt without also giving them the ability to decrypt. Sometimes you just want to let a contractor encrypt a new value, but you don't want them to know the rest of the secrets.
-* Conceptual - it takes more mental energy to understand the `.env.vault` format. Encrypted values inside a `.env` file is easier to quickly grasp.
+* *Pull Requests* - it was difficult to tell which key had been changed
+* *Security* - there was no mechanism to give a teammate the ability to encrypt without also giving them the ability to decrypt. Sometimes you just want to let a contractor encrypt a new value, but you don't want them to know the rest of the secrets.
+* *Conceptual* - it takes more mental energy to understand the `.env.vault` format. Encrypted values inside a `.env` file is easier to quickly grasp.
+* *Combining Multiple Files* - there was simply no mechanism to do this well with the `.env.vault` file format.
 
-That said, the `.env.vault` tooling will still stick around for at least 1 year. I'm still using it in projects as are many thousands of other people. It will live under `dotenvx vault` commands.
+That said, the `.env.vault` tooling will still stick around for at least 1 year under `dotenvx vault` parent command. I'm still using it in projects as are many thousands of other people.
 
 #### Will you provide a migration tool to quickly switch `.env.vault` files to encrypted `.env` files?
 
-Yes. We will.
+Yes. Working on this soon.
 
 &nbsp;
 
