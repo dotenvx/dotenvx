@@ -12,10 +12,17 @@ All notable changes to this project will be documented in this file. See [standa
   * `dotenvx encrypt` => `dotenvx vault encrypt`
   * `dotenvx decrypt` => `dotenvx vault decrypt`
   * `dotenvx status` => `dotenvx vault status`
+* ⚠️ DEPRECATION NOTICE: the beta `hub` commands are being completely deprecated (they will be fully removed in upcoming 1.0.0 release). We will provide .env.keys tooling at a later time (replacing hub) but in the context of the new `--encrypt` flag functionality below
 
 ### Added
 
-* 🎉 `--encrypt` flag for `dotenv set`. usage: `dotenvx set HELLO World --encrypt`
+* 🎉 `--encrypt` flag for `dotenv set`. usage: 
+
+#### Usage
+
+```
+$ dotenvx set HELLO World --encrypt`
+```
 
 This encrypts the values inside your `.env` file.
 

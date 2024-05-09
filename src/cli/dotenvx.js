@@ -12,7 +12,7 @@ const packageJson = require('./../lib/helpers/packageJson')
 const notice = new UpdateNotice()
 notice.check()
 if (notice.update) {
-  logger.warn(`Update available ${notice.packageVersion} → ${notice.latestVersion} changelog: https://dotenvx.com/changelog`)
+  logger.warn(`Update available ${notice.packageVersion} → ${notice.latestVersion} 0.38.0 and higher have SIGNIFICANT changes. please read the changelog: https://dotenvx.com/changelog`)
 }
 
 // for use with run
