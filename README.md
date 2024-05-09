@@ -514,25 +514,17 @@ More examples
 
 ## Encryption
 
-> Encrypt your .env values (recommended for production and ci).
+> Start encrypting your `.env` files with a single command
+
 ```sh
 $ dotenvx set HELLO World --encrypt
 ```
 
-This uses the `secp256k1` public/private key encryption algorithm to generate a `DOTENV_PUBLIC_KEY` in your `.env` file and a `DOTENV_PRIVATE_KEY` in your `.env.keys` file. The `DOTENV_PUBLIC_KEY` is used to encrypt values and the `DOTENV_PRIVATE_KEY` is used to decrypt values.
+![](https://github.com/dotenvx/dotenvx/assets/3848/21f7a529-7a40-44e4-87d4-a72e1637b702)
 
-```ini
-#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
-#/            public-key encryption for .env files          /
-#/       [how it works](https://dotenvx.com/encryption)     /
-#/----------------------------------------------------------/
-DOTENV_PUBLIC_KEY="02ea626e97ed45b2e426335076f1b135b7f41793328f5134575634ae7880095d8c"
+> Uses the same public-key cryptograpy as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1) to generate a `DOTENV_PUBLIC_KEY` (`.env`) for encryption and a `DOTENV_PRIVATE_KEY` (`.env.keys`) for decryption.
 
-# .env
-HELLO="encrypted:BHMiMASXrcM8Cbx0OULC4t+gGLOryb8ONM26y834fSXRXgVcgI81Srn7oz5kl8oKWt+yfbDnhGIJeVGn78TGJFqh1rkMeSUpL5zKS6x6547RfWdRRPcJbBtkxYS4328WfkKCIFSz"
-```
-
-Running your code with encrypted values works the same. Run  `dotenvx run --`. It will find `DOTENV_PRIVATE_KEY` in `.env.keys`, and use its value to decrypt at runtime.
+Basic usage:
 
 ```sh
 $ touch .env
