@@ -551,7 +551,7 @@ More examples
 
   Note the `DOTENV_PRIVATE_KEY_PRODUCTION` ends with `_PRODUCTION`. This instructs `dotenvx run` to load the `.env.production` file.
 
-* <details><summary>.env.ci</summary><br>
+* <details><summary>`.env.ci`</summary><br>
 
   ```sh
   $ dotenvx set HELLO Ci --encrypt -f .env.ci
