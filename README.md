@@ -514,34 +514,32 @@ More examples
 
 ## Encryption
 
-> Start encrypting your `.env` files with a single command
+> Add encryption to your `.env` files with a single command.
 
 ```sh
 $ dotenvx set HELLO World --encrypt
+set HELLO with encryption (.env)
 ```
 
 ![](https://github.com/dotenvx/dotenvx/assets/3848/21f7a529-7a40-44e4-87d4-a72e1637b702)
 
 > Uses the same public-key cryptograpy as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1) to generate a `DOTENV_PUBLIC_KEY` (`.env`) for encryption and a `DOTENV_PRIVATE_KEY` (`.env.keys`) for decryption.
 
-Basic usage:
-
-```sh
-$ touch .env
-$ dotenvx set HELLO World --encrypt
-$ echo "console.log('Hello ' + process.env.HELLO)" > index.js
-
-$ dotenvx run -- node index.js
-[dotenvx] injecting env (2) from .env
-Hello World
-```
-
 More examples
+
+* <details><summary>.env</summary><br>
+  ```sh
+  $ dotenvx set HELLO World --encrypt
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ dotenvx run -- node index.js
+  [dotenvx] injecting env (2) from .env
+  Hello World
+  ```
 
 * <details><summary>.env.production</summary><br>
 
   ```sh
-  $ touch .env.production
   $ dotenvx set HELLO Production --encrypt -f .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
@@ -553,7 +551,6 @@ More examples
 * <details><summary>.env.ci</summary><br>
 
   ```sh
-  $ touch .env.ci
   $ dotenvx set HELLO Ci --encrypt -f .env.ci
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
@@ -565,8 +562,6 @@ More examples
 * <details><summary>multiple .env* files</summary><br>
 
   ```sh
-  $ touch .env
-  $ touch .env.production
   $ dotenvx set HELLO World --encrypt -f .env
   $ dotenvx set HELLO Production --encrypt -f .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -575,195 +570,6 @@ More examples
   [dotenvx] injecting env (3) from .env, .env.production
   Hello World
   ```
-
-* <details><summary>AWS Lambda</summary><br>
-
-  ```sh
-  coming soon
-  ```
-
-  </details>
-
-* <details><summary>Digital Ocean</summary><br>
-
-  ```sh
-  coming soon
-  ```
-
-  </details>
-
-* <details><summary>Docker 🐳</summary><br>
-
-  > Add the `dotenvx` binary to your Dockerfile
-
-  ```sh
-  # Install dotenvx
-  RUN curl -fsS https://dotenvx.sh/ | sh
-  ```
-
-  > Use it in your Dockerfile CMD
-
-  ```sh
-  # Prepend dotenvx run
-  CMD ["dotenvx", "run", "--", "node", "index.js"]
-  ```
-
-  see [docker guide](https://dotenvx.com/docs/platforms/docker)
-
-  </details>
-
-* <details><summary>Fly.io 🎈</summary><br>
-
-  > Add the `dotenvx` binary to your Dockerfile
-
-  ```sh
-  # Install dotenvx
-  RUN curl -fsS https://dotenvx.sh/ | sh
-  ```
-
-  > Use it in your Dockerfile CMD
-
-  ```sh
-  # Prepend dotenvx run
-  CMD ["dotenvx", "run", "--", "node", "index.js"]
-  ```
-
-  see [fly guide](https://dotenvx.com/docs/platforms/fly)
-
-  </details>
-
-* <details><summary>Heroku 🟣</summary><br>
-
-  > Add the buildpack, installing the `dotenvx` binary to your heroku deployment.
-
-  ```sh
-  heroku buildpacks:add https://github.com/dotenvx/heroku-buildpack-dotenvx
-  ```
-
-  > Use it in your Procfile.
-
-  ```sh
-  web: dotenvx run -- node index.js
-  ```
-
-  see [heroku guide](https://dotenvx.com/docs/platforms/heroku)
-
-  </details>
-
-* <details><summary>Laravel Forge</summary><br>
-
-  ```sh
-  coming soon
-  ```
-
-  </details>
-
-* <details><summary>Netlify 🔷</summary><br>
-
-  > Add the `dotenvx` npm module
-
-  ```sh
-  npm install @dotenvx/dotenvx --save
-  ```
-
-  > Use it in your `package.json scripts`
-
-  ```json
-  "scripts": {
-    "dotenvx": "dotenvx",
-    "dev": "dotenvx run -- next dev --turbo",
-    "build": "dotenvx run -- next build",
-    "start": "dotenvx run -- next start"
-  },
-  ```
-
-  see [netlify guide](https://dotenvx.com/docs/platforms/netlify)
-
-  </details>
-
-* <details><summary>Railway 🚄</summary><br>
-
-  > Add the `dotenvx` binary to your Dockerfile
-
-  ```sh
-  # Install dotenvx
-  RUN curl -fsS https://dotenvx.sh/ | sh
-  ```
-
-  > Use it in your Dockerfile CMD
-
-  ```sh
-  # Prepend dotenvx run
-  CMD ["dotenvx", "run", "--", "node", "index.js"]
-  ```
-
-  see [railway guide](https://dotenvx.com/docs/platforms/railway)
-
-  </details>
-
-* <details><summary>Render</summary><br>
-
-  ```sh
-  coming soon
-  ```
-
-  </details>
-
-* <details><summary>Vercel ▲</summary><br>
-
-  > Add the `dotenvx` npm module
-
-  ```sh
-  npm install @dotenvx/dotenvx --save
-  ```
-
-  > Use it in your `package.json scripts`
-
-  ```json
-  "scripts": {
-    "dotenvx": "dotenvx",
-    "dev": "dotenvx run -- next dev --turbo",
-    "build": "dotenvx run -- next build",
-    "start": "dotenvx run -- next start"
-  },
-  ```
-
-  see [vercel guide](https://dotenvx.com/docs/platforms/vercel)
-
-  </details>
-
-* <details><summary>CircleCI</summary><br>
-
-  ```sh
-  coming soon
-  ```
-
-  </details>
-
-* <details><summary>GitHub Actions 🐙</summary><br>
-
-  > Add the `dotenvx` binary to GitHub Actions
-
-  ```sh
-  name: build
-  on: [push]
-  jobs:
-    build:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: curl -fsS https://dotenvx.sh/ | sh
-      - run: dotenvx run -- node build.js
-        env:
-          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
-  ```
-
-  see [github actions guide](https://dotenvx.com/docs/cis/github-actions)
-
-  </details>
 
 &nbsp;
 
