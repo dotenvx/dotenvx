@@ -523,7 +523,7 @@ set HELLO with encryption (.env)
 
 ![](https://github.com/dotenvx/dotenvx/assets/3848/21f7a529-7a40-44e4-87d4-a72e1637b702)
 
-> Uses the same public-key cryptograpy as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1) to generate a `DOTENV_PUBLIC_KEY` (`.env`) for encryption and a `DOTENV_PRIVATE_KEY` (`.env.keys`) for decryption.
+> A `DOTENV_PUBLIC_KEY` (encryption key) and a `DOTENV_PRIVATE_KEY` (decryption key) is generated using the same public-key cryptography as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1).
 
 More examples
 
@@ -570,6 +570,12 @@ More examples
   [dotenvx] injecting env (3) from .env, .env.production
   Hello World
   ```
+
+* <details><summary>other curves</summary><br>
+
+  `secp256k1` is a well-known and battle tested curve, in use with Bitcoin and other cryptocurrencies, but we are open to adding support for more curves.
+
+  If your organization's compliance department requires [NIST approved curves](https://csrc.nist.gov/projects/elliptic-curve-cryptography) or other curves like `curve25519`, please reach out at [security@dotenvx.com](mailto:security@dotenvx.com).
 
 &nbsp;
 
