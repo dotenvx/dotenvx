@@ -559,7 +559,7 @@ More examples
   Hello Ci
   ```
 
-* <details><summary>multiple .env* files</summary><br>
+* <details><summary>combine multiple encrypted .env files</summary><br>
 
   ```sh
   $ dotenvx set HELLO World --encrypt -f .env
