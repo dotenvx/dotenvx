@@ -637,6 +637,22 @@ This fix is easy. Replace `--env-file` with `-f`.
 
 [more context](https://github.com/dotenvx/dotenvx/issues/131)
 
+#### What happened to the `.env.vault` file?
+
+We are sunsetting it. Encrypted values inside your already existing `.env` files work better.
+
+The `.env.vault` file got us far and to this final solution, but it had limitations such as:
+
+* Pull Requests - it was difficult to tell which key had been changed
+* Security - there was no mechanism to give a teammate the ability to encrypt without also giving them the ability to decrypt. Sometimes you just want to let a contractor encrypt a new value, but you don't want them to know the rest of the secrets.
+* Conceptual - it takes more mental energy to understand the `.env.vault` format. Encrypted values inside a `.env` file is easier to quickly grasp.
+
+That said, the `.env.vault` tooling will still stick around for at least 1 year. I'm still using it in projects as are many thousands of other people. It will live under `dotenvx vault` commands.
+
+#### Will you provide a migration tool to quickly switch `.env.vault` files to encrypted `.env` files?
+
+Yes. We will.
+
 &nbsp;
 
 ## Contributing
