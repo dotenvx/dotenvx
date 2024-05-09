@@ -514,7 +514,7 @@ More examples
 
 ## Encryption
 
-> Add encryption to your `.env` files with a single command.
+> Add encryption to your `.env` files with a single command. Pass the `--encrypt` flag.
 
 ```sh
 $ dotenvx set HELLO World --encrypt
