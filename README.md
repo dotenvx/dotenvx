@@ -514,23 +514,75 @@ More examples
 
 ## Encryption
 
-> Encrypt your secrets to a `.env.vault` file and load from it (recommended for production and ci).
+> Encrypt your .env values (recommended for production and ci).
 ```sh
-$ echo "HELLO=World" > .env
-$ echo "HELLO=production" > .env.production
+$ dotenvx set HELLO World --encrypt
+```
+
+This uses the `secp256k1` public/private key encryption algorithm to generate a `DOTENV_PUBLIC_KEY` in your `.env` file and a `DOTENV_PRIVATE_KEY` in your `.env.keys` file. The `DOTENV_PUBLIC_KEY` is used to encrypt values and the `DOTENV_PRIVATE_KEY` is used to decrypt values.
+
+```ini
+#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
+#/            public-key encryption for .env files          /
+#/       [how it works](https://dotenvx.com/encryption)     /
+#/----------------------------------------------------------/
+DOTENV_PUBLIC_KEY="02ea626e97ed45b2e426335076f1b135b7f41793328f5134575634ae7880095d8c"
+
+# .env
+HELLO="encrypted:BHMiMASXrcM8Cbx0OULC4t+gGLOryb8ONM26y834fSXRXgVcgI81Srn7oz5kl8oKWt+yfbDnhGIJeVGn78TGJFqh1rkMeSUpL5zKS6x6547RfWdRRPcJbBtkxYS4328WfkKCIFSz"
+```
+
+Running your code with encrypted values works the same. Run  `dotenvx run --`. It will find `DOTENV_PRIVATE_KEY` in `.env.keys`, and use its value to decrypt at runtime.
+
+```sh
+$ touch .env
+$ dotenvx set HELLO World --encrypt
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
-$ dotenvx encrypt
-[dotenvx][info] encrypted to .env.vault (.env,.env.production)
-[dotenvx][info] keys added to .env.keys (DOTENV_KEY_PRODUCTION,DOTENV_KEY_PRODUCTION)
-
-$ DOTENV_KEY='<dotenv_key_production>' dotenvx run -- node index.js
-[dotenvx][info] loading env (1) from encrypted .env.vault
-Hello production
-^ :-]
+$ dotenvx run -- node index.js
+[dotenvx] injecting env (2) from .env
+Hello World
 ```
 
 More examples
+
+* <details><summary>.env.production</summary><br>
+
+  ```sh
+  $ touch .env.production
+  $ dotenvx set HELLO Production --encrypt -f .env.production
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ DOTENV_PRIVATE_KEY_PRODUCTION="<.env.production private key>" dotenvx run -- node index.js
+  [dotenvx] injecting env (2) from .env.production
+  Hello Production
+  ```
+
+* <details><summary>.env.ci</summary><br>
+
+  ```sh
+  $ touch .env.ci
+  $ dotenvx set HELLO Ci --encrypt -f .env.ci
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ DOTENV_PRIVATE_KEY_CI="<.env.ci private key>" dotenvx run -- node index.js
+  [dotenvx] injecting env (2) from .env.ci
+  Hello Ci
+  ```
+
+* <details><summary>multiple .env* files</summary><br>
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ dotenvx set HELLO World --encrypt -f .env
+  $ dotenvx set HELLO Production --encrypt -f .env.production
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ DOTENV_PRIVATE_KEY="<.env private key>" DOTENV_PRIVATE_KEY="<.env.production private key>" dotenvx run -- node index.js
+  [dotenvx] injecting env (3) from .env, .env.production
+  Hello World
+  ```
 
 * <details><summary>AWS Lambda</summary><br>
 
