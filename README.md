@@ -528,6 +528,7 @@ set HELLO with encryption (.env)
 More examples
 
 * <details><summary>.env</summary><br>
+
   ```sh
   $ dotenvx set HELLO World --encrypt
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -573,9 +574,9 @@ More examples
 
 * <details><summary>other curves</summary><br>
 
-  `secp256k1` is a well-known and battle tested curve, in use with Bitcoin and other cryptocurrencies, but we are open to adding support for more curves.
-
-  If your organization's compliance department requires [NIST approved curves](https://csrc.nist.gov/projects/elliptic-curve-cryptography) or other curves like `curve25519`, please reach out at [security@dotenvx.com](mailto:security@dotenvx.com).
+  > `secp256k1` is a well-known and battle tested curve, in use with Bitcoin and other cryptocurrencies, but we are open to adding support for more curves.
+  > 
+  > If your organization's compliance department requires [NIST approved curves](https://csrc.nist.gov/projects/elliptic-curve-cryptography) or other curves like `curve25519`, please reach out at [security@dotenvx.com](mailto:security@dotenvx.com).
 
 &nbsp;
 
