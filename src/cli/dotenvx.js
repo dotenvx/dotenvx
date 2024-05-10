@@ -147,6 +147,9 @@ program.command('settings')
   .option('-pp, --pretty-print', 'pretty print output')
   .action(require('./actions/settings'))
 
+// dotenvx vault
+program.addCommand(require('./commands/vault'))
+
 // dotenvx encrypt
 const encryptAction = require('./actions/vault/encrypt')
 program.command('encrypt')
@@ -182,9 +185,6 @@ program.command('status')
 
     statusAction.apply(this, args)
   })
-
-// dotenvx vault
-program.addCommand(require('./commands/vault'))
 
 // dotenvx hub
 program.addCommand(require('./commands/hub'))
