@@ -803,7 +803,7 @@ More examples
   ```
 
   </details>
-* <details><summary>`get --convention=nextjs`</summary><br>
+* <details><summary>`get KEY --convention=nextjs`</summary><br>
 
   Return a single environment variable's value using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:
 
