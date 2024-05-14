@@ -586,6 +586,151 @@ More examples
 
 &nbsp;
 
+## Advanced usage
+
+* <details><summary>`run` - Variable Expansion</summary><br>
+
+  Reference and expand variables already on your machine for use in your .env file.
+
+  ```ini
+  # .env
+  USERNAME="username"
+  DATABASE_URL="postgres://${USERNAME}@localhost/my_database"
+  ```
+  ```js
+  // index.js
+  console.log('DATABASE_URL', process.env.DATABASE_URL)
+  ```
+  ```sh
+  $ dotenvx run --debug -- node index.js
+  [dotenvx@0.14.1] injecting env (2) from .env
+  DATABASE_URL postgres://username@localhost/my_database
+  ```
+
+  </details>
+* <details><summary>`run` - Command Substitution</summary><br>
+
+  Add the output of a command to one of your variables in your .env file.
+
+  ```ini
+  # .env
+  DATABASE_URL="postgres://$(whoami)@localhost/my_database"
+  ```
+  ```js
+  // index.js
+  console.log('DATABASE_URL', process.env.DATABASE_URL)
+  ```
+  ```sh
+  $ dotenvx run --debug -- node index.js
+  [dotenvx@0.14.1] injecting env (1) from .env
+  DATABASE_URL postgres://yourusername@localhost/my_database
+  ```
+
+  </details>
+* <details><summary>`run` - multiple `-f` flags</summary><br>
+
+  ```sh
+  $ echo "HELLO=local" > .env.local
+
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx run -f .env.local -f .env -- node index.js
+  [dotenvx][info] loading env (1) from .env.local,.env
+  Hello local
+  ```
+
+  </details>
+* <details><summary>`run --overload`</summary><br>
+
+  ```sh
+  $ echo "HELLO=local" > .env.local
+
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx run -f .env.local -f .env --overload -- node index.js
+  [dotenvx][info] loading env (1) from .env.local,.env
+  Hello World
+  ```
+
+* <details><summary>`run --verbose`</summary><br>
+
+  ```sh
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx run -f .env.production --verbose -- node index.js
+  [dotenvx][verbose] injecting env from /path/to/.env.production
+  [dotenvx][verbose] HELLO set
+  [dotenvx][info] loading env (1) from .env.production
+  Hello production
+  ```
+
+* <details><summary>`run --debug`</summary><br>
+
+  ```sh
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx run -f .env.production --debug -- node index.js
+  [dotenvx][debug] configuring options
+  [dotenvx][debug] {"envFile":[".env.production"]}
+  [dotenvx][verbose] injecting env from /path/to/.env.production
+  [dotenvx][debug] reading env from /path/to/.env.production
+  [dotenvx][debug] parsing env from /path/to/.env.production
+  [dotenvx][debug] {"HELLO":"production"}
+  [dotenvx][debug] writing env from /path/to/.env.production
+  [dotenvx][verbose] HELLO set
+  [dotenvx][debug] HELLO set to production
+  [dotenvx][info] loading env (1) from .env.production
+  Hello production
+  ```
+
+  </details>
+* <details><summary>`run --quiet`</summary><br>
+
+  Use `--quiet` to suppress all output (except errors).
+
+  ```sh
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx run -f .env.production --quiet -- node index.js
+  Hello production
+  ```
+
+  </details>
+* <details><summary>`run --log-level`</summary><br>
+
+  Set `--log-level` to whatever you wish. For example, to supress warnings (risky), set log level to `error`:
+
+  ```sh
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx run -f .env.production --log-level=error -- node index.js
+  Hello production
+  ```
+
+  Available log levels are `error, warn, info, verbose, debug, silly`
+
+  </details>
+* <details><summary>`run --convention=nextjs`</summary><br>
+
+  Want to load envs conveniently usng the same convention as Next.js? Set `--convention` to `nextjs`:
+
+  ```sh
+  $ echo "HELLO=development local" > .env.development.local
+  $ echo "HELLO=local" > .env.local
+  $ echo "HELLO=development" > .env.development
+  $ echo "HELLO=env" > .env
+
+  $ dotenvx run --convention=nextjs -- node index.js
+  Hello development local
+  ```
+
+  See [next.js environment variable load order](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order)
+
+  (more conventions available upon request)
+
+  </details>
+
+
 ## More features
 
 > Keep your `.env` files safe
