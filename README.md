@@ -586,75 +586,6 @@ More examples
 
 ## Advanced usage
 
-* <details><summary>`--version`</summary><br>
-
-  Check current version of `dotenvx`.
-
-  ```sh
-  $ dotenvx --version
-  X.X.X
-  ```
-
-  </details>
-* <details><summary>`help`</summary><br>
-
-  Output help for `dotenvx`.
-
-  ```sh
-  $ dotenvx help
-  Usage: @dotenvx/dotenvx [options] [command]
-
-  a better dotenv–from the creator of `dotenv`
-
-  Options:
-    -l, --log-level <level>           set log level (default: "info")
-    -q, --quiet                       sets log level to error
-    -v, --verbose                     sets log level to verbose
-    -d, --debug                       sets log level to debug
-    -V, --version                     output the version number
-    -h, --help                        display help for command
-
-  Commands:
-    run [options]                     inject env at runtime [dotenvx run -- yourcommand]
-    get [options] [key]               return a single environment variable
-    set [options] <KEY> <value>       set a single environment variable
-    ...
-    help [command]                    display help for command
-  ```
-
-  You can get more detailed help per command with `dotenvx help COMMAND`.
-
-  ```sh
-  $ dotenvx help run
-  Usage: @dotenvx/dotenvx run [options]
-
-  inject env at runtime [dotenvx run -- yourcommand]
-
-  Options:
-    -e, --env <strings...>            environment variable(s) set as string (example: "HELLO=World") (default: [])
-    -f, --env-file <paths...>         path(s) to your env file(s) (default: [])
-    -fv, --env-vault-file <paths...>  path(s) to your .env.vault file(s) (default: [])
-    -o, --overload                    override existing env variables
-    --convention <name>               load a .env convention (available conventions: ['nextjs'])
-    -h, --help                        display help for command
-
-  Examples:
-
-    $ dotenvx run -- npm run dev
-    $ dotenvx run -- flask --app index run
-    $ dotenvx run -- php artisan serve
-    $ dotenvx run -- bin/rails s
-
-  Try it:
-
-    $ echo "HELLO=World" > .env
-    $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
-
-    $ dotenvx run -- node index.js
-    [dotenvx] injecting env (1) from .env
-    Hello World
-  ```
-
 * <details><summary>`run` - Variable Expansion</summary><br>
 
   Reference and expand variables already on your machine for use in your .env file.
@@ -1033,6 +964,8 @@ More examples
   </details>
 * <details><summary>`genexample`</summary><br>
 
+  In one command, generate a `.env.example` file from your current `.env` file contents.
+
   ```sh
   $ echo "HELLO=World" > .env
 
@@ -1047,6 +980,8 @@ More examples
 
   </details>
 * <details><summary>`genexample -f`</summary><br>
+
+  Pass multiple `.env` files to generate your `.env.example` file from the combination of their contents.
 
   ```sh
   $ echo "HELLO=World" > .env
@@ -1065,6 +1000,8 @@ More examples
   </details>
 * <details><summary>`genexample directory`</summary><br>
 
+  Generate a `.env.example` file inside the specified directory. Useful for monorepos.
+
   ```sh
   $ echo "HELLO=World" > .env
   $ mkdir -p apps/backend
@@ -1080,16 +1017,142 @@ More examples
   ```
 
   </details>
+* <details><summary>`gitignore`</summary><br>
 
-## More features
+  Gitignore your `.env` files.
 
-> Keep your `.env` files safe
+  ```sh
+  $ dotenvx gitignore
+  creating .gitignore
+  appending .env* to .gitignore
+  done
+  ```
 
-* [`dotenvx genexample`](https://dotenvx.com/docs/features/genexample) – generate `.env.example` file
-* [`dotenvx gitignore`](https://dotenvx.com/docs/features/gitignore) – gitignore your `.env` files
-* [`dotenvx prebuild`](https://dotenvx.com/docs/features/prebuild) – prevent `.env` files from being built into your docker container
-* [`dotenvx precommit`](https://dotenvx.com/docs/features/precommit) – prevent `.env` files from being committed to code
-* [`dotenvx scan`](https://dotenvx.com/docs/features/scan) – scan for leaked secrets in code
+  </details>
+* <details><summary>`precommit`</summary><br>
+
+  Prevent `.env` files from being committed to code.
+
+  ```sh
+  $ dotenvx precommit
+  [dotenvx][precommit] success
+  ```
+
+  </details>
+* <details><summary>`precommit --install`</summary><br>
+
+  Install a shell script to `.git/hooks/pre-commit` to prevent accidentally committing any `.env` files to source control.
+
+  ```sh
+  $ dotenvx precommit --install
+  [dotenvx][precommit] dotenvx precommit installed [.git/hooks/pre-commit]
+  ```
+
+  </details>
+* <details><summary>`prebuild`</summary><br>
+
+  Prevent `.env` files from being built into your docker containers.
+
+  Add it to your `Dockerfile`.
+
+  ```sh
+  RUN curl -fsS https://dotenvx.sh/ | sh
+
+  ...
+
+  RUN dotenvx prebuild
+  CMD ["dotenvx", "run", "--", "node", "index.js"]
+  ```
+
+  </details>
+* <details><summary>`scan`</summary><br>
+
+  Use [gitleaks](https://gitleaks.io) under the hood to scan for possible secrets in your code.
+
+  ```sh
+  $ dotenvx scan
+
+      ○
+      │╲
+      │ ○
+      ○ ░
+      ░    gitleaks
+
+  100 commits scanned.
+  no leaks found
+  ```
+
+  </details>
+* <details><summary>`help`</summary><br>
+
+  Output help for `dotenvx`.
+
+  ```sh
+  $ dotenvx help
+  Usage: @dotenvx/dotenvx [options] [command]
+
+  a better dotenv–from the creator of `dotenv`
+
+  Options:
+    -l, --log-level <level>           set log level (default: "info")
+    -q, --quiet                       sets log level to error
+    -v, --verbose                     sets log level to verbose
+    -d, --debug                       sets log level to debug
+    -V, --version                     output the version number
+    -h, --help                        display help for command
+
+  Commands:
+    run [options]                     inject env at runtime [dotenvx run -- yourcommand]
+    get [options] [key]               return a single environment variable
+    set [options] <KEY> <value>       set a single environment variable
+    ...
+    help [command]                    display help for command
+  ```
+
+  You can get more detailed help per command with `dotenvx help COMMAND`.
+
+  ```sh
+  $ dotenvx help run
+  Usage: @dotenvx/dotenvx run [options]
+
+  inject env at runtime [dotenvx run -- yourcommand]
+
+  Options:
+    -e, --env <strings...>            environment variable(s) set as string (example: "HELLO=World") (default: [])
+    -f, --env-file <paths...>         path(s) to your env file(s) (default: [])
+    -fv, --env-vault-file <paths...>  path(s) to your .env.vault file(s) (default: [])
+    -o, --overload                    override existing env variables
+    --convention <name>               load a .env convention (available conventions: ['nextjs'])
+    -h, --help                        display help for command
+
+  Examples:
+
+    $ dotenvx run -- npm run dev
+    $ dotenvx run -- flask --app index run
+    $ dotenvx run -- php artisan serve
+    $ dotenvx run -- bin/rails s
+
+  Try it:
+
+    $ echo "HELLO=World" > .env
+    $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+    $ dotenvx run -- node index.js
+    [dotenvx] injecting env (1) from .env
+    Hello World
+  ```
+
+  </details>
+* <details><summary>`--version`</summary><br>
+
+  Check current version of `dotenvx`.
+
+  ```sh
+  $ dotenvx --version
+  X.X.X
+  ```
+
+  </details>
 
 &nbsp;
 
