@@ -679,6 +679,54 @@ More examples
   ```
 
   </details>
+* <details><summary>`DOTENV_PRIVATE_KEY=<privateKey> run`</summary><br>
+  
+  Decrypt your encrypted `.env` by setting `DOTENV_PRIVATE_KEY` before `dotenvx run`.
+
+  ```sh
+  $ touch .env
+  $ dotenvx set HELLO encrypted --encrypt
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  # check your .env.keys files for your privateKey
+  $ DOTENV_PRIVATE_KEY="122...0b8" dotenvx run -- node index.js
+  [dotenvx] injecting env (2) from .env
+  Hello encrypted
+  ```
+
+  </details>
+* <details><summary>`DOTENV_PRIVATE_KEY_PRODUCTION=<privateKey> run`</summary><br>
+
+  Decrypt your encrypted `.env.production` by setting `DOTENV_PRIVATE_KEY_PRODUCTION` before `dotenvx run`. Alternatively, this can be already set on your server or cloud provider.
+
+  ```sh
+  $ touch .env.production
+  $ dotenvx set HELLO "production encrypted" -f .env.production --encrypt
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  # check your .env.keys files for your privateKey
+  $ DOTENV_PRIVATE_KEY_PRODUCTION="122...0b8" dotenvx run -- node index.js
+  [dotenvx] injecting env (2) from .env.production
+  Hello production encrypted
+  ```
+
+  </details>
+* <details><summary>`DOTENV_PRIVATE_KEY_CI=<privateKey> run`</summary><br>
+
+  Decrypt your encrypted `.env.ci` by setting `DOTENV_PRIVATE_KEY_CI` before `dotenvx run`. Alternatively, this can be already set on your server or cloud provider.
+
+  ```sh
+  $ touch .env.ci
+  $ dotenvx set HELLO "ci encrypted" -f .env.production --encrypt
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  # check your .env.keys files for your privateKey
+  $ DOTENV_PRIVATE_KEY_CI="122...0b8" dotenvx run -- node index.js
+  [dotenvx] injecting env (2) from .env.ci
+  Hello ci encrypted
+  ```
+
+  </details>
 * <details><summary>`run --verbose`</summary><br>
 
   Set log level to `verbose`. ([log levels](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
