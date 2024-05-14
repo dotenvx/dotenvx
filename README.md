@@ -930,6 +930,54 @@ More examples
   ```
 
   </details>
+* <details><summary>`set KEY value`</summary><br>
+
+  Set a single key/value.
+
+  ```sh
+  $ touch .env
+
+  $ dotenvx set HELLO World
+  set HELLO (.env)
+  ```
+
+  </details>
+* <details><summary>`set KEY value --encrypt`</summary><br>
+
+  Set an encrypted key/value.
+
+  ```sh
+  $ touch .env
+
+  $ dotenvx set HELLO World --encrypt
+  set HELLO with encryption (.env)
+  ```
+
+  </details>
+* <details><summary>`set KEY value -f`</summary><br>
+
+  Set an (encrypted) key/value for another `.env` file.
+
+  ```sh
+  $ touch .env.production
+
+  $ dotenvx set HELLO production --encrypt -f .env.production
+  set HELLO with encryption (.env.production)
+  ```
+
+  </details>
+* <details><summary>`set KEY "value with spaces"`</summary><br>
+
+  Set a value containing spaces.
+
+  ```sh
+  $ touch .env.ci
+
+  $ dotenvx set HELLO "my ci" -f .env.ci
+  set HELLO (.env.ci)
+  ```
+
+  </details>
 
 ## More features
 
