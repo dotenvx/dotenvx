@@ -679,7 +679,7 @@ More examples
   ```
 
   </details>
-* <details><summary>`DOTENV_PRIVATE_KEY=<privateKey> run`</summary><br>
+* <details><summary>`DOTENV_PRIVATE_KEY='privateKey' dotenvx run`</summary><br>
   
   Decrypt your encrypted `.env` by setting `DOTENV_PRIVATE_KEY` before `dotenvx run`.
 
@@ -695,7 +695,7 @@ More examples
   ```
 
   </details>
-* <details><summary>`DOTENV_PRIVATE_KEY_PRODUCTION=<privateKey> run`</summary><br>
+* <details><summary>`DOTENV_PRIVATE_KEY_PRODUCTION='privateKey' dotenvx run`</summary><br>
 
   Decrypt your encrypted `.env.production` by setting `DOTENV_PRIVATE_KEY_PRODUCTION` before `dotenvx run`. Alternatively, this can be already set on your server or cloud provider.
 
@@ -711,7 +711,7 @@ More examples
   ```
 
   </details>
-* <details><summary>`DOTENV_PRIVATE_KEY_CI=<privateKey> run`</summary><br>
+* <details><summary>`DOTENV_PRIVATE_KEY_CI='privateKey' dotenvx run`</summary><br>
 
   Decrypt your encrypted `.env.ci` by setting `DOTENV_PRIVATE_KEY_CI` before `dotenvx run`. Alternatively, this can be already set on your server or cloud provider.
 
