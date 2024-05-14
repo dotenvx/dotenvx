@@ -727,9 +727,9 @@ More examples
   ```
 
   </details>
-* <details><summary>`DOTENV_PRIVATE_KEY=key DOTENV_PRIVATE_KEY_PRODUCTION=key run` - combined</summary><br>
+* <details><summary>`DOTENV_PRIVATE_KEY=key DOTENV_PRIVATE_KEY_PRODUCTION=key run` - Multiple</summary><br>
 
-  Decrypt your encrypted `.env` and `.env.production` files by setting `DOTENV_PRIVATE_KEY` and `DOTENV_PRIVATE_KEY_PRODUCTION` before `dotenvx run`.
+  Decrypt your encrypted `.env` and `.env.production` files by setting `DOTENV_PRIVATE_KEY` and `DOTENV_PRIVATE_KEY_PRODUCTION` before `dotenvx run`. Compose any encrypted files you want this way. As long as your `DOTENV_PRIVATE_KEY_${environment}` is set the values from `.env.${environment}` will be decrypted at runtime.
 
   ```sh
   $ touch .env
