@@ -646,6 +646,7 @@ More examples
 
   ```sh
   $ echo "HELLO=World" > .env
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run --env HELLO=String -f .env -- node index.js
   [dotenvx] injecting env (1) from .env, and --env flag
@@ -659,11 +660,11 @@ More examples
 
   ```sh
   $ echo "HELLO=local" > .env.local
-
   $ echo "HELLO=World" > .env
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env.local -f .env --overload -- node index.js
-  [dotenvx][info] loading env (1) from .env.local,.env
+  [dotenvx] injecting env (1) from .env.local, .env
   Hello World
   ```
 
@@ -674,11 +675,12 @@ More examples
 
   ```sh
   $ echo "HELLO=production" > .env.production
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env.production --verbose -- node index.js
-  [dotenvx][verbose] injecting env from /path/to/.env.production
-  [dotenvx][verbose] HELLO set
-  [dotenvx][info] loading env (1) from .env.production
+  loading env from .env.production (/path/to/.env.production)
+  HELLO set
+  [dotenvx] injecting env (1) from .env.production
   Hello production
   ```
 
@@ -689,18 +691,18 @@ More examples
 
   ```sh
   $ echo "HELLO=production" > .env.production
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env.production --debug -- node index.js
-  [dotenvx][debug] configuring options
-  [dotenvx][debug] {"envFile":[".env.production"]}
-  [dotenvx][verbose] injecting env from /path/to/.env.production
-  [dotenvx][debug] reading env from /path/to/.env.production
-  [dotenvx][debug] parsing env from /path/to/.env.production
-  [dotenvx][debug] {"HELLO":"production"}
-  [dotenvx][debug] writing env from /path/to/.env.production
-  [dotenvx][verbose] HELLO set
-  [dotenvx][debug] HELLO set to production
-  [dotenvx][info] loading env (1) from .env.production
+  process command [node index.js]
+  options: {"env":[],"envFile":[".env.production"]}
+  loading env from .env.production (/path/to/.env.production)
+  {"HELLO":"production"}
+  HELLO set
+  HELLO set to production
+  [dotenvx] injecting env (1) from .env.production
+  executing process command [node index.js]
+  expanding process command to [/opt/homebrew/bin/node index.js]
   Hello production
   ```
 
@@ -711,6 +713,7 @@ More examples
 
   ```sh
   $ echo "HELLO=production" > .env.production
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env.production --quiet -- node index.js
   Hello production
@@ -723,6 +726,7 @@ More examples
 
   ```sh
   $ echo "HELLO=production" > .env.production
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env.production --log-level=error -- node index.js
   Hello production
@@ -740,8 +744,10 @@ More examples
   $ echo "HELLO=local" > .env.local
   $ echo "HELLO=development" > .env.development
   $ echo "HELLO=env" > .env
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run --convention=nextjs -- node index.js
+  [dotenvx] injecting env (1) from .env.development.local, .env.local, .env.development, .env
   Hello development local
   ```
 
