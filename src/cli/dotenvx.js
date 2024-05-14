@@ -85,6 +85,7 @@ program.command('get')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables')
+  .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\'])')
   .option('-a, --all', 'include all machine envs as well')
   .option('-pp, --pretty-print', 'pretty print output')
   .action(function (...args) {

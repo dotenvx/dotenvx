@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.38.0...main)
 
+## 0.38.1
+
+### Added
+
+* Add `--convention` flag to `get`
+
 ## 0.38.0
 
 ### Changed

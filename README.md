@@ -872,7 +872,22 @@ More examples
   ```
 
   </details>
+* <details><summary>`get --convention=nextjs`</summary><br>
 
+  Return a single environment variable's value using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:
+
+  ```sh
+  $ echo "HELLO=development local" > .env.development.local
+  $ echo "HELLO=local" > .env.local
+  $ echo "HELLO=development" > .env.development
+  $ echo "HELLO=env" > .env
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ dotenvx get HELLO --convention=nextjs
+  development local
+  ```
+
+  </details>
 
 ## More features
 
