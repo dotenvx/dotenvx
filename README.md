@@ -978,6 +978,59 @@ More examples
   ```
 
   </details>
+* <details><summary>`ls`</summary><br>
+
+  Print all `.env` files in a tree structure.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+
+  $ dotenvx ls
+  ├─ .env.production
+  ├─ .env
+  └─ apps
+     └─ backend
+        └─ .env
+  ```
+
+  </details>
+* <details><summary>`ls directory`</summary><br>
+
+  Print all `.env` files inside a specified path to a directory.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+
+  $ dotenvx ls apps/backend
+  └─ .env
+  ```
+
+  </details>
+* <details><summary>`ls -f`</summary><br>
+
+  Glob `.env` filenames matching a wildcard.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+  $ touch apps/backend/.env.prod
+
+  $ dotenvx ls -f **/.env.prod*
+  ├─ .env.production
+  └─ apps
+     └─ backend
+        └─ .env.prod
+  ```
+
+  </details>
 
 ## More features
 
