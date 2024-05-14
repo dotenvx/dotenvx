@@ -888,6 +888,48 @@ More examples
   ```
 
   </details>
+* <details><summary>`get` (all)</summary><br>
+
+  Return a hash of all key/value pairs in a `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx get
+  {"HELLO":"World"}
+  ```
+
+  </details>
+* <details><summary>`get --all`</summary><br>
+
+  Return preset machine envs as well.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx get --all
+  {"PWD":"/some/file/path","USER":"username","LIBRARY_PATH":"/usr/local/lib", ..., "HELLO":"World"}
+  ```
+
+  </details>
+* <details><summary>`get --all --pretty-print`</summary><br>
+
+  Make the output more readable - pretty print it.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx get --all --pretty-print
+  {
+    "PWD": "/some/filepath",
+    "USER": "username",
+    "LIBRARY_PATH": "/usr/local/lib",
+    ...,
+    "HELLO": "World"
+  }
+  ```
+
+  </details>
 
 ## More features
 
