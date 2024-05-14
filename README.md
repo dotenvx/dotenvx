@@ -586,6 +586,16 @@ More examples
 
 ## Advanced usage
 
+* <details><summary>`dotenvx --version`</summary><br>
+
+  Check current version of `dotenvx`.
+
+  ```sh
+  $ dotenvx --version
+  X.X.X
+  ```
+
+  </details>
 * <details><summary>`run` - Variable Expansion</summary><br>
 
   Reference and expand variables already on your machine for use in your .env file.
