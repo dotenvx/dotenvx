@@ -888,9 +888,9 @@ More examples
   ```
 
   </details>
-* <details><summary>`get` (all)</summary><br>
+* <details><summary>`get` (json)</summary><br>
 
-  Return a hash of all key/value pairs in a `.env` file.
+  Return a json response of all key/value pairs in a `.env` file.
 
   ```sh
   $ echo "HELLO=World" > .env
