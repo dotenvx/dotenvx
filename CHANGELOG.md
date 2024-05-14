@@ -2,13 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.38.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.39.0...main)
 
-## 0.38.1
+## 0.39.0
 
 ### Added
 
 * Add `--convention` flag to `get`
+
+### Removed
+
+* Removed help messages like 'in production' and 'in ci'. Too specific and could lead to confusion.
 
 ## 0.38.0
 
