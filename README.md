@@ -492,7 +492,7 @@ More examples
   </details>
 * <details><summary>`--convention` flag</summary><br>
 
-  Want to load envs conveniently usng the same convention as Next.js? Set `--convention` to `nextjs`:
+  Load envs using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:
 
   ```sh
   $ echo "HELLO=development local" > .env.development.local
@@ -503,8 +503,6 @@ More examples
   $ dotenvx run --convention=nextjs -- node index.js
   Hello development local
   ```
-
-  See [next.js environment variable load order](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order)
 
   (more conventions available upon request)
 
@@ -629,6 +627,8 @@ More examples
   </details>
 * <details><summary>`run` - multiple `-f` flags</summary><br>
 
+  Compose multiple `.env` files for environment variables loading, as you need.
+
   ```sh
   $ echo "HELLO=local" > .env.local
 
@@ -642,6 +642,8 @@ More examples
   </details>
 * <details><summary>`run --env HELLO=String`</summary><br>
 
+  Set environment variables as a simple `KEY=value` string pair.
+
   ```sh
   $ echo "HELLO=World" > .env
 
@@ -652,6 +654,8 @@ More examples
 
   </details>
 * <details><summary>`run --overload`</summary><br>
+
+  Override existing env variables. These can be variables already on your machine or variables loaded as files consecutively. The last variable seen will 'win'.
 
   ```sh
   $ echo "HELLO=local" > .env.local
@@ -666,6 +670,8 @@ More examples
   </details>
 * <details><summary>`run --verbose`</summary><br>
 
+  Set log level to `verbose`. ([log levels](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
+
   ```sh
   $ echo "HELLO=production" > .env.production
 
@@ -678,6 +684,8 @@ More examples
 
   </details>
 * <details><summary>`run --debug`</summary><br>
+
+  Set log level to `debug`. ([log levels](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
 
   ```sh
   $ echo "HELLO=production" > .env.production
@@ -699,7 +707,7 @@ More examples
   </details>
 * <details><summary>`run --quiet`</summary><br>
 
-  Use `--quiet` to suppress all output (except errors).
+  Use `--quiet` to suppress all output (except errors). ([log levels](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
 
   ```sh
   $ echo "HELLO=production" > .env.production
@@ -720,12 +728,12 @@ More examples
   Hello production
   ```
 
-  Available log levels are `error, warn, info, verbose, debug, silly`
+  Available log levels are `error, warn, info, verbose, debug, silly` ([source](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
 
   </details>
 * <details><summary>`run --convention=nextjs`</summary><br>
 
-  Want to load envs conveniently usng the same convention as Next.js? Set `--convention` to `nextjs`:
+  Load envs using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:
 
   ```sh
   $ echo "HELLO=development local" > .env.development.local
@@ -736,8 +744,6 @@ More examples
   $ dotenvx run --convention=nextjs -- node index.js
   Hello development local
   ```
-
-  See [next.js environment variable load order](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order)
 
   (more conventions available upon request)
 
