@@ -586,7 +586,7 @@ More examples
 
 ## Advanced usage
 
-* <details><summary>`dotenvx --version`</summary><br>
+* <details><summary>`--version`</summary><br>
 
   Check current version of `dotenvx`.
 
@@ -596,6 +596,65 @@ More examples
   ```
 
   </details>
+* <details><summary>`help`</summary><br>
+
+  Output help for `dotenvx`.
+
+  ```sh
+  $ dotenvx help
+  Usage: @dotenvx/dotenvx [options] [command]
+
+  a better dotenv–from the creator of `dotenv`
+
+  Options:
+    -l, --log-level <level>           set log level (default: "info")
+    -q, --quiet                       sets log level to error
+    -v, --verbose                     sets log level to verbose
+    -d, --debug                       sets log level to debug
+    -V, --version                     output the version number
+    -h, --help                        display help for command
+
+  Commands:
+    run [options]                     inject env at runtime [dotenvx run -- yourcommand]
+    get [options] [key]               return a single environment variable
+    set [options] <KEY> <value>       set a single environment variable
+    ...
+    help [command]                    display help for command
+  ```
+
+  You can get more detailed help per command with `dotenvx help COMMAND`.
+
+  ```sh
+  $ dotenvx help run
+  Usage: @dotenvx/dotenvx run [options]
+
+  inject env at runtime [dotenvx run -- yourcommand]
+
+  Options:
+    -e, --env <strings...>            environment variable(s) set as string (example: "HELLO=World") (default: [])
+    -f, --env-file <paths...>         path(s) to your env file(s) (default: [])
+    -fv, --env-vault-file <paths...>  path(s) to your .env.vault file(s) (default: [])
+    -o, --overload                    override existing env variables
+    --convention <name>               load a .env convention (available conventions: ['nextjs'])
+    -h, --help                        display help for command
+
+  Examples:
+
+    $ dotenvx run -- npm run dev
+    $ dotenvx run -- flask --app index run
+    $ dotenvx run -- php artisan serve
+    $ dotenvx run -- bin/rails s
+
+  Try it:
+
+    $ echo "HELLO=World" > .env
+    $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+    $ dotenvx run -- node index.js
+    [dotenvx] injecting env (1) from .env
+    Hello World
+  ```
+
 * <details><summary>`run` - Variable Expansion</summary><br>
 
   Reference and expand variables already on your machine for use in your .env file.
