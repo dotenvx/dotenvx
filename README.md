@@ -823,6 +823,56 @@ More examples
   (more conventions available upon request)
 
   </details>
+* <details><summary>`get KEY`</summary><br>
+
+  Return a single environment variable's value.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx get HELLO
+  World
+  ```
+
+  </details>
+* <details><summary>`get KEY -f`</summary><br>
+
+  Return a single environment variable's value from a specific `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx get HELLO -f .env.production
+  production
+  ```
+
+  </details>
+* <details><summary>`get KEY --env`</summary><br>
+
+  Return a single environment variable's value from a `--env` string.
+
+  ```sh
+  $ dotenvx get HELLO --env HELLO=String -f .env.production
+  String
+  ```
+
+  </details>
+
+* <details><summary>`get KEY --overload`</summary><br>
+
+  Return a single environment variable's value where each found value is overloaded.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "HELLO=production" > .env.production
+
+  $ dotenvx get HELLO -f .env.production --env HELLO=String -f .env --overload
+  World
+  ```
+
+  </details>
+
 
 ## More features
 
