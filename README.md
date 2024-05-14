@@ -625,6 +625,16 @@ More examples
   ```
 
   </details>
+* <details><summary>`run` - Shell Expansion</summary><br>
+
+  Prevent your shell from expanding inline `$VARIABLES` before dotenvx has a chance to inject it. Use a subshell.
+
+  ```sh
+  $ dotenvx run --env="HELLO=World" -- sh -c 'echo Hello $HELLO'
+  Hello World
+  ```
+
+  </details>
 * <details><summary>`run` - multiple `-f` flags</summary><br>
 
   Compose multiple `.env` files for environment variables loading, as you need.
