@@ -103,6 +103,13 @@ program.command('set')
   .option('-c, --encrypt', 'encrypt value')
   .action(require('./actions/set'))
 
+// dotenvx ls
+program.command('ls')
+  .description('print all .env files in a tree structure')
+  .argument('[directory]', 'directory to list .env files from', '.')
+  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
+  .action(require('./actions/ls'))
+
 // dotenvx genexample
 program.command('genexample')
   .description('generate .env.example')
@@ -133,13 +140,6 @@ program.command('precommit')
 program.command('scan')
   .description('scan for leaked secrets')
   .action(require('./actions/scan'))
-
-// dotenvx ls
-program.command('ls')
-  .description('print all .env files in a tree structure')
-  .argument('[directory]', 'directory to list .env files from', '.')
-  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
-  .action(require('./actions/ls'))
 
 // dotenvx settings
 program.command('settings')
