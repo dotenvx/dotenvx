@@ -1031,6 +1031,55 @@ More examples
   ```
 
   </details>
+* <details><summary>`genexample`</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx genexample
+  ✔ updated .env.example (1)
+  ```
+
+  ```ini
+  # .env.example
+  HELLO=""
+  ```
+
+  </details>
+* <details><summary>`genexample -f`</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "DB_HOST=example.com" > .env.production
+
+  $ dotenvx genexample -f .env -f .env.production
+  ✔ updated .env.example (2)
+  ```
+
+  ```ini
+  # .env.example
+  HELLO=""
+  DB_HOST=""
+  ```
+
+  </details>
+* <details><summary>`genexample directory`</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ mkdir -p apps/backend
+  $ echo "HELLO=Backend" > apps/backend/.env
+
+  $ dotenvx genexample apps/backend
+  ✔ updated .env.example (1)
+  ```
+
+  ```ini
+  # apps/backend/.env.example
+  HELLO=""
+  ```
+
+  </details>
 
 ## More features
 
@@ -1041,14 +1090,6 @@ More examples
 * [`dotenvx prebuild`](https://dotenvx.com/docs/features/prebuild) – prevent `.env` files from being built into your docker container
 * [`dotenvx precommit`](https://dotenvx.com/docs/features/precommit) – prevent `.env` files from being committed to code
 * [`dotenvx scan`](https://dotenvx.com/docs/features/scan) – scan for leaked secrets in code
-
-> Convenience
-
-* [`dotenvx get`](https://dotenvx.com/docs/features/get) – return a single environment variable
-* [`dotenvx set`](https://dotenvx.com/docs/features/set) – set a single environment variable
-* [`dotenvx ls`](https://dotenvx.com/docs/features/ls) – list all .env files in your repo
-* [`dotenvx status`](https://dotenvx.com/docs/features/status) – compare your .env* content(s) to your .env.vault decrypted content(s)
-* [`dotenvx settings`](https://dotenvx.com/docs/features/settings) – print current dotenvx settings
 
 &nbsp;
 
