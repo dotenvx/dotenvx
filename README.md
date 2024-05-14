@@ -635,8 +635,19 @@ More examples
   $ echo "HELLO=World" > .env
 
   $ dotenvx run -f .env.local -f .env -- node index.js
-  [dotenvx][info] loading env (1) from .env.local,.env
+  [dotenvx] loading env (1) from .env.local,.env
   Hello local
+  ```
+
+  </details>
+* <details><summary>`run --env HELLO=String`</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx run --env HELLO=String -f .env -- node index.js
+  [dotenvx] injecting env (1) from .env, and --env flag
+  Hello String
   ```
 
   </details>
@@ -652,6 +663,7 @@ More examples
   Hello World
   ```
 
+  </details>
 * <details><summary>`run --verbose`</summary><br>
 
   ```sh
@@ -664,6 +676,7 @@ More examples
   Hello production
   ```
 
+  </details>
 * <details><summary>`run --debug`</summary><br>
 
   ```sh
@@ -729,7 +742,6 @@ More examples
   (more conventions available upon request)
 
   </details>
-
 
 ## More features
 
