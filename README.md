@@ -601,7 +601,7 @@ More examples
   ```
   ```sh
   $ dotenvx run --debug -- node index.js
-  [dotenvx@0.14.1] injecting env (2) from .env
+  [dotenvx] injecting env (2) from .env
   DATABASE_URL postgres://username@localhost/my_database
   ```
 
@@ -620,7 +620,7 @@ More examples
   ```
   ```sh
   $ dotenvx run --debug -- node index.js
-  [dotenvx@0.14.1] injecting env (1) from .env
+  [dotenvx] injecting env (1) from .env
   DATABASE_URL postgres://yourusername@localhost/my_database
   ```
 
@@ -631,11 +631,11 @@ More examples
 
   ```sh
   $ echo "HELLO=local" > .env.local
-
   $ echo "HELLO=World" > .env
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env.local -f .env -- node index.js
-  [dotenvx] loading env (1) from .env.local,.env
+  [dotenvx] injecting env (1) from .env.local, .env
   Hello local
   ```
 
