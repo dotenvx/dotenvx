@@ -710,6 +710,8 @@ More examples
   Hello production encrypted
   ```
 
+  Note the `DOTENV_PRIVATE_KEY_PRODUCTION` ends with `_PRODUCTION`. This instructs dotenvx run to load the `.env.production` file.
+
   </details>
 * <details><summary>`DOTENV_PRIVATE_KEY_CI=key dotenvx run`</summary><br>
 
@@ -726,10 +728,12 @@ More examples
   Hello ci encrypted
   ```
 
+  Note the `DOTENV_PRIVATE_KEY_CI` ends with `_CI`. This instructs dotenvx run to load the `.env.ci` file. See the pattern?
+
   </details>
 * <details><summary>`DOTENV_PRIVATE_KEY=key DOTENV_PRIVATE_KEY_PRODUCTION=key run` - Combine Multiple</summary><br>
 
-  Decrypt your encrypted `.env` and `.env.production` files by setting `DOTENV_PRIVATE_KEY` and `DOTENV_PRIVATE_KEY_PRODUCTION` before `dotenvx run`. Compose any encrypted files you want this way. As long as your `DOTENV_PRIVATE_KEY_${environment}` is set the values from `.env.${environment}` will be decrypted at runtime.
+  Decrypt your encrypted `.env` and `.env.production` files by setting `DOTENV_PRIVATE_KEY` and `DOTENV_PRIVATE_KEY_PRODUCTION` before `dotenvx run`. 
 
   ```sh
   $ touch .env
@@ -747,6 +751,8 @@ More examples
   [dotenvx] injecting env (3) from .env.production, .env
   Hello production encrypted
   ```
+
+  Compose any encrypted files you want this way. As long as a `DOTENV_PRIVATE_KEY_${environment}` is set, the values from `.env.${environment}` will be decrypted at runtime.
 
   </details>
 * <details><summary>`run --verbose`</summary><br>
