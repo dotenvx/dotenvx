@@ -103,6 +103,12 @@ program.command('set')
   .option('-c, --encrypt', 'encrypt value')
   .action(require('./actions/set'))
 
+// dotenvx encryptall
+program.command('encryptall')
+  .description('encrypt all environment variables')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .action(require('./actions/encryptall'))
+
 // dotenvx ls
 program.command('ls')
   .description('print all .env files in a tree structure')

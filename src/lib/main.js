@@ -8,6 +8,7 @@ const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Sets = require('./services/sets')
 const Status = require('./services/status')
+const Encryptall = require('./services/encryptall')
 const Genexample = require('./services/genexample')
 const Settings = require('./services/settings')
 
@@ -62,6 +63,10 @@ const set = function (key, value, envFile, encrypt) {
   return new Sets(key, value, envFile, encrypt).run()
 }
 
+const encryptall = function (envFile) {
+  return new Encryptall(envFile).run()
+}
+
 const status = function (directory) {
   return new Status(directory).run()
 }
@@ -99,6 +104,7 @@ module.exports = {
   ls,
   get,
   set,
+  encryptall,
   status,
   genexample,
   // settings
