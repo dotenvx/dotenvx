@@ -3,7 +3,9 @@ const fs = require('fs')
 const ignore = require('ignore')
 
 const pluralize = require('./../helpers/pluralize')
+const fullyEncrypted = require('./../helpers/fullyEncrypted')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
+const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Precommit {
   constructor (options = {}) {
@@ -22,16 +24,20 @@ class Precommit {
       }
     } else {
       const warnings = []
+      let successMessage = 'success'
+      let gitignore = MISSING_GITIGNORE
 
       // 1. check for .gitignore file
       if (!fs.existsSync('.gitignore')) {
-        const error = new Error('.gitignore missing')
-        error.help = '? add it with [touch .gitignore]'
-        throw error
+        const warning = new Error('.gitignore missing')
+        warning.help = '? add it with [touch .gitignore]'
+        warnings.push(warning)
+      } else {
+        gitignore = fs.readFileSync('.gitignore').toString()
       }
 
       // 2. check .env* files against .gitignore file
-      const ig = ignore().add(fs.readFileSync('.gitignore').toString())
+      const ig = ignore().add(gitignore)
       const files = fs.readdirSync(process.cwd())
       const dotenvFiles = files.filter(file => file.match(/^\.env(\..+)?$/))
       dotenvFiles.forEach(file => {
@@ -44,14 +50,19 @@ class Precommit {
           }
         } else {
           if (file !== '.env.example' && file !== '.env.vault') {
-            const error = new Error(`${file} not properly gitignored`)
-            error.help = `? add ${file} to .gitignore with [echo ".env*" >> .gitignore]`
-            throw error
+            const src = fs.readFileSync(file).toString()
+            const encrypted = fullyEncrypted(src)
+
+            // if contents are encrypted don't raise an error
+            if (!encrypted) {
+              const error = new Error(`${file} not encrypted (or not gitignored)`)
+              error.help = `? encrypt it with [dotenvx protect -f ${file}] or add ${file} to .gitignore with [echo ".env*" >> .gitignore]`
+              throw error
+            }
           }
         }
       })
 
-      let successMessage = 'success'
       if (warnings.length > 0) {
         successMessage = `success (with ${pluralize('warning', warnings.length)})`
       }

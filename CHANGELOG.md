@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.39.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.40.0...main)
+
+## 0.40.0
+
+## Changed
+
+* Made `precommit` smart enough to check if a `.env*` file is encrypted or not. If fully encrypted, then allow `precommit` check to pass ([#211](https://github.com/dotenvx/dotenvx/pull/211))
 
 ## 0.39.0
 
