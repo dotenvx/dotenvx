@@ -14,7 +14,8 @@ class Encrypt {
     this.envFile = envFile
     this.publicKey = null
     this.processedEnvFiles = []
-    this.settableFilepaths = new Set()
+    this.changedFilepaths = new Set()
+    this.unchangedFilepaths = new Set()
   }
 
   run () {
@@ -58,10 +59,12 @@ class Encrypt {
 
         if (changed) {
           fs.writeFileSync(filepath, src)
+          this.changedFilepaths.add(envFilepath)
+        } else {
+          this.unchangedFilepaths.add(envFilepath)
         }
 
         row.publicKey = publicKey
-        this.settableFilepaths.add(envFilepath)
       } catch (e) {
         if (e.code === 'ENOENT') {
           const error = new Error(`missing ${envFilepath} file (${filepath})`)
@@ -78,7 +81,8 @@ class Encrypt {
 
     return {
       processedEnvFiles: this.processedEnvFiles,
-      settableFilepaths: [...this.settableFilepaths]
+      changedFilepaths: [...this.changedFilepaths],
+      unchangedFilepaths: [...this.unchangedFilepaths]
     }
   }
 

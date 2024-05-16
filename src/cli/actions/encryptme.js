@@ -1,18 +1,25 @@
 const logger = require('./../../shared/logger')
+const createSpinner = require('./../../shared/createSpinner')
+const sleep = require('./../../lib/helpers/sleep')
 
 const main = require('./../../lib/main')
 
-function encryptme () {
+const spinner = createSpinner('encrypting')
+
+async function encryptme () {
+  spinner.start()
+  await sleep(500) // better dx
+
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
     const {
       processedEnvFiles,
-      settableFilepaths
+      changedFilepaths,
+      unchangedFilepaths
     } = main.encryptme(options.envFile)
 
-    let atLeastOneSuccess = false
     for (const processedEnvFile of processedEnvFiles) {
       logger.verbose(`encrypting ${processedEnvFile.filepath}`)
       if (processedEnvFile.error) {
@@ -23,14 +30,16 @@ function encryptme () {
           logger.warn(processedEnvFile.error)
         }
       } else {
-        atLeastOneSuccess = true
         // logger.verbose(`${processedEnvFile.key} set`)
         // logger.debug(`${processedEnvFile.key} set to ${processedEnvFile.value}`)
       }
     }
 
-    if (atLeastOneSuccess) {
-      logger.success(`encrypted (${settableFilepaths.join(', ')})`)
+    if (changedFilepaths.length > 0) {
+      spinner.succeed(`encrypted (${changedFilepaths.join(', ')})`)
+      logger.help2(`ℹ commit encrypted changes to code: [git commit -am "encrypt ${changedFilepaths.join(',')}"]`)
+    } else {
+      spinner.done(`no changes (${unchangedFilepaths})`)
     }
   } catch (error) {
     logger.error(error.message)
