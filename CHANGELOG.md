@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 0.40.0
 
+## Added
+
+* Added `dotenvx encryptall` command to convert an entire `.env` file to an encrypted `.env` file. ([#213](https://github.com/dotenvx/dotenvx/pull/213))
+
 ## Changed
 
 * Made `precommit` smart enough to check if a `.env*` file is encrypted or not. If fully encrypted, then allow `precommit` check to pass ([#211](https://github.com/dotenvx/dotenvx/pull/211))

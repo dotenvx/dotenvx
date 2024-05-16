@@ -3,7 +3,7 @@ const fs = require('fs')
 const ignore = require('ignore')
 
 const pluralize = require('./../helpers/pluralize')
-const fullyEncrypted = require('./../helpers/fullyEncrypted')
+const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
@@ -51,7 +51,7 @@ class Precommit {
         } else {
           if (file !== '.env.example' && file !== '.env.vault') {
             const src = fs.readFileSync(file).toString()
-            const encrypted = fullyEncrypted(src)
+            const encrypted = isFullyEncrypted(src)
 
             // if contents are encrypted don't raise an error
             if (!encrypted) {
