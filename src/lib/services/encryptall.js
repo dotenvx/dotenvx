@@ -21,6 +21,7 @@ class Encryptall {
     const envFilepaths = this._envFilepaths()
     for (const envFilepath of envFilepaths) {
       const row = {}
+      row.keys = []
       row.filepath = envFilepath
 
       const filepath = path.resolve(envFilepath)
@@ -35,6 +36,9 @@ class Encryptall {
         } = findOrCreatePublicKey(filepath, envKeysFilepath)
         src = envSrc // src was potentially changed by findOrCreatePublicKey
 
+        // track possible changes
+        let changed = false
+
         // iterate over all non-encrypted values and encrypt them
         const parsed = dotenv.parse(src)
         for (const [key, value] of Object.entries(parsed)) {
@@ -43,8 +47,17 @@ class Encryptall {
             const encryptedValue = encryptValue(value, publicKey)
             // once newSrc is built write it out
             src = replace(src, key, encryptedValue)
-            fs.writeFileSync(filepath, src)
+
+            // add key
+            row.keys.push(key)
+
+            // track change
+            changed = true
           }
+        }
+
+        if (changed) {
+          fs.writeFileSync(filepath, src)
         }
 
         row.publicKey = publicKey
