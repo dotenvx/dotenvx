@@ -36,12 +36,8 @@ t.test('#run (no gitignore file)', ct => {
   const existsSyncStub = sinon.stub(fs, 'existsSync')
   existsSyncStub.returns(false)
 
-  try {
-    new Precommit().run()
-    ct.fail('should have raised an error but did not')
-  } catch (error) {
-    ct.same(error.message, '.gitignore missing')
-  }
+  const { warnings } = new Precommit().run()
+  ct.same(warnings[0].message, '.gitignore missing')
 
   existsSyncStub.restore()
   ct.end()
@@ -79,7 +75,17 @@ t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
 
 t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
   const readFileSyncStub = sinon.stub(fs, 'readFileSync')
-  readFileSyncStub.returns('.env')
+
+  // Stub different return values based on the file path
+  readFileSyncStub.callsFake((filePath) => {
+    if (filePath === '.env') {
+      return '.env'
+    } else if (filePath === '.env.production') {
+      return 'ENV_VAR=value'
+    }
+    return ''
+  })
+
   const readdirSyncStub = sinon.stub(fs, 'readdirSync')
   readdirSyncStub.returns(['.env.production'])
 
@@ -87,7 +93,7 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, '.env.production not properly gitignored')
+    ct.same(error.message, '.env.production not encrypted (or not gitignored)')
   }
 
   readFileSyncStub.restore()
