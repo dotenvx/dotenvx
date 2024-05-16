@@ -4,7 +4,7 @@ const path = require('path')
 const sinon = require('sinon')
 const dotenv = require('dotenv')
 
-const Encryptme = require('../../../src/lib/services/encryptme')
+const Encrypt = require('../../../src/lib/services/encrypt')
 
 let writeFileSyncStub
 
@@ -23,7 +23,7 @@ t.test('#run (no arguments)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptme().run()
+  } = new Encrypt().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
@@ -42,7 +42,7 @@ t.test('#run (no env file)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptme().run()
+  } = new Encrypt().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
@@ -63,7 +63,7 @@ t.test('#run (no arguments and some other error)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptme().run()
+  } = new Encrypt().run()
 
   const exampleError = new Error('Mock Error')
 
@@ -91,7 +91,7 @@ t.test('#run (finds .env file)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptme(envFile).run()
+  } = new Encrypt(envFile).run()
 
   const p1 = processedEnvFiles[0]
   ct.same(p1.keys, ['HELLO'])
@@ -112,7 +112,7 @@ t.test('#run (finds .env file as array)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptme([envFile]).run()
+  } = new Encrypt([envFile]).run()
 
   const p1 = processedEnvFiles[0]
   ct.same(p1.keys, ['HELLO'])

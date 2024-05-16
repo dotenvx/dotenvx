@@ -8,7 +8,7 @@ const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
 const Sets = require('../../src/lib/services/sets')
 const Status = require('../../src/lib/services/status')
-const Encryptme = require('../../src/lib/services/encryptme')
+const Encrypt = require('../../src/lib/services/encrypt')
 const Genexample = require('../../src/lib/services/genexample')
 const Settings = require('../../src/lib/services/settings')
 const VaultEncrypt = require('../../src/lib/services/vaultEncrypt')
@@ -117,13 +117,13 @@ t.test('set calls Sets.run', ct => {
   ct.end()
 })
 
-t.test('encryptme calls Encryptme.run', ct => {
-  const stub = sinon.stub(Encryptme.prototype, 'run')
+t.test('encryptme calls Encrypt.run', ct => {
+  const stub = sinon.stub(Encrypt.prototype, 'run')
   stub.returns({})
 
   main.encryptme()
 
-  t.ok(stub.called, 'new Encryptme().run() called')
+  t.ok(stub.called, 'new Encrypt().run() called')
 
   stub.restore()
 

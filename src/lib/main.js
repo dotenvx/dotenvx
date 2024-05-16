@@ -7,7 +7,7 @@ const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Sets = require('./services/sets')
 const Status = require('./services/status')
-const Encryptme = require('./services/encryptme')
+const Encrypt = require('./services/encrypt')
 const Genexample = require('./services/genexample')
 const Settings = require('./services/settings')
 const VaultEncrypt = require('./services/vaultEncrypt')
@@ -68,7 +68,7 @@ const set = function (key, value, envFile, encrypt) {
 }
 
 const encryptme = function (envFile) {
-  return new Encryptme(envFile).run()
+  return new Encrypt(envFile).run()
 }
 
 const status = function (directory) {
