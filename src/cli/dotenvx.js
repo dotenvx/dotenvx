@@ -166,6 +166,7 @@ program.command('encrypt')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(function (...args) {
     logger.warn('DEPRECATION NOTICE: [dotenvx encrypt] has moved. change your command to [dotenvx vault encrypt]')
+    logger.warn('DEPRECATION NOTICE: [dotenvx encryptme] will become [dotenvx encrypt] in a 1.0.0 release scheduled for middle of June 2024.')
 
     encryptAction.apply(this, args)
   })
@@ -177,7 +178,7 @@ program.command('decrypt')
   .argument('[directory]', 'directory to decrypt', '.')
   .option('-e, --environment <environments...>', 'environment(s) to decrypt')
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTECE: [dotenvx decrypt] has moved. change your command to [dotenvx vault decrypt]')
+    logger.warn('DEPRECATION NOTICE: [dotenvx decrypt] has moved. change your command to [dotenvx vault decrypt]')
 
     decryptAction.apply(this, args)
   })

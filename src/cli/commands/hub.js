@@ -14,7 +14,7 @@ hub
   .description('authenticate to dotenvx hub')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTECE: [dotenvx hub login] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub login] will be removed in 1.0.0 release soon')
 
     loginAction.apply(this, args)
   })
@@ -26,7 +26,7 @@ hub
   .argument('[directory]', 'directory to push', '.')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTECE: [dotenvx hub push] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub push] will be removed in 1.0.0 release soon')
 
     pushAction.apply(this, args)
   })
@@ -38,7 +38,7 @@ hub
   .argument('[directory]', 'directory to pull', '.')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTECE: [dotenvx hub pull] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub pull] will be removed in 1.0.0 release soon')
 
     pullAction.apply(this, args)
   })
@@ -49,7 +49,7 @@ hub
   .description('view repository on dotenvx hub')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTECE: [dotenvx hub open] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub open] will be removed in 1.0.0 release soon')
 
     openAction.apply(this, args)
   })
@@ -60,7 +60,7 @@ hub
   .description('print the auth token dotenvx hub is configured to use')
   .option('-h, --hostname <url>', 'set hostname', 'https://hub.dotenvx.com')
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTECE: [dotenvx hub token] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub token] will be removed in 1.0.0 release soon')
 
     tokenAction.apply(this, args)
   })
@@ -70,7 +70,7 @@ hub
   .command('status')
   .description('display logged in user')
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTECE: [dotenvx hub status] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub status] will be removed in 1.0.0 release soon')
 
     statusAction.apply(this, args)
   })
@@ -81,7 +81,7 @@ hub
   .description('log out this machine from dotenvx hub')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTECE: [dotenvx hub logout] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub logout] will be removed in 1.0.0 release soon')
 
     logoutAction.apply(this, args)
   })

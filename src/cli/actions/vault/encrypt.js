@@ -58,7 +58,6 @@ async function encrypt (directory) {
 
     if (addedKeys.length > 0) {
       spinner.succeed(`${pluralize('key', addedKeys.length)} added to .env.keys (${addedKeys})`)
-      logger.help2('ℹ push .env.keys up to hub: [dotenvx hub push]')
     }
 
     if (addedVaults.length > 0) {
