@@ -3,7 +3,6 @@ const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand')
 
 // services
-const Encrypt = require('./services/encrypt')
 const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Sets = require('./services/sets')
@@ -11,6 +10,7 @@ const Status = require('./services/status')
 const Encryptme = require('./services/encryptme')
 const Genexample = require('./services/genexample')
 const Settings = require('./services/settings')
+const VaultEncrypt = require('./services/vaultEncrypt')
 
 // helpers
 const dotenvEval = require('./helpers/dotenvEval')
@@ -42,9 +42,13 @@ const parse = function (src) {
   return dotenv.parse(src)
 }
 
-// actions related
+// DEPRECATED: will became the same function as encryptme
 const encrypt = function (directory, envFile) {
-  return new Encrypt(directory, envFile).run()
+  return new VaultEncrypt(directory, envFile).run()
+}
+
+const vaultEncrypt = function (directory, envFile) {
+  return new VaultEncrypt(directory, envFile).run()
 }
 
 const ls = function (directory, envFile) {
@@ -101,6 +105,7 @@ module.exports = {
   parse,
   // actions related
   encrypt,
+  vaultEncrypt,
   ls,
   get,
   set,

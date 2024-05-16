@@ -4,7 +4,6 @@ const dotenv = require('dotenv')
 
 const main = require('../../src/lib/main')
 
-const Encrypt = require('../../src/lib/services/encrypt')
 const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
 const Sets = require('../../src/lib/services/sets')
@@ -12,6 +11,7 @@ const Status = require('../../src/lib/services/status')
 const Encryptme = require('../../src/lib/services/encryptme')
 const Genexample = require('../../src/lib/services/genexample')
 const Settings = require('../../src/lib/services/settings')
+const VaultEncrypt = require('../../src/lib/services/vaultEncrypt')
 
 t.test('config calls dotenv.config', ct => {
   const stub = sinon.stub(dotenv, 'config')
@@ -52,13 +52,26 @@ t.test('parse calls dotenv.parse', ct => {
   ct.end()
 })
 
-t.test('encrypt calls Encrypt.run', ct => {
-  const stub = sinon.stub(Encrypt.prototype, 'run')
+t.test('encrypt calls VaultEncrypt.run', ct => {
+  const stub = sinon.stub(VaultEncrypt.prototype, 'run')
   stub.returns({})
 
   main.encrypt()
 
-  t.ok(stub.called, 'new Encrypt().run() called')
+  t.ok(stub.called, 'new VaultEncrypt().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('vaultEncrypt calls VaultEncrypt.run', ct => {
+  const stub = sinon.stub(VaultEncrypt.prototype, 'run')
+  stub.returns({})
+
+  main.vaultEncrypt()
+
+  t.ok(stub.called, 'new VaultEncrypt().run() called')
 
   stub.restore()
 
