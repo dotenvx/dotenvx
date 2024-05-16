@@ -9,7 +9,7 @@ const replace = require('./../helpers/replace')
 
 const ENCODING = 'utf8'
 
-class Encryptall {
+class Encryptme {
   constructor (envFile = '.env') {
     this.envFile = envFile
     this.publicKey = null
@@ -91,4 +91,4 @@ class Encryptall {
   }
 }
 
-module.exports = Encryptall
+module.exports = Encryptme

@@ -4,7 +4,7 @@ const path = require('path')
 const sinon = require('sinon')
 const dotenv = require('dotenv')
 
-const Encryptall = require('../../../src/lib/services/encryptall')
+const Encryptme = require('../../../src/lib/services/encryptme')
 
 let writeFileSyncStub
 
@@ -23,7 +23,7 @@ t.test('#run (no arguments)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptall().run()
+  } = new Encryptme().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
@@ -42,7 +42,7 @@ t.test('#run (no env file)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptall().run()
+  } = new Encryptme().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
@@ -63,7 +63,7 @@ t.test('#run (no arguments and some other error)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptall().run()
+  } = new Encryptme().run()
 
   const exampleError = new Error('Mock Error')
 
@@ -91,7 +91,7 @@ t.test('#run (finds .env file)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptall(envFile).run()
+  } = new Encryptme(envFile).run()
 
   const p1 = processedEnvFiles[0]
   ct.same(p1.keys, ['HELLO'])
@@ -112,14 +112,12 @@ t.test('#run (finds .env file as array)', ct => {
   const {
     processedEnvFiles,
     settableFilepaths
-  } = new Encryptall([envFile]).run()
+  } = new Encryptme([envFile]).run()
 
   const p1 = processedEnvFiles[0]
   ct.same(p1.keys, ['HELLO'])
   ct.same(p1.filepath, 'tests/monorepo/apps/frontend/.env')
   ct.same(settableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-
-  // sinon.assert.calledOnceWithExactly(writeFileSyncStub, path.resolve(envFile), '# for testing purposes only\nHELLO="frontend"\nKEY="value"\n')
 
   ct.end()
 })

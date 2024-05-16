@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## Added
 
-* Added `dotenvx encryptall` command to convert an entire `.env` file to an encrypted `.env` file. ([#213](https://github.com/dotenvx/dotenvx/pull/213))
+* Added `dotenvx encryptme` command to convert an entire `.env` file to an encrypted `.env` file. ([#213](https://github.com/dotenvx/dotenvx/pull/213))
 
 ## Changed
 

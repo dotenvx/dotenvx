@@ -2,7 +2,7 @@ const logger = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
 
-function encryptall () {
+function encryptme () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -10,7 +10,7 @@ function encryptall () {
     const {
       processedEnvFiles,
       settableFilepaths
-    } = main.encryptall(options.envFile)
+    } = main.encryptme(options.envFile)
 
     let atLeastOneSuccess = false
     for (const processedEnvFile of processedEnvFiles) {
@@ -18,7 +18,7 @@ function encryptall () {
       if (processedEnvFile.error) {
         if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
           logger.warn(processedEnvFile.error)
-          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.filepath}] and re-run [dotenvx encryptall]`)
+          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.filepath}] and re-run [dotenvx encryptme]`)
         } else {
           logger.warn(processedEnvFile.error)
         }
@@ -40,4 +40,4 @@ function encryptall () {
   }
 }
 
-module.exports = encryptall
+module.exports = encryptme
