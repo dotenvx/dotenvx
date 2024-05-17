@@ -3,6 +3,7 @@ const path = require('path')
 const dotenv = require('dotenv')
 
 const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
+const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const replace = require('./../helpers/replace')
@@ -14,27 +15,38 @@ class Encrypt {
     this.envFile = envFile
     this.publicKey = null
     this.processedEnvFiles = []
-    this.settableFilepaths = new Set()
+    this.changedFilepaths = new Set()
+    this.unchangedFilepaths = new Set()
   }
 
   run () {
     const envFilepaths = this._envFilepaths()
     for (const envFilepath of envFilepaths) {
+      const filepath = path.resolve(envFilepath)
+
       const row = {}
       row.keys = []
-      row.filepath = envFilepath
+      row.filepath = filepath
+      row.envFilepath = envFilepath
 
-      const filepath = path.resolve(envFilepath)
       try {
         // get the original src
         let src = fs.readFileSync(filepath, { encoding: ENCODING })
         // get/generate the public key
         const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         const {
+          envSrc,
           publicKey,
-          envSrc
+          privateKey,
+          privateKeyAdded
         } = findOrCreatePublicKey(filepath, envKeysFilepath)
-        src = envSrc // src was potentially changed by findOrCreatePublicKey
+        row.publicKey = publicKey
+        row.privateKey = privateKey
+        row.privateKeyName = guessPrivateKeyName(filepath)
+        row.privateKeyAdded = privateKeyAdded
+
+        // src was potentially changed by findOrCreatePublicKey so we set it again here
+        src = envSrc
 
         // track possible changes
         let changed = false
@@ -57,11 +69,12 @@ class Encrypt {
         }
 
         if (changed) {
-          fs.writeFileSync(filepath, src)
+          row.envSrc = src
+          row.changed = true
+          this.changedFilepaths.add(envFilepath)
+        } else {
+          this.unchangedFilepaths.add(envFilepath)
         }
-
-        row.publicKey = publicKey
-        this.settableFilepaths.add(envFilepath)
       } catch (e) {
         if (e.code === 'ENOENT') {
           const error = new Error(`missing ${envFilepath} file (${filepath})`)
@@ -78,7 +91,8 @@ class Encrypt {
 
     return {
       processedEnvFiles: this.processedEnvFiles,
-      settableFilepaths: [...this.settableFilepaths]
+      changedFilepaths: [...this.changedFilepaths],
+      unchangedFilepaths: [...this.unchangedFilepaths]
     }
   }
 

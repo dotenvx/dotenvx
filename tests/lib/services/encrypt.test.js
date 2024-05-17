@@ -11,7 +11,6 @@ let writeFileSyncStub
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
-
   writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
 })
 
@@ -22,7 +21,8 @@ t.afterEach((ct) => {
 t.test('#run (no arguments)', ct => {
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths,
+    unchangedFilepaths
   } = new Encrypt().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
@@ -30,10 +30,12 @@ t.test('#run (no arguments)', ct => {
 
   ct.same(processedEnvFiles, [{
     keys: [],
-    filepath: '.env',
+    filepath: path.resolve('.env'),
+    envFilepath: '.env',
     error: exampleError
   }])
-  ct.same(settableFilepaths, [])
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, [])
 
   ct.end()
 })
@@ -41,7 +43,8 @@ t.test('#run (no arguments)', ct => {
 t.test('#run (no env file)', ct => {
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths,
+    unchangedFilepaths
   } = new Encrypt().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
@@ -49,10 +52,12 @@ t.test('#run (no env file)', ct => {
 
   ct.same(processedEnvFiles, [{
     keys: [],
-    filepath: '.env',
+    filepath: path.resolve('.env'),
+    envFilepath: '.env',
     error: exampleError
   }])
-  ct.same(settableFilepaths, [])
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, [])
 
   ct.end()
 })
@@ -62,17 +67,18 @@ t.test('#run (no arguments and some other error)', ct => {
 
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Encrypt().run()
 
   const exampleError = new Error('Mock Error')
 
   ct.same(processedEnvFiles, [{
     keys: [],
-    filepath: '.env',
+    envFilepath: '.env',
+    filepath: path.resolve('.env'),
     error: exampleError
   }])
-  ct.same(settableFilepaths, [])
+  ct.same(changedFilepaths, [])
 
   readFileSyncStub.restore()
 
@@ -80,25 +86,20 @@ t.test('#run (no arguments and some other error)', ct => {
 })
 
 t.test('#run (finds .env file)', ct => {
-  // Stub writeFileSync to capture the written content
-  let writtenContent
-  writeFileSyncStub.restore()
-  writeFileSyncStub = sinon.stub(fs, 'writeFileSync').callsFake((filePath, content) => {
-    writtenContent = content
-  })
-
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths,
+    unchangedFilepaths
   } = new Encrypt(envFile).run()
 
   const p1 = processedEnvFiles[0]
   ct.same(p1.keys, ['HELLO'])
-  ct.same(p1.filepath, 'tests/monorepo/apps/frontend/.env')
-  ct.same(settableFilepaths, ['tests/monorepo/apps/frontend/.env'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/frontend/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
+  ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(writtenContent)
+  const parsed = dotenv.parse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -111,13 +112,45 @@ t.test('#run (finds .env file as array)', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Encrypt([envFile]).run()
 
   const p1 = processedEnvFiles[0]
   ct.same(p1.keys, ['HELLO'])
-  ct.same(p1.filepath, 'tests/monorepo/apps/frontend/.env')
-  ct.same(settableFilepaths, ['tests/monorepo/apps/frontend/.env'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/frontend/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
+
+  ct.end()
+})
+
+t.test('#run (finds .env file already encrypted)', ct => {
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt(envFile).run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, [])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/encrypted/.env')
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+
+  ct.end()
+})
+
+t.test('#run (finds .env file as array)', ct => {
+  const envFile = 'tests/monorepo/apps/frontend/.env'
+  const {
+    processedEnvFiles,
+    changedFilepaths
+  } = new Encrypt([envFile]).run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/frontend/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
 
   ct.end()
 })
