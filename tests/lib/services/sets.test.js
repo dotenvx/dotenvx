@@ -21,7 +21,7 @@ t.afterEach((ct) => {
 t.test('#run (no arguments)', ct => {
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Sets().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
@@ -30,10 +30,11 @@ t.test('#run (no arguments)', ct => {
   ct.same(processedEnvFiles, [{
     key: null,
     value: null,
-    filepath: '.env',
+    filepath: path.resolve('.env'),
+    envFilepath: '.env',
     error: exampleError
   }])
-  ct.same(settableFilepaths, [])
+  ct.same(changedFilepaths, [])
 
   ct.end()
 })
@@ -41,7 +42,7 @@ t.test('#run (no arguments)', ct => {
 t.test('#run (no env file)', ct => {
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Sets().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
@@ -50,10 +51,11 @@ t.test('#run (no env file)', ct => {
   ct.same(processedEnvFiles, [{
     key: null,
     value: null,
-    filepath: '.env',
+    filepath: path.resolve('.env'),
+    envFilepath: '.env',
     error: exampleError
   }])
-  ct.same(settableFilepaths, [])
+  ct.same(changedFilepaths, [])
 
   ct.end()
 })
@@ -63,7 +65,7 @@ t.test('#run (no arguments and some other error)', ct => {
 
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Sets().run()
 
   const exampleError = new Error('Mock Error')
@@ -71,10 +73,11 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(processedEnvFiles, [{
     key: null,
     value: null,
-    filepath: '.env',
+    filepath: path.resolve('.env'),
+    envFilepath: '.env',
     error: exampleError
   }])
-  ct.same(settableFilepaths, [])
+  ct.same(changedFilepaths, [])
 
   readFileSyncStub.restore()
 
@@ -82,58 +85,75 @@ t.test('#run (no arguments and some other error)', ct => {
 })
 
 t.test('#run (finds .env file)', ct => {
+  const envSrc = [
+    '# for testing purposes only',
+    'HELLO="frontend"',
+    'KEY="value"'
+  ].join('\n') + '\n'
+
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Sets('KEY', 'value', envFile).run()
 
   ct.same(processedEnvFiles, [{
     key: 'KEY',
     value: 'value',
-    filepath: 'tests/monorepo/apps/frontend/.env'
+    filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
+    envFilepath: 'tests/monorepo/apps/frontend/.env',
+    envSrc: envSrc
   }])
-  ct.same(settableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-
-  sinon.assert.calledOnceWithExactly(writeFileSyncStub, path.resolve(envFile), '# for testing purposes only\nHELLO="frontend"\nKEY="value"\n')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
 
   ct.end()
 })
 
 t.test('#run (finds .env file and overwrites existing key/value)', ct => {
+  const envSrc = [
+    '# for testing purposes only',
+    'HELLO="new value"',
+  ].join('\n') + '\n'
+
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Sets('HELLO', 'new value', envFile).run()
 
   ct.same(processedEnvFiles, [{
     key: 'HELLO',
     value: 'new value',
-    filepath: 'tests/monorepo/apps/frontend/.env'
+    filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
+    envFilepath: 'tests/monorepo/apps/frontend/.env',
+    envSrc: envSrc
   }])
-  ct.same(settableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-
-  sinon.assert.calledOnceWithExactly(writeFileSyncStub, path.resolve(envFile), '# for testing purposes only\nHELLO="new value"\n')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
 
   ct.end()
 })
 
 t.test('#run (finds .env file as array)', ct => {
+  const envSrc = [
+    '# for testing purposes only',
+    'HELLO="frontend"',
+    'KEY="value"',
+  ].join('\n') + '\n'
+
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Sets('KEY', 'value', [envFile]).run()
 
   ct.same(processedEnvFiles, [{
     key: 'KEY',
     value: 'value',
-    filepath: 'tests/monorepo/apps/frontend/.env'
+    filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
+    envFilepath: 'tests/monorepo/apps/frontend/.env',
+    envSrc: envSrc
   }])
-  ct.same(settableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-
-  sinon.assert.calledOnceWithExactly(writeFileSyncStub, path.resolve(envFile), '# for testing purposes only\nHELLO="frontend"\nKEY="value"\n')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
 
   ct.end()
 })
@@ -142,23 +162,16 @@ t.test('#run (finds .env file) with --encrypt', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
     processedEnvFiles,
-    settableFilepaths
+    changedFilepaths
   } = new Sets('KEY', 'value', envFile, true).run()
 
   const row = processedEnvFiles[0]
   const publicKey = row.publicKey
+  const privateKey = row.privateKey
+  const privateKeyAdded = row.privateKeyAdded
+  const privateKeyName = row.privateKeyName
   const encryptedValue = row.encryptedValue
-
-  ct.same(processedEnvFiles, [{
-    key: 'KEY',
-    value: 'value',
-    encryptedValue,
-    publicKey,
-    filepath: 'tests/monorepo/apps/frontend/.env'
-  }])
-  ct.same(settableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-
-  const output = [
+  const envSrc = [
     '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
     '#/            public-key encryption for .env files          /',
     '#/       [how it works](https://dotenvx.com/encryption)     /',
@@ -169,9 +182,21 @@ t.test('#run (finds .env file) with --encrypt', ct => {
     '# for testing purposes only',
     'HELLO="frontend"',
     `KEY="${encryptedValue}"`
-  ].join('\n')
+  ].join('\n') + '\n'
 
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(2), path.resolve(envFile), output + '\n')
+  ct.same(processedEnvFiles, [{
+    key: 'KEY',
+    value: 'value',
+    filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
+    envFilepath: 'tests/monorepo/apps/frontend/.env',
+    encryptedValue,
+    publicKey,
+    privateKey,
+    privateKeyAdded,
+    privateKeyName,
+    envSrc
+  }])
+  ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
 
   ct.end()
 })

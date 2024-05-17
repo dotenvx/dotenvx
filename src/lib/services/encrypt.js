@@ -13,7 +13,6 @@ const ENCODING = 'utf8'
 class Encrypt {
   constructor (envFile = '.env') {
     this.envFile = envFile
-    this.publicKey = null
     this.processedEnvFiles = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
