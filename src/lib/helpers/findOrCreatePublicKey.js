@@ -31,7 +31,8 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
       envSrc,
       keysSrc,
       publicKey: envParsed[publicKeyName],
-      privateKey: keysParsed[privateKeyName]
+      privateKey: keysParsed[privateKeyName],
+      privateKeyAdded: false
     }
   }
 
@@ -73,7 +74,8 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
     envSrc,
     keysSrc,
     publicKey,
-    privateKey
+    privateKey,
+    privateKeyAdded: true
   }
 }
 
