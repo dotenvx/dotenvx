@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file. See [standa
 ## Changed
 
 * Made `precommit` smart enough to check if a `.env*` file is encrypted or not. If fully encrypted, then allow `precommit` check to pass ([#211](https://github.com/dotenvx/dotenvx/pull/211))
-* Do not warn of missing files for conventions (too noisy) ([#215](https://github.com/dotenvx/dotenvx/pull/215))
+* Do not warn of missing files for conventions (too noisy) ([#216](https://github.com/dotenvx/dotenvx/pull/216))
 
 ## 0.39.0
 
