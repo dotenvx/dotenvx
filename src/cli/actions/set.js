@@ -35,7 +35,11 @@ function set (key, value) {
     }
 
     if (atLeastOneSuccess) {
-      logger.success(`set ${key} (${settableFilepaths.join(', ')})`)
+      if (options.encrypt) {
+        logger.success(`set ${key} with encryption (${settableFilepaths.join(', ')})`)
+      } else {
+        logger.success(`set ${key} (${settableFilepaths.join(', ')})`)
+      }
     }
   } catch (error) {
     logger.error(error.message)
