@@ -45,7 +45,6 @@ function set (key, value) {
 
     if (changedFilepaths.length > 0) {
       logger.success(`✔ set ${key}${withEncryption} (${changedFilepaths.join(',')})`)
-      logger.help2(`ℹ commit ${changedFilepaths.join(',')}: [git commit -am "encrypt ${changedFilepaths.join(',')}"]`)
     } else if (unchangedFilepaths.length > 0) {
       logger.info(`no changes (${unchangedFilepaths})`)
     } else {
