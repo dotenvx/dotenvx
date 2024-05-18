@@ -15,11 +15,11 @@ function set (key, value) {
   try {
     const {
       processedEnvFiles,
-      changedFilepaths
+      changedFilepaths,
+      unchangedFilepaths
     } = main.set(key, value, options.envFile, options.encrypt)
 
     let withEncryption = ''
-    let atLeastOneSuccess = false
 
     if (options.encrypt) {
       withEncryption = ' with encryption'
@@ -40,14 +40,16 @@ function set (key, value) {
 
         logger.verbose(`${processedEnvFile.key} set${withEncryption} (${processedEnvFile.envFilepath})`)
         logger.debug(`${processedEnvFile.key} set${withEncryption} to ${processedEnvFile.value} (${processedEnvFile.envFilepath})`)
-
-        atLeastOneSuccess = true
       }
     }
 
-    if (atLeastOneSuccess) {
-      logger.success(`✔ set ${key}${withEncryption} (${changedFilepaths.join(', ')})`)
+    if (changedFilepaths.length > 0) {
+      logger.success(`✔ set ${key}${withEncryption} (${changedFilepaths.join(',')})`)
       logger.help2(`ℹ commit ${changedFilepaths.join(',')}: [git commit -am "encrypt ${changedFilepaths.join(',')}"]`)
+    } else if (unchangedFilepaths.length > 0) {
+      logger.info(`no changes (${unchangedFilepaths})`)
+    } else {
+      // do nothing
     }
 
     for (const processedEnvFile of processedEnvFiles) {
@@ -62,6 +64,13 @@ function set (key, value) {
     if (error.help) {
       logger.help(error.help)
     }
+    if (error.debug) {
+      logger.debug(error.debug)
+    }
+    if (error.code) {
+      logger.debug(`ERROR_CODE: ${error.code}`)
+    }
+    process.exit(1)
   }
 }
 

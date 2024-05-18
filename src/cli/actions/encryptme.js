@@ -35,7 +35,7 @@ async function encryptme () {
     }
 
     if (changedFilepaths.length > 0) {
-      logger.success(`✔ encrypted (${changedFilepaths.join(', ')})`)
+      logger.success(`✔ encrypted (${changedFilepaths.join(',')})`)
       // logger.help2(`ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]`) // TODO: tell user it is save to now commit this file to code. it's encrypted.
       logger.help2(`ℹ commit ${changedFilepaths.join(',')}: [git commit -am "encrypt ${changedFilepaths.join(',')}"]`)
     } else if (unchangedFilepaths.length > 0) {
