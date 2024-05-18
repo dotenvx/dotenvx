@@ -13,7 +13,6 @@ const ENCODING = 'utf8'
 class Encrypt {
   constructor (envFile = '.env') {
     this.envFile = envFile
-    this.publicKey = null
     this.processedEnvFiles = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
@@ -45,34 +44,31 @@ class Encrypt {
         row.privateKeyName = guessPrivateKeyName(filepath)
         row.privateKeyAdded = privateKeyAdded
 
-        // src was potentially changed by findOrCreatePublicKey so we set it again here
-        src = envSrc
+        src = envSrc // src was potentially changed by findOrCreatePublicKey so we set it again here
 
         // track possible changes
-        let changed = false
+        row.changed = false
 
         // iterate over all non-encrypted values and encrypt them
         const parsed = dotenv.parse(src)
         for (const [key, value] of Object.entries(parsed)) {
           const encrypted = isEncrypted(key, value)
           if (!encrypted) {
+            row.keys.push(key) // track key(s)
+
             const encryptedValue = encryptValue(value, publicKey)
             // once newSrc is built write it out
             src = replace(src, key, encryptedValue)
 
-            // add key
-            row.keys.push(key)
-
-            // track change
-            changed = true
+            row.changed = true // track change
           }
         }
 
-        if (changed) {
+        if (row.changed) {
           row.envSrc = src
-          row.changed = true
           this.changedFilepaths.add(envFilepath)
         } else {
+          row.envSrc = src
           this.unchangedFilepaths.add(envFilepath)
         }
       } catch (e) {

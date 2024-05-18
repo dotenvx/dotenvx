@@ -1,6 +1,9 @@
+const fs = require('fs')
 const logger = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
+
+const ENCODING = 'utf8'
 
 function set (key, value) {
   logger.debug(`key: ${key}`)
@@ -12,36 +15,62 @@ function set (key, value) {
   try {
     const {
       processedEnvFiles,
-      settableFilepaths
+      changedFilepaths,
+      unchangedFilepaths
     } = main.set(key, value, options.envFile, options.encrypt)
 
-    let atLeastOneSuccess = false
+    let withEncryption = ''
+
+    if (options.encrypt) {
+      withEncryption = ' with encryption'
+    }
 
     for (const processedEnvFile of processedEnvFiles) {
-      logger.verbose(`setting for ${processedEnvFile.filepath}`)
+      logger.verbose(`setting for ${processedEnvFile.envFilepath}`)
 
       if (processedEnvFile.error) {
         if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
           logger.warn(processedEnvFile.error)
-          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.filepath}] and re-run [dotenvx set]`)
+          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx set]`)
         } else {
           logger.warn(processedEnvFile.error)
         }
       } else {
-        atLeastOneSuccess = true
-        logger.verbose(`${processedEnvFile.key} set`)
-        logger.debug(`${processedEnvFile.key} set to ${processedEnvFile.value}`)
+        fs.writeFileSync(processedEnvFile.filepath, processedEnvFile.envSrc, ENCODING)
+
+        logger.verbose(`${processedEnvFile.key} set${withEncryption} (${processedEnvFile.envFilepath})`)
+        logger.debug(`${processedEnvFile.key} set${withEncryption} to ${processedEnvFile.value} (${processedEnvFile.envFilepath})`)
       }
     }
 
-    if (atLeastOneSuccess) {
-      logger.success(`set ${key} (${settableFilepaths.join(', ')})`)
+    if (changedFilepaths.length > 0) {
+      logger.success(`✔ set ${key}${withEncryption} (${changedFilepaths.join(',')})`)
+      logger.help2(`ℹ commit ${changedFilepaths.join(',')}: [git commit -am "encrypt ${changedFilepaths.join(',')}"]`)
+    } else if (unchangedFilepaths.length > 0) {
+      logger.info(`no changes (${unchangedFilepaths})`)
+    } else {
+      // do nothing
+    }
+
+    for (const processedEnvFile of processedEnvFiles) {
+      if (processedEnvFile.privateKeyAdded) {
+        logger.success(`✔ key added to .env.keys (${processedEnvFile.privateKeyName})`)
+        logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]') // TODO: make smart if they have already ignored it
+        logger.help2(`ℹ run [${processedEnvFile.privateKeyName}='${processedEnvFile.privateKey}' dotenvx get ${key}] to test decryption locally`)
+      }
     }
   } catch (error) {
     logger.error(error.message)
     if (error.help) {
       logger.help(error.help)
     }
+    if (error.debug) {
+      logger.debug(error.debug)
+    }
+    if (error.code) {
+      logger.debug(`ERROR_CODE: ${error.code}`)
+    }
+    process.exit(1)
   }
 }
 

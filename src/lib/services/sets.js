@@ -1,7 +1,10 @@
 const fs = require('fs')
 const path = require('path')
 
+const dotenv = require('dotenv')
+
 const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
+const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const replace = require('./../helpers/replace')
 
@@ -14,39 +17,57 @@ class Sets {
     this.envFile = envFile
     this.encrypt = encrypt
 
-    this.publicKey = null
     this.processedEnvFiles = []
-    this.settableFilepaths = new Set()
+    this.changedFilepaths = new Set()
+    this.unchangedFilepaths = new Set()
   }
 
   run () {
     const envFilepaths = this._envFilepaths()
     for (const envFilepath of envFilepaths) {
+      const filepath = path.resolve(envFilepath)
+
       const row = {}
       row.key = this.key
-      row.filepath = envFilepath
       row.value = this.value
+      row.filepath = filepath
+      row.envFilepath = envFilepath
+      row.changed = false
 
-      const filepath = path.resolve(envFilepath)
       try {
         let value = this.value
         let src = fs.readFileSync(filepath, { encoding: ENCODING })
+        row.originalValue = dotenv.parse(src)[row.key] || null
+
         if (this.encrypt) {
           const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
           const {
+            envSrc,
             publicKey,
-            envSrc
+            privateKey,
+            privateKeyAdded
           } = findOrCreatePublicKey(filepath, envKeysFilepath)
           src = envSrc // overwrite the original read (because findOrCreatePublicKey) rewrite to it
           value = encryptValue(value, publicKey)
-          row.encryptedValue = value // useful
+
+          row.changed = true // track change
+          row.encryptedValue = value
           row.publicKey = publicKey
+          row.privateKey = privateKey
+          row.privateKeyAdded = privateKeyAdded
+          row.privateKeyName = guessPrivateKeyName(filepath)
         }
 
-        const newSrc = replace(src, this.key, value)
-        fs.writeFileSync(filepath, newSrc)
+        if (value !== row.originalValue) {
+          row.envSrc = replace(src, this.key, value)
 
-        this.settableFilepaths.add(envFilepath)
+          this.changedFilepaths.add(envFilepath)
+          row.changed = true
+        } else {
+          row.envSrc = src
+
+          this.unchangedFilepaths.add(envFilepath)
+        }
       } catch (e) {
         if (e.code === 'ENOENT') {
           const error = new Error(`missing ${envFilepath} file (${filepath})`)
@@ -63,7 +84,8 @@ class Sets {
 
     return {
       processedEnvFiles: this.processedEnvFiles,
-      settableFilepaths: [...this.settableFilepaths]
+      changedFilepaths: [...this.changedFilepaths],
+      unchangedFilepaths: [...this.unchangedFilepaths]
     }
   }
 
