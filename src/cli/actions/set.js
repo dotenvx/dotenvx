@@ -54,7 +54,11 @@ function set (key, value) {
     for (const processedEnvFile of processedEnvFiles) {
       if (processedEnvFile.privateKeyAdded) {
         logger.success(`✔ key added to .env.keys (${processedEnvFile.privateKeyName})`)
-        logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]') // TODO: make smart if they have already ignored it
+
+        if (!isIgnoringDotenvKeys) {
+          logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]')
+        }
+
         logger.help2(`ℹ run [${processedEnvFile.privateKeyName}='${processedEnvFile.privateKey}' dotenvx get ${key}] to test decryption locally`)
       }
     }

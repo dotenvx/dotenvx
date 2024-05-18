@@ -3,6 +3,8 @@ const logger = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
 
+const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
+
 const ENCODING = 'utf8'
 
 async function encryptme () {
@@ -36,7 +38,6 @@ async function encryptme () {
 
     if (changedFilepaths.length > 0) {
       logger.success(`✔ encrypted (${changedFilepaths.join(',')})`)
-      // logger.help2(`ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]`) // TODO: tell user it is save to now commit this file to code. it's encrypted.
     } else if (unchangedFilepaths.length > 0) {
       logger.info(`no changes (${unchangedFilepaths})`)
     } else {
@@ -46,7 +47,11 @@ async function encryptme () {
     for (const processedEnvFile of processedEnvFiles) {
       if (processedEnvFile.privateKeyAdded) {
         logger.success(`✔ key added to .env.keys (${processedEnvFile.privateKeyName})`)
-        logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]') // TODO: make smart if they have already ignored it
+
+        if (!isIgnoringDotenvKeys()) {
+          logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]')
+        }
+
         logger.help2(`ℹ run [${processedEnvFile.privateKeyName}='${processedEnvFile.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
       }
     }
