@@ -3,6 +3,8 @@ const logger = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
 
+const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
+
 const ENCODING = 'utf8'
 
 function set (key, value) {
@@ -55,7 +57,7 @@ function set (key, value) {
       if (processedEnvFile.privateKeyAdded) {
         logger.success(`✔ key added to .env.keys (${processedEnvFile.privateKeyName})`)
 
-        if (!isIgnoringDotenvKeys) {
+        if (!isIgnoringDotenvKeys()) {
           logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]')
         }
 
