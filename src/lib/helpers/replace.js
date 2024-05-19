@@ -7,7 +7,7 @@ function replace (src, key, value) {
   const parsed = dotenv.parse(src)
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
     // replace
-    const regex = new RegExp(`^${key}=.*$`, 'm') // Regular expression to find the key and replace its value
+    const regex = new RegExp(`^${key}=(?:(["'\`])[^\\1]*\\1|[^\\n]*)(\\n[^A-Z0-9_].*)*`, 'm')
     output = src.replace(regex, formatted)
   } else {
     // append

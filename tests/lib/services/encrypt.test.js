@@ -108,6 +108,40 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
+t.test('#run (finds .env file with multiline value)', ct => {
+  const envFile = 'tests/monorepo/apps/multiline/.env'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt(envFile).run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiline/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/multiline/.env'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenv.parse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
+
+  const output = `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
+#/            public-key encryption for .env files          /
+#/       [how it works](https://dotenvx.com/encryption)     /
+#/----------------------------------------------------------/
+DOTENV_PUBLIC_KEY="${parsed.DOTENV_PUBLIC_KEY}"
+
+# .env
+HELLO="${parsed.HELLO}"
+`
+  ct.same(p1.envSrc, output)
+
+  ct.end()
+})
+
 t.test('#run (finds .env file as array)', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {

@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.40.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.40.1...main)
+
+## 0.40.1
+
+## Added
+
+* Support encryption replacemnt of multiline values ([#220](https://github.com/dotenvx/dotenvx/pull/220))
 
 ## 0.40.0
 
