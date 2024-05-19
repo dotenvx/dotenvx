@@ -59,3 +59,47 @@ JKLM
 
   ct.end()
 })
+
+t.test('#replace with single quoted multiline', ct => {
+  const src = `HELLO='-----BEGIN RSA PRIVATE KEY-----
+ABCD
+EFGH
+JKLM
+-----END RSA PRIVATE KEY-----'`
+
+  const newSrc = replace(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="Universe"')
+
+  ct.end()
+})
+
+t.test('#replace with backtick quoted multiline', ct => {
+  const src = `HELLO=\`-----BEGIN RSA PRIVATE KEY-----
+THIS
+IS
+"MULTILINE's"
+-----END RSA PRIVATE KEY-----\``
+
+  const newSrc = replace(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="Universe"')
+
+  ct.end()
+})
+
+t.test('#replace evals', ct => {
+  const src = `HELLO="$(echo world)"`
+
+  const newSrc = replace(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="Universe"')
+
+  ct.end()
+})
+
+t.test('#replace expands', ct => {
+  const src = `HELLO=$\{MACHINE-$\{UNDEFINED-default\}\}"`
+
+  const newSrc = replace(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="Universe"')
+
+  ct.end()
+})
