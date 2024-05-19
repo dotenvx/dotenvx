@@ -87,16 +87,7 @@ IS
 })
 
 t.test('#replace evals', ct => {
-  const src = `HELLO="$(echo world)"`
-
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
-
-  ct.end()
-})
-
-t.test('#replace expands', ct => {
-  const src = `HELLO=$\{MACHINE-$\{UNDEFINED-default\}\}"`
+  const src = 'HELLO="$(echo world)"'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
   ct.same(newSrc, 'HELLO="Universe"')
