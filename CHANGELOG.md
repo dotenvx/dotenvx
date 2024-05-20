@@ -2,7 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.40.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.41.0...main)
+
+## 0.41.0
+
+## Added
+
+* Added `vault convert` command to list convert instructions for converting `.env.vault` to encrypted .env files ([#222](https://github.com/dotenvx/dotenvx/pull/222))
+
+```sh
+To convert your .env.vault file to encrypted .env file(s):
+
+  1. Run [dotenvx vault decrypt]
+  2. Run [ls -a .env*]
+
+Lastly, convert each .env(.environment) file:
+
+  3. Run [dotenvx convert -f .env.production]
+
+For example:
+
+  $ dotenvx convert -f .env
+  $ dotenvx convert -f .env.ci
+  $ dotenvx convert -f .env.production
+
+Afterward:
+
+Update production with your new DOTENV_PRIVATE_KEY_PRODUCTION located in .env.keys
+
+Learn more at [https://dotenvx.com/docs/quickstart#add-encryption]
+```
+
+## Changed
+
+* Rename `encryptme` to `convert` ([#222](https://github.com/dotenvx/dotenvx/pull/222))
 
 ## 0.40.1
 

@@ -103,11 +103,11 @@ program.command('set')
   .option('-c, --encrypt', 'encrypt value')
   .action(require('./actions/set'))
 
-// dotenvx encryptme
-program.command('encryptme')
-  .description('encrypt env file(s) environment variables')
+// dotenvx convert
+program.command('convert')
+  .description('convert env file(s) to encrypted env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
-  .action(require('./actions/encryptme'))
+  .action(require('./actions/convert'))
 
 // dotenvx ls
 program.command('ls')
