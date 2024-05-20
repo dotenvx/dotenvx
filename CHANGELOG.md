@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.41.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.42.0...main)
+
+## 0.42.0
+
+## Added
+
+* Added `.env.vault deprecated` warning when using `DOTENV_KEY`. Provide instructions to convert to encrypted `.env` files. ([#223](https://github.com/dotenvx/dotenvx/pull/223))
 
 ## 0.41.0
 
