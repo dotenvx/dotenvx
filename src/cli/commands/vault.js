@@ -9,9 +9,7 @@ vault
 
 // dotenvx vault convert
 vault.command('convert')
-  .description('convert .env.vault file to encrypted env file(s)')
-  .argument('[directory]', 'directory to convert', '.')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .description('instructions for converting .env.vault to encrypted env file(s)')
   .action(require('./../actions/vault/convert'))
 
 // dotenvx vault encrypt

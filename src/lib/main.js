@@ -11,7 +11,6 @@ const Encrypt = require('./services/encrypt')
 const Genexample = require('./services/genexample')
 const Settings = require('./services/settings')
 const VaultEncrypt = require('./services/vaultEncrypt')
-const VaultConvert = require('./services/vaultConvert')
 
 // helpers
 const dotenvEval = require('./helpers/dotenvEval')
@@ -50,10 +49,6 @@ const encrypt = function (directory, envFile) {
 
 const vaultEncrypt = function (directory, envFile) {
   return new VaultEncrypt(directory, envFile).run()
-}
-
-const vaultConvert = function (directory, envFile) {
-  return new VaultConvert(directory, envFile).run()
 }
 
 const ls = function (directory, envFile) {
