@@ -23,14 +23,14 @@ t.test('expands', ct => {
   ct.end()
 })
 
-t.test('expands using machine value', ct => {
+t.test('expands using the file value first (if it exists)', ct => {
   process.env.MACHINE = 'machine'
 
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath })
 
-  ct.equal(env.parsed.MACHINE_EXPAND, 'machine')
-  ct.equal(process.env.MACHINE_EXPAND, 'machine')
+  ct.equal(env.parsed.MACHINE_EXPAND, 'machine_env')
+  ct.equal(process.env.MACHINE_EXPAND, 'machine_env')
 
   ct.end()
 })

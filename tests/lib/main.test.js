@@ -6,6 +6,7 @@ const main = require('../../src/lib/main')
 
 const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
+const Run = require('../../src/lib/services/run')
 const Sets = require('../../src/lib/services/sets')
 const Status = require('../../src/lib/services/status')
 const Encrypt = require('../../src/lib/services/encrypt')
@@ -13,13 +14,13 @@ const Genexample = require('../../src/lib/services/genexample')
 const Settings = require('../../src/lib/services/settings')
 const VaultEncrypt = require('../../src/lib/services/vaultEncrypt')
 
-t.test('config calls dotenv.config', ct => {
-  const stub = sinon.stub(dotenv, 'config')
-  stub.returns({})
+t.test('config calls Run.run', ct => {
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
   main.config()
 
-  t.ok(stub.called, 'dotenv.config() called')
+  t.ok(stub.called, 'new Run().run() called')
 
   stub.restore()
 

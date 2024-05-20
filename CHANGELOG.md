@@ -2,17 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.42.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.43.0...main)
+
+## 0.43.0
+
+### Added
+
+* Support `require('@dotenvx/dotenvx').config()` for `DOTENV_PRIVATE_KEY` decryption ([#225](https://github.com/dotenvx/dotenvx/pull/225))
 
 ## 0.42.0
 
-## Added
+### Added
 
 * Added `.env.vault deprecated` warning when using `DOTENV_KEY`. Provide instructions to convert to encrypted `.env` files. ([#224](https://github.com/dotenvx/dotenvx/pull/224))
 
 ## 0.41.0
 
-## Added
+### Added
 
 * Added `vault convert` command to list convert instructions for converting `.env.vault` to encrypted .env files ([#222](https://github.com/dotenvx/dotenvx/pull/222))
 
@@ -39,27 +45,27 @@ Update production with your new DOTENV_PRIVATE_KEY_PRODUCTION located in .env.ke
 Learn more at [https://dotenvx.com/docs/quickstart#add-encryption]
 ```
 
-## Changed
+### Changed
 
 * Rename `encryptme` to `convert` ([#222](https://github.com/dotenvx/dotenvx/pull/222))
 
 ## 0.40.1
 
-## Added
+### Added
 
 * Support encryption replacemnt of multiline values ([#220](https://github.com/dotenvx/dotenvx/pull/220))
 
 ## 0.40.0
 
-## Added
+### Added
 
 * Added `dotenvx encryptme` command to convert an entire `.env` file to an encrypted `.env` file. ([#213](https://github.com/dotenvx/dotenvx/pull/213))
 
-## Changed
+### Changed
 
 * Made `precommit` smart enough to check if a `.env*` file is encrypted or not. If fully encrypted, then allow `precommit` check to pass ([#211](https://github.com/dotenvx/dotenvx/pull/211))
 
-## Removed
+### Removed
 
 * Do not warn of missing files for conventions (too noisy) ([#216](https://github.com/dotenvx/dotenvx/pull/216))
 

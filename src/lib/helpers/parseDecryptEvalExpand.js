@@ -7,13 +7,10 @@ function parseDecryptEvalExpand (src, privateKey = null) {
   // parse
   const parsed = dotenv.parse(src)
 
-  // inline decrypt
-  for (const key in parsed) {
-    const value = parsed[key]
-
-    // handle inline encrypted values
-    if (privateKey && privateKey.length > 0) {
-      // privateKey
+  // handle inline encrypted values
+  if (privateKey && privateKey.length > 0) {
+    for (const key in parsed) {
+      const value = parsed[key]
       parsed[key] = decryptValue(value, privateKey)
     }
   }
