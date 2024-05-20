@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## Added
 
-* Added `.env.vault deprecated` warning when using `DOTENV_KEY`. Provide instructions to convert to encrypted `.env` files. ([#223](https://github.com/dotenvx/dotenvx/pull/223))
+* Added `.env.vault deprecated` warning when using `DOTENV_KEY`. Provide instructions to convert to encrypted `.env` files. ([#224](https://github.com/dotenvx/dotenvx/pull/224))
 
 ## 0.41.0
 
