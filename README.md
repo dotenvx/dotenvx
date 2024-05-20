@@ -995,6 +995,37 @@ More examples
   ```
 
   </details>
+* <details><summary>`convert`</summary><br>
+
+  Convert a `.env` file to an encrypted `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx convert
+  ✔ encrypted (.env)
+  ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
+  ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
+  ℹ run [DOTENV_PRIVATE_KEY='122...0b8' dotenvx run -- yourcommand] to test decryption locally
+  ```
+
+  </details>
+* <details><summary>`convert -f`</summary><br>
+
+  Convert a specified `.env` file to an encrypted `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "HELLO=Production" > .env.production
+
+  $ dotenvx convert -f .env.production
+  ✔ encrypted (.env.production)
+  ✔ key added to .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION)
+  ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
+  ℹ run [DOTENV_PRIVATE_KEY_PRODUCTION='bff..bc4' dotenvx run -- yourcommand] to test decryption locally
+  ```
+
+  </details>
 * <details><summary>`ls`</summary><br>
 
   Print all `.env` files in a tree structure.
