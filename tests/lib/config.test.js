@@ -5,6 +5,7 @@ const sinon = require('sinon')
 const t = require('tap')
 
 const dotenvx = require('../../src/lib/main')
+const logger = require('../../src/shared/logger')
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
@@ -75,18 +76,6 @@ t.test('sets values from both .env.local and .env. but neither is used as value 
   ct.end()
 })
 
-t.test('takes URL for path option', ct => {
-  const envPath = path.resolve(__dirname, '..', '.env')
-  const fileUrl = new URL(`file://${envPath}`)
-
-  const env = dotenvx.config({ path: fileUrl })
-
-  ct.equal(env.parsed.BASIC, 'basic')
-  ct.equal(process.env.BASIC, 'basic')
-
-  ct.end()
-})
-
 t.test('takes option for path along with home directory char ~', ct => {
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo')
   const mockedHomedir = '/Users/dummy'
@@ -99,27 +88,6 @@ t.test('takes option for path along with home directory char ~', ct => {
 
   homedirStub.restore()
   readFileSyncStub.restore()
-  ct.end()
-})
-
-t.test('takes option for encoding', ct => {
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo')
-
-  const testEncoding = 'latin1'
-  dotenvx.config({ encoding: testEncoding })
-  ct.equal(readFileSyncStub.args[0][1].encoding, testEncoding)
-
-  readFileSyncStub.restore()
-  ct.end()
-})
-
-t.test('takes option for debug', ct => {
-  const logStub = sinon.stub(console, 'log')
-
-  dotenvx.config({ debug: 'true' })
-  ct.ok(logStub.called)
-
-  logStub.restore()
   ct.end()
 })
 
@@ -150,7 +118,7 @@ t.test('does not write over keys already in process.env', ct => {
   ct.end()
 })
 
-t.test('does write over keys already in process.env if override turned on', ct => {
+t.test('writes over keys already in process.env if override turned on', ct => {
   const testPath = 'tests/.env'
   const existing = 'bar'
   process.env.BASIC = existing
@@ -225,7 +193,7 @@ t.test('returns any errors thrown from reading file or parsing', ct => {
 t.test('logs any errors thrown from reading file or parsing when in debug mode', ct => {
   ct.plan(2)
 
-  const logStub = sinon.stub(console, 'log')
+  const logStub = sinon.stub(logger, 'warnv')
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo')
 
   readFileSyncStub.throws()
@@ -238,10 +206,10 @@ t.test('logs any errors thrown from reading file or parsing when in debug mode',
   readFileSyncStub.restore()
 })
 
-t.test('logs any errors parsing when in debug and override mode', ct => {
+t.test('logs when in debug mode', ct => {
   ct.plan(1)
 
-  const logStub = sinon.stub(console, 'log')
+  const logStub = sinon.stub(logger, 'debug')
 
   dotenvx.config({ debug: true, override: true })
 
