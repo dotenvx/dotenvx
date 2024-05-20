@@ -105,7 +105,7 @@ program.command('set')
 
 // dotenvx convert
 program.command('convert')
-  .description('encrypt env file(s) environment variables')
+  .description('convert env file(s) to encrypted env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(require('./actions/convert'))
 
