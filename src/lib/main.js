@@ -55,7 +55,6 @@ const config = function (options = {}) {
 
     const {
       processedEnvs,
-      readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
     } = new Run(envs, overload, DOTENV_KEY, processEnv).run()
@@ -71,10 +70,6 @@ const config = function (options = {}) {
 
       if (processedEnv.type === 'envFile') {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-      }
-
-      if (processedEnv.type === 'env') {
-        logger.verbose(`loading env from string (${processedEnv.string})`)
       }
 
       if (processedEnv.error) {
@@ -114,14 +109,9 @@ const config = function (options = {}) {
     }
 
     let msg = `injecting env (${uniqueInjectedKeys.length})`
-    if (readableFilepaths.length > 0 && readableStrings.length > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}, and --env flag${readableStrings.length > 1 ? 's' : ''}`
-    } else if (readableFilepaths.length > 0) {
+    if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
-    } else if (readableStrings.length > 0) {
-      msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
     }
-
     logger.successv(msg)
 
     if (lastError) {

@@ -16,7 +16,7 @@ const VaultEncrypt = require('../../src/lib/services/vaultEncrypt')
 
 t.test('config calls Run.run', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
-  stub.returns({})
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
   main.config()
 
