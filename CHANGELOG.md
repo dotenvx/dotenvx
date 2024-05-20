@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.40.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.41.0...main)
+
+## 0.41.0
+
+## Added
+
+* Added `vault convert` command to convert `.env.vault` to encrypted .env files ([#222](https://github.com/dotenvx/dotenvx/pull/222))
+
+## Changed
+
+* Rename `encryptme` to `convert` ([#222](https://github.com/dotenvx/dotenvx/pull/222))
 
 ## 0.40.1
 
