@@ -7,7 +7,7 @@ const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
 const ENCODING = 'utf8'
 
-async function encryptme () {
+async function convert () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -16,14 +16,14 @@ async function encryptme () {
       processedEnvFiles,
       changedFilepaths,
       unchangedFilepaths
-    } = main.encryptme(options.envFile)
+    } = main.convert(options.envFile)
 
     for (const processedEnvFile of processedEnvFiles) {
       logger.verbose(`encrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
       if (processedEnvFile.error) {
         if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
           logger.warn(processedEnvFile.error)
-          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx encryptme]`)
+          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx convert]`)
         } else {
           logger.warn(processedEnvFile.error)
         }
@@ -70,4 +70,4 @@ async function encryptme () {
   }
 }
 
-module.exports = encryptme
+module.exports = convert

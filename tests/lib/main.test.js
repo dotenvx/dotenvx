@@ -117,11 +117,11 @@ t.test('set calls Sets.run', ct => {
   ct.end()
 })
 
-t.test('encryptme calls Encrypt.run', ct => {
+t.test('convert calls Encrypt.run', ct => {
   const stub = sinon.stub(Encrypt.prototype, 'run')
   stub.returns({})
 
-  main.encryptme()
+  main.convert()
 
   t.ok(stub.called, 'new Encrypt().run() called')
 

@@ -42,7 +42,7 @@ const parse = function (src) {
   return dotenv.parse(src)
 }
 
-// DEPRECATED: will became the same function as encryptme
+// DEPRECATED: will became the same function as convert
 const encrypt = function (directory, envFile) {
   return new VaultEncrypt(directory, envFile).run()
 }
@@ -67,7 +67,7 @@ const set = function (key, value, envFile, encrypt) {
   return new Sets(key, value, envFile, encrypt).run()
 }
 
-const encryptme = function (envFile) {
+const convert = function (envFile) {
   return new Encrypt(envFile).run()
 }
 
@@ -109,7 +109,7 @@ module.exports = {
   ls,
   get,
   set,
-  encryptme,
+  convert,
   status,
   genexample,
   // settings
