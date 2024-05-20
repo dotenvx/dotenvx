@@ -29,8 +29,7 @@ function convert (directory) {
     logger.help2('')
     logger.success('Learn more at [https://dotenvx.com/docs/quickstart#add-encryption]')
     logger.help2('')
-
-    } catch (error) {
+  } catch (error) {
     logger.error(error.message)
     if (error.help) {
       logger.help(error.help)
