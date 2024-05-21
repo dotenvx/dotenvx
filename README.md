@@ -45,10 +45,10 @@ $ echo "HELLO=World" > .env
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ node index.js
-Hello undefined
+Hello undefined # without dotenvx
 
 $ dotenvx run -- node index.js
-Hello World
+Hello World # with dotenvx
 > :-D
 ```
 
