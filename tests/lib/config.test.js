@@ -217,3 +217,15 @@ t.test('logs when in debug mode', ct => {
 
   logStub.restore()
 })
+
+t.test('does not log when in quiet mode', ct => {
+  ct.plan(1)
+
+  const logStub = sinon.stub(logger, 'debug')
+
+  dotenvx.config({ quiet: true })
+
+  ct.notOk(logStub.called)
+
+  logStub.restore()
+})
