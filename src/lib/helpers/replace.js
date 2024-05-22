@@ -10,7 +10,7 @@ function replace (src, key, value) {
       `^${key}=` + // start of line with key
       '(?:' + // begin non-capturing group for handling both quoted and unquoted values
         '(["\'`])' + // capture opening quote (' or " or `)
-      //        '[^\\1]*' + // match any character except the quote captured initially
+        '[^\\1]*' + // match any character except the quote captured initially
         '\\1' + // match the same closing quote as captured at the start
       '|' + // OR
         '[^#\\n]*' + // match any characters until a # (comment) or newline
