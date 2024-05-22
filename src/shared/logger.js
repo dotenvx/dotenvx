@@ -103,4 +103,29 @@ const logger = createLogger({
   ]
 })
 
-module.exports = logger
+const setLogLevel = options => {
+  if (options.logLevel) {
+    logger.level = options.logLevel
+    logger.debug(`setting log level to ${options.logLevel}`)
+  }
+
+  // --quiet overides --log-level. only errors will be shown
+  if (options.quiet) {
+    logger.level = 'error'
+  }
+
+  // --verbose overrides --quiet
+  if (options.verbose) {
+    logger.level = 'verbose'
+  }
+
+  // --debug overrides --verbose
+  if (options.debug) {
+    logger.level = 'debug'
+  }
+}
+
+module.exports = {
+  logger,
+  setLogLevel
+}

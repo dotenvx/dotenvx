@@ -1,7 +1,7 @@
 const { Command } = require('commander')
 
 const store = require('./../../shared/store')
-const logger = require('./../../shared/logger')
+const { logger } = require('./../../shared/logger')
 
 const hub = new Command('hub')
 

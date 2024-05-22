@@ -1,7 +1,7 @@
 const path = require('path')
 const execa = require('execa')
 const which = require('which')
-const logger = require('./../../shared/logger')
+const { logger } = require('./../../shared/logger')
 
 const Run = require('./../../lib/services/run')
 

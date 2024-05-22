@@ -1,4 +1,4 @@
-const logger = require('./../../shared/logger')
+const { logger } = require('./../../shared/logger')
 
 const Precommit = require('./../../lib/services/precommit')
 

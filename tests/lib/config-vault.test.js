@@ -4,7 +4,7 @@ const sinon = require('sinon')
 const t = require('tap')
 
 const dotenvx = require('../../src/lib/main')
-const logger = require('../../src/shared/logger')
+const { logger } = require('../../src/shared/logger')
 
 const testPath = 'tests/.env'
 

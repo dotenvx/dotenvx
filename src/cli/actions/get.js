@@ -1,4 +1,4 @@
-const logger = require('./../../shared/logger')
+const { logger } = require('./../../shared/logger')
 
 const conventions = require('./../../lib/helpers/conventions')
 

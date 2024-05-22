@@ -4,7 +4,7 @@ const UpdateNotice = require('./../lib/helpers/updateNotice')
 const { Command } = require('commander')
 const program = new Command()
 
-const logger = require('./../shared/logger')
+const { setLogLevel, logger } = require('../shared/logger')
 const examples = require('./examples')
 const packageJson = require('./../lib/helpers/packageJson')
 
@@ -33,25 +33,7 @@ program
   .hook('preAction', (thisCommand, actionCommand) => {
     const options = thisCommand.opts()
 
-    if (options.logLevel) {
-      logger.level = options.logLevel
-      logger.debug(`setting log level to ${options.logLevel}`)
-    }
-
-    // --quiet overides --log-level. only errors will be shown
-    if (options.quiet) {
-      logger.level = 'error'
-    }
-
-    // --verbose overrides --quiet
-    if (options.verbose) {
-      logger.level = 'verbose'
-    }
-
-    // --debug overrides --verbose
-    if (options.debug) {
-      logger.level = 'debug'
-    }
+    setLogLevel(options)
   })
 
 // cli

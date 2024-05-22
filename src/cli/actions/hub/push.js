@@ -3,7 +3,7 @@ const path = require('path')
 const { request } = require('undici')
 
 const store = require('./../../../shared/store')
-const logger = require('./../../../shared/logger')
+const { logger } = require('./../../../shared/logger')
 const createSpinner = require('./../../../shared/createSpinner')
 
 const isGitRepo = require('./../../../lib/helpers/isGitRepo')

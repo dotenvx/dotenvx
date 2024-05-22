@@ -5,7 +5,7 @@ const sinon = require('sinon')
 const t = require('tap')
 
 const dotenvx = require('../../src/lib/main')
-const logger = require('../../src/shared/logger')
+const { logger } = require('../../src/shared/logger')
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
@@ -209,23 +209,75 @@ t.test('logs any errors thrown from reading file or parsing when in debug mode',
 t.test('logs when in debug mode', ct => {
   ct.plan(1)
 
-  const logStub = sinon.stub(logger, 'debug')
+  dotenvx.config({ debug: true })
 
-  dotenvx.config({ debug: true, override: true })
-
-  ct.ok(logStub.called)
-
-  logStub.restore()
+  ct.equal(logger.level, 'debug')
 })
 
 t.test('does not log when in quiet mode', ct => {
-  ct.plan(1)
+  ct.plan(2)
 
   const logStub = sinon.stub(logger, 'debug')
 
   dotenvx.config({ quiet: true })
 
+  ct.equal(logger.level, 'error')
   ct.notOk(logStub.called)
+
+  logStub.restore()
+})
+
+t.test('logs in verbose mode', ct => {
+  ct.plan(1)
+
+  dotenvx.config({ verbose: true })
+
+  ct.equal(logger.level, 'verbose')
+})
+
+t.test('sets specific log level and logs it', ct => {
+  ct.plan(2)
+
+  const logStub = sinon.stub(logger, 'debug')
+
+  dotenvx.config({ logLevel: 'warn' })
+
+  ct.equal(logger.level, 'warn')
+  ct.ok(logStub.calledWith('setting log level to warn'))
+
+  logStub.restore()
+})
+
+t.test('verbose mode overrides quiet mode', ct => {
+  ct.plan(1)
+
+  dotenvx.config({ quiet: true, verbose: true })
+
+  ct.equal(logger.level, 'verbose')
+})
+
+t.test('quiet mode overrides specific log level', ct => {
+  ct.plan(2)
+
+  const logStub = sinon.stub(logger, 'debug')
+
+  dotenvx.config({ logLevel: 'warn', quiet: true })
+
+  ct.equal(logger.level, 'error')
+  ct.ok(logStub.calledWith('setting log level to warn'))
+
+  logStub.restore()
+})
+
+t.test('debug mode overrides logLevel, quiet, verbose', ct => {
+  ct.plan(2)
+
+  const logStub = sinon.stub(logger, 'debug')
+
+  dotenvx.config({ logLevel: 'warn', debug: true, quiet: true, verbose: true })
+
+  ct.equal(logger.level, 'debug')
+  ct.ok(logStub.calledWith('setting log level to warn'))
 
   logStub.restore()
 })
