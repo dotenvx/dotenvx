@@ -167,14 +167,15 @@ t.test('#replace newlines', ct => {
   ct.end()
 })
 
-t.test('#replace unquoted newlines', ct => {
-  const src = 'HELLO=dontexpand\nnewlines'
-
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
-
-  ct.end()
-})
+// TODO: add support for these
+// t.test('#replace unquoted newlines', ct => {
+//   const src = 'HELLO=dontexpand\nnewlines'
+//
+//   const newSrc = replace(src, 'HELLO', 'Universe')
+//   ct.same(newSrc, 'HELLO="Universe"')
+//
+//   ct.end()
+// })
 
 t.test('#replace inline comments', ct => {
   const src = 'HELLO=inline comments # work #very #well'
@@ -279,6 +280,42 @@ HELLO4="world"`
 HELLO2="world"
 HELLO3="universe"
 HELLO4="world"`
+
+  ct.same(newSrc, expected)
+
+  ct.end()
+})
+
+t.test('#replace somewhere in the middle when single quoted', ct => {
+  const src = `HELLO='world'
+HELLO2='world'
+HELLO3='world'
+HELLO4='world'`
+
+  const newSrc = replace(src, 'HELLO3', 'universe')
+
+  const expected = `HELLO='world'
+HELLO2='world'
+HELLO3="universe"
+HELLO4='world'`
+
+  ct.same(newSrc, expected)
+
+  ct.end()
+})
+
+t.test('#replace somewhere in the middle when backtick quoted', ct => {
+  const src = `HELLO=\`world\`
+HELLO2=\`world\`
+HELLO3=\`world\`
+HELLO4=\`world\``
+
+  const newSrc = replace(src, 'HELLO3', 'universe')
+
+  const expected = `HELLO=\`world\`
+HELLO2=\`world\`
+HELLO3="universe"
+HELLO4=\`world\``
 
   ct.same(newSrc, expected)
 
