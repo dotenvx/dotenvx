@@ -103,4 +103,24 @@ const logger = createLogger({
   ]
 })
 
-module.exports = logger
+const setLogLevel = options => {
+  const logLevel = options.debug
+    ? 'debug'
+    : options.verbose
+      ? 'verbose'
+      : options.quiet
+        ? 'error'
+        : options.logLevel
+
+  if (!logLevel) return
+  logger.level = logLevel
+  // Only log which level it's setting if it's not set to quiet mode
+  if (!options.quiet || (options.quiet && logLevel !== 'error')) {
+    logger.debug(`Setting log level to ${logLevel}`)
+  }
+}
+
+module.exports = {
+  logger,
+  setLogLevel
+}

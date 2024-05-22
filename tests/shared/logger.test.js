@@ -3,7 +3,7 @@ const t = require('tap')
 const chalk = require('chalk')
 
 const packageJson = require('../../src/lib/helpers/packageJson')
-const logger = require('../../src/shared/logger')
+const { logger } = require('../../src/shared/logger')
 
 t.test('logger.blank', (ct) => {
   const message = 'message1'

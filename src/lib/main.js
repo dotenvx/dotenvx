@@ -1,5 +1,5 @@
 const path = require('path')
-const logger = require('./../shared/logger')
+const { logger } = require('./../shared/logger')
 const dotenv = require('dotenv')
 
 // services
@@ -15,6 +15,7 @@ const VaultEncrypt = require('./services/vaultEncrypt')
 
 // helpers
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
+const { setLogLevel } = require('../shared/logger')
 
 // proxies to dotenv
 const config = function (options = {}) {
@@ -33,11 +34,7 @@ const config = function (options = {}) {
     DOTENV_KEY = options.DOTENV_KEY
   }
 
-  // debug -> log level
-  if (options && options.debug) {
-    logger.level = 'debug'
-    logger.debug('setting log level to debug')
-  }
+  if (options) setLogLevel(options)
 
   // build envs using user set option.path
   const optionPaths = dotenvOptionPaths(options) // [ '.env' ]

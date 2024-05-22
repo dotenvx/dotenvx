@@ -5,7 +5,7 @@ const confirm = require('@inquirer/confirm').default
 
 const createSpinner = require('./../../../shared/createSpinner')
 const store = require('./../../../shared/store')
-const logger = require('./../../../shared/logger')
+const { logger } = require('./../../../shared/logger')
 
 const OAUTH_CLIENT_ID = 'oac_dotenvxcli'
 
