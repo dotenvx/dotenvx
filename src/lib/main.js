@@ -33,6 +33,11 @@ const config = function (options = {}) {
     DOTENV_KEY = options.DOTENV_KEY
   }
 
+  // --quiet CLI flag equivalent. only errors will be shown
+  if (options && options.quiet) {
+    logger.level = 'error'
+  }
+
   // debug -> log level
   if (options && options.debug) {
     logger.level = 'debug'
