@@ -22,7 +22,7 @@ function replace (src, key, value) {
     )
 
     output = src.replace(regex, `$1${formatted}`)
-   } else {
+  } else {
     // append
     if (src.endsWith('\n')) {
       formatted = formatted + '\n'
