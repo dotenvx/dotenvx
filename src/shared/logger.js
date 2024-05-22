@@ -104,24 +104,19 @@ const logger = createLogger({
 })
 
 const setLogLevel = options => {
-  if (options.logLevel) {
-    logger.level = options.logLevel
-    logger.debug(`setting log level to ${options.logLevel}`)
-  }
+  const logLevel = options.debug
+    ? 'debug'
+    : options.verbose
+      ? 'verbose'
+      : options.quiet
+        ? 'error'
+        : options.logLevel
 
-  // --quiet overides --log-level. only errors will be shown
-  if (options.quiet) {
-    logger.level = 'error'
-  }
-
-  // --verbose overrides --quiet
-  if (options.verbose) {
-    logger.level = 'verbose'
-  }
-
-  // --debug overrides --verbose
-  if (options.debug) {
-    logger.level = 'debug'
+  if (!logLevel) return
+  logger.level = logLevel
+  // Only log which level it's setting if it's not set to quiet mode
+  if (!options.quiet || (options.quiet && logLevel !== 'error')) {
+    logger.debug(`Setting log level to ${logLevel}`)
   }
 }
 
