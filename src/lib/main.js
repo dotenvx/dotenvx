@@ -34,7 +34,7 @@ const config = function (options = {}) {
     DOTENV_KEY = options.DOTENV_KEY
   }
 
-  setLogLevel(options)
+  if (options) setLogLevel(options)
 
   // build envs using user set option.path
   const optionPaths = dotenvOptionPaths(options) // [ '.env' ]
