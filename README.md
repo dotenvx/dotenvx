@@ -9,7 +9,7 @@
 &nbsp;
 
 
-### Quickstart
+### Quickstart [![NPM version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg?style=flat-square)](https://www.npmjs.com/package/@dotenvx/dotenvx)
 
 Install and use it in code just like `dotenv`.
 
