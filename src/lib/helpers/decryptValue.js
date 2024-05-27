@@ -23,7 +23,12 @@ function decryptValue (value, privateKey) {
     }
   }
 
-  return decryptedValue || value
+  // return 'encrypted:string' value if undefined or null
+  if (decryptedValue === undefined || decryptedValue === null) {
+    return value
+  }
+
+  return decryptedValue
 }
 
 module.exports = decryptValue
