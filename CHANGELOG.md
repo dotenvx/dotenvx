@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.1...main)
+
+## 0.44.1
+
+### Changed
+
+* Respect decryption of zero length strings - `dotenvx set HELLO '' --encrypt` ([#236](https://github.com/dotenvx/dotenvx/pull/236))
 
 ## 0.44.0
 

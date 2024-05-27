@@ -32,6 +32,18 @@ t.test('#parseDecryptEvalExpand with encrypted value', ct => {
   ct.end()
 })
 
+t.test('#parseDecryptEvalExpand with encrypted value as empty string', ct => {
+  src = 'HELLO=encrypted:BGKyYqb2aCT1GJQnluY7LGgHZvrHL9+w6LtFp+fxxc3AYSWt+z0P/xYUdZu/uWy5psgk2jfJfDV3P0MpL4V6/r2DMWvnNAzzshf3vPFg9FG1mpn9qNGxPcwoYoT6YKF0Nw=='
+
+  const privateKey = 'd470775e64ae4cfe617b14f9ce3800e1c5a7fd773b57aa0471ed6e3e5060ffce'
+
+  const parsed = parseDecryptEvalExpand(src, privateKey)
+
+  ct.same(parsed, { HELLO: '' })
+
+  ct.end()
+})
+
 t.test('#parseDecryptEvalExpand machine value already set', ct => {
   process.env.HELLO = 'machine'
 

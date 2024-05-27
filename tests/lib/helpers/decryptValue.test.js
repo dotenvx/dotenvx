@@ -27,3 +27,11 @@ t.test('#decryptValue (fails decryption) returns raw value', ct => {
 
   ct.end()
 })
+
+t.test('#decryptValue when empty string', ct => {
+  const result = encryptValue('', publicKey)
+  const decrypted = decryptValue(result, privateKey)
+  ct.same(decrypted, '')
+
+  ct.end()
+})
