@@ -9,7 +9,7 @@
   ],
   "homepage": "https://github.com/dotenvx/dotenvx",
   "repository": "dotenvx/dotenvx",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "files": [
     "src/**/*"
   ],
