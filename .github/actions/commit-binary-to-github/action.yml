@@ -49,7 +49,6 @@ runs:
       shell: bash
       run: |
         cd dotenvx-${{ inputs.platform }}
-        npm version ${{ env.CLEAN_VERSION }} --no-git-tag-version
         git config --global user.name 'motdotenv'
         git config --global user.email 'mot@dotenv.org'
         git add .
