@@ -393,7 +393,6 @@ jobs:
           repository: dotenv/dotenvx
           short-description: ${{ github.event.repository.description }}
 
-  # binaries to npm
   dotenvx-darwin-amd64:
     needs: release
     runs-on: ubuntu-latest
