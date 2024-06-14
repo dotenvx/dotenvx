@@ -31,7 +31,7 @@ jobs:
   #     - run: npm test
 
   # binaries to npm
-  dotenvx-darwin-amd64:
+  adotenvx-darwin-amd64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -47,7 +47,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-darwin-arm64:
+  adotenvx-darwin-arm64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -63,7 +63,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-darwin-x86_64:
+  adotenvx-darwin-x86_64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -79,7 +79,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-linux-aarch64:
+  adotenvx-linux-aarch64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -95,7 +95,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-linux-amd64:
+  adotenvx-linux-amd64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -111,7 +111,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-linux-arm64:
+  adotenvx-linux-arm64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -127,7 +127,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-linux-x86_64:
+  adotenvx-linux-x86_64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -143,7 +143,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-windows-amd64:
+  adotenvx-windows-amd64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -159,7 +159,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-windows-arm64:
+  adotenvx-windows-arm64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -175,7 +175,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-  dotenvx-windows-x86_64:
+  adotenvx-windows-x86_64:
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -191,7 +191,6 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
  
-     
   # run only on semantic version tag
   release:
     needs: test
