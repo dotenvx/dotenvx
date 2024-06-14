@@ -230,6 +230,151 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: dotenv/dotenvx
           short-description: ${{ github.event.repository.description }}
+
+  dotenvx-darwin-amd64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: darwin-amd64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  dotenvx-darwin-arm64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: darwin-arm64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  dotenvx-darwin-x86_64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: darwin-x86_64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  dotenvx-linux-aarch64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: linux-aarch64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  dotenvx-linux-amd64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: linux-amd64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  dotenvx-linux-arm64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: linux-arm64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  dotenvx-linux-x86_64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: linux-x86_64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  dotenvx-windows-amd64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: windows-amd64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  dotenvx-windows-x86_64:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: windows-x86_64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+ 
   postrelease-ubuntu:
     needs: [homebrew, npm, docker]
     runs-on: ubuntu-latest
