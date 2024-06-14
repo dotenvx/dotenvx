@@ -42,7 +42,7 @@ jobs:
       # GITHUB_ENV operates like a .env file
       - name: extract version
         run: |
-          VERSION=v0.1.2
+          VERSION=v0.1.4
           CLEAN_VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
@@ -52,25 +52,16 @@ jobs:
         with:
           node-version: 16.x
 
-      # https://news.ycombinator.com/item?id=32388964
-      # https://github.com/procursusteam/ldid
-      # https://www.pulumi.com/blog/nodejs-binaries-with-pkg/
-      # https://github.com/pulumi/pulumi-aws-static-website/blob/main/.github/workflows/release.yaml
-      - name: ldid for macos binary building
-        uses: MOZGIII/install-ldid-action@v1
-        with:
-          tag: v2.1.5-procursus2
-
-      - name: npm install
-        run: npm install
-
-      - name: pkg
+      - name: download release tarball
         run: |
-          echo "pkg-ing dotenvx-darwin-arm64"
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/dotenvx
-          echo "change ownership"
-          sudo chown -R root:root bin/
-      - name: checkout dotenvx/dotenvx-darwin-arm64 repo
+          curl -L -o dotenvx-darwin-arm64-${{ env.CLEAN_VERSION }}.tar.gz https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-darwin-arm64-${{ env.CLEAN_VERSION }}.tar.gz
+
+      - name: extract tarball
+        run: |
+          mkdir -p binary
+          tar -xzvf dotenvx-darwin-arm64-${{ env.CLEAN_VERSION }}.tar.gz -C binary --strip-components=1
+
+        - name: checkout dotenvx/dotenvx-darwin-arm64 repo
         uses: actions/checkout@v4
         with:
           repository: "dotenvx/dotenvx-darwin-arm64"
@@ -79,7 +70,7 @@ jobs:
       - name: copy dotenvx binary to dotenvx-darwin-arm64 repo
         run: |
           mkdir -p dotenvx-darwin-arm64
-          cp -r bin/darwin-arm64/* dotenvx-darwin-arm64/
+          cp -r binary/* dotenvx-darwin-arm64/
       - name: set version, commit, and push
         run: |
           cd dotenvx-darwin-arm64
