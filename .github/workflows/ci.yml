@@ -36,46 +36,12 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-
-      # GITHUB_ENV operates like a .env file
-      - name: extract version
-        run: |
-          VERSION=v0.30.0
-          CLEAN_VERSION=${VERSION#v}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
-      - name: node
-        uses: actions/setup-node@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
         with:
-          node-version: 16.x
-      - name: download and extract tarball
-        run: |
-          curl -L -o tarball.tar.gz https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-darwin-arm64.tar.gz
-          mkdir -p output
-          tar -xzvf tarball.tar.gz -C output --strip-components=1
-      - name: checkout dotenvx/dotenvx-darwin-arm64 repo
-        uses: actions/checkout@v4
-        with:
-          repository: "dotenvx/dotenvx-darwin-arm64"
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          path: "dotenvx-darwin-arm64"
-      - name: copy dotenvx binary to repo
-        run: |
-          mkdir -p dotenvx-darwin-arm64
-          cp -r output/* dotenvx-darwin-arm64/
-      - name: set version, commit, and push
-        run: |
-          cd dotenvx-darwin-arm64
-          npm version ${{ env.CLEAN_VERSION }} --no-git-tag-version
-          git config --global user.name 'motdotenv'
-          git config --global user.email 'mot@dotenv.org'
-          git add .
-          git commit -m "${{ env.VERSION }}"
-          git tag "${{ env.VERSION }}"
-          git push origin HEAD --tags
-
+          version: v0.30.1
+          platform: darwin-arm64
+      
   # run only on semantic version tag
   release:
     needs: test
