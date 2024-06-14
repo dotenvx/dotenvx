@@ -52,6 +52,6 @@ runs:
         git config --global user.name 'motdotenv'
         git config --global user.email 'mot@dotenv.org'
         git add .
-        git commit -m "${{ env.VERSION }}"
+        git commit -m "${{ env.VERSION }}" --allow-empty
         git tag "${{ env.VERSION }}" --force
         git push origin HEAD --tags --force
