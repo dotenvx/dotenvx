@@ -240,7 +240,7 @@ More examples
   ```sh
   FROM node:latest
   RUN echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
-  RUN curl -fsS https://dotenvx.sh/ | sh
+  RUN curl -fsS https://dotenvx.sh/install.sh | sh
   CMD ["dotenvx", "run", "--", "echo", "Hello $HELLO"]
   ```
 
@@ -261,7 +261,7 @@ More examples
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: curl -fsS https://dotenvx.sh/ | sh
+      - run: curl -fsS https://dotenvx.sh/install.sh | sh
       - run: dotenvx run -- node build.js
         env:
           DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
@@ -277,7 +277,7 @@ More examples
   heroku buildpacks:add https://github.com/dotenvx/heroku-buildpack-dotenvx
 
   # docker
-  RUN curl -fsS https://dotenvx.sh/ | sh
+  RUN curl -fsS https://dotenvx.sh/install.sh | sh
 
   # vercel
   npm install @dotenvx/dotenvx --save
@@ -1173,7 +1173,7 @@ More examples
   Add it to your `Dockerfile`.
 
   ```sh
-  RUN curl -fsS https://dotenvx.sh/ | sh
+  RUN curl -fsS https://dotenvx.sh/install.sh | sh
 
   ...
 
