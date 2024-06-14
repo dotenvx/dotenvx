@@ -42,7 +42,7 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: darwin-amd64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -58,7 +58,7 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: darwin-arm64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -74,7 +74,7 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: darwin-x86_64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -90,7 +90,7 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: linux-aarch64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -106,7 +106,7 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: linux-amd64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -122,7 +122,7 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: linux-arm64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -138,7 +138,7 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: linux-x86_64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -154,24 +154,8 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: windows-amd64
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-  adotenvx-windows-arm64:
-    needs: test
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: commit binary to github
-        uses: ./.github/actions/commit-binary-to-github
-        with:
-          version: v0.43.2
-          platform: windows-arm64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
@@ -186,7 +170,7 @@ jobs:
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
-          version: v0.43.2
+          version: v0.44.1
           platform: windows-x86_64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -517,22 +501,6 @@ jobs:
         with:
           version: ${GITHUB_REF#refs/tags/}
           platform: windows-amd64
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-  dotenvx-windows-arm64:
-    needs: release
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: commit binary to github
-        uses: ./.github/actions/commit-binary-to-github
-        with:
-          version: ${GITHUB_REF#refs/tags/}
-          platform: windows-arm64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
