@@ -30,55 +30,6 @@ jobs:
   #     - run: npm run standard
   #     - run: npm test
 
-  # binaries to npm
-  adotenvx-darwin-amd64:
-    needs: test
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: commit binary to github
-        uses: ./.github/actions/commit-binary-to-github
-        with:
-          version: v0.44.1
-          platform: darwin-amd64
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-  adotenvx-darwin-arm64:
-    needs: test
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: commit binary to github
-        uses: ./.github/actions/commit-binary-to-github
-        with:
-          version: v0.44.1
-          platform: darwin-arm64
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-  adotenvx-darwin-x86_64:
-    needs: test
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: commit binary to github
-        uses: ./.github/actions/commit-binary-to-github
-        with:
-          version: v0.44.1
-          platform: darwin-x86_64
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
   adotenvx-linux-aarch64:
     needs: test
     runs-on: ubuntu-latest

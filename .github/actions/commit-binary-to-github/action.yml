@@ -54,5 +54,5 @@ runs:
         git config --global user.email 'mot@dotenv.org'
         git add .
         git commit -m "${{ env.VERSION }}"
-        git tag "${{ env.VERSION }}"
-        git push origin HEAD --tags
+        git tag "${{ env.VERSION }}" --force
+        git push origin HEAD --tags --force
