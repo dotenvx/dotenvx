@@ -42,7 +42,7 @@ jobs:
       # GITHUB_ENV operates like a .env file
       - name: extract version
         run: |
-          VERSION=v0.1.1
+          VERSION=v0.1.2
           CLEAN_VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
@@ -80,9 +80,10 @@ jobs:
         run: |
           mkdir -p dotenvx-darwin-arm64
           cp -r bin/darwin-arm64/* dotenvx-darwin-arm64/
-      - name: commit and push
+      - name: set version, commit, and push
         run: |
           cd dotenvx-darwin-arm64
+          npm version ${{ env.CLEAN_VERSION }} --no-git-tag-version
           git config --global user.name 'motdotenv'
           git config --global user.email 'mot@dotenv.org'
           git add .
