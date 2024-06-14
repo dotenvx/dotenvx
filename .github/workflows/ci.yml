@@ -36,6 +36,8 @@ jobs:
     strategy:
       fail-fast: true
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:

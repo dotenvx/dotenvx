@@ -15,7 +15,6 @@ runs:
   steps:
     - name: checkout
       uses: actions/checkout@v4
-
     # GITHUB_ENV operates like a .env file
     - name: extract version
       run: |
