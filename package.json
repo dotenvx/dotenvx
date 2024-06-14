@@ -11,7 +11,8 @@
   "repository": "dotenvx/dotenvx",
   "license": "BSD-3-Clause",
   "files": [
-    "src/**/*"
+    "src/**/*",
+    "CHANGELOG"
   ],
   "main": "src/lib/main.js",
   "bin": {
