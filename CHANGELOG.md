@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.2...main)
+
+## 0.44.2
+
+### Changed
+
+* Fix license in `package.json` to match project's license BSD-3.
 
 ## 0.44.1
 
