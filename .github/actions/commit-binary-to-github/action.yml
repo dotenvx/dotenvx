@@ -14,6 +14,7 @@ runs:
   using: "composite"
   steps:
     - name: extract version
+      shell: bash
       run: |
         VERSION=${{inputs.version}}
         CLEAN_VERSION=${VERSION#v}
@@ -23,22 +24,29 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: 16.x
+
     - name: download and extract tarball
+      shell: bash
       run: |
         curl -L -o tarball.tar.gz https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-${{ inputs.platform }}.tar.gz
         mkdir -p output
         tar -xzvf tarball.tar.gz -C output --strip-components=1
+
     - name: checkout target repo
       uses: actions/checkout@v4
       with:
         repository: "dotenvx/dotenvx-${{ inputs.platform }}"
         token: ${{ env.PERSONAL_ACCESS_TOKEN }}
         path: "dotenvx-${{ inputs.platform }}"
+
     - name: copy dotenvx binary to repo
+      shell: bash
       run: |
         mkdir -p dotenvx-${{ inputs.platform }}
         cp -r output/* dotenvx-${{ inputs.platform }}/
+
     - name: set version, commit, and push
+      shell: bash
       run: |
         cd dotenvx-${{ inputs.platform }}
         npm version ${{ env.CLEAN_VERSION }} --no-git-tag-version
