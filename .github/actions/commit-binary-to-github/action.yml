@@ -19,7 +19,7 @@ runs:
     - name: extract version
       run: |
         VERSION=${{inputs.version}}
-        CLEAN_VERSION=${{VERSION#v }}
+        CLEAN_VERSION=${VERSION#v}
         echo "VERSION=$VERSION" >> $GITHUB_ENV
         echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
     - name: node
@@ -35,7 +35,7 @@ runs:
       uses: actions/checkout@v4
       with:
         repository: "dotenvx/dotenvx-${{ inputs.platform }}"
-        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        token: ${{ env.PERSONAL_ACCESS_TOKEN }}
         path: "dotenvx-${{ inputs.platform }}"
     - name: copy dotenvx binary to repo
       run: |

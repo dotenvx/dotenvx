@@ -43,6 +43,8 @@ jobs:
         with:
           version: v0.30.1
           platform: darwin-arm64
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       
   # run only on semantic version tag
   release:
