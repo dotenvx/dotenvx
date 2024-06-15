@@ -22,9 +22,9 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap run --show-full-coverage && shellspec",
+    "test": "tap run --show-full-coverage",
     "shellspec": "bash shellspec",
-    "prerelease": "npm test",
+    "prerelease": "npm test && shellspec",
     "release": "standard-version"
   },
   "funding": "https://dotenvx.com",

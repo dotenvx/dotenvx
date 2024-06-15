@@ -16,6 +16,7 @@ jobs:
       - run: npm install
       - run: npm run standard
       - run: npm run test
+      - run: npm run shellspec
       - run: npm audit --omit=dev
 
   # test-windows:
