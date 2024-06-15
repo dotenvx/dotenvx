@@ -50,16 +50,16 @@ jobs:
       - name: copy install.sh to dotenvx.sh repo
         run: |
           cp dist2/install.sh dotenvx.sh/install.sh
-          echo "${{ env.CLEAN_VERSION }}" > VERSION
+          echo "${{ env.CLEAN_VERSION }}" > dotenvx.sh/VERSION
       - name: commit and push
         run: |
           cd dotenvx.sh
           git config --global user.name 'motdotenv'
           git config --global user.email 'mot@dotenv.org'
           git add .
-          git commit -m "${{ env.VERSION }}"
-          git tag "${{ env.VERSION }}"
-          git push origin HEAD --tags
+          git commit -m "${{ env.VERSION }}" --allow-empty
+          git tag "${{ env.VERSION }}" --force
+          git push origin HEAD --tags --force
 
   # test-windows:
   #   runs-on: windows-latest
