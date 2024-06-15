@@ -67,6 +67,12 @@ jobs:
     strategy:
       fail-fast: true
     steps:
+      - name: extract version
+        run: |
+          VERSION=0.44.3
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
       - name: wait for deployment
         run: |
           end=$((SECONDS+300))
