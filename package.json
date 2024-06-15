@@ -22,7 +22,8 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap run --show-full-coverage",
+    "test": "tap run --show-full-coverage && shellspec",
+    "shellspec": "bash shellspec",
     "prerelease": "npm test",
     "release": "standard-version"
   },
