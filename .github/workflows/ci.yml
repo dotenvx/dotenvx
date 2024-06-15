@@ -392,7 +392,6 @@ jobs:
     needs: 
       - homebrew
       - npm
-      - docker
       - dotenvx-darwin-amd64
       - dotenvx-darwin-arm64
       - dotenvx-darwin-x86_64
