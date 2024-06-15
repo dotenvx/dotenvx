@@ -37,6 +37,8 @@ jobs:
 
       - name: update install.sh with VERSION
         run: |
+          mkdir -p dist
+          mkdir -p dist2
           sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist/install.sh
           sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist2/install.sh
       - name: checkout dotenvx/dotenvx.sh repo
