@@ -30,7 +30,7 @@ jobs:
       # GITHUB_ENV operates like a .env file
       - name: extract version
         run: |
-          VERSION=0.44.2
+          VERSION=0.44.3
           CLEAN_VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
@@ -60,11 +60,18 @@ jobs:
           git commit -m "${{ env.VERSION }}" --allow-empty
           git tag "${{ env.VERSION }}" --force
           git push origin HEAD --tags --force
+
+  confirm-dotenvx-sh:
+    needs: dotenvx-sh
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
       - name: wait for deployment
         run: |
           end=$((SECONDS+300))
           while [ $SECONDS -lt $end ]; do
-            current_version=$(curl -s https://dotenvx.sh/VERSION)
+            current_version=$(curl -s -L https://dotenvx.sh/VERSION)
             if [ "$current_version" == "${{ env.CLEAN_VERSION }}" ]; then
               echo "dotenvx.sh deployment successful with version $current_version"
               exit 0
