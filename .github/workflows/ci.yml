@@ -385,9 +385,92 @@ jobs:
           platform: windows-x86_64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
- 
+
+  # aggregate publish-all job to wait for all previous jobs to complete
+  publish-all:
+    runs-on: ubuntu-latest
+    needs: 
+      - homebrew
+      - npm
+      - docker
+      - dotenvx-darwin-amd64
+      - dotenvx-darwin-arm64
+      - dotenvx-darwin-x86_64
+      - dotenvx-linux-aarch64
+      - dotenvx-linux-amd64
+      - dotenvx-linux-arm64
+      - dotenvx-linux-x86_64
+      - dotenvx-windows-amd64
+      - dotenvx-windows-x86_64
+    steps:
+      - name: publish-all aggregate step
+        run: echo "publish-all completed"
+
+  dotenvx-sh:
+    needs: publish-all
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: extract version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+      - name: update install.sh with VERSION
+        run: |
+          mkdir -p dist
+          sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist/install.sh
+      - name: checkout dotenvx/dotenvx.sh repo
+        uses: actions/checkout@v4
+        with:
+          repository: "dotenvx/dotenvx.sh"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: "dotenvx.sh"
+      - name: copy install.sh to dotenvx.sh repo
+        run: |
+          cp dist/install.sh dotenvx.sh/install.sh
+          echo "${{ env.CLEAN_VERSION }}" > dotenvx.sh/VERSION
+      - name: commit and push
+        run: |
+          cd dotenvx.sh
+          git config --global user.name 'motdotenv'
+          git config --global user.email 'mot@dotenv.org'
+          git add .
+          git commit -m "${{ env.VERSION }}" --allow-empty
+          git tag "${{ env.VERSION }}" --force
+          git push origin HEAD --tags --force
+  confirm-dotenvx-sh:
+    needs: dotenvx-sh
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: extract version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+      - name: wait for deployment
+        run: |
+          end=$((SECONDS+300))
+          while [ $SECONDS -lt $end ]; do
+            current_version=$(curl -s -L https://dotenvx.sh/VERSION)
+            if [ "$current_version" == "${{ env.CLEAN_VERSION }}" ]; then
+              echo "dotenvx.sh deployment successful with version $current_version"
+              exit 0
+            fi
+            echo "waiting for deployment..."
+            sleep 10
+          done
+          echo "[DEPLOYMENT_FAILED]: VERSION did not update to ${{ env.CLEAN_VERSION }} within 5 minutes"
+          exit 1
+
   postrelease-ubuntu:
-    needs: [homebrew, npm, docker]
+    needs: confirm-dotenvx-sh
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -427,7 +510,7 @@ jobs:
             exit 1
           fi
   postrelease-mac:
-    needs: [homebrew, npm, docker]
+    needs: confirm-dotenvx-sh
     runs-on: macos-latest
     strategy:
       fail-fast: true
@@ -467,7 +550,7 @@ jobs:
             exit 1
           fi
   postrelease-windows:
-    needs: [homebrew, npm, docker]
+    needs: confirm-dotenvx-sh
     runs-on: windows-latest
     strategy:
       fail-fast: true

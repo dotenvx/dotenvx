@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.3...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.4...main)
+
+## 0.44.4
+
+### Changed
+
+* Automated deployment of `install.sh` along with sanity checks ([#250](https://github.com/dotenvx/dotenvx/pull/250))
 
 ## 0.44.3
 
