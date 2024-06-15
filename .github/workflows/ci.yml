@@ -82,10 +82,8 @@ jobs:
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-aarch64/dotenvx
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenvx.exe
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenvx.exe
-
           echo "change ownership"
           sudo chown -R root:root bin/
-
           echo "dist-ing"
           mkdir -p dist
           mkdir -p dist2
@@ -102,7 +100,6 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
           zip -j ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.zip bin/windows-amd64/dotenvx.exe
           zip -j ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip bin/windows-x86_64/dotenvx.exe
-
           tar --gzip -cf ./dist/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
@@ -114,7 +111,6 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
           zip -j ./dist/dotenvx-windows-amd64.zip bin/windows-amd64/dotenvx.exe
           zip -j ./dist/dotenvx-windows-x86_64.zip bin/windows-x86_64/dotenvx.exe
-
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-amd64.tar.gz -C bin/darwin-amd64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-x86_64.tar.gz -C bin/darwin-x86_64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-darwin-arm64.tar.gz -C bin/darwin-arm64/ .
@@ -127,9 +123,10 @@ jobs:
           zip -j ./dist2/latest/dotenvx-windows-amd64.zip bin/windows-amd64/dotenvx.exe
           zip -j ./dist2/latest/dotenvx-windows-x86_64.zip bin/windows-x86_64/dotenvx.exe
 
-      - name: update install.sh version
-        run: sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist/install.sh
-        run: sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist2/install.sh
+      - name: update install.sh with VERSION
+        run: |
+          sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist/install.sh
+          sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist2/install.sh
 
       - name: create release
         uses: softprops/action-gh-release@v1
