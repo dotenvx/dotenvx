@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.3...main)
+
+## 0.44.3
+
+### Added
+
+* Include `CHANGELOG.md` in npm release
+* Include `install.sh` in package release
 
 ## 0.44.2
 
