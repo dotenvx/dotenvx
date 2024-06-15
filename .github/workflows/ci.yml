@@ -21,6 +21,44 @@ jobs:
       - run: npm run testshell
       - run: npm audit --omit=dev
 
+  dotenvx-sh:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      # GITHUB_ENV operates like a .env file
+      - name: extract version
+        run: |
+          VERSION=0.44.3
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+
+      - name: update install.sh with VERSION
+        run: |
+          sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist/install.sh
+          sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist2/install.sh
+      - name: checkout dotenvx/dotenvx.sh repo
+        uses: actions/checkout@v4
+        with:
+          repository: "dotenvx/dotenvx.sh"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: "dotenvx.sh"
+      - name: copy install.sh to dotenvx.sh repo
+        run: |
+          cp dist2/install.sh dotenvx.sh/install.sh
+          echo "${{ env.CLEAN_VERSION }}" > VERSION
+      - name: commit and push
+        run: |
+          cd dotenvx.sh
+          git config --global user.name 'motdotenv'
+          git config --global user.email 'mot@dotenv.org'
+          git add .
+          git commit -m "${{ env.VERSION }}"
+          git tag "${{ env.VERSION }}"
+          git push origin HEAD --tags
+
   # test-windows:
   #   runs-on: windows-latest
   #   strategy:
@@ -385,9 +423,29 @@ jobs:
           platform: windows-x86_64
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
- 
+
+  # aggregate publish-all job to wait for all previous jobs to complete
+  publish-all:
+    runs-on: ubuntu-latest
+    needs: 
+      - homebrew
+      - npm
+      - docker
+      - dotenvx-darwin-amd64
+      - dotenvx-darwin-arm64
+      - dotenvx-darwin-x86_64
+      - dotenvx-linux-aarch64
+      - dotenvx-linux-amd64
+      - dotenvx-linux-arm64
+      - dotenvx-linux-x86_64
+      - dotenvx-windows-amd64
+      - dotenvx-windows-x86_64
+    steps:
+      - name: publish-all aggregate step
+        run: echo "publish-all completed"
+
   postrelease-ubuntu:
-    needs: [homebrew, npm, docker]
+    needs: publish-all
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -427,7 +485,7 @@ jobs:
             exit 1
           fi
   postrelease-mac:
-    needs: [homebrew, npm, docker]
+    needs: publish-all
     runs-on: macos-latest
     strategy:
       fail-fast: true
@@ -467,7 +525,7 @@ jobs:
             exit 1
           fi
   postrelease-windows:
-    needs: [homebrew, npm, docker]
+    needs: publish-all
     runs-on: windows-latest
     strategy:
       fail-fast: true
