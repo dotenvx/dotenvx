@@ -7,3 +7,5 @@ dist/*
 .env*
 !.env.vault
 tests/
+spec/
+.shellspec

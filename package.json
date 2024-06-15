@@ -23,7 +23,8 @@
     "standard": "standard",
     "standard:fix": "standard --fix",
     "test": "tap run --show-full-coverage",
-    "prerelease": "npm test",
+    "testshell": "bash shellspec",
+    "prerelease": "npm test && npm run testshell",
     "release": "standard-version"
   },
   "funding": "https://dotenvx.com",

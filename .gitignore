@@ -16,3 +16,5 @@ tests/tmp
 !tests/.env.multiline
 !tests/.env.vault
 !tests/monorepo/**/.env*
+spec/tmp/*
+!spec/tmp/.gitkeep
