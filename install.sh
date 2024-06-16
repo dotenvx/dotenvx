@@ -383,6 +383,7 @@ install_dotenvx() {
 
   # let user know
   echo "[dotenvx@$VERSION] installed successfully ($(directory)/$(binary_name))"
+  echo "now type: dotenvx help"
 
   return 0
 }
