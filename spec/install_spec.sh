@@ -417,7 +417,8 @@ Commands:
     It 'installs it'
       When call install_dotenvx
       The status should equal 0
-      The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)"
+      The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)
+now type: dotenvx help"
     End
 
     Describe 'when a different path'
@@ -428,7 +429,8 @@ Commands:
       It 'installs it but warns'
         When call install_dotenvx
         The status should equal 0
-        The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)"
+        The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)
+now type: dotenvx help"
         The stderr should equal "[DOTENVX_CONFLICT] conflicting dotenvx found at /different/path
 ? we recommend updating your path to include ./spec/tmp"
       End
@@ -443,7 +445,8 @@ Commands:
     It 'installs dotenvx'
       When call run
       The status should equal 0
-      The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)"
+      The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)
+now type: dotenvx help"
     End
 
     Describe 'when a different path'
@@ -454,7 +457,8 @@ Commands:
       It 'installs it but warns'
         When call run
         The status should equal 0
-        The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)"
+        The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)
+now type: dotenvx help"
         The stderr should equal "[DOTENVX_CONFLICT] conflicting dotenvx found at /different/path
 ? we recommend updating your path to include ./spec/tmp"
       End
