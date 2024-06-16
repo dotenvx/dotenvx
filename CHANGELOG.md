@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.4...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.5...main)
+
+## 0.44.5
+
+### Changed
+
+* Removed `.github` folder from published binaries on npm (example: [npm code](https://www.npmjs.com/package/@dotenvx/dotenvx-darwin-arm64?activeTab=code))
+* Add help message to `install.sh`
 
 ## 0.44.4
 
