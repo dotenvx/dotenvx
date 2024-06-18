@@ -94,7 +94,7 @@ is_version_valid() {
   fi
 
   local semver_regex="^([0-9]+)\.([0-9]+)\.([0-9]+)$"
-  if [[ "$VERSION" =~ $semver_regex ]]; then
+  if echo "$VERSION" | grep -Eq "$semver_regex"; then
     return 0
   else
     echo "[INSTALLATION_FAILED] VERSION ($VERSION) is not a valid semantic version in install.sh script"
