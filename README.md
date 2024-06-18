@@ -1317,9 +1317,9 @@ The `.env.vault` file got us far, but it had limitations such as:
 
 That said, the `.env.vault` tooling will still stick around for at least 1 year under `dotenvx vault` parent command. I'm still using it in projects as are many thousands of other people.
 
-#### Will you provide a migration tool to quickly switch `.env.vault` files to encrypted `.env` files?
+#### How do I migrate my `.env.vault` file(s) to encrypted `.env` files?
 
-Yes. Working on this soon.
+Run `$ dotenvx vault migrate` and follow the instructions.
 
 &nbsp;
 
