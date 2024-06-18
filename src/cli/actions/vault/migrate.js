@@ -1,6 +1,6 @@
 const { logger } = require('./../../../shared/logger')
 
-function convert (directory) {
+function migrate (directory) {
   // debug args
   logger.debug(`directory: ${directory}`)
 
@@ -8,7 +8,7 @@ function convert (directory) {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    logger.help2('To convert your .env.vault file to encrypted .env file(s):')
+    logger.help2('To migrate your .env.vault file to encrypted .env file(s):')
     logger.help('')
     logger.help('  1. Run [dotenvx vault decrypt]')
     logger.help('  2. Run [ls -a .env*]')
@@ -44,4 +44,4 @@ function convert (directory) {
   }
 }
 
-module.exports = convert
+module.exports = migrate

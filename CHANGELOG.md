@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.44.6...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.45.0...main)
+
+## 0.45.0
+
+### Changed
+
+* Rename `dotenvx vault convert` to `dotenvx vault migrate` ([#251](https://github.com/dotenvx/dotenvx/pull/251))
+* Update `install.sh` regex version check to be `sh` compatible (not just bash)
 
 ## 0.44.6
 
