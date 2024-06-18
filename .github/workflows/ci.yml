@@ -138,8 +138,10 @@ jobs:
           body: "see [CHANGELOG](https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md)"
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      # - name: gen checksums
-      #   uses: wangzuo/action-release-checksums@v1
+
+      - name: publish checksums to release
+        uses: wangzuo/action-release-checksums@v1
+
       - name: checkout dotenvx/releases repo
         uses: actions/checkout@v4
         with:
