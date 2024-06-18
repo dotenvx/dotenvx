@@ -41,13 +41,13 @@ INSTALL_SCRIPT_URL="https://dotenvx.sh/install.sh"
 #  |  ```sh                                                                                          |
 #  |  # curl examples                                                                                |
 #  |  curl -sfS "https://dotenvx.sh/install.sh" | sudo sh                                            |
-#  |  curl -sfS "https://dotenvx.sh/install.sh?directory=." | sh                                     |
 #  |  curl -sfS "https://dotenvx.sh/install.sh?version=0.44.0" | sh                                  |
+#  |  curl -sfS "https://dotenvx.sh/install.sh?directory=." | sh                                     |
 #  |  curl -sfS "https://dotenvx.sh/install.sh?directory=/custom/path&version=0.44.0" | sh           |
 #  |                                                                                                 |
 #  |  # self-executing examples                                                                      |
-#  |  ./install.sh --directory=.                                                                     |
 #  |  ./install.sh --version=0.44.0                                                                  |
+#  |  ./install.sh --directory=.                                                                     |
 #  |  ./install.sh --directory=/custom/path --version=0.44.0                                         |
 #  |  ./install.sh --help                                                                            |
 #  |  ```                                                                                            |
