@@ -207,7 +207,7 @@ Commands:
       It 'is false'
         When call is_version_valid
         The status should equal 1
-        The output should equal "[INSTALLATION_FAILED] VERSION is blank in install.sh script
+        The output should equal "[INSTALLATION_FAILED] VERSION () is blank in install.sh script
 ? set VERSION to valid semantic semver version and try again"
       End
     End
@@ -222,7 +222,7 @@ Commands:
       It 'is false'
         When call is_version_valid
         The status should equal 1
-        The output should equal "[INSTALLATION_FAILED] VERSION is not a valid semantic version in install.sh script
+        The output should equal "[INSTALLATION_FAILED] VERSION (22) is not a valid semantic version in install.sh script
 ? set VERSION to valid semantic semver version and try again"
       End
     End

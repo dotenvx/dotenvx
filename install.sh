@@ -87,7 +87,7 @@ usage() {
 # machine checks ------------------------
 is_version_valid() {
   if [ -z "$VERSION" ]; then
-    echo "[INSTALLATION_FAILED] VERSION is blank in install.sh script"
+    echo "[INSTALLATION_FAILED] VERSION ($VERSION) is blank in install.sh script"
     echo "? set VERSION to valid semantic semver version and try again"
 
     return 1
@@ -97,7 +97,7 @@ is_version_valid() {
   if [[ "$VERSION" =~ $semver_regex ]]; then
     return 0
   else
-    echo "[INSTALLATION_FAILED] VERSION is not a valid semantic version in install.sh script"
+    echo "[INSTALLATION_FAILED] VERSION ($VERSION) is not a valid semantic version in install.sh script"
     echo "? set VERSION to valid semantic semver version and try again"
 
     return 1
