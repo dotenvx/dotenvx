@@ -141,6 +141,8 @@ jobs:
 
       - name: publish checksums to release
         uses: wangzuo/action-release-checksums@v1
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: checkout dotenvx/releases repo
         uses: actions/checkout@v4
