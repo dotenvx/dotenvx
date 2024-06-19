@@ -47,17 +47,11 @@ dotenvx help
 curl -sfS https://dotenvx.sh | sh
 dotenvx help
 ```
-
-[![linux-aarch64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-aarch64?label=linux-aarch64)](https://npmjs.com/@dotenvx/dotenvx-linux-aarch64)
-[![linux-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-amd64?label=linux-amd64)](https://npmjs.com/@dotenvx/dotenvx-linux-amd64)
-[![linux-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-arm64?label=linux-arm64)](https://npmjs.com/@dotenvx/dotenvx-linux-arm64)
-[![linux-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-x86_64?label=linux-x86_64)](https://npmjs.com/@dotenvx/dotenvx-linux-x86_64)<br>
-[![mac-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-amd64?label=mac-amd64)](https://npmjs.com/@dotenvx/dotenvx-darwin-amd64)
-[![mac-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-arm64?label=mac-arm64)](https://npmjs.com/@dotenvx/dotenvx-darwin-arm64)
-[![mac-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-x86_64?label=mac-x86_64)](https://npmjs.com/@dotenvx/dotenvx-darwin-x86_64)<br>
-[![win-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-amd64?label=win-amd64)](https://npmjs.com/@dotenvx/dotenvx-windows-amd64)
-[![win-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-x86_64?label=win-x86_64)](https://npmjs.com/@dotenvx/dotenvx-windows-x86_64)
 <sup>*curl installs sourced from npm binary releases - <a href="https://www.npmjs.com/package/@dotenvx/dotenvx-linux-x86_64">example</a></sup>
+
+* <sup>lnx:</sup> [![linux-aarch64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-aarch64?label=linux-aarch64)](https://npmjs.com/@dotenvx/dotenvx-linux-aarch64) [![linux-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-amd64?label=linux-amd64)](https://npmjs.com/@dotenvx/dotenvx-linux-amd64) [![linux-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-arm64?label=linux-arm64)](https://npmjs.com/@dotenvx/dotenvx-linux-arm64) [![linux-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-x86_64?label=linux-x86_64)](https://npmjs.com/@dotenvx/dotenvx-linux-x86_64)
+* <sup>mac:</sup> [![darwin-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-amd64?label=darwin-amd64)](https://npmjs.com/@dotenvx/dotenvx-darwin-amd64) [![darwin-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-arm64?label=darwin-arm64)](https://npmjs.com/@dotenvx/dotenvx-darwin-arm64) [![darwin-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-x86_64?label=darwin-x86_64)](https://npmjs.com/@dotenvx/dotenvx-darwin-x86_64)
+* <sup>win:</sup> [![windows-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-amd64?label=windows-amd64)](https://npmjs.com/@dotenvx/dotenvx-windows-amd64) [![windows-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-x86_64?label=win-x86_64)](https://npmjs.com/@dotenvx/dotenvx-windows-x86_64)
 
 &nbsp;
 
