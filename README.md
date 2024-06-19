@@ -54,7 +54,7 @@ dotenvx help
 <details><summary>with docker 🐳</summary><br>
 
 ```sh
-docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
+docker run -it --rm -v $(pwd):/app dotenv/dotenvx help
 ```
 
 [![docker pulls](https://img.shields.io/docker/pulls/dotenv/dotenvx)](https://hub.docker.com/r/dotenv/dotenvx)
