@@ -50,6 +50,16 @@ dotenvx help
 
 [![curl installs](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl)](https://github.com/dotenvx/dotenvx.sh)
 
+![darwin-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-amd64)
+![darwin-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-arm64)
+![darwin-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-x86_64)
+![linux-aarch64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-aarch64)
+![linux-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-amd64)
+![linux-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-arm64)
+![linux-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-x86_64)
+![windows-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-amd64)
+![windows-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-x86_64)
+
 &nbsp;
 
 </details>
