@@ -84,7 +84,7 @@ Describe 'install.sh'
       It "returns with curl example"
         When call help_sudo_install_command
         The status should equal 0
-        The output should equal "curl -sfS https://dotenvx.sh/install.sh | sudo $0"
+        The output should equal "curl -sfS https://dotenvx.sh | sudo $0"
       End
     End
   End
@@ -104,7 +104,7 @@ Describe 'install.sh'
       It "returns with curl example"
         When call help_customize_directory_command
         The status should equal 0
-        The output should equal "curl -sfS https://dotenvx.sh/install.sh | $0 -s -- --directory=."
+        The output should equal "curl -sfS https://dotenvx.sh | $0 -s -- --directory=."
       End
     End
   End
