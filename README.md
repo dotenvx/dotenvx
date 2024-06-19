@@ -45,6 +45,8 @@ curl -sfS https://dotenvx.sh | sh
 
 [source `install.sh`](https://github.com/dotenvx/dotenvx.sh)
 
+</details>
+
 <details><summary>with docker 🐳</summary><br>
 
 ```sh
@@ -52,6 +54,8 @@ docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
 ```
 
 [hub.docker.com/r/dotenv/dotenvx](https://hub.docker.com/r/dotenv/dotenvx)
+
+</details>
 
 > Unlocks dotenv for ANY language, framework, or platform. 💥 
 >
