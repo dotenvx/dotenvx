@@ -1,4 +1,4 @@
-![dotenvx](https://dotenvx.com/better-banner.png)
+[![dotenvx](https://dotenvx.com/better-banner.png)](https://dotenvx.com)
 
 *a better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
