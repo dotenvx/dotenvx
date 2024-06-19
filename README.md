@@ -55,7 +55,7 @@ curl -sfS https://dotenvx.sh | sh
 docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
 ```
 
-![![docker pulls](https://img.shields.io/docker/pulls/dotenv/dotenvx)](https://hub.docker.com/r/dotenv/dotenvx)
+[![docker pulls](https://img.shields.io/docker/pulls/dotenv/dotenvx)](https://hub.docker.com/r/dotenv/dotenvx)
 
 &nbsp;
 
