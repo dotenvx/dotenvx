@@ -27,31 +27,31 @@ console.log(`Hello ${process.env.HELLO}`)
 
 or install globally
 
-* <details><summary>with brew 🍺</summary><br>
+<details><summary>with brew 🍺</summary><br>
 
-  ```sh
-  brew install dotenvx/brew/dotenvx
-  ```
+```sh
+brew install dotenvx/brew/dotenvx
+```
 
-  [source](https://github.com/dotenvx/homebrew-brew)
+[source](https://github.com/dotenvx/homebrew-brew)
 
-  </details>
+</details>
 
-* <details><summary>with curl 🌐</summary><br>
+<details><summary>with curl 🌐</summary><br>
 
-  ```sh
-  curl -sfS https://dotenvx.sh | sh
-  ```
+```sh
+curl -sfS https://dotenvx.sh | sh
+```
 
-  [source `install.sh`](https://github.com/dotenvx/dotenvx.sh)
+[source `install.sh`](https://github.com/dotenvx/dotenvx.sh)
 
-* <details><summary>with docker 🐳</summary><br>
+<details><summary>with docker 🐳</summary><br>
 
-  ```sh
-  docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
-  ```
+```sh
+docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
+```
 
-  [hub.docker.com/r/dotenv/dotenvx](https://hub.docker.com/r/dotenv/dotenvx)
+[hub.docker.com/r/dotenv/dotenvx](https://hub.docker.com/r/dotenv/dotenvx)
 
 > Unlocks dotenv for ANY language, framework, or platform. 💥 
 >
