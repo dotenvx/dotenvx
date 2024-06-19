@@ -37,7 +37,7 @@ brew install dotenvx/brew/dotenvx
 
 </details>
 
-<details><summary>with curl 🌐</summary><br>
+<details><summary>with curl 🌐 <img src="https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl" /></summary><br>
 
 ```sh
 curl -sfS https://dotenvx.sh | sh
