@@ -37,25 +37,37 @@ brew install dotenvx/brew/dotenvx
 
 </details>
 
-<details><summary>with curl 🌐 <img src="https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl" /></summary><br>
+<details><summary>with curl 🌐 </summary><br>
 
 ```sh
 curl -sfS https://dotenvx.sh | sh
 ```
 
-[source](https://github.com/dotenvx/dotenvx.sh)
+![curl installs](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl) [source](https://github.com/dotenvx/dotenvx.sh)
 
 </details>
 
-<details><summary>or with docker 🐳</summary><br>
+<details><summary>with docker 🐳</summary><br>
 
 ```sh
 docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
 ```
 
-[source](https://hub.docker.com/r/dotenv/dotenvx)
+![docker pulls](https://img.shields.io/docker/pulls/dotenv/dotenvx) [source](https://hub.docker.com/r/dotenv/dotenvx)
 
 </details>
+
+<details><summary>or with github releases 🐙</summary><br>
+
+```sh
+LATEST_VERSION=$(curl -s https://api.github.com/repos/dotenvx/dotenvx/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
+curl -L -o dotenvx.tar.gz "https://github.com/dotenvx/dotenvx/releases/download/$LATEST_VERSION/dotenvx-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m).tar.gz"
+```
+
+![github releases](https://img.shields.io/github/downloads/dotenvx/dotenvx/total) [source](https://github.com/dotenvx/dotenvx/releases)
+
+</details>
+
 
 > Unlocks dotenv for ANY language, framework, or platform. 💥 
 >
