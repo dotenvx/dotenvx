@@ -48,11 +48,10 @@ curl -sfS https://dotenvx.sh | sh
 dotenvx help
 ```
 
-* *linux* [![linux-aarch64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-aarch64?label=linux-aarch64)](https://npmjs.com/@dotenvx/dotenvx-linux-aarch64) [![linux-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-amd64?label=linux-amd64)](https://npmjs.com/@dotenvx/dotenvx-linux-amd64) [![linux-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-arm64?label=linux-arm64)](https://npmjs.com/@dotenvx/dotenvx-linux-arm64) [![linux-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-x86_64?label=linux-x86_64)](https://npmjs.com/@dotenvx/dotenvx-linux-x86_64)
-* *mac* [![darwin-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-amd64?label=darwin-amd64)](https://npmjs.com/@dotenvx/dotenvx-darwin-amd64) [![darwin-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-arm64?label=darwin-arm64)](https://npmjs.com/@dotenvx/dotenvx-darwin-arm64) [![darwin-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-x86_64?label=darwin-x86_64)](https://npmjs.com/@dotenvx/dotenvx-darwin-x86_64)
-* *win* [![windows-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-amd64?label=windows-amd64)](https://npmjs.com/@dotenvx/dotenvx-windows-amd64) [![windows-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-x86_64?label=win-x86_64)](https://npmjs.com/@dotenvx/dotenvx-windows-x86_64)
-
-<sup>*curl installs sourced from npm binary releases - <a href="https://www.npmjs.com/package/@dotenvx/dotenvx-linux-x86_64">example</a></sup>
+[![mac](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl/darwin&label=mac)](https://github.com/dotenvx/dotenvx.sh/blob/main/install.sh)
+[![linux](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl/linux&label=linux)](https://github.com/dotenvx/dotenvx.sh/blob/main/install.sh)
+[![windows](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl/windows&label=windows)](https://github.com/dotenvx/dotenvx.sh/blob/main/install.sh)
+<sup>*curl installs sourced from npm binary packages - <a href="https://www.npmjs.com/package/@dotenvx/dotenvx-linux-x86_64">example</a></sup>
 
 &nbsp;
 
