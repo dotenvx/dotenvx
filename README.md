@@ -9,7 +9,7 @@
 &nbsp;
 
 
-### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg?style=flat-square)](https://www.npmjs.com/package/@dotenvx/dotenvx) ![npm installs](https://img.shields.io/npm/dm/@dotenvx/dotenvx)
+### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg)](https://www.npmjs.com/package/@dotenvx/dotenvx) ![npm installs](https://img.shields.io/npm/dm/@dotenvx/dotenvx)
 
 Install and use it in code just like `dotenv`.
 
@@ -34,7 +34,9 @@ brew install dotenvx/brew/dotenvx
 dotenvx help
 ```
 
-[source](https://github.com/dotenvx/homebrew-brew)
+[![homebrew installs](https://img.shields.io/github/downloads/dotenvx/dotenvx/total)](https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb)
+
+<small>*homebrew installs sourced from github releases - [formula](https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb)</small>
 
 &nbsp;
 
