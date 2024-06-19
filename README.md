@@ -27,11 +27,7 @@ console.log(`Hello ${process.env.HELLO}`)
 
 or install globally
 
-> Unlocks dotenv for ANY language, framework, or platform. 💥 
->
-> I use (and recommend) this approach going forward. - [motdotla](https://github.com/motdotla))
-
-* <details><summary>with <a href="https://brew.sh">brew</a> 🍺</summary><br>
+* <details><summary>with brew 🍺</summary><br>
 
   ```sh
   brew install dotenvx/brew/dotenvx
@@ -41,7 +37,7 @@ or install globally
 
   </details>
 
-* <details><summary>with <a href="https://dotenvx.sh">curl</a> 🌐</summary><br>
+* <details><summary>with curl 🌐</summary><br>
 
   ```sh
   curl -sfS https://dotenvx.sh | sh
@@ -49,7 +45,7 @@ or install globally
 
   [source `install.sh`](https://github.com/dotenvx/dotenvx.sh)
 
-* <details><summary>with <a href="https://dotenvx.sh">docker</a> 🐳</summary><br>
+* <details><summary>with docker 🐳</summary><br>
 
   ```sh
   docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
@@ -57,6 +53,9 @@ or install globally
 
   [hub.docker.com/r/dotenv/dotenvx](https://hub.docker.com/r/dotenv/dotenvx)
 
+> Unlocks dotenv for ANY language, framework, or platform. 💥 
+>
+> I use (and recommend) this approach going forward. - [motdotla](https://github.com/motdotla))
 
 &nbsp;
 
