@@ -29,6 +29,8 @@ or install globally - *unlocks dotenv for any language, framework, or platform!*
 
 <details><summary>with brew 🍺</summary><br>
 
+&nbsp;
+
 ```sh
 brew install dotenvx/brew/dotenvx
 dotenvx help
@@ -42,6 +44,8 @@ dotenvx help
 </details>
 
 <details><summary>with curl 🌐 </summary><br>
+
+&nbsp;
 
 ```sh
 curl -sfS https://dotenvx.sh | sh
@@ -59,6 +63,8 @@ dotenvx help
 
 <details><summary>with docker 🐳</summary><br>
 
+&nbsp;
+
 ```sh
 docker run -it --rm -v $(pwd):/app dotenv/dotenvx help
 ```
@@ -70,6 +76,8 @@ docker run -it --rm -v $(pwd):/app dotenv/dotenvx help
 </details>
 
 <details><summary>or with github releases 🐙</summary><br>
+
+&nbsp;
 
 ```sh
 curl -L -o dotenvx.tar.gz "https://github.com/dotenvx/dotenvx/releases/latest/download/dotenvx-$(uname -s)-$(uname -m).tar.gz"
