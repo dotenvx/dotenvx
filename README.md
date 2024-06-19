@@ -25,7 +25,7 @@ console.log(`Hello ${process.env.HELLO}`)
 
 &nbsp;
 
-or install globally
+or install globally - *unlocks dotenv for any language, framework, or platform!*
 
 <details><summary>with brew 🍺</summary><br>
 
@@ -43,7 +43,9 @@ brew install dotenvx/brew/dotenvx
 curl -sfS https://dotenvx.sh | sh
 ```
 
-![curl installs](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl) [source](https://github.com/dotenvx/dotenvx.sh)
+[![curl installs](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl)](https://github.com/dotenvx/dotenvx.sh)
+
+&nbsp;
 
 </details>
 
@@ -53,7 +55,9 @@ curl -sfS https://dotenvx.sh | sh
 docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
 ```
 
-![docker pulls](https://img.shields.io/docker/pulls/dotenv/dotenvx) [source](https://hub.docker.com/r/dotenv/dotenvx)
+![![docker pulls](https://img.shields.io/docker/pulls/dotenv/dotenvx)](https://hub.docker.com/r/dotenv/dotenvx)
+
+&nbsp;
 
 </details>
 
@@ -68,10 +72,6 @@ curl -L -o dotenvx.tar.gz "https://github.com/dotenvx/dotenvx/releases/download/
 
 </details>
 
-
-> Unlocks dotenv for ANY language, framework, or platform. 💥 
->
-> I use (and recommend) this approach going forward. - [motdotla](https://github.com/motdotla))
 
 &nbsp;
 
