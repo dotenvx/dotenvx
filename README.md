@@ -36,6 +36,8 @@ dotenvx help
 
 [source](https://github.com/dotenvx/homebrew-brew)
 
+&nbsp;
+
 </details>
 
 <details><summary>with curl 🌐 </summary><br>
