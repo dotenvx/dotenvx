@@ -49,15 +49,16 @@ dotenvx help
 ```
 
 [![curl installs](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl&label=curl%20installs)](https://github.com/dotenvx/dotenvx.sh)
-![darwin-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-amd64?label=darwin-amd64)
-![darwin-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-arm64?label=darwin-arm64)
-![darwin-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-x86_64?label=darwin-x86_64)
+
+![mac-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-amd64?label=mac-amd64)
+![mac-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-arm64?label=mac-arm64)
+![mac-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-x86_64?label=mac-x86_64)
 ![linux-aarch64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-aarch64?label=linux-aarch64)
 ![linux-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-amd64?label=linux-amd64)
 ![linux-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-arm64?label=linux-arm64)
 ![linux-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-linux-x86_64?label=linux-x86_64)
-![windows-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-amd64?label=windows-amd64)
-![windows-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-x86_64?label=windows-x86_64)
+![win-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-amd64?label=win-amd64)
+![win-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-windows-x86_64?label=win-x86_64)
 
 &nbsp;
 
