@@ -43,7 +43,7 @@ brew install dotenvx/brew/dotenvx
 curl -sfS https://dotenvx.sh | sh
 ```
 
-[source `install.sh`](https://github.com/dotenvx/dotenvx.sh)
+[source](https://github.com/dotenvx/dotenvx.sh)
 
 </details>
 
@@ -53,7 +53,7 @@ curl -sfS https://dotenvx.sh | sh
 docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
 ```
 
-[hub.docker.com/r/dotenv/dotenvx](https://hub.docker.com/r/dotenv/dotenvx)
+[source](https://hub.docker.com/r/dotenv/dotenvx)
 
 </details>
 
@@ -108,7 +108,6 @@ More examples
   ```
 
   </details>
-
 * <details><summary>Deno 🦕</summary><br>
 
   ```sh
@@ -122,6 +121,7 @@ More examples
   Hello World
   ```
 
+  </details>
 * <details><summary>Bun 🥟</summary><br>
 
   ```sh
@@ -135,6 +135,7 @@ More examples
   Hello Test
   ```
 
+  </details>
 * <details><summary>Python 🐍</summary><br>
 
   ```sh
@@ -272,7 +273,6 @@ More examples
   see [docker guide](https://dotenvx.com/docs/platforms/docker)
 
   </details>
-
 * <details><summary>CI/CDs 🐙</summary><br>
 
   ```yaml
@@ -323,7 +323,6 @@ More examples
   see [process manager guides](https://dotenvx.com/docs#process-managers)
 
   </details>
-
 * <details><summary>npx</summary><br>
 
   ```sh
@@ -362,7 +361,6 @@ More examples
   ```
 
   </details>
-
 * <details><summary>Git</summary><br>
 
   ```sh
