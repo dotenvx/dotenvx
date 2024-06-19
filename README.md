@@ -35,7 +35,7 @@ dotenvx help
 ```
 
 [![homebrew installs](https://img.shields.io/github/downloads/dotenvx/dotenvx/total)](https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb)
-<sub>(homebrew installs sourced from github releases - <a href="https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb">formula</a>)</sub>
+<sup>*homebrew installs sourced from github releases - <a href="https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb">formula</a></sup>
 
 &nbsp;
 
@@ -75,7 +75,7 @@ tar -xzf dotenvx.tar.gz
 ```
 
 [![github releases](https://img.shields.io/github/downloads/dotenvx/dotenvx/total)](https://github.com/dotenvx/dotenvx/releases)
-<sub>(total includes homebrew installs)</sub>
+<sup>*includes homebrew installs</sup>
 
 </details>
 
