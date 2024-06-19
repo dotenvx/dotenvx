@@ -320,7 +320,7 @@ help_sudo_install_command() {
 
 help_customize_directory_command() {
   if is_piped; then
-    echo "curl -sfS $INSTALL_SCRIPT_URL | $0 -s -- --directory=."
+    echo "curl -sfS \"$INSTALL_SCRIPT_URL?directory=.\" | $0"
   else
     echo "$0 --directory=."
   fi
