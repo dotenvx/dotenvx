@@ -36,7 +36,7 @@ dotenvx help
 
 [![homebrew installs](https://img.shields.io/github/downloads/dotenvx/dotenvx/total)](https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb)
 
-<small>*homebrew installs sourced from github releases - [formula](https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb)</small>
+<sub>*homebrew installs sourced from github releases - <a href="https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb">formula</a></sub>
 
 &nbsp;
 
