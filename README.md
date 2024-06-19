@@ -49,8 +49,6 @@ dotenvx help
 ```
 
 [![curl installs](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl&label=curl%20installs)](https://github.com/dotenvx/dotenvx.sh)
-
-by os-arch:
 ![darwin-amd64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-amd64?label=darwin-amd64)
 ![darwin-arm64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-arm64?label=darwin-arm64)
 ![darwin-x86_64](https://img.shields.io/npm/dt/@dotenvx/dotenvx-darwin-x86_64?label=darwin-x86_64)
