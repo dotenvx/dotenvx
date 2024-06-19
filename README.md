@@ -9,7 +9,7 @@
 &nbsp;
 
 
-### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg)](https://www.npmjs.com/package/@dotenvx/dotenvx) ![npm installs](https://img.shields.io/npm/dm/@dotenvx/dotenvx)
+### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg)](https://www.npmjs.com/package/@dotenvx/dotenvx) [![npm installs](https://img.shields.io/npm/dm/@dotenvx/dotenvx)](https://www.npmjs.com/package/@dotenvx/dotenvx)
 
 Install and use it in code just like `dotenv`.
 
