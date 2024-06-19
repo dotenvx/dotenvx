@@ -47,7 +47,7 @@ curl -sfS https://dotenvx.sh | sh
 
 </details>
 
-<details><summary>with docker 🐳</summary><br>
+<details><summary>or with docker 🐳</summary><br>
 
 ```sh
 docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
