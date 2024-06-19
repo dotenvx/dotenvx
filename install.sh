@@ -4,7 +4,7 @@ set -e
 VERSION=""
 DIRECTORY="/usr/local/bin"
 REGISTRY_URL="https://registry.npmjs.org"
-INSTALL_SCRIPT_URL="https://dotenvx.sh/install.sh"
+INSTALL_SCRIPT_URL="https://dotenvx.sh"
 
 #  ./install.sh
 #  ___________________________________________________________________________________________________
@@ -25,13 +25,13 @@ INSTALL_SCRIPT_URL="https://dotenvx.sh/install.sh"
 #  |  ## Install                                                                                     |
 #  |                                                                                                 |
 #  |  ```sh                                                                                          |
-#  |  curl -sfS https://dotenvx.sh/install.sh | sh                                                   |
+#  |  curl -sfS https://dotenvx.sh | sh                                                              |
 #  |  ```                                                                                            |
 #  |                                                                                                 |
 #  |  or self-execute this file:                                                                     |
 #  |                                                                                                 |
 #  |  ```sh                                                                                          |
-#  |  curl -sfS https://dotenvx.sh/install.sh > install.sh                                           |
+#  |  curl -sfS https://dotenvx.sh > install.sh                                                      |
 #  |  chmod +x install.sh                                                                            |
 #  |  ./install.sh                                                                                   |
 #  |  ```                                                                                            |
@@ -40,15 +40,15 @@ INSTALL_SCRIPT_URL="https://dotenvx.sh/install.sh"
 #  |                                                                                                 |
 #  |  ```sh                                                                                          |
 #  |  # curl examples                                                                                |
-#  |  curl -sfS "https://dotenvx.sh/install.sh" | sudo sh                                            |
-#  |  curl -sfS "https://dotenvx.sh/install.sh?version=0.44.0" | sh                                  |
-#  |  curl -sfS "https://dotenvx.sh/install.sh?directory=." | sh                                     |
-#  |  curl -sfS "https://dotenvx.sh/install.sh?directory=/custom/path&version=0.44.0" | sh           |
+#  |  curl -sfS "https://dotenvx.sh" | sudo sh                                                       |
+#  |  curl -sfS "https://dotenvx.sh?version=0.44.5" | sh                                             |
+#  |  curl -sfS "https://dotenvx.sh?directory=." | sh                                                |
+#  |  curl -sfS "https://dotenvx.sh?directory=/custom/path&version=0.44.5" | sh                      |
 #  |                                                                                                 |
 #  |  # self-executing examples                                                                      |
-#  |  ./install.sh --version=0.44.0                                                                  |
+#  |  ./install.sh --version=0.44.5                                                                  |
 #  |  ./install.sh --directory=.                                                                     |
-#  |  ./install.sh --directory=/custom/path --version=0.44.0                                         |
+#  |  ./install.sh --directory=/custom/path --version=0.44.5                                         |
 #  |  ./install.sh --help                                                                            |
 #  |  ```                                                                                            |
 #  |                                                                                                 |
