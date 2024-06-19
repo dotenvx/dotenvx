@@ -9,7 +9,7 @@
 &nbsp;
 
 
-### Quickstart [![NPM version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg?style=flat-square)](https://www.npmjs.com/package/@dotenvx/dotenvx)
+### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg?style=flat-square)](https://www.npmjs.com/package/@dotenvx/dotenvx) ![npm installs](https://img.shields.io/npm/dm/@dotenvx/dotenvx)
 
 Install and use it in code just like `dotenv`.
 
@@ -25,16 +25,38 @@ console.log(`Hello ${process.env.HELLO}`)
 
 &nbsp;
 
-Or install globally
+or install globally
 
-```sh
-brew install dotenvx/brew/dotenvx
-```
-> * [other global ways to install](https://dotenvx.com/docs/install)
+> Unlocks dotenv for ANY language, framework, or platform. 💥 
 >
-> Install globally as a cli to unlock dotenv for ANY language, framework, or platform. 💥
->
-> I am using (and recommending) this approach going forward. – [motdotla](https://github.com/motdotla)
+> I use (and recommend) this approach going forward. - [motdotla](https://github.com/motdotla))
+
+* <details><summary>with <a href="https://brew.sh">brew</a> 🍺</summary><br>
+
+  ```sh
+  brew install dotenvx/brew/dotenvx
+  ```
+
+  [source](https://github.com/dotenvx/homebrew-brew)
+
+  </details>
+
+* <details><summary>with <a href="https://dotenvx.sh">curl</a> 🌐</summary><br>
+
+  ```sh
+  curl -sfS https://dotenvx.sh | sh
+  ```
+
+  [source `install.sh`](https://github.com/dotenvx/dotenvx.sh)
+
+* <details><summary>with <a href="https://dotenvx.sh">docker</a> 🐳</summary><br>
+
+  ```sh
+  docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- yourcommand
+  ```
+
+  [hub.docker.com/r/dotenv/dotenvx](https://hub.docker.com/r/dotenv/dotenvx)
+
 
 &nbsp;
 
