@@ -139,44 +139,7 @@ program.command('settings')
 // dotenvx vault
 program.addCommand(require('./commands/vault'))
 
-// dotenvx encrypt
-const encryptAction = require('./actions/vault/encrypt')
-program.command('encrypt')
-  .description('DEPRECATED: moved to [dotenvx vault encrypt]')
-  .addHelpText('after', examples.encrypt)
-  .argument('[directory]', 'directory to encrypt', '.')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx encrypt] has moved. change your command to [dotenvx vault encrypt]')
-    logger.warn('DEPRECATION NOTICE: [dotenvx encryptme] will become [dotenvx encrypt] in a 1.0.0 release scheduled for middle of June 2024.')
-
-    encryptAction.apply(this, args)
-  })
-
-// dotenvx decrypt
-const decryptAction = require('./actions/vault/decrypt')
-program.command('decrypt')
-  .description('DEPRECATED: moved to [dotenvx vault decrypt]')
-  .argument('[directory]', 'directory to decrypt', '.')
-  .option('-e, --environment <environments...>', 'environment(s) to decrypt')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx decrypt] has moved. change your command to [dotenvx vault decrypt]')
-
-    decryptAction.apply(this, args)
-  })
-
-// dotenvx status
-const statusAction = require('./actions/vault/status')
-program.command('status')
-  .description('DEPRECATED: moved to [dotenvx vault status]')
-  .argument('[directory]', 'directory to check status against', '.')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx status] has moved. change your command to [dotenvx vault status]')
-
-    statusAction.apply(this, args)
-  })
-
-// dotenvx hub
+// DEPRECATED: dotenvx hub
 program.addCommand(require('./commands/hub'))
 
 program.parse(process.argv)
