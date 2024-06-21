@@ -2,8 +2,8 @@ const t = require('tap')
 const fs = require('fs')
 const sinon = require('sinon')
 
-const main = require('../../../src/lib/main')
-const genexample = require('../../../src/cli/actions/genexample')
+const main = require('../../../../src/lib/main')
+const genexample = require('../../../../src/cli/actions/ext/genexample')
 
 t.test('genexample calls main.genexample', async ct => {
   const stub = sinon.stub(main, 'genexample')

@@ -2,7 +2,7 @@ const t = require('tap')
 const sinon = require('sinon')
 
 const main = require('../../../../src/lib/main')
-const ls = require('../../../../src/cli/actions/ls')
+const ls = require('../../../../src/cli/actions/ext/ls')
 
 t.test('ls calls main.ls', async ct => {
   const stub = sinon.stub(main, 'ls')

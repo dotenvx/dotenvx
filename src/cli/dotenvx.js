@@ -92,13 +92,6 @@ program.command('encrypt')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(encryptAction)
 
-// dotenvx genexample
-program.command('genexample')
-  .description('generate .env.example')
-  .argument('[directory]', 'directory to generate from', '.')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
-  .action(require('./actions/genexample'))
-
 // dotenvx gitignore
 program.command('gitignore')
   .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
@@ -158,6 +151,18 @@ program.command('ls')
     logger.warn('DEPRECATION NOTICE: [ls] has moved to [dotenvx ext ls]')
 
     lsAction.apply(this, args)
+  })
+
+// DEPRECATED: dotenvx genexample
+const genexampleAction = require('./actions/ext/genexample')
+program.command('genexample')
+  .description('DEPRECATED: moved to [dotenvx ext genexample]')
+  .argument('[directory]', 'directory to generate from', '.')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [genexample] has moved to [dotenvx ext genexample]')
+
+    genexampleAction.apply(this, args)
   })
 
 program.parse(process.argv)
