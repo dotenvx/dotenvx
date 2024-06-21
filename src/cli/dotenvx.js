@@ -91,21 +91,6 @@ program.command('encrypt')
   .description('convert env file(s) to encrypted env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(encryptAction)
-program.command('convert')
-  .description('DEPRECATED: moved to [dotenvx encrypt]')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx convert] has moved to [dotenvx encrypt]')
-
-    encryptAction.apply(this, args)
-  })
-
-// dotenvx ls
-program.command('ls')
-  .description('print all .env files in a tree structure')
-  .argument('[directory]', 'directory to list .env files from', '.')
-  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
-  .action(require('./actions/ls'))
 
 // dotenvx genexample
 program.command('genexample')
@@ -145,10 +130,34 @@ program.command('settings')
   .option('-pp, --pretty-print', 'pretty print output')
   .action(require('./actions/settings'))
 
+program.addCommand(require('./commands/ext'))
+
 // dotenvx vault
 program.addCommand(require('./commands/vault'))
 
 // DEPRECATED: dotenvx hub
 program.addCommand(require('./commands/hub'))
+
+// DEPRECATED: dotenvx convert
+program.command('convert')
+  .description('DEPRECATED: moved to [dotenvx encrypt]')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [dotenvx convert] has moved to [dotenvx encrypt]')
+
+    encryptAction.apply(this, args)
+  })
+
+// DEPRECATED: dotenvx ls
+const lsAction = require('./actions/ext/ls')
+program.command('ls')
+  .description('DEPRECATED: moved to [dotenvx ext ls]')
+  .argument('[directory]', 'directory to list .env files from', '.')
+  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [ls] has moved to [dotenvx ext ls]')
+
+    lsAction.apply(this, args)
+  })
 
 program.parse(process.argv)

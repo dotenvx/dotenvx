@@ -1,9 +1,9 @@
 const treeify = require('object-treeify')
 
-const { logger } = require('./../../shared/logger')
+const { logger } = require('./../../../shared/logger')
 
-const main = require('./../../lib/main')
-const ArrayToTree = require('./../../lib/helpers/arrayToTree')
+const main = require('./../../../lib/main')
+const ArrayToTree = require('./../../../lib/helpers/arrayToTree')
 
 function ls (directory) {
   // debug args
