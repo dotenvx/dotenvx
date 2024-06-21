@@ -2,8 +2,8 @@ const fs = require('fs')
 
 const ignore = require('ignore')
 
-const { logger } = require('./../../shared/logger')
-const pluralize = require('./../../lib/helpers/pluralize')
+const { logger } = require('./../../../shared/logger')
+const pluralize = require('./../../../lib/helpers/pluralize')
 
 function prebuild () {
   const options = this.opts()

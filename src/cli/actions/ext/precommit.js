@@ -1,6 +1,6 @@
-const { logger } = require('./../../shared/logger')
+const { logger } = require('./../../../shared/logger')
 
-const Precommit = require('./../../lib/services/precommit')
+const Precommit = require('./../../../lib/services/precommit')
 
 function precommit () {
   const options = this.opts()

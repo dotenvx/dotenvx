@@ -92,29 +92,18 @@ program.command('encrypt')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(encryptAction)
 
-// dotenvx gitignore
-program.command('gitignore')
-  .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
-  .addHelpText('after', examples.gitignore)
-  .action(require('./actions/gitignore'))
-
-// dotenvx prebuild
-program.command('prebuild')
-  .description('prevent including .env files in docker builds')
-  .addHelpText('after', examples.prebuild)
-  .action(require('./actions/prebuild'))
-
-// dotenvx precommit
-program.command('precommit')
-  .description('prevent committing .env files to code')
-  .addHelpText('after', examples.precommit)
-  .option('-i, --install', 'install to .git/hooks/pre-commit')
-  .action(require('./actions/precommit'))
-
 // dotenvx scan
 program.command('scan')
   .description('scan for leaked secrets')
   .action(require('./actions/scan'))
+
+program.addCommand(require('./commands/ext'))
+
+// DEPRECATED: dotenvx hub
+program.addCommand(require('./commands/hub'))
+
+// dotenvx vault
+program.addCommand(require('./commands/vault'))
 
 // dotenvx settings
 program.command('settings')
@@ -123,15 +112,9 @@ program.command('settings')
   .option('-pp, --pretty-print', 'pretty print output')
   .action(require('./actions/settings'))
 
-program.addCommand(require('./commands/ext'))
-
-// dotenvx vault
-program.addCommand(require('./commands/vault'))
-
-// DEPRECATED: dotenvx hub
-program.addCommand(require('./commands/hub'))
-
-// DEPRECATED: dotenvx convert
+//
+// DEPRECATED AND hidden
+//
 program.command('convert')
   .description('DEPRECATED: moved to [dotenvx encrypt]')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
@@ -141,7 +124,6 @@ program.command('convert')
     encryptAction.apply(this, args)
   })
 
-// DEPRECATED: dotenvx ls
 const lsAction = require('./actions/ext/ls')
 program.command('ls')
   .description('DEPRECATED: moved to [dotenvx ext ls]')
@@ -153,7 +135,6 @@ program.command('ls')
     lsAction.apply(this, args)
   })
 
-// DEPRECATED: dotenvx genexample
 const genexampleAction = require('./actions/ext/genexample')
 program.command('genexample')
   .description('DEPRECATED: moved to [dotenvx ext genexample]')
@@ -164,5 +145,50 @@ program.command('genexample')
 
     genexampleAction.apply(this, args)
   })
+
+// dotenvx gitignore
+const gitignoreAction = require('./actions/ext/gitignore')
+program.command('gitignore')
+  .description('DEPRECATED: moved to [dotenvx ext gitignore]')
+  .addHelpText('after', examples.gitignore)
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [gitignore] has moved to [dotenvx ext gitignore]')
+
+    gitignoreAction.apply(this, args)
+  })
+
+// dotenvx prebuild
+const prebuildAction = require('./actions/ext/prebuild')
+program.command('prebuild')
+  .description('DEPRECATED: moved to [dotenvx ext prebuild]')
+  .addHelpText('after', examples.prebuild)
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [prebuild] has moved to [dotenvx ext prebuild]')
+
+    prebuildAction.apply(this, args)
+  })
+
+// dotenvx precommit
+const precommitAction = require('./actions/ext/precommit')
+program.command('precommit')
+  .description('DEPRECATED: moved to [dotenvx ext precommit]')
+  .addHelpText('after', examples.precommit)
+  .option('-i, --install', 'install to .git/hooks/pre-commit')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [precommit] has moved to [dotenvx ext precommit]')
+
+    precommitAction.apply(this, args)
+  })
+
+// overide helpInformation to hide DEPRECATED commands
+program.helpInformation = function () {
+  const originalHelp = Command.prototype.helpInformation.call(this)
+  const lines = originalHelp.split('\n')
+
+  // Filter out the hidden command from the help output
+  const filteredLines = lines.filter(line => !line.includes('DEPRECATED') || line.includes('hub'))
+
+  return filteredLines.join('\n')
+}
 
 program.parse(process.argv)

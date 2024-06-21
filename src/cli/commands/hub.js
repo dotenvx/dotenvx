@@ -6,7 +6,7 @@ const { logger } = require('./../../shared/logger')
 const hub = new Command('hub')
 
 hub
-  .description('DEPRECATED: interact with hub (will be replaced by pro - @motdotla)')
+  .description('DEPRECATED: to be replaced by [dotenvx pro]')
 
 const loginAction = require('./../actions/hub/login')
 hub
