@@ -85,11 +85,20 @@ program.command('set')
   .option('-c, --encrypt', 'encrypt value')
   .action(require('./actions/set'))
 
-// dotenvx convert
-program.command('convert')
+// dotenvx encrypt
+const encryptAction = require('./actions/encrypt')
+program.command('encrypt')
   .description('convert env file(s) to encrypted env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
-  .action(require('./actions/convert'))
+  .action(encryptAction)
+program.command('convert')
+  .description('DEPRECATED: moved to [dotenvx encrypt]')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [dotenvx convert] has moved to [dotenvx encrypt]')
+
+    encryptAction.apply(this, args)
+  })
 
 // dotenvx ls
 program.command('ls')

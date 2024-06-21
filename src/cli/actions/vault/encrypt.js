@@ -29,7 +29,7 @@ async function encrypt (directory) {
       existingVaults,
       addedDotenvFilenames,
       envFile
-    } = main.encrypt(directory, options.envFile)
+    } = main.vaultEncrypt(directory, options.envFile)
 
     logger.verbose(`generating .env.keys from ${envFile}`)
     if (addedKeys.length > 0) {
