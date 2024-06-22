@@ -94,9 +94,6 @@ program.command('encrypt')
 
 program.addCommand(require('./commands/ext'))
 
-// dotenvx vault
-program.addCommand(require('./commands/vault'))
-
 // dotenvx settings
 program.command('settings')
   .description('print current dotenvx settings')
@@ -108,6 +105,7 @@ program.command('settings')
 // DEPRECATED AND hidden
 //
 program.addCommand(require('./commands/hub'))
+program.addCommand(require('./commands/vault'))
 
 program.command('convert')
   .description('DEPRECATED: moved to [dotenvx encrypt]')

@@ -106,7 +106,7 @@ async function push (directory) {
   }
 
   spinner.succeed(`pushed [${usernameName}]`)
-  logger.help2('ℹ run [dotenvx hub open] to view on hub')
+  logger.help2('ℹ run [dotenvx ext hub open] to view on hub')
 }
 
 module.exports = push

@@ -7,7 +7,7 @@ const examples = require('./../examples')
 const ext = new Command('ext')
 
 ext
-  .description('dotenvx extensions (ls, genexample, precommit, and more)')
+  .description('extensions (ls, genexample, precommit, vault, and more)')
 
 // dotenvx ext ls
 ext.command('ls')
@@ -48,5 +48,6 @@ ext.command('scan')
   .action(require('./../actions/ext/scan'))
 
 ext.addCommand(require('./../commands/ext/hub'))
+ext.addCommand(require('./../commands/ext/vault'))
 
 module.exports = ext
