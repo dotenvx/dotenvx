@@ -1,15 +1,15 @@
 const openBrowser = require('open')
 const confirm = require('@inquirer/confirm').default
 
-const createSpinner = require('./../../../shared/createSpinner')
-const { logger } = require('./../../../shared/logger')
+const createSpinner = require('./../../../../shared/createSpinner')
+const { logger } = require('./../../../../shared/logger')
 
-const isGitRepo = require('./../../../lib/helpers/isGitRepo')
-const isGithub = require('./../../../lib/helpers/isGithub')
-const gitUrl = require('./../../../lib/helpers/gitUrl')
-const gitRoot = require('./../../../lib/helpers/gitRoot')
-const extractUsernameName = require('./../../../lib/helpers/extractUsernameName')
-const sleep = require('./../../../lib/helpers/sleep')
+const isGitRepo = require('./../../../../lib/helpers/isGitRepo')
+const isGithub = require('./../../../../lib/helpers/isGithub')
+const gitUrl = require('./../../../../lib/helpers/gitUrl')
+const gitRoot = require('./../../../../lib/helpers/gitRoot')
+const extractUsernameName = require('./../../../../lib/helpers/extractUsernameName')
+const sleep = require('./../../../../lib/helpers/sleep')
 
 const spinner = createSpinner('opening')
 

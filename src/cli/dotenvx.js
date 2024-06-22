@@ -88,19 +88,11 @@ program.command('set')
 // dotenvx encrypt
 const encryptAction = require('./actions/encrypt')
 program.command('encrypt')
-  .description('convert env file(s) to encrypted env file(s)')
+  .description('convert .env file(s) to encrypted .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(encryptAction)
 
-// dotenvx scan
-program.command('scan')
-  .description('scan for leaked secrets')
-  .action(require('./actions/scan'))
-
 program.addCommand(require('./commands/ext'))
-
-// DEPRECATED: dotenvx hub
-program.addCommand(require('./commands/hub'))
 
 // dotenvx vault
 program.addCommand(require('./commands/vault'))
@@ -115,6 +107,8 @@ program.command('settings')
 //
 // DEPRECATED AND hidden
 //
+program.addCommand(require('./commands/hub'))
+
 program.command('convert')
   .description('DEPRECATED: moved to [dotenvx encrypt]')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
@@ -180,13 +174,23 @@ program.command('precommit')
     precommitAction.apply(this, args)
   })
 
+// dotenvx scan
+const scanAction = require('./actions/ext/scan')
+program.command('scan')
+  .description('DEPRECATED: moved to [dotenvx ext scan]')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [scan] has moved to [dotenvx ext scan]')
+
+    scanAction.apply(this, args)
+  })
+
 // overide helpInformation to hide DEPRECATED commands
 program.helpInformation = function () {
   const originalHelp = Command.prototype.helpInformation.call(this)
   const lines = originalHelp.split('\n')
 
   // Filter out the hidden command from the help output
-  const filteredLines = lines.filter(line => !line.includes('DEPRECATED') || line.includes('hub'))
+  const filteredLines = lines.filter(line => !line.includes('DEPRECATED'))
 
   return filteredLines.join('\n')
 }

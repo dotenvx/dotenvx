@@ -8,80 +8,80 @@ const hub = new Command('hub')
 hub
   .description('DEPRECATED: to be replaced by [dotenvx pro]')
 
-const loginAction = require('./../actions/hub/login')
+const loginAction = require('./../actions/ext/hub/login')
 hub
   .command('login')
-  .description('authenticate to dotenvx hub')
+  .description('DEPRECATED: moved to [dotenvx ext hub login]')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx hub login] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub login] moved to [dotenvx ext hub login]')
 
     loginAction.apply(this, args)
   })
 
-const pushAction = require('./../actions/hub/push')
+const pushAction = require('./../actions/ext/hub/push')
 hub
   .command('push')
-  .description('push .env.keys to dotenvx hub')
+  .description('DEPRECATED: moved to [dotenvx ext hub push]')
   .argument('[directory]', 'directory to push', '.')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx hub push] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub push] moved to [dotenvx ext hub push]')
 
     pushAction.apply(this, args)
   })
 
-const pullAction = require('./../actions/hub/pull')
+const pullAction = require('./../actions/ext/hub/pull')
 hub
   .command('pull')
-  .description('pull .env.keys from dotenvx hub')
+  .description('DEPRECATED: moved to [dotenvx ext hub pull]')
   .argument('[directory]', 'directory to pull', '.')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx hub pull] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub pull] moved to [dotenvx ext hub pull]')
 
     pullAction.apply(this, args)
   })
 
-const openAction = require('./../actions/hub/open')
+const openAction = require('./../actions/ext/hub/open')
 hub
   .command('open')
-  .description('view repository on dotenvx hub')
+  .description('DEPRECATED: moved to [dotenvx ext hub open]')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx hub open] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub open] moved to [dotenvx ext hub open]')
 
     openAction.apply(this, args)
   })
 
-const tokenAction = require('./../actions/hub/token')
+const tokenAction = require('./../actions/ext/hub/token')
 hub
   .command('token')
-  .description('print the auth token dotenvx hub is configured to use')
+  .description('DEPRECATED: moved to [dotenvx ext hub token]')
   .option('-h, --hostname <url>', 'set hostname', 'https://hub.dotenvx.com')
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx hub token] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub token] moved to [dotenvx ext hub token]')
 
     tokenAction.apply(this, args)
   })
 
-const statusAction = require('./../actions/hub/status')
+const statusAction = require('./../actions/ext/hub/status')
 hub
   .command('status')
-  .description('display logged in user')
+  .description('DEPRECATED: moved to [dotenvx ext hub status]')
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx hub status] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub status] moved to [dotenvx ext hub status]')
 
     statusAction.apply(this, args)
   })
 
-const logoutAction = require('./../actions/hub/logout')
+const logoutAction = require('./../actions/ext/hub/logout')
 hub
   .command('logout')
-  .description('log out this machine from dotenvx hub')
+  .description('DEPRECATED: moved to [dotenvx ext hub logout]')
   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx hub logout] will be removed in 1.0.0 release soon')
+    logger.warn('DEPRECATION NOTICE: [dotenvx hub logout] moved to [dotenvx ext hub logout]')
 
     logoutAction.apply(this, args)
   })

@@ -1,6 +1,6 @@
 const execa = require('execa')
 
-const { logger } = require('./../../shared/logger')
+const { logger } = require('./../../../shared/logger')
 
 async function scan () {
   const options = this.opts()

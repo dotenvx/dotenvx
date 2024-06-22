@@ -42,4 +42,11 @@ ext.command('precommit')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(require('./../actions/ext/precommit'))
 
+// dotenvx scan
+ext.command('scan')
+  .description('scan for leaked secrets')
+  .action(require('./../actions/ext/scan'))
+
+ext.addCommand(require('./../commands/ext/hub'))
+
 module.exports = ext
