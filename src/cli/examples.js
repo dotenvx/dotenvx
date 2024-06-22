@@ -22,12 +22,12 @@ Try it:
   `
 }
 
-const encrypt = function () {
+const vaultEncrypt = function () {
   return `
 Examples:
 
   \`\`\`
-  $ dotenvx encrypt
+  $ dotenvx ext vault encrypt
   \`\`\`
 
 Try it:
@@ -37,7 +37,7 @@ Try it:
   $ echo "HELLO=production" > .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
-  $ dotenvx encrypt
+  $ dotenvx ext vault encrypt
   encrypted to .env.vault (.env,.env.production)
   keys added to .env.keys (DOTENV_KEY_PRODUCTION,DOTENV_KEY_PRODUCTION)
 
@@ -53,15 +53,15 @@ const precommit = function () {
 Examples:
 
   \`\`\`
-  $ dotenvx precommit
-  $ dotenvx precommit --install
+  $ dotenvx ext precommit
+  $ dotenvx ext precommit --install
   \`\`\`
 
 Try it:
 
   \`\`\`
-  $ dotenvx precommit
-  [dotenvx@0.10.0][precommit] success
+  $ dotenvx ext precommit
+  [dotenvx@0.45.0][precommit] success
   \`\`\`
   `
 }
@@ -71,13 +71,13 @@ const prebuild = function () {
 Examples:
 
   \`\`\`
-  $ dotenvx prebuild
+  $ dotenvx ext prebuild
   \`\`\`
 
 Try it:
 
   \`\`\`
-  $ dotenvx prebuild
+  $ dotenvx ext prebuild
   [dotenvx@0.10.0][prebuild] success
   \`\`\`
   `
@@ -88,13 +88,13 @@ const gitignore = function () {
 Examples:
 
   \`\`\`
-  $ dotenvx gitignore
+  $ dotenvx ext gitignore
   \`\`\`
 
 Try it:
 
   \`\`\`
-  $ dotenvx gitignore
+  $ dotenvx ext gitignore
   done
   \`\`\`
   `
@@ -102,7 +102,7 @@ Try it:
 
 module.exports = {
   run,
-  encrypt,
+  vaultEncrypt,
   precommit,
   prebuild,
   gitignore

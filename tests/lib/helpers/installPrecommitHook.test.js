@@ -4,18 +4,18 @@ const sinon = require('sinon')
 
 const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitHook')
 
-t.test('#run (exists and already includes dotenvx precommit) does nothing', ct => {
+t.test('#run (exists and already includes dotenvx ext precommit) does nothing', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
   const currentHookStub = sinon.stub(installPrecommitHook, '_currentHook')
 
   existsStub.returns(true)
-  currentHookStub.returns('dotenvx precommit')
+  currentHookStub.returns('dotenvx ext precommit')
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx precommit exists [.git/hooks/pre-commit]')
+  ct.same(successMessage, 'dotenvx ext precommit exists [.git/hooks/pre-commit]')
 
   // restore stubs
   existsStub.restore()
@@ -24,7 +24,7 @@ t.test('#run (exists and already includes dotenvx precommit) does nothing', ct =
   ct.end()
 })
 
-t.test('#run (exists but does not include dotenvx precommit) appends', ct => {
+t.test('#run (exists but does not include dotenvx ext precommit) appends', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
@@ -36,7 +36,7 @@ t.test('#run (exists but does not include dotenvx precommit) appends', ct => {
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx precommit appended [.git/hooks/pre-commit]')
+  ct.same(successMessage, 'dotenvx ext precommit appended [.git/hooks/pre-commit]')
 
   t.ok(appendFileSyncStub.called, 'fs.appendFileSync should be called')
 
@@ -59,7 +59,7 @@ t.test('#run (does not exist) creates', ct => {
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx precommit installed [.git/hooks/pre-commit]')
+  ct.same(successMessage, 'dotenvx ext precommit installed [.git/hooks/pre-commit]')
 
   t.ok(writeFileSyncStub.called, 'fs.writeFileSync should be called')
   t.ok(chmodSyncStub.called, 'fs.chomdSyncStub should be called')

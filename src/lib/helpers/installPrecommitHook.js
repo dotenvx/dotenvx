@@ -11,7 +11,7 @@ then
   exit 1
 fi
 
-dotenvx precommit`
+dotenvx ext precommit`
 
 class InstallPrecommitHook {
   constructor () {
@@ -25,16 +25,16 @@ class InstallPrecommitHook {
       // Check if the pre-commit file already exists
       if (this._exists()) {
         // Check if 'dotenvx precommit' already exists in the file
-        if (this._currentHook().includes('dotenvx precommit')) {
+        if (this._currentHook().includes('dotenvx ext precommit')) {
           // do nothing
-          successMessage = `dotenvx precommit exists [${this.hookPath}]`
+          successMessage = `dotenvx ext precommit exists [${this.hookPath}]`
         } else {
           this._appendHook()
-          successMessage = `dotenvx precommit appended [${this.hookPath}]`
+          successMessage = `dotenvx ext precommit appended [${this.hookPath}]`
         }
       } else {
         this._createHook()
-        successMessage = `dotenvx precommit installed [${this.hookPath}]`
+        successMessage = `dotenvx ext precommit installed [${this.hookPath}]`
       }
 
       return {

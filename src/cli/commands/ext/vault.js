@@ -15,7 +15,7 @@ vault.command('migrate')
 // dotenvx ext vault encrypt
 vault.command('encrypt')
   .description('encrypt .env.* to .env.vault')
-  .addHelpText('after', examples.encrypt)
+  .addHelpText('after', examples.vaultEncrypt)
   .argument('[directory]', 'directory to encrypt', '.')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(require('./../../actions/ext/vault/encrypt'))

@@ -22,7 +22,7 @@ vault.command('migrate')
 const encryptAction = require('./../actions/ext/vault/encrypt')
 vault.command('encrypt')
   .description('DEPRECATED: moved to [dotenvx ext vault encrypt]')
-  .addHelpText('after', examples.encrypt)
+  .addHelpText('after', examples.vaultEncrypt)
   .argument('[directory]', 'directory to encrypt', '.')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(function (...args) {
