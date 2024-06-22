@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const fs = require('fs')
+const path = require('path')
 const UpdateNotice = require('./../lib/helpers/updateNotice')
 const { Command } = require('commander')
 const program = new Command()
@@ -96,7 +98,9 @@ program.command('encrypt')
 program.command('pro')
   .description('🏆 pro')
   .action(function (...args) {
-    console.log('coming soon (small business)')
+    const pro = fs.readFileSync(path.join(__dirname, './pro.txt'), 'utf8')
+
+    console.log(pro)
   })
 
 // // dotenvx ent
