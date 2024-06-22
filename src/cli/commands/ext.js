@@ -1,7 +1,5 @@
 const { Command } = require('commander')
 
-const store = require('./../../shared/store')
-const { logger } = require('./../../shared/logger')
 const examples = require('./../examples')
 
 const ext = new Command('ext')

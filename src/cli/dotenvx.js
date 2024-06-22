@@ -115,7 +115,6 @@ program.addCommand(require('./commands/ext'))
 program.addCommand(require('./commands/hub'))
 program.addCommand(require('./commands/vault'))
 
-
 program.command('convert')
   .description('DEPRECATED: moved to [dotenvx encrypt]')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
