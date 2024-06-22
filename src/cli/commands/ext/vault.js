@@ -5,7 +5,7 @@ const examples = require('./../../examples')
 const vault = new Command('vault')
 
 vault
-  .description('manage .env.vault files')
+  .description('🔐 manage .env.vault files')
 
 // dotenvx ext vault migrate
 vault.command('migrate')

@@ -7,7 +7,7 @@ const examples = require('./../examples')
 const ext = new Command('ext')
 
 ext
-  .description('extensions (ls, genexample, precommit, vault, and more)')
+  .description('🔌 extensions')
 
 // dotenvx ext ls
 ext.command('ls')
@@ -47,7 +47,14 @@ ext.command('scan')
   .description('scan for leaked secrets')
   .action(require('./../actions/ext/scan'))
 
-ext.addCommand(require('./../commands/ext/hub'))
+// dotenvx settings
+ext.command('settings')
+  .description('print current dotenvx settings')
+  .argument('[key]', 'settings name')
+  .option('-pp, --pretty-print', 'pretty print output')
+  .action(require('./../actions/ext/settings'))
+
 ext.addCommand(require('./../commands/ext/vault'))
+ext.addCommand(require('./../commands/ext/hub'))
 
 module.exports = ext

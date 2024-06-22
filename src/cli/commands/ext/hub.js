@@ -6,7 +6,7 @@ const { logger } = require('./../../../shared/logger')
 const hub = new Command('hub')
 
 hub
-  .description('DEPRECATED: to be replaced by [dotenvx pro]')
+  .description('🚫 DEPRECATED: to be replaced by [dotenvx pro]')
 
 const loginAction = require('./../../actions/ext/hub/login')
 hub

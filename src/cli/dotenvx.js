@@ -92,20 +92,29 @@ program.command('encrypt')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(encryptAction)
 
-program.addCommand(require('./commands/ext'))
+// dotenvx pro
+program.command('pro')
+  .description('🏆 pro')
+  .action(function (...args) {
+    console.log('coming soon (small business)')
+  })
 
-// dotenvx settings
-program.command('settings')
-  .description('print current dotenvx settings')
-  .argument('[key]', 'settings name')
-  .option('-pp, --pretty-print', 'pretty print output')
-  .action(require('./actions/settings'))
+// // dotenvx ent
+// program.command('ent')
+//   .description('🏢 enterprise')
+//   .action(function (...args) {
+//     console.log('coming soon (med-large companies)')
+//   })
+
+// dotenvx ext
+program.addCommand(require('./commands/ext'))
 
 //
 // DEPRECATED AND hidden
 //
 program.addCommand(require('./commands/hub'))
 program.addCommand(require('./commands/vault'))
+
 
 program.command('convert')
   .description('DEPRECATED: moved to [dotenvx encrypt]')
