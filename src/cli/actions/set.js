@@ -15,7 +15,7 @@ function set (key, value) {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   // encrypt
-  encrypt = true
+  let encrypt = true
   if (options.plain) {
     encrypt = false
   }
