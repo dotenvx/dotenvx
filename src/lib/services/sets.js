@@ -11,7 +11,7 @@ const replace = require('./../helpers/replace')
 const ENCODING = 'utf8'
 
 class Sets {
-  constructor (key, value, envFile = '.env', encrypt = false) {
+  constructor (key, value, envFile = '.env', encrypt = true) {
     this.key = key
     this.value = value
     this.envFile = envFile
