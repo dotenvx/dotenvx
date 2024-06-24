@@ -557,14 +557,14 @@ More examples
 
 ## Encryption
 
-> Add encryption to your `.env` files with a single command. Pass the `--encrypt` flag.
+> Add encryption to your `.env` files with a single command. Use `dotenvx encrypt`.
 
 ```sh
-$ dotenvx set HELLO World --encrypt
-set HELLO with encryption (.env)
+$ dotenvx encrypt
+✔ encrypted (.env)
 ```
 
-![](https://github.com/dotenvx/dotenvx/assets/3848/21f7a529-7a40-44e4-87d4-a72e1637b702)
+![encrypted .env](https://github.com/dotenvx/dotenvx/assets/3848/2a8c3dc5-cd8e-4a08-8a59-c24d0535c81a)
 
 > A `DOTENV_PUBLIC_KEY` (encryption key) and a `DOTENV_PRIVATE_KEY` (decryption key) are generated using the same public-key cryptography as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1).
 
@@ -573,7 +573,19 @@ More examples
 * <details><summary>`.env`</summary><br>
 
   ```sh
-  $ dotenvx set HELLO World --encrypt
+  $ echo "HELLO=World" > .env
+  $ dotenvx encrypt
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ dotenvx run -- node index.js
+  [dotenvx] injecting env (2) from .env
+  Hello World
+  ```
+
+* <details><summary>`.env` - using `set KEY`</summary><br>
+
+  ```sh
+  $ dotenvx set HELLO World
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -- node index.js
@@ -584,7 +596,21 @@ More examples
 * <details><summary>`.env.production`</summary><br>
 
   ```sh
-  $ dotenvx set HELLO Production --encrypt -f .env.production
+  $ echo "HELLO=Production" > .env.production
+  $ dotenvx encrypt -f .env.production
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ DOTENV_PRIVATE_KEY_PRODUCTION="<.env.production private key>" dotenvx run -- node index.js
+  [dotenvx] injecting env (2) from .env.production
+  Hello Production
+  ```
+
+  Note the `DOTENV_PRIVATE_KEY_PRODUCTION` ends with `_PRODUCTION`. This instructs `dotenvx run` to load the `.env.production` file.
+
+* <details><summary>`.env.production` - using `set KEY`</summary><br>
+
+  ```sh
+  $ dotenvx set HELLO Production -f .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ DOTENV_PRIVATE_KEY_PRODUCTION="<.env.production private key>" dotenvx run -- node index.js
@@ -597,7 +623,8 @@ More examples
 * <details><summary>`.env.ci`</summary><br>
 
   ```sh
-  $ dotenvx set HELLO Ci --encrypt -f .env.ci
+  $ echo "HELLO=Ci" > .env.ci
+  $ dotenvx encrypt -f .env.ci
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ DOTENV_PRIVATE_KEY_CI="<.env.ci private key>" dotenvx run -- node index.js
@@ -610,8 +637,8 @@ More examples
 * <details><summary>combine multiple encrypted .env files</summary><br>
 
   ```sh
-  $ dotenvx set HELLO World --encrypt -f .env
-  $ dotenvx set HELLO Production --encrypt -f .env.production
+  $ dotenvx set HELLO World -f .env
+  $ dotenvx set HELLO Production -f .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ DOTENV_PRIVATE_KEY="<.env private key>" DOTENV_PRIVATE_KEY_PRODUCTION="<.env.production private key>" dotenvx run -- node index.js
@@ -620,6 +647,26 @@ More examples
   ```
 
   Note the `DOTENV_PRIVATE_KEY` instructs `dotenvx run` to load the `.env` file and the `DOTENV_PRIVATE_KEY_PRODUCTION` instructs it to load the `.env.production` file. See the pattern?
+
+* <details><summary>combine multiple encrypted .env files with same filename but different directories</summary><br>
+
+  ```sh
+  $ mkdir app1
+  $ mkdir app2
+  $ dotenvx set HELLO app1 -f app1/.env.ci
+  $ dotenvx set HELLO app2 -f app2/.env.ci
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ DOTENV_PRIVATE_KEY_CI="<app1/privat ci key>,<app2/private ci key>" dotenvx run -f app1/.env.ci -f app2/.env.ci -- node index.js
+  [dotenvx] injecting env (2) from app1/.env.ci,app2/.env.ci
+  Hello app1
+
+  $ DOTENV_PRIVATE_KEY_CI="<app1/privat ci key>,<app2/private ci key>" dotenvx run -f app1/.env.ci -f app2/.env.ci --overload -- node index.js
+  [dotenvx] injecting env (2) from app1/.env.ci,app2/.env.ci
+  Hello app2
+  ```
+
+  Note the `DOTENV_PRIVATE_KEY_CI` (and any `DOTENV_PRIVATE_KEY*`) can take multiple private keys by simply comma separating them.
 
 * <details><summary>other curves</summary><br>
 
@@ -730,7 +777,7 @@ More examples
 
   ```sh
   $ touch .env
-  $ dotenvx set HELLO encrypted --encrypt
+  $ dotenvx set HELLO encrypted
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   # check your .env.keys files for your privateKey
@@ -746,7 +793,7 @@ More examples
 
   ```sh
   $ touch .env.production
-  $ dotenvx set HELLO "production encrypted" -f .env.production --encrypt
+  $ dotenvx set HELLO "production encrypted" -f .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   # check .env.keys for your privateKey
@@ -764,7 +811,7 @@ More examples
 
   ```sh
   $ touch .env.ci
-  $ dotenvx set HELLO "ci encrypted" -f .env.production --encrypt
+  $ dotenvx set HELLO "ci encrypted" -f .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   # check .env.keys for your privateKey
@@ -783,8 +830,8 @@ More examples
   ```sh
   $ touch .env
   $ touch .env.production
-  $ dotenvx set HELLO encrypted --encrypt
-  $ dotenvx set HELLO "production encrypted" -f .env.production --encrypt
+  $ dotenvx set HELLO encrypted
+  $ dotenvx set HELLO "production encrypted" -f .env.production
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   # check .env.keys for your privateKeys
@@ -994,25 +1041,25 @@ More examples
   </details>
 * <details><summary>`set KEY value`</summary><br>
 
-  Set a single key/value.
+  Set an encrypted key/value (on by default).
 
   ```sh
   $ touch .env
 
   $ dotenvx set HELLO World
-  set HELLO (.env)
+  set HELLO with encryption (.env)
   ```
 
   </details>
-* <details><summary>`set KEY value --encrypt`</summary><br>
+* <details><summary>`set KEY value --plain`</summary><br>
 
-  Set an encrypted key/value.
+  Set a plaintext key/value.
 
   ```sh
   $ touch .env
 
-  $ dotenvx set HELLO World --encrypt
-  set HELLO with encryption (.env)
+  $ dotenvx set HELLO World --plain
+  set HELLO (.env)
   ```
 
   </details>
@@ -1023,7 +1070,7 @@ More examples
   ```sh
   $ touch .env.production
 
-  $ dotenvx set HELLO production --encrypt -f .env.production
+  $ dotenvx set HELLO production -f .env.production
   set HELLO with encryption (.env.production)
   ```
 
