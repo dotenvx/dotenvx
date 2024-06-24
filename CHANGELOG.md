@@ -2,7 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v0.45.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.0.0...main)
+
+## 1.0.0 
+
+🎉 `dotenvx` has made it to `1.0.0`. There are BREAKING CHANGES ⚠️ .
+
+### Added
+
+* added `dotenvx set KEY value --plain` to set plain text values
+* added `dotenvx ext` 🔌  as a location to place extensions like `gititgnore`, `precommit`, `ls`, and more. better than cluttering up core features like `run`, `get/set`, and `encrypt`.
+* added `dotenvx pro` 🏆 command with coming soon and [link to GitHub issue](https://github.com/dotenvx/dotenvx/issues/259) (if you wish to be notified of progress. will provide tooling/features for teams)
+
+### Changed
+
+* `BREAKING ⚠️`
+  * turned on encryption by default for `dotenvx set` (use `dotenvx set KEY value --plain` to set plain values)
+  * renamed `dotenvx encrypt` to `dotenvx ext vault encrypt` (for managing `.env.vault` files)
+  * renamed `dotenvx convert` to `dotenvx encrypt`
+  * moved `ls` to `dotenvx ext ls`
+  * moved `genexample` to `dotenvx ext genexample`
+  * moved `gitignore` to `dotenvx ext gitignore`
+  * moved `prebuild` to `dotenvx ext prebuild`
+  * moved `precommit` to `dotenvx ext precommit`
+  * moved `scan` to `dotenvx ext scan`
+  * moved `hub` to `dotenvx ext hub`
+  * moved `vault` to `dotenvx ext vault`
+  * moved `settings` to `dotenvx ext settings`
+
+(for many of these moved commands, for example `dotenvx genexample`, still work in `1.0.0` but with a large deprecated notice - `DEPRECATION NOTICE: [genexample] has moved to [dotenvx ext genexample]`. Please change your muscle memory to `dotenvx ext genexample`, as these deprecated command paths will be removed in a later minor version. importantly `dotenvx encrypt` was not able to be preserved because as it is now in use for encrypted `.env` files rather than `.env.vault` files)
+
+This is a BIG release that sets the tone for `dotenvx`'s core offering and features while maintaining room for growth. Thank you everyone for your support and usage of `dotenvx` 🙏.
 
 ## 0.45.0
 
