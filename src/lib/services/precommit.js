@@ -56,7 +56,7 @@ class Precommit {
             // if contents are encrypted don't raise an error
             if (!encrypted) {
               const error = new Error(`${file} not encrypted (or not gitignored)`)
-              error.help = `? encrypt it with [dotenvx protect -f ${file}] or add ${file} to .gitignore with [echo ".env*" >> .gitignore]`
+              error.help = `? encrypt it with [dotenvx encrypt -f ${file}] or add ${file} to .gitignore with [echo ".env*" >> .gitignore]`
               throw error
             }
           }

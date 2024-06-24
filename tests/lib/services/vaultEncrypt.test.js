@@ -104,7 +104,7 @@ t.test('#run (empty envFile)', ct => {
   } catch (error) {
     ct.same(error.code, 'MISSING_ENV_FILES')
     ct.same(error.message, 'no .env* files found')
-    ct.same(error.help, '? add one with [echo "HELLO=World" > .env] and then run [dotenvx vault encrypt]')
+    ct.same(error.help, '? add one with [echo "HELLO=World" > .env] and then run [dotenvx ext vault encrypt]')
   }
 
   ct.end()
@@ -117,7 +117,7 @@ t.test('#run (envFile not found)', ct => {
   } catch (error) {
     ct.same(error.code, 'MISSING_ENV_FILE')
     ct.same(error.message, `file does not exist at [${path.resolve('tests/monorepo/apps/backend/.env.notfound')}]`)
-    ct.same(error.help, '? add it with [echo "HELLO=World" > .env.notfound] and then run [dotenvx vault encrypt]')
+    ct.same(error.help, '? add it with [echo "HELLO=World" > .env.notfound] and then run [dotenvx ext vault encrypt]')
   }
 
   ct.end()

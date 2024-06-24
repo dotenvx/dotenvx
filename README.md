@@ -1040,14 +1040,14 @@ More examples
   ```
 
   </details>
-* <details><summary>`convert`</summary><br>
+* <details><summary>`encrypt`</summary><br>
 
-  Convert a `.env` file to an encrypted `.env` file.
+  Encrypt the contents of a `.env` file to an encrypted `.env` file.
 
   ```sh
   $ echo "HELLO=World" > .env
 
-  $ dotenvx convert
+  $ dotenvx encrypt
   ✔ encrypted (.env)
   ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
   ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
@@ -1055,193 +1055,19 @@ More examples
   ```
 
   </details>
-* <details><summary>`convert -f`</summary><br>
+* <details><summary>`encrypt -f`</summary><br>
 
-  Convert a specified `.env` file to an encrypted `.env` file.
+  Encrypt the contents of a specified `.env` file to an encrypted `.env` file.
 
   ```sh
   $ echo "HELLO=World" > .env
   $ echo "HELLO=Production" > .env.production
 
-  $ dotenvx convert -f .env.production
+  $ dotenvx encrypt -f .env.production
   ✔ encrypted (.env.production)
   ✔ key added to .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION)
   ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
   ℹ run [DOTENV_PRIVATE_KEY_PRODUCTION='bff..bc4' dotenvx run -- yourcommand] to test decryption locally
-  ```
-
-  </details>
-* <details><summary>`ls`</summary><br>
-
-  Print all `.env` files in a tree structure.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-
-  $ dotenvx ls
-  ├─ .env.production
-  ├─ .env
-  └─ apps
-     └─ backend
-        └─ .env
-  ```
-
-  </details>
-* <details><summary>`ls directory`</summary><br>
-
-  Print all `.env` files inside a specified path to a directory.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-
-  $ dotenvx ls apps/backend
-  └─ .env
-  ```
-
-  </details>
-* <details><summary>`ls -f`</summary><br>
-
-  Glob `.env` filenames matching a wildcard.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-  $ touch apps/backend/.env.prod
-
-  $ dotenvx ls -f **/.env.prod*
-  ├─ .env.production
-  └─ apps
-     └─ backend
-        └─ .env.prod
-  ```
-
-  </details>
-* <details><summary>`genexample`</summary><br>
-
-  In one command, generate a `.env.example` file from your current `.env` file contents.
-
-  ```sh
-  $ echo "HELLO=World" > .env
-
-  $ dotenvx genexample
-  ✔ updated .env.example (1)
-  ```
-
-  ```ini
-  # .env.example
-  HELLO=""
-  ```
-
-  </details>
-* <details><summary>`genexample -f`</summary><br>
-
-  Pass multiple `.env` files to generate your `.env.example` file from the combination of their contents.
-
-  ```sh
-  $ echo "HELLO=World" > .env
-  $ echo "DB_HOST=example.com" > .env.production
-
-  $ dotenvx genexample -f .env -f .env.production
-  ✔ updated .env.example (2)
-  ```
-
-  ```ini
-  # .env.example
-  HELLO=""
-  DB_HOST=""
-  ```
-
-  </details>
-* <details><summary>`genexample directory`</summary><br>
-
-  Generate a `.env.example` file inside the specified directory. Useful for monorepos.
-
-  ```sh
-  $ echo "HELLO=World" > .env
-  $ mkdir -p apps/backend
-  $ echo "HELLO=Backend" > apps/backend/.env
-
-  $ dotenvx genexample apps/backend
-  ✔ updated .env.example (1)
-  ```
-
-  ```ini
-  # apps/backend/.env.example
-  HELLO=""
-  ```
-
-  </details>
-* <details><summary>`gitignore`</summary><br>
-
-  Gitignore your `.env` files.
-
-  ```sh
-  $ dotenvx gitignore
-  creating .gitignore
-  appending .env* to .gitignore
-  done
-  ```
-
-  </details>
-* <details><summary>`precommit`</summary><br>
-
-  Prevent `.env` files from being committed to code.
-
-  ```sh
-  $ dotenvx precommit
-  [dotenvx][precommit] success
-  ```
-
-  </details>
-* <details><summary>`precommit --install`</summary><br>
-
-  Install a shell script to `.git/hooks/pre-commit` to prevent accidentally committing any `.env` files to source control.
-
-  ```sh
-  $ dotenvx precommit --install
-  [dotenvx][precommit] dotenvx precommit installed [.git/hooks/pre-commit]
-  ```
-
-  </details>
-* <details><summary>`prebuild`</summary><br>
-
-  Prevent `.env` files from being built into your docker containers.
-
-  Add it to your `Dockerfile`.
-
-  ```sh
-  RUN curl -fsS https://dotenvx.sh/install.sh | sh
-
-  ...
-
-  RUN dotenvx prebuild
-  CMD ["dotenvx", "run", "--", "node", "index.js"]
-  ```
-
-  </details>
-* <details><summary>`scan`</summary><br>
-
-  Use [gitleaks](https://gitleaks.io) under the hood to scan for possible secrets in your code.
-
-  ```sh
-  $ dotenvx scan
-
-      ○
-      │╲
-      │ ○
-      ○ ░
-      ░    gitleaks
-
-  100 commits scanned.
-  no leaks found
   ```
 
   </details>
@@ -1312,6 +1138,187 @@ More examples
   ```sh
   $ dotenvx --version
   X.X.X
+  ```
+
+  </details>
+
+&nbsp;
+
+## Extensions
+
+Extended functionality for `dotenvx` 🔌.
+
+* <details><summary>`ext ls`</summary><br>
+
+  Print all `.env` files in a tree structure.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+
+  $ dotenvx ext ls
+  ├─ .env.production
+  ├─ .env
+  └─ apps
+     └─ backend
+        └─ .env
+  ```
+
+  </details>
+* <details><summary>`ext ls directory`</summary><br>
+
+  Print all `.env` files inside a specified path to a directory.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+
+  $ dotenvx ext ls apps/backend
+  └─ .env
+  ```
+
+  </details>
+* <details><summary>`ext ls -f`</summary><br>
+
+  Glob `.env` filenames matching a wildcard.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+  $ touch apps/backend/.env.prod
+
+  $ dotenvx ext ls -f **/.env.prod*
+  ├─ .env.production
+  └─ apps
+     └─ backend
+        └─ .env.prod
+  ```
+
+  </details>
+* <details><summary>`ext genexample`</summary><br>
+
+  In one command, generate a `.env.example` file from your current `.env` file contents.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx ext genexample
+  ✔ updated .env.example (1)
+  ```
+
+  ```ini
+  # .env.example
+  HELLO=""
+  ```
+
+  </details>
+* <details><summary>`ext genexample -f`</summary><br>
+
+  Pass multiple `.env` files to generate your `.env.example` file from the combination of their contents.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "DB_HOST=example.com" > .env.production
+
+  $ dotenvx ext genexample -f .env -f .env.production
+  ✔ updated .env.example (2)
+  ```
+
+  ```ini
+  # .env.example
+  HELLO=""
+  DB_HOST=""
+  ```
+
+  </details>
+* <details><summary>`ext genexample directory`</summary><br>
+
+  Generate a `.env.example` file inside the specified directory. Useful for monorepos.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ mkdir -p apps/backend
+  $ echo "HELLO=Backend" > apps/backend/.env
+
+  $ dotenvx ext genexample apps/backend
+  ✔ updated .env.example (1)
+  ```
+
+  ```ini
+  # apps/backend/.env.example
+  HELLO=""
+  ```
+
+  </details>
+* <details><summary>`ext gitignore`</summary><br>
+
+  Gitignore your `.env` files.
+
+  ```sh
+  $ dotenvx ext gitignore
+  creating .gitignore
+  appending .env* to .gitignore
+  done
+  ```
+
+  </details>
+* <details><summary>`ext precommit`</summary><br>
+
+  Prevent `.env` files from being committed to code.
+
+  ```sh
+  $ dotenvx ext precommit
+  [dotenvx][precommit] success
+  ```
+
+  </details>
+* <details><summary>`ext precommit --install`</summary><br>
+
+  Install a shell script to `.git/hooks/pre-commit` to prevent accidentally committing any `.env` files to source control.
+
+  ```sh
+  $ dotenvx ext precommit --install
+  [dotenvx][precommit] dotenvx precommit installed [.git/hooks/pre-commit]
+  ```
+
+  </details>
+* <details><summary>`ext prebuild`</summary><br>
+
+  Prevent `.env` files from being built into your docker containers.
+
+  Add it to your `Dockerfile`.
+
+  ```sh
+  RUN curl -fsS https://dotenvx.sh | sh
+
+  ...
+
+  RUN dotenvx ext prebuild
+  CMD ["dotenvx", "run", "--", "node", "index.js"]
+  ```
+
+  </details>
+* <details><summary>`ext scan`</summary><br>
+
+  Use [gitleaks](https://gitleaks.io) under the hood to scan for possible secrets in your code.
+
+  ```sh
+  $ dotenvx ext scan
+
+      ○
+      │╲
+      │ ○
+      ○ ░
+      ░    gitleaks
+
+  100 commits scanned.
+  no leaks found
   ```
 
   </details>

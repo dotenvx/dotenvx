@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const fs = require('fs')
+const path = require('path')
 const UpdateNotice = require('./../lib/helpers/updateNotice')
 const { Command } = require('commander')
 const program = new Command()
@@ -82,101 +84,126 @@ program.command('set')
   .argument('KEY', 'KEY')
   .argument('value', 'value')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
-  .option('-c, --encrypt', 'encrypt value')
+  .option('-c, --encrypt', 'encrypt value (default: true)', true)
+  .option('-p, --plain', 'store value as plain text', false)
   .action(require('./actions/set'))
 
-// dotenvx convert
-program.command('convert')
-  .description('convert env file(s) to encrypted env file(s)')
+// dotenvx encrypt
+const encryptAction = require('./actions/encrypt')
+program.command('encrypt')
+  .description('convert .env file(s) to encrypted .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
-  .action(require('./actions/convert'))
+  .action(encryptAction)
 
-// dotenvx ls
-program.command('ls')
-  .description('print all .env files in a tree structure')
-  .argument('[directory]', 'directory to list .env files from', '.')
-  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
-  .action(require('./actions/ls'))
+// dotenvx pro
+program.command('pro')
+  .description('🏆 pro')
+  .action(function (...args) {
+    const pro = fs.readFileSync(path.join(__dirname, './pro.txt'), 'utf8')
 
-// dotenvx genexample
-program.command('genexample')
-  .description('generate .env.example')
-  .argument('[directory]', 'directory to generate from', '.')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
-  .action(require('./actions/genexample'))
+    console.log(pro)
+  })
 
-// dotenvx gitignore
-program.command('gitignore')
-  .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
-  .addHelpText('after', examples.gitignore)
-  .action(require('./actions/gitignore'))
+// // dotenvx ent
+// program.command('ent')
+//   .description('🏢 enterprise')
+//   .action(function (...args) {
+//     console.log('coming soon (med-large companies)')
+//   })
 
-// dotenvx prebuild
-program.command('prebuild')
-  .description('prevent including .env files in docker builds')
-  .addHelpText('after', examples.prebuild)
-  .action(require('./actions/prebuild'))
+// dotenvx ext
+program.addCommand(require('./commands/ext'))
 
-// dotenvx precommit
-program.command('precommit')
-  .description('prevent committing .env files to code')
-  .addHelpText('after', examples.precommit)
-  .option('-i, --install', 'install to .git/hooks/pre-commit')
-  .action(require('./actions/precommit'))
-
-// dotenvx scan
-program.command('scan')
-  .description('scan for leaked secrets')
-  .action(require('./actions/scan'))
-
-// dotenvx settings
-program.command('settings')
-  .description('print current dotenvx settings')
-  .argument('[key]', 'settings name')
-  .option('-pp, --pretty-print', 'pretty print output')
-  .action(require('./actions/settings'))
-
-// dotenvx vault
+//
+// DEPRECATED AND hidden
+//
+program.addCommand(require('./commands/hub'))
 program.addCommand(require('./commands/vault'))
 
-// dotenvx encrypt
-const encryptAction = require('./actions/vault/encrypt')
-program.command('encrypt')
-  .description('DEPRECATED: moved to [dotenvx vault encrypt]')
-  .addHelpText('after', examples.encrypt)
-  .argument('[directory]', 'directory to encrypt', '.')
+program.command('convert')
+  .description('DEPRECATED: moved to [dotenvx encrypt]')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx encrypt] has moved. change your command to [dotenvx vault encrypt]')
-    logger.warn('DEPRECATION NOTICE: [dotenvx encryptme] will become [dotenvx encrypt] in a 1.0.0 release scheduled for middle of June 2024.')
+    logger.warn('DEPRECATION NOTICE: [dotenvx convert] has moved to [dotenvx encrypt]')
 
     encryptAction.apply(this, args)
   })
 
-// dotenvx decrypt
-const decryptAction = require('./actions/vault/decrypt')
-program.command('decrypt')
-  .description('DEPRECATED: moved to [dotenvx vault decrypt]')
-  .argument('[directory]', 'directory to decrypt', '.')
-  .option('-e, --environment <environments...>', 'environment(s) to decrypt')
+const lsAction = require('./actions/ext/ls')
+program.command('ls')
+  .description('DEPRECATED: moved to [dotenvx ext ls]')
+  .argument('[directory]', 'directory to list .env files from', '.')
+  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx decrypt] has moved. change your command to [dotenvx vault decrypt]')
+    logger.warn('DEPRECATION NOTICE: [ls] has moved to [dotenvx ext ls]')
 
-    decryptAction.apply(this, args)
+    lsAction.apply(this, args)
   })
 
-// dotenvx status
-const statusAction = require('./actions/vault/status')
-program.command('status')
-  .description('DEPRECATED: moved to [dotenvx vault status]')
-  .argument('[directory]', 'directory to check status against', '.')
+const genexampleAction = require('./actions/ext/genexample')
+program.command('genexample')
+  .description('DEPRECATED: moved to [dotenvx ext genexample]')
+  .argument('[directory]', 'directory to generate from', '.')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx status] has moved. change your command to [dotenvx vault status]')
+    logger.warn('DEPRECATION NOTICE: [genexample] has moved to [dotenvx ext genexample]')
 
-    statusAction.apply(this, args)
+    genexampleAction.apply(this, args)
   })
 
-// dotenvx hub
-program.addCommand(require('./commands/hub'))
+// dotenvx gitignore
+const gitignoreAction = require('./actions/ext/gitignore')
+program.command('gitignore')
+  .description('DEPRECATED: moved to [dotenvx ext gitignore]')
+  .addHelpText('after', examples.gitignore)
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [gitignore] has moved to [dotenvx ext gitignore]')
+
+    gitignoreAction.apply(this, args)
+  })
+
+// dotenvx prebuild
+const prebuildAction = require('./actions/ext/prebuild')
+program.command('prebuild')
+  .description('DEPRECATED: moved to [dotenvx ext prebuild]')
+  .addHelpText('after', examples.prebuild)
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [prebuild] has moved to [dotenvx ext prebuild]')
+
+    prebuildAction.apply(this, args)
+  })
+
+// dotenvx precommit
+const precommitAction = require('./actions/ext/precommit')
+program.command('precommit')
+  .description('DEPRECATED: moved to [dotenvx ext precommit]')
+  .addHelpText('after', examples.precommit)
+  .option('-i, --install', 'install to .git/hooks/pre-commit')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [precommit] has moved to [dotenvx ext precommit]')
+
+    precommitAction.apply(this, args)
+  })
+
+// dotenvx scan
+const scanAction = require('./actions/ext/scan')
+program.command('scan')
+  .description('DEPRECATED: moved to [dotenvx ext scan]')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [scan] has moved to [dotenvx ext scan]')
+
+    scanAction.apply(this, args)
+  })
+
+// overide helpInformation to hide DEPRECATED commands
+program.helpInformation = function () {
+  const originalHelp = Command.prototype.helpInformation.call(this)
+  const lines = originalHelp.split('\n')
+
+  // Filter out the hidden command from the help output
+  const filteredLines = lines.filter(line => !line.includes('DEPRECATED'))
+
+  return filteredLines.join('\n')
+}
 
 program.parse(process.argv)

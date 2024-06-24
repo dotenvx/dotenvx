@@ -1,11 +1,11 @@
 const fs = require('fs')
 const path = require('path')
 
-const main = require('./../../../lib/main')
-const { logger } = require('./../../../shared/logger')
-const createSpinner = require('./../../../shared/createSpinner')
-const sleep = require('./../../../lib/helpers/sleep')
-const pluralize = require('./../../../lib/helpers/pluralize')
+const main = require('./../../../../lib/main')
+const { logger } = require('./../../../../shared/logger')
+const createSpinner = require('./../../../../shared/createSpinner')
+const sleep = require('./../../../../lib/helpers/sleep')
+const pluralize = require('./../../../../lib/helpers/pluralize')
 
 const spinner = createSpinner('encrypting')
 
@@ -29,7 +29,7 @@ async function encrypt (directory) {
       existingVaults,
       addedDotenvFilenames,
       envFile
-    } = main.encrypt(directory, options.envFile)
+    } = main.vaultEncrypt(directory, options.envFile)
 
     logger.verbose(`generating .env.keys from ${envFile}`)
     if (addedKeys.length > 0) {

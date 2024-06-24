@@ -1,6 +1,6 @@
-const { logger } = require('./../../../shared/logger')
+const { logger } = require('./../../../../shared/logger')
 
-const main = require('./../../../lib/main')
+const main = require('./../../../../lib/main')
 
 function status (directory) {
   // debug args

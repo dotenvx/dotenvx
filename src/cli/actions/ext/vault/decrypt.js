@@ -1,10 +1,10 @@
 const fs = require('fs')
 
-const { logger } = require('./../../../shared/logger')
-const createSpinner = require('./../../../shared/createSpinner')
-const sleep = require('./../../../lib/helpers/sleep')
+const { logger } = require('./../../../../shared/logger')
+const createSpinner = require('./../../../../shared/createSpinner')
+const sleep = require('./../../../../lib/helpers/sleep')
 
-const Decrypt = require('./../../../lib/services/decrypt')
+const Decrypt = require('./../../../../lib/services/decrypt')
 
 const spinner = createSpinner('decrypting')
 

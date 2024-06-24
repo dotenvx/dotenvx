@@ -87,7 +87,7 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file)', ct => {
+t.test('#run (encrypt off) (finds .env file)', ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="frontend"',
@@ -98,7 +98,7 @@ t.test('#run (finds .env file)', ct => {
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets('KEY', 'value', envFile).run()
+  } = new Sets('KEY', 'value', envFile, false).run()
 
   ct.same(processedEnvFiles, [{
     key: 'KEY',
@@ -114,7 +114,7 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file and overwrites existing key/value)', ct => {
+t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)', ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="new value"'
@@ -124,7 +124,7 @@ t.test('#run (finds .env file and overwrites existing key/value)', ct => {
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets('HELLO', 'new value', envFile).run()
+  } = new Sets('HELLO', 'new value', envFile, false).run()
 
   ct.same(processedEnvFiles, [{
     key: 'HELLO',
@@ -140,7 +140,7 @@ t.test('#run (finds .env file and overwrites existing key/value)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file and attempts overwrite with same key/value)', ct => {
+t.test('#run (encrypt off) (finds .env file and attempts overwrite with same key/value)', ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="frontend"'
@@ -151,7 +151,7 @@ t.test('#run (finds .env file and attempts overwrite with same key/value)', ct =
     processedEnvFiles,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets('HELLO', 'frontend', envFile).run()
+  } = new Sets('HELLO', 'frontend', envFile, false).run()
 
   ct.same(processedEnvFiles, [{
     key: 'HELLO',
@@ -168,7 +168,7 @@ t.test('#run (finds .env file and attempts overwrite with same key/value)', ct =
   ct.end()
 })
 
-t.test('#run (finds .env file as array)', ct => {
+t.test('#run (encrypt off) (finds .env file as array)', ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="frontend"',
@@ -179,7 +179,7 @@ t.test('#run (finds .env file as array)', ct => {
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets('KEY', 'value', [envFile]).run()
+  } = new Sets('KEY', 'value', [envFile], false).run()
 
   ct.same(processedEnvFiles, [{
     key: 'KEY',
@@ -200,7 +200,7 @@ t.test('#run (finds .env file) with --encrypt', ct => {
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets('KEY', 'value', envFile, true).run()
+  } = new Sets('KEY', 'value', envFile).run()
 
   const row = processedEnvFiles[0]
   const publicKey = row.publicKey

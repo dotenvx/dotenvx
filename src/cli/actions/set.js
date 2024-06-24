@@ -14,16 +14,22 @@ function set (key, value) {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  // encrypt
+  let encrypt = true
+  if (options.plain) {
+    encrypt = false
+  }
+
   try {
     const {
       processedEnvFiles,
       changedFilepaths,
       unchangedFilepaths
-    } = main.set(key, value, options.envFile, options.encrypt)
+    } = main.set(key, value, options.envFile, encrypt)
 
     let withEncryption = ''
 
-    if (options.encrypt) {
+    if (encrypt) {
       withEncryption = ' with encryption'
     }
 

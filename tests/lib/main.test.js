@@ -53,13 +53,13 @@ t.test('parse calls dotenv.parse', ct => {
   ct.end()
 })
 
-t.test('encrypt calls VaultEncrypt.run', ct => {
-  const stub = sinon.stub(VaultEncrypt.prototype, 'run')
+t.test('encrypt calls Encrypt.run', ct => {
+  const stub = sinon.stub(Encrypt.prototype, 'run')
   stub.returns({})
 
   main.encrypt()
 
-  t.ok(stub.called, 'new VaultEncrypt().run() called')
+  t.ok(stub.called, 'new Encrypt().run() called')
 
   stub.restore()
 
@@ -112,19 +112,6 @@ t.test('set calls Sets.run', ct => {
   main.set()
 
   t.ok(stub.called, 'new Sets().run() called')
-
-  stub.restore()
-
-  ct.end()
-})
-
-t.test('convert calls Encrypt.run', ct => {
-  const stub = sinon.stub(Encrypt.prototype, 'run')
-  stub.returns({})
-
-  main.convert()
-
-  t.ok(stub.called, 'new Encrypt().run() called')
 
   stub.restore()
 

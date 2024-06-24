@@ -1,6 +1,6 @@
-const { logger } = require('./../../shared/logger')
+const { logger } = require('./../../../shared/logger')
 
-const main = require('./../../lib/main')
+const main = require('./../../../lib/main')
 
 function settings (key = null) {
   logger.debug(`key: ${key}`)

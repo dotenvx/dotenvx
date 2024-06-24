@@ -134,11 +134,6 @@ const parse = function (src) {
   return dotenv.parse(src)
 }
 
-// DEPRECATED: will became the same function as convert
-const encrypt = function (directory, envFile) {
-  return new VaultEncrypt(directory, envFile).run()
-}
-
 const vaultEncrypt = function (directory, envFile) {
   return new VaultEncrypt(directory, envFile).run()
 }
@@ -159,7 +154,7 @@ const set = function (key, value, envFile, encrypt) {
   return new Sets(key, value, envFile, encrypt).run()
 }
 
-const convert = function (envFile) {
+const encrypt = function (envFile) {
   return new Encrypt(envFile).run()
 }
 
@@ -201,7 +196,6 @@ module.exports = {
   ls,
   get,
   set,
-  convert,
   status,
   genexample,
   // settings

@@ -22,7 +22,7 @@ class VaultEncrypt {
     if (this.envFile.length < 1) {
       const code = 'MISSING_ENV_FILES'
       const message = 'no .env* files found'
-      const help = '? add one with [echo "HELLO=World" > .env] and then run [dotenvx vault encrypt]'
+      const help = '? add one with [echo "HELLO=World" > .env] and then run [dotenvx ext vault encrypt]'
 
       const error = new Error(message)
       error.code = code
@@ -41,7 +41,7 @@ class VaultEncrypt {
       if (!fs.existsSync(filepath)) {
         const code = 'MISSING_ENV_FILE'
         const message = `file does not exist at [${filepath}]`
-        const help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx vault encrypt]`
+        const help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx ext vault encrypt]`
 
         const error = new Error(message)
         error.code = code
