@@ -1369,6 +1369,12 @@ More examples
 * <a href="https://dotenvx.com/docs/platforms/railway">Render <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/railway.svg" alt="Railway Logo" width="20" height="20" style="fill:#0B0D0E;"></a>
 * <a href="https://dotenvx.com/docs/monorepos/turborepo">Turborepo <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/turborepo.svg" alt="Turborepo Logo" width="20" height="20" style="fill:#EF4444;"></a>
 * <a href="https://dotenvx.com/docs/platforms/vercel">Vercel <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/vercel.svg" alt="Vercel Logo" width="20" height="20" style="fill:#000000;"></a>
+* [more](https://dotenvx.com/docs/guides)
+  * <a href="https://dotenvx.com/docs/guides#node-js">Node.js <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/nodejs.svg" alt="Node.js Logo" width="20" height="20" style="fill:#5FA04E;"></a>
+  * <a href="https://dotenvx.com/docs/guides#python">Python <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/python.svg" alt="Python Logo" width="20" height="20" style="fill:#3776AB;"></a>
+  * <a href="https://dotenvx.com/docs/guides#php">PHP <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/php.svg" alt="PHP Logo" width="20" height="20" style="fill:#777BB4;"></a>
+  * <a href="https://dotenvx.com/docs/guides#ruby">Ruby <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/ruby.svg" alt="Ruby Logo" width="20" height="20" style="fill:#CC342D;"></a>
+  * <a href="https://dotenvx.com/docs/guides#rust">Rust <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/rust.svg" alt="Rust Logo" width="20" height="20" style="fill:#000000;"></a>
 
 &nbsp;
 
