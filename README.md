@@ -676,7 +676,9 @@ More examples
 
 &nbsp;
 
-## Advanced usage
+## More
+
+### Advanced usage 🎓
 
 * <details><summary>`run` - Variable Expansion</summary><br>
 
@@ -1083,7 +1085,7 @@ More examples
   $ touch .env.ci
 
   $ dotenvx set HELLO "my ci" -f .env.ci
-  set HELLO (.env.ci)
+  set HELLO with encryption (.env.ci)
   ```
 
   </details>
@@ -1191,7 +1193,7 @@ More examples
 
 &nbsp;
 
-## Extensions
+### Extensions 🔌
 
 Extended functionality for `dotenvx` 🔌.
 
