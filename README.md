@@ -1355,22 +1355,12 @@ More examples
 
 &nbsp;
 
-### Guides 📖
+## Guides
 
-* [quickstart guides](https://dotenvx.com/docs/quickstart)
-  * [run anywhere](https://dotenvx.com/docs/quickstart/run)
-  * [multi-environment](https://dotenvx.com/docs/quickstart/environments)
-  * [encrypted envs](https://dotenvx.com/docs/quickstart/encryption)
-* [dotenvx/docs](https://dotenvx.com/docs)
-  * [languages](https://dotenvx.com/docs#languages)
-  * [frameworks](https://dotenvx.com/docs#frameworks)
-  * [platforms](https://dotenvx.com/docs#platforms)
-  * [ci/cd](https://dotenvx.com/docs#cis)
-
-<a href="https://dotenvx.com/docs/platforms/digital-ocean"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/digitalocean.svg" alt="Digital Ocean Logo" width="40" height="40" style="fill:#0080FF;"></a>
-<a href="https://dotenvx.com/docs/platforms/docker"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/docker.svg" alt="Docker Logo" width="40" height="40" style="fill:#2496ED;"></a>
-<a href="https://dotenvx.com/docs/cis/github-actions"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub Logo" width="40" height="40" style="fill:#181717;"></a>
-<a href="https://dotenvx.com/docs/platforms/heroku"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/heroku.svg" alt="Heroku Logo" width="40" height="40" style="fill:#430098;"></a>
+* <a href="https://dotenvx.com/docs/platforms/digital-ocean">Digital Ocean <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/digitalocean.svg" alt="Digital Ocean Logo" width="20" height="20" style="fill:#0080FF;"></a>
+* <a href="https://dotenvx.com/docs/platforms/docker">Docker <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/docker.svg" alt="Docker Logo" width="20" height="20" style="fill:#2496ED;"></a>
+* <a href="https://dotenvx.com/docs/cis/github-actions">GitHub Actions <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub Logo" width="20" height="20" style="fill:#181717;"></a>
+* <a href="https://dotenvx.com/docs/platforms/heroku">Heroku <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/heroku.svg" alt="Heroku Logo" width="20" height="20" style="fill:#430098;"></a>
 
 &nbsp;
 
