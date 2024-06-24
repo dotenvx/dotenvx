@@ -659,188 +659,9 @@ More examples
 
 &nbsp;
 
-## More
+## Advanced
 
-> Go deeper with [extensions](#extensions-), [advaned usage](#advanced-usage-), and [guides](#guides-).
-
-### Extensions 🔌
-
-* <details><summary>`ext ls`</summary><br>
-
-  Print all `.env` files in a tree structure.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-
-  $ dotenvx ext ls
-  ├─ .env.production
-  ├─ .env
-  └─ apps
-     └─ backend
-        └─ .env
-  ```
-
-  </details>
-* <details><summary>`ext ls directory`</summary><br>
-
-  Print all `.env` files inside a specified path to a directory.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-
-  $ dotenvx ext ls apps/backend
-  └─ .env
-  ```
-
-  </details>
-* <details><summary>`ext ls -f`</summary><br>
-
-  Glob `.env` filenames matching a wildcard.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-  $ touch apps/backend/.env.prod
-
-  $ dotenvx ext ls -f **/.env.prod*
-  ├─ .env.production
-  └─ apps
-     └─ backend
-        └─ .env.prod
-  ```
-
-  </details>
-* <details><summary>`ext genexample`</summary><br>
-
-  In one command, generate a `.env.example` file from your current `.env` file contents.
-
-  ```sh
-  $ echo "HELLO=World" > .env
-
-  $ dotenvx ext genexample
-  ✔ updated .env.example (1)
-  ```
-
-  ```ini
-  # .env.example
-  HELLO=""
-  ```
-
-  </details>
-* <details><summary>`ext genexample -f`</summary><br>
-
-  Pass multiple `.env` files to generate your `.env.example` file from the combination of their contents.
-
-  ```sh
-  $ echo "HELLO=World" > .env
-  $ echo "DB_HOST=example.com" > .env.production
-
-  $ dotenvx ext genexample -f .env -f .env.production
-  ✔ updated .env.example (2)
-  ```
-
-  ```ini
-  # .env.example
-  HELLO=""
-  DB_HOST=""
-  ```
-
-  </details>
-* <details><summary>`ext genexample directory`</summary><br>
-
-  Generate a `.env.example` file inside the specified directory. Useful for monorepos.
-
-  ```sh
-  $ echo "HELLO=World" > .env
-  $ mkdir -p apps/backend
-  $ echo "HELLO=Backend" > apps/backend/.env
-
-  $ dotenvx ext genexample apps/backend
-  ✔ updated .env.example (1)
-  ```
-
-  ```ini
-  # apps/backend/.env.example
-  HELLO=""
-  ```
-
-  </details>
-* <details><summary>`ext gitignore`</summary><br>
-
-  Gitignore your `.env` files.
-
-  ```sh
-  $ dotenvx ext gitignore
-  creating .gitignore
-  appending .env* to .gitignore
-  done
-  ```
-
-  </details>
-* <details><summary>`ext precommit`</summary><br>
-
-  Prevent `.env` files from being committed to code.
-
-  ```sh
-  $ dotenvx ext precommit
-  [dotenvx][precommit] success
-  ```
-
-  </details>
-* <details><summary>`ext precommit --install`</summary><br>
-
-  Install a shell script to `.git/hooks/pre-commit` to prevent accidentally committing any `.env` files to source control.
-
-  ```sh
-  $ dotenvx ext precommit --install
-  [dotenvx][precommit] dotenvx precommit installed [.git/hooks/pre-commit]
-  ```
-
-  </details>
-* <details><summary>`ext prebuild`</summary><br>
-
-  Prevent `.env` files from being built into your docker containers.
-
-  Add it to your `Dockerfile`.
-
-  ```sh
-  RUN curl -fsS https://dotenvx.sh | sh
-
-  ...
-
-  RUN dotenvx ext prebuild
-  CMD ["dotenvx", "run", "--", "node", "index.js"]
-  ```
-
-  </details>
-* <details><summary>`ext scan`</summary><br>
-
-  Use [gitleaks](https://gitleaks.io) under the hood to scan for possible secrets in your code.
-
-  ```sh
-  $ dotenvx ext scan
-
-      ○
-      │╲
-      │ ○
-      ○ ░
-      ░    gitleaks
-
-  100 commits scanned.
-  no leaks found
-  ```
-
-  </details>
-
-### Advanced usage 🎓
+> Become a `dotenvx` power user.
 
 * <details><summary>`run` - Variable Expansion</summary><br>
 
@@ -1355,6 +1176,185 @@ More examples
 
   </details>
 
+### Extensions 🔌
+
+* <details><summary>`ext ls`</summary><br>
+
+  Print all `.env` files in a tree structure.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+
+  $ dotenvx ext ls
+  ├─ .env.production
+  ├─ .env
+  └─ apps
+     └─ backend
+        └─ .env
+  ```
+
+  </details>
+* <details><summary>`ext ls directory`</summary><br>
+
+  Print all `.env` files inside a specified path to a directory.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+
+  $ dotenvx ext ls apps/backend
+  └─ .env
+  ```
+
+  </details>
+* <details><summary>`ext ls -f`</summary><br>
+
+  Glob `.env` filenames matching a wildcard.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+  $ touch apps/backend/.env.prod
+
+  $ dotenvx ext ls -f **/.env.prod*
+  ├─ .env.production
+  └─ apps
+     └─ backend
+        └─ .env.prod
+  ```
+
+  </details>
+* <details><summary>`ext genexample`</summary><br>
+
+  In one command, generate a `.env.example` file from your current `.env` file contents.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx ext genexample
+  ✔ updated .env.example (1)
+  ```
+
+  ```ini
+  # .env.example
+  HELLO=""
+  ```
+
+  </details>
+* <details><summary>`ext genexample -f`</summary><br>
+
+  Pass multiple `.env` files to generate your `.env.example` file from the combination of their contents.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "DB_HOST=example.com" > .env.production
+
+  $ dotenvx ext genexample -f .env -f .env.production
+  ✔ updated .env.example (2)
+  ```
+
+  ```ini
+  # .env.example
+  HELLO=""
+  DB_HOST=""
+  ```
+
+  </details>
+* <details><summary>`ext genexample directory`</summary><br>
+
+  Generate a `.env.example` file inside the specified directory. Useful for monorepos.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ mkdir -p apps/backend
+  $ echo "HELLO=Backend" > apps/backend/.env
+
+  $ dotenvx ext genexample apps/backend
+  ✔ updated .env.example (1)
+  ```
+
+  ```ini
+  # apps/backend/.env.example
+  HELLO=""
+  ```
+
+  </details>
+* <details><summary>`ext gitignore`</summary><br>
+
+  Gitignore your `.env` files.
+
+  ```sh
+  $ dotenvx ext gitignore
+  creating .gitignore
+  appending .env* to .gitignore
+  done
+  ```
+
+  </details>
+* <details><summary>`ext precommit`</summary><br>
+
+  Prevent `.env` files from being committed to code.
+
+  ```sh
+  $ dotenvx ext precommit
+  [dotenvx][precommit] success
+  ```
+
+  </details>
+* <details><summary>`ext precommit --install`</summary><br>
+
+  Install a shell script to `.git/hooks/pre-commit` to prevent accidentally committing any `.env` files to source control.
+
+  ```sh
+  $ dotenvx ext precommit --install
+  [dotenvx][precommit] dotenvx precommit installed [.git/hooks/pre-commit]
+  ```
+
+  </details>
+* <details><summary>`ext prebuild`</summary><br>
+
+  Prevent `.env` files from being built into your docker containers.
+
+  Add it to your `Dockerfile`.
+
+  ```sh
+  RUN curl -fsS https://dotenvx.sh | sh
+
+  ...
+
+  RUN dotenvx ext prebuild
+  CMD ["dotenvx", "run", "--", "node", "index.js"]
+  ```
+
+  </details>
+* <details><summary>`ext scan`</summary><br>
+
+  Use [gitleaks](https://gitleaks.io) under the hood to scan for possible secrets in your code.
+
+  ```sh
+  $ dotenvx ext scan
+
+      ○
+      │╲
+      │ ○
+      ○ ░
+      ░    gitleaks
+
+  100 commits scanned.
+  no leaks found
+  ```
+
+  </details>
+
+&nbsp;
+
 ### Guides 📖
 
 * [quickstart guides](https://dotenvx.com/docs/quickstart)
@@ -1367,6 +1367,9 @@ More examples
   * [platforms](https://dotenvx.com/docs#platforms)
   * [ci/cd](https://dotenvx.com/docs#cis)
 
+<a href="https://dotenvx.com/docs/cis/github-actions"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub Logo" width="40" height="40" style="fill:#181717;"></a>
+<a href="https://dotenvx.com/docs/cis/github-actions"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub Logo" width="40" height="40" style="fill:#181717;"></a>
+<a href="https://dotenvx.com/docs/cis/github-actions"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub Logo" width="40" height="40" style="fill:#181717;"></a>
 
 &nbsp;
 
