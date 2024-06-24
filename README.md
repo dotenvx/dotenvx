@@ -661,12 +661,11 @@ More examples
 
 ## More
 
-> Go deeper with [extensions 🔌](#extensions-), [advaned usage 🎓](#advanced-usage-)
-, and framework/platform/language [guides 📖](#guides-).
+> Go deeper with [extensions](#extensions-), [advaned usage](#advanced-usage-), and [guides](#guides-).
 
 ### Extensions 🔌
 
-Extended functionality for `dotenvx`.
+> Extended functionality for `dotenvx`.
 
 * <details><summary>`ext ls`</summary><br>
 
@@ -1359,8 +1358,6 @@ Become an advanced user of `dotenvx`.
   ```
 
   </details>
-
-&nbsp;
 
 ### Guides 📖
 
