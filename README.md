@@ -662,6 +662,7 @@ More examples
 ## Advanced
 
 > Become a `dotenvx` power user.
+>
 
 * <details><summary>`run` - Variable Expansion</summary><br>
 
@@ -1356,6 +1357,9 @@ More examples
 &nbsp;
 
 ## Guides
+
+> Go deeper into using `dotenvx` with detailed framework and platform guides.
+>
 
 * <a href="https://dotenvx.com/docs/platforms/digital-ocean">Digital Ocean <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/digitalocean.svg" alt="Digital Ocean Logo" width="20" height="20" style="fill:#0080FF;"></a>
 * <a href="https://dotenvx.com/docs/platforms/docker">Docker <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/docker.svg" alt="Docker Logo" width="20" height="20" style="fill:#2496ED;"></a>
