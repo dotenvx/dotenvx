@@ -665,8 +665,6 @@ More examples
 
 ### Extensions 🔌
 
-> Extended functionality for `dotenvx`.
-
 * <details><summary>`ext ls`</summary><br>
 
   Print all `.env` files in a tree structure.
@@ -843,8 +841,6 @@ More examples
   </details>
 
 ### Advanced usage 🎓
-
-Become an advanced user of `dotenvx`.
 
 * <details><summary>`run` - Variable Expansion</summary><br>
 
@@ -1360,8 +1356,6 @@ Become an advanced user of `dotenvx`.
   </details>
 
 ### Guides 📖
-
-See more detailed guides for using `dotenvx` with many languages, frameworks, and platforms.
 
 * [quickstart guides](https://dotenvx.com/docs/quickstart)
   * [run anywhere](https://dotenvx.com/docs/quickstart/run)
