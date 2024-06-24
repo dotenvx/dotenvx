@@ -1215,18 +1215,6 @@ More examples
   ```
 
   </details>
-* <details><summary>`set KEY value --plain`</summary><br>
-
-  Set a plaintext key/value.
-
-  ```sh
-  $ touch .env
-
-  $ dotenvx set HELLO World --plain
-  set HELLO (.env)
-  ```
-
-  </details>
 * <details><summary>`set KEY value -f`</summary><br>
 
   Set an (encrypted) key/value for another `.env` file.
@@ -1248,6 +1236,18 @@ More examples
 
   $ dotenvx set HELLO "my ci" -f .env.ci
   set HELLO with encryption (.env.ci)
+  ```
+
+  </details>
+* <details><summary>`set KEY value --plain`</summary><br>
+
+  Set a plaintext key/value.
+
+  ```sh
+  $ touch .env
+
+  $ dotenvx set HELLO World --plain
+  set HELLO (.env)
   ```
 
   </details>
