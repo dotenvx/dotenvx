@@ -1367,9 +1367,10 @@ More examples
   * [platforms](https://dotenvx.com/docs#platforms)
   * [ci/cd](https://dotenvx.com/docs#cis)
 
+<a href="https://dotenvx.com/docs/platforms/digital-ocean"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/digitalocean.svg" alt="Digital Ocean Logo" width="40" height="40" style="fill:#0080FF;"></a>
+<a href="https://dotenvx.com/docs/platforms/docker"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/docker.svg" alt="Docker Logo" width="40" height="40" style="fill:#2496ED;"></a>
 <a href="https://dotenvx.com/docs/cis/github-actions"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub Logo" width="40" height="40" style="fill:#181717;"></a>
-<a href="https://dotenvx.com/docs/cis/github-actions"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub Logo" width="40" height="40" style="fill:#181717;"></a>
-<a href="https://dotenvx.com/docs/cis/github-actions"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub Logo" width="40" height="40" style="fill:#181717;"></a>
+<a href="https://dotenvx.com/docs/platforms/heroku"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/heroku.svg" alt="Heroku Logo" width="40" height="40" style="fill:#430098;"></a>
 
 &nbsp;
 
