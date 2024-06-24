@@ -613,32 +613,6 @@ More examples
   Note the `DOTENV_PRIVATE_KEY_CI` ends with `_CI`. This instructs `dotenvx run` to load the `.env.ci` file. See the pattern?
 
   </details>
-* <details><summary>`.env` using set</summary><br>
-
-  ```sh
-  $ dotenvx set HELLO World
-  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
-
-  $ dotenvx run -- node index.js
-  [dotenvx] injecting env (2) from .env
-  Hello World
-  ```
-
-  </details>
-* <details><summary>`.env.production` using set</summary><br>
-
-  ```sh
-  $ dotenvx set HELLO Production -f .env.production
-  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
-
-  $ DOTENV_PRIVATE_KEY_PRODUCTION="<.env.production private key>" dotenvx run -- node index.js
-  [dotenvx] injecting env (2) from .env.production
-  Hello Production
-  ```
-
-  Note the `DOTENV_PRIVATE_KEY_PRODUCTION` ends with `_PRODUCTION`. This instructs `dotenvx run` to load the `.env.production` file.
-
-  </details>
 * <details><summary>combine multiple encrypted .env files</summary><br>
 
   ```sh
@@ -654,7 +628,7 @@ More examples
   Note the `DOTENV_PRIVATE_KEY` instructs `dotenvx run` to load the `.env` file and the `DOTENV_PRIVATE_KEY_PRODUCTION` instructs it to load the `.env.production` file. See the pattern?
 
   </details>
-* <details><summary>combine multiple encrypted .env files with same filename but different directories</summary><br>
+* <details><summary>combine multiple encrypted .env files for monorepo</summary><br>
 
   ```sh
   $ mkdir app1
@@ -680,6 +654,8 @@ More examples
   > `secp256k1` is a well-known and battle tested curve, in use with Bitcoin and other cryptocurrencies, but we are open to adding support for more curves.
   > 
   > If your organization's compliance department requires [NIST approved curves](https://csrc.nist.gov/projects/elliptic-curve-cryptography) or other curves like `curve25519`, please reach out at [security@dotenvx.com](mailto:security@dotenvx.com).
+
+  </details>
 
 &nbsp;
 
