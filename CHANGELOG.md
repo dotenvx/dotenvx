@@ -34,6 +34,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 This is a BIG release that sets the tone for `dotenvx`'s core offering and features while maintaining room for growth. Thank you everyone for your support and usage of `dotenvx` 🙏.
 
+[blog post: "From dotenv to dotenvx: Next Generation Config Management"](https://dotenvx.com/blog/2024/06/24/dotenvx-next-generation-config-management.html)
+
 ## 0.45.0
 
 ### Changed
