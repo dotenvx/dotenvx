@@ -28,6 +28,9 @@ const config = function (options = {}) {
   // overload
   const overload = options.overload || options.override
 
+  // preserve
+  const preserve = options.preserve || options.preserve
+
   // DOTENV_KEY
   let DOTENV_KEY = process.env.DOTENV_KEY
   if (options && options.DOTENV_KEY) {
@@ -54,7 +57,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, DOTENV_KEY, processEnv).run()
+    } = new Run(envs, overload, preserve, DOTENV_KEY, processEnv).run()
 
     let lastError
     const parsedAll = {}
@@ -146,8 +149,8 @@ const genexample = function (directory, envFile) {
   return new Genexample(directory, envFile).run()
 }
 
-const get = function (key, envs = [], overload = false, DOTENV_KEY = '', all = false) {
-  return new Get(key, envs, overload, DOTENV_KEY, all).run()
+const get = function (key, envs = [], overload = false, preserve = false, DOTENV_KEY = '', all = false) {
+  return new Get(key, envs, overload, preserve, DOTENV_KEY, all).run()
 }
 
 const set = function (key, value, envFile, encrypt) {

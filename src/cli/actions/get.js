@@ -18,7 +18,7 @@ function get (key) {
     envs = this.envs
   }
 
-  const value = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
+  const value = main.get(key, envs, options.overload, options.preserve, process.env.DOTENV_KEY, options.all)
 
   if (typeof value === 'object' && value !== null) {
     if (options.prettyPrint) {

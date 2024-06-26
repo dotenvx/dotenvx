@@ -1,17 +1,18 @@
 const Run = require('./run')
 
 class Get {
-  constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false) {
+  constructor (key, envs = [], overload = false, preserve = false, DOTENV_KEY = '', all = false) {
     this.key = key
     this.envs = envs
     this.overload = overload
+    this.preserve = preserve
     this.DOTENV_KEY = DOTENV_KEY
     this.all = all
   }
 
   run () {
     const processEnv = { ...process.env }
-    const { processedEnvs } = new Run(this.envs, this.overload, this.DOTENV_KEY, processEnv).run()
+    const { processedEnvs } = new Run(this.envs, this.overload, this.preserve, this.DOTENV_KEY, processEnv).run()
 
     if (!this.key) {
       // if user wants to return ALL envs (even prior set on machine)

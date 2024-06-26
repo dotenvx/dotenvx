@@ -3,7 +3,7 @@ const dotenvExpand = require('dotenv-expand')
 const dotenvEval = require('./dotenvEval')
 const decryptValue = require('./decryptValue')
 
-function parseDecryptEvalExpand (src, privateKey = null) {
+function parseDecryptEvalExpand (src, privateKey = null, preserve = false) {
   // parse
   const parsed = dotenv.parse(src)
 
@@ -24,7 +24,7 @@ function parseDecryptEvalExpand (src, privateKey = null) {
 
   const expandPlease = {
     processEnv: {},
-    parsed: { ...process.env, ...evaled } // always treat as overload, then later in the code the inject method takes care of actually setting on process.env via overload or not. this functions job is just to determine what the value would be
+    parsed: preserve ? { ...evaled, ...process.env } : { ...process.env, ...evaled } // always treat as overload when not preserving machine env, then later in the code the inject method takes care of actually setting on process.env via overload or not. this functions job is just to determine what the value would be
   }
   const expanded = dotenvExpand.expand(expandPlease).parsed
 

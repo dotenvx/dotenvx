@@ -1145,6 +1145,7 @@ More examples
     -f, --env-file <paths...>         path(s) to your env file(s) (default: [])
     -fv, --env-vault-file <paths...>  path(s) to your .env.vault file(s) (default: [])
     -o, --overload                    override existing env variables
+    -p, --preserve                    preserve machine env variables
     --convention <name>               load a .env convention (available conventions: ['nextjs'])
     -h, --help                        display help for command
 

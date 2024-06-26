@@ -17,10 +17,11 @@ const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 const guessPrivateKeyFilename = require('./../helpers/guessPrivateKeyFilename')
 
 class Run {
-  constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
+  constructor (envs = [], overload = false, preserve = false, DOTENV_KEY = '', processEnv = process.env) {
     this.dotenvPrivateKeyNames = Object.keys(processEnv).filter(key => key.startsWith('DOTENV_PRIVATE_KEY')) // important, must be first. used by determineEnvs
     this.envs = this._determineEnvs(envs, DOTENV_KEY)
     this.overload = overload
+    this.preserve = preserve
     this.DOTENV_KEY = DOTENV_KEY
     this.processEnv = processEnv
 
@@ -63,11 +64,11 @@ class Run {
     row.string = env
 
     try {
-      const parsed = parseDecryptEvalExpand(env)
+      const parsed = parseDecryptEvalExpand(env, null, this.preserve)
       row.parsed = parsed
       this.readableStrings.add(env)
 
-      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
+      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload, this.preserve)
       row.injected = injected
       row.preExisted = preExisted
 
@@ -93,10 +94,10 @@ class Run {
 
       // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
       const privateKey = smartDotenvPrivateKey(envFilepath)
-      const parsed = parseDecryptEvalExpand(src, privateKey)
+      const parsed = parseDecryptEvalExpand(src, privateKey, this.preserve)
       row.parsed = parsed
 
-      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
+      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload, this.preserve)
       row.injected = injected
       row.preExisted = preExisted
 
@@ -162,10 +163,10 @@ class Run {
 
     try {
       // parse this. it's the equivalent of the .env file
-      const parsed = parseDecryptEvalExpand(decrypted)
+      const parsed = parseDecryptEvalExpand(decrypted, null, this.preserve)
       row.parsed = parsed
 
-      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
+      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload, this.preserve)
       row.injected = injected
       row.preExisted = preExisted
 
@@ -179,8 +180,8 @@ class Run {
     this.processedEnvs.push(row)
   }
 
-  _inject (processEnv, parsed, overload) {
-    return inject(processEnv, parsed, overload)
+  _inject (processEnv, parsed, overload, preserve) {
+    return inject(processEnv, parsed, overload, preserve)
   }
 
   _determineEnvsFromDotenvPrivateKey () {
