@@ -15,6 +15,7 @@
     "CHANGELOG.md"
   ],
   "main": "src/lib/main.js",
+  "types": "src/lib/main.d.ts",
   "bin": {
     "dotenvx": "./src/cli/dotenvx.js",
     "git-dotenvx": "./src/cli/dotenvx.js"
