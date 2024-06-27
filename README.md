@@ -1370,7 +1370,7 @@ More examples
 * <a href="https://dotenvx.com/docs/package-managers/npm">NPM <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/npm.svg" alt="NPM Logo" width="20" height="20" style="fill:#CB3837;"></a>
 * <a href="https://dotenvx.com/docs/monorepos/nx">Nx <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/nx.svg" alt="Nx Logo" width="20" height="20" style="fill:#143055;"></a>
 * <a href="https://dotenvx.com/docs/platforms/render">Render <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/render.svg" alt="Render Logo" width="20" height="20" style="fill:#000000;"></a>
-* <a href="https://dotenvx.com/docs/platforms/railway">Render <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/railway.svg" alt="Railway Logo" width="20" height="20" style="fill:#0B0D0E;"></a>
+* <a href="https://dotenvx.com/docs/platforms/railway">Railway <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/railway.svg" alt="Railway Logo" width="20" height="20" style="fill:#0B0D0E;"></a>
 * <a href="https://dotenvx.com/docs/monorepos/turborepo">Turborepo <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/turborepo.svg" alt="Turborepo Logo" width="20" height="20" style="fill:#EF4444;"></a>
 * <a href="https://dotenvx.com/docs/platforms/vercel">Vercel <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/vercel.svg" alt="Vercel Logo" width="20" height="20" style="fill:#000000;"></a>
 * [more](https://dotenvx.com/docs/guides)
