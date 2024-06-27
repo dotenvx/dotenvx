@@ -13,7 +13,7 @@ t.beforeEach((ct) => {
 })
 
 t.test('#parseDecryptEvalExpand', ct => {
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'World' })
 
@@ -25,7 +25,7 @@ t.test('#parseDecryptEvalExpand with encrypted value', ct => {
 
   const privateKey = 'd607fffc83656d0658c6de64d1d9a10f5d0bfbcd437f2a93bd0e1afa5f192626'
 
-  const parsed = parseDecryptEvalExpand(src, privateKey)
+  const { parsed } = parseDecryptEvalExpand(src, privateKey)
 
   ct.same(parsed, { HELLO: 'Universe' })
 
@@ -37,7 +37,7 @@ t.test('#parseDecryptEvalExpand with encrypted value as empty string', ct => {
 
   const privateKey = 'd470775e64ae4cfe617b14f9ce3800e1c5a7fd773b57aa0471ed6e3e5060ffce'
 
-  const parsed = parseDecryptEvalExpand(src, privateKey)
+  const { parsed } = parseDecryptEvalExpand(src, privateKey)
 
   ct.same(parsed, { HELLO: '' })
 
@@ -47,9 +47,10 @@ t.test('#parseDecryptEvalExpand with encrypted value as empty string', ct => {
 t.test('#parseDecryptEvalExpand machine value already set', ct => {
   process.env.HELLO = 'machine'
 
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed, processEnv } = parseDecryptEvalExpand(src)
 
-  ct.same(parsed, { HELLO: 'World' })
+  ct.same(parsed.HELLO, 'World')
+  ct.same(processEnv.HELLO, 'machine')
 
   ct.end()
 })
@@ -59,9 +60,11 @@ t.test('#parseDecryptEvalExpand expands from process.env', ct => {
 
   src = 'HELLO=$EXPAND'
 
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed, processEnv } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'expanded' })
+  ct.same(processEnv.HELLO, 'expanded')
+  ct.same(process.env.HELLO, 'expanded')
 
   ct.end()
 })
@@ -70,7 +73,7 @@ t.test('#parseDecryptEvalExpand expands from self file', ct => {
   src = `HELLO=$EXPAND
 EXPAND=self`
 
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'self', EXPAND: 'self' })
 
@@ -83,7 +86,7 @@ ONE=$TWO
 TWO=hiya
 `
 
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'hiya', ONE: 'hiya', TWO: 'hiya' })
 
@@ -93,7 +96,7 @@ TWO=hiya
 t.test('#parseDecryptEvalExpand command substitutes', ct => {
   src = 'HELLO=$(echo world)'
 
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'world' })
 
@@ -105,7 +108,7 @@ t.test('#parseDecryptEvalExpand command does substitute (already set in processE
 
   src = 'HELLO=$(echo world)'
 
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'world' })
 
@@ -117,7 +120,7 @@ t.test('#parseDecryptEvalExpand machine command does not substitute (holman dotf
 
   src = 'HELLO=$(echo world)'
 
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'world' })
 
@@ -126,7 +129,7 @@ t.test('#parseDecryptEvalExpand machine command does not substitute (holman dotf
 
 t.test('returns object', ct => {
   const dotenv = { parsed: {} }
-  const parsed = parseDecryptEvalExpand(dotenv)
+  const { parsed } = parseDecryptEvalExpand(dotenv)
 
   t.ok(parsed instanceof Object, 'should be an object')
 
@@ -139,7 +142,7 @@ t.test('expands environment variables', ct => {
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -155,7 +158,7 @@ t.test('expands environment variables (pre-existing but treats everything as ove
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -171,7 +174,7 @@ t.test('expands environment variables (pre-existing when overload is true)', ct 
     BASIC_EXPAND=\${BASIC}
     BASIC_EXPAND_SIMPLE=$BASIC
   `
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.BASIC, 'basic')
   ct.equal(parsed.BASIC_EXPAND, 'basic')
@@ -186,23 +189,52 @@ t.test('uses environment variables existing already on the machine for expansion
     MACHINE_EXPAND=\${MACHINE}
     MACHINE_EXPAND_SIMPLE=$MACHINE
   `
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed, processEnv } = parseDecryptEvalExpand(src)
 
+  ct.equal(parsed.MACHINE, undefined)
   ct.equal(parsed.MACHINE_EXPAND, 'machine')
   ct.equal(parsed.MACHINE_EXPAND_SIMPLE, 'machine')
+  ct.equal(processEnv.MACHINE, 'machine')
+  ct.equal(processEnv.MACHINE_EXPAND, 'machine')
+  ct.equal(processEnv.MACHINE_EXPAND_SIMPLE, 'machine')
 
   ct.end()
 })
 
-t.test('only returns keys part of the original input. process.env is used for help with expansion only here and not returned', ct => {
+t.test('only returns keys part of the original input. process.env is used for help with expansion only here and not returned as part of parsed', ct => {
   process.env.MACHINE = 'machine'
   const src = `
     MACHINE_EXPAND=\${MACHINE}
     MACHINE_EXPAND_SIMPLE=$MACHINE
   `
-  const parsed = parseDecryptEvalExpand(src)
+  const { parsed, processEnv } = parseDecryptEvalExpand(src)
 
   ct.equal(parsed.MACHINE, undefined)
+  ct.equal(processEnv.MACHINE, 'machine')
+  ct.equal(processEnv.MACHINE_EXPAND, 'machine')
+  ct.equal(processEnv.MACHINE_EXPAND_SIMPLE, 'machine')
+
+  ct.end()
+})
+
+t.test('falsey value already in process.env', ct => {
+  process.env.BASIC = ''
+  const src = 'BASIC=basic'
+  const { parsed, processEnv } = parseDecryptEvalExpand(src)
+
+  ct.equal(parsed.BASIC, 'basic')
+  ct.equal(processEnv.BASIC, '')
+
+  ct.end()
+})
+
+t.test('no value in process.env', ct => {
+  const src = 'BASIC=basic'
+  const { parsed, processEnv } = parseDecryptEvalExpand(src)
+
+  ct.equal(parsed.BASIC, 'basic')
+  ct.equal(processEnv.BASIC, undefined)
+  ct.equal(process.env.BASIC, undefined)
 
   ct.end()
 })

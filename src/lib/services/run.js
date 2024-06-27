@@ -63,7 +63,8 @@ class Run {
     row.string = env
 
     try {
-      const parsed = parseDecryptEvalExpand(env)
+      const { parsed } = parseDecryptEvalExpand(env, null, this.processEnv)
+
       row.parsed = parsed
       this.readableStrings.add(env)
 
@@ -93,7 +94,7 @@ class Run {
 
       // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
       const privateKey = smartDotenvPrivateKey(envFilepath)
-      const parsed = parseDecryptEvalExpand(src, privateKey)
+      const { parsed } = parseDecryptEvalExpand(src, privateKey, this.processEnv)
       row.parsed = parsed
 
       const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
@@ -162,7 +163,7 @@ class Run {
 
     try {
       // parse this. it's the equivalent of the .env file
-      const parsed = parseDecryptEvalExpand(decrypted)
+      const { parsed } = parseDecryptEvalExpand(decrypted, null, this.processEnv)
       row.parsed = parsed
 
       const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)

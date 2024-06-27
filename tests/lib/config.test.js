@@ -132,8 +132,7 @@ t.test('writes over keys already in process.env if override turned on', ct => {
 
 t.test('does not write over keys already in process.env if the key has a falsy value', ct => {
   const testPath = 'tests/.env'
-  const existing = ''
-  process.env.BASIC = existing
+  process.env.BASIC = ''
   const env = dotenvx.config({ path: testPath })
 
   ct.equal(env.parsed.BASIC, '')
