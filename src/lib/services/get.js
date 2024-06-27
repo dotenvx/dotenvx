@@ -21,6 +21,7 @@ class Get {
 
       // typical scenario - return only envs that were identified in the .env file
       // iterate over all processedEnvs.parsed and grab from processEnv
+      /** @type {Record<string, string>} */
       const result = {}
       for (const processedEnv of processedEnvs) {
         // parsed means we saw the key in a file or --env flag. this effectively filters out any preset machine envs - while still respecting complex evaluating, expansion, and overload. in other words, the value might be the machine value because the key was displayed in a .env file
