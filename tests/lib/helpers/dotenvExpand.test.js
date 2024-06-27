@@ -66,6 +66,27 @@ t.test('#expand using the machine value first (if it exists) when given a proces
   ct.end()
 })
 
+t.test('#expand using the machine value first (if it exists) but where the expansion key is also already set on process.env', ct => {
+  process.env.MACHINE = 'machine'
+  process.env.MACHINE_EXPAND = 'already set!'
+  const options = {
+    parsed: {
+      MACHINE: 'file',
+      MACHINE_EXPAND: '$MACHINE'
+    }
+  }
+  const { parsed, processEnv } = dotenvExpand.expand(options)
+
+  ct.same(parsed.MACHINE, 'file')
+  ct.same(parsed.MACHINE_EXPAND, 'file')
+  ct.same(processEnv.MACHINE, 'machine')
+  ct.same(processEnv.MACHINE_EXPAND, 'already set!')
+  ct.same(process.env.MACHINE, 'machine')
+  ct.same(process.env.MACHINE_EXPAND, 'already set!')
+
+  ct.end()
+})
+
 t.test('#expand with nothing to expand', ct => {
   const options = {
     processEnv: {

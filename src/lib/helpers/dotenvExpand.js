@@ -61,6 +61,10 @@ function expand (options) {
       continue // no change means no expansion, move on
     }
 
+    if (processEnv[key]) {
+      continue // already has a value in process.env, move on
+    }
+
     // interpolate with processEnv only (used for default no overload)
     const processEnvValue = interpolate(value, combinedReversed) // could be empty string ''
     if (processEnvValue) {
