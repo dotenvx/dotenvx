@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.0.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.0.1...main)
+
+## 1.0.1
+
+### Changed
+
+* 🐞 Fix expansion when preset on `process.env` and/or with `--overload` ([#271](https://github.com/dotenvx/dotenvx/pull/271))
 
 ## 1.0.0 
 
