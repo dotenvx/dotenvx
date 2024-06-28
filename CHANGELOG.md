@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.0.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.1.0...main)
+
+## 1.1.0
+
+### Added
+
+* Add TypeScript type definitions ([#272](https://github.com/dotenvx/dotenvx/pull/272))
 
 ## 1.0.1
 
