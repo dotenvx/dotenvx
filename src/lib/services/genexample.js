@@ -57,7 +57,9 @@ class Genexample {
     }
 
     const currentEnvExample = dotenv.configDotenv({ path: exampleFilepath }).parsed
+    /** @type {Record<string, string>} */
     const injected = {}
+    /** @type {Record<string, string>} */
     const preExisted = {}
 
     for (const key of [...keys]) {

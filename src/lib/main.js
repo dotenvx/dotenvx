@@ -1,3 +1,4 @@
+// @ts-check
 const path = require('path')
 const { logger } = require('./../shared/logger')
 const dotenv = require('dotenv')
@@ -18,6 +19,8 @@ const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
 const { setLogLevel } = require('../shared/logger')
 
 // proxies to dotenv
+
+/** @type {import('./main').config} */
 const config = function (options = {}) {
   // allow user to set processEnv to write to
   let processEnv = process.env
@@ -44,29 +47,46 @@ const config = function (options = {}) {
     for (const optionPath of optionPaths) {
       // if DOTENV_KEY is set then assume we are checking envVaultFile
       if (DOTENV_KEY) {
-        envs.push({ type: 'envVaultFile', value: path.join(path.dirname(optionPath), '.env.vault') })
+        envs.push({
+          type: 'envVaultFile',
+          value: path.join(path.dirname(optionPath), '.env.vault')
+        })
       } else {
         envs.push({ type: 'envFile', value: optionPath })
       }
     }
 
-    const {
-      processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
-    } = new Run(envs, overload, DOTENV_KEY, processEnv).run()
+    const { processedEnvs, readableFilepaths, uniqueInjectedKeys } = new Run(
+      envs,
+      overload,
+      DOTENV_KEY,
+      processEnv
+    ).run()
 
     let lastError
+    /** @type {Record<string, string>} */
     const parsedAll = {}
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
-        logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-        logger.debug(`decrypting encrypted env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
+        logger.verbose(
+          `loading env from encrypted ${processedEnv.filepath} (${path.resolve(
+            processedEnv.filepath
+          )})`
+        )
+        logger.debug(
+          `decrypting encrypted env from ${
+            processedEnv.filepath
+          } (${path.resolve(processedEnv.filepath)})`
+        )
       }
 
       if (processedEnv.type === 'envFile') {
-        logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
+        logger.verbose(
+          `loading env from ${processedEnv.filepath} (${path.resolve(
+            processedEnv.filepath
+          )})`
+        )
       }
 
       if (processedEnv.error) {
@@ -76,7 +96,9 @@ const config = function (options = {}) {
           // do not warn for conventions (too noisy)
           if (!options.convention) {
             logger.warnv(processedEnv.error)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- yourcommand]`)
+            logger.help(
+              `? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- yourcommand]`
+            )
           }
         } else {
           logger.warnv(processedEnv.error)
@@ -99,8 +121,12 @@ const config = function (options = {}) {
         // verbose/debug preExisted key/value
         const preExisted = processedEnv.preExisted
         for (const [key, value] of Object.entries(preExisted)) {
-          logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-          logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
+          logger.verbose(
+            `${key} pre-exists (protip: use --overload to override)`
+          )
+          logger.debug(
+            `${key} pre-exists as ${value} (protip: use --overload to override)`
+          )
         }
       }
     }
@@ -126,47 +152,66 @@ const config = function (options = {}) {
   }
 }
 
+/** @type {import('./main').configDotenv} */
 const configDotenv = function (options) {
   return dotenv.configDotenv(options)
 }
 
+/** @type {import('./main').parse} */
 const parse = function (src) {
   return dotenv.parse(src)
 }
 
+/** @type {import('./main').vaultEncrypt} */
 const vaultEncrypt = function (directory, envFile) {
   return new VaultEncrypt(directory, envFile).run()
 }
 
+/** @type {import('./main').ls} */
 const ls = function (directory, envFile) {
   return new Ls(directory, envFile).run()
 }
 
+/** @type {import('./main').genexample} */
 const genexample = function (directory, envFile) {
   return new Genexample(directory, envFile).run()
 }
 
-const get = function (key, envs = [], overload = false, DOTENV_KEY = '', all = false) {
+/** @type {import('./main').get} */
+const get = function (
+  key,
+  envs = [],
+  overload = false,
+  DOTENV_KEY = '',
+  all = false
+) {
   return new Get(key, envs, overload, DOTENV_KEY, all).run()
 }
 
+/** @type {import('./main').set} */
 const set = function (key, value, envFile, encrypt) {
   return new Sets(key, value, envFile, encrypt).run()
 }
 
+/** @type {import('./main').encrypt} */
 const encrypt = function (envFile) {
   return new Encrypt(envFile).run()
 }
 
+/** @type {import('./main').status} */
 const status = function (directory) {
   return new Status(directory).run()
 }
 
+/** @type {import('./main').settings} */
 const settings = function (key = null) {
+  // @ts-ignore
   return new Settings(key).run()
 }
 
 // misc/cleanup
+
+/** @type {import('./main').decrypt} */
 const decrypt = function (encrypted, keyStr) {
   try {
     return dotenv.decrypt(encrypted, keyStr)
@@ -174,9 +219,15 @@ const decrypt = function (encrypted, keyStr) {
     switch (e.code) {
       case 'DECRYPTION_FAILED':
         // more helpful error when decryption fails
-        logger.error('[DECRYPTION_FAILED] Unable to decrypt .env.vault with DOTENV_KEY.')
-        logger.help('[DECRYPTION_FAILED] Run with debug flag [dotenvx run --debug -- yourcommand] or manually run [echo $DOTENV_KEY] to compare it to the one in .env.keys.')
-        logger.debug(`[DECRYPTION_FAILED] DOTENV_KEY is ${process.env.DOTENV_KEY}`)
+        logger.error(
+          '[DECRYPTION_FAILED] Unable to decrypt .env.vault with DOTENV_KEY.'
+        )
+        logger.help(
+          '[DECRYPTION_FAILED] Run with debug flag [dotenvx run --debug -- yourcommand] or manually run [echo $DOTENV_KEY] to compare it to the one in .env.keys.'
+        )
+        logger.debug(
+          `[DECRYPTION_FAILED] DOTENV_KEY is ${process.env.DOTENV_KEY}`
+        )
         process.exit(1)
         break
       default:

@@ -1,0 +1,284 @@
+import type { URL } from 'url';
+import type { Change } from 'diff';
+
+export interface DotenvParseOutput {
+  [name: string]: string;
+}
+
+/**
+ * Parses a string or buffer in the .env file format into an object.
+ *
+ * @see https://dotenvx.com/docs
+ * @param src - contents to be parsed. example: `'DB_HOST=localhost'`
+ * @returns an object with keys and values based on `src`. example: `{ DB_HOST : 'localhost' }`
+ */
+export function parse<T extends DotenvParseOutput = DotenvParseOutput>(
+  src: string | Buffer
+): T;
+
+export interface DotenvConfigOptions {
+  /**   *
+   * Specify a custom path if your file containing environment variables is located elsewhere.
+   * Can also be an array of strings, specifying multiple paths.
+   *
+   * @default require('path').resolve(process.cwd(), '.env')
+   * @example require('dotenv').config({ path: '/custom/path/to/.env' })
+   * @example require('dotenv').config({ path: ['/path/to/first.env', '/path/to/second.env'] })
+   */
+  path?: string | string[] | URL;
+
+  /**
+   * Specify the encoding of your file containing environment variables.
+   *
+   * @default 'utf8'
+   * @example require('dotenv').config({ encoding: 'latin1' })
+   */
+  encoding?: string;
+
+  /**
+   * Turn on logging to help debug why certain keys or values are not being set as you expect.
+   *
+   * @default false
+   * @example require('dotenv').config({ debug: process.env.DEBUG })
+   */
+  debug?: boolean;
+
+  /**
+   * Override any environment variables that have already been set on your machine with values from your .env file.
+   * @default false
+   * @example require('dotenv').config({ override: true })
+   * @alias overload
+   */
+  override?: boolean;
+
+  /**
+   * @default false
+   * @alias override
+   */
+  overload?: boolean;
+
+  /**
+   * Specify an object to write your secrets to. Defaults to process.env environment variables.
+   *
+   * @default process.env
+   * @example const processEnv = {}; require('dotenv').config({ processEnv: processEnv })
+   */
+  processEnv?: DotenvPopulateInput;
+
+  /**
+   * Pass the DOTENV_KEY directly to config options. Defaults to looking for process.env.DOTENV_KEY environment variable. Note this only applies to decrypting .env.vault files. If passed as null or undefined, or not passed at all, dotenv falls back to its traditional job of parsing a .env file.
+   *
+   * @default undefined
+   * @example require('dotenv').config({ DOTENV_KEY: 'dotenv://:key_1234…@dotenvx.com/vault/.env.vault?environment=production' })
+   */
+  DOTENV_KEY?: string;
+
+  /**
+   * Do not warn for missing .env files
+   */
+  convention?: string;
+}
+
+export interface DotenvConfigOutput {
+  error?: Error;
+  parsed?: DotenvParseOutput;
+}
+
+export interface DotenvPopulateInput {
+  [name: string]: string;
+}
+
+/**
+ * Loads `.env` file contents into process.env by default. If `DOTENV_KEY` is present, it smartly attempts to load encrypted `.env.vault` file contents into process.env.
+ *
+ * @see https://dotenvx.com/docs
+ *
+ * @param options - additional options. example: `{ path: './custom/path', encoding: 'latin1', debug: true, override: false }`
+ * @returns an object with a `parsed` key if successful or `error` key if an error occurred. example: { parsed: { KEY: 'value' } }
+ *
+ */
+export function config(options?: DotenvConfigOptions): DotenvConfigOutput;
+
+/**
+ * Loads `.env` file contents into process.env.
+ *
+ * @see https://dotenvx.com/docs
+ *
+ * @param options - additional options. example: `{ path: './custom/path', encoding: 'latin1', debug: true, override: false }`
+ * @returns an object with a `parsed` key if successful or `error` key if an error occurred. example: { parsed: { KEY: 'value' } }
+ *
+ */
+export function configDotenv(options?: DotenvConfigOptions): DotenvConfigOutput;
+
+/**
+ * Decrypt ciphertext
+ *
+ * @see https://dotenvx.com/docs
+ *
+ * @param encrypted - the encrypted ciphertext string
+ * @param keyStr - the decryption key string
+ */
+export function decrypt(encrypted: string, keyStr: string): string;
+
+export type EncryptRowOutput = {
+  keys: string[];
+  filepath: string;
+  envFilepath: string;
+  publicKey: string;
+  privateKey: string;
+  privateKeyName: string;
+  privateKeyAdded: boolean;
+  envSrc: string;
+  changed: boolean;
+  error?: Error;
+};
+
+export type EncryptOutput = {
+  processedEnvFiles: EncryptRowOutput[];
+  changedFilepaths: string[];
+  unchangedFilepaths: string[];
+};
+
+/**
+ * Encrypt plaintext
+ *
+ * @see https://dotenvx.com/docs
+ * @param envFile - path to the .env file
+ */
+export function encrypt(envFile: string): EncryptOutput;
+
+export type VaultEncryptOutput = {
+  dotenvKeys: Record<string, string>;
+  dotenvKeysFile: string;
+  addedKeys: string[];
+  existingKeys: string[];
+  dotenvVaultFile: string;
+  addedVaults: string[];
+  existingVaults: string[];
+  addedDotenvFilenames: string[];
+  envFile: string | string[];
+};
+
+/**
+ * Encrypt plaintext
+ *
+ * @see https://dotenvx.com/docs
+ * @param directory - current working directory
+ * @param envFile - path to the .env file(s)
+ */
+export function vaultEncrypt(
+  directory: string,
+  envFile: string | string[]
+): VaultEncryptOutput;
+
+/**
+ * List all env files in the current working directory
+ *
+ * @param directory - current working directory
+ * @param envFile - glob pattern to match env files
+ */
+export function ls(directory: string, envFile: string): string[];
+
+/**
+ * Get the value of a key from the .env file
+ *
+ * @param [key] - the key to get the value of
+ * @param [envs] - the environment(s) to get the value from
+ * @param [overload] - whether to overload the value from the .env file
+ * @param [DOTENV_KEY] - the decryption key string
+ * @param [all] - whether to return all values
+ */
+export function get(
+  key?: string,
+  envs: string[] = [],
+  overload = false,
+  DOTENV_KEY = '',
+  all = false
+): Record<string, string | undefined> | string | undefined;
+
+export type SetOutput = {
+  key: string;
+  value: string;
+  filepath: string;
+  envFilepath: string;
+  envSrc: string;
+  changed: boolean;
+  encryptedValue?: string;
+  publicKey?: string;
+  privateKey?: string;
+  privateKeyAdded?: boolean;
+  privateKeyName?: string;
+  error?: Error;
+};
+
+/**
+ * Set the value of a key in the .env file
+ *
+ * @param key - the key to set the value of
+ * @param value - the value to set
+ * @param envFile - the path to the .env file
+ * @param [encrypt] - whether to encrypt the value
+ */
+export function set(
+  key: string,
+  value: string,
+  envFile: string | string,
+  encrypt?: boolean
+): EncryptOutput;
+
+type StatusRow = {
+  filename: string;
+  filepath: string;
+  environment: string;
+  raw: string;
+  decrypted: any;
+  differences: Change[];
+};
+
+export type StatusOutput = {
+  changes: StatusRow[];
+  nochanges: StatusRow[];
+  untracked: StatusRow[];
+};
+
+/**
+ * Check the differences between the .env file and the decrypted values
+ *
+ * @param directory - current working directory
+ */
+export function status(directory: string): StatusOutput;
+
+export type GenExampleOutput = {
+  envExampleFile: string;
+  envFile: string | string[];
+  exampleFilepath: string;
+  addedKeys: string[];
+  injected: Record<string, string>;
+  preExisted: Record<string, string>;
+};
+
+/**
+ * Generate an example .env file
+ *
+ * @param directory - current working directory
+ * @param envFile - path to the .env file(s)
+ */
+export function genexample(
+  directory: string,
+  envFile: string
+): GenExampleOutput;
+
+export type Settings = {
+  DOTENVX_SETTINGS_FILEPATH: string;
+};
+
+type KeyOfSettings = Extract<keyof Settings, string>;
+
+/**
+ * Get the DotenvX settings
+ *
+ * @param [key] - the key to get the value of
+ */
+export function settings(
+  key: KeyOfSettings | undefined | null = null
+): Settings;
