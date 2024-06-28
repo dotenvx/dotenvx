@@ -22,8 +22,8 @@ export interface DotenvConfigOptions {
    * Can also be an array of strings, specifying multiple paths.
    *
    * @default require('path').resolve(process.cwd(), '.env')
-   * @example require('dotenv').config({ path: '/custom/path/to/.env' })
-   * @example require('dotenv').config({ path: ['/path/to/first.env', '/path/to/second.env'] })
+   * @example require('@dotenvx/dotenvx').config({ path: '/custom/path/to/.env' })
+   * @example require('@dotenvx/dotenvx').config({ path: ['/path/to/first.env', '/path/to/second.env'] })
    */
   path?: string | string[] | URL;
 
@@ -31,7 +31,7 @@ export interface DotenvConfigOptions {
    * Specify the encoding of your file containing environment variables.
    *
    * @default 'utf8'
-   * @example require('dotenv').config({ encoding: 'latin1' })
+   * @example require('@dotenvx/dotenvx').config({ encoding: 'latin1' })
    */
   encoding?: string;
 
@@ -39,14 +39,14 @@ export interface DotenvConfigOptions {
    * Turn on logging to help debug why certain keys or values are not being set as you expect.
    *
    * @default false
-   * @example require('dotenv').config({ debug: process.env.DEBUG })
+   * @example require('@dotenvx/dotenvx').config({ debug: process.env.DEBUG })
    */
   debug?: boolean;
 
   /**
    * Override any environment variables that have already been set on your machine with values from your .env file.
    * @default false
-   * @example require('dotenv').config({ override: true })
+   * @example require('@dotenvx/dotenvx').config({ override: true })
    * @alias overload
    */
   override?: boolean;
@@ -61,7 +61,7 @@ export interface DotenvConfigOptions {
    * Specify an object to write your secrets to. Defaults to process.env environment variables.
    *
    * @default process.env
-   * @example const processEnv = {}; require('dotenv').config({ processEnv: processEnv })
+   * @example const processEnv = {}; require('@dotenvx/dotenvx').config({ processEnv: processEnv })
    */
   processEnv?: DotenvPopulateInput;
 
@@ -69,7 +69,7 @@ export interface DotenvConfigOptions {
    * Pass the DOTENV_KEY directly to config options. Defaults to looking for process.env.DOTENV_KEY environment variable. Note this only applies to decrypting .env.vault files. If passed as null or undefined, or not passed at all, dotenv falls back to its traditional job of parsing a .env file.
    *
    * @default undefined
-   * @example require('dotenv').config({ DOTENV_KEY: 'dotenv://:key_1234…@dotenvx.com/vault/.env.vault?environment=production' })
+   * @example require('@dotenvx/dotenvx').config({ DOTENV_KEY: 'dotenv://:key_1234…@dotenvx.com/vault/.env.vault?environment=production' })
    */
   DOTENV_KEY?: string;
 
@@ -275,7 +275,7 @@ export type Settings = {
 type KeyOfSettings = Extract<keyof Settings, string>;
 
 /**
- * Get the DotenvX settings
+ * Get the dotenvx settings
  *
  * @param [key] - the key to get the value of
  */
