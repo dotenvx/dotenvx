@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const { execSync } = require('child_process')
 const UpdateNotice = require('./../lib/helpers/updateNotice')
 const { Command } = require('commander')
 const program = new Command()
@@ -99,9 +100,14 @@ program.command('encrypt')
 program.command('pro')
   .description('🏆 pro')
   .action(function (...args) {
-    const pro = fs.readFileSync(path.join(__dirname, './pro.txt'), 'utf8')
+    try {
+      // execute `dotenvx-pro` if available
+      execSync('dotenvx-pro', { stdio: ['inherit', 'inherit', 'ignore'] })
+    } catch (_error) {
+      const pro = fs.readFileSync(path.join(__dirname, './pro.txt'), 'utf8')
 
-    console.log(pro)
+      console.log(pro)
+    }
   })
 
 // // dotenvx ent
