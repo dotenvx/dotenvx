@@ -234,6 +234,17 @@ More examples
   ```
 
   </details>
+* <details><summary>Clojure 🌿</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo '(println "Hello" (System/getenv "HELLO"))' > index.clj
+
+  $ dotenvx run -- clojure -M index.clj
+  Hello World
+  ```
+
+  </details>
 * <details><summary>.NET 🔵</summary><br>
 
   ```sh
