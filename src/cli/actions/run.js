@@ -1,6 +1,7 @@
 const path = require('path')
 const execa = require('execa')
 const which = require('which')
+const { execFile, spawnSync } = require('child_process')
 const { logger } = require('./../../shared/logger')
 
 const Run = require('./../../lib/services/run')
@@ -48,15 +49,31 @@ const executeCommand = async function (commandArgs, env) {
   }
 
   try {
-    let systemCommandPath = commandArgs[0]
+    // ensure the first command is expanded
     try {
-      systemCommandPath = which.sync(`${commandArgs[0]}`)
-      logger.debug(`expanding process command to [${systemCommandPath} ${commandArgs.slice(1).join(' ')}]`)
+      commandArgs[0] = path.resolve(which.sync(`${commandArgs[0]}`))
+      logger.debug(`expanding process command to [${commandArgs.join(' ')}]`)
     } catch (e) {
-      logger.debug(`could not expand process command. using [${systemCommandPath} ${commandArgs.slice(1).join(' ')}]`)
+      logger.debug(`could not expand process command. using [${commandArgs.join(' ')}]`)
     }
 
-    commandProcess = execa(systemCommandPath, commandArgs.slice(1), {
+    // expand any other commands that follow a --
+    let expandNext = false
+    for (let i = 0; i < commandArgs.length; i++) {
+      if (commandArgs[i] === '--') {
+        expandNext = true
+      } else if (expandNext) {
+        try {
+          commandArgs[i] = path.resolve(which.sync(`${commandArgs[i]}`))
+          logger.debug(`expanding process command to [${commandArgs.join(' ')}]`)
+        } catch (e) {
+          logger.debug(`could not expand process command. using [${commandArgs.join(' ')}]`)
+        }
+        expandNext = false
+      }
+    }
+
+    commandProcess = execa(commandArgs[0], commandArgs.slice(1), {
       stdio: 'inherit',
       env: { ...process.env, ...env }
     })
@@ -197,7 +214,6 @@ async function run () {
     logger.error('  or try:   [dotenvx run -- npm run dev]')
     process.exit(1)
   } else {
-    // const commandArgs = process.argv.slice(commandIndex + 1)
     await executeCommand(commandArgs, process.env)
   }
 }
