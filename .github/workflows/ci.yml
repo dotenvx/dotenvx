@@ -79,6 +79,9 @@ jobs:
       - name: npm install
         run: npm install
 
+      - name: npm run patch
+        run: npm run patch
+
       - name: pkg
         run: |
           echo "pkg-ing"

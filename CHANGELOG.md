@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.3.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.3.2...main)
+
+## 1.3.2
+
+### Changed
+
+* 🐞 remove risky `prepare` and `postinstall` scripts and replace with `npm run patch` for development and binary building ([#286](https://github.com/dotenvx/dotenvx/pull/286))
 
 ## 1.3.1
 
