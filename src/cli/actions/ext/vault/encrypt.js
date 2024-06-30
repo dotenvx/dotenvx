@@ -3,7 +3,7 @@ const path = require('path')
 
 const main = require('./../../../../lib/main')
 const { logger } = require('./../../../../shared/logger')
-const createSpinner = require('./../../../../shared/createSpinner')
+const { createSpinner } = require('./../../../../shared/createSpinner')
 const sleep = require('./../../../../lib/helpers/sleep')
 const pluralize = require('./../../../../lib/helpers/pluralize')
 

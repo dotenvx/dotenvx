@@ -4,7 +4,7 @@ const { request } = require('undici')
 
 const store = require('./../../../../shared/store')
 const { logger } = require('./../../../../shared/logger')
-const createSpinner = require('./../../../../shared/createSpinner')
+const { createSpinner } = require('./../../../../shared/createSpinner')
 
 const isGitRepo = require('./../../../../lib/helpers/isGitRepo')
 const isGithub = require('./../../../../lib/helpers/isGithub')
