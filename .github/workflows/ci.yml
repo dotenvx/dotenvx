@@ -38,6 +38,28 @@ jobs:
       - run: npm run testshell
       - run: npm audit --omit=dev
 
+  postrelease-temp:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - name: install dotenvx
+        run: curl -fsS https://dotenvx.sh/ | sh
+      - name: verify nested invocations
+        run: |
+          echo "HELLO=Ubuntu" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(dotenvx run --quiet -- dotenvx run --quiet -- dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "postrelease dotenvx nested invocations: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+
   # test-windows:
   #   runs-on: windows-latest
   #   strategy:
