@@ -1,5 +1,5 @@
 const path = require('path')
-const { spawnSync, execSync, spawn } = require('child_process')
+const { spawnSync } = require('child_process')
 const { Command } = require('commander')
 const { logger } = require('../../shared/logger')
 
@@ -9,6 +9,36 @@ const ext = new Command('ext')
 
 ext
   .description('🔌 extensions')
+  .allowUnknownOption()
+  .argument('[command]', 'dynamic external extension')
+  .argument('[args...]', 'arguments for dynamic external extension')
+  .action((command, args, cmdObj) => {
+    logger.debug(`command: ${command}`)
+    logger.debug(`args: ${JSON.stringify(args)}`)
+
+    // output help and exit code 1
+    if (!command) {
+      ext.outputHelp()
+      process.exit(1)
+    }
+
+    // include node_modules/.bin in path
+    const binPath = path.join(process.cwd(), 'node_modules', '.bin')
+    const newPath = `${binPath}:${process.env.PATH}`
+    const env = { ...process.env, PATH: newPath }
+
+    // attempt to run the extension
+    const result = spawnSync(`dotenvx-ext-${command}`, args, { stdio: 'inherit', env })
+    if (result.error) {
+      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
+      logger.help(`install with npm [npm install @dotenvx/dotenvx-ext-${command}] or with curl [curl -sfS https://dotenvx.sh/ext/${command} | sh]`)
+    }
+    if (result.status !== 0) {
+      // do nothing
+    } else {
+      // do nothing
+    }
+  })
 
 // dotenvx ext ls
 ext.command('ls')
@@ -56,21 +86,5 @@ ext.command('settings')
   .action(require('./../actions/ext/settings'))
 
 ext.addCommand(require('./../commands/ext/vault'))
-ext.command('hub [cmdArgs...]')
-  .description('🚫 DEPRECATED: to be replaced by [dotenvx pro]')
-  .action((cmdArgs) => {
-    // Using spawnSync to execute the command synchronously
-    const result = spawnSync('dotenvx-ext-hub', cmdArgs, { stdio: 'inherit' })
-
-    if (result.error) {
-      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-hub to use [dotenvx ext hub] commands`)
-      logger.help('install with npm [npm install @dotenvx/dotenvx-ext-hub] or with curl [curl -sfS https://dotenvx.sh/ext/hub.sh | sh]')
-    }
-    if (result.status !== 0) {
-      // do nothing
-    } else {
-      // do nothing
-    }
-  })
 
 module.exports = ext
