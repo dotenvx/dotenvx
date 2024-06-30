@@ -38,41 +38,6 @@ jobs:
       - run: npm run testshell
       - run: npm audit --omit=dev
 
-  postrelease-temp:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 16.x
-      - name: install dotenvx
-        run: curl -fsS https://dotenvx.sh/ | sh
-      - name: verify nested invocations
-        run: |
-          echo "HELLO=Ubuntu" > .env
-          echo "console.log('Hello ' + process.env.HELLO)" > index.js
-          EXPECTED_MESSAGE=$(dotenvx run --quiet -- dotenvx run --quiet -- dotenvx run --quiet -- node index.js)
-          echo $EXPECTED_MESSAGE
-          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
-            echo "postrelease dotenvx nested invocations: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
-            exit 1
-          fi
-
-  # test-windows:
-  #   runs-on: windows-latest
-  #   strategy:
-  #     fail-fast: true
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 16.x
-  #     - run: npm install
-  #     - run: npm run standard
-  #     - run: npm test
-
   # run only on semantic version tag
   release:
     needs: test
@@ -571,6 +536,17 @@ jobs:
             echo "postrelease dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
             exit 1
           fi
+      - name: verify nested invocations
+        run: |
+          echo "HELLO=Ubuntu" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(dotenvx run --quiet -- dotenvx run --quiet -- dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "postrelease dotenvx nested invocations: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+
   postrelease-mac:
     needs: confirm-dotenvx-sh
     runs-on: macos-latest
@@ -611,6 +587,17 @@ jobs:
             echo "postrelease dotenvx get failure: expected Mac, got $EXPECTED_VALUE"
             exit 1
           fi
+      - name: verify nested invocations
+        run: |
+          echo "HELLO=Mac" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(dotenvx run --quiet -- dotenvx run --quiet -- dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Mac" ]; then
+            echo "postrelease dotenvx run failure: expected Hello Mac, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+
   postrelease-windows:
     needs: confirm-dotenvx-sh
     runs-on: windows-latest
@@ -652,6 +639,17 @@ jobs:
           Write-Output "Expected Value: $EXPECTED_VALUE"
           if ($EXPECTED_VALUE -ne "Windows") {
             Write-Output "postrelease dotenvx get failure: expected 'Windows', got '$EXPECTED_VALUE'"
+            exit 1
+          }
+        shell: pwsh
+      - name: verify nested invocations
+        run: |
+          "HELLO=Windows" | Out-File -FilePath .env
+          "console.log('Hello ' + process.env.HELLO)" | Out-File -FilePath index.js
+          $EXPECTED_MESSAGE = .\dotenvx\dotenvx.exe run --quiet -- .\dotenvx\dotenvx.exe run --quiet -- .\dotenvx\dotenvx.exe run --quiet -- node index.js
+          Write-Output "Expected Message: $EXPECTED_MESSAGE"
+          if ($EXPECTED_MESSAGE -ne "Hello Windows") {
+            Write-Output "postrelease dotenvx run failure: expected 'Hello Windows', got '$EXPECTED_MESSAGE'"
             exit 1
           }
         shell: pwsh
