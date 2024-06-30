@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.4.0...main)
 
+### Changed
+
+* replace `@inquirer/confirm` and `ora` ([#285](https://github.com/dotenvx/dotenvx/pull/285))
+
 ## 1.4.0
 
 ### Removed
