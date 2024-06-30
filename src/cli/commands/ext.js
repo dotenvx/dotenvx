@@ -11,6 +11,8 @@ ext
   .description('🔌 extensions')
   .allowUnknownOption()
 
+ext.addHelpText('after', `  hub                               🚫 DEPRECATED: to be replaced by [dotenvx pro]`)
+
 ext
   .argument('[command]', 'dynamic ext command')
   .argument('[args...]', 'dynamic ext command arguments')
@@ -34,8 +36,12 @@ ext
 
     const result = spawnSync(`dotenvx-ext-${command}`, forwardedArgs, { stdio: 'inherit', env })
     if (result.error) {
-      logger.warn(`[INSTALLATION_NEEDED] Install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
-      logger.help(`Install with npm [npm install @dotenvx/dotenvx-ext-${command}] or with curl [curl -sfS https://dotenvx.sh/ext/${command} | sh]`)
+      if (command == 'hub') {
+        logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
+        logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-hub]')
+      } else {
+        logger.info(`error: unknown command '${command}'`)
+      }
     }
 
     if (result.status !== 0) {
