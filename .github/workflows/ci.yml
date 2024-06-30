@@ -485,7 +485,7 @@ jobs:
           exit 1
 
   postrelease-npm:
-    # needs: confirm-dotenvx-sh
+    needs: confirm-dotenvx-sh
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
