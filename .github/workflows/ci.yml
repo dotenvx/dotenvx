@@ -484,6 +484,45 @@ jobs:
           echo "[DEPLOYMENT_FAILED]: VERSION did not update to ${{ env.CLEAN_VERSION }} within 5 minutes"
           exit 1
 
+  postrelease-npm:
+    # needs: confirm-dotenvx-sh
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - name: sleep
+        run: sleep 60
+      - name: verify version
+        run: |
+          RELEASED_VERSION=$(npx --yes @dotenvx/dotenvx --version)
+          EXPECTED_VERSION=$(node -p "require('./package.json').version")
+          echo $RELEASED_VERSION
+          echo $EXPECTED_VERSION
+          if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "postrelease version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+            exit 1
+          fi
+      - name: verify dotenvx run/get
+        run: |
+          echo "HELLO=NPM" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(npx --yes @dotenvx/dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello NPM" ]; then
+            echo "postrelease dotenvx run failure: expected Hello NPM, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+          EXPECTED_VALUE=$(npx --yes @dotenvx/dotenvx get HELLO)
+          echo $EXPECTED_VALUE
+          if [ "$EXPECTED_VALUE" != "NPM" ]; then
+            echo "postrelease dotenvx get failure: expected NPM, got $EXPECTED_VALUE"
+            exit 1
+          fi
+
   postrelease-ubuntu:
     needs: confirm-dotenvx-sh
     runs-on: ubuntu-latest
