@@ -144,8 +144,9 @@ export type EncryptOutput = {
  *
  * @see https://dotenvx.com/docs
  * @param envFile - path to the .env file
+ * @param key - keys(s) to encrypt (default: all keys in .env file)
  */
-export function encrypt(envFile: string): EncryptOutput;
+export function encrypt(envFile: string, key: string): EncryptOutput;
 
 export type VaultEncryptOutput = {
   dotenvKeys: Record<string, string>;
@@ -157,6 +158,7 @@ export type VaultEncryptOutput = {
   existingVaults: string[];
   addedDotenvFilenames: string[];
   envFile: string | string[];
+  key: string | string[];
 };
 
 /**

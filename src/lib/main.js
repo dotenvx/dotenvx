@@ -194,8 +194,8 @@ const set = function (key, value, envFile, encrypt) {
 }
 
 /** @type {import('./main').encrypt} */
-const encrypt = function (envFile) {
-  return new Encrypt(envFile).run()
+const encrypt = function (envFile, key) {
+  return new Encrypt(envFile, key).run()
 }
 
 /** @type {import('./main').status} */
