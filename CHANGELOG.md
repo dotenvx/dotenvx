@@ -2,19 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.1.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.2.0...main)
+
+## 1.2.0
+
+### Added
+
+* handle nested `dotenvx` invocations - `dotenvx run -- dotenvx run -- env` ([#279](https://github.com/dotenvx/dotenvx/pull/279))
+
+### Changed
+
+* replace `glob` with faster approach ([#278](https://github.com/dotenvx/dotenvx/pull/278))
 
 ## 1.1.0
 
 ### Added
 
-* Add TypeScript type definitions ([#272](https://github.com/dotenvx/dotenvx/pull/272))
+* add TypeScript type definitions ([#272](https://github.com/dotenvx/dotenvx/pull/272))
 
 ## 1.0.1
 
 ### Changed
 
-* 🐞 Fix expansion when preset on `process.env` and/or with `--overload` ([#271](https://github.com/dotenvx/dotenvx/pull/271))
+* 🐞 fix expansion when preset on `process.env` and/or with `--overload` ([#271](https://github.com/dotenvx/dotenvx/pull/271))
 
 ## 1.0.0 
 
