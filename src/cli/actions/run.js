@@ -1,7 +1,6 @@
 const path = require('path')
 const execa = require('execa')
 const which = require('which')
-const { execFile, spawnSync } = require('child_process')
 const { logger } = require('./../../shared/logger')
 
 const Run = require('./../../lib/services/run')
