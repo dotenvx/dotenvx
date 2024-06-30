@@ -1,7 +1,7 @@
 const openBrowser = require('open')
 
 const confirm = require('./../../../../shared/confirm')
-const createSpinner = require('./../../../../shared/createSpinner')
+const { createSpinner } = require('./../../../../shared/createSpinner')
 const store = require('./../../../../shared/store')
 const { logger } = require('./../../../../shared/logger')
 const sleep = require('./../../../../lib/helpers/sleep')

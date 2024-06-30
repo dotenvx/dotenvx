@@ -3,7 +3,7 @@ const { request } = require('undici')
 const clipboardy = require('./../../../../lib/helpers/clipboardy')
 
 const confirm = require('./../../../../shared/confirm')
-const createSpinner = require('./../../../../shared/createSpinner')
+const { createSpinner } = require('./../../../../shared/createSpinner')
 const store = require('./../../../../shared/store')
 const { logger } = require('./../../../../shared/logger')
 
