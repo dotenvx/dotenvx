@@ -3,20 +3,12 @@
 const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
-const UpdateNotice = require('./../lib/helpers/updateNotice')
 const { Command } = require('commander')
 const program = new Command()
 
 const { setLogLevel, logger } = require('../shared/logger')
 const examples = require('./examples')
 const packageJson = require('./../lib/helpers/packageJson')
-
-// once a day check for any updates
-const notice = new UpdateNotice()
-notice.check()
-if (notice.update) {
-  logger.warn(`Update available ${notice.packageVersion} → ${notice.latestVersion} 0.38.0 and higher have SIGNIFICANT changes. please read the changelog: https://dotenvx.com/changelog`)
-}
 
 // for use with run
 const envs = []

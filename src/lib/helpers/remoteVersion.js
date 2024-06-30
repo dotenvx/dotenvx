@@ -17,6 +17,7 @@ class RemoteVersion {
   }
 
   async _npmVersion () {
+    console.log('tag', this.tag)
     try {
       const response = await request(`https://registry.npmjs.org/${this.packageName}/${this.tag}`, {
         method: 'GET',
@@ -34,6 +35,7 @@ class RemoteVersion {
 
       return data.version
     } catch (_error) {
+      console.log('_error', _error)
       return packageJson.version
     }
   }
