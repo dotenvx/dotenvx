@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.2.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.3.0...main)
+
+## 1.3.0
+
+### Added
+
+* encrypt specified keys with `--key` option - `dotenvx encrypt -k HELLO` ([#281](https://github.com/dotenvx/dotenvx/pull/281))
 
 ## 1.2.0
 

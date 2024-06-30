@@ -1115,6 +1115,18 @@ More examples
   ```
 
   </details>
+* <details><summary>`encrypt -k`</summary><br>
+
+  Specify the key(s) to encrypt by passing `--key`.
+
+  ```sh
+  $ echo "HELLO=World\nHELLO2=Universe" > .env
+
+  $ dotenvx encrypt -k HELLO2
+  ✔ encrypted (.env)
+  ```
+
+  </details>
 * <details><summary>`help`</summary><br>
 
   Output help for `dotenvx`.
