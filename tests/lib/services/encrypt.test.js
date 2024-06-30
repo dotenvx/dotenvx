@@ -188,3 +188,51 @@ t.test('#run (finds .env file as array)', ct => {
 
   ct.end()
 })
+
+t.test('#run (finds .env file with specified key)', ct => {
+  const envFile = 'tests/monorepo/apps/multiple/.env'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt(envFile, ['HELLO2']).run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO2'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenv.parse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'HELLO2', 'HELLO3'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.match(parsed.HELLO, 'one', 'HELLO should not be encrypted')
+  ct.match(parsed.HELLO2, /^encrypted:/, 'HELLO should start with "encrypted:"')
+
+  ct.end()
+})
+
+t.test('#run (finds .env file with specified key as string)', ct => {
+  const envFile = 'tests/monorepo/apps/multiple/.env'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt(envFile, 'HELLO2').run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO2'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenv.parse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'HELLO2', 'HELLO3'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.match(parsed.HELLO, 'one', 'HELLO should not be encrypted')
+  ct.match(parsed.HELLO2, /^encrypted:/, 'HELLO should start with "encrypted:"')
+
+  ct.end()
+})

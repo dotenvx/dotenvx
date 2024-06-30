@@ -16,7 +16,7 @@ async function encrypt () {
       processedEnvFiles,
       changedFilepaths,
       unchangedFilepaths
-    } = main.encrypt(options.envFile)
+    } = main.encrypt(options.envFile, options.key)
 
     for (const processedEnvFile of processedEnvFiles) {
       logger.verbose(`encrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)

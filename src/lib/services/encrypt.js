@@ -11,8 +11,9 @@ const replace = require('./../helpers/replace')
 const ENCODING = 'utf8'
 
 class Encrypt {
-  constructor (envFile = '.env') {
+  constructor (envFile = '.env', key = []) {
     this.envFile = envFile
+    this.key = key
     this.processedEnvFiles = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
@@ -20,6 +21,7 @@ class Encrypt {
 
   run () {
     const envFilepaths = this._envFilepaths()
+    const keys = this._keys()
     for (const envFilepath of envFilepaths) {
       const filepath = path.resolve(envFilepath)
 
@@ -52,15 +54,17 @@ class Encrypt {
         // iterate over all non-encrypted values and encrypt them
         const parsed = dotenv.parse(src)
         for (const [key, value] of Object.entries(parsed)) {
-          const encrypted = isEncrypted(key, value)
-          if (!encrypted) {
-            row.keys.push(key) // track key(s)
+          if (keys.length < 1 || keys.includes(key)) { // optionally control which key to encrypt
+            const encrypted = isEncrypted(key, value)
+            if (!encrypted) {
+              row.keys.push(key) // track key(s)
 
-            const encryptedValue = encryptValue(value, publicKey)
-            // once newSrc is built write it out
-            src = replace(src, key, encryptedValue)
+              const encryptedValue = encryptValue(value, publicKey)
+              // once newSrc is built write it out
+              src = replace(src, key, encryptedValue)
 
-            row.changed = true // track change
+              row.changed = true // track change
+            }
           }
         }
 
@@ -98,6 +102,14 @@ class Encrypt {
     }
 
     return this.envFile
+  }
+
+  _keys () {
+    if (!Array.isArray(this.key)) {
+      return [this.key]
+    }
+
+    return this.key
   }
 }
 

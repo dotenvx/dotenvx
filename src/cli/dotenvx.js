@@ -94,6 +94,7 @@ const encryptAction = require('./actions/encrypt')
 program.command('encrypt')
   .description('convert .env file(s) to encrypted .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .action(encryptAction)
 
 // dotenvx pro
