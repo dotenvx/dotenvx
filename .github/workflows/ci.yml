@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
+    outputs:
+      TEST_COUNT_FORMATTED: ${{ steps.set_test_count.outputs.TEST_COUNT_FORMATTED }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,11 +34,7 @@ jobs:
           export LC_NUMERIC="en_US.UTF-8"
           TEST_COUNT_FORMATTED=$(printf "%'d\n" $(($TEST_COUNT)))
           echo $TEST_COUNT_FORMATTED
-          echo "TEST_COUNT_FORMATTED=$TEST_COUNT_FORMATTED" >> $GITHUB_ENV
-          echo "::set-output name=test_count_formatted::$TEST_COUNT_FORMATTED" # Set output parameter
-      - name: verify output parameter
-        run: |
-          echo "Output Parameter TEST_COUNT_FORMATTED is set to: ${{ steps.set_test_count.outputs.test_count_formatted }}"
+          echo "TEST_COUNT_FORMATTED=$TEST_COUNT_FORMATTED" >> $GITHUB_OUTPUT
       - run: npm run testshell
       - run: npm audit --omit=dev
 
@@ -51,7 +49,7 @@ jobs:
       - name: update gist
         env:
           GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
-          TEST_COUNT_FORMATTED: ${{ needs.test.outputs.test_count_formatted }}
+          TEST_COUNT_FORMATTED: ${{ needs.test.outputs.TEST_COUNT_FORMATTED }}
         run: |
           curl -L \
             -X PATCH \
