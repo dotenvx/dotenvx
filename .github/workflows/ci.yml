@@ -38,27 +38,6 @@ jobs:
       - run: npm run testshell
       - run: npm audit --omit=dev
 
-  testcount:
-    needs: test
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: update gist
-        env:
-          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
-          TEST_COUNT_FORMATTED: ${{ needs.test.outputs.TEST_COUNT_FORMATTED }}
-        run: |
-          curl -L \
-            -X PATCH \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GIST_TOKEN" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/gists/bb76445765a9731e7d824a6efdf53524 \
-            -d "{\"description\":\"dotenvxTestCount\",\"files\":{\"dotenvxTestCount.json\":{\"content\":\"{ \\\"schemaVersion\\\": 1, \\\"label\\\": \\\"tests\\\", \\\"message\\\": \\\"$TEST_COUNT_FORMATTED\\\", \\\"color\\\": \\\"brightgreen\\\" }\"}}}"
-
   # test-windows:
   #   runs-on: windows-latest
   #   strategy:
@@ -283,6 +262,26 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: dotenv/dotenvx
           short-description: ${{ github.event.repository.description }}
+  testcount:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: update gist
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          TEST_COUNT_FORMATTED: ${{ needs.test.outputs.TEST_COUNT_FORMATTED }}
+        run: |
+          curl -L \
+            -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GIST_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/gists/bb76445765a9731e7d824a6efdf53524 \
+            -d "{\"description\":\"dotenvxTestCount\",\"files\":{\"dotenvxTestCount.json\":{\"content\":\"{ \\\"schemaVersion\\\": 1, \\\"label\\\": \\\"tests\\\", \\\"message\\\": \\\"$TEST_COUNT_FORMATTED\\\", \\\"color\\\": \\\"brightgreen\\\" }\"}}}"
 
   dotenvx-darwin-amd64:
     needs: release
