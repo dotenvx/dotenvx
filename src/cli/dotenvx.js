@@ -116,7 +116,6 @@ program.addCommand(require('./commands/ext'))
 //
 // DEPRECATED AND hidden
 //
-program.addCommand(require('./commands/hub'))
 program.addCommand(require('./commands/vault'))
 
 program.command('convert')
