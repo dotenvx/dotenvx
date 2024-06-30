@@ -1,4 +1,7 @@
+const path = require('path')
+const { spawnSync, execSync, spawn } = require('child_process')
 const { Command } = require('commander')
+const { logger } = require('../../shared/logger')
 
 const examples = require('./../examples')
 
@@ -53,6 +56,21 @@ ext.command('settings')
   .action(require('./../actions/ext/settings'))
 
 ext.addCommand(require('./../commands/ext/vault'))
-ext.addCommand(require('./../commands/ext/hub'))
+ext.command('hub [cmdArgs...]')
+  .description('🚫 DEPRECATED: to be replaced by [dotenvx pro]')
+  .action((cmdArgs) => {
+    // Using spawnSync to execute the command synchronously
+    const result = spawnSync('dotenvx-ext-hub', cmdArgs, { stdio: 'inherit' })
+
+    if (result.error) {
+      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-hub to use [dotenvx ext hub] commands`)
+      logger.help('install with npm [npm install @dotenvx/dotenvx-ext-hub] or with curl [curl -sfS https://dotenvx.sh/ext/hub.sh | sh]')
+    }
+    if (result.status !== 0) {
+      // do nothing
+    } else {
+      // do nothing
+    }
+  })
 
 module.exports = ext

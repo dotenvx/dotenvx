@@ -1,3 +1,5 @@
+const { execSync } = require('child_process')
+
 const { Command } = require('commander')
 
 const store = require('./../../../shared/store')
@@ -8,17 +10,17 @@ const hub = new Command('hub')
 hub
   .description('🚫 DEPRECATED: to be replaced by [dotenvx pro]')
 
-const loginAction = require('./../../actions/ext/hub/login')
-hub
-  .command('login')
-  .description('authenticate to dotenvx hub')
-  .option('-h, --hostname <url>', 'set hostname', store.getHostname())
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: to be replaced by [dotenvx pro]')
-
-    loginAction.apply(this, args)
-  })
-
+// const loginAction = require('./../../actions/ext/hub/login')
+// hub
+//   .command('login')
+//   .description('authenticate to dotenvx hub')
+//   .option('-h, --hostname <url>', 'set hostname', store.getHostname())
+//   .action(function (...args) {
+//     logger.warn('DEPRECATION NOTICE: to be replaced by [dotenvx pro]')
+//
+//     loginAction.apply(this, args)
+//   })
+//
 const pushAction = require('./../../actions/ext/hub/push')
 hub
   .command('push')
