@@ -26,14 +26,17 @@ jobs:
           npm run test 2>&1 | tee testResults.txt
           test ${PIPESTATUS[0]} -eq 0
       - name: set test count
-        env:
-          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+        id: set_test_count
         run: |
           TEST_COUNT=$(tail -2 testResults.txt | head -1 | awk -F'[,: ]+' '/total/ {print $4}')
           export LC_NUMERIC="en_US.UTF-8"
           TEST_COUNT_FORMATTED=$(printf "%'d\n" $(($TEST_COUNT)))
           echo $TEST_COUNT_FORMATTED
           echo "TEST_COUNT_FORMATTED=$TEST_COUNT_FORMATTED" >> $GITHUB_ENV
+          echo "::set-output name=test_count_formatted::$TEST_COUNT_FORMATTED" # Set output parameter
+      - name: verify output parameter
+        run: |
+          echo "Output Parameter TEST_COUNT_FORMATTED is set to: ${{ steps.set_test_count.outputs.test_count_formatted }}"
       - run: npm run testshell
       - run: npm audit --omit=dev
 
@@ -43,10 +46,12 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: set test count
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: update gist
         env:
           GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
-          TEST_COUNT_FORMATTED: ${{ env.TEST_COUNT_FORMATTED }}
+          TEST_COUNT_FORMATTED: ${{ needs.test.outputs.test_count_formatted }}
         run: |
           curl -L \
             -X PATCH \
