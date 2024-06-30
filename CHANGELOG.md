@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Removed
 
 * remove update notice. let users decide what version they want without nagging them to update ([#288](https://github.com/dotenvx/dotenvx/pull/288))
+* remove `dotenvx hub`. still available at `dotenvx ext hub` ([#290](https://github.com/dotenvx/dotenvx/pull/290))
 
 ## 1.3.2
 
