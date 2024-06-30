@@ -27,7 +27,7 @@
     "testshell": "bash shellspec",
     "prerelease": "npm test && npm run testshell",
     "release": "standard-version",
-    "postinstall": "patch-package"
+    "prepare": "patch-package"
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
