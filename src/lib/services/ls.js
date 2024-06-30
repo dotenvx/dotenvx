@@ -1,5 +1,6 @@
+const { fdir: Fdir } = require('fdir')
 const path = require('path')
-const globSync = require('glob').globSync
+const picomatch = require('picomatch')
 
 class Ls {
   constructor (directory = './', envFile = '.env*') {
@@ -14,27 +15,23 @@ class Ls {
   }
 
   _filepaths () {
-    const options = {
-      ignore: this.ignore,
-      cwd: this.cwd // context dirctory for globSync
-    }
+    const ignoreMatchers = this.ignore.map(pattern => picomatch(pattern))
+    const pathMatchers = this._patterns().map(pattern => picomatch(pattern))
 
-    const patterns = this._patterns()
-    return globSync(patterns, options)
+    const api = new Fdir()
+      .withRelativePaths()
+      .exclude((dir, path) => ignoreMatchers.some(matcher => matcher(path)))
+      .filter((path) => pathMatchers.some(matcher => matcher(path)))
+
+    return api.crawl(this.cwd).sync()
   }
 
   _patterns () {
     if (!Array.isArray(this.envFile)) {
-      return `**/${this.envFile}`
+      return [`**/${this.envFile}`]
     }
 
-    const out = []
-
-    for (let i = 0; i < this.envFile.length; i++) {
-      const part = this.envFile[i]
-      out.push(`**/${part}`)
-    }
-    return out
+    return this.envFile.map(part => `**/${part}`)
   }
 }
 

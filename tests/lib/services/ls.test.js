@@ -8,23 +8,23 @@ t.test('#run', ct => {
   const envFiles = ls.run()
 
   const expected = [
-    '.env.vault',
-    '.env.multiline',
-    '.env.local',
-    '.env.expand',
-    '.env.eval',
     '.env',
-    'monorepo/apps/unencrypted/.env',
-    'monorepo/apps/multiline/.env',
-    'monorepo/apps/frontend/.env',
-    'monorepo/apps/encrypted/.env.keys',
-    'monorepo/apps/encrypted/.env',
-    'monorepo/apps/backend/.env.vault',
-    'monorepo/apps/backend/.env.untracked',
-    'monorepo/apps/backend/.env.previous',
-    'monorepo/apps/backend/.env.keys',
+    '.env.eval',
+    '.env.expand',
+    '.env.local',
+    '.env.multiline',
+    '.env.vault',
+    'monorepo/apps/backend/.env',
     'monorepo/apps/backend/.env.example',
-    'monorepo/apps/backend/.env'
+    'monorepo/apps/backend/.env.keys',
+    'monorepo/apps/backend/.env.previous',
+    'monorepo/apps/backend/.env.untracked',
+    'monorepo/apps/backend/.env.vault',
+    'monorepo/apps/encrypted/.env',
+    'monorepo/apps/encrypted/.env.keys',
+    'monorepo/apps/frontend/.env',
+    'monorepo/apps/multiline/.env',
+    'monorepo/apps/unencrypted/.env'
   ]
 
   ct.same(envFiles, expected)
@@ -38,17 +38,17 @@ t.test('#run (with directory argument)', ct => {
   const envFiles = ls.run()
 
   const expected = [
-    'apps/unencrypted/.env',
-    'apps/multiline/.env',
-    'apps/frontend/.env',
-    'apps/encrypted/.env.keys',
-    'apps/encrypted/.env',
-    'apps/backend/.env.vault',
-    'apps/backend/.env.untracked',
-    'apps/backend/.env.previous',
-    'apps/backend/.env.keys',
+    'apps/backend/.env',
     'apps/backend/.env.example',
-    'apps/backend/.env'
+    'apps/backend/.env.keys',
+    'apps/backend/.env.previous',
+    'apps/backend/.env.untracked',
+    'apps/backend/.env.vault',
+    'apps/encrypted/.env',
+    'apps/encrypted/.env.keys',
+    'apps/frontend/.env',
+    'apps/multiline/.env',
+    'apps/unencrypted/.env'
   ]
 
   ct.same(envFiles, expected)
@@ -62,17 +62,17 @@ t.test('#run (with somehow malformed directory argument)', ct => {
   const envFiles = ls.run()
 
   const expected = [
-    'apps/unencrypted/.env',
-    'apps/multiline/.env',
-    'apps/frontend/.env',
-    'apps/encrypted/.env.keys',
-    'apps/encrypted/.env',
-    'apps/backend/.env.vault',
-    'apps/backend/.env.untracked',
-    'apps/backend/.env.previous',
-    'apps/backend/.env.keys',
+    'apps/backend/.env',
     'apps/backend/.env.example',
-    'apps/backend/.env'
+    'apps/backend/.env.keys',
+    'apps/backend/.env.previous',
+    'apps/backend/.env.untracked',
+    'apps/backend/.env.vault',
+    'apps/encrypted/.env',
+    'apps/encrypted/.env.keys',
+    'apps/frontend/.env',
+    'apps/multiline/.env',
+    'apps/unencrypted/.env'
   ]
 
   ct.same(envFiles, expected)
@@ -86,23 +86,23 @@ t.test('#_filepaths', ct => {
   const envFiles = ls._filepaths()
 
   const expected = [
-    '.env.vault',
-    '.env.multiline',
-    '.env.local',
-    '.env.expand',
-    '.env.eval',
     '.env',
-    'monorepo/apps/unencrypted/.env',
-    'monorepo/apps/multiline/.env',
-    'monorepo/apps/frontend/.env',
-    'monorepo/apps/encrypted/.env.keys',
-    'monorepo/apps/encrypted/.env',
-    'monorepo/apps/backend/.env.vault',
-    'monorepo/apps/backend/.env.untracked',
-    'monorepo/apps/backend/.env.previous',
-    'monorepo/apps/backend/.env.keys',
+    '.env.eval',
+    '.env.expand',
+    '.env.local',
+    '.env.multiline',
+    '.env.vault',
+    'monorepo/apps/backend/.env',
     'monorepo/apps/backend/.env.example',
-    'monorepo/apps/backend/.env'
+    'monorepo/apps/backend/.env.keys',
+    'monorepo/apps/backend/.env.previous',
+    'monorepo/apps/backend/.env.untracked',
+    'monorepo/apps/backend/.env.vault',
+    'monorepo/apps/encrypted/.env',
+    'monorepo/apps/encrypted/.env.keys',
+    'monorepo/apps/frontend/.env',
+    'monorepo/apps/multiline/.env',
+    'monorepo/apps/unencrypted/.env'
   ]
 
   ct.same(envFiles, expected)
@@ -115,7 +115,7 @@ t.test('#_patterns', ct => {
 
   const patterns = ls._patterns()
 
-  const expected = '**/.env*'
+  const expected = ['**/.env*']
 
   ct.same(patterns, expected)
 
@@ -127,7 +127,7 @@ t.test('#_patterns (envFile set to string)', ct => {
 
   const patterns = ls._patterns()
 
-  const expected = '**/.env'
+  const expected = ['**/.env']
 
   ct.same(patterns, expected)
 
