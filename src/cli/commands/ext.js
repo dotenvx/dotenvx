@@ -10,33 +10,36 @@ const ext = new Command('ext')
 ext
   .description('🔌 extensions')
   .allowUnknownOption()
-  .argument('[command]', 'dynamic external extension')
-  .argument('[args...]', 'arguments for dynamic external extension')
-  .action((command, args, cmdObj) => {
-    logger.debug(`command: ${command}`)
-    logger.debug(`args: ${JSON.stringify(args)}`)
 
-    // output help and exit code 1
+ext
+  .argument('[command]', 'dynamic ext command')
+  .argument('[args...]', 'dynamic ext command arguments')
+  .action((command, args, cmdObj) => {
     if (!command) {
       ext.outputHelp()
       process.exit(1)
     }
 
-    // include node_modules/.bin in path
+    // construct the full command line manually including flags
+    const rawArgs = process.argv.slice(3) // adjust the index based on where actual args start
+    const commandIndex = rawArgs.indexOf(command)
+    const forwardedArgs = rawArgs.slice(commandIndex + 1)
+
+    logger.debug(`command: ${command}`)
+    logger.debug(`args: ${JSON.stringify(forwardedArgs)}`)
+
     const binPath = path.join(process.cwd(), 'node_modules', '.bin')
     const newPath = `${binPath}:${process.env.PATH}`
     const env = { ...process.env, PATH: newPath }
 
-    // attempt to run the extension
-    const result = spawnSync(`dotenvx-ext-${command}`, args, { stdio: 'inherit', env })
+    const result = spawnSync(`dotenvx-ext-${command}`, forwardedArgs, { stdio: 'inherit', env })
     if (result.error) {
-      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
-      logger.help(`install with npm [npm install @dotenvx/dotenvx-ext-${command}] or with curl [curl -sfS https://dotenvx.sh/ext/${command} | sh]`)
+      logger.warn(`[INSTALLATION_NEEDED] Install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
+      logger.help(`Install with npm [npm install @dotenvx/dotenvx-ext-${command}] or with curl [curl -sfS https://dotenvx.sh/ext/${command} | sh]`)
     }
+
     if (result.status !== 0) {
-      // do nothing
-    } else {
-      // do nothing
+      process.exit(result.status)
     }
   })
 
