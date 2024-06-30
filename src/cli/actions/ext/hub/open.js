@@ -1,6 +1,6 @@
 const openBrowser = require('open')
-const confirm = require('@inquirer/confirm').default
 
+const confirm = require('./../../../../shared/confirm')
 const createSpinner = require('./../../../../shared/createSpinner')
 const { logger } = require('./../../../../shared/logger')
 
