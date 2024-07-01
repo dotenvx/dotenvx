@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.5.0...main)
 
+## 1.5.0
+
 ### Added
 
 * add help text for dashed values on `set`. example: `dotenvx set KEY -- "- + * ÷"` ([#293](https://github.com/dotenvx/dotenvx/pull/293))
