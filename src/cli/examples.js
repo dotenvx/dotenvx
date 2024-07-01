@@ -100,10 +100,26 @@ Try it:
   `
 }
 
+const set = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx set KEY value
+  $ dotenvx set KEY "value with spaces"
+  $ dotenvx set KEY -- "---value with a dash---"
+  $ dotenvx set KEY -- "-----BEGIN OPENSSH PRIVATE KEY-----
+                        b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+                        -----END OPENSSH PRIVATE KEY-----"
+  \`\`\`
+  `
+}
+
 module.exports = {
   run,
   vaultEncrypt,
   precommit,
   prebuild,
-  gitignore
+  gitignore,
+  set
 }

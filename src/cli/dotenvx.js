@@ -72,14 +72,17 @@ program.command('get')
   })
 
 // dotenvx set
+const setAction = require('./actions/set')
 program.command('set')
   .description('set a single environment variable')
+  .addHelpText('after', examples.set)
+  .allowUnknownOption()
   .argument('KEY', 'KEY')
-  .argument('value', 'value')
+  .argument('[value]', 'value')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .option('-c, --encrypt', 'encrypt value (default: true)', true)
   .option('-p, --plain', 'store value as plain text', false)
-  .action(require('./actions/set'))
+  .action(setAction)
 
 // dotenvx encrypt
 const encryptAction = require('./actions/encrypt')
