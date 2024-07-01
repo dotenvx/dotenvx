@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Removed
 
-* removed `dotenvx ext hub` - instead [dotenvx-ext-hub](https://github.com/dotenvx/dotenvx-ext-hub) to continue using ([#291](https://github.com/dotenvx/dotenvx/pull/291))
+* remove `dotenvx ext hub`, replace with [dotenvx-ext-hub](https://github.com/dotenvx/dotenvx-ext-hub) (install there to continue using hub) ([#291](https://github.com/dotenvx/dotenvx/pull/291))
 
 ## 1.4.0
 
