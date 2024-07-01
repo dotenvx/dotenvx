@@ -214,6 +214,8 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
           scope: '@dotenvx'
+      # update npm to v9 (last 16.x supported version) for npm provenance to work
+      - run: npm install -g npm@9
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
