@@ -3,14 +3,14 @@ const fs = require('fs')
 const path = require('path')
 const sinon = require('sinon')
 
-const Decrypt = require('../../../src/lib/services/decrypt')
+const VaultDecrypt = require('../../../src/lib/services/vaultDecrypt')
 
 t.test('#run', ct => {
   const {
     processedEnvs,
     changedFilenames,
     unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend').run()
+  } = new VaultDecrypt('tests/monorepo/apps/backend').run()
 
   const expectedDecrypted = `# for testing purposes only
 HELLO="backend"
@@ -32,7 +32,7 @@ HELLO="backend"
 
 t.test('#run (when missing .env.vault file)', ct => {
   try {
-    new Decrypt('tests/monorepo/apps/backend/missing').run()
+    new VaultDecrypt('tests/monorepo/apps/backend/missing').run()
 
     ct.fail('should have raised an error but did not')
   } catch (error) {
@@ -53,7 +53,7 @@ t.test('#run (when missing .env.keys file)', ct => {
   })
 
   try {
-    new Decrypt('tests/monorepo/apps/backend').run()
+    new VaultDecrypt('tests/monorepo/apps/backend').run()
 
     ct.fail('should have raised an error but did not')
   } catch (error) {
@@ -79,7 +79,7 @@ t.test('#run (decrypted .env does not exist)', ct => {
     processedEnvs,
     changedFilenames,
     unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend').run()
+  } = new VaultDecrypt('tests/monorepo/apps/backend').run()
 
   const expectedDecrypted = `# for testing purposes only
 HELLO="backend"
@@ -117,7 +117,7 @@ t.test('#run (decrypted .env is different than current .env)', ct => {
     processedEnvs,
     changedFilenames,
     unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend').run()
+  } = new VaultDecrypt('tests/monorepo/apps/backend').run()
 
   const expectedDecrypted = `# for testing purposes only
 HELLO="backend"
@@ -153,7 +153,7 @@ t.test('#run (.env.vault file is missing the DOTENV_VAULT_DEVELOPMENT key/value)
 
   const {
     processedEnvs
-  } = new Decrypt('tests/monorepo/apps/backend').run()
+  } = new VaultDecrypt('tests/monorepo/apps/backend').run()
 
   ct.same(processedEnvs, [{
     environment: 'development',
@@ -172,7 +172,7 @@ t.test('#run (--environment argument)', ct => {
     processedEnvs,
     changedFilenames,
     unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend', ['development']).run()
+  } = new VaultDecrypt('tests/monorepo/apps/backend', ['development']).run()
 
   const expectedDecrypted = `# for testing purposes only
 HELLO="backend"
@@ -197,7 +197,7 @@ t.test('#run (--environment string argument)', ct => {
     processedEnvs,
     changedFilenames,
     unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend', 'development').run()
+  } = new VaultDecrypt('tests/monorepo/apps/backend', 'development').run()
 
   const expectedDecrypted = `# for testing purposes only
 HELLO="backend"
@@ -220,7 +220,7 @@ HELLO="backend"
 t.test('#run (--environment argument where environment does not exist)', ct => {
   const {
     processedEnvs
-  } = new Decrypt('tests/monorepo/apps/backend', ['ci']).run()
+  } = new VaultDecrypt('tests/monorepo/apps/backend', ['ci']).run()
 
   ct.same(processedEnvs, [{
     environment: 'ci',

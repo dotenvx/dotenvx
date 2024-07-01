@@ -10,9 +10,11 @@ const Run = require('../../src/lib/services/run')
 const Sets = require('../../src/lib/services/sets')
 const Status = require('../../src/lib/services/status')
 const Encrypt = require('../../src/lib/services/encrypt')
+const Decrypt = require('../../src/lib/services/decrypt')
 const Genexample = require('../../src/lib/services/genexample')
 const Settings = require('../../src/lib/services/settings')
 const VaultEncrypt = require('../../src/lib/services/vaultEncrypt')
+const VaultDecrypt = require('../../src/lib/services/vaultDecrypt')
 
 t.test('config calls Run.run', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
@@ -60,6 +62,19 @@ t.test('encrypt calls Encrypt.run', ct => {
   main.encrypt()
 
   t.ok(stub.called, 'new Encrypt().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('decrypt calls Decrypt.run', ct => {
+  const stub = sinon.stub(Decrypt.prototype, 'run')
+  stub.returns({})
+
+  main.decrypt()
+
+  t.ok(stub.called, 'new Decrypt().run() called')
 
   stub.restore()
 

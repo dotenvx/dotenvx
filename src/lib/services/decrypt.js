@@ -2,124 +2,106 @@ const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
 
+const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
+const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
+const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
+const decryptValue = require('./../helpers/decryptValue')
+const isEncrypted = require('./../helpers/isEncrypted')
+const replace = require('./../helpers/replace')
+
 const ENCODING = 'utf8'
 
-const libDecrypt = require('./../../lib/helpers/decrypt')
-
 class Decrypt {
-  constructor (directory = '.', environment) {
-    this.directory = directory
-    this.environment = environment
-
-    this.envKeysFilepath = path.resolve(this.directory, '.env.keys')
-    this.envVaultFilepath = path.resolve(this.directory, '.env.vault')
-
-    this.processedEnvs = []
-    this.changedFilenames = new Set()
-    this.unchangedFilenames = new Set()
+  constructor (envFile = '.env', key = []) {
+    this.envFile = envFile
+    this.key = key
+    this.processedEnvFiles = []
+    this.changedFilepaths = new Set()
+    this.unchangedFilepaths = new Set()
   }
 
   run () {
-    if (!fs.existsSync(this.envVaultFilepath)) {
-      const code = 'MISSING_ENV_VAULT_FILE'
-      const message = `missing .env.vault (${this.envVaultFilepath})`
-      const help = `? generate one with [dotenvx encrypt ${this.directory}]`
+    const envFilepaths = this._envFilepaths()
+    const keys = this._keys()
+    for (const envFilepath of envFilepaths) {
+      const filepath = path.resolve(envFilepath)
 
-      const error = new Error(message)
-      error.code = code
-      error.help = help
-      throw error
-    }
+      const row = {}
+      row.keys = []
+      row.filepath = filepath
+      row.envFilepath = envFilepath
 
-    if (!fs.existsSync(this.envKeysFilepath)) {
-      const code = 'MISSING_ENV_KEYS_FILE'
-      const message = `missing .env.keys (${this.envKeysFilepath})`
-      const help = '? a .env.keys file must be present in order to decrypt your .env.vault contents to .env file(s)'
+      try {
+        // get the src
+        let src = fs.readFileSync(filepath, { encoding: ENCODING })
 
-      const error = new Error(message)
-      error.code = code
-      error.help = help
-      throw error
-    }
+        // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
+        const privateKey = smartDotenvPrivateKey(envFilepath)
+        row.privateKey = privateKey
+        row.privateKeyName = guessPrivateKeyName(filepath)
 
-    const dotenvKeys = dotenv.configDotenv({ path: this.envKeysFilepath }).parsed
-    const dotenvVault = dotenv.configDotenv({ path: this.envVaultFilepath }).parsed
-    const environments = this._environments()
+        // track possible changes
+        row.changed = false
 
-    if (environments.length > 0) {
-      // iterate over the environments
-      for (const environment of environments) {
-        const value = dotenvKeys[`DOTENV_KEY_${environment.toUpperCase()}`]
-        const row = this._processRow(value, dotenvVault, environment)
+        // iterate over all non-encrypted values and encrypt them
+        const parsed = dotenv.parse(src)
+        for (const [key, value] of Object.entries(parsed)) {
+          if (keys.length < 1 || keys.includes(key)) { // optionally control which key to decrypt
+            const encrypted = isEncrypted(key, value)
+            if (encrypted) {
+              row.keys.push(key) // track key(s)
 
-        this.processedEnvs.push(row)
+              const plainValue = decryptValue(value, privateKey)
+              // once newSrc is built write it out
+              src = replace(src, key, plainValue)
+
+              row.changed = true // track change
+            }
+          }
+        }
+
+        if (row.changed) {
+          row.envSrc = src
+          this.changedFilepaths.add(envFilepath)
+        } else {
+          row.envSrc = src
+          this.unchangedFilepaths.add(envFilepath)
+        }
+      } catch (e) {
+        if (e.code === 'ENOENT') {
+          const error = new Error(`missing ${envFilepath} file (${filepath})`)
+          error.code = 'MISSING_ENV_FILE'
+
+          row.error = error
+        } else {
+          row.error = e
+        }
       }
-    } else {
-      for (const [dotenvKey, value] of Object.entries(dotenvKeys)) {
-        const environment = dotenvKey.replace('DOTENV_KEY_', '').toLowerCase()
-        const row = this._processRow(value, dotenvVault, environment)
 
-        this.processedEnvs.push(row)
-      }
+      this.processedEnvFiles.push(row)
     }
 
     return {
-      processedEnvs: this.processedEnvs,
-      changedFilenames: [...this.changedFilenames],
-      unchangedFilenames: [...this.unchangedFilenames]
+      processedEnvFiles: this.processedEnvFiles,
+      changedFilepaths: [...this.changedFilepaths],
+      unchangedFilepaths: [...this.unchangedFilepaths]
     }
   }
 
-  _processRow (value, dotenvVault, environment) {
-    environment = environment.toLowerCase() // important so we don't later write .env.DEVELOPMENT for example
-    const vaultKey = `DOTENV_VAULT_${environment.toUpperCase()}`
-    const ciphertext = dotenvVault[vaultKey] // attempt to find ciphertext
-
-    const row = {}
-    row.environment = environment
-    row.dotenvKey = value ? value.trim() : value
-    row.ciphertext = ciphertext
-
-    if (ciphertext && ciphertext.length >= 1) {
-      // Decrypt
-      const decrypted = libDecrypt(ciphertext, value.trim())
-      row.decrypted = decrypted
-
-      // envFilename
-      // replace _ with . to support filenames like .env.development.local
-      let envFilename = `.env.${environment.replace('_', '.')}`
-      if (environment === 'development') {
-        envFilename = '.env'
-      }
-      row.filename = envFilename
-      row.filepath = path.resolve(this.directory, envFilename)
-
-      // check if exists and is changing
-      if (fs.existsSync(row.filepath) && (fs.readFileSync(row.filepath, { encoding: ENCODING }).toString() === decrypted)) {
-        this.unchangedFilenames.add(envFilename)
-      } else {
-        row.shouldWrite = true
-        this.changedFilenames.add(envFilename)
-      }
-    } else {
-      const message = `${vaultKey} missing in .env.vault: ${this.envVaultFilepath}`
-      const warning = new Error(message)
-      row.warning = warning
+  _envFilepaths () {
+    if (!Array.isArray(this.envFile)) {
+      return [this.envFile]
     }
 
-    return row
+    return this.envFile
   }
 
-  _environments () {
-    if (this.environment === undefined) {
-      return []
+  _keys () {
+    if (!Array.isArray(this.key)) {
+      return [this.key]
     }
 
-    if (!Array.isArray(this.environment)) {
-      return [this.environment]
-    }
-
-    return this.environment
+    return this.key
   }
 }
 

@@ -4,7 +4,7 @@ const { logger } = require('./../../../../shared/logger')
 const { createSpinner } = require('./../../../../shared/createSpinner')
 const sleep = require('./../../../../lib/helpers/sleep')
 
-const Decrypt = require('./../../../../lib/services/decrypt')
+const VaultDecrypt = require('./../../../../lib/services/vaultDecrypt')
 
 const spinner = createSpinner('decrypting')
 
@@ -22,7 +22,7 @@ async function decrypt (directory) {
       processedEnvs,
       changedFilenames,
       unchangedFilenames
-    } = new Decrypt(directory, options.environment).run()
+    } = new VaultDecrypt(directory, options.environment).run()
 
     for (const env of processedEnvs) {
       if (env.warning) {
