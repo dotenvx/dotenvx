@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* add help text on setting gpg, dashed, and multiline values with `dotenvx set` ([#293](https://github.com/dotenvx/dotenvx/pull/293))
+* add help text for dashed values on `set`. example: `dotenvx set KEY -- "- + * ÷"` ([#293](https://github.com/dotenvx/dotenvx/pull/293))
 
 ### Changed
 

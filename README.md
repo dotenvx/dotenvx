@@ -1072,6 +1072,18 @@ More examples
   ```
 
   </details>
+* <details><summary>`set KEY -- "- + * ÷"`</summary><br>
+
+  If your value starts with a dash (`-`), then place two dashes instructing the cli that there are no more flag arguments.
+
+  ```sh
+  $ touch .env.ci
+
+  $ dotenvx set HELLO -f .env.ci -- "- + * ÷"
+  set HELLO with encryption (.env.ci)
+  ```
+
+  </details>
 * <details><summary>`set KEY value --plain`</summary><br>
 
   Set a plaintext key/value.
