@@ -8,7 +8,10 @@
     "env"
   ],
   "homepage": "https://github.com/dotenvx/dotenvx",
-  "repository": "dotenvx/dotenvx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotenvx/dotenvx.git"
+  },
   "license": "BSD-3-Clause",
   "files": [
     "src/**/*",
@@ -31,8 +34,6 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
-    "@clack/core": "^0.3.4",
-    "arch": "^2.1.1",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
@@ -42,11 +43,8 @@
     "execa": "^5.1.1",
     "fdir": "^6.1.1",
     "ignore": "^5.3.0",
-    "is-wsl": "^2.1.1",
     "object-treeify": "1.1.33",
-    "open": "^8.4.2",
     "picomatch": "^3.0.1",
-    "undici": "^5.28.3",
     "which": "^4.0.0",
     "winston": "^3.11.0",
     "xxhashjs": "^0.2.2"
