@@ -1,4 +1,7 @@
+const path = require('path')
+const { spawnSync } = require('child_process')
 const { Command } = require('commander')
+const { logger } = require('../../shared/logger')
 
 const examples = require('./../examples')
 
@@ -6,6 +9,45 @@ const ext = new Command('ext')
 
 ext
   .description('🔌 extensions')
+  .allowUnknownOption()
+
+ext.addHelpText('after', '  hub                               🚫 DEPRECATED: to be replaced by [dotenvx pro]')
+
+ext
+  .argument('[command]', 'dynamic ext command')
+  .argument('[args...]', 'dynamic ext command arguments')
+  .action((command, args, cmdObj) => {
+    if (!command) {
+      ext.outputHelp()
+      process.exit(1)
+    }
+
+    // construct the full command line manually including flags
+    const rawArgs = process.argv.slice(3) // adjust the index based on where actual args start
+    const commandIndex = rawArgs.indexOf(command)
+    const forwardedArgs = rawArgs.slice(commandIndex + 1)
+
+    logger.debug(`command: ${command}`)
+    logger.debug(`args: ${JSON.stringify(forwardedArgs)}`)
+
+    const binPath = path.join(process.cwd(), 'node_modules', '.bin')
+    const newPath = `${binPath}:${process.env.PATH}`
+    const env = { ...process.env, PATH: newPath }
+
+    const result = spawnSync(`dotenvx-ext-${command}`, forwardedArgs, { stdio: 'inherit', env })
+    if (result.error) {
+      if (command === 'hub') {
+        logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
+        logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-hub]')
+      } else {
+        logger.info(`error: unknown command '${command}'`)
+      }
+    }
+
+    if (result.status !== 0) {
+      process.exit(result.status)
+    }
+  })
 
 // dotenvx ext ls
 ext.command('ls')
@@ -53,6 +95,5 @@ ext.command('settings')
   .action(require('./../actions/ext/settings'))
 
 ext.addCommand(require('./../commands/ext/vault'))
-ext.addCommand(require('./../commands/ext/hub'))
 
 module.exports = ext
