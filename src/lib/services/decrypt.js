@@ -2,7 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
 
-const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
 const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const decryptValue = require('./../helpers/decryptValue')

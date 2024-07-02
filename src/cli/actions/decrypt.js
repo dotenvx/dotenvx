@@ -12,9 +12,7 @@ async function decrypt () {
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
-      processedEnvFiles,
-      changedFilepaths,
-      unchangedFilepaths
+      processedEnvFiles
     } = main.decrypt(options.envFile, options.key)
 
     for (const processedEnvFile of processedEnvFiles) {
@@ -37,7 +35,6 @@ async function decrypt () {
           logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx decrypt]`)
         } else {
           logger.warn(processedEnvFile.error)
-
         }
       } else if (processedEnvFile.changed) {
         fs.writeFileSync(processedEnvFile.filepath, processedEnvFile.envSrc, ENCODING)

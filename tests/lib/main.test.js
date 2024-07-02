@@ -14,7 +14,6 @@ const Decrypt = require('../../src/lib/services/decrypt')
 const Genexample = require('../../src/lib/services/genexample')
 const Settings = require('../../src/lib/services/settings')
 const VaultEncrypt = require('../../src/lib/services/vaultEncrypt')
-const VaultDecrypt = require('../../src/lib/services/vaultDecrypt')
 
 t.test('config calls Run.run', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
