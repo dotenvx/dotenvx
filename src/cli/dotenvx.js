@@ -92,6 +92,15 @@ program.command('encrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .action(encryptAction)
 
+// dotenvx decrypt
+const decryptAction = require('./actions/decrypt')
+program.command('decrypt')
+  .description('convert encrypted .env file(s) to plain .env file(s)')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
+  .option('--stdout', 'send to stdout')
+  .action(decryptAction)
+
 // dotenvx pro
 program.command('pro')
   .description('🏆 pro')

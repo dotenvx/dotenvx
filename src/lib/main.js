@@ -10,6 +10,7 @@ const Run = require('./services/run')
 const Sets = require('./services/sets')
 const Status = require('./services/status')
 const Encrypt = require('./services/encrypt')
+const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
 const Settings = require('./services/settings')
 const VaultEncrypt = require('./services/vaultEncrypt')
@@ -162,11 +163,6 @@ const parse = function (src) {
   return dotenv.parse(src)
 }
 
-/** @type {import('./main').vaultEncrypt} */
-const vaultEncrypt = function (directory, envFile) {
-  return new VaultEncrypt(directory, envFile).run()
-}
-
 /** @type {import('./main').ls} */
 const ls = function (directory, envFile) {
   return new Ls(directory, envFile).run()
@@ -198,6 +194,11 @@ const encrypt = function (envFile, key) {
   return new Encrypt(envFile, key).run()
 }
 
+/** @type {import('./main').encrypt} */
+const decrypt = function (envFile, key) {
+  return new Decrypt(envFile, key).run()
+}
+
 /** @type {import('./main').status} */
 const status = function (directory) {
   return new Status(directory).run()
@@ -211,8 +212,8 @@ const settings = function (key = null) {
 
 // misc/cleanup
 
-/** @type {import('./main').decrypt} */
-const decrypt = function (encrypted, keyStr) {
+/** @type {import('./main').vaultDecrypt} */
+const vaultDecrypt = function (encrypted, keyStr) {
   try {
     return dotenv.decrypt(encrypted, keyStr)
   } catch (e) {
@@ -236,6 +237,11 @@ const decrypt = function (encrypted, keyStr) {
   }
 }
 
+/** @type {import('./main').vaultEncrypt} */
+const vaultEncrypt = function (directory, envFile) {
+  return new VaultEncrypt(directory, envFile).run()
+}
+
 module.exports = {
   // dotenv proxies
   config,
@@ -243,7 +249,7 @@ module.exports = {
   parse,
   // actions related
   encrypt,
-  vaultEncrypt,
+  decrypt,
   ls,
   get,
   set,
@@ -252,5 +258,6 @@ module.exports = {
   // settings
   settings,
   // misc/cleanup
-  decrypt
+  vaultEncrypt,
+  vaultDecrypt
 }

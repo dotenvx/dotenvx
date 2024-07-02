@@ -4,7 +4,7 @@ const diff = require('diff')
 const chalk = require('chalk')
 
 const Ls = require('./ls')
-const Decrypt = require('./decrypt')
+const VaultDecrypt = require('./vaultDecrypt')
 
 const containsDirectory = require('./../helpers/containsDirectory')
 const guessEnvironment = require('./../helpers/guessEnvironment')
@@ -60,7 +60,7 @@ class Status {
       row.raw = fs.readFileSync(filepath, { encoding: ENCODING })
 
       // grab decrypted
-      const { processedEnvs } = new Decrypt(this.directory, row.environment).run()
+      const { processedEnvs } = new VaultDecrypt(this.directory, row.environment).run()
       const result = processedEnvs[0]
 
       // handle warnings

@@ -6,6 +6,7 @@ const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
+const isPublicKey = require('./../helpers/isPublicKey')
 const replace = require('./../helpers/replace')
 
 const ENCODING = 'utf8'
@@ -55,7 +56,7 @@ class Encrypt {
         const parsed = dotenv.parse(src)
         for (const [key, value] of Object.entries(parsed)) {
           if (keys.length < 1 || keys.includes(key)) { // optionally control which key to encrypt
-            const encrypted = isEncrypted(key, value)
+            const encrypted = isEncrypted(key, value) || isPublicKey(key, value)
             if (!encrypted) {
               row.keys.push(key) // track key(s)
 

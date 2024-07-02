@@ -25,6 +25,8 @@ t.test('#run', ct => {
     'monorepo/apps/frontend/.env',
     'monorepo/apps/multiline/.env',
     'monorepo/apps/multiple/.env',
+    'monorepo/apps/multiple/.env.keys',
+    'monorepo/apps/multiple/.env.production',
     'monorepo/apps/unencrypted/.env'
   ]
 
@@ -50,6 +52,8 @@ t.test('#run (with directory argument)', ct => {
     'apps/frontend/.env',
     'apps/multiline/.env',
     'apps/multiple/.env',
+    'apps/multiple/.env.keys',
+    'apps/multiple/.env.production',
     'apps/unencrypted/.env'
   ]
 
@@ -75,6 +79,8 @@ t.test('#run (with somehow malformed directory argument)', ct => {
     'apps/frontend/.env',
     'apps/multiline/.env',
     'apps/multiple/.env',
+    'apps/multiple/.env.keys',
+    'apps/multiple/.env.production',
     'apps/unencrypted/.env'
   ]
 
@@ -106,6 +112,8 @@ t.test('#_filepaths', ct => {
     'monorepo/apps/frontend/.env',
     'monorepo/apps/multiline/.env',
     'monorepo/apps/multiple/.env',
+    'monorepo/apps/multiple/.env.keys',
+    'monorepo/apps/multiple/.env.production',
     'monorepo/apps/unencrypted/.env'
   ]
 

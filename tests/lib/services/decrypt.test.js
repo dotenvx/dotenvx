@@ -2,232 +2,207 @@ const t = require('tap')
 const fs = require('fs')
 const path = require('path')
 const sinon = require('sinon')
+const dotenv = require('dotenv')
 
 const Decrypt = require('../../../src/lib/services/decrypt')
 
-t.test('#run', ct => {
-  const {
-    processedEnvs,
-    changedFilenames,
-    unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend').run()
+let writeFileSyncStub
 
-  const expectedDecrypted = `# for testing purposes only
-HELLO="backend"
+t.beforeEach((ct) => {
+  // important, clear process.env before each test
+  process.env = {}
+  writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
+})
+
+t.afterEach((ct) => {
+  writeFileSyncStub.restore()
+})
+
+t.test('#run (no arguments)', ct => {
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Decrypt().run()
+
+  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  exampleError.code = 'MISSING_ENV_FILE'
+
+  ct.same(processedEnvFiles, [{
+    keys: [],
+    filepath: path.resolve('.env'),
+    envFilepath: '.env',
+    error: exampleError
+  }])
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, [])
+
+  ct.end()
+})
+
+t.test('#run (no env file)', ct => {
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Decrypt().run()
+
+  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  exampleError.code = 'MISSING_ENV_FILE'
+
+  ct.same(processedEnvFiles, [{
+    keys: [],
+    filepath: path.resolve('.env'),
+    envFilepath: '.env',
+    error: exampleError
+  }])
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, [])
+
+  ct.end()
+})
+
+t.test('#run (no arguments and some other error)', ct => {
+  const readFileSyncStub = sinon.stub(fs, 'readFileSync').throws(new Error('Mock Error'))
+
+  const {
+    processedEnvFiles,
+    changedFilepaths
+  } = new Decrypt().run()
+
+  const exampleError = new Error('Mock Error')
+
+  ct.same(processedEnvFiles, [{
+    keys: [],
+    envFilepath: '.env',
+    filepath: path.resolve('.env'),
+    error: exampleError
+  }])
+  ct.same(changedFilepaths, [])
+
+  readFileSyncStub.restore()
+
+  ct.end()
+})
+
+t.test('#run (finds .env file)', ct => {
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Decrypt(envFile).run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/encrypted/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenv.parse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.same(parsed.HELLO, 'encrypted') // the decrypted value is 'encrypted'
+
+  ct.end()
+})
+
+t.test('#run (finds .env file with multiline value)', ct => {
+  const envFile = 'tests/monorepo/apps/multiline/.env'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Decrypt(envFile).run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, [])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiline/.env')
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, ['tests/monorepo/apps/multiline/.env'])
+
+  const parsed = dotenv.parse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['HELLO'])
+  ct.same(parsed.HELLO, `-----BEGIN RSA PRIVATE KEY-----
+ABCD
+EFGH
+IJKL
+-----END RSA PRIVATE KEY-----`)
+
+  const output = `HELLO="-----BEGIN RSA PRIVATE KEY-----
+ABCD
+EFGH
+IJKL
+-----END RSA PRIVATE KEY-----"
 `
-
-  ct.same(processedEnvs, [{
-    environment: 'development',
-    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
-    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
-    decrypted: expectedDecrypted,
-    filename: '.env',
-    filepath: path.resolve('tests/monorepo/apps/backend/.env')
-  }])
-  ct.same(changedFilenames, [])
-  ct.same(unchangedFilenames, ['.env'])
+  ct.same(p1.envSrc, output)
 
   ct.end()
 })
 
-t.test('#run (when missing .env.vault file)', ct => {
-  try {
-    new Decrypt('tests/monorepo/apps/backend/missing').run()
-
-    ct.fail('should have raised an error but did not')
-  } catch (error) {
-    ct.equal(error.message, `missing .env.vault (${path.resolve('tests/monorepo/apps/backend/missing', '.env.vault')})`)
-  }
-
-  ct.end()
-})
-
-t.test('#run (when missing .env.keys file)', ct => {
-  const sandbox = sinon.createSandbox()
-  sandbox.stub(fs, 'existsSync').callsFake((filepath) => {
-    if (filepath === path.resolve('tests/monorepo/apps/backend/.env.keys')) {
-      return false
-    } else {
-      return true
-    }
-  })
-
-  try {
-    new Decrypt('tests/monorepo/apps/backend').run()
-
-    ct.fail('should have raised an error but did not')
-  } catch (error) {
-    ct.equal(error.message, `missing .env.keys (${path.resolve('tests/monorepo/apps/backend', '.env.keys')})`)
-  }
-
-  sandbox.restore()
-
-  ct.end()
-})
-
-t.test('#run (decrypted .env does not exist)', ct => {
-  const sandbox = sinon.createSandbox()
-  sandbox.stub(fs, 'existsSync').callsFake((filepath) => {
-    if (filepath === path.resolve('tests/monorepo/apps/backend/.env')) {
-      return false
-    } else {
-      return true
-    }
-  })
-
+t.test('#run (finds .env file as array)', ct => {
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
   const {
-    processedEnvs,
-    changedFilenames,
-    unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend').run()
+    processedEnvFiles,
+    changedFilepaths
+  } = new Decrypt([envFile]).run()
 
-  const expectedDecrypted = `# for testing purposes only
-HELLO="backend"
-`
-
-  ct.same(processedEnvs, [{
-    environment: 'development',
-    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
-    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
-    decrypted: expectedDecrypted,
-    filename: '.env',
-    filepath: path.resolve('tests/monorepo/apps/backend/.env'),
-    shouldWrite: true
-  }])
-  ct.same(changedFilenames, ['.env'])
-  ct.same(unchangedFilenames, [])
-
-  sandbox.restore()
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/encrypted/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
 
   ct.end()
 })
 
-t.test('#run (decrypted .env is different than current .env)', ct => {
-  const originalReadFileSync = fs.readFileSync
-  const sandbox = sinon.createSandbox()
-  sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
-    if (filepath === path.resolve('tests/monorepo/apps/backend/.env')) {
-      return ''
-    } else {
-      return originalReadFileSync(filepath, options)
-    }
-  })
-
+t.test('#run (finds .env file with specified key)', ct => {
+  const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const {
-    processedEnvs,
-    changedFilenames,
-    unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend').run()
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Decrypt(envFile, ['HELLO2']).run()
 
-  const expectedDecrypted = `# for testing purposes only
-HELLO="backend"
-`
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO2'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env.production')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env.production'])
+  ct.same(unchangedFilepaths, [])
 
-  ct.same(processedEnvs, [{
-    environment: 'development',
-    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
-    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
-    decrypted: expectedDecrypted,
-    filename: '.env',
-    filepath: path.resolve('tests/monorepo/apps/backend/.env'),
-    shouldWrite: true
-  }])
-  ct.same(changedFilenames, ['.env'])
-  ct.same(unchangedFilenames, [])
+  const parsed = dotenv.parse(p1.envSrc)
 
-  sandbox.restore()
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_PRODUCTION', 'HELLO', 'HELLO2', 'HELLO3'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_PRODUCTION, 'DOTENV_PUBLIC_KEY_PRODUCTION should not be empty')
+  ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should still be encrypted')
+  ct.match(parsed.HELLO2, 'two', 'HELLO2 should be decrypted')
+  ct.match(parsed.HELLO3, /^encrypted:/, 'HELLO3 should still be encrypted')
 
   ct.end()
 })
 
-t.test('#run (.env.vault file is missing the DOTENV_VAULT_DEVELOPMENT key/value)', ct => {
-  const originalReadFileSync = fs.readFileSync
-  const sandbox = sinon.createSandbox()
-  sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
-    if (filepath === path.resolve('tests/monorepo/apps/backend/.env.vault')) {
-      return ''
-    } else {
-      return originalReadFileSync(filepath, options)
-    }
-  })
-
+t.test('#run (finds .env file with specified key as string)', ct => {
+  const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const {
-    processedEnvs
-  } = new Decrypt('tests/monorepo/apps/backend').run()
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Decrypt(envFile, 'HELLO2').run()
 
-  ct.same(processedEnvs, [{
-    environment: 'development',
-    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
-    ciphertext: undefined,
-    warning: new Error(`DOTENV_VAULT_DEVELOPMENT missing in .env.vault: ${path.resolve('tests/monorepo/apps/backend/.env.vault')}`)
-  }])
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO2'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env.production')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env.production'])
+  ct.same(unchangedFilepaths, [])
 
-  sandbox.restore()
+  const parsed = dotenv.parse(p1.envSrc)
 
-  ct.end()
-})
-
-t.test('#run (--environment argument)', ct => {
-  const {
-    processedEnvs,
-    changedFilenames,
-    unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend', ['development']).run()
-
-  const expectedDecrypted = `# for testing purposes only
-HELLO="backend"
-`
-
-  ct.same(processedEnvs, [{
-    environment: 'development',
-    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
-    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
-    decrypted: expectedDecrypted,
-    filename: '.env',
-    filepath: path.resolve('tests/monorepo/apps/backend/.env')
-  }])
-  ct.same(changedFilenames, [])
-  ct.same(unchangedFilenames, ['.env'])
-
-  ct.end()
-})
-
-t.test('#run (--environment string argument)', ct => {
-  const {
-    processedEnvs,
-    changedFilenames,
-    unchangedFilenames
-  } = new Decrypt('tests/monorepo/apps/backend', 'development').run()
-
-  const expectedDecrypted = `# for testing purposes only
-HELLO="backend"
-`
-
-  ct.same(processedEnvs, [{
-    environment: 'development',
-    dotenvKey: 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development',
-    ciphertext: 'TgaIyXmiLS1ej5LrII+Boz8R8nQ4avEM/pcreOfLUehTMmludeyXn6HMXLu8Jjn9O0yckjXy7kRrNfUvUJ88V8RpTwDP8k7u',
-    decrypted: expectedDecrypted,
-    filename: '.env',
-    filepath: path.resolve('tests/monorepo/apps/backend/.env')
-  }])
-  ct.same(changedFilenames, [])
-  ct.same(unchangedFilenames, ['.env'])
-
-  ct.end()
-})
-
-t.test('#run (--environment argument where environment does not exist)', ct => {
-  const {
-    processedEnvs
-  } = new Decrypt('tests/monorepo/apps/backend', ['ci']).run()
-
-  ct.same(processedEnvs, [{
-    environment: 'ci',
-    dotenvKey: undefined,
-    ciphertext: undefined,
-    warning: new Error(`DOTENV_VAULT_CI missing in .env.vault: ${path.resolve('tests/monorepo/apps/backend/.env.vault')}`)
-  }])
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_PRODUCTION', 'HELLO', 'HELLO2', 'HELLO3'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_PRODUCTION, 'DOTENV_PUBLIC_KEY_PRODUCTION should not be empty')
+  ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should still be encrypted')
+  ct.match(parsed.HELLO2, 'two', 'HELLO2 should be decrypted')
+  ct.match(parsed.HELLO3, /^encrypted:/, 'HELLO3 should still be encrypted')
 
   ct.end()
 })
