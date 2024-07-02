@@ -1,3 +1,4 @@
+const fs = require('fs')
 const { logger } = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
@@ -8,26 +9,52 @@ async function decrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const {
-    processedEnvFiles,
-  } = main.decrypt(options.envFile, options.key)
+  // stdout - should not have a try so that exit codes can surface to stdout
+  if (options.stdout) {
+    const {
+      processedEnvFiles,
+      changedFilepaths,
+      unchangedFilepaths
+    } = main.decrypt(options.envFile, options.key)
 
-  // stdout
-  if (options.output && options.output === true) {
     for (const processedEnvFile of processedEnvFiles) {
-      logger.blank(processedEnvFile.envSrc)
-      logger.blank('')
+      process.stdout.write(processedEnvFile.envSrc)
     }
-  // write to file
-  } else if (options.output) {
-    // TODO - -o filename.txt
-
-  } else {
-    // TODO - rewrite same file
   }
 
   try {
+    const {
+      processedEnvFiles,
+      changedFilepaths,
+      unchangedFilepaths
+    } = main.decrypt(options.envFile, options.key)
 
+    for (const processedEnvFile of processedEnvFiles) {
+      logger.verbose(`decrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+      if (processedEnvFile.error) {
+        if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
+          logger.warn(processedEnvFile.error)
+          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx decrypt]`)
+        } else {
+          logger.warn(processedEnvFile.error)
+
+        }
+      } else if (processedEnvFile.changed) {
+        fs.writeFileSync(processedEnvFile.filepath, processedEnvFile.envSrc, ENCODING)
+
+        logger.verbose(`decrypted ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+      } else {
+        logger.verbose(`no changes ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+      }
+    }
+
+    if (changedFilepaths.length > 0) {
+      logger.success(`✔ decrypted (${changedFilepaths.join(',')})`)
+    } else if (unchangedFilepaths.length > 0) {
+      logger.info(`no changes (${unchangedFilepaths})`)
+    } else {
+      // do nothing - scenario when no .env files found
+    }
   } catch (error) {
     logger.error(error.message)
     if (error.help) {

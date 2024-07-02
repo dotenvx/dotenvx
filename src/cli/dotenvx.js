@@ -98,7 +98,7 @@ program.command('decrypt')
   .description('convert encrypted .env file(s) to plain .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
-  .option('-o, --output [path]', 'a single output file or default to stdout if no path is provided')
+  .option('--stdout', 'send to stdout')
   .action(decryptAction)
 
 // dotenvx pro
