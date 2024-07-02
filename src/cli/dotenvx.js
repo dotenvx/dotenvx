@@ -90,6 +90,7 @@ program.command('encrypt')
   .description('convert .env file(s) to encrypted .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
+  .option('--stdout', 'send to stdout')
   .action(encryptAction)
 
 // dotenvx decrypt
