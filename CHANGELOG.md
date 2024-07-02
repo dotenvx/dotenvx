@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.5.0...main)
 
+### Added
+
+* add `dotenvx decrypt` command. works inversely to `dotenvx encrypt`. same falgs. ([#294](https://github.com/dotenvx/dotenvx/pull/294))
+* add `--stdout` option to `dotenvx decrypt`. example: `dotenvx decrypt -f .env.production > somefile.txt`
+
 ## 1.5.0
 
 ### Added
