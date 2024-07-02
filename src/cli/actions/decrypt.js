@@ -18,6 +18,7 @@ async function decrypt () {
     for (const processedEnvFile of processedEnvFiles) {
       process.stdout.write(processedEnvFile.envSrc)
     }
+    process.exit(0) // exit early
   }
 
   try {
