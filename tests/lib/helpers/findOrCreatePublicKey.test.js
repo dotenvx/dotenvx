@@ -4,29 +4,38 @@ const sinon = require('sinon')
 
 const findOrCreatePublicKey = require('../../../src/lib/helpers/findOrCreatePublicKey')
 
-let writeFileSyncStub
 let envFile = 'tests/monorepo/apps/encrypted/.env'
 let envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
-
-  writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
-})
-
-t.afterEach((ct) => {
-  writeFileSyncStub.restore()
 })
 
 t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is found', ct => {
   const {
     publicKey,
-    privateKey
+    privateKey,
+    privateKeyAdded,
+    envSrc,
+    keysSrc
   } = findOrCreatePublicKey(envFile, envKeysFile)
 
   ct.same(publicKey, '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba')
   ct.same(privateKey, 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
+
+  const envKeysOutput = [
+    '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
+    '#/ private decryption keys. DO NOT commit to source control /',
+    '#/     [how it works](https://dotenvx.com/encryption)       /',
+    '#/----------------------------------------------------------/',
+    '',
+    '# .env',
+    `DOTENV_PRIVATE_KEY="${privateKey}"`
+  ].join('\n')
+
+  ct.same(privateKeyAdded, false)
+  ct.same(envKeysOutput.trim(), keysSrc.trim())
 
   ct.end()
 })
@@ -37,10 +46,11 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found', ct => {
 
   const {
     publicKey,
-    privateKey
+    privateKey,
+    privateKeyAdded,
+    envSrc,
+    keysSrc
   } = findOrCreatePublicKey(envFile, envKeysFile)
-
-  t.ok(writeFileSyncStub.called, 'fs.writeFileSync() called')
 
   const envOutput = [
     '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
@@ -63,10 +73,9 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found', ct => {
     `DOTENV_PRIVATE_KEY="${privateKey}"`
   ].join('\n')
 
-  sinon.assert.callCount(writeFileSyncStub, 2)
-
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(0), envFile, envOutput + '\n')
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(1), envKeysFile, envKeysOutput + '\n')
+  ct.same(privateKeyAdded, true)
+  ct.same(envOutput.trim(), envSrc.trim())
+  ct.same(envKeysOutput.trim(), keysSrc.trim())
 
   ct.end()
 })
@@ -88,10 +97,11 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found but .env.keys
 
   const {
     publicKey,
-    privateKey
+    privateKey,
+    privateKeyAdded,
+    envSrc,
+    keysSrc
   } = findOrCreatePublicKey(envFile, envKeysFile)
-
-  t.ok(writeFileSyncStub.called, 'fs.writeFileSync() called')
 
   const envOutput = [
     '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
@@ -111,10 +121,9 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found but .env.keys
     `DOTENV_PRIVATE_KEY="${privateKey}"`
   ].join('\n')
 
-  sinon.assert.callCount(writeFileSyncStub, 2)
-
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(0), envFile, envOutput + '\n')
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(1), envKeysFile, envKeysOutput + '\n')
+  ct.same(privateKeyAdded, true)
+  ct.same(envOutput.trim(), envSrc.trim())
+  ct.same(envKeysOutput.trim(), keysSrc.trim())
 
   existsSyncStub.restore()
   ct.end()

@@ -1,7 +1,13 @@
 const { PrivateKey } = require('eciesjs')
 
-function keyPair () {
-  const kp = new PrivateKey()
+function keyPair (existingPrivateKey) {
+  let kp
+
+  if (existingPrivateKey) {
+    kp = new PrivateKey(Buffer.from(existingPrivateKey, 'hex'))
+  } else {
+    kp = new PrivateKey()
+  }
 
   const publicKey = kp.publicKey.toHex()
   const privateKey = kp.secret.toString('hex')

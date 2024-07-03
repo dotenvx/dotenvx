@@ -38,10 +38,16 @@ class Encrypt {
         const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         const {
           envSrc,
+          keysSrc,
           publicKey,
           privateKey,
           privateKeyAdded
         } = findOrCreatePublicKey(filepath, envKeysFilepath)
+
+        // handle writes
+        fs.writeFileSync(filepath, envSrc)
+        fs.writeFileSync(envKeysFilepath, keysSrc)
+
         row.publicKey = publicKey
         row.privateKey = privateKey
         row.privateKeyName = guessPrivateKeyName(filepath)
