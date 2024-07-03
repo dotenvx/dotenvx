@@ -41,11 +41,11 @@ class Encrypt {
           keysSrc,
           publicKey,
           privateKey,
+          publicKeyAdded,
           privateKeyAdded
         } = findOrCreatePublicKey(filepath, envKeysFilepath)
 
         // handle writes
-        fs.writeFileSync(filepath, envSrc)
         fs.writeFileSync(envKeysFilepath, keysSrc)
 
         row.publicKey = publicKey
@@ -56,7 +56,7 @@ class Encrypt {
         src = envSrc // src was potentially changed by findOrCreatePublicKey so we set it again here
 
         // track possible changes
-        row.changed = false
+        row.changed = publicKeyAdded
 
         // iterate over all non-encrypted values and encrypt them
         const parsed = dotenv.parse(src)
