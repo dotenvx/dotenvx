@@ -24,6 +24,17 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is found', ct => {
   ct.same(publicKey, '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba')
   ct.same(privateKey, 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
 
+  const envOutput = [
+    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+    '#/            public-key encryption for .env files          /',
+    '#/       [how it works](https://dotenvx.com/encryption)     /',
+    '#/----------------------------------------------------------/',
+    'DOTENV_PUBLIC_KEY="03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba"',
+    '',
+    '# .env',
+    'HELLO="encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=="'
+  ].join('\n')
+
   const envKeysOutput = [
     '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
     '#/ private decryption keys. DO NOT commit to source control /',
@@ -35,6 +46,7 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is found', ct => {
   ].join('\n')
 
   ct.same(privateKeyAdded, false)
+  ct.same(envOutput.trim(), envSrc.trim())
   ct.same(envKeysOutput.trim(), keysSrc.trim())
 
   ct.end()
