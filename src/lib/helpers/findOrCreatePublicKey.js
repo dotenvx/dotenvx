@@ -24,20 +24,23 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
   // parsed
   const envParsed = dotenv.parse(envSrc)
   const keysParsed = dotenv.parse(keysSrc)
+  const existingPublicKey = envParsed[publicKeyName]
+  const existingPrivateKey = keysParsed[privateKeyName]
 
   // if DOTENV_PUBLIC_KEY_${environment} already present then go no further
-  if (envParsed[publicKeyName] && envParsed[publicKeyName].length > 0) {
+  if (existingPublicKey && existingPublicKey.length > 0) {
     return {
       envSrc,
       keysSrc,
-      publicKey: envParsed[publicKeyName],
-      privateKey: keysParsed[privateKeyName],
+      publicKey: existingPublicKey,
+      privateKey: existingPrivateKey,
+      publicKeyAdded: false,
       privateKeyAdded: false
     }
   }
 
   // generate key pair
-  const { publicKey, privateKey } = keyPair()
+  const { publicKey, privateKey } = keyPair(existingPrivateKey)
 
   // publicKey
   const prependPublicKey = [
@@ -65,17 +68,20 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
 
   envSrc = `${prependPublicKey}\n${envSrc}`
   keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
-  keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
-  fs.writeFileSync(envFilepath, envSrc)
-  fs.writeFileSync(envKeysFilepath, keysSrc)
+  let privateKeyAdded = false
+  if (!existingPrivateKey) {
+    keysSrc = `${keysSrc}\n${appendPrivateKey}`
+    privateKeyAdded = true
+  }
 
   return {
     envSrc,
     keysSrc,
     publicKey,
     privateKey,
-    privateKeyAdded: true
+    publicKeyAdded: true,
+    privateKeyAdded
   }
 }
 

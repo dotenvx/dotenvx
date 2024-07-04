@@ -1,10 +1,10 @@
 const t = require('tap')
 const fs = require('fs')
 const sinon = require('sinon')
+const dotenv = require('dotenv')
 
 const findOrCreatePublicKey = require('../../../src/lib/helpers/findOrCreatePublicKey')
 
-let writeFileSyncStub
 let envFile = 'tests/monorepo/apps/encrypted/.env'
 let envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -12,36 +12,78 @@ t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
 
-  writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
+  envFile = 'tests/monorepo/apps/encrypted/.env'
+  envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 })
 
-t.afterEach((ct) => {
-  writeFileSyncStub.restore()
-})
+t.test('#findOrCreatePublicKey when .env.keys AND DOTENV_PUBLIC_KEY is found', ct => {
+  const existingPublicKey = dotenv.parse(fs.readFileSync(envFile)).DOTENV_PUBLIC_KEY
+  const existingPrivateKey = dotenv.parse(fs.readFileSync(envKeysFile)).DOTENV_PRIVATE_KEY
 
-t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is found', ct => {
   const {
     publicKey,
-    privateKey
+    privateKey,
+    publicKeyAdded,
+    privateKeyAdded,
+    envSrc,
+    keysSrc
   } = findOrCreatePublicKey(envFile, envKeysFile)
 
   ct.same(publicKey, '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba')
+  ct.same(publicKey, existingPublicKey)
+  ct.same(publicKeyAdded, false)
   ct.same(privateKey, 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
+  ct.same(privateKey, existingPrivateKey)
+  ct.same(privateKeyAdded, false)
+
+  // double check outputs
+  const envOutput = [
+    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+    '#/            public-key encryption for .env files          /',
+    '#/       [how it works](https://dotenvx.com/encryption)     /',
+    '#/----------------------------------------------------------/',
+    'DOTENV_PUBLIC_KEY="03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba"',
+    '',
+    '# .env',
+    'HELLO="encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=="'
+  ].join('\n')
+
+  const envKeysOutput = [
+    '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
+    '#/ private decryption keys. DO NOT commit to source control /',
+    '#/     [how it works](https://dotenvx.com/encryption)       /',
+    '#/----------------------------------------------------------/',
+    '',
+    '# .env',
+    `DOTENV_PRIVATE_KEY="${privateKey}"`
+  ].join('\n')
+
+  ct.same(envOutput.trim(), envSrc.trim())
+  ct.same(envKeysOutput.trim(), keysSrc.trim())
 
   ct.end()
 })
 
-t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found', ct => {
+t.test('#findOrCreatePublicKey when no .env.keys file and no DOTENV_PUBLIC_KEY', ct => {
   envFile = 'tests/monorepo/apps/unencrypted/.env'
   envKeysFile = 'tests/monorepo/apps/unencrypted/.env.keys'
 
+  const existingPublicKey = dotenv.parse(fs.readFileSync(envFile)).DOTENV_PUBLIC_KEY
+  ct.same(existingPublicKey, undefined)
+
   const {
     publicKey,
-    privateKey
+    privateKey,
+    privateKeyAdded,
+    envSrc,
+    keysSrc
   } = findOrCreatePublicKey(envFile, envKeysFile)
 
-  t.ok(writeFileSyncStub.called, 'fs.writeFileSync() called')
+  ct.ok(publicKey)
+  ct.ok(privateKey)
+  ct.same(privateKeyAdded, true)
 
+  // double check outputs
   const envOutput = [
     '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
     '#/            public-key encryption for .env files          /',
@@ -63,15 +105,13 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found', ct => {
     `DOTENV_PRIVATE_KEY="${privateKey}"`
   ].join('\n')
 
-  sinon.assert.callCount(writeFileSyncStub, 2)
-
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(0), envFile, envOutput + '\n')
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(1), envKeysFile, envKeysOutput + '\n')
+  ct.same(envOutput.trim(), envSrc.trim())
+  ct.same(envKeysOutput.trim(), keysSrc.trim())
 
   ct.end()
 })
 
-t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found but .env.keys file is already found', ct => {
+t.test('#findOrCreatePublicKey when .env.keys found but with no DOTENV_PRIVATE_KEY and no DOTENV_PUBLIC_KEY', ct => {
   envFile = 'tests/monorepo/apps/unencrypted/.env'
   envKeysFile = 'tests/monorepo/apps/unencrypted/.env.keys'
 
@@ -88,11 +128,17 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found but .env.keys
 
   const {
     publicKey,
-    privateKey
+    privateKey,
+    privateKeyAdded,
+    envSrc,
+    keysSrc
   } = findOrCreatePublicKey(envFile, envKeysFile)
 
-  t.ok(writeFileSyncStub.called, 'fs.writeFileSync() called')
+  ct.ok(publicKey)
+  ct.ok(privateKey)
+  ct.same(privateKeyAdded, true)
 
+  // double check outputs
   const envOutput = [
     '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
     '#/            public-key encryption for .env files          /',
@@ -111,11 +157,77 @@ t.test('#findOrCreatePublicKey when DOTENV_PUBLIC_KEY is NOT found but .env.keys
     `DOTENV_PRIVATE_KEY="${privateKey}"`
   ].join('\n')
 
-  sinon.assert.callCount(writeFileSyncStub, 2)
-
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(0), envFile, envOutput + '\n')
-  sinon.assert.calledWithExactly(writeFileSyncStub.getCall(1), envKeysFile, envKeysOutput + '\n')
+  ct.same(envOutput.trim(), envSrc.trim())
+  ct.same(envKeysOutput.trim(), keysSrc.trim())
 
   existsSyncStub.restore()
+  sandbox.restore()
+
+  ct.end()
+})
+
+t.test('#findOrCreatePublicKey when .env.keys found but no DOTENV_PUBLIC_KEY', ct => {
+  const existsSyncStub = sinon.stub(fs, 'existsSync').returns(true)
+  const originalReadFileSync = fs.readFileSync
+  const sandbox = sinon.createSandbox()
+  sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
+    if (filepath === envFile) {
+      return 'HELLO="unencrypted"\n'
+    } else {
+      return originalReadFileSync(filepath, options)
+    }
+  })
+
+  const existingPublicKey = dotenv.parse(fs.readFileSync(envFile)).DOTENV_PUBLIC_KEY
+  const existingPrivateKey = dotenv.parse(fs.readFileSync(envKeysFile)).DOTENV_PRIVATE_KEY
+  console.log('envKeysFile', envKeysFile)
+
+  ct.same(existingPublicKey, undefined)
+  console.log('existingPrivateKey', existingPrivateKey)
+  ct.ok(existingPrivateKey)
+
+  const {
+    publicKey,
+    privateKey,
+    publicKeyAdded,
+    privateKeyAdded,
+    envSrc,
+    keysSrc
+  } = findOrCreatePublicKey(envFile, envKeysFile)
+
+  ct.notSame(publicKey, existingPublicKey)
+  ct.same(publicKeyAdded, true)
+  ct.same(privateKey, 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
+  ct.same(privateKey, existingPrivateKey)
+  ct.same(privateKeyAdded, false)
+
+  // double check outputs
+  const envOutput = [
+    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+    '#/            public-key encryption for .env files          /',
+    '#/       [how it works](https://dotenvx.com/encryption)     /',
+    '#/----------------------------------------------------------/',
+    'DOTENV_PUBLIC_KEY="03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba"',
+    '',
+    '# .env',
+    'HELLO="unencrypted"'
+  ].join('\n')
+
+  const envKeysOutput = [
+    '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
+    '#/ private decryption keys. DO NOT commit to source control /',
+    '#/     [how it works](https://dotenvx.com/encryption)       /',
+    '#/----------------------------------------------------------/',
+    '',
+    '# .env',
+    `DOTENV_PRIVATE_KEY="${privateKey}"`
+  ].join('\n')
+
+  ct.same(envOutput.trim(), envSrc.trim())
+  ct.same(envKeysOutput.trim(), keysSrc.trim())
+
+  existsSyncStub.restore()
+  sandbox.restore()
+
   ct.end()
 })

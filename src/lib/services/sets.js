@@ -43,14 +43,21 @@ class Sets {
           const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
           const {
             envSrc,
+            keysSrc,
             publicKey,
             privateKey,
+            publicKeyAdded,
             privateKeyAdded
           } = findOrCreatePublicKey(filepath, envKeysFilepath)
-          src = envSrc // overwrite the original read (because findOrCreatePublicKey) rewrite to it
+
+          // handle .env.keys write
+          fs.writeFileSync(envKeysFilepath, keysSrc)
+
+          src = envSrc // src was potentially modified by findOrCreatePublicKey so we set it again here
+
           value = encryptValue(value, publicKey)
 
-          row.changed = true // track change
+          row.changed = publicKeyAdded // track change
           row.encryptedValue = value
           row.publicKey = publicKey
           row.privateKey = privateKey

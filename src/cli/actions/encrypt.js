@@ -11,6 +11,18 @@ async function encrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  // stdout - should not have a try so that exit codes can surface to stdout
+  if (options.stdout) {
+    const {
+      processedEnvFiles
+    } = main.encrypt(options.envFile, options.key)
+
+    for (const processedEnvFile of processedEnvFiles) {
+      process.stdout.write(processedEnvFile.envSrc)
+    }
+    process.exit(0) // exit early
+  }
+
   try {
     const {
       processedEnvFiles,

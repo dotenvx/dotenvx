@@ -38,19 +38,23 @@ class Encrypt {
         const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         const {
           envSrc,
+          keysSrc,
           publicKey,
           privateKey,
+          publicKeyAdded,
           privateKeyAdded
         } = findOrCreatePublicKey(filepath, envKeysFilepath)
+
+        // handle .env.keys write
+        fs.writeFileSync(envKeysFilepath, keysSrc)
+
+        src = envSrc // src was potentially modified by findOrCreatePublicKey so we set it again here
+
+        row.changed = publicKeyAdded // track change
         row.publicKey = publicKey
         row.privateKey = privateKey
-        row.privateKeyName = guessPrivateKeyName(filepath)
         row.privateKeyAdded = privateKeyAdded
-
-        src = envSrc // src was potentially changed by findOrCreatePublicKey so we set it again here
-
-        // track possible changes
-        row.changed = false
+        row.privateKeyName = guessPrivateKeyName(filepath)
 
         // iterate over all non-encrypted values and encrypt them
         const parsed = dotenv.parse(src)
