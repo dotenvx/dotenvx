@@ -8,13 +8,13 @@ const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 
 const guessPrivateKeyName = require('./guessPrivateKeyName')
 
-function searchProcessEnv(privateKeyName) {
+function searchProcessEnv (privateKeyName) {
   if (process.env[privateKeyName] && process.env[privateKeyName].length > 0) {
     return process.env[privateKeyName]
   }
 }
 
-function searchKeysFile(privateKeyName, envFilepath) {
+function searchKeysFile (privateKeyName, envFilepath) {
   const directory = path.dirname(envFilepath)
   const envKeysFilepath = path.resolve(directory, '.env.keys')
 
