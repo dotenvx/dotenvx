@@ -1,5 +1,4 @@
 const t = require('tap')
-const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const which = require('which')
@@ -12,7 +11,7 @@ const version = packageJson.version
 const tempDir = os.tmpdir()
 const originalDir = process.cwd()
 
-function execShell(commands) {
+function execShell (commands) {
   return execSync(commands, {
     encoding: 'utf8',
     shell: true
