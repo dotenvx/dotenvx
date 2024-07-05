@@ -92,6 +92,34 @@ Hello local`) // --debug
   ct.end()
 })
 
+t.test('#run - multiple .env files --overload', ct => {
+  execShell(`
+    echo "HELLO=local" > .env.local
+    echo "HELLO=World" > .env
+    echo "console.log('Hello ' + process.env.HELLO)" > index.js
+  `)
+
+  const command = `${node} index.js`
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --overload -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello World`)
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --overload --quiet -- ${command}`), 'Hello World') // --quiet
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --overload --debug -- ${command}`), `Setting log level to debug
+process command [${node} index.js]
+options: {"env":[],"envFile":[".env.local",".env"],"envVaultFile":[],"overload":true}
+loading env from .env.local (${tempDir}/.env.local)
+{"HELLO":"local"}
+HELLO set
+HELLO set to local
+loading env from .env (${tempDir}/.env)
+{"HELLO":"World"}
+HELLO set
+HELLO set to World
+[dotenvx@${version}] injecting env (1) from .env.local, .env
+executing process command [${node} index.js]
+expanding process command to [${node} index.js]
+Hello World`) // --debug
+
+  ct.end()
+})
 
 t.test('#run - Variable Expansion', ct => {
   execShell(`
