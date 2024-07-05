@@ -32,6 +32,12 @@ t.afterEach((ct) => {
   process.chdir(originalDir)
 })
 
+t.test('#--version', ct => {
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} --version`), version)
+
+  ct.end()
+})
+
 t.test('#run', ct => {
   execShell(`
     echo "HELLO=World" > .env
@@ -40,7 +46,6 @@ t.test('#run', ct => {
 
   const command = `${node} index.js`
   ct.equal(execShell(`${node} index.js`), 'Hello undefined')
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} --version`), version)
   ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env\nHello World`)
   ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'Hello World') // --quiet
   ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --debug -- ${command}`), `Setting log level to debug
@@ -57,6 +62,36 @@ Hello World`) // --debug
 
   ct.end()
 })
+
+t.test('#run - multiple .env files', ct => {
+  execShell(`
+    echo "HELLO=local" > .env.local
+    echo "HELLO=World" > .env
+    echo "console.log('Hello ' + process.env.HELLO)" > index.js
+  `)
+
+  const command = `${node} index.js`
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello local`)
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --quiet -- ${command}`), 'Hello local') // --quiet
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --debug -- ${command}`), `Setting log level to debug
+process command [${node} index.js]
+options: {"env":[],"envFile":[".env.local",".env"],"envVaultFile":[]}
+loading env from .env.local (${tempDir}/.env.local)
+{"HELLO":"local"}
+HELLO set
+HELLO set to local
+loading env from .env (${tempDir}/.env)
+{"HELLO":"World"}
+HELLO pre-exists (protip: use --overload to override)
+HELLO pre-exists as local (protip: use --overload to override)
+[dotenvx@${version}] injecting env (1) from .env.local, .env
+executing process command [${node} index.js]
+expanding process command to [${node} index.js]
+Hello local`) // --debug
+
+  ct.end()
+})
+
 
 t.test('#run - Variable Expansion', ct => {
   execShell(`
