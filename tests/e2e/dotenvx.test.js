@@ -133,3 +133,17 @@ t.test('#run - Variable Expansion', ct => {
 
   ct.end()
 })
+
+t.test('#run - Command Substitution', ct => {
+  execShell(`
+    echo 'DATABASE_URL="postgres://\$(whoami)@localhost/my_database"' > .env
+    echo "console.log('DATABASE_URL', process.env.DATABASE_URL)" > index.js
+  `)
+
+  const command = `${node} index.js`
+  const whoami = execShell('whoami')
+  ct.equal(execShell(`${node} index.js`), 'DATABASE_URL undefined')
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), `DATABASE_URL postgres://${whoami}@localhost/my_database`)
+
+  ct.end()
+})
