@@ -1,4 +1,5 @@
 const t = require('tap')
+const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const which = require('which')
@@ -8,7 +9,7 @@ const node = path.resolve(which.sync('node')) // /opt/homebrew/node
 const packageJson = require('../../src/lib/helpers/packageJson')
 const version = packageJson.version
 
-const tempDir = os.tmpdir()
+const tempDir = fs.realpathSync(os.tmpdir())
 const originalDir = process.cwd()
 
 function execShell (commands) {
@@ -45,7 +46,7 @@ t.test('#run', ct => {
   ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --debug -- ${command}`), `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[]}
-loading env from .env (/private${tempDir}/.env)
+loading env from .env (${tempDir}/.env)
 {"HELLO":"World"}
 HELLO set
 HELLO set to World
@@ -53,6 +54,19 @@ HELLO set to World
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
 Hello World`) // --debug
+
+  ct.end()
+})
+
+t.test('#run - Variable Expansion', ct => {
+  execShell(`
+    echo 'USERNAME="username"\nDATABASE_URL="postgres://\${USERNAME}@localhost/my_database"' > .env
+    echo "console.log('DATABASE_URL', process.env.DATABASE_URL)" > index.js
+  `)
+
+  const command = `${node} index.js`
+  ct.equal(execShell(`${node} index.js`), 'DATABASE_URL undefined')
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'DATABASE_URL postgres://username@localhost/my_database')
 
   ct.end()
 })
