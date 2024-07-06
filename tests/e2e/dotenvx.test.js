@@ -9,7 +9,8 @@ const { execSync } = require('child_process')
 const packageJson = require('../../src/lib/helpers/packageJson')
 const version = packageJson.version
 
-const tempDir = fs.realpathSync(os.tmpdir())
+let tempDir = ''
+const osTempDir = fs.realpathSync(os.tmpdir())
 const originalDir = process.cwd()
 
 const node = path.resolve(which.sync('node')) // /opt/homebrew/node
@@ -25,6 +26,8 @@ function execShell (commands) {
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
+
+  tempDir = fs.mkdtempSync(path.join(osTempDir, 'dotenvx-test-'))
 
   // go to tempDir
   process.chdir(tempDir)
@@ -181,7 +184,6 @@ Hello String`) // --debug
 
 t.test('#run - encrypted .env', ct => {
   execShell(`
-    rm .env
     touch .env
     ${node} ${dotenvx} set HELLO encrypted
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -212,7 +214,6 @@ Hello encrypted`) // --debug
 
 t.test('#run - encrypted .env with no .env.keys', ct => {
   execShell(`
-    rm .env
     touch .env
     ${node} ${dotenvx} set HELLO encrypted
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -246,7 +247,6 @@ Hello ${encrypted}`) // --debug
 
 t.test('#run - encrypted .env with no .env.keys, with DOTENV_PRIVATE_KEY', ct => {
   execShell(`
-    rm .env
     touch .env
     ${node} ${dotenvx} set HELLO encrypted
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -269,7 +269,6 @@ t.test('#run - encrypted .env with no .env.keys, with DOTENV_PRIVATE_KEY', ct =>
 
 t.test('#run - encrypted .env.production with no .env.keys, with DOTENV_PRIVATE_KEY_PRODUCTION', ct => {
   execShell(`
-    rm .env.production
     touch .env.production
     ${node} ${dotenvx} set HELLO production -f .env.production
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -325,7 +324,6 @@ t.test('#get --overload', ct => {
 
 t.test('#get (json)', ct => {
   execShell(`
-    rm .env
     echo "HELLO=World" > .env
   `)
 
@@ -336,7 +334,6 @@ t.test('#get (json)', ct => {
 
 t.test('#run - encrypt', ct => {
   execShell(`
-    rm .env
     echo "HELLO=World" > .env
   `)
 
@@ -355,8 +352,6 @@ t.test('#run - encrypt', ct => {
 
 t.test('#run - encrypt -k', ct => {
   execShell(`
-    rm .env
-    rm .env.keys
     echo "HELLO=World\nHI=thar" > .env
   `)
 
