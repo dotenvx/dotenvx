@@ -294,7 +294,6 @@ t.test('#run - encrypted .env.production with no .env.keys, with DOTENV_PRIVATE_
 
 t.test('#get', ct => {
   execShell(`
-    rm .env
     echo "HELLO=World" > .env
   `)
 
@@ -305,7 +304,6 @@ t.test('#get', ct => {
 
 t.test('#get --env', ct => {
   execShell(`
-    rm .env
     echo "HELLO=World" > .env
   `)
 
@@ -318,8 +316,6 @@ t.test('#get --env', ct => {
 
 t.test('#get --overload', ct => {
   execShell(`
-    rm .env
-    rm .env.production
     echo "HELLO=World" > .env
     echo "HELLO=production" > .env.production
   `)
