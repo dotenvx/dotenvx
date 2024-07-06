@@ -328,3 +328,38 @@ t.test('#get --overload', ct => {
 
   ct.end()
 })
+
+t.test('#get (json)', ct => {
+  execShell(`
+    rm .env
+    echo "HELLO=World" > .env
+  `)
+
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get`), '{"HELLO":"World"}')
+
+  ct.end()
+})
+
+t.test('#run - encrypt', ct => {
+  execShell(`
+    rm .env
+    rm .env.keys
+    echo "HELLO=World" > .env
+  `)
+
+  // const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
+  // const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
+
+  const output = execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} encrypt`)
+
+  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
+  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
+
+  ct.equal(output, `✔ encrypted (.env)
+✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
+ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
+ℹ run [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
+
+  ct.end()
+})
+
