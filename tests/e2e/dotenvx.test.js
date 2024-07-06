@@ -3,6 +3,7 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const which = require('which')
+const dotenv = require('dotenv')
 const { execSync } = require('child_process')
 
 const node = path.resolve(which.sync('node')) // /opt/homebrew/node
@@ -15,7 +16,11 @@ const originalDir = process.cwd()
 function execShell (commands) {
   return execSync(commands, {
     encoding: 'utf8',
-    shell: true
+    shell: true,
+    env: {
+      ...process.env,
+      PATH: process.env.PATH // Ensure the PATH environment variable is passed
+    }
   }).trim()
 }
 
@@ -172,6 +177,102 @@ HELLO pre-exists as String (protip: use --overload to override)
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
 Hello String`) // --debug
+
+  ct.end()
+})
+
+t.test('#run - encrypted .env', ct => {
+  execShell(`
+    rm .env
+    touch .env
+    ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} set HELLO encrypted
+    echo "console.log('Hello ' + process.env.HELLO)" > index.js
+  `)
+
+  const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
+  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
+
+  const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
+  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
+
+  const command = `${node} index.js`
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'Hello encrypted') // --quiet
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --debug -- ${command}`), `Setting log level to debug
+process command [${node} index.js]
+options: {"env":[],"envFile":[],"envVaultFile":[]}
+loading env from .env (${tempDir}/.env)
+{"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"encrypted"}
+DOTENV_PUBLIC_KEY set
+DOTENV_PUBLIC_KEY set to ${DOTENV_PUBLIC_KEY}
+HELLO set
+HELLO set to encrypted
+[dotenvx@${version}] injecting env (2) from .env
+executing process command [${node} index.js]
+expanding process command to [${node} index.js]
+Hello encrypted`) // --debug
+
+  ct.end()
+})
+
+t.test('#run - encrypted .env with no .env.keys', ct => {
+  execShell(`
+    rm .env
+    touch .env
+    ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} set HELLO encrypted
+    echo "console.log('Hello ' + process.env.HELLO)" > index.js
+  `)
+
+  const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
+  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
+
+  const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
+  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
+  const encrypted = parsedEnv.HELLO
+
+  execShell(`rm .env.keys`)
+
+  const command = `${node} index.js`
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), `Hello ${encrypted}`) // --quiet
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --debug -- ${command}`), `Setting log level to debug
+process command [${node} index.js]
+options: {"env":[],"envFile":[],"envVaultFile":[]}
+loading env from .env (${tempDir}/.env)
+{"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"${encrypted}"}
+DOTENV_PUBLIC_KEY set
+DOTENV_PUBLIC_KEY set to ${DOTENV_PUBLIC_KEY}
+HELLO set
+HELLO set to ${encrypted}
+[dotenvx@${version}] injecting env (2) from .env
+executing process command [${node} index.js]
+expanding process command to [${node} index.js]
+Hello ${encrypted}`) // --debug
+
+  ct.end()
+})
+
+t.test('#run - encrypted .env with no .env.keys, with DOTENV_PRIVATE_KEY', ct => {
+  execShell(`
+    rm .env
+    touch .env
+    ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} set HELLO encrypted
+    echo "console.log('Hello ' + process.env.HELLO)" > index.js
+  `)
+
+  const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
+  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
+
+  const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
+  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
+
+  execShell(`rm .env.keys`) // no keys file
+
+  process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY // set already on server
+
+  const command = `${node} index.js`
+  ct.equal(execShell(`DOTENV_PRIVATE_KEY=${DOTENV_PRIVATE_KEY} ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'Hello encrypted') // --quiet
 
   ct.end()
 })
