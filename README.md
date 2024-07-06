@@ -1247,8 +1247,9 @@ More examples
     get [options] [key]               return a single environment variable
     set [options] <KEY> <value>       set a single environment variable
     encrypt [options]                 convert .env file(s) to encrypted .env file(s)
+    decrypt [options]                 convert encrypted .env file(s) to plain .env file(s)
     pro                               🏆 pro
-    ext                               🔌 extensions
+    ext [command] [args...]           🔌 extensions
     help [command]                    display help for command
   ```
 
