@@ -343,7 +343,6 @@ t.test('#get (json)', ct => {
 t.test('#run - encrypt', ct => {
   execShell(`
     rm .env
-    rm .env.keys
     echo "HELLO=World" > .env
   `)
 
