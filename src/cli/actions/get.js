@@ -21,17 +21,18 @@ function get (key) {
   const value = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
 
   if (typeof value === 'object' && value !== null) {
+    let space = 0
     if (options.prettyPrint) {
-      logger.blank0(JSON.stringify(value, null, 2))
-    } else {
-      logger.blank0(value)
+      space = 2
     }
+
+    process.stdout.write(JSON.stringify(value, null, space))
   } else {
     if (value === undefined) {
-      logger.blank0('')
+      process.stdout.write('')
       process.exit(1)
     } else {
-      logger.blank0(value)
+      process.stdout.write(value)
     }
   }
 }
