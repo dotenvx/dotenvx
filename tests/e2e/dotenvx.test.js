@@ -363,3 +363,30 @@ t.test('#run - encrypt', ct => {
   ct.end()
 })
 
+t.test('#run - encrypt -k', ct => {
+  execShell(`
+    rm .env
+    rm .env.keys
+    echo "HELLO=World\nHI=thar" > .env
+  `)
+
+  const output = execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} encrypt -k HI`)
+
+  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
+  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
+
+  ct.equal(output, `✔ encrypted (.env)
+✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
+ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
+ℹ run [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
+
+  execShell('rm .env.keys')
+
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO`), 'World') // unencrypted still
+  ct.match(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HI`), /^encrypted:/, 'HI should be encrypted')
+
+  process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HI`), 'thar')
+
+  ct.end()
+})
