@@ -436,14 +436,16 @@ t.test('#run - decrypt --stdout', ct => {
   execShell(`${dotenvx} encrypt`)
   const DOTENV_PUBLIC_KEY = execShell(`${dotenvx} get DOTENV_PUBLIC_KEY`)
 
-  const output = execShell(`${dotenvx} decrypt --stdout`)
-  ct.equal(output, `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
+  execShell(`${dotenvx} decrypt --stdout > filename.txt`)
+
+  ct.equal(fs.readFileSync(path.join(tempDir, 'filename.txt'), { encoding: 'utf8' }), `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
 #/            public-key encryption for .env files          /
 #/       [how it works](https://dotenvx.com/encryption)     /
 #/----------------------------------------------------------/
 DOTENV_PUBLIC_KEY="${DOTENV_PUBLIC_KEY}"
 
 # .env
-HELLO="World"`)
+HELLO="World"\n`)
+
   ct.end()
 })
