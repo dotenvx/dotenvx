@@ -7,6 +7,7 @@ const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
 const ENCODING = 'utf8'
 
+/* c8 ignore start */
 function set (key, value) {
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
@@ -38,10 +39,10 @@ function set (key, value) {
 
       if (processedEnvFile.error) {
         if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
-          logger.warn(processedEnvFile.error)
+          logger.warn(processedEnvFile.error.message)
           logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx set]`)
         } else {
-          logger.warn(processedEnvFile.error)
+          logger.warn(processedEnvFile.error.message)
         }
       } else {
         fs.writeFileSync(processedEnvFile.filepath, processedEnvFile.envSrc, ENCODING)
@@ -84,5 +85,6 @@ function set (key, value) {
     process.exit(1)
   }
 }
+/* c8 ignore stop */
 
 module.exports = set

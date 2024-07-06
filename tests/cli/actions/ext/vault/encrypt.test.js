@@ -6,15 +6,14 @@ const dotenv = require('dotenv')
 const main = require('../../../../../src/lib/main')
 const vaultEncrypt = require('../../../../../src/cli/actions/ext/vault/encrypt')
 
-t.test('vaultEncrypt (when .env file does not exist)', async ct => {
+t.test('vaultEncrypt (when .env file does not exist)', ct => {
   const optsStub = sinon.stub().returns({})
   const exitStub = sinon.stub(process, 'exit')
   const fakeContext = {
     opts: optsStub
   }
 
-  // Call the encrypt function with the fake context
-  await vaultEncrypt.call(fakeContext, '.')
+  vaultEncrypt.call(fakeContext, '.')
 
   ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
 
@@ -23,7 +22,7 @@ t.test('vaultEncrypt (when .env file does not exist)', async ct => {
   ct.end()
 })
 
-t.test('vaultEncrypt (when different error not having help or code occurs)', async ct => {
+t.test('vaultEncrypt (when different error not having help or code occurs)', ct => {
   const mainStub = sinon.stub(main, 'vaultEncrypt').throws(new Error('other error'))
   const exitStub = sinon.stub(process, 'exit')
 
@@ -32,8 +31,7 @@ t.test('vaultEncrypt (when different error not having help or code occurs)', asy
     opts: optsStub
   }
 
-  // Call the vaultEncrypt function with the fake context
-  await vaultEncrypt.call(fakeContext, '.')
+  vaultEncrypt.call(fakeContext, '.')
 
   ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
 
@@ -43,15 +41,14 @@ t.test('vaultEncrypt (when different error not having help or code occurs)', asy
   ct.end()
 })
 
-t.test('vaultEncrypt (when .env file exists)', async ct => {
+t.test('vaultEncrypt (when .env file exists)', ct => {
   // setup
   try { fs.rmdirSync('tmp', { recursive: true }) } catch (_e) {}
   fs.mkdirSync('tmp')
   fs.writeFileSync('tmp/.env', 'HELLO=World')
 
-  // run vaultEncrypt
   const fakeContext = { opts: sinon.stub().returns({}) }
-  await vaultEncrypt.call(fakeContext, 'tmp')
+  vaultEncrypt.call(fakeContext, 'tmp')
 
   const envVault = dotenv.configDotenv({ path: 'tmp/.env.vault' }).parsed
   const envKeys = dotenv.configDotenv({ path: 'tmp/.env.keys' }).parsed
@@ -65,7 +62,7 @@ t.test('vaultEncrypt (when .env file exists)', async ct => {
   ct.end()
 })
 
-t.test('vaultEncrypt (when .env and .env.keys exists)', async ct => {
+t.test('vaultEncrypt (when .env and .env.keys exists)', ct => {
   // setup
   try { fs.rmdirSync('tmp', { recursive: true }) } catch (_e) {}
   fs.mkdirSync('tmp')
@@ -74,7 +71,7 @@ t.test('vaultEncrypt (when .env and .env.keys exists)', async ct => {
 
   // run vaultEncrypt
   const fakeContext = { opts: sinon.stub().returns({}) }
-  await vaultEncrypt.call(fakeContext, 'tmp')
+  vaultEncrypt.call(fakeContext, 'tmp')
 
   const envVault = dotenv.configDotenv({ path: 'tmp/.env.vault' }).parsed
   const envKeys = dotenv.configDotenv({ path: 'tmp/.env.keys' }).parsed
@@ -88,7 +85,7 @@ t.test('vaultEncrypt (when .env and .env.keys exists)', async ct => {
   ct.end()
 })
 
-t.test('vaultEncrypt (when .env, .env.keys, and .env.vault exists)', async ct => {
+t.test('vaultEncrypt (when .env, .env.keys, and .env.vault exists)', ct => {
   // setup
   try { fs.rmdirSync('tmp', { recursive: true }) } catch (_e) {}
   fs.mkdirSync('tmp')
@@ -98,7 +95,7 @@ t.test('vaultEncrypt (when .env, .env.keys, and .env.vault exists)', async ct =>
 
   // run vaultEncrypt
   const fakeContext = { opts: sinon.stub().returns({}) }
-  await vaultEncrypt.call(fakeContext, 'tmp')
+  vaultEncrypt.call(fakeContext, 'tmp')
 
   const envVault = dotenv.configDotenv({ path: 'tmp/.env.vault' }).parsed
   const envKeys = dotenv.configDotenv({ path: 'tmp/.env.keys' }).parsed
@@ -112,7 +109,7 @@ t.test('vaultEncrypt (when .env, .env.keys, and .env.vault exists)', async ct =>
   ct.end()
 })
 
-t.test('vaultEncrypt (when .env, .env.keys, and .env.vault exists but .env.vault ciphertext is invalid)', async ct => {
+t.test('vaultEncrypt (when .env, .env.keys, and .env.vault exists but .env.vault ciphertext is invalid)', ct => {
   // setup
   try { fs.rmdirSync('tmp', { recursive: true }) } catch (_e) {}
   fs.mkdirSync('tmp')
@@ -124,7 +121,7 @@ t.test('vaultEncrypt (when .env, .env.keys, and .env.vault exists but .env.vault
   const fakeContext = { opts: sinon.stub().returns({}) }
 
   // run vaultEncrypt
-  await vaultEncrypt.call(fakeContext, 'tmp')
+  vaultEncrypt.call(fakeContext, 'tmp')
 
   ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
 

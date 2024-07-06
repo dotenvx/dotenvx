@@ -3,16 +3,9 @@ const path = require('path')
 
 const main = require('./../../../../lib/main')
 const { logger } = require('./../../../../shared/logger')
-const { createSpinner } = require('./../../../../shared/createSpinner')
-const sleep = require('./../../../../lib/helpers/sleep')
 const pluralize = require('./../../../../lib/helpers/pluralize')
 
-const spinner = createSpinner('encrypting')
-
-async function encrypt (directory) {
-  spinner.start()
-  await sleep(500) // better dx
-
+function encrypt (directory) {
   logger.debug(`directory: ${directory}`)
 
   const options = this.opts()
@@ -50,14 +43,14 @@ async function encrypt (directory) {
     fs.writeFileSync(path.resolve(directory, '.env.vault'), dotenvVaultFile)
 
     if (addedDotenvFilenames.length > 0) {
-      spinner.succeed(`encrypted to .env.vault (${addedDotenvFilenames})`)
+      logger.success(`encrypted to .env.vault (${addedDotenvFilenames})`)
       logger.help2('ℹ commit .env.vault to code: [git commit -am ".env.vault"]')
     } else {
-      spinner.done(`no changes (${envFile})`)
+      logger.blank(`no changes (${envFile})`)
     }
 
     if (addedKeys.length > 0) {
-      spinner.succeed(`${pluralize('key', addedKeys.length)} added to .env.keys (${addedKeys})`)
+      logger.success(`${pluralize('key', addedKeys.length)} added to .env.keys (${addedKeys})`)
     }
 
     if (addedVaults.length > 0) {
@@ -68,7 +61,7 @@ async function encrypt (directory) {
       logger.help2(`ℹ run [DOTENV_KEY='${tryKey}' dotenvx run -- yourcommand] to test decryption locally`)
     }
   } catch (error) {
-    spinner.fail(error.message)
+    logger.error(error.message)
     if (error.help) {
       logger.help(error.help)
     }

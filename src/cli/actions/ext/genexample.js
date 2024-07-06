@@ -1,18 +1,10 @@
 const fs = require('fs')
 const main = require('./../../../lib/main')
 const { logger } = require('./../../../shared/logger')
-const { createSpinner } = require('./../../../shared/createSpinner')
-
-const sleep = require('./../../../lib/helpers/sleep')
-
-const spinner = createSpinner('generating')
 
 const ENCODING = 'utf8'
 
-async function genexample (directory) {
-  spinner.start()
-  await sleep(500) // better dx
-
+function genexample (directory) {
   logger.debug(`directory: ${directory}`)
 
   const options = this.opts()
@@ -34,12 +26,12 @@ async function genexample (directory) {
     fs.writeFileSync(exampleFilepath, envExampleFile, ENCODING)
 
     if (addedKeys.length > 0) {
-      spinner.succeed(`updated .env.example (${addedKeys.length})`)
+      logger.success(`updated .env.example (${addedKeys.length})`)
     } else {
-      spinner.done('no changes (.env.example)')
+      logger.blank('no changes (.env.example)')
     }
   } catch (error) {
-    spinner.fail(error.message)
+    logger.error(error.message)
     if (error.help) {
       logger.help(error.help)
     }

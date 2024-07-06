@@ -13,7 +13,7 @@ function isIgnoringDotenvKeys () {
     return false
   }
 
-  return false
+  return true
 }
 
 module.exports = isIgnoringDotenvKeys

@@ -1,25 +1,28 @@
-const execa = require('execa')
+const childProcess = require('child_process')
 
 const { logger } = require('./../../../shared/logger')
 
-async function scan () {
+function scan () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    await execa('gitleaks', ['version'])
+    // redirect stderr to stdout to capture and ignore it
+    childProcess.execSync('gitleaks version', { stdio: ['ignore', 'pipe', 'ignore'] })
   } catch (error) {
-    logger.error('gitleaks command not found')
+    logger.error('gitleaks: command not found')
     logger.help('? install gitleaks:      [brew install gitleaks]')
     logger.help2('? other install options: [https://github.com/gitleaks/gitleaks]')
     process.exit(1)
+    return
   }
 
   try {
-    const { stderr } = await execa('gitleaks', ['detect', '-v'])
-    logger.blank(stderr) // gitleaks sends output as stderr for strange reason
+    const output = childProcess.execSync('gitleaks detect -v 2>&1', { stdio: 'pipe' }).toString() // gitleaks sends output as stderr for strange reason
+    logger.blank(output)
   } catch (error) {
     logger.error(error.message)
+
     process.exit(1)
   }
 }

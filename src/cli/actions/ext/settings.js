@@ -11,13 +11,14 @@ function settings (key = null) {
   const value = main.settings(key)
 
   if (typeof value === 'object' && value !== null) {
+    let space = 0
     if (options.prettyPrint) {
-      logger.blank(JSON.stringify(value, null, 2))
-    } else {
-      logger.blank(value)
+      space = 2
     }
+
+    process.stdout.write(JSON.stringify(value, null, space))
   } else {
-    logger.blank(value)
+    process.stdout.write(value)
   }
 }
 
