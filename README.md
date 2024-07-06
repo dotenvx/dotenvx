@@ -660,6 +660,16 @@ More examples
   Note the `DOTENV_PRIVATE_KEY_CI` (and any `DOTENV_PRIVATE_KEY*`) can take multiple private keys by simply comma separating them.
 
   </details>
+* <details><summary>`--stdout`</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ dotenvx encrypt --stdout
+  $ dotenvx encrypt --stdout > .env.encrypted
+  ```
+
+  </details>
+
 * <details><summary>other curves</summary><br>
 
   > `secp256k1` is a well-known and battle tested curve, in use with Bitcoin and other cryptocurrencies, but we are open to adding support for more curves.
@@ -1139,6 +1149,33 @@ More examples
   ```
 
   </details>
+* <details><summary>`encrypt --stdout`</summary><br>
+
+  Encrypt the contents of a `.env` file and send to stdout.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx encrypt --stdout
+  #/-------------------[DOTENV_PUBLIC_KEY]--------------------/
+  #/            public-key encryption for .env files          /
+  #/       [how it works](https://dotenvx.com/encryption)     /
+  #/----------------------------------------------------------/
+  DOTENV_PUBLIC_KEY="034af93e93708b994c10f236c96ef88e47291066946cce2e8d98c9e02c741ced45"
+  # .env
+  HELLO="encrypted:BDqDBibm4wsYqMpCjTQ6BsDHmMadg9K3dAt+Z9HPMfLEIRVz50hmLXPXRuDBXaJi/LwWYEVUNiq0HISrslzQPaoyS8Lotg3gFWJTsNCdOWnqpjF2xNUX2RQiP05kAbEXM6MWVjDr"
+  ```
+
+  or send to a file:
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx encrypt --stdout > somefile.txt
+  ```
+
+  </details>
+
 * <details><summary>`help`</summary><br>
 
   Output help for `dotenvx`.
