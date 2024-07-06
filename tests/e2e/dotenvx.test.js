@@ -141,7 +141,7 @@ t.test('#run - Variable Expansion', ct => {
 
 t.test('#run - Command Substitution', ct => {
   execShell(`
-    echo 'DATABASE_URL="postgres://\$(whoami)@localhost/my_database"' > .env
+    echo 'DATABASE_URL="postgres://$(whoami)@localhost/my_database"' > .env
     echo "console.log('DATABASE_URL', process.env.DATABASE_URL)" > index.js
   `)
 
@@ -190,10 +190,7 @@ t.test('#run - encrypted .env', ct => {
   `)
 
   const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
-  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
-
   const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
-  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
 
   const command = `${node} index.js`
   ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
@@ -224,13 +221,10 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   `)
 
   const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
-  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
-
   const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
-  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
   const encrypted = parsedEnv.HELLO
 
-  execShell(`rm .env.keys`)
+  execShell('rm .env.keys')
 
   const command = `${node} index.js`
   ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
@@ -260,13 +254,11 @@ t.test('#run - encrypted .env with no .env.keys, with DOTENV_PRIVATE_KEY', ct =>
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
   `)
 
-  const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
 
-  const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
 
-  execShell(`rm .env.keys`) // no keys file
+  execShell('rm .env.keys') // no keys file
 
   process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY // set already on server
 
