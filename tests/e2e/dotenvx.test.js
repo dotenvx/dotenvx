@@ -6,7 +6,7 @@ const which = require('which')
 const dotenv = require('dotenv')
 const { execSync } = require('child_process')
 
-const keyPair = require('../../src/lib/helpers/keyPair')
+// const keyPair = require('../../src/lib/helpers/keyPair')
 const packageJson = require('../../src/lib/helpers/packageJson')
 const version = packageJson.version
 
