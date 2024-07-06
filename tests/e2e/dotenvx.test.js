@@ -268,3 +268,63 @@ t.test('#run - encrypted .env with no .env.keys, with DOTENV_PRIVATE_KEY', ct =>
 
   ct.end()
 })
+
+t.test('#run - encrypted .env.production with no .env.keys, with DOTENV_PRIVATE_KEY_PRODUCTION', ct => {
+  execShell(`
+    rm .env.production
+    touch .env.production
+    ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} set HELLO production -f .env.production
+    echo "console.log('Hello ' + process.env.HELLO)" > index.js
+  `)
+
+  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
+
+  const DOTENV_PRIVATE_KEY_PRODUCTION = parsedEnvKeys.DOTENV_PRIVATE_KEY_PRODUCTION
+
+  execShell('rm .env.keys') // no keys file
+
+  process.env.DOTENV_PRIVATE_KEY_PRODUCTION = DOTENV_PRIVATE_KEY_PRODUCTION // set already on server
+
+  const command = `${node} index.js`
+  ct.equal(execShell(`DOTENV_PRIVATE_KEY_PRODUCTION=${DOTENV_PRIVATE_KEY_PRODUCTION} ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env.production\nHello production`)
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'Hello production') // --quiet
+
+  ct.end()
+})
+
+t.test('#get', ct => {
+  execShell(`
+    rm .env
+    echo "HELLO=World" > .env
+  `)
+
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO`), 'World')
+
+  ct.end()
+})
+
+t.test('#get --env', ct => {
+  execShell(`
+    rm .env
+    echo "HELLO=World" > .env
+  `)
+
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO --env HELLO=String`), 'World')
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO --env HELLO=String -f .env`), 'String')
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO -f .env --env HELLO=String`), 'World')
+
+  ct.end()
+})
+
+t.test('#get --overload', ct => {
+  execShell(`
+    rm .env
+    rm .env.production
+    echo "HELLO=World" > .env
+    echo "HELLO=production" > .env.production
+  `)
+
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO -f .env.production --env HELLO=String -f .env --overload`), 'World')
+
+  ct.end()
+})
