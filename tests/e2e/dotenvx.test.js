@@ -6,12 +6,14 @@ const which = require('which')
 const dotenv = require('dotenv')
 const { execSync } = require('child_process')
 
-const node = path.resolve(which.sync('node')) // /opt/homebrew/node
 const packageJson = require('../../src/lib/helpers/packageJson')
 const version = packageJson.version
 
 const tempDir = fs.realpathSync(os.tmpdir())
 const originalDir = process.cwd()
+
+const node = path.resolve(which.sync('node')) // /opt/homebrew/node
+const dotenvx = path.join(originalDir, 'src/cli/dotenvx.js')
 
 function execShell (commands) {
   return execSync(commands, {
@@ -38,7 +40,7 @@ t.afterEach((ct) => {
 })
 
 t.test('#--version', ct => {
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} --version`), version)
+  ct.equal(execShell(`${node} ${dotenvx} --version`), version)
 
   ct.end()
 })
@@ -51,9 +53,9 @@ t.test('#run', ct => {
 
   const command = `${node} index.js`
   ct.equal(execShell(`${node} index.js`), 'Hello undefined')
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env\nHello World`)
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'Hello World') // --quiet
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${node} ${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env\nHello World`)
+  ct.equal(execShell(`${node} ${dotenvx} run --quiet -- ${command}`), 'Hello World') // --quiet
+  ct.equal(execShell(`${node} ${dotenvx} run --debug -- ${command}`), `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[]}
 loading env from .env (${tempDir}/.env)
@@ -76,9 +78,9 @@ t.test('#run - multiple .env files', ct => {
   `)
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello local`)
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --quiet -- ${command}`), 'Hello local') // --quiet
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${node} ${dotenvx} run -f .env.local -f .env -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello local`)
+  ct.equal(execShell(`${node} ${dotenvx} run -f .env.local -f .env --quiet -- ${command}`), 'Hello local') // --quiet
+  ct.equal(execShell(`${node} ${dotenvx} run -f .env.local -f .env --debug -- ${command}`), `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[".env.local",".env"],"envVaultFile":[]}
 loading env from .env.local (${tempDir}/.env.local)
@@ -105,9 +107,9 @@ t.test('#run - multiple .env files --overload', ct => {
   `)
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --overload -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello World`)
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --overload --quiet -- ${command}`), 'Hello World') // --quiet
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -f .env.local -f .env --overload --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${node} ${dotenvx} run -f .env.local -f .env --overload -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello World`)
+  ct.equal(execShell(`${node} ${dotenvx} run -f .env.local -f .env --overload --quiet -- ${command}`), 'Hello World') // --quiet
+  ct.equal(execShell(`${node} ${dotenvx} run -f .env.local -f .env --overload --debug -- ${command}`), `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[".env.local",".env"],"envVaultFile":[],"overload":true}
 loading env from .env.local (${tempDir}/.env.local)
@@ -134,7 +136,7 @@ t.test('#run - Variable Expansion', ct => {
 
   const command = `${node} index.js`
   ct.equal(execShell(`${node} index.js`), 'DATABASE_URL undefined')
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'DATABASE_URL postgres://username@localhost/my_database')
+  ct.equal(execShell(`${node} ${dotenvx} run --quiet -- ${command}`), 'DATABASE_URL postgres://username@localhost/my_database')
 
   ct.end()
 })
@@ -148,7 +150,7 @@ t.test('#run - Command Substitution', ct => {
   const command = `${node} index.js`
   const whoami = execShell('whoami')
   ct.equal(execShell(`${node} index.js`), 'DATABASE_URL undefined')
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), `DATABASE_URL postgres://${whoami}@localhost/my_database`)
+  ct.equal(execShell(`${node} ${dotenvx} run --quiet -- ${command}`), `DATABASE_URL postgres://${whoami}@localhost/my_database`)
 
   ct.end()
 })
@@ -160,9 +162,9 @@ t.test('#run - --env', ct => {
   `)
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --env HELLO=String -f .env -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env, and --env flag\nHello String`)
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --env HELLO=String -f .env --quiet -- ${command}`), 'Hello String') // --quiet
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --env HELLO=String -f .env --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${node} ${dotenvx} run --env HELLO=String -f .env -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env, and --env flag\nHello String`)
+  ct.equal(execShell(`${node} ${dotenvx} run --env HELLO=String -f .env --quiet -- ${command}`), 'Hello String') // --quiet
+  ct.equal(execShell(`${node} ${dotenvx} run --env HELLO=String -f .env --debug -- ${command}`), `Setting log level to debug
 process command [${node} index.js]
 options: {"env":["HELLO=String"],"envFile":[".env"],"envVaultFile":[]}
 loading env from string (HELLO=String)
@@ -185,7 +187,7 @@ t.test('#run - encrypted .env', ct => {
   execShell(`
     rm .env
     touch .env
-    ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} set HELLO encrypted
+    ${node} ${dotenvx} set HELLO encrypted
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
   `)
 
@@ -193,9 +195,9 @@ t.test('#run - encrypted .env', ct => {
   const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'Hello encrypted') // --quiet
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${node} ${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
+  ct.equal(execShell(`${node} ${dotenvx} run --quiet -- ${command}`), 'Hello encrypted') // --quiet
+  ct.equal(execShell(`${node} ${dotenvx} run --debug -- ${command}`), `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[]}
 loading env from .env (${tempDir}/.env)
@@ -216,7 +218,7 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   execShell(`
     rm .env
     touch .env
-    ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} set HELLO encrypted
+    ${node} ${dotenvx} set HELLO encrypted
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
   `)
 
@@ -227,9 +229,9 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   execShell('rm .env.keys')
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), `Hello ${encrypted}`) // --quiet
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${node} ${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
+  ct.equal(execShell(`${node} ${dotenvx} run --quiet -- ${command}`), `Hello ${encrypted}`) // --quiet
+  ct.equal(execShell(`${node} ${dotenvx} run --debug -- ${command}`), `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[]}
 loading env from .env (${tempDir}/.env)
@@ -250,7 +252,7 @@ t.test('#run - encrypted .env with no .env.keys, with DOTENV_PRIVATE_KEY', ct =>
   execShell(`
     rm .env
     touch .env
-    ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} set HELLO encrypted
+    ${node} ${dotenvx} set HELLO encrypted
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
   `)
 
@@ -263,8 +265,8 @@ t.test('#run - encrypted .env with no .env.keys, with DOTENV_PRIVATE_KEY', ct =>
   process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY // set already on server
 
   const command = `${node} index.js`
-  ct.equal(execShell(`DOTENV_PRIVATE_KEY=${DOTENV_PRIVATE_KEY} ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'Hello encrypted') // --quiet
+  ct.equal(execShell(`DOTENV_PRIVATE_KEY=${DOTENV_PRIVATE_KEY} ${node} ${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
+  ct.equal(execShell(`${node} ${dotenvx} run --quiet -- ${command}`), 'Hello encrypted') // --quiet
 
   ct.end()
 })
@@ -273,7 +275,7 @@ t.test('#run - encrypted .env.production with no .env.keys, with DOTENV_PRIVATE_
   execShell(`
     rm .env.production
     touch .env.production
-    ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} set HELLO production -f .env.production
+    ${node} ${dotenvx} set HELLO production -f .env.production
     echo "console.log('Hello ' + process.env.HELLO)" > index.js
   `)
 
@@ -286,8 +288,8 @@ t.test('#run - encrypted .env.production with no .env.keys, with DOTENV_PRIVATE_
   process.env.DOTENV_PRIVATE_KEY_PRODUCTION = DOTENV_PRIVATE_KEY_PRODUCTION // set already on server
 
   const command = `${node} index.js`
-  ct.equal(execShell(`DOTENV_PRIVATE_KEY_PRODUCTION=${DOTENV_PRIVATE_KEY_PRODUCTION} ${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env.production\nHello production`)
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --quiet -- ${command}`), 'Hello production') // --quiet
+  ct.equal(execShell(`DOTENV_PRIVATE_KEY_PRODUCTION=${DOTENV_PRIVATE_KEY_PRODUCTION} ${node} ${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env.production\nHello production`)
+  ct.equal(execShell(`${node} ${dotenvx} run --quiet -- ${command}`), 'Hello production') // --quiet
 
   ct.end()
 })
@@ -297,7 +299,7 @@ t.test('#get', ct => {
     echo "HELLO=World" > .env
   `)
 
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO`), 'World')
+  ct.equal(execShell(`${node} ${dotenvx} get HELLO`), 'World')
 
   ct.end()
 })
@@ -307,9 +309,9 @@ t.test('#get --env', ct => {
     echo "HELLO=World" > .env
   `)
 
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO --env HELLO=String`), 'World')
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO --env HELLO=String -f .env`), 'String')
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO -f .env --env HELLO=String`), 'World')
+  ct.equal(execShell(`${node} ${dotenvx} get HELLO --env HELLO=String`), 'World')
+  ct.equal(execShell(`${node} ${dotenvx} get HELLO --env HELLO=String -f .env`), 'String')
+  ct.equal(execShell(`${node} ${dotenvx} get HELLO -f .env --env HELLO=String`), 'World')
 
   ct.end()
 })
@@ -320,7 +322,7 @@ t.test('#get --overload', ct => {
     echo "HELLO=production" > .env.production
   `)
 
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO -f .env.production --env HELLO=String -f .env --overload`), 'World')
+  ct.equal(execShell(`${node} ${dotenvx} get HELLO -f .env.production --env HELLO=String -f .env --overload`), 'World')
 
   ct.end()
 })
@@ -331,7 +333,7 @@ t.test('#get (json)', ct => {
     echo "HELLO=World" > .env
   `)
 
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get`), '{"HELLO":"World"}')
+  ct.equal(execShell(`${node} ${dotenvx} get`), '{"HELLO":"World"}')
 
   ct.end()
 })
@@ -342,10 +344,7 @@ t.test('#run - encrypt', ct => {
     echo "HELLO=World" > .env
   `)
 
-  // const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
-  // const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
-
-  const output = execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} encrypt`)
+  const output = execShell(`${node} ${dotenvx} encrypt`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
@@ -365,7 +364,7 @@ t.test('#run - encrypt -k', ct => {
     echo "HELLO=World\nHI=thar" > .env
   `)
 
-  const output = execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} encrypt -k HI`)
+  const output = execShell(`${node} ${dotenvx} encrypt -k HI`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
@@ -377,11 +376,11 @@ t.test('#run - encrypt -k', ct => {
 
   execShell('rm .env.keys')
 
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HELLO`), 'World') // unencrypted still
-  ct.match(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HI`), /^encrypted:/, 'HI should be encrypted')
+  ct.equal(execShell(`${node} ${dotenvx} get HELLO`), 'World') // unencrypted still
+  ct.match(execShell(`${node} ${dotenvx} get HI`), /^encrypted:/, 'HI should be encrypted')
 
   process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY
-  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} get HI`), 'thar')
+  ct.equal(execShell(`${node} ${dotenvx} get HI`), 'thar')
 
   ct.end()
 })
