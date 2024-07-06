@@ -147,3 +147,31 @@ t.test('#run - Command Substitution', ct => {
 
   ct.end()
 })
+
+t.test('#run - --env', ct => {
+  execShell(`
+    echo "HELLO=World" > .env
+    echo "console.log('Hello ' + process.env.HELLO)" > index.js
+  `)
+
+  const command = `${node} index.js`
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --env HELLO=String -f .env -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env, and --env flag\nHello String`)
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --env HELLO=String -f .env --quiet -- ${command}`), 'Hello String') // --quiet
+  ct.equal(execShell(`${node} ${path.join(originalDir, 'src/cli/dotenvx.js')} run --env HELLO=String -f .env --debug -- ${command}`), `Setting log level to debug
+process command [${node} index.js]
+options: {"env":["HELLO=String"],"envFile":[".env"],"envVaultFile":[]}
+loading env from string (HELLO=String)
+{"HELLO":"String"}
+HELLO set
+HELLO set to String
+loading env from .env (${tempDir}/.env)
+{"HELLO":"World"}
+HELLO pre-exists (protip: use --overload to override)
+HELLO pre-exists as String (protip: use --overload to override)
+[dotenvx@${version}] injecting env (1) from .env, and --env flag
+executing process command [${node} index.js]
+expanding process command to [${node} index.js]
+Hello String`) // --debug
+
+  ct.end()
+})
