@@ -1155,7 +1155,6 @@ More examples
 
   ```sh
   $ echo "HELLO=World" > .env
-
   $ dotenvx encrypt --stdout
   #/-------------------[DOTENV_PUBLIC_KEY]--------------------/
   #/            public-key encryption for .env files          /
@@ -1170,8 +1169,57 @@ More examples
 
   ```sh
   $ echo "HELLO=World" > .env
-
   $ dotenvx encrypt --stdout > somefile.txt
+  ```
+
+  </details>
+* <details><summary>`decrypt`</summary><br>
+
+  Decrypt the contents of an encrypted `.env` file to an unencrypted `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ dotenvx encrypt
+  ✔ encrypted (.env)
+  $ dotenvx decrypt
+  ✔ decrypted (.env)
+  ```
+
+  </details>
+* <details><summary>`decrypt -f`</summary><br>
+
+  Decrypt the contents of a specified encrypted `.env` file to an unencrypted `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "HELLO=Production" > .env.production
+
+  $ dotenvx encrypt -f .env.production
+  ✔ encrypted (.env.production)
+  $ dotenvx decrypt -f .env.production
+  ✔ decrypted (.env.production)
+  ```
+
+  </details>
+* <details><summary>`decrypt --stdout`</summary><br>
+
+  Decrypt the contents of an encrypted `.env` file and send to stdout.
+
+  ```sh
+  $ dotenvx decrypt --stdout
+  #/-------------------[DOTENV_PUBLIC_KEY]--------------------/
+  #/            public-key encryption for .env files          /
+  #/       [how it works](https://dotenvx.com/encryption)     /
+  #/----------------------------------------------------------/
+  DOTENV_PUBLIC_KEY="034af93e93708b994c10f236c96ef88e47291066946cce2e8d98c9e02c741ced45"
+  # .env
+  HELLO="World"
+  ```
+
+  or send to a file:
+
+  ```sh
+  $ dotenvx decrypt --stdout > somefile.txt
   ```
 
   </details>
