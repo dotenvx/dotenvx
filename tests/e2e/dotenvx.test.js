@@ -408,7 +408,6 @@ HI="encrypted:`
   ct.end()
 })
 
-
 t.test('#run - decrypt', ct => {
   execShell(`
     echo "HELLO=World" > .env
