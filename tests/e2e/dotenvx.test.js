@@ -18,11 +18,7 @@ const dotenvx = path.join(originalDir, 'src/cli/dotenvx.js')
 function execShell (commands) {
   return execSync(commands, {
     encoding: 'utf8',
-    shell: true,
-    env: {
-      ...process.env,
-      PATH: process.env.PATH // Ensure the PATH environment variable is passed
-    }
+    shell: true
   }).trim()
 }
 
