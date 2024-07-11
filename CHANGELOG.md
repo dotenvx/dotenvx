@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.6.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.6.1...main)
+
+## 1.6.1
+
+### Added
+
+* added support for `.env1` (`.env*`) file format. (private key expands to `DOTENV_PRIVATE_KEY_DEVELOPMENT1`) ([#312](https://github.com/dotenvx/dotenvx/pull/312))
 
 ## 1.6.0
 
