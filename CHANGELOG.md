@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* added support for `.env1` (`.env*`) file format. (private key expands to `DOTENV_PRIVATE_KEY_DEVELOPMENT1`) ([#311](https://github.com/dotenvx/dotenvx/pull/294))
+* added support for `.env1` (`.env*`) file format. (private key expands to `DOTENV_PRIVATE_KEY_DEVELOPMENT1`) ([#312](https://github.com/dotenvx/dotenvx/pull/312))
 
 ## 1.6.0
 
