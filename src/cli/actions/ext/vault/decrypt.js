@@ -1,17 +1,10 @@
 const fs = require('fs')
 
 const { logger } = require('./../../../../shared/logger')
-const { createSpinner } = require('./../../../../shared/createSpinner')
-const sleep = require('./../../../../lib/helpers/sleep')
 
 const VaultDecrypt = require('./../../../../lib/services/vaultDecrypt')
 
-const spinner = createSpinner('decrypting')
-
-async function decrypt (directory) {
-  spinner.start()
-  await sleep(500) // better dx
-
+function decrypt (directory) {
   logger.debug(`directory: ${directory}`)
 
   const options = this.opts()
@@ -49,12 +42,12 @@ async function decrypt (directory) {
     }
 
     if (changedMsg.length > 0) {
-      spinner.succeed(`${changedMsg} ${unchangedMsg}`)
+      logger.success(`${changedMsg} ${unchangedMsg}`)
     } else {
-      spinner.done(`${unchangedMsg}`)
+      logger.blank(`${unchangedMsg}`)
     }
   } catch (error) {
-    spinner.fail(error.message)
+    logger.error(error.message)
     if (error.help) {
       logger.help(error.help)
     }

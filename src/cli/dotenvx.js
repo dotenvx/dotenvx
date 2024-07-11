@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+/* c8 ignore start */
 const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
@@ -126,20 +127,6 @@ program.command('pro')
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
 
-//
-// DEPRECATED AND hidden
-//
-program.addCommand(require('./commands/vault'))
-
-program.command('convert')
-  .description('DEPRECATED: moved to [dotenvx encrypt]')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [dotenvx convert] has moved to [dotenvx encrypt]')
-
-    encryptAction.apply(this, args)
-  })
-
 const lsAction = require('./actions/ext/ls')
 program.command('ls')
   .description('DEPRECATED: moved to [dotenvx ext ls]')
@@ -216,5 +203,6 @@ program.helpInformation = function () {
 
   return filteredLines.join('\n')
 }
+/* c8 ignore stop */
 
 program.parse(process.argv)

@@ -14,6 +14,7 @@ function prebuild () {
     logger.errorvpb('.dockerignore missing')
     logger.help2('? add it with [touch .dockerignore]')
     process.exit(1)
+    return
   }
 
   // 2. check .env* files against .dockerignore file

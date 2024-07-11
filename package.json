@@ -26,7 +26,8 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap run --show-full-coverage",
+    "test": "tap run --show-full-coverage --timeout=60000",
+    "test-single": "tap run tests/cli/actions/decrypt.test.js",
     "testshell": "bash shellspec",
     "prerelease": "npm test && npm run testshell",
     "release": "standard-version",
@@ -57,7 +58,7 @@
     "sinon": "^14.0.1",
     "standard": "^17.1.0",
     "standard-version": "^9.5.0",
-    "tap": "^18.7.0"
+    "tap": "^19.2.0"
   },
   "publishConfig": {
     "access": "public",

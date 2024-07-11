@@ -180,10 +180,7 @@ t.test('#findOrCreatePublicKey when .env.keys found but no DOTENV_PUBLIC_KEY', c
 
   const existingPublicKey = dotenv.parse(fs.readFileSync(envFile)).DOTENV_PUBLIC_KEY
   const existingPrivateKey = dotenv.parse(fs.readFileSync(envKeysFile)).DOTENV_PRIVATE_KEY
-  console.log('envKeysFile', envKeysFile)
-
   ct.same(existingPublicKey, undefined)
-  console.log('existingPrivateKey', existingPrivateKey)
   ct.ok(existingPrivateKey)
 
   const {

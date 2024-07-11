@@ -77,3 +77,8 @@ function gitignore () {
 }
 
 module.exports = gitignore
+module.exports.Git = Git
+module.exports.Docker = Docker
+module.exports.Npm = Npm
+module.exports.Vercel = Vercel
+module.exports.Generic = Generic

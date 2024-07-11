@@ -5,7 +5,7 @@ const sinon = require('sinon')
 const main = require('../../../../src/lib/main')
 const genexample = require('../../../../src/cli/actions/ext/genexample')
 
-t.test('genexample calls main.genexample', async ct => {
+t.test('genexample calls main.genexample', ct => {
   const stub = sinon.stub(main, 'genexample')
   stub.returns({
     envExampleFile: 'HELLO=""',
@@ -22,7 +22,7 @@ t.test('genexample calls main.genexample', async ct => {
   }
 
   // Call the genexample function with the fake context
-  await genexample.call(fakeContext, '.')
+  genexample.call(fakeContext, '.')
 
   t.ok(stub.called, 'main.genexample() called')
   t.ok(fsStub.called, 'fs.writeFileSync() called')
@@ -32,7 +32,7 @@ t.test('genexample calls main.genexample', async ct => {
   ct.end()
 })
 
-t.test('genexample calls main.genexample (no addedKeys changes)', async ct => {
+t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
   const stub = sinon.stub(main, 'genexample')
   stub.returns({
     envExampleFile: '',
@@ -49,7 +49,7 @@ t.test('genexample calls main.genexample (no addedKeys changes)', async ct => {
   }
 
   // Call the genexample function with the fake context
-  await genexample.call(fakeContext, '.')
+  genexample.call(fakeContext, '.')
 
   t.ok(stub.called, 'main.genexample() called')
   t.ok(fsStub.called, 'fs.writeFileSync() called')
@@ -59,7 +59,7 @@ t.test('genexample calls main.genexample (no addedKeys changes)', async ct => {
   ct.end()
 })
 
-t.test('genexample calls main.genexample (other error)', async ct => {
+t.test('genexample calls main.genexample (other error)', ct => {
   const stub = sinon.stub(main, 'genexample').throws(new Error('other error'))
   const exitStub = sinon.stub(process, 'exit')
 
@@ -69,7 +69,7 @@ t.test('genexample calls main.genexample (other error)', async ct => {
   }
 
   // Call the genexample function with the fake context
-  await genexample.call(fakeContext, '.')
+  genexample.call(fakeContext, '.')
 
   ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
 
@@ -79,7 +79,7 @@ t.test('genexample calls main.genexample (other error)', async ct => {
   ct.end()
 })
 
-t.test('genexample calls main.genexample (error with code and help message)', async ct => {
+t.test('genexample calls main.genexample (error with code and help message)', ct => {
   const error = new Error('message')
   error.help = 'help message'
   error.code = 'CODE'
@@ -93,7 +93,7 @@ t.test('genexample calls main.genexample (error with code and help message)', as
   }
 
   // Call the genexample function with the fake context
-  await genexample.call(fakeContext, '.')
+  genexample.call(fakeContext, '.')
 
   ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
 
