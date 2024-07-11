@@ -26,7 +26,7 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap run --allow-empty-coverage --timeout=60000",
+    "test": "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
     "test-coverage": "tap run --show-full-coverage --timeout=60000",
     "test-single": "tap run --coverage-report=none tests/cli/actions/decrypt.test.js",
     "testshell": "bash shellspec",
