@@ -2,14 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.5.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.6.0...main)
+
+## 1.6.0
 
 ### Added
 
 * add `dotenvx decrypt` command. works inversely to `dotenvx encrypt`. same flags. ([#294](https://github.com/dotenvx/dotenvx/pull/294))
 * add `--stdout` option to `dotenvx decrypt`. example: `dotenvx decrypt -f .env.production > somefile.txt` ([#298](https://github.com/dotenvx/dotenvx/pull/298))
 * add `--stdout` option to `dotenvx encrypt`. example: `dotenvx encrypt -f .env.production > somefile.txt` ([#298](https://github.com/dotenvx/dotenvx/pull/298))
+
+### Changed
+
 * smarter private key finder. if you rename your file to `secrets.txt` it can still decrypt from `DOTENV_PRIVATE_KEY` by seeking out the invert of the `DOTENV_PUBLIC_KEY` inside `secrets.txt` ([#302](https://github.com/dotenvx/dotenvx/pull/302))
+
+### Removed
+
 * remove `dotenvx convert` - still at `dotenvx encrypt`
 * remove `dotenvx vault` - still at `dotenvx ext vault`
 
