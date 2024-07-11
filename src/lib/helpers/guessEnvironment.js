@@ -7,7 +7,10 @@ function guessEnvironment (filepath) {
   const possibleEnvironmentList = [...parts.slice(2)]
 
   if (possibleEnvironmentList.length === 0) {
-    return 'development'
+    // handle .env1 -> development1
+    const environment = filename.replace('.env', 'development')
+
+    return environment
   }
 
   if (possibleEnvironmentList.length === 1) {

@@ -55,3 +55,21 @@ t.test('#guessEnvironment (.env.some.other.thing)', (ct) => {
 
   ct.end()
 })
+
+t.test('#guessEnvironment (.env1)', ct => {
+  const filepath = '.env1'
+  const environment = guessEnvironment(filepath)
+
+  ct.same(environment, 'development1')
+
+  ct.end()
+})
+
+t.test('#guessEnvironment (secrets.txt)', ct => {
+  const filepath = 'secrets.txt'
+  const environment = guessEnvironment(filepath)
+
+  ct.same(environment, 'secrets.txt') // for now just return the filename (might change in the future depending on user usage)
+
+  ct.end()
+})
