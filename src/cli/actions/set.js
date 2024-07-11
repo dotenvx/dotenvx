@@ -7,7 +7,6 @@ const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
 const ENCODING = 'utf8'
 
-/* c8 ignore start */
 function set (key, value) {
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
@@ -85,6 +84,5 @@ function set (key, value) {
     process.exit(1)
   }
 }
-/* c8 ignore stop */
 
 module.exports = set

@@ -5,7 +5,6 @@ const main = require('./../../lib/main')
 
 const ENCODING = 'utf8'
 
-/* c8 ignore start */
 function decrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -68,6 +67,5 @@ function decrypt () {
     }
   }
 }
-/* c8 ignore stop */
 
 module.exports = decrypt

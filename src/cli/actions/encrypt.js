@@ -7,7 +7,6 @@ const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
 const ENCODING = 'utf8'
 
-/* c8 ignore start */
 function encrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -82,6 +81,5 @@ function encrypt () {
     }
   }
 }
-/* c8 ignore stop */
 
 module.exports = encrypt
