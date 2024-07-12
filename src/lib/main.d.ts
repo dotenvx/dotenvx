@@ -36,14 +36,6 @@ export interface DotenvConfigOptions {
   encoding?: string;
 
   /**
-   * Turn on logging to help debug why certain keys or values are not being set as you expect.
-   *
-   * @default false
-   * @example require('@dotenvx/dotenvx').config({ debug: process.env.DEBUG })
-   */
-  debug?: boolean;
-
-  /**
    * Override any environment variables that have already been set on your machine with values from your .env file.
    * @default false
    * @example require('@dotenvx/dotenvx').config({ override: true })
@@ -77,6 +69,40 @@ export interface DotenvConfigOptions {
    * Do not warn for missing .env files
    */
   convention?: string;
+
+  /**
+   * Turn on logging to help debug why certain keys or values are not being set as you expect.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').config({ debug: process.env.DEBUG })
+   */
+  debug?: boolean;
+
+  verbose?: boolean;
+
+  quiet?: boolean;
+
+  logLevel?:
+    | 'error'
+    | 'errorv'
+    | 'errorvp'
+    | 'errorvpb'
+    | 'errornocolor'
+    | 'warn'
+    | 'warnv'
+    | 'warnvp'
+    | 'warnvpb'
+    | 'success'
+    | 'successv'
+    | 'successvp'
+    | 'successvpb'
+    | 'info'
+    | 'help'
+    | 'help2'
+    | 'http'
+    | 'verbose'
+    | 'debug'
+    | 'blank';
 }
 
 export interface DotenvConfigOutput {
