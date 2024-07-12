@@ -11,6 +11,10 @@ const replace = require('./../helpers/replace')
 const ENCODING = 'utf8'
 
 class Decrypt {
+  /**
+   * @param {string|string[]} [envFile]
+   * @param {string|string[]} [key]
+   **/
   constructor (envFile = '.env', key = []) {
     this.envFile = envFile
     this.key = key

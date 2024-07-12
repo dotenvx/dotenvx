@@ -12,6 +12,10 @@ const replace = require('./../helpers/replace')
 const ENCODING = 'utf8'
 
 class Encrypt {
+  /**
+   * @param {string|string[]} [envFile]
+   * @param {string|string[]} [key]
+   **/
   constructor (envFile = '.env', key = []) {
     this.envFile = envFile
     this.key = key
@@ -59,8 +63,10 @@ class Encrypt {
         // iterate over all non-encrypted values and encrypt them
         const parsed = dotenv.parse(src)
         for (const [key, value] of Object.entries(parsed)) {
-          if (keys.length < 1 || keys.includes(key)) { // optionally control which key to encrypt
-            const encrypted = isEncrypted(key, value) || isPublicKey(key, value)
+          if (keys.length < 1 || keys.includes(key)) {
+            // optionally control which key to encrypt
+            const encrypted =
+              isEncrypted(key, value) || isPublicKey(key, value)
             if (!encrypted) {
               row.keys.push(key) // track key(s)
 
