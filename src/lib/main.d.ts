@@ -36,14 +36,6 @@ export interface DotenvConfigOptions {
   encoding?: string;
 
   /**
-   * Turn on logging to help debug why certain keys or values are not being set as you expect.
-   *
-   * @default false
-   * @example require('@dotenvx/dotenvx').config({ debug: process.env.DEBUG })
-   */
-  debug?: boolean;
-
-  /**
    * Override any environment variables that have already been set on your machine with values from your .env file.
    * @default false
    * @example require('@dotenvx/dotenvx').config({ override: true })
@@ -77,6 +69,40 @@ export interface DotenvConfigOptions {
    * Do not warn for missing .env files
    */
   convention?: string;
+
+  /**
+   * Turn on logging to help debug why certain keys or values are not being set as you expect.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').config({ debug: process.env.DEBUG })
+   */
+  debug?: boolean;
+
+  verbose?: boolean;
+
+  quiet?: boolean;
+
+  logLevel?:
+    | 'error'
+    | 'errorv'
+    | 'errorvp'
+    | 'errorvpb'
+    | 'errornocolor'
+    | 'warn'
+    | 'warnv'
+    | 'warnvp'
+    | 'warnvpb'
+    | 'success'
+    | 'successv'
+    | 'successvp'
+    | 'successvpb'
+    | 'info'
+    | 'help'
+    | 'help2'
+    | 'http'
+    | 'verbose'
+    | 'debug'
+    | 'blank';
 }
 
 export interface DotenvConfigOutput {
@@ -115,10 +141,13 @@ export function configDotenv(options?: DotenvConfigOptions): DotenvConfigOutput;
  *
  * @see https://dotenvx.com/docs
  *
- * @param encrypted - the encrypted ciphertext string
- * @param keyStr - the decryption key string
+ * @param envFile - the encrypted ciphertext string
+ * @param key - the decryption key(s)
  */
-export function decrypt(encrypted: string, keyStr: string): string;
+export function decrypt(
+  envFile?: string | string[],
+  key?: string | string[]
+): string;
 
 export type EncryptRowOutput = {
   keys: string[];
@@ -143,10 +172,13 @@ export type EncryptOutput = {
  * Encrypt plaintext
  *
  * @see https://dotenvx.com/docs
- * @param envFile - path to the .env file
- * @param key - keys(s) to encrypt (default: all keys in .env file)
+ * @param envFile - path to the .env file(s)
+ * @param key - keys(s) to encrypt env file(s) (default: all keys in .env file)
  */
-export function encrypt(envFile: string, key: string): EncryptOutput;
+export function encrypt(
+  envFile?: string | string[],
+  key?: string | string[]
+): EncryptOutput;
 
 export type VaultEncryptOutput = {
   dotenvKeys: Record<string, string>;
@@ -158,20 +190,7 @@ export type VaultEncryptOutput = {
   existingVaults: string[];
   addedDotenvFilenames: string[];
   envFile: string | string[];
-  key: string | string[];
 };
-
-/**
- * Encrypt plaintext
- *
- * @see https://dotenvx.com/docs
- * @param directory - current working directory
- * @param envFile - path to the .env file(s)
- */
-export function vaultEncrypt(
-  directory: string,
-  envFile: string | string[]
-): VaultEncryptOutput;
 
 /**
  * List all env files in the current working directory
@@ -284,3 +303,22 @@ type KeyOfSettings = Extract<keyof Settings, string>;
 export function settings(
   key: KeyOfSettings | undefined | null = null
 ): Settings;
+
+/**
+ * Decrypt ciphertext
+ * @param encrypted - the encrypted ciphertext string
+ * @param keyStr - the decryption key string
+ */
+export function vaultDecrypt(encrypted: string, keyStr: string): string;
+
+/**
+ * Encrypt plaintext
+ *
+ * @see https://dotenvx.com/docs
+ * @param directory - current working directory
+ * @param envFile - path to the .env file(s)
+ */
+export function vaultEncrypt(
+  directory?: string,
+  envFile?: string | string[]
+): VaultEncryptOutput;
