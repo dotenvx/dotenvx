@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
 /* c8 ignore start */
-const fs = require('fs')
-const path = require('path')
-const { execSync } = require('child_process')
 const { Command } = require('commander')
 const program = new Command()
 
