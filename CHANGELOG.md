@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.6.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.6.3...main)
+
+## 1.6.3
+
+### Changed
+
+* adjust `dotenvx pro` to be dynamic if [dotenvx-pro](https://github.com/dotenvx/dotenvx-pro) is installed user's machine
 
 ## 1.6.2
 
