@@ -21,8 +21,8 @@ All notable changes to this project will be documented in this file. See [standa
 ### Added
 
 * add `dotenvx decrypt` command. works inversely to `dotenvx encrypt`. same flags. ([#294](https://github.com/dotenvx/dotenvx/pull/294))
-* add `--stdout` option to `dotenvx decrypt`. example: `dotenvx decrypt -f .env.production > somefile.txt` ([#298](https://github.com/dotenvx/dotenvx/pull/298))
-* add `--stdout` option to `dotenvx encrypt`. example: `dotenvx encrypt -f .env.production > somefile.txt` ([#298](https://github.com/dotenvx/dotenvx/pull/298))
+* add `--stdout` option to `dotenvx decrypt`. example: `dotenvx decrypt -f .env.production --stdout > somefile.txt` ([#298](https://github.com/dotenvx/dotenvx/pull/298))
+* add `--stdout` option to `dotenvx encrypt`. example: `dotenvx encrypt -f .env.production --stdout > somefile.txt` ([#298](https://github.com/dotenvx/dotenvx/pull/298))
 
 ### Changed
 
