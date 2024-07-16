@@ -112,9 +112,28 @@ program.command('decrypt')
   .option('--stdout', 'send to stdout')
   .action(decryptAction)
 
+// dotenvx help
+program.command('help [command]')
+  .description('display help for command')
+  .action((command) => {
+    if (command) {
+      const subCommand = program.commands.find(c => c.name() === command)
+      if (subCommand) {
+        subCommand.outputHelp()
+      } else {
+        program.outputHelp()
+      }
+    } else {
+      program.outputHelp()
+    }
+  })
+
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
 
+//
+// DEPRECATED or MOVED
+//
 const lsAction = require('./actions/ext/ls')
 program.command('ls')
   .description('DEPRECATED: moved to [dotenvx ext ls]')
@@ -137,7 +156,6 @@ program.command('genexample')
     genexampleAction.apply(this, args)
   })
 
-// dotenvx gitignore
 const gitignoreAction = require('./actions/ext/gitignore')
 program.command('gitignore')
   .description('DEPRECATED: moved to [dotenvx ext gitignore]')
@@ -148,7 +166,6 @@ program.command('gitignore')
     gitignoreAction.apply(this, args)
   })
 
-// dotenvx prebuild
 const prebuildAction = require('./actions/ext/prebuild')
 program.command('prebuild')
   .description('DEPRECATED: moved to [dotenvx ext prebuild]')
@@ -159,7 +176,6 @@ program.command('prebuild')
     prebuildAction.apply(this, args)
   })
 
-// dotenvx precommit
 const precommitAction = require('./actions/ext/precommit')
 program.command('precommit')
   .description('DEPRECATED: moved to [dotenvx ext precommit]')
@@ -171,7 +187,6 @@ program.command('precommit')
     precommitAction.apply(this, args)
   })
 
-// dotenvx scan
 const scanAction = require('./actions/ext/scan')
 program.command('scan')
   .description('DEPRECATED: moved to [dotenvx ext scan]')
@@ -179,21 +194,6 @@ program.command('scan')
     logger.warn('DEPRECATION NOTICE: [scan] has moved to [dotenvx ext scan]')
 
     scanAction.apply(this, args)
-  })
-
-program.command('help [command]')
-  .description('display help for command')
-  .action((command) => {
-    if (command) {
-      const subCommand = program.commands.find(c => c.name() === command)
-      if (subCommand) {
-        subCommand.outputHelp()
-      } else {
-        program.outputHelp()
-      }
-    } else {
-      program.outputHelp()
-    }
   })
 
 // overide helpInformation to hide DEPRECATED commands
