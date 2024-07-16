@@ -10,6 +10,7 @@ const program = new Command()
 const { setLogLevel, logger } = require('../shared/logger')
 const examples = require('./examples')
 const packageJson = require('./../lib/helpers/packageJson')
+const executeDynamic = require('./../lib/helpers/executeDynamic')
 
 // for use with run
 const envs = []
@@ -32,11 +33,22 @@ program
     setLogLevel(options)
   })
 
+program.addHelpText('after', '  pro                               🏆 pro')
+
+program
+  .argument('[command]', 'dynamic command')
+  .argument('[args...]', 'dynamic command arguments')
+  .action((command, args, cmdObj) => {
+    const rawArgs = process.argv.slice(3) // adjust the index based on where actual args start
+    executeDynamic(program, command, rawArgs)
+  })
+
 // cli
 program
   .name(packageJson.name)
   .description(packageJson.description)
   .version(packageJson.version)
+  .allowUnknownOption()
 
 // dotenvx run -- node index.js
 const runAction = require('./actions/run')
@@ -102,27 +114,6 @@ program.command('decrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('--stdout', 'send to stdout')
   .action(decryptAction)
-
-// dotenvx pro
-program.command('pro')
-  .description('🏆 pro')
-  .action(function (...args) {
-    try {
-      // execute `dotenvx-pro` if available
-      execSync('dotenvx-pro', { stdio: ['inherit', 'inherit', 'ignore'] })
-    } catch (_error) {
-      const pro = fs.readFileSync(path.join(__dirname, './pro.txt'), 'utf8')
-
-      console.log(pro)
-    }
-  })
-
-// // dotenvx ent
-// program.command('ent')
-//   .description('🏢 enterprise')
-//   .action(function (...args) {
-//     console.log('coming soon (med-large companies)')
-//   })
 
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
