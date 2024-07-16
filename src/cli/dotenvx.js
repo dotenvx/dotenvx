@@ -30,7 +30,7 @@ program
     setLogLevel(options)
   })
 
-program.addHelpText('after', '  pro                               🏆 pro')
+program.addHelpText('after', '  pro                               🏆 pro\n')
 
 program
   .argument('[command]', 'dynamic command')
