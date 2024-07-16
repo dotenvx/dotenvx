@@ -181,6 +181,21 @@ program.command('scan')
     scanAction.apply(this, args)
   })
 
+program.command('help [command]')
+  .description('display help for command')
+  .action((command) => {
+    if (command) {
+      const subCommand = program.commands.find(c => c.name() === command)
+      if (subCommand) {
+        subCommand.outputHelp()
+      } else {
+        program.outputHelp()
+      }
+    } else {
+      program.outputHelp()
+    }
+  })
+
 // overide helpInformation to hide DEPRECATED commands
 program.helpInformation = function () {
   const originalHelp = Command.prototype.helpInformation.call(this)
