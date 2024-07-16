@@ -202,7 +202,7 @@ program.helpInformation = function () {
   const lines = originalHelp.split('\n')
 
   // Filter out the hidden command from the help output
-  const filteredLines = lines.filter(line => !line.includes('DEPRECATED'))
+  const filteredLines = lines.filter(line => !line.includes('DEPRECATED') && !line.includes('help [command]'))
 
   return filteredLines.join('\n')
 }
