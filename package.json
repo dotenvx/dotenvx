@@ -43,10 +43,10 @@
     "dotenv": "^16.4.5",
     "eciesjs": "^0.4.6",
     "execa": "^5.1.1",
-    "fdir": "^6.1.1",
+    "fdir": "^6.2.0",
     "ignore": "^5.3.0",
     "object-treeify": "1.1.33",
-    "picomatch": "^3.0.1",
+    "picomatch": "^4.0.2",
     "which": "^4.0.0",
     "winston": "^3.11.0",
     "xxhashjs": "^0.2.2"

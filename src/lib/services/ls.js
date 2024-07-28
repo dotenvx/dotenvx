@@ -15,15 +15,17 @@ class Ls {
   }
 
   _filepaths () {
-    const ignoreMatchers = this.ignore.map(pattern => picomatch(pattern))
-    const pathMatchers = this._patterns().map(pattern => picomatch(pattern))
+    const exclude = picomatch(this.ignore)
+    const include = picomatch(this._patterns(), {
+      ignore: this.ignore
+    })
 
-    const api = new Fdir()
+    return new Fdir()
       .withRelativePaths()
-      .exclude((dir, path) => ignoreMatchers.some(matcher => matcher(path)))
-      .filter((path) => pathMatchers.some(matcher => matcher(path)))
-
-    return api.crawl(this.cwd).sync()
+      .exclude((dir, path) => exclude(path))
+      .filter((path) => include(path))
+      .crawl(this.cwd)
+      .sync()
   }
 
   _patterns () {
