@@ -12,7 +12,6 @@ const Status = require('../../src/lib/services/status')
 const Encrypt = require('../../src/lib/services/encrypt')
 const Decrypt = require('../../src/lib/services/decrypt')
 const Genexample = require('../../src/lib/services/genexample')
-const Settings = require('../../src/lib/services/settings')
 const VaultEncrypt = require('../../src/lib/services/vaultEncrypt')
 
 t.test('config calls Run.run', ct => {
@@ -139,19 +138,6 @@ t.test('set calls Status.run', ct => {
   main.status()
 
   t.ok(stub.called, 'new Status().run() called')
-
-  stub.restore()
-
-  ct.end()
-})
-
-t.test('settings calls Settings.run', ct => {
-  const stub = sinon.stub(Settings.prototype, 'run')
-  stub.returns({})
-
-  main.settings()
-
-  t.ok(stub.called, 'new Settings().run() called')
 
   stub.restore()
 

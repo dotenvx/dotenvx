@@ -289,21 +289,6 @@ export function genexample(
   envFile: string
 ): GenExampleOutput;
 
-export type Settings = {
-  DOTENVX_SETTINGS_FILEPATH: string;
-};
-
-type KeyOfSettings = Extract<keyof Settings, string>;
-
-/**
- * Get the dotenvx settings
- *
- * @param [key] - the key to get the value of
- */
-export function settings(
-  key: KeyOfSettings | undefined | null = null
-): Settings;
-
 /**
  * Decrypt ciphertext
  * @param encrypted - the encrypted ciphertext string

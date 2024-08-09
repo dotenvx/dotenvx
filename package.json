@@ -38,7 +38,6 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
-    "conf": "^10.2.0",
     "diff": "^5.2.0",
     "dotenv": "^16.4.5",
     "eciesjs": "^0.4.6",
