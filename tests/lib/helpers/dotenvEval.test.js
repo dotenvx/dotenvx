@@ -64,3 +64,17 @@ t.test('#eval (already set on machine but matches exactly parsed so do eval)', c
 
   ct.end()
 })
+
+t.test('#eval (cat multiline file)', ct => {
+  const options = {
+    parsed: {
+      HELLO: '$(cat tests/multiline.txt)'
+    }
+  }
+  const parsed = dotenvEval.eval(options).parsed
+
+  ct.same(parsed.HELLO, 'one\ntwo\nthree')
+  ct.same(process.env.HELLO, 'one\ntwo\nthree')
+
+  ct.end()
+})
