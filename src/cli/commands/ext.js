@@ -57,13 +57,6 @@ ext.command('scan')
   .description('scan for leaked secrets')
   .action(require('./../actions/ext/scan'))
 
-// dotenvx settings
-ext.command('settings')
-  .description('print current dotenvx settings')
-  .argument('[key]', 'settings name')
-  .option('-pp, --pretty-print', 'pretty print output')
-  .action(require('./../actions/ext/settings'))
-
 ext.addCommand(require('./../commands/ext/vault'))
 
 module.exports = ext

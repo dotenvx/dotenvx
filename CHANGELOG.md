@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.6.5...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.7.0...main)
+
+## 1.7.0
+
+### Removed
+
+* remove `ext settings` command (and [`conf`](https://www.npmjs.com/package/conf) along with it) ([#323](https://github.com/dotenvx/dotenvx/pull/323))
 
 ## 1.6.5
 

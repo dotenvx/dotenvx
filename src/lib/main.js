@@ -12,7 +12,6 @@ const Status = require('./services/status')
 const Encrypt = require('./services/encrypt')
 const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
-const Settings = require('./services/settings')
 const VaultEncrypt = require('./services/vaultEncrypt')
 
 // helpers
@@ -204,12 +203,6 @@ const status = function (directory) {
   return new Status(directory).run()
 }
 
-/** @type {import('./main').settings} */
-const settings = function (key = null) {
-  // @ts-ignore
-  return new Settings(key).run()
-}
-
 // misc/cleanup
 
 /** @type {import('./main').vaultDecrypt} */
@@ -255,8 +248,6 @@ module.exports = {
   set,
   status,
   genexample,
-  // settings
-  settings,
   // misc/cleanup
   vaultEncrypt,
   vaultDecrypt
