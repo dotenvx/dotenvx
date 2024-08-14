@@ -1,8 +1,7 @@
-const fs = require('fs')
-const path = require('path')
-
-const packageJsonPath = path.join(__dirname, '../../../package.json')
-
-const packageJson = require(packageJsonPath)
+const packageJson = {
+  name: process.env.npm_package_name,
+  version: process.env.npm_package_version,
+  description: "a better dotenv–from the creator of `dotenv`",
+}
 
 module.exports = packageJson
