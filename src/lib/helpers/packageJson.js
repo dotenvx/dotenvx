@@ -1,7 +1,3 @@
-const packageJson = {
-  name: process.env.npm_package_name,
-  version: process.env.npm_package_version,
-  description: "a better dotenv–from the creator of `dotenv`",
-}
+const {name, version, description} = require('../../../package.json')
 
-module.exports = packageJson
+module.exports = {name, version, description}
