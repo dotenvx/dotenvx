@@ -32,7 +32,9 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
   // for logging only log the original keys existing in parsed. this feels unnecessarily complex - like dotenv-expand should support the ability to inject additional `process.env` or objects as it sees fit to the object it wants to expand
   const result = {}
   for (const key in parsed) {
-    result[key] = expanded.parsed[key]
+    const value = expanded.parsed[key]
+    // decrypt again if necessary, since dotenv-expand may have expanded an encrypted value
+    result[key] = privateKey && privateKey.length ? decryptValue(value, privateKey) : value
   }
 
   return { parsed: result, processEnv }
