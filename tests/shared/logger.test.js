@@ -1,9 +1,10 @@
 const capcon = require('capture-console')
 const t = require('tap')
-const chalk = require('chalk')
+const pc = require('picocolors')
+const sinon = require('sinon')
 
 const packageJson = require('../../src/lib/helpers/packageJson')
-const { logger } = require('../../src/shared/logger')
+const { getColor, logger } = require('../../src/shared/logger')
 
 t.test('logger.blank', (ct) => {
   const message = 'message1'
@@ -60,7 +61,7 @@ t.test('logger.help2', (ct) => {
     logger.help2(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('gray')('message1')}\n`)
+  ct.equal(stdout, `${getColor('gray')('message1')}\n`)
 
   ct.end()
 })
@@ -72,7 +73,7 @@ t.test('logger.help', (ct) => {
     logger.help(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('blue')('message1')}\n`)
+  ct.equal(stdout, `${getColor('blue')('message1')}\n`)
 
   ct.end()
 })
@@ -96,7 +97,7 @@ t.test('logger.successvpb', (ct) => {
     logger.successvpb(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('green')(`[dotenvx@${packageJson.version}][prebuild] message1`)}\n`)
+  ct.equal(stdout, `${getColor('green')(`[dotenvx@${packageJson.version}][prebuild] message1`)}\n`)
 
   ct.end()
 })
@@ -108,7 +109,7 @@ t.test('logger.successvp', (ct) => {
     logger.successvp(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('green')(`[dotenvx@${packageJson.version}][precommit] message1`)}\n`)
+  ct.equal(stdout, `${getColor('green')(`[dotenvx@${packageJson.version}][precommit] message1`)}\n`)
 
   ct.end()
 })
@@ -120,7 +121,7 @@ t.test('logger.successv', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -132,7 +133,7 @@ t.test('logger.success', (ct) => {
     logger.success(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('green')('message1')}\n`)
+  ct.equal(stdout, `${getColor('green')('message1')}\n`)
 
   ct.end()
 })
@@ -144,7 +145,7 @@ t.test('logger.warnvpb', (ct) => {
     logger.warnvpb(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('orangered')(`[dotenvx@${packageJson.version}][prebuild] message1`)}\n`)
+  ct.equal(stdout, `${getColor('orangered')(`[dotenvx@${packageJson.version}][prebuild] message1`)}\n`)
 
   ct.end()
 })
@@ -156,7 +157,7 @@ t.test('logger.warnvp', (ct) => {
     logger.warnvp(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('orangered')(`[dotenvx@${packageJson.version}][precommit] message1`)}\n`)
+  ct.equal(stdout, `${getColor('orangered')(`[dotenvx@${packageJson.version}][precommit] message1`)}\n`)
 
   ct.end()
 })
@@ -168,7 +169,7 @@ t.test('logger.warnv', (ct) => {
     logger.warnv(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('orangered')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('orangered')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -180,7 +181,7 @@ t.test('logger.warn', (ct) => {
     logger.warn(message)
   })
 
-  ct.equal(stdout, `${chalk.keyword('orangered')('message1')}\n`)
+  ct.equal(stdout, `${getColor('orangered')('message1')}\n`)
 
   ct.end()
 })
@@ -192,7 +193,7 @@ t.test('logger.errorvpb', (ct) => {
     logger.errorvpb(message)
   })
 
-  ct.equal(stdout, `${chalk.bold.red(`[dotenvx@${packageJson.version}][prebuild] message1`)}\n`)
+  ct.equal(stdout, `${pc.bold(pc.red(`[dotenvx@${packageJson.version}][prebuild] message1`))}\n`)
 
   ct.end()
 })
@@ -204,7 +205,7 @@ t.test('logger.errorvp', (ct) => {
     logger.errorvp(message)
   })
 
-  ct.equal(stdout, `${chalk.bold.red(`[dotenvx@${packageJson.version}][precommit] message1`)}\n`)
+  ct.equal(stdout, `${pc.bold(pc.red(`[dotenvx@${packageJson.version}][precommit] message1`))}\n`)
 
   ct.end()
 })
@@ -216,7 +217,7 @@ t.test('logger.errorv', (ct) => {
     logger.errorv(message)
   })
 
-  ct.equal(stdout, `${chalk.bold.red(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${pc.bold(pc.red(`[dotenvx@${packageJson.version}] message1`))}\n`)
 
   ct.end()
 })
@@ -228,7 +229,7 @@ t.test('logger.error', (ct) => {
     logger.error(message)
   })
 
-  ct.equal(stdout, `${chalk.bold.red('message1')}\n`)
+  ct.equal(stdout, `${pc.bold(pc.red('message1'))}\n`)
 
   ct.end()
 })
@@ -253,6 +254,37 @@ t.test('logger.blank as object', (ct) => {
   })
 
   ct.equal(stdout, `${JSON.stringify({ key: 'value' })}\n`)
+
+  ct.end()
+})
+
+t.test('getColor with color support', (ct) => {
+  const stub = sinon.stub(pc, 'isColorSupported').value(true)
+
+  ct.equal(getColor('red')('hello'), '\x1b[38;2;255;0;0mhello\x1b[39m')
+
+  stub.restore()
+  ct.end()
+})
+
+t.test('getColor without color support', (ct) => {
+  const stub = sinon.stub(pc, 'isColorSupported').value(false)
+
+  ct.equal(getColor('red')('hello'), 'hello')
+
+  stub.restore()
+  ct.end()
+})
+
+t.test('getColor invalid color', (ct) => {
+  try {
+    getColor('invalid color')
+
+    ct.fail('getColor should throw error')
+  } catch (error) {
+    ct.pass(' threw an error')
+    ct.equal(error.message, 'Invalid color invalid color')
+  }
 
   ct.end()
 })
