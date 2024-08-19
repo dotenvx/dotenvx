@@ -268,6 +268,16 @@ More examples
   ```
 
   </details>
+* <details><summary>Fish 🐠</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+
+  $ dotenvx run --quiet -- sh -c 'echo Hello $HELLO'
+  Hello World
+  ```
+
+  </details>
 * <details><summary>Cron ⏰</summary><br>
 
   ```sh

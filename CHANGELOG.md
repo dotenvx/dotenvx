@@ -2,7 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.6.4...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.7.0...main)
+
+### Changed
+
+* replaced `execa` with `tinyexec` - cutting down on 15 dependencies ([#328](https://github.com/dotenvx/dotenvx/pull/328))
+
+## 1.7.0
+
+### Removed
+
+* remove `ext settings` command (and [`conf`](https://www.npmjs.com/package/conf) along with it) ([#323](https://github.com/dotenvx/dotenvx/pull/323))
+
+## 1.6.5
+
+### Changed
+
+* 🐞 patch `chomp` for interpolation. strip ending newline (was stripping first found newline) ([#322](https://github.com/dotenvx/dotenvx/pull/322))
 
 ## 1.6.4
 

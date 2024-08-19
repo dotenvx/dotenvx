@@ -108,7 +108,7 @@ const decryptAction = require('./actions/decrypt')
 program.command('decrypt')
   .description('convert encrypted .env file(s) to plain .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
-  .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
+  .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('--stdout', 'send to stdout')
   .action(decryptAction)
 

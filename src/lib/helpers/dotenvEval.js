@@ -1,7 +1,7 @@
 const { execSync } = require('child_process')
 
 function _chomp (value) {
-  return value.replace(/\r?\n|\r/, '')
+  return value.replace(/[\r\n]+$/, '')
 }
 
 function interpolate (value, processEnv, parsed) {
