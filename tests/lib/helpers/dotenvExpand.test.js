@@ -17,11 +17,12 @@ t.test('#expand', ct => {
   const { parsed, processEnv } = dotenvExpand.expand(options)
 
   ct.same(parsed.BASIC, 'basic')
-  ct.same(parsed.BASIC_EXPAND, 'basic')
   ct.same(processEnv.BASIC, undefined)
-  ct.same(processEnv.BASIC_EXPAND, 'basic') // edge case where becuase it was an expansion we also need to place it in processEnv with its possible expansion value
   ct.same(process.env.BASIC, undefined)
-  ct.same(process.env.BASIC_EXPAND, 'basic')
+
+  ct.same(parsed.BASIC_EXPAND, 'basic')
+  ct.same(processEnv.BASIC_EXPAND, 'basic')
+  ct.same(process.env.BASIC_EXPAND, undefined) // it should not update process.env directly
 
   ct.end()
 })
@@ -32,36 +33,32 @@ t.test('#expand using the machine value first (if it exists)', ct => {
     parsed: {
       MACHINE: 'file',
       MACHINE_EXPAND: '$MACHINE'
-    }
+    },
+    processEnv: process.env
   }
   const { parsed, processEnv } = dotenvExpand.expand(options)
 
   ct.same(parsed.MACHINE, 'file')
-  ct.same(parsed.MACHINE_EXPAND, 'file')
   ct.same(processEnv.MACHINE, 'machine')
-  ct.same(processEnv.MACHINE_EXPAND, 'machine')
   ct.same(process.env.MACHINE, 'machine')
+
+  ct.same(parsed.MACHINE_EXPAND, 'file')
+  ct.same(processEnv.MACHINE_EXPAND, 'machine')
   ct.same(process.env.MACHINE_EXPAND, 'machine')
 
   ct.end()
 })
 
-t.test('#expand using the machine value first (if it exists) when given a processEnv', ct => {
+t.test('#expand - missing parsed (defaults to empty hash)', ct => {
+  process.env.MACHINE = 'machine'
   const options = {
-    processEnv: {
-      MACHINE: 'machine'
-    },
-    parsed: {
-      MACHINE: 'file',
-      MACHINE_EXPAND: '$MACHINE'
-    }
+    processEnv: process.env
   }
   const { parsed, processEnv } = dotenvExpand.expand(options)
 
-  ct.same(parsed.MACHINE, 'file')
-  ct.same(parsed.MACHINE_EXPAND, 'file')
+  ct.same(parsed.MACHINE, undefined)
   ct.same(processEnv.MACHINE, 'machine')
-  ct.same(processEnv.MACHINE_EXPAND, 'machine')
+  ct.same(process.env.MACHINE, 'machine')
 
   ct.end()
 })
@@ -73,15 +70,17 @@ t.test('#expand using the machine value first (if it exists) but where the expan
     parsed: {
       MACHINE: 'file',
       MACHINE_EXPAND: '$MACHINE'
-    }
+    },
+    processEnv: process.env
   }
   const { parsed, processEnv } = dotenvExpand.expand(options)
 
   ct.same(parsed.MACHINE, 'file')
-  ct.same(parsed.MACHINE_EXPAND, 'file')
   ct.same(processEnv.MACHINE, 'machine')
-  ct.same(processEnv.MACHINE_EXPAND, 'already set!')
   ct.same(process.env.MACHINE, 'machine')
+
+  ct.same(parsed.MACHINE_EXPAND, 'file')
+  ct.same(processEnv.MACHINE_EXPAND, 'already set!')
   ct.same(process.env.MACHINE_EXPAND, 'already set!')
 
   ct.end()
@@ -161,7 +160,7 @@ t.test('handles expand with default', ct => {
   const options = {
     processEnv: {},
     parsed: {
-      MACHINE: 'machine_env',
+      MACHINE: 'file',
       // eslint-disable-next-line no-template-curly-in-string
       EXPAND_DEFAULT: '${MACHINE:-default}'
     }
@@ -169,8 +168,28 @@ t.test('handles expand with default', ct => {
 
   const { parsed, processEnv } = dotenvExpand.expand(options)
 
-  ct.same(parsed.EXPAND_DEFAULT, 'machine_env')
-  ct.same(processEnv.EXPAND_DEFAULT, 'machine_env') // it should use the processEnv value if it exists, but otherwise use the file value since it does
+  ct.same(parsed.EXPAND_DEFAULT, 'file')
+  ct.same(processEnv.EXPAND_DEFAULT, 'file')
+
+  ct.end()
+})
+
+t.test('handles expand with default - when machine has a set value already', ct => {
+  const options = {
+    processEnv: {
+      MACHINE: 'already set'
+    },
+    parsed: {
+      MACHINE: 'file',
+      // eslint-disable-next-line no-template-curly-in-string
+      EXPAND_DEFAULT: '${MACHINE:-default}'
+    }
+  }
+
+  const { parsed, processEnv } = dotenvExpand.expand(options)
+
+  ct.same(parsed.EXPAND_DEFAULT, 'file')
+  ct.same(processEnv.EXPAND_DEFAULT, 'already set')
 
   ct.end()
 })
@@ -179,7 +198,7 @@ t.test('handles multi-nested with defaults', ct => {
   const options = {
     processEnv: {},
     parsed: {
-      MACHINE: 'machine_env',
+      MACHINE: 'file',
       // eslint-disable-next-line no-template-curly-in-string
       EXPAND_DEFAULT_NESTED_TWICE: '${UNDEFINED:-${MACHINE}${UNDEFINED:-default}}'
     }
@@ -187,8 +206,8 @@ t.test('handles multi-nested with defaults', ct => {
 
   const { parsed, processEnv } = dotenvExpand.expand(options)
 
-  ct.same(parsed.EXPAND_DEFAULT_NESTED_TWICE, 'machine_envdefault')
-  ct.same(processEnv.EXPAND_DEFAULT_NESTED_TWICE, 'machine_envdefault')
+  ct.same(parsed.EXPAND_DEFAULT_NESTED_TWICE, 'filedefault')
+  ct.same(processEnv.EXPAND_DEFAULT_NESTED_TWICE, 'filedefault')
 
   ct.end()
 })

@@ -63,12 +63,12 @@ class Run {
     row.string = env
 
     try {
-      const { parsed } = parseDecryptEvalExpand(env, null, this.processEnv)
+      const { parsed, processEnv } = parseDecryptEvalExpand(env, null, this.processEnv)
 
       row.parsed = parsed
       this.readableStrings.add(env)
 
-      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
+      const { injected, preExisted } = this._inject(processEnv, parsed, this.overload, this.processEnv)
       row.injected = injected
       row.preExisted = preExisted
 
@@ -94,10 +94,10 @@ class Run {
 
       // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
       const privateKey = smartDotenvPrivateKey(envFilepath)
-      const { parsed } = parseDecryptEvalExpand(src, privateKey, this.processEnv)
+      const { parsed, processEnv } = parseDecryptEvalExpand(src, privateKey, this.processEnv)
       row.parsed = parsed
 
-      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
+      const { injected, preExisted } = this._inject(processEnv, parsed, this.overload, this.processEnv)
       row.injected = injected
       row.preExisted = preExisted
 
@@ -163,10 +163,10 @@ class Run {
 
     try {
       // parse this. it's the equivalent of the .env file
-      const { parsed } = parseDecryptEvalExpand(decrypted, null, this.processEnv)
+      const { parsed, processEnv } = parseDecryptEvalExpand(decrypted, null, this.processEnv)
       row.parsed = parsed
 
-      const { injected, preExisted } = this._inject(this.processEnv, parsed, this.overload)
+      const { injected, preExisted } = this._inject(processEnv, parsed, this.overload, this.processEnv)
       row.injected = injected
       row.preExisted = preExisted
 
@@ -180,8 +180,8 @@ class Run {
     this.processedEnvs.push(row)
   }
 
-  _inject (processEnv, parsed, overload) {
-    return inject(processEnv, parsed, overload)
+  _inject (clonedProcessEnv, parsed, overload, processEnv) {
+    return inject(clonedProcessEnv, parsed, overload, processEnv)
   }
 
   _determineEnvsFromDotenvPrivateKey () {

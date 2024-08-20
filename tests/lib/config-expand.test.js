@@ -17,8 +17,8 @@ t.test('expands', ct => {
   ct.equal(env.parsed.BASIC, 'basic')
   ct.equal(process.env.BASIC_EXPAND, 'basic')
 
-  ct.equal(env.parsed.MACHINE_EXPAND, 'machine_env')
-  ct.equal(process.env.MACHINE_EXPAND, 'machine_env')
+  ct.equal(env.parsed.MACHINE_EXPAND, 'file')
+  ct.equal(process.env.MACHINE_EXPAND, 'file')
 
   ct.end()
 })
@@ -28,6 +28,8 @@ t.test('expands using the machine value first (if it exists)', ct => {
 
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath })
+
+  ct.equal(env.parsed.MACHINE, 'machine') // this is because .parsed here conceptually is the final output to process.env. it's just a convenient getter, unlike other internal 'parsed' objects. TODO: improve naming of this internally ct.equal(process.env.MACHINE, 'machine')
 
   ct.equal(env.parsed.MACHINE_EXPAND, 'machine')
   ct.equal(process.env.MACHINE_EXPAND, 'machine')
@@ -42,16 +44,16 @@ t.test('expands to bring own processEnv', ct => {
   const env = dotenvx.config({ path: testPath, processEnv: myObject })
 
   ct.equal(env.parsed.BASIC, 'basic')
-  ct.equal(process.env.BASIC, undefined)
   ct.equal(myObject.BASIC, 'basic')
+  ct.equal(process.env.BASIC, undefined)
 
   ct.equal(env.parsed.BASIC, 'basic')
   ct.equal(process.env.BASIC_EXPAND, undefined)
   ct.equal(myObject.BASIC_EXPAND, 'basic')
 
-  ct.equal(env.parsed.MACHINE_EXPAND, 'machine_env')
+  ct.equal(env.parsed.MACHINE_EXPAND, 'file')
   ct.equal(process.env.MACHINE_EXPAND, undefined)
-  ct.equal(myObject.MACHINE_EXPAND, 'machine_env')
+  ct.equal(myObject.MACHINE_EXPAND, 'file')
 
   ct.end()
 })
@@ -63,32 +65,32 @@ t.test('expands .env.expand correctly', ct => {
   ct.equal(env.parsed.ESCAPED_EXPAND, '$ESCAPED')
   ct.equal(process.env.ESCAPED_EXPAND, '$ESCAPED')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT, 'file')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT_NESTED, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT_NESTED, 'file')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED2, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT_NESTED2, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED2, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT_NESTED2, 'file')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED_TWICE, 'machine_envdefault')
-  ct.equal(process.env.EXPAND_DEFAULT_NESTED_TWICE, 'machine_envdefault')
+  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED_TWICE, 'filedefault')
+  ct.equal(process.env.EXPAND_DEFAULT_NESTED_TWICE, 'filedefault')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED_TWICE2, 'machine_envdefault')
-  ct.equal(process.env.EXPAND_DEFAULT_NESTED_TWICE2, 'machine_envdefault')
+  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED_TWICE2, 'filedefault')
+  ct.equal(process.env.EXPAND_DEFAULT_NESTED_TWICE2, 'filedefault')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_SPECIAL_CHARACTERS, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT_SPECIAL_CHARACTERS, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT_SPECIAL_CHARACTERS, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT_SPECIAL_CHARACTERS, 'file')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_SPECIAL_CHARACTERS2, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT_SPECIAL_CHARACTERS2, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT_SPECIAL_CHARACTERS2, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT_SPECIAL_CHARACTERS2, 'file')
 
   ct.equal(env.parsed.UNDEFINED_EXPAND, '')
   ct.equal(process.env.UNDEFINED_EXPAND, '')
 
-  ct.equal(env.parsed.UNDEFINED_EXPAND_NESTED, 'machine_env')
-  ct.equal(process.env.UNDEFINED_EXPAND_NESTED, 'machine_env')
+  ct.equal(env.parsed.UNDEFINED_EXPAND_NESTED, 'file')
+  ct.equal(process.env.UNDEFINED_EXPAND_NESTED, 'file')
 
   ct.equal(env.parsed.UNDEFINED_EXPAND_DEFAULT, 'default')
   ct.equal(process.env.UNDEFINED_EXPAND_DEFAULT, 'default')
@@ -204,32 +206,32 @@ t.test('expands .env.expand correctly when MACHINE already set but overload is t
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath, overload: true })
 
-  ct.equal(env.parsed.EXPAND_DEFAULT, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT, 'file')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT_NESTED, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT_NESTED, 'file')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED2, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT_NESTED2, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED2, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT_NESTED2, 'file')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED_TWICE, 'machine_envdefault')
-  ct.equal(process.env.EXPAND_DEFAULT_NESTED_TWICE, 'machine_envdefault')
+  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED_TWICE, 'filedefault')
+  ct.equal(process.env.EXPAND_DEFAULT_NESTED_TWICE, 'filedefault')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED_TWICE2, 'machine_envdefault')
-  ct.equal(process.env.EXPAND_DEFAULT_NESTED_TWICE2, 'machine_envdefault')
+  ct.equal(env.parsed.EXPAND_DEFAULT_NESTED_TWICE2, 'filedefault')
+  ct.equal(process.env.EXPAND_DEFAULT_NESTED_TWICE2, 'filedefault')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_SPECIAL_CHARACTERS, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT_SPECIAL_CHARACTERS, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT_SPECIAL_CHARACTERS, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT_SPECIAL_CHARACTERS, 'file')
 
-  ct.equal(env.parsed.EXPAND_DEFAULT_SPECIAL_CHARACTERS2, 'machine_env')
-  ct.equal(process.env.EXPAND_DEFAULT_SPECIAL_CHARACTERS2, 'machine_env')
+  ct.equal(env.parsed.EXPAND_DEFAULT_SPECIAL_CHARACTERS2, 'file')
+  ct.equal(process.env.EXPAND_DEFAULT_SPECIAL_CHARACTERS2, 'file')
 
   ct.equal(env.parsed.UNDEFINED_EXPAND, '')
   ct.equal(process.env.UNDEFINED_EXPAND, '')
 
-  ct.equal(env.parsed.UNDEFINED_EXPAND_NESTED, 'machine_env')
-  ct.equal(process.env.UNDEFINED_EXPAND_NESTED, 'machine_env')
+  ct.equal(env.parsed.UNDEFINED_EXPAND_NESTED, 'file')
+  ct.equal(process.env.UNDEFINED_EXPAND_NESTED, 'file')
 
   ct.end()
 })

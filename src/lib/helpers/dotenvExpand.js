@@ -42,30 +42,27 @@ function interpolate (value, lookups) {
 }
 
 function expand (options) {
-  let processEnv = process.env
-  if (options && options.processEnv != null) {
-    processEnv = options.processEnv
-  }
+  const processEnv = options.processEnv || {}
+  const parsed = options.parsed || {}
 
-  const combined = { ...processEnv, ...options.parsed }
-  const combinedReversed = { ...options.parsed, ...processEnv }
+  const combined = { ...processEnv, ...parsed }
+  const combinedReversed = { ...parsed, ...processEnv }
 
-  for (const key in options.parsed) {
-    const value = options.parsed[key]
+  for (const key in parsed) {
+    const value = parsed[key]
 
     // interpolate using both file and processEnv (file interpolation wins. used for --overload later)
     const fileValue = _resolveEscapeSequences(interpolate(value, combined))
-    options.parsed[key] = fileValue
+    parsed[key] = fileValue
 
     if (fileValue === _resolveEscapeSequences(value)) {
       continue // no change means no expansion, move on
     }
 
     if (processEnv[key]) {
-      continue // already has a value in process.env, move on
+      continue // already has a value in processEnv, move on
     }
 
-    // interpolate with processEnv only (used for default no overload)
     const processEnvValue = interpolate(value, combinedReversed) // could be empty string ''
     if (processEnvValue) {
       processEnv[key] = _resolveEscapeSequences(processEnvValue) // set it
@@ -73,7 +70,7 @@ function expand (options) {
   }
 
   return {
-    parsed: options.parsed,
+    parsed,
     processEnv
   }
 }

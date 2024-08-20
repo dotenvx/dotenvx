@@ -6,8 +6,6 @@ const decryptValue = require('./decryptValue')
 function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.env) {
   // parse
   const parsed = dotenv.parse(src)
-
-  // handle inline encrypted values
   if (privateKey && privateKey.length > 0) {
     for (const key in parsed) {
       const value = parsed[key]
@@ -28,13 +26,19 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
     parsed: evaled
   }
   const expanded = dotenvExpand.expand(inputEvaled)
+  if (privateKey && privateKey.length > 0) {
+    for (const key in expanded.parsed) {
+      expanded.parsed[key] = decryptValue(expanded.parsed[key], privateKey)
+    }
+    for (const key in processEnv) {
+      processEnv[key] = decryptValue(processEnv[key], privateKey)
+    }
+  }
 
   // for logging only log the original keys existing in parsed. this feels unnecessarily complex - like dotenv-expand should support the ability to inject additional `process.env` or objects as it sees fit to the object it wants to expand
   const result = {}
   for (const key in parsed) {
-    const value = expanded.parsed[key]
-    // decrypt again if necessary, since dotenv-expand may have expanded an encrypted value
-    result[key] = privateKey && privateKey.length ? decryptValue(value, privateKey) : value
+    result[key] = expanded.parsed[key]
   }
 
   return { parsed: result, processEnv }

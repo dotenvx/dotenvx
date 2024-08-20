@@ -60,10 +60,24 @@ t.test('#parseDecryptEvalExpand expands from process.env', ct => {
 
   src = 'HELLO=$EXPAND'
 
-  const { parsed, processEnv } = parseDecryptEvalExpand(src)
+  const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'expanded' })
-  ct.same(processEnv.HELLO, 'expanded')
+  ct.same(process.env.HELLO, 'expanded')
+
+  ct.end()
+})
+
+t.test('#parseDecryptEvalExpand expands AND decrypts from process.env', ct => {
+  process.env.EXPAND = 'encrypted:BMVCQpz/+NYDcGZhbXyqbwP8IDJSTXl4xDQsgusQHEVFAWOXQnKRBTOzRiwuYIJzjuWnKkrQJEDEi8Av9xnfx61jVTJymVWLjVmFK7CM+6lmKOnIhPMzu0Mi0dH82P81bOXjkZTHIIcA'
+
+  const privateKey = '1fc1cafa954a7a2bf0a6fbff46189c9e03e3a66b4d1133108ab9fcdb9e154b70'
+
+  src = 'HELLO=$EXPAND'
+
+  const { parsed } = parseDecryptEvalExpand(src, privateKey)
+
+  ct.same(parsed, { HELLO: 'expanded' })
   ct.same(process.env.HELLO, 'expanded')
 
   ct.end()
@@ -76,6 +90,19 @@ EXPAND=self`
   const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'self', EXPAND: 'self' })
+
+  ct.end()
+})
+
+t.test('#parseDecryptEvalExpand expands from self file AND decrypts', ct => {
+  const privateKey = '1fc1cafa954a7a2bf0a6fbff46189c9e03e3a66b4d1133108ab9fcdb9e154b70'
+
+  src = `HELLO=$EXPAND
+EXPAND=encrypted:BMVCQpz/+NYDcGZhbXyqbwP8IDJSTXl4xDQsgusQHEVFAWOXQnKRBTOzRiwuYIJzjuWnKkrQJEDEi8Av9xnfx61jVTJymVWLjVmFK7CM+6lmKOnIhPMzu0Mi0dH82P81bOXjkZTHIIcA`
+
+  const { parsed } = parseDecryptEvalExpand(src, privateKey)
+
+  ct.same(parsed, { HELLO: 'expanded', EXPAND: 'expanded' })
 
   ct.end()
 })
@@ -99,6 +126,18 @@ t.test('#parseDecryptEvalExpand command substitutes', ct => {
   const { parsed } = parseDecryptEvalExpand(src)
 
   ct.same(parsed, { HELLO: 'world' })
+
+  ct.end()
+})
+
+t.test('#parseDecryptEvalExpand command substitutes AND decrypts', ct => {
+  const privateKey = '1fc1cafa954a7a2bf0a6fbff46189c9e03e3a66b4d1133108ab9fcdb9e154b70'
+
+  src = 'HELLO=$(echo encrypted:BMVCQpz/+NYDcGZhbXyqbwP8IDJSTXl4xDQsgusQHEVFAWOXQnKRBTOzRiwuYIJzjuWnKkrQJEDEi8Av9xnfx61jVTJymVWLjVmFK7CM+6lmKOnIhPMzu0Mi0dH82P81bOXjkZTHIIcA)'
+
+  const { parsed } = parseDecryptEvalExpand(src, privateKey)
+
+  ct.same(parsed, { HELLO: 'expanded' })
 
   ct.end()
 })

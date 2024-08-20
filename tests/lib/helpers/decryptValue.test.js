@@ -35,3 +35,10 @@ t.test('#decryptValue when empty string', ct => {
 
   ct.end()
 })
+
+t.test('#decryptValue - hardcoded scenario', ct => {
+  const decrypted = decryptValue('encrypted:BMVCQpz/+NYDcGZhbXyqbwP8IDJSTXl4xDQsgusQHEVFAWOXQnKRBTOzRiwuYIJzjuWnKkrQJEDEi8Av9xnfx61jVTJymVWLjVmFK7CM+6lmKOnIhPMzu0Mi0dH82P81bOXjkZTHIIcA', privateKey)
+  ct.same(decrypted, 'expanded')
+
+  ct.end()
+})
