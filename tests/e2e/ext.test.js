@@ -15,11 +15,20 @@ function execShell (commands) {
   }).trim()
 }
 
-t.test('ext hub', ct => {
-  const output = execShell(`${dotenvx} ext hub`)
+t.test('ext missing', ct => {
+  const output = execShell(`${dotenvx} ext missing`)
 
-  t.match(output, /\[INSTALLATION_NEEDED\] install dotenvx-ext-hub to use \[dotenvx ext hub\] commands/, 'shoud say installation needed')
-  t.match(output, /see installation instructions/, 'shoud say see installation instructions')
+  t.match(output, "error: unknown command 'missing'", 'shoud say installation needed')
 
   ct.end()
 })
+
+// uncomment when ready to deprecate ext vault
+// t.test('ext vault', ct => {
+//   const output = execShell(`${dotenvx} ext vault`)
+//
+//   t.match(output, /\[INSTALLATION_NEEDED\] install dotenvx-ext-vault to use \[dotenvx ext vault\] commands/, 'shoud say installation needed')
+//   t.match(output, /see installation instructions/, 'shoud say see installation instructions')
+//
+//   ct.end()
+// })

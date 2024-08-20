@@ -24,7 +24,7 @@ t.test('executeExtension - no command', ct => {
   ct.end()
 })
 
-t.test('executeExtension - hub command missing', ct => {
+t.test('executeExtension - vault command missing', ct => {
   const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
   const mockResult = {
     status: 1,
@@ -32,15 +32,16 @@ t.test('executeExtension - hub command missing', ct => {
   }
   spawnSyncStub.returns(mockResult)
   const processExitStub = sinon.stub(process, 'exit')
-  const loggerHelpStub = sinon.stub(logger, 'help')
-  const loggerWarnStub = sinon.stub(logger, 'warn')
+  // const loggerHelpStub = sinon.stub(logger, 'help')
+  // const loggerWarnStub = sinon.stub(logger, 'warn')
 
-  executeExtension(ext, 'hub', ['hub'])
+  executeExtension(ext, 'vault', ['vault'])
 
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
-  ct.ok(loggerWarnStub.calledWith('[INSTALLATION_NEEDED] install dotenvx-ext-hub to use [dotenvx ext hub] commands'), 'warn')
-  ct.ok(loggerHelpStub.calledWith('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-hub]'), 'help')
+  // uncomment when ready to deprecate ext vault commands
+  // ct.ok(loggerWarnStub.calledWith('[INSTALLATION_NEEDED] install dotenvx-ext-vault to use [dotenvx ext vault] commands'), 'warn')
+  // ct.ok(loggerHelpStub.calledWith('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-vault]'), 'help')
 
   ct.end()
 })
@@ -68,7 +69,7 @@ t.test('executeExtension - other command missing', ct => {
   ct.end()
 })
 
-t.test('executeExtension - hub found', ct => {
+t.test('executeExtension - vault found', ct => {
   const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
   const mockResult = {
     status: 0
@@ -78,7 +79,7 @@ t.test('executeExtension - hub found', ct => {
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerWarnStub = sinon.stub(logger, 'warn')
 
-  executeExtension(ext, 'hub', ['hub'])
+  executeExtension(ext, 'vault', ['vault'])
 
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.notCalled, 'process.exit should not be called')
