@@ -1,8 +1,3 @@
-const fs = require('fs')
-const path = require('path')
+const {name, version, description} = require('../../../package.json')
 
-const packageJsonPath = path.join(__dirname, '../../../package.json')
-
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
-
-module.exports = packageJson
+module.exports = {name, version, description}
