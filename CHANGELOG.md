@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.7.0...main)
 
+### Added
+
+* decrypt expanded values ([#336](https://github.com/dotenvx/dotenvx/pull/336))
+
 ### Changed
 
 * replaced `execa` with `tinyexec` - cutting down on 15 dependencies ([#328](https://github.com/dotenvx/dotenvx/pull/328))
