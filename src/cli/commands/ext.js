@@ -9,8 +9,6 @@ ext
   .description('🔌 extensions')
   .allowUnknownOption()
 
-ext.addHelpText('after', '  hub                               🚫 DEPRECATED: to be replaced by [dotenvx pro]')
-
 ext
   .argument('[command]', 'dynamic ext command')
   .argument('[args...]', 'dynamic ext command arguments')
