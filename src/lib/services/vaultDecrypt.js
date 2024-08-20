@@ -23,7 +23,7 @@ class VaultDecrypt {
     if (!fs.existsSync(this.envVaultFilepath)) {
       const code = 'MISSING_ENV_VAULT_FILE'
       const message = `missing .env.vault (${this.envVaultFilepath})`
-      const help = `? generate one with [dotenvx encrypt ${this.directory}]`
+      const help = `? generate one with [dotenvx ext vault encrypt ${this.directory}]`
 
       const error = new Error(message)
       error.code = code

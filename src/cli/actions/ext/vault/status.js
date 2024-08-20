@@ -58,7 +58,7 @@ function status (directory) {
 
     if (untrackedFilenames.length > 0) {
       logger.warn(`untracked (${untrackedFilenames.join(', ')})`)
-      logger.help(`? track them with [dotenvx encrypt ${directory}]`)
+      logger.help(`? track them with [dotenvx ext vault encrypt ${directory}]`)
     }
   } catch (error) {
     logger.error(error.message)
