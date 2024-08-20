@@ -261,7 +261,7 @@ t.test('logger.blank as object', (ct) => {
 t.test('getColor with color support', (ct) => {
   const stub = sinon.stub(pc, 'isColorSupported').value(true)
 
-  ct.equal(getColor('red')('hello'), '\x1b[38;2;255;0;0mhello\x1b[39m')
+  ct.equal(getColor('orangered')('hello'), '\x1b[38;5;202mhello\x1b[39m')
 
   stub.restore()
   ct.end()
@@ -270,7 +270,7 @@ t.test('getColor with color support', (ct) => {
 t.test('getColor without color support', (ct) => {
   const stub = sinon.stub(pc, 'isColorSupported').value(false)
 
-  ct.equal(getColor('red')('hello'), 'hello')
+  ct.equal(getColor('orangered')('hello'), 'hello')
 
   stub.restore()
   ct.end()
@@ -278,12 +278,12 @@ t.test('getColor without color support', (ct) => {
 
 t.test('getColor invalid color', (ct) => {
   try {
-    getColor('invalid color')
+    getColor('invalid')
 
     ct.fail('getColor should throw error')
   } catch (error) {
     ct.pass(' threw an error')
-    ct.equal(error.message, 'Invalid color invalid color')
+    ct.equal(error.message, 'Invalid color invalid')
   }
 
   ct.end()

@@ -1,5 +1,4 @@
 const winston = require('winston')
-const colors = require('color-name')
 const pc = require('picocolors')
 
 const printf = winston.format.printf
@@ -8,6 +7,15 @@ const createLogger = winston.createLogger
 const transports = winston.transports
 
 const packageJson = require('./../lib/helpers/packageJson')
+
+const colors = new Map([
+  ['blue', 21],
+  ['green', 34],
+  ['olive', 142],
+  ['plum', 182],
+  ['orangered', 202],
+  ['gray', 244]
+])
 
 const levels = {
   error: 0,
@@ -34,12 +42,12 @@ const levels = {
 }
 
 function getColor (color) {
-  if (!Object.hasOwn(colors, color)) {
+  if (!colors.has(color)) {
     throw new Error(`Invalid color ${color}`)
   }
   if (!pc.isColorSupported) return (message) => message
-  const [r, g, b] = colors[color]
-  return (message) => `\x1b[38;2;${r};${g};${b}m${message}\x1b[39m`
+  const code = colors.get(color)
+  return (message) => `\x1b[38;5;${code}m${message}\x1b[39m`
 }
 
 const error = (m) => pc.bold(pc.red(m))
