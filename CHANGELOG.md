@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file. See [standa
 * replace `execa` with `tinyexec` - cutting down on 15 dependencies ([#328](https://github.com/dotenvx/dotenvx/pull/328))
 * optimize `Ls._filepaths` ([#317](https://github.com/dotenvx/dotenvx/pull/317/))
 
+### Removed
+
+* remove `ext hub` from extension list (you can still install it as an extension [here](https://github.com/dotenvx/dotenvx-ext-hub)) ([#337](https://github.com/dotenvx/dotenvx/pull/337))
+
 ## 1.7.0
 
 ### Removed
