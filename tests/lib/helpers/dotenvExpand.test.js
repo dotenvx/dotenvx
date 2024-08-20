@@ -49,6 +49,20 @@ t.test('#expand using the machine value first (if it exists)', ct => {
   ct.end()
 })
 
+t.test('#expand - missing parsed (defaults to empty hash)', ct => {
+  process.env.MACHINE = 'machine'
+  const options = {
+    processEnv: process.env
+  }
+  const { parsed, processEnv } = dotenvExpand.expand(options)
+
+  ct.same(parsed.MACHINE, undefined)
+  ct.same(processEnv.MACHINE, 'machine')
+  ct.same(process.env.MACHINE, 'machine')
+
+  ct.end()
+})
+
 t.test('#expand using the machine value first (if it exists) but where the expansion key is also already set on process.env', ct => {
   process.env.MACHINE = 'machine'
   process.env.MACHINE_EXPAND = 'already set!'
