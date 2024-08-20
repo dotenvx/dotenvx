@@ -2,14 +2,29 @@ const dotenv = require('dotenv')
 const dotenvEval = require('./dotenvEval')
 const dotenvExpand = require('./dotenvExpand')
 const decryptValue = require('./decryptValue')
+const truncate = require('./truncate')
+
+function warning (e, key, privateKey) {
+  const warning = new Error(`[${e.code}] could not decrypt ${key} using private key ${truncate(privateKey)}`)
+  warning.code = e.code
+  warning.help = `[${e.code}] ? ${e.message}`
+
+  return warning
+}
 
 function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.env) {
+  const warnings = []
+
   // parse
   const parsed = dotenv.parse(src)
   if (privateKey && privateKey.length > 0) {
     for (const key in parsed) {
-      const value = parsed[key]
-      parsed[key] = decryptValue(value, privateKey)
+      try {
+        const decryptedValue = decryptValue(parsed[key], privateKey)
+        parsed[key] = decryptedValue
+      } catch (_e) {
+        // do nothing. warnings tracked further below.
+      }
     }
   }
 
@@ -28,10 +43,20 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
   const expanded = dotenvExpand.expand(inputEvaled)
   if (privateKey && privateKey.length > 0) {
     for (const key in expanded.parsed) {
-      expanded.parsed[key] = decryptValue(expanded.parsed[key], privateKey)
+      try {
+        const decryptedValue = decryptValue(expanded.parsed[key], privateKey)
+        expanded.parsed[key] = decryptedValue
+      } catch (e) {
+        warnings.push(warning(e, key, privateKey))
+      }
     }
     for (const key in processEnv) {
-      processEnv[key] = decryptValue(processEnv[key], privateKey)
+      try {
+        const decryptedValue = decryptValue(processEnv[key], privateKey)
+        processEnv[key] = decryptedValue
+      } catch (e) {
+        warnings.push(warning(e, key, privateKey))
+      }
     }
   }
 
@@ -41,7 +66,7 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
     result[key] = expanded.parsed[key]
   }
 
-  return { parsed: result, processEnv }
+  return { parsed: result, processEnv, warnings }
 }
 
 module.exports = parseDecryptEvalExpand

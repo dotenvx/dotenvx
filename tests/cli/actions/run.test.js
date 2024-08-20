@@ -156,6 +156,51 @@ t.test('run - envFile', async ct => {
   ct.end()
 })
 
+t.test('run - envFile (with warnings)', async ct => {
+  const warning = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…')
+  warning.code = 'DECRYPTION_FAILED'
+  warning.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
+
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [{
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {
+        HELLO: 'World'
+      },
+      injected: {
+        HELLO: 'World'
+      },
+      warnings: [warning],
+      preExisted: {}
+    }],
+    readableStrings: [],
+    readableFilepaths: ['.env'],
+    uniqueInjectedKeys: ['HELLO']
+  })
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+  const loggerWarnStub = sinon.stub(logger, 'warn')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
+  t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
+  t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
+  t.ok(loggerWarnStub.calledWith('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…'), 'logger.warn')
+  t.ok(loggerHelpStub.calledWith('[DECRYPTION_FAILED] ? encrypted data looks malformed'), 'logger.help')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
+
+  ct.end()
+})
+
 t.test('run - env', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }

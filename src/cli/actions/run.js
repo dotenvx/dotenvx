@@ -60,6 +60,15 @@ async function run () {
           logger.warnv(processedEnv.error.message)
         }
       } else {
+        if (processedEnv.warnings) {
+          for (const warning of processedEnv.warnings) {
+            logger.warn(warning.message)
+            if (warning.help) {
+              logger.help(warning.help)
+            }
+          }
+        }
+
         // debug parsed
         const parsed = processedEnv.parsed
         logger.debug(parsed)
