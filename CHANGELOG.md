@@ -6,11 +6,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* decrypt expanded values ([#336](https://github.com/dotenvx/dotenvx/pull/336))
+* decrypt expanded values as necessary ([#336](https://github.com/dotenvx/dotenvx/pull/336))
 
 ### Changed
 
-* replaced `execa` with `tinyexec` - cutting down on 15 dependencies ([#328](https://github.com/dotenvx/dotenvx/pull/328))
+* replace `chalk` with `picocolors` and `color-name` - cutting down on 5 dependencies ([#335](https://github.com/dotenvx/dotenvx/pull/335))
+* replace `execa` with `tinyexec` - cutting down on 15 dependencies ([#328](https://github.com/dotenvx/dotenvx/pull/328))
 * optimize `Ls._filepaths` ([#317](https://github.com/dotenvx/dotenvx/pull/317/))
 
 ## 1.7.0
