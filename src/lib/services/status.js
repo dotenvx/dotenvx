@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const diff = require('diff')
-const chalk = require('chalk')
+const pc = require('picocolors')
 
 const Ls = require('./ls')
 const VaultDecrypt = require('./vaultDecrypt')
@@ -94,12 +94,12 @@ class Status {
   _colorizeDiff (part) {
     // If the part was added, color it green
     if (part.added) {
-      return chalk.green(part.value)
+      return pc.green(part.value)
     }
 
     // If the part was removed, color it red
     if (part.removed) {
-      return chalk.red(part.value)
+      return pc.red(part.value)
     }
 
     // No color for unchanged parts

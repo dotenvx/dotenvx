@@ -1,5 +1,6 @@
 const winston = require('winston')
-const chalk = require('chalk')
+const colors = require('color-name')
+const pc = require('picocolors')
 
 const printf = winston.format.printf
 const combine = winston.format.combine
@@ -32,15 +33,24 @@ const levels = {
   silly: 6
 }
 
-const error = chalk.bold.red
-const warn = chalk.keyword('orangered')
-const success = chalk.keyword('green')
-const successv = chalk.keyword('olive') // yellow-ish tint that 'looks' like dotenv
-const help = chalk.keyword('blue')
-const help2 = chalk.keyword('gray')
-const http = chalk.keyword('green')
-const verbose = chalk.keyword('plum')
-const debug = chalk.keyword('plum')
+function getColor (color) {
+  if (!Object.hasOwn(colors, color)) {
+    throw new Error(`Invalid color ${color}`)
+  }
+  if (!pc.isColorSupported) return (message) => message
+  const [r, g, b] = colors[color]
+  return (message) => `\x1b[38;2;${r};${g};${b}m${message}\x1b[39m`
+}
+
+const error = (m) => pc.bold(pc.red(m))
+const warn = getColor('orangered')
+const success = getColor('green')
+const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
+const help = getColor('blue')
+const help2 = getColor('gray')
+const http = getColor('green')
+const verbose = getColor('plum')
+const debug = getColor('plum')
 
 const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
   const formattedMessage = typeof message === 'object' ? JSON.stringify(message) : message
@@ -119,5 +129,6 @@ const setLogLevel = options => {
 
 module.exports = {
   logger,
+  getColor,
   setLogLevel
 }
