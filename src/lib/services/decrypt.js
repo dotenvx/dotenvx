@@ -14,10 +14,12 @@ class Decrypt {
   /**
    * @param {string|string[]} [envFile]
    * @param {string|string[]} [key]
+   * @param {string|string[]} [excludeKey]
    **/
-  constructor (envFile = '.env', key = []) {
+  constructor (envFile = '.env', key = [], excludeKey = []) {
     this.envFile = envFile
     this.key = key
+    this.excludeKey = excludeKey
     this.processedEnvFiles = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
@@ -26,6 +28,7 @@ class Decrypt {
   run () {
     const envFilepaths = this._envFilepaths()
     const keys = this._keys()
+    const excludeKeys = this._excludeKeys()
     for (const envFilepath of envFilepaths) {
       const filepath = path.resolve(envFilepath)
 
@@ -49,17 +52,25 @@ class Decrypt {
         // iterate over all non-encrypted values and encrypt them
         const parsed = dotenv.parse(src)
         for (const [key, value] of Object.entries(parsed)) {
-          if (keys.length < 1 || keys.includes(key)) { // optionally control which key to decrypt
-            const encrypted = isEncrypted(key, value)
-            if (encrypted) {
-              row.keys.push(key) // track key(s)
+          // key excluded - don't decrypt it
+          if (excludeKeys.includes(key)) {
+            continue
+          }
 
-              const decryptedValue = decryptValue(value, privateKey)
-              // once newSrc is built write it out
-              src = replace(src, key, decryptedValue)
+          // key effectively excluded (by not being in the list of includes) - don't encrypt it
+          if (keys.length > 0 && !keys.includes(key)) {
+            continue
+          }
 
-              row.changed = true // track change
-            }
+          const encrypted = isEncrypted(key, value)
+          if (encrypted) {
+            row.keys.push(key) // track key(s)
+
+            const decryptedValue = decryptValue(value, privateKey)
+            // once newSrc is built write it out
+            src = replace(src, key, decryptedValue)
+
+            row.changed = true // track change
           }
         }
 
@@ -105,6 +116,14 @@ class Decrypt {
     }
 
     return this.key
+  }
+
+  _excludeKeys () {
+    if (!Array.isArray(this.excludeKey)) {
+      return [this.excludeKey]
+    }
+
+    return this.excludeKey
   }
 }
 

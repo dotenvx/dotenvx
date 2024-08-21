@@ -15,10 +15,12 @@ class Encrypt {
   /**
    * @param {string|string[]} [envFile]
    * @param {string|string[]} [key]
+   * @param {string|string[]} [excludeKey]
    **/
-  constructor (envFile = '.env', key = []) {
+  constructor (envFile = '.env', key = [], excludeKey = []) {
     this.envFile = envFile
     this.key = key
+    this.excludeKey = excludeKey
     this.processedEnvFiles = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
@@ -27,6 +29,7 @@ class Encrypt {
   run () {
     const envFilepaths = this._envFilepaths()
     const keys = this._keys()
+    const excludeKeys = this._excludeKeys()
     for (const envFilepath of envFilepaths) {
       const filepath = path.resolve(envFilepath)
 
@@ -63,19 +66,25 @@ class Encrypt {
         // iterate over all non-encrypted values and encrypt them
         const parsed = dotenv.parse(src)
         for (const [key, value] of Object.entries(parsed)) {
-          if (keys.length < 1 || keys.includes(key)) {
-            // optionally control which key to encrypt
-            const encrypted =
-              isEncrypted(key, value) || isPublicKey(key, value)
-            if (!encrypted) {
-              row.keys.push(key) // track key(s)
+          // key excluded - don't encrypt it
+          if (excludeKeys.includes(key)) {
+            continue
+          }
 
-              const encryptedValue = encryptValue(value, publicKey)
-              // once newSrc is built write it out
-              src = replace(src, key, encryptedValue)
+          // key effectively excluded (by not being in the list of includes) - don't encrypt it
+          if (keys.length > 0 && !keys.includes(key)) {
+            continue
+          }
 
-              row.changed = true // track change
-            }
+          const encrypted = isEncrypted(key, value) || isPublicKey(key, value)
+          if (!encrypted) {
+            row.keys.push(key) // track key(s)
+
+            const encryptedValue = encryptValue(value, publicKey)
+            // once newSrc is built write it out
+            src = replace(src, key, encryptedValue)
+
+            row.changed = true // track change
           }
         }
 
@@ -121,6 +130,14 @@ class Encrypt {
     }
 
     return this.key
+  }
+
+  _excludeKeys () {
+    if (!Array.isArray(this.excludeKey)) {
+      return [this.excludeKey]
+    }
+
+    return this.excludeKey
   }
 }
 

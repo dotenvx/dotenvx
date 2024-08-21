@@ -13,7 +13,7 @@ function decrypt () {
   if (options.stdout) {
     const {
       processedEnvFiles
-    } = main.decrypt(options.envFile, options.key)
+    } = main.decrypt(options.envFile, options.key, options.excludeKey)
 
     for (const processedEnvFile of processedEnvFiles) {
       process.stdout.write(processedEnvFile.envSrc)
@@ -25,7 +25,7 @@ function decrypt () {
         processedEnvFiles,
         changedFilepaths,
         unchangedFilepaths
-      } = main.decrypt(options.envFile, options.key)
+      } = main.decrypt(options.envFile, options.key, options.excludeKey)
 
       for (const processedEnvFile of processedEnvFiles) {
         logger.verbose(`decrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
