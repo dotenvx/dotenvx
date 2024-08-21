@@ -1,5 +1,15 @@
 const depth = require('../lib/helpers/colorDepth')
 
+const colors8 = new Map([
+  ['blue', 34],
+  ['gray', 37],
+  ['green', 32],
+  ['olive', 33],
+  ['orangered', 31], // mapped to red
+  ['plum', 35], // mapped to magenta
+  ['red', 31]
+])
+
 const colors16 = new Map([
   ['blue', 34],
   ['gray', 37],
@@ -32,6 +42,10 @@ function getColor (color) {
   if (colorDepth >= 16) {
     const code = colors16.get(color)
     return (message) => `\x1b[${code}m${message}\x1b[39m`
+  }
+  if (colorDepth >= 8) {
+    const code = colors8.get(color)
+    return (message) => `\x1b[${code}m${message}\x1b[39m`;
   }
   return (message) => message
 }
