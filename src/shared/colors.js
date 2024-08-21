@@ -45,7 +45,7 @@ function getColor (color) {
   }
   if (colorDepth >= 8) {
     const code = colors8.get(color)
-    return (message) => `\x1b[${code}m${message}\x1b[39m`;
+    return (message) => `\x1b[${code}m${message}\x1b[39m`
   }
   return (message) => message
 }
