@@ -132,40 +132,8 @@ program.command('help [command]')
 program.addCommand(require('./commands/ext'))
 
 //
-// DEPRECATED or MOVED
+// MOVED
 //
-const lsAction = require('./actions/ext/ls')
-program.command('ls')
-  .description('DEPRECATED: moved to [dotenvx ext ls]')
-  .argument('[directory]', 'directory to list .env files from', '.')
-  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [ls] has moved to [dotenvx ext ls]')
-
-    lsAction.apply(this, args)
-  })
-
-const genexampleAction = require('./actions/ext/genexample')
-program.command('genexample')
-  .description('DEPRECATED: moved to [dotenvx ext genexample]')
-  .argument('[directory]', 'directory to generate from', '.')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [genexample] has moved to [dotenvx ext genexample]')
-
-    genexampleAction.apply(this, args)
-  })
-
-const gitignoreAction = require('./actions/ext/gitignore')
-program.command('gitignore')
-  .description('DEPRECATED: moved to [dotenvx ext gitignore]')
-  .addHelpText('after', examples.gitignore)
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [gitignore] has moved to [dotenvx ext gitignore]')
-
-    gitignoreAction.apply(this, args)
-  })
-
 const prebuildAction = require('./actions/ext/prebuild')
 program.command('prebuild')
   .description('DEPRECATED: moved to [dotenvx ext prebuild]')
@@ -185,15 +153,6 @@ program.command('precommit')
     logger.warn('DEPRECATION NOTICE: [precommit] has moved to [dotenvx ext precommit]')
 
     precommitAction.apply(this, args)
-  })
-
-const scanAction = require('./actions/ext/scan')
-program.command('scan')
-  .description('DEPRECATED: moved to [dotenvx ext scan]')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [scan] has moved to [dotenvx ext scan]')
-
-    scanAction.apply(this, args)
   })
 
 // overide helpInformation to hide DEPRECATED commands
