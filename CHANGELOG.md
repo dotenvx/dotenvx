@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.9.0...main)
 
+## 1.9.0
+
 ### Added
 
 * add `--exclude-key` (`-ek`) option to `dotenvx encrypt` and `dotenvx decrypt` ([#344](https://github.com/dotenvx/dotenvx/pull/344))
