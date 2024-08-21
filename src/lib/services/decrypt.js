@@ -54,9 +54,9 @@ class Decrypt {
             if (encrypted) {
               row.keys.push(key) // track key(s)
 
-              const plainValue = decryptValue(value, privateKey)
+              const decryptedValue = decryptValue(value, privateKey)
               // once newSrc is built write it out
-              src = replace(src, key, plainValue)
+              src = replace(src, key, decryptedValue)
 
               row.changed = true // track change
             }

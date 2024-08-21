@@ -10,6 +10,7 @@ function decryptValue (value, privateKey) {
   const privateKeys = privateKey.split(',')
 
   let decryptedValue
+  let decryptionError
   for (const key of privateKeys) {
     const secret = Buffer.from(key, 'hex')
     const encoded = value.substring(PREFIX.length)
@@ -17,15 +18,25 @@ function decryptValue (value, privateKey) {
 
     try {
       decryptedValue = decrypt(secret, ciphertext).toString()
+      decryptionError = null // reset to null error (scenario for multiple private keys)
       break
-    } catch (_error) {
-      // TODO: somehow surface these errors to the user's logs
+    } catch (e) {
+      if (e.message === 'Invalid private key') {
+        decryptionError = new Error('private key looks invalid')
+      } else if (e.message === 'Unsupported state or unable to authenticate data') {
+        decryptionError = new Error('private key looks wrong')
+      } else if (e.message === 'Point of length 65 was invalid. Expected 33 compressed bytes or 65 uncompressed bytes') {
+        decryptionError = new Error('encrypted data looks malformed')
+      } else {
+        decryptionError = new Error(`${e.message}`)
+      }
+
+      decryptionError.code = 'DECRYPTION_FAILED'
     }
   }
 
-  // return 'encrypted:string' value if undefined or null
-  if (decryptedValue === undefined || decryptedValue === null) {
-    return value
+  if (decryptionError) {
+    throw decryptionError
   }
 
   return decryptedValue

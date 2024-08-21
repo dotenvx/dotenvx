@@ -32,6 +32,45 @@ t.test('#parseDecryptEvalExpand with encrypted value', ct => {
   ct.end()
 })
 
+t.test('#parseDecryptEvalExpand with encrypted value malformed', ct => {
+  src = 'HELLO=encrypted:AA9cBZml/SqizWFcPJqiT+0EAeJ2Vlb4aKfrAma4G19sPHEYsIu9C0EhqM6CnTJRVX0srj1BW4a9k3XwbkLFGN1vmAUAVxzFsoEFyPXPJJ+dB8wzcVMim6Ako4+QmVWlSn2FR/wc6y6B'
+
+  const privateKey = 'd607fffc83656d0658c6de64d1d9a10f5d0bfbcd437f2a93bd0e1afa5f192626'
+
+  const { parsed, warnings } = parseDecryptEvalExpand(src, privateKey)
+
+  const warning = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…')
+  warning.code = 'DECRYPTION_FAILED'
+  warning.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
+
+  ct.same(warnings, [warning])
+  ct.same(parsed, { HELLO: 'encrypted:AA9cBZml/SqizWFcPJqiT+0EAeJ2Vlb4aKfrAma4G19sPHEYsIu9C0EhqM6CnTJRVX0srj1BW4a9k3XwbkLFGN1vmAUAVxzFsoEFyPXPJJ+dB8wzcVMim6Ako4+QmVWlSn2FR/wc6y6B' })
+
+  ct.end()
+})
+
+t.test('#parseDecryptEvalExpand with encrypted value malformed coming from process.env', ct => {
+  process.env.HELLO_ENC = 'encrypted:AA9cBZml/SqizWFcPJqiT+0EAeJ2Vlb4aKfrAma4G19sPHEYsIu9C0EhqM6CnTJRVX0srj1BW4a9k3XwbkLFGN1vmAUAVxzFsoEFyPXPJJ+dB8wzcVMim6Ako4+QmVWlSn2FR/wc6y6B'
+  src = 'HELLO=$HELLO_ENC'
+
+  const privateKey = 'd607fffc83656d0658c6de64d1d9a10f5d0bfbcd437f2a93bd0e1afa5f192626'
+
+  const { parsed, warnings } = parseDecryptEvalExpand(src, privateKey)
+
+  const warning = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…')
+  warning.code = 'DECRYPTION_FAILED'
+  warning.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
+
+  const warning2 = new Error('[DECRYPTION_FAILED] could not decrypt HELLO_ENC using private key d607fff…')
+  warning2.code = 'DECRYPTION_FAILED'
+  warning2.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
+
+  ct.same(warnings, [warning, warning2, warning])
+  ct.same(parsed, { HELLO: 'encrypted:AA9cBZml/SqizWFcPJqiT+0EAeJ2Vlb4aKfrAma4G19sPHEYsIu9C0EhqM6CnTJRVX0srj1BW4a9k3XwbkLFGN1vmAUAVxzFsoEFyPXPJJ+dB8wzcVMim6Ako4+QmVWlSn2FR/wc6y6B' })
+
+  ct.end()
+})
+
 t.test('#parseDecryptEvalExpand with encrypted value as empty string', ct => {
   src = 'HELLO=encrypted:BGKyYqb2aCT1GJQnluY7LGgHZvrHL9+w6LtFp+fxxc3AYSWt+z0P/xYUdZu/uWy5psgk2jfJfDV3P0MpL4V6/r2DMWvnNAzzshf3vPFg9FG1mpn9qNGxPcwoYoT6YKF0Nw=='
 
