@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* warn when decryption fails on `run` or `get` ([#339](https://github.com/dotenvx/dotenvx/pull/339))
+* warn when decryption fails on `run` ([#339](https://github.com/dotenvx/dotenvx/pull/339))
 * decrypt expanded values as necessary ([#336](https://github.com/dotenvx/dotenvx/pull/336))
 
 ### Changed
