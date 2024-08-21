@@ -20,9 +20,6 @@ function genexample (directory) {
 
     logger.verbose(`loading env from ${envFile}`)
 
-    // TODO: display pre-existing
-    // TODO: display added/appended/injected
-
     fs.writeFileSync(exampleFilepath, envExampleFile, ENCODING)
 
     if (addedKeys.length > 0) {

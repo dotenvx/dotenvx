@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.8.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.9.0...main)
 
 ### Added
 
 * add `--exclude-key` (`-ek`) option to `dotenvx encrypt` and `dotenvx decrypt` ([#344](https://github.com/dotenvx/dotenvx/pull/344))
+
+### Changed
+
+* preserve comments and spacing on first-time generation of .env.example file ([#346](https://github.com/dotenvx/dotenvx/pull/346))
 
 ## 1.8.0
 

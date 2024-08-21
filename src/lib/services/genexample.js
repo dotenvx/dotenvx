@@ -5,11 +5,15 @@ const dotenv = require('dotenv')
 const ENCODING = 'utf8'
 
 const findEnvFiles = require('../helpers/findEnvFiles')
+const replace = require('../helpers/replace')
 
 class Genexample {
   constructor (directory = '.', envFile) {
     this.directory = directory
     this.envFile = envFile || findEnvFiles(directory)
+
+    this.exampleFilename = '.env.example'
+    this.exampleFilepath = path.resolve(this.directory, this.exampleFilename)
   }
 
   run () {
@@ -27,6 +31,12 @@ class Genexample {
     const keys = new Set()
     const addedKeys = new Set()
     const envFilepaths = this._envFilepaths()
+    /** @type {Record<string, string>} */
+    const injected = {}
+    /** @type {Record<string, string>} */
+    const preExisted = {}
+
+    let exampleSrc = `# ${this.exampleFilename} - generated with dotenvx\n`
 
     for (const envFilepath of envFilepaths) {
       const filepath = path.resolve(this.directory, envFilepath)
@@ -41,43 +51,51 @@ class Genexample {
         throw error
       }
 
-      const parsed = dotenv.configDotenv({ path: filepath }).parsed
-      for (const key of Object.keys(parsed)) {
+      // get the original src
+      let src = fs.readFileSync(filepath, { encoding: ENCODING })
+      const parsed = dotenv.parse(src)
+      for (const key in parsed) {
+        // used later
         keys.add(key)
+
+        // once newSrc is built write it out
+        src = replace(src, key, '') // empty value
       }
+
+      exampleSrc += `\n${src}`
     }
 
-    let envExampleFile = ''
-    const exampleFilename = '.env.example'
-    const exampleFilepath = path.resolve(this.directory, exampleFilename)
-    if (!fs.existsSync(exampleFilepath)) {
-      envExampleFile += `# ${exampleFilename} - generated with dotenvx\n`
-    } else {
-      envExampleFile = fs.readFileSync(exampleFilepath, ENCODING)
-    }
-
-    const currentEnvExample = dotenv.configDotenv({ path: exampleFilepath }).parsed
-    /** @type {Record<string, string>} */
-    const injected = {}
-    /** @type {Record<string, string>} */
-    const preExisted = {}
-
-    for (const key of [...keys]) {
-      if (key in currentEnvExample) {
-        preExisted[key] = currentEnvExample[key]
-      } else {
-        envExampleFile += `${key}=""\n`
-
+    if (!fs.existsSync(this.exampleFilepath)) {
+      // it doesn't exist so just write this first generated one
+      // exampleSrc - already written to from the prior loop
+      for (const key of [...keys]) {
+        // every key is added since it's the first time generating .env.example
         addedKeys.add(key)
 
         injected[key] = ''
       }
+    } else {
+      // it already exists (which means the user might have it modified a way in which they prefer, so replace exampleSrc with their existing .env.example)
+      exampleSrc = fs.readFileSync(this.exampleFilepath, ENCODING)
+
+      const parsed = dotenv.parse(exampleSrc)
+      for (const key of [...keys]) {
+        if (key in parsed) {
+          preExisted[key] = parsed[key]
+        } else {
+          exampleSrc += `${key}=""\n`
+
+          addedKeys.add(key)
+
+          injected[key] = ''
+        }
+      }
     }
 
     return {
-      envExampleFile,
+      envExampleFile: exampleSrc,
       envFile: this.envFile,
-      exampleFilepath,
+      exampleFilepath: this.exampleFilepath,
       addedKeys: [...addedKeys],
       injected,
       preExisted
