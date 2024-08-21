@@ -43,7 +43,6 @@
     "fdir": "^6.2.0",
     "ignore": "^5.3.0",
     "object-treeify": "1.1.33",
-    "picocolors": "^1.0.1",
     "picomatch": "^4.0.2",
     "tinyexec": "^0.2.0",
     "which": "^4.0.0",
