@@ -15,7 +15,7 @@ function encrypt () {
   if (options.stdout) {
     const {
       processedEnvFiles
-    } = main.encrypt(options.envFile, options.key)
+    } = main.encrypt(options.envFile, options.key, options.excludeKey)
 
     for (const processedEnvFile of processedEnvFiles) {
       process.stdout.write(processedEnvFile.envSrc)
@@ -27,7 +27,7 @@ function encrypt () {
         processedEnvFiles,
         changedFilepaths,
         unchangedFilepaths
-      } = main.encrypt(options.envFile, options.key)
+      } = main.encrypt(options.envFile, options.key, options.excludeKey)
 
       for (const processedEnvFile of processedEnvFiles) {
         logger.verbose(`encrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)

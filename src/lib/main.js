@@ -189,13 +189,13 @@ const set = function (key, value, envFile, encrypt) {
 }
 
 /** @type {import('./main').encrypt} */
-const encrypt = function (envFile, key) {
-  return new Encrypt(envFile, key).run()
+const encrypt = function (envFile, key, excludeKey) {
+  return new Encrypt(envFile, key, excludeKey).run()
 }
 
 /** @type {import('./main').encrypt} */
-const decrypt = function (envFile, key) {
-  return new Decrypt(envFile, key).run()
+const decrypt = function (envFile, key, excludeKey) {
+  return new Decrypt(envFile, key, excludeKey).run()
 }
 
 /** @type {import('./main').status} */
