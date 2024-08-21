@@ -1,4 +1,4 @@
 const { WriteStream } = require('tty')
-const getColorDepth = () => WriteStream.prototype.getColorDepth() ?? 2
+const getColorDepth = () => WriteStream.prototype.getColorDepth()
 
 module.exports = { getColorDepth }
