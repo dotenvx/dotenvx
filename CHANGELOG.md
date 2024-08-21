@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.8.0...main)
 
+## 1.8.0
+
 ### Added
 
 * warn when decryption fails on `run` or `get` ([#339](https://github.com/dotenvx/dotenvx/pull/339))
