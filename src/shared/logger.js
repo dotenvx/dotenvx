@@ -1,10 +1,3 @@
-const winston = require('winston')
-
-const printf = winston.format.printf
-const combine = winston.format.combine
-const createLogger = winston.createLogger
-const transports = winston.transports
-
 const packageJson = require('../lib/helpers/packageJson')
 const { getColor, bold } = require('./colors')
 
@@ -26,7 +19,6 @@ const levels = {
   help: 2,
   help2: 2,
   blank: 2,
-  http: 3,
   verbose: 4,
   debug: 5,
   silly: 6
@@ -38,14 +30,27 @@ const success = getColor('green')
 const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
 const help = getColor('blue')
 const help2 = getColor('gray')
-const http = getColor('green')
 const verbose = getColor('plum')
 const debug = getColor('plum')
 
-const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
+let currentLevel = levels.info // default log level
+
+function log (level, message) {
+  if (levels[level] === undefined) {
+    throw new Error(`MISSING_LOG_LEVEL: '${level}'. implement in logger.`)
+  }
+
+  if (levels[level] <= currentLevel) {
+    const formattedMessage = formatMessage(level, message)
+    console.log(formattedMessage)
+  }
+}
+
+function formatMessage (level, message) {
   const formattedMessage = typeof message === 'object' ? JSON.stringify(message) : message
 
   switch (level.toLowerCase()) {
+    // errors
     case 'error':
       return error(formattedMessage)
     case 'errorv':
@@ -56,6 +61,7 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return error(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     case 'errornocolor':
       return formattedMessage
+    // warns
     case 'warn':
       return warn(formattedMessage)
     case 'warnv':
@@ -64,6 +70,7 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return warn(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'warnvpb':
       return warn(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
+    // successes
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'
@@ -72,35 +79,66 @@ const dotenvxFormat = printf(({ level, message, label, timestamp }) => {
       return success(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'successvpb': // success with 'version' and precommit
       return success(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
+    // info
     case 'info':
       return formattedMessage
+    // help
     case 'help':
       return help(formattedMessage)
     case 'help2':
       return help2(formattedMessage)
-    case 'http':
-      return http(formattedMessage)
+    // verbose
     case 'verbose':
       return verbose(formattedMessage)
+    // debug
     case 'debug':
       return debug(formattedMessage)
+    // blank
     case 'blank': // custom
       return formattedMessage
   }
-})
+}
 
-const logger = createLogger({
+const logger = {
+  // track level
   level: 'info',
-  levels,
-  format: combine(
-    dotenvxFormat
-  ),
-  transports: [
-    new transports.Console()
-  ]
-})
 
-const setLogLevel = options => {
+  // errors
+  error: (msg) => log('error', msg),
+  errorv: (msg) => log('errorv', msg),
+  errorvp: (msg) => log('errorvp', msg),
+  errorvpb: (msg) => log('errorvpb', msg),
+  errornocolor: (msg) => log('errornocolor', msg),
+  // warns
+  warn: (msg) => log('warn', msg),
+  warnv: (msg) => log('warnv', msg),
+  warnvp: (msg) => log('warnvp', msg),
+  warnvpb: (msg) => log('warnvpb', msg),
+  // success
+  success: (msg) => log('success', msg),
+  successv: (msg) => log('successv', msg),
+  successvp: (msg) => log('successvp', msg),
+  successvpb: (msg) => log('successvpb', msg),
+  // info
+  info: (msg) => log('info', msg),
+  // help
+  help: (msg) => log('help', msg),
+  help2: (msg) => log('help2', msg),
+  // verbose
+  verbose: (msg) => log('verbose', msg),
+  // debug
+  debug: (msg) => log('debug', msg),
+  // blank
+  blank: (msg) => log('blank', msg),
+  setLevel: (level) => {
+    if (levels[level] !== undefined) {
+      currentLevel = levels[level]
+      logger.level = level
+    }
+  }
+}
+
+function setLogLevel (options) {
   const logLevel = options.debug
     ? 'debug'
     : options.verbose
@@ -110,7 +148,7 @@ const setLogLevel = options => {
         : options.logLevel
 
   if (!logLevel) return
-  logger.level = logLevel
+  logger.setLevel(logLevel)
   // Only log which level it's setting if it's not set to quiet mode
   if (!options.quiet || (options.quiet && logLevel !== 'error')) {
     logger.debug(`Setting log level to ${logLevel}`)
@@ -120,5 +158,6 @@ const setLogLevel = options => {
 module.exports = {
   logger,
   getColor,
-  setLogLevel
+  setLogLevel,
+  levels
 }

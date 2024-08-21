@@ -866,7 +866,7 @@ More examples
   </details>
 * <details><summary>`run --verbose`</summary><br>
 
-  Set log level to `verbose`. ([log levels](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
+  Set log level to `verbose`. ([log levels](https://docs.npmjs.com/cli/v8/using-npm/logging#setting-log-levels))
 
   ```sh
   $ echo "HELLO=production" > .env.production
@@ -882,7 +882,7 @@ More examples
   </details>
 * <details><summary>`run --debug`</summary><br>
 
-  Set log level to `debug`. ([log levels](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
+  Set log level to `debug`. ([log levels](https://docs.npmjs.com/cli/v8/using-npm/logging#setting-log-levels))
 
   ```sh
   $ echo "HELLO=production" > .env.production
@@ -904,7 +904,7 @@ More examples
   </details>
 * <details><summary>`run --quiet`</summary><br>
 
-  Use `--quiet` to suppress all output (except errors). ([log levels](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
+  Use `--quiet` to suppress all output (except errors). ([log levels](https://docs.npmjs.com/cli/v8/using-npm/logging#setting-log-levels))
 
   ```sh
   $ echo "HELLO=production" > .env.production
@@ -927,7 +927,7 @@ More examples
   Hello production
   ```
 
-  Available log levels are `error, warn, info, verbose, debug, silly` ([source](https://github.com/winstonjs/winston?tab=readme-ov-file#logging))
+  Available log levels are `error, warn, info, verbose, debug, silly` ([source](https://docs.npmjs.com/cli/v8/using-npm/logging#setting-log-levels))
 
   </details>
 * <details><summary>`run --convention=nextjs`</summary><br>
