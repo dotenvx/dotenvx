@@ -2,20 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.7.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.8.0...main)
 
 ### Added
 
+* warn when decryption fails on `run` or `get` ([#339](https://github.com/dotenvx/dotenvx/pull/339))
 * decrypt expanded values as necessary ([#336](https://github.com/dotenvx/dotenvx/pull/336))
 
 ### Changed
 
+* use `ansi` colors over `rgb` - for wider terminal coverage ([#340](https://github.com/dotenvx/dotenvx/pull/340))
 * replace `chalk` with `picocolors` and `color-name` - cutting down on 5 dependencies ([#335](https://github.com/dotenvx/dotenvx/pull/335))
 * replace `execa` with `tinyexec` - cutting down on 15 dependencies ([#328](https://github.com/dotenvx/dotenvx/pull/328))
 * optimize `Ls._filepaths` ([#317](https://github.com/dotenvx/dotenvx/pull/317/))
 
 ### Removed
 
+* remove `picocolors` and `color-name` - cutting down on 2 dependencies ([#340](https://github.com/dotenvx/dotenvx/pull/340))
 * remove `ext hub` from extension list (you can still install it as an extension [here](https://github.com/dotenvx/dotenvx-ext-hub)) ([#337](https://github.com/dotenvx/dotenvx/pull/337))
 
 ## 1.7.0
