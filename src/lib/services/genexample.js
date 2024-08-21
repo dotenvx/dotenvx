@@ -31,6 +31,11 @@ class Genexample {
     const keys = new Set()
     const addedKeys = new Set()
     const envFilepaths = this._envFilepaths()
+    /** @type {Record<string, string>} */
+    const injected = {}
+    /** @type {Record<string, string>} */
+    const preExisted = {}
+
     let exampleSrc = `# ${this.exampleFilename} - generated with dotenvx\n`
 
     for (const envFilepath of envFilepaths) {
@@ -57,7 +62,7 @@ class Genexample {
         src = replace(src, key, "") // empty value
       }
 
-      exampleSrc += `${src}\n`
+      exampleSrc += `\n${src}`
 
       // // OLD
       // const parsedOld = dotenv.configDotenv({ path: filepath }).parsed
@@ -69,27 +74,28 @@ class Genexample {
     if (!fs.existsSync(this.exampleFilepath)) {
       // it doesn't exist so just write this first generated one
       // exampleSrc - already written to from the prior loop
-    } else {
-      // it already exists (which means the user might have it modified a way in which they prefer, so replace exampleSrc with their existing .env.example)
-      exampleSrc = fs.readFileSync(this.exampleFilepath, ENCODING)
       const parsed = dotenv.parse(exampleSrc)
-      const parsed = dotenv.configDotenv({ path: this.exampleFilepath }).parsed
-    }
-
-    /** @type {Record<string, string>} */
-    const injected = {}
-    /** @type {Record<string, string>} */
-    const preExisted = {}
-
-    for (const key of [...keys]) {
-      if (key in currentEnvExample) {
-        preExisted[key] = currentEnvExample[key]
-      } else {
-        //exampleSrc += `${key}=""\n`
-
+      for (const key of [...keys]) {
+        // every key is added since it's the first time generating .env.example
         addedKeys.add(key)
 
         injected[key] = ''
+      }
+    } else {
+      // it already exists (which means the user might have it modified a way in which they prefer, so replace exampleSrc with their existing .env.example)
+      exampleSrc = fs.readFileSync(this.exampleFilepath, ENCODING)
+
+      const parsed = dotenv.parse(exampleSrc)
+      for (const key of [...keys]) {
+        if (key in parsed) {
+          preExisted[key] = parsed[key]
+        } else {
+          exampleSrc += `${key}=""\n`
+
+          addedKeys.add(key)
+
+          injected[key] = ''
+        }
       }
     }
 

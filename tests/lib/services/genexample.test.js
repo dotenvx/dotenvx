@@ -1,5 +1,7 @@
 const t = require('tap')
+const fs = require('fs')
 const path = require('path')
+const sinon = require('sinon')
 
 const Genexample = require('../../../src/lib/services/genexample')
 
@@ -13,7 +15,9 @@ t.test('#run', ct => {
   } = genexample.run()
 
   const output = `# .env.example - generated with dotenvx
-HELLO=""
+
+# for testing purposes only
+HELLO="" # this is a comment
 `
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })
@@ -41,6 +45,37 @@ HELLO=""
   ct.end()
 })
 
+t.test('#run (.env.example already exists but with different keys)', ct => {
+  const originalReadFileSync = fs.readFileSync
+  const sandbox = sinon.createSandbox()
+  sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
+    if (filepath === path.resolve('tests/monorepo/apps/backend/.env')) {
+      return 'HELLO=world\nHELLO2=universe'
+    } else {
+      return originalReadFileSync(filepath, options)
+    }
+  })
+
+  const genexample = new Genexample('tests/monorepo/apps/backend')
+
+  const {
+    envExampleFile,
+    injected,
+    preExisted
+  } = genexample.run()
+
+  const output = `# .env.example - generated with dotenvx
+HELLO=""
+HELLO2=""
+`
+
+  ct.same(envExampleFile, output)
+  ct.same(injected, { HELLO2: '' })
+  ct.same(preExisted, { HELLO: '' })
+
+  ct.end()
+})
+
 t.test('#run (string envFile)', ct => {
   const genexample = new Genexample('tests/monorepo/apps/frontend', '.env')
 
@@ -51,7 +86,9 @@ t.test('#run (string envFile)', ct => {
   } = genexample.run()
 
   const output = `# .env.example - generated with dotenvx
-HELLO=""
+
+# for testing purposes only
+HELLO="" # this is a comment
 `
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })
