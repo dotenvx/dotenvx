@@ -1,9 +1,33 @@
 const capcon = require('capture-console')
 const t = require('tap')
+const sinon = require('sinon')
 
 const packageJson = require('../../src/lib/helpers/packageJson')
 const { getColor, bold } = require('../../src/shared/colors')
-const { logger } = require('../../src/shared/logger')
+const { logger, levels } = require('../../src/shared/logger')
+
+t.test('throws error for missing log level', (ct) => {
+  // Backup the original levels
+  const originalLevels = { ...levels }
+
+  // Remove the "info" level
+  delete levels.info
+
+  // Stub console.log to avoid actual logging during the test
+  const logStub = sinon.stub(console, 'log')
+
+  t.throws(() => {
+    logger.info('This should throw an error')
+  }, /MISSING_LOG_LEVEL/, 'Throws error for missing log level')
+
+  // Restore the original levels
+  Object.assign(levels, originalLevels)
+
+  // Restore console.log
+  logStub.restore()
+
+  ct.end()
+})
 
 t.test('logger.blank', (ct) => {
   const message = 'message1'
@@ -34,18 +58,6 @@ t.test('logger.verbose', (ct) => {
 
   const stdout = capcon.interceptStdout(() => {
     logger.verbose(message)
-  })
-
-  ct.equal(stdout, '') // blank because log level
-
-  ct.end()
-})
-
-t.test('logger.http', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.http(message)
   })
 
   ct.equal(stdout, '') // blank because log level

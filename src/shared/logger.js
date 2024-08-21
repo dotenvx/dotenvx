@@ -19,7 +19,6 @@ const levels = {
   help: 2,
   help2: 2,
   blank: 2,
-  http: 3,
   verbose: 4,
   debug: 5,
   silly: 6
@@ -31,7 +30,6 @@ const success = getColor('green')
 const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
 const help = getColor('blue')
 const help2 = getColor('gray')
-const http = getColor('green')
 const verbose = getColor('plum')
 const debug = getColor('plum')
 
@@ -89,9 +87,6 @@ function formatMessage (level, message) {
       return help(formattedMessage)
     case 'help2':
       return help2(formattedMessage)
-    // http
-    case 'http':
-      return http(formattedMessage)
     // verbose
     case 'verbose':
       return verbose(formattedMessage)
@@ -101,8 +96,6 @@ function formatMessage (level, message) {
     // blank
     case 'blank': // custom
       return formattedMessage
-    default:
-      throw new Error(`MISSING_LOG_LEVEL_FORMAT: '${level}'. implement in logger.`)
   }
 }
 
@@ -131,8 +124,6 @@ const logger = {
   // help
   help: (msg) => log('help', msg),
   help2: (msg) => log('help2', msg),
-  // http
-  http: (msg) => log('http', msg),
   // verbose
   verbose: (msg) => log('verbose', msg),
   // debug
@@ -167,5 +158,6 @@ function setLogLevel (options) {
 module.exports = {
   logger,
   getColor,
-  setLogLevel
+  setLogLevel,
+  levels
 }
