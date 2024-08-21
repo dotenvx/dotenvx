@@ -27,20 +27,6 @@ console.log(`Hello ${process.env.HELLO}`)
 
 or install globally - *unlocks dotenv for any language, framework, or platform!*
 
-<details><summary>with brew 🍺</summary><br>
-
-```sh
-brew install dotenvx/brew/dotenvx
-dotenvx help
-```
-
-[![brew installs](https://img.shields.io/github/downloads/dotenvx/dotenvx/total?label=brew%20installs)](https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb)
-<sup>*homebrew installs sourced from github releases - <a href="https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb">formula</a></sup>
-
-&nbsp;
-
-</details>
-
 <details><summary>with curl 🌐 </summary><br>
 
 ```sh
@@ -52,6 +38,20 @@ dotenvx help
 [![linux](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl/linux&label=linux)](https://github.com/dotenvx/dotenvx.sh/blob/main/install.sh)
 [![windows](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl/windows&label=windows)](https://github.com/dotenvx/dotenvx.sh/blob/main/install.sh)
 <sup>*curl installs sourced from npm binary packages - <a href="https://www.npmjs.com/package/@dotenvx/dotenvx-linux-x86_64">example</a></sup>
+
+&nbsp;
+
+</details>
+
+<details><summary>with brew 🍺</summary><br>
+
+```sh
+brew install dotenvx/brew/dotenvx
+dotenvx help
+```
+
+[![brew installs](https://img.shields.io/github/downloads/dotenvx/dotenvx/total?label=brew%20installs)](https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb)
+<sup>*homebrew installs sourced from github releases - <a href="https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb">formula</a></sup>
 
 &nbsp;
 
