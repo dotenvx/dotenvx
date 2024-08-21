@@ -54,27 +54,20 @@ class Genexample {
       // get the original src
       let src = fs.readFileSync(filepath, { encoding: ENCODING })
       const parsed = dotenv.parse(src)
-      for (const [key, value] of Object.entries(parsed)) {
+      for (const key in parsed) {
         // used later
         keys.add(key)
 
         // once newSrc is built write it out
-        src = replace(src, key, "") // empty value
+        src = replace(src, key, '') // empty value
       }
 
       exampleSrc += `\n${src}`
-
-      // // OLD
-      // const parsedOld = dotenv.configDotenv({ path: filepath }).parsed
-      // for (const key of Object.keys(parsedOld)) {
-      //   keys.add(key)
-      // }
     }
 
     if (!fs.existsSync(this.exampleFilepath)) {
       // it doesn't exist so just write this first generated one
       // exampleSrc - already written to from the prior loop
-      const parsed = dotenv.parse(exampleSrc)
       for (const key of [...keys]) {
         // every key is added since it's the first time generating .env.example
         addedKeys.add(key)
