@@ -131,6 +131,40 @@ program.command('help [command]')
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
 
+//
+// MOVED
+//
+const prebuildAction = require('./actions/ext/prebuild')
+program.command('prebuild')
+  .description('DEPRECATED: moved to [dotenvx ext prebuild]')
+  .addHelpText('after', examples.prebuild)
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [prebuild] has moved to [dotenvx ext prebuild]')
+
+    prebuildAction.apply(this, args)
+  })
+
+const precommitAction = require('./actions/ext/precommit')
+program.command('precommit')
+  .description('DEPRECATED: moved to [dotenvx ext precommit]')
+  .addHelpText('after', examples.precommit)
+  .option('-i, --install', 'install to .git/hooks/pre-commit')
+  .action(function (...args) {
+    logger.warn('DEPRECATION NOTICE: [precommit] has moved to [dotenvx ext precommit]')
+
+    precommitAction.apply(this, args)
+  })
+
+// overide helpInformation to hide DEPRECATED commands
+program.helpInformation = function () {
+  const originalHelp = Command.prototype.helpInformation.call(this)
+  const lines = originalHelp.split('\n')
+
+  // Filter out the hidden command from the help output
+  const filteredLines = lines.filter(line => !line.includes('DEPRECATED') && !line.includes('help [command]'))
+
+  return filteredLines.join('\n')
+}
 /* c8 ignore stop */
 
 program.parse(process.argv)
