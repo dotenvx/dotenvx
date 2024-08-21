@@ -1,10 +1,9 @@
 const capcon = require('capture-console')
 const t = require('tap')
-const pc = require('picocolors')
-const sinon = require('sinon')
 
 const packageJson = require('../../src/lib/helpers/packageJson')
-const { getColor, logger } = require('../../src/shared/logger')
+const { getColor, bold } = require('../../src/shared/colors')
+const { logger } = require('../../src/shared/logger')
 
 t.test('logger.blank', (ct) => {
   const message = 'message1'
@@ -193,7 +192,7 @@ t.test('logger.errorvpb', (ct) => {
     logger.errorvpb(message)
   })
 
-  ct.equal(stdout, `${pc.bold(pc.red(`[dotenvx@${packageJson.version}][prebuild] message1`))}\n`)
+  ct.equal(stdout, `${bold(getColor('red')(`[dotenvx@${packageJson.version}][prebuild] message1`))}\n`)
 
   ct.end()
 })
@@ -205,7 +204,7 @@ t.test('logger.errorvp', (ct) => {
     logger.errorvp(message)
   })
 
-  ct.equal(stdout, `${pc.bold(pc.red(`[dotenvx@${packageJson.version}][precommit] message1`))}\n`)
+  ct.equal(stdout, `${bold(getColor('red')(`[dotenvx@${packageJson.version}][precommit] message1`))}\n`)
 
   ct.end()
 })
@@ -217,7 +216,7 @@ t.test('logger.errorv', (ct) => {
     logger.errorv(message)
   })
 
-  ct.equal(stdout, `${pc.bold(pc.red(`[dotenvx@${packageJson.version}] message1`))}\n`)
+  ct.equal(stdout, `${bold(getColor('red')(`[dotenvx@${packageJson.version}] message1`))}\n`)
 
   ct.end()
 })
@@ -229,7 +228,7 @@ t.test('logger.error', (ct) => {
     logger.error(message)
   })
 
-  ct.equal(stdout, `${pc.bold(pc.red('message1'))}\n`)
+  ct.equal(stdout, `${bold(getColor('red')('message1'))}\n`)
 
   ct.end()
 })
@@ -254,37 +253,6 @@ t.test('logger.blank as object', (ct) => {
   })
 
   ct.equal(stdout, `${JSON.stringify({ key: 'value' })}\n`)
-
-  ct.end()
-})
-
-t.test('getColor with color support', (ct) => {
-  const stub = sinon.stub(pc, 'isColorSupported').value(true)
-
-  ct.equal(getColor('red')('hello'), '\x1b[38;2;255;0;0mhello\x1b[39m')
-
-  stub.restore()
-  ct.end()
-})
-
-t.test('getColor without color support', (ct) => {
-  const stub = sinon.stub(pc, 'isColorSupported').value(false)
-
-  ct.equal(getColor('red')('hello'), 'hello')
-
-  stub.restore()
-  ct.end()
-})
-
-t.test('getColor invalid color', (ct) => {
-  try {
-    getColor('invalid color')
-
-    ct.fail('getColor should throw error')
-  } catch (error) {
-    ct.pass(' threw an error')
-    ct.equal(error.message, 'Invalid color invalid color')
-  }
 
   ct.end()
 })

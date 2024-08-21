@@ -1,13 +1,12 @@
 const winston = require('winston')
-const colors = require('color-name')
-const pc = require('picocolors')
 
 const printf = winston.format.printf
 const combine = winston.format.combine
 const createLogger = winston.createLogger
 const transports = winston.transports
 
-const packageJson = require('./../lib/helpers/packageJson')
+const packageJson = require('../lib/helpers/packageJson')
+const { getColor, bold } = require('./colors')
 
 const levels = {
   error: 0,
@@ -33,16 +32,7 @@ const levels = {
   silly: 6
 }
 
-function getColor (color) {
-  if (!Object.hasOwn(colors, color)) {
-    throw new Error(`Invalid color ${color}`)
-  }
-  if (!pc.isColorSupported) return (message) => message
-  const [r, g, b] = colors[color]
-  return (message) => `\x1b[38;2;${r};${g};${b}m${message}\x1b[39m`
-}
-
-const error = (m) => pc.bold(pc.red(m))
+const error = (m) => bold(getColor('red')(m))
 const warn = getColor('orangered')
 const success = getColor('green')
 const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv

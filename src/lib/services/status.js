@@ -1,13 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 const diff = require('diff')
-const pc = require('picocolors')
 
 const Ls = require('./ls')
 const VaultDecrypt = require('./vaultDecrypt')
 
 const containsDirectory = require('./../helpers/containsDirectory')
 const guessEnvironment = require('./../helpers/guessEnvironment')
+const { getColor } = require('./../../shared/colors')
 
 const ENCODING = 'utf8'
 
@@ -94,12 +94,12 @@ class Status {
   _colorizeDiff (part) {
     // If the part was added, color it green
     if (part.added) {
-      return pc.green(part.value)
+      return getColor('green')(part.value)
     }
 
     // If the part was removed, color it red
     if (part.removed) {
-      return pc.red(part.value)
+      return getColor('red')(part.value)
     }
 
     // No color for unchanged parts
