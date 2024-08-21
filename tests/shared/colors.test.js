@@ -22,6 +22,15 @@ t.test('getColor with ansi16 color support', (ct) => {
   ct.end()
 })
 
+t.test('getColor with ansi8 color support', (ct) => {
+  const stub = sinon.stub(depth, 'getColorDepth').returns(8)
+
+  ct.equal(getColor('olive')('hello'), '\x1b[33mhello\x1b[39m')
+
+  stub.restore()
+  ct.end()
+})
+
 t.test('getColor without color support', (ct) => {
   const stub = sinon.stub(depth, 'getColorDepth').returns(2)
 
