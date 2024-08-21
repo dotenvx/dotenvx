@@ -46,7 +46,6 @@
     "picomatch": "^4.0.2",
     "tinyexec": "^0.2.0",
     "which": "^4.0.0",
-    "winston": "^3.11.0",
     "xxhashjs": "^0.2.2"
   },
   "devDependencies": {

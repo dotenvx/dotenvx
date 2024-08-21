@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 * preserve comments and spacing on first-time generation of .env.example file ([#346](https://github.com/dotenvx/dotenvx/pull/346))
 
+### Removed
+
+* removed `winston` - logger simplified to use `console.log` going forward ([#347](https://github.com/dotenvx/dotenvx/pull/347))
+
 ## 1.8.0
 
 ### Added
