@@ -53,7 +53,7 @@ t.test('status - when no .env* files', ct => {
 
   ct.ok(stub.called, 'main.status() called')
   ct.ok(loggerWarnStub.calledWith('no .env* files.'), 'logger.warn called')
-  ct.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and then run [dotenvx status]'), 'logger.help called')
+  ct.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and then run [dotenvx ext vault status]'), 'logger.help called')
 
   ct.end()
 })

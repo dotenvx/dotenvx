@@ -49,7 +49,7 @@ function status (directory) {
 
     if (nochangeFilenames.length < 1 && changeFilenames.length < 1) {
       logger.warn('no .env* files.')
-      logger.help('? add one with [echo "HELLO=World" > .env] and then run [dotenvx status]')
+      logger.help('? add one with [echo "HELLO=World" > .env] and then run [dotenvx ext vault status]')
     }
 
     for (const row of untracked) {
