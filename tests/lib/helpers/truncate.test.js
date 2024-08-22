@@ -21,3 +21,13 @@ t.test('#truncate - 11 characters', ct => {
 
   ct.end()
 })
+
+t.test('#truncate - null privateKey', ct => {
+  const privateKey = null
+
+  const result = truncate(privateKey)
+
+  t.equal(result, '')
+
+  ct.end()
+})

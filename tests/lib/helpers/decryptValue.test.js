@@ -14,6 +14,20 @@ t.test('#decryptValue', ct => {
   ct.end()
 })
 
+t.test('#decryptValue - privateKey null', ct => {
+  const encryptedString = encryptValue('hello', publicKey)
+
+  try {
+    decryptValue(encryptedString, null)
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.code, 'DECRYPTION_FAILED')
+    ct.same(error.message, 'private key missing or blank')
+  }
+
+  ct.end()
+})
+
 t.test('#decryptValue (does not start with encrypted:) returns raw value', ct => {
   const decrypted = decryptValue('world', privateKey)
   ct.same(decrypted, 'world') // return the original raw value
@@ -79,7 +93,7 @@ t.test('#decryptValue empty privateKey', ct => {
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
-    ct.same(error.message, 'private key looks invalid')
+    ct.same(error.message, 'private key missing or blank')
   }
 
   ct.end()
