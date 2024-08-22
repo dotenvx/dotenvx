@@ -39,7 +39,7 @@ t.test('#parseDecryptEvalExpand with encrypted value malformed', ct => {
 
   const { parsed, warnings } = parseDecryptEvalExpand(src, privateKey)
 
-  const warning = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…')
+  const warning = new Error(`[DECRYPTION_FAILED] could not decrypt HELLO using private key 'd607fff…'`)
   warning.code = 'DECRYPTION_FAILED'
   warning.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
 
@@ -57,11 +57,11 @@ t.test('#parseDecryptEvalExpand with encrypted value malformed coming from proce
 
   const { parsed, warnings } = parseDecryptEvalExpand(src, privateKey)
 
-  const warning = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…')
+  const warning = new Error(`[DECRYPTION_FAILED] could not decrypt HELLO using private key 'd607fff…'`)
   warning.code = 'DECRYPTION_FAILED'
   warning.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
 
-  const warning2 = new Error('[DECRYPTION_FAILED] could not decrypt HELLO_ENC using private key d607fff…')
+  const warning2 = new Error(`[DECRYPTION_FAILED] could not decrypt HELLO_ENC using private key 'd607fff…'`)
   warning2.code = 'DECRYPTION_FAILED'
   warning2.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
 

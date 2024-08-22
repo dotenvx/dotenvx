@@ -4,8 +4,8 @@ const dotenvExpand = require('./dotenvExpand')
 const decryptValue = require('./decryptValue')
 const truncate = require('./truncate')
 
-function warning (e, key, privateKey) {
-  const warning = new Error(`[${e.code}] could not decrypt ${key} using private key ${truncate(privateKey)}`)
+function warning (e, key, privateKey = null) {
+  const warning = new Error(`[${e.code}] could not decrypt ${key} using private key '${truncate(privateKey)}'`)
   warning.code = e.code
   warning.help = `[${e.code}] ? ${e.message}`
 
@@ -17,14 +17,12 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
 
   // parse
   const parsed = dotenv.parse(src)
-  if (privateKey && privateKey.length > 0) {
-    for (const key in parsed) {
-      try {
-        const decryptedValue = decryptValue(parsed[key], privateKey)
-        parsed[key] = decryptedValue
-      } catch (_e) {
-        // do nothing. warnings tracked further below.
-      }
+  for (const key in parsed) {
+    try {
+      const decryptedValue = decryptValue(parsed[key], privateKey)
+      parsed[key] = decryptedValue
+    } catch (_e) {
+      // do nothing. warnings tracked further below.
     }
   }
 
@@ -41,22 +39,20 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
     parsed: evaled
   }
   const expanded = dotenvExpand.expand(inputEvaled)
-  if (privateKey && privateKey.length > 0) {
-    for (const key in expanded.parsed) {
-      try {
-        const decryptedValue = decryptValue(expanded.parsed[key], privateKey)
-        expanded.parsed[key] = decryptedValue
-      } catch (e) {
-        warnings.push(warning(e, key, privateKey))
-      }
+  for (const key in expanded.parsed) {
+    try {
+      const decryptedValue = decryptValue(expanded.parsed[key], privateKey)
+      expanded.parsed[key] = decryptedValue
+    } catch (e) {
+      warnings.push(warning(e, key, privateKey))
     }
-    for (const key in processEnv) {
-      try {
-        const decryptedValue = decryptValue(processEnv[key], privateKey)
-        processEnv[key] = decryptedValue
-      } catch (e) {
-        warnings.push(warning(e, key, privateKey))
-      }
+  }
+  for (const key in processEnv) {
+    try {
+      const decryptedValue = decryptValue(processEnv[key], privateKey)
+      processEnv[key] = decryptedValue
+    } catch (e) {
+      warnings.push(warning(e, key, privateKey))
     }
   }
 
