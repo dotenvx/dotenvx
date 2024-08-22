@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.9.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.9.1...main)
+
+## 1.9.1
+
+### Added
+
+* warn if private key is missing or blank ([#349](https://github.com/dotenvx/dotenvx/pull/349))
 
 ## 1.9.0
 
