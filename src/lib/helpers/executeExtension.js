@@ -22,10 +22,11 @@ function executeExtension (ext, command, rawArgs) {
 
   const result = childProcess.spawnSync(`dotenvx-ext-${command}`, forwardedArgs, { stdio: 'inherit', env })
   if (result.error) {
-    if (command === 'vault') {
+    // list known extension here for convenience to the user
+    if (['vault', 'hub'].includes(command)) {
       // when ready, uncomment to deprecate ext vault
-      // logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
-      // logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-vault]')
+      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
+      logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-vault]')
     } else {
       logger.info(`error: unknown command '${command}'`)
     }
