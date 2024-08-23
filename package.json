@@ -45,8 +45,7 @@
     "object-treeify": "1.1.33",
     "picomatch": "^4.0.2",
     "tinyexec": "^0.2.0",
-    "which": "^4.0.0",
-    "xxhashjs": "^0.2.2"
+    "which": "^4.0.0"
   },
   "devDependencies": {
     "capture-console": "^1.0.2",

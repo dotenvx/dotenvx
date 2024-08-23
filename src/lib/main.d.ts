@@ -180,18 +180,6 @@ export function encrypt(
   key?: string | string[]
 ): EncryptOutput;
 
-export type VaultEncryptOutput = {
-  dotenvKeys: Record<string, string>;
-  dotenvKeysFile: string;
-  addedKeys: string[];
-  existingKeys: string[];
-  dotenvVaultFile: string;
-  addedVaults: string[];
-  existingVaults: string[];
-  addedDotenvFilenames: string[];
-  envFile: string | string[];
-};
-
 /**
  * List all env files in the current working directory
  *
@@ -288,22 +276,3 @@ export function genexample(
   directory: string,
   envFile: string
 ): GenExampleOutput;
-
-/**
- * Decrypt ciphertext
- * @param encrypted - the encrypted ciphertext string
- * @param keyStr - the decryption key string
- */
-export function vaultDecrypt(encrypted: string, keyStr: string): string;
-
-/**
- * Encrypt plaintext
- *
- * @see https://dotenvx.com/docs
- * @param directory - current working directory
- * @param envFile - path to the .env file(s)
- */
-export function vaultEncrypt(
-  directory?: string,
-  envFile?: string | string[]
-): VaultEncryptOutput;

@@ -8,11 +8,9 @@ const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Run = require('./services/run')
 const Sets = require('./services/sets')
-const Status = require('./services/status')
 const Encrypt = require('./services/encrypt')
 const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
-const VaultEncrypt = require('./services/vaultEncrypt')
 
 // helpers
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
@@ -198,43 +196,6 @@ const decrypt = function (envFile, key, excludeKey) {
   return new Decrypt(envFile, key, excludeKey).run()
 }
 
-/** @type {import('./main').status} */
-const status = function (directory) {
-  return new Status(directory).run()
-}
-
-// misc/cleanup
-
-/** @type {import('./main').vaultDecrypt} */
-const vaultDecrypt = function (encrypted, keyStr) {
-  try {
-    return dotenv.decrypt(encrypted, keyStr)
-  } catch (e) {
-    switch (e.code) {
-      case 'DECRYPTION_FAILED':
-        // more helpful error when decryption fails
-        logger.error(
-          '[DECRYPTION_FAILED] Unable to decrypt .env.vault with DOTENV_KEY.'
-        )
-        logger.help(
-          '[DECRYPTION_FAILED] Run with debug flag [dotenvx run --debug -- yourcommand] or manually run [echo $DOTENV_KEY] to compare it to the one in .env.keys.'
-        )
-        logger.debug(
-          `[DECRYPTION_FAILED] DOTENV_KEY is ${process.env.DOTENV_KEY}`
-        )
-        process.exit(1)
-        break
-      default:
-        throw e
-    }
-  }
-}
-
-/** @type {import('./main').vaultEncrypt} */
-const vaultEncrypt = function (directory, envFile) {
-  return new VaultEncrypt(directory, envFile).run()
-}
-
 module.exports = {
   // dotenv proxies
   config,
@@ -246,9 +207,5 @@ module.exports = {
   ls,
   get,
   set,
-  status,
-  genexample,
-  // misc/cleanup
-  vaultEncrypt,
-  vaultDecrypt
+  genexample
 }

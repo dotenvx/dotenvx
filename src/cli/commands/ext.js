@@ -9,6 +9,9 @@ ext
   .description('🔌 extensions')
   .allowUnknownOption()
 
+// list known extensions here you want to display
+ext.addHelpText('after', '  vault                             🔐 manage .env.vault files')
+
 ext
   .argument('[command]', 'dynamic ext command')
   .argument('[args...]', 'dynamic ext command arguments')
@@ -54,7 +57,5 @@ ext.command('precommit')
 ext.command('scan')
   .description('scan for leaked secrets')
   .action(require('./../actions/ext/scan'))
-
-ext.addCommand(require('./../commands/ext/vault'))
 
 module.exports = ext
