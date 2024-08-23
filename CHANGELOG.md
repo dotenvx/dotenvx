@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.9.1...main)
 
+## 1.10.0
+
+### Removed
+
+* remove `dotenvx ext vault`, replace with [dotenvx-ext-vault](https://github.com/dotenvx/dotenvx-ext-vaut) (install there to continue using `ext vault`) ([#351](https://github.com/dotenvx/dotenvx/pull/351))
+
 ## 1.9.1
 
 ### Added
