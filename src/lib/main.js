@@ -11,7 +11,6 @@ const Sets = require('./services/sets')
 const Encrypt = require('./services/encrypt')
 const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
-const VaultEncrypt = require('./services/vaultEncrypt')
 
 // helpers
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
@@ -224,11 +223,6 @@ const vaultDecrypt = function (encrypted, keyStr) {
   }
 }
 
-/** @type {import('./main').vaultEncrypt} */
-const vaultEncrypt = function (directory, envFile) {
-  return new VaultEncrypt(directory, envFile).run()
-}
-
 module.exports = {
   // dotenv proxies
   config,
@@ -242,6 +236,5 @@ module.exports = {
   set,
   genexample,
   // misc/cleanup
-  vaultEncrypt,
   vaultDecrypt
 }

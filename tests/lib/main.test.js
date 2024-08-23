@@ -11,7 +11,6 @@ const Sets = require('../../src/lib/services/sets')
 const Encrypt = require('../../src/lib/services/encrypt')
 const Decrypt = require('../../src/lib/services/decrypt')
 const Genexample = require('../../src/lib/services/genexample')
-const VaultEncrypt = require('../../src/lib/services/vaultEncrypt')
 
 t.test('config calls Run.run', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
@@ -72,19 +71,6 @@ t.test('decrypt calls Decrypt.run', ct => {
   main.decrypt()
 
   t.ok(stub.called, 'new Decrypt().run() called')
-
-  stub.restore()
-
-  ct.end()
-})
-
-t.test('vaultEncrypt calls VaultEncrypt.run', ct => {
-  const stub = sinon.stub(VaultEncrypt.prototype, 'run')
-  stub.returns({})
-
-  main.vaultEncrypt()
-
-  t.ok(stub.called, 'new VaultEncrypt().run() called')
 
   stub.restore()
 
