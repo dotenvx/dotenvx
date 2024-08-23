@@ -7,11 +7,6 @@ const vault = new Command('vault')
 vault
   .description('🔐 manage .env.vault files')
 
-// dotenvx ext vault migrate
-vault.command('migrate')
-  .description('instructions for migrating .env.vault to encrypted env file(s)')
-  .action(require('./../../actions/ext/vault/migrate'))
-
 // dotenvx ext vault encrypt
 vault.command('encrypt')
   .description('encrypt .env.* to .env.vault')
