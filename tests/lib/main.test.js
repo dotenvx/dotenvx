@@ -25,6 +25,19 @@ t.test('config calls Run.run', ct => {
   ct.end()
 })
 
+t.test('config with convention  - calls Run.run with proper envs', ct => {
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.config({ convention: 'nextjs' })
+
+  t.ok(stub.called, 'new Run().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('configDotenv calls dotenv.configDotenv', ct => {
   const stub = sinon.stub(dotenv, 'configDotenv')
   stub.returns({})

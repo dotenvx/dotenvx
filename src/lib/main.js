@@ -13,6 +13,7 @@ const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
 
 // helpers
+const conventions = require('./helpers/conventions')
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
 const { setLogLevel } = require('../shared/logger')
 
@@ -41,7 +42,18 @@ const config = function (options = {}) {
   const optionPaths = dotenvOptionPaths(options) // [ '.env' ]
 
   try {
-    const envs = []
+    let envs = []
+    // handle shorthand conventions - like --convention=nextjs
+    if (options.convention) {
+      envs = conventions(options.convention).concat(envs)
+    }
+
+    if (process.env.DOTENV_KEY) {
+      logger.warn('DEPRECATION NOTICE: Setting DOTENV_KEY with .env.vault is deprecated.')
+      logger.warn('DEPRECATION NOTICE: Run [dotenvx ext vault migrate] for instructions on converting your .env.vault file to encrypted .env files (using public key encryption algorithm secp256k1)')
+      logger.warn('DEPRECATION NOTICE: Read more at [https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md#0380]')
+    }
+
     for (const optionPath of optionPaths) {
       // if DOTENV_KEY is set then assume we are checking envVaultFile
       if (DOTENV_KEY) {

@@ -1,7 +1,7 @@
 const resolveHome = require('./resolveHome')
 
 function dotenvOptionPaths (options) {
-  let optionPaths = ['.env']
+  let optionPaths = []
 
   if (options && options.path) {
     if (!Array.isArray(options.path)) {
