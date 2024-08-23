@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.10.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.10.1...main)
+
+## 1.10.1
+
+### Changed
+
+* check subfolders on `dotenvx ext precommit` hook ([#350](https://github.com/dotenvx/dotenvx/pull/350))
 
 ## 1.10.0
 
