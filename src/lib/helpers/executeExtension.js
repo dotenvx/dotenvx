@@ -24,7 +24,6 @@ function executeExtension (ext, command, rawArgs) {
   if (result.error) {
     // list known extension here for convenience to the user
     if (['vault', 'hub'].includes(command)) {
-      // when ready, uncomment to deprecate ext vault
       logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
       logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-vault]')
     } else {
