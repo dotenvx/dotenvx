@@ -10,11 +10,11 @@ const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Precommit {
-  constructor(options = {}) {
+  constructor (options = {}) {
     this.install = options.install
   }
 
-  run() {
+  run () {
     if (this.install) {
       const {
         successMessage
@@ -76,7 +76,7 @@ class Precommit {
     }
   }
 
-  _installPrecommitHook() {
+  _installPrecommitHook () {
     return new InstallPrecommitHook().run()
   }
 }

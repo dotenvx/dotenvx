@@ -7,7 +7,7 @@ const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitH
 const Ls = require('../../../src/lib/services/ls')
 
 t.test('#run', ct => {
-  const lsServiceStub = sinon.stub(Ls.prototype, "run")
+  const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns([])
   const precommit = new Precommit()
   const installPrecommitHookStub = sinon.stub(precommit, '_installPrecommitHook')
@@ -37,7 +37,7 @@ t.test('#run (install: true)', ct => {
 t.test('#run (no gitignore file)', ct => {
   const existsSyncStub = sinon.stub(fs, 'existsSync')
   existsSyncStub.returns(false)
-  const lsServiceStub = sinon.stub(Ls.prototype, "run")
+  const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns([])
 
   const { warnings } = new Precommit().run()
@@ -53,7 +53,7 @@ t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
   readFileSyncStub.returns('.env*')
   const readdirSyncStub = sinon.stub(fs, 'readdirSync')
   readdirSyncStub.returns(['.env.example'])
-  const lsServiceStub = sinon.stub(Ls.prototype, "run")
+  const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['.env.example'])
 
   const { warnings } = new Precommit().run()
