@@ -13,6 +13,8 @@ async function run () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  console.log('options', options)
+
   try {
     let envs = []
     // handle shorthand conventions - like --convention=nextjs
