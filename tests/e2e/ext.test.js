@@ -23,12 +23,11 @@ t.test('ext missing', ct => {
   ct.end()
 })
 
-// uncomment when ready to deprecate ext vault
-// t.test('ext vault', ct => {
-//   const output = execShell(`${dotenvx} ext vault`)
-//
-//   t.match(output, /\[INSTALLATION_NEEDED\] install dotenvx-ext-vault to use \[dotenvx ext vault\] commands/, 'shoud say installation needed')
-//   t.match(output, /see installation instructions/, 'shoud say see installation instructions')
-//
-//   ct.end()
-// })
+t.test('ext vault', ct => {
+  const output = execShell(`${dotenvx} ext vault`)
+
+  t.match(output, /\[INSTALLATION_NEEDED\] install dotenvx-ext-vault to use \[dotenvx ext vault\] commands/, 'shoud say installation needed')
+  t.match(output, /see installation instructions/, 'shoud say see installation instructions')
+
+  ct.end()
+})

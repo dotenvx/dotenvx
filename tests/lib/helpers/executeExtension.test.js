@@ -32,16 +32,15 @@ t.test('executeExtension - vault command missing', ct => {
   }
   spawnSyncStub.returns(mockResult)
   const processExitStub = sinon.stub(process, 'exit')
-  // const loggerHelpStub = sinon.stub(logger, 'help')
-  // const loggerWarnStub = sinon.stub(logger, 'warn')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+  const loggerWarnStub = sinon.stub(logger, 'warn')
 
   executeExtension(ext, 'vault', ['vault'])
 
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
-  // uncomment when ready to deprecate ext vault commands
-  // ct.ok(loggerWarnStub.calledWith('[INSTALLATION_NEEDED] install dotenvx-ext-vault to use [dotenvx ext vault] commands'), 'warn')
-  // ct.ok(loggerHelpStub.calledWith('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-vault]'), 'help')
+  ct.ok(loggerWarnStub.calledWith('[INSTALLATION_NEEDED] install dotenvx-ext-vault to use [dotenvx ext vault] commands'), 'warn')
+  ct.ok(loggerHelpStub.calledWith('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-vault]'), 'help')
 
   ct.end()
 })
