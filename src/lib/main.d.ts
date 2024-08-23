@@ -1,5 +1,4 @@
 import type { URL } from 'url';
-import type { Change } from 'diff';
 
 export interface DotenvParseOutput {
   [name: string]: string;
@@ -234,28 +233,6 @@ export function set(
   envFile: string | string,
   encrypt?: boolean
 ): EncryptOutput;
-
-type StatusRow = {
-  filename: string;
-  filepath: string;
-  environment: string;
-  raw: string;
-  decrypted: any;
-  differences: Change[];
-};
-
-export type StatusOutput = {
-  changes: StatusRow[];
-  nochanges: StatusRow[];
-  untracked: StatusRow[];
-};
-
-/**
- * Check the differences between the .env file and the decrypted values
- *
- * @param directory - current working directory
- */
-export function status(directory: string): StatusOutput;
 
 export type GenExampleOutput = {
   envExampleFile: string;
