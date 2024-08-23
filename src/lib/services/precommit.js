@@ -2,17 +2,19 @@
 const fs = require('fs')
 const ignore = require('ignore')
 
+const Ls = require('../services/ls')
+
 const pluralize = require('./../helpers/pluralize')
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Precommit {
-  constructor (options = {}) {
+  constructor(options = {}) {
     this.install = options.install
   }
 
-  run () {
+  run() {
     if (this.install) {
       const {
         successMessage
@@ -38,8 +40,8 @@ class Precommit {
 
       // 2. check .env* files against .gitignore file
       const ig = ignore().add(gitignore)
-      const files = fs.readdirSync(process.cwd())
-      const dotenvFiles = files.filter(file => file.match(/^\.env(\..+)?$/))
+      const lsService = new Ls(process.cwd())
+      const dotenvFiles = lsService.run()
       dotenvFiles.forEach(file => {
         // check if that file is being ignored
         if (ig.ignores(file)) {
@@ -74,7 +76,7 @@ class Precommit {
     }
   }
 
-  _installPrecommitHook () {
+  _installPrecommitHook() {
     return new InstallPrecommitHook().run()
   }
 }
