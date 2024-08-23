@@ -8,7 +8,6 @@ const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Run = require('./services/run')
 const Sets = require('./services/sets')
-const Status = require('./services/status')
 const Encrypt = require('./services/encrypt')
 const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
@@ -198,11 +197,6 @@ const decrypt = function (envFile, key, excludeKey) {
   return new Decrypt(envFile, key, excludeKey).run()
 }
 
-/** @type {import('./main').status} */
-const status = function (directory) {
-  return new Status(directory).run()
-}
-
 // misc/cleanup
 
 /** @type {import('./main').vaultDecrypt} */
@@ -246,7 +240,6 @@ module.exports = {
   ls,
   get,
   set,
-  status,
   genexample,
   // misc/cleanup
   vaultEncrypt,

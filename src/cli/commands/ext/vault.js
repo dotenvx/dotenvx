@@ -27,10 +27,4 @@ vault.command('decrypt')
   .option('-e, --environment <environments...>', 'environment(s) to decrypt')
   .action(require('./../../actions/ext/vault/decrypt'))
 
-// dotenvx ext vault status
-vault.command('status')
-  .description('compare your .env* content(s) to your .env.vault decrypted content(s)')
-  .argument('[directory]', 'directory to check status against', '.')
-  .action(require('./../../actions/ext/vault/status'))
-
 module.exports = vault

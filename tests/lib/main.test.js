@@ -8,7 +8,6 @@ const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
 const Run = require('../../src/lib/services/run')
 const Sets = require('../../src/lib/services/sets')
-const Status = require('../../src/lib/services/status')
 const Encrypt = require('../../src/lib/services/encrypt')
 const Decrypt = require('../../src/lib/services/decrypt')
 const Genexample = require('../../src/lib/services/genexample')
@@ -125,19 +124,6 @@ t.test('set calls Sets.run', ct => {
   main.set()
 
   t.ok(stub.called, 'new Sets().run() called')
-
-  stub.restore()
-
-  ct.end()
-})
-
-t.test('set calls Status.run', ct => {
-  const stub = sinon.stub(Status.prototype, 'run')
-  stub.returns({})
-
-  main.status()
-
-  t.ok(stub.called, 'new Status().run() called')
 
   stub.restore()
 
