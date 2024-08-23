@@ -196,33 +196,6 @@ const decrypt = function (envFile, key, excludeKey) {
   return new Decrypt(envFile, key, excludeKey).run()
 }
 
-// misc/cleanup
-
-/** @type {import('./main').vaultDecrypt} */
-const vaultDecrypt = function (encrypted, keyStr) {
-  try {
-    return dotenv.decrypt(encrypted, keyStr)
-  } catch (e) {
-    switch (e.code) {
-      case 'DECRYPTION_FAILED':
-        // more helpful error when decryption fails
-        logger.error(
-          '[DECRYPTION_FAILED] Unable to decrypt .env.vault with DOTENV_KEY.'
-        )
-        logger.help(
-          '[DECRYPTION_FAILED] Run with debug flag [dotenvx run --debug -- yourcommand] or manually run [echo $DOTENV_KEY] to compare it to the one in .env.keys.'
-        )
-        logger.debug(
-          `[DECRYPTION_FAILED] DOTENV_KEY is ${process.env.DOTENV_KEY}`
-        )
-        process.exit(1)
-        break
-      default:
-        throw e
-    }
-  }
-}
-
 module.exports = {
   // dotenv proxies
   config,
@@ -234,7 +207,5 @@ module.exports = {
   ls,
   get,
   set,
-  genexample,
-  // misc/cleanup
-  vaultDecrypt
+  genexample
 }
