@@ -18,8 +18,6 @@ const guessPrivateKeyFilename = require('./../helpers/guessPrivateKeyFilename')
 
 class Run {
   constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
-    console.log('processEnv', processEnv)
-
     this.dotenvPrivateKeyNames = Object.keys(processEnv).filter(key => key.startsWith('DOTENV_PRIVATE_KEY')) // important, must be first. used by determineEnvs
     this.envs = this._determineEnvs(envs, DOTENV_KEY)
     this.overload = overload
@@ -191,14 +189,10 @@ class Run {
   _determineEnvsFromDotenvPrivateKey () {
     const envs = []
 
-    console.log('envs', envs)
-
     for (const privateKeyName of this.dotenvPrivateKeyNames) {
       const filename = guessPrivateKeyFilename(privateKeyName)
       envs.push({ type: TYPE_ENV_FILE, value: filename })
     }
-
-    console.log('envs', envs)
 
     return envs
   }
@@ -206,8 +200,6 @@ class Run {
   _determineEnvs (envs = [], DOTENV_KEY = '') {
     if (!envs || envs.length <= 0) {
       // if process.env.DOTENV_PRIVATE_KEY or process.env.DOTENV_PRIVATE_KEY_${environment} is set, assume inline encryption methodology
-      console.log('dotenvPrivateKeyNames', this.dotenvPrivateKeyNames)
-
       if (this.dotenvPrivateKeyNames.length > 0) {
         return this._determineEnvsFromDotenvPrivateKey()
       }

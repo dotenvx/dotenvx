@@ -40,8 +40,6 @@ const config = function (options = {}) {
   // build envs using user set option.path
   const optionPaths = dotenvOptionPaths(options) // [ '.env' ]
 
-  console.log('optionPaths', optionPaths)
-
   try {
     let envs = []
     // handle shorthand conventions - like --convention=nextjs
