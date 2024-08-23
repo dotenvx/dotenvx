@@ -65,7 +65,7 @@ export interface DotenvConfigOptions {
   DOTENV_KEY?: string;
 
   /**
-   * Do not warn for missing .env files
+   * Load a .env convention (available conventions: 'nextjs')
    */
   convention?: string;
 

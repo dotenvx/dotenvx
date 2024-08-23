@@ -13,6 +13,7 @@ const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
 
 // helpers
+const conventions = require('./helpers/conventions')
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
 const { setLogLevel } = require('../shared/logger')
 
