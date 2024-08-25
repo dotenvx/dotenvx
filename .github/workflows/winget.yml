@@ -33,10 +33,12 @@ jobs:
       - name: commit and push
         run: |
           cd winget-pkgs
-          ls -al
           git config --global user.name 'motdotenv'
           git config --global user.email 'mot@dotenv.org'
-          git branch -d dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+          ls -al
+          git branch
+          git branch dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+          git checkout dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
           git branch
           git add .
           git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}"
