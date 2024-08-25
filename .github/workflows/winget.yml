@@ -14,9 +14,9 @@ jobs:
       fail-fast: true
     steps:
       - uses: actions/checkout@v4
-      - name: set version
+      - name: extract version
         run:
-          VERSION=1.10.2
+          VERSION="v1.10.2"
           CLEAN_VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
