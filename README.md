@@ -69,6 +69,18 @@ docker run -it --rm -v $(pwd):/app dotenv/dotenvx help
 
 </details>
 
+<details><summary>with windows 🟦🟩🟥🟨</summary><br>
+
+```sh
+winget install dotenvx
+dotenvx help
+```
+
+&nbsp;
+
+</details>
+
+
 <details><summary>or with github releases 🐙</summary><br>
 
 ```sh
@@ -78,7 +90,6 @@ tar -xzf dotenvx.tar.gz
 ```
 
 [![github releases](https://img.shields.io/github/downloads/dotenvx/dotenvx/total)](https://github.com/dotenvx/dotenvx/releases)
-<sup>*includes homebrew installs</sup>
 
 </details>
 

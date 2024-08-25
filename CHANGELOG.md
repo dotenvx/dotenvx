@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.10.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.10.3...main)
+
+## 1.10.3
+
+### Added
+
+* ci: automate publishing to `winget` ([#354](https://github.com/dotenvx/dotenvx/pull/354))
 
 ## 1.10.2
 
