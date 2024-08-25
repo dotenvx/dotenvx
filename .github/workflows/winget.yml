@@ -18,8 +18,10 @@ jobs:
         run: |
           VERSION="v1.10.2"
           CLEAN_VERSION=${VERSION#v}
+          SHA_X86="720ce8ca6599727d2793052413848d9d365855b0fbf5a38c4193d643d1a02df6"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+          echo "SHA_X86=$SHA_X86" >> $GITHUB_ENV
       - name: checkout dotenvx/winget-pkgs repo
         uses: actions/checkout@v4
         with:
@@ -73,6 +75,29 @@ jobs:
           Tags: ["env", "dotenv", "environment", "variables", "dotenvx", "cli", "encryption"]
           Moniker: dotenvx
           ManifestType: defaultLocale
+          ManifestVersion: 1.6.0
+          EOT
+      - name: create dotenvx.dotenvx.installer.yaml
+        run: |
+          cd winget-pkgs
+          mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
+          CURRENT_DATE=$(date +"%Y-%m-%d")
+          cat <<EOT > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.installer.yaml
+          PackageIdentifier: dotenvx.dotenvx
+          PackageVersion: ${{ env.CLEAN_VERSION }}
+          InstallerLocale: en-US
+          InstallerType: zip
+          ReleaseDate: "$CURRENT_DATE"
+          Installers:
+            - Architecture: x64
+              NestedInstallerType: portable
+              NestedInstallerFiles:
+                - RelativeFilePath: dotenvx.exe
+                  PortableCommandAlias: dotenvx
+              InstallerUrl: https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip
+              InstallerSha256: ${{ env.SHA_X86 }}
+              UpgradeBehavior: uninstallPrevious
+          ManifestType: installer
           ManifestVersion: 1.6.0
           EOT
       - name: commit and push
