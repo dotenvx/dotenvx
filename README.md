@@ -87,9 +87,9 @@ winget install dotenvx
 dotenvx help
 ```
 
-&nbsp;
-
 </details>
+
+&nbsp;
 
 ## Run Anywhere
 
