@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: extract version
-        run:
+        run: |
           VERSION="v1.10.2"
           CLEAN_VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
