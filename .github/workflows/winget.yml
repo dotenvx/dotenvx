@@ -46,13 +46,33 @@ jobs:
       - name: create dotenvx.dotenvx.yaml
         run: |
           cd winget-pkgs
-          ls -al
           mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
           cat <<EOT > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.yaml
           PackageIdentifier: dotenvx.dotenvx
           PackageVersion: ${{ env.CLEAN_VERSION }}
           DefaultLocale: en-US
           ManifestType: version
+          ManifestVersion: 1.6.0
+          EOT
+      - name: create dotenvx.dotenvx.locale.en-US.yaml
+        run: |
+          cd winget-pkgs
+          mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
+          cat <<EOT > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.locale.en-US.yaml
+          PackageIdentifier: dotenvx.dotenvx
+          PackageVersion: ${{ env.CLEAN_VERSION }}
+          PackageLocale: en-US
+          Publisher: dotenvx
+          PublisherUrl: https://dotenvx.com
+          Author: motdotla
+          PackageName: dotenvx
+          PackageUrl: https://github.com/dotenvx/dotenvx
+          License: BSD-3-Clause
+          ShortDescription: a better dotenv–from the creator of dotenv
+          Description: a better dotenv–from the creator of dotenv
+          Tags: ["env", "dotenv", "environment", "variables", "dotenvx", "cli", "encryption"]
+          Moniker: dotenvx
+          ManifestType: defaultLocale
           ManifestVersion: 1.6.0
           EOT
       - name: commit and push
