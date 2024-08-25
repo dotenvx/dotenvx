@@ -26,10 +26,6 @@ jobs:
           repository: "dotenvx/winget-pkgs"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: "winget-pkgs"
-      - name: create manifest files
-        run: |
-          mkdir -p winget-pkgs/manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
-          echo "${{ env.CLEAN_VERSION }}" > winget-pkgs/manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/VERSION
       - name: commit and push
         run: |
           cd winget-pkgs
@@ -39,7 +35,10 @@ jobs:
           git branch
           git branch dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
           git checkout dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+          git pull origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
           git branch
+          mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
+          echo "${{ env.CLEAN_VERSION }}" > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/VERSION
           git add .
           git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}"
           git branch
