@@ -65,19 +65,7 @@ docker run -it --rm -v $(pwd):/app dotenv/dotenvx help
 
 </details>
 
-<details><summary>with windows 🟦🟩🟥🟨</summary><br>
-
-```sh
-winget install dotenvx
-dotenvx help
-```
-
-&nbsp;
-
-</details>
-
-
-<details><summary>or with github releases 🐙</summary><br>
+<details><summary>with github releases 🐙</summary><br>
 
 ```sh
 curl -L -o dotenvx.tar.gz "https://github.com/dotenvx/dotenvx/releases/latest/download/dotenvx-$(uname -s)-$(uname -m).tar.gz"
@@ -87,10 +75,21 @@ tar -xzf dotenvx.tar.gz
 
 [![github releases](https://img.shields.io/github/downloads/dotenvx/dotenvx/total)](https://github.com/dotenvx/dotenvx/releases)
 
+&nbsp;
+
 </details>
 
 
+<details><summary>or with windows 🟦🟩🟥🟨</summary><br>
+
+```sh
+winget install dotenvx
+dotenvx help
+```
+
 &nbsp;
+
+</details>
 
 ## Run Anywhere
 
