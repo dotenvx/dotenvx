@@ -9,7 +9,7 @@
 &nbsp;
 
 
-### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg)](https://www.npmjs.com/package/@dotenvx/dotenvx) [![test suite](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/motdotenv/bb76445765a9731e7d824a6efdf53524/raw/dotenvxTestCount.json)](https://github.com/dotenvx/dotenvx/tree/main/tests) 
+### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg)](https://www.npmjs.com/package/@dotenvx/dotenvx) [![downloads](https://img.shields.io/npm/dw/@dotenvx/dotenvx)](https://www.npmjs.com/package/@dotenvx/dotenvx) [![test suite](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/motdotenv/bb76445765a9731e7d824a6efdf53524/raw/dotenvxTestCount.json)](https://github.com/dotenvx/dotenvx/tree/main/tests) 
 
 Install and use it in code just like `dotenv`.
 
@@ -22,8 +22,6 @@ require('@dotenvx/dotenvx').config()
 
 console.log(`Hello ${process.env.HELLO}`)
 ```
-
-[![downloads](https://img.shields.io/npm/dw/@dotenvx/dotenvx)](https://www.npmjs.com/package/@dotenvx/dotenvx) 
 
 &nbsp;
 
