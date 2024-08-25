@@ -48,7 +48,7 @@ jobs:
           cd winget-pkgs
           ls -al
           mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
-          cat <<EOT >> manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.yaml
+          cat <<EOT > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.yaml
           PackageIdentifier: dotenvx.dotenvx
           PackageVersion: ${{ env.CLEAN_VERSION }}
           DefaultLocale: en-US
