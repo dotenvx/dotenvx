@@ -26,6 +26,17 @@ jobs:
           repository: "dotenvx/winget-pkgs"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: "winget-pkgs"
+      - name: create dotenvx.dotenvx.yaml
+        run: |
+          cd winget-pkgs
+          mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
+          cat <<EOT >> manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.yaml
+          PackageIdentifier: dotenvx.dotenvx
+          PackageVersion: ${{ env.CLEAN_VERSION }}
+          DefaultLocale: en-US
+          ManifestType: version
+          ManifestVersion: 1.6.0
+          EOT
       - name: commit and push
         run: |
           cd winget-pkgs
@@ -40,6 +51,6 @@ jobs:
           mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
           echo "${{ env.CLEAN_VERSION }}" > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/VERSION
           git add .
-          git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}"
+          git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}" --allow-empty
           git branch
           git push origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
