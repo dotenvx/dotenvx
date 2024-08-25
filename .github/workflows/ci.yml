@@ -376,6 +376,14 @@ jobs:
           git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}" --allow-empty
           git branch
           git push origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+      - name: create pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          cd winget-pkgs
+          gh pr create --title "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}" \
+            --head dotenvx-dotenvx-${{ env.CLEAN_VERSION }} \
+            --base master
 
   dotenvx-darwin-amd64:
     needs: release
