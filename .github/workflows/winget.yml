@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ['*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  winget:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: set version
+        run:
+          VERSION=1.10.2
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+      - name: checkout dotenvx/winget-pkgs repo
+        uses: actions/checkout@v4
+        with:
+          repository: "dotenvx/winget-pkgs"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: "winget-pkgs"
+      - name: copy dist2 files to release repo
+        run: |
+          mkdir -p winget-pkgs/manifests/d/dotenvx/dotenvx/1.10.2
+          echo "${{ env.CLEAN_VERSION }}" > winget-pkgs/manifests/d/dotenvx/dotenvx/1.10.2/VERSION
+      - name: commit and push
+        run: |
+          cd winget-pkgs
+          git config --global user.name 'motdotenv'
+          git config --global user.email 'mot@dotenv.org'
+          git branch -d dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+          git add .
+          git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}"
+          git push origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
