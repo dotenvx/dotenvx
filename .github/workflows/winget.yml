@@ -18,10 +18,8 @@ jobs:
         run: |
           VERSION="v1.10.2"
           CLEAN_VERSION=${VERSION#v}
-          SHA_X86="720ce8ca6599727d2793052413848d9d365855b0fbf5a38c4193d643d1a02df6"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
-          echo "SHA_X86=$SHA_X86" >> $GITHUB_ENV
       - name: checkout dotenvx/winget-pkgs repo
         uses: actions/checkout@v4
         with:
@@ -77,6 +75,13 @@ jobs:
           ManifestType: defaultLocale
           ManifestVersion: 1.6.0
           EOT
+      # 720ce8ca6599727d2793052413848d9d365855b0fbf5a38c4193d643d1a02df6
+      - name: calculate sha256 for x64 installer
+        run: |
+          INSTALLER_URL="https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip"
+          curl -L $INSTALLER_URL -o dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip
+          SHA_X86=$(sha256sum dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip | awk '{ print $1 }')
+          echo "SHA_X86=$SHA_X86" >> $GITHUB_ENV
       - name: create dotenvx.dotenvx.installer.yaml
         run: |
           cd winget-pkgs
