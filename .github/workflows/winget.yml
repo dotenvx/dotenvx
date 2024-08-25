@@ -26,9 +26,27 @@ jobs:
           repository: "dotenvx/winget-pkgs"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: "winget-pkgs"
+      - name: git config and pull
+        run: |
+          cd winget-pkgs
+          git config --global user.name 'motdotenv'
+          git config --global user.email 'mot@dotenv.org'
+          git branch
+          git branch dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+          git checkout dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+      - name: check if branch exists and pull
+        run: |
+          cd winget-pkgs
+          BRANCH_EXISTS=$(git ls-remote --heads origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }} | wc -l)
+          if [ "$BRANCH_EXISTS" -eq 1 ]; then
+            git pull origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+          else
+            echo "Branch does not exist on the remote; skipping pull."
+          fi
       - name: create dotenvx.dotenvx.yaml
         run: |
           cd winget-pkgs
+          ls -al
           mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
           cat <<EOT >> manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.yaml
           PackageIdentifier: dotenvx.dotenvx
@@ -40,16 +58,6 @@ jobs:
       - name: commit and push
         run: |
           cd winget-pkgs
-          git config --global user.name 'motdotenv'
-          git config --global user.email 'mot@dotenv.org'
-          ls -al
-          git branch
-          git branch dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
-          git checkout dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
-          git pull origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
-          git branch
-          mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
-          echo "${{ env.CLEAN_VERSION }}" > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/VERSION
           git add .
           git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}" --allow-empty
           git branch
