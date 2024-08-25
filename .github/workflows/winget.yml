@@ -26,16 +26,19 @@ jobs:
           repository: "dotenvx/winget-pkgs"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: "winget-pkgs"
-      - name: copy dist2 files to release repo
+      - name: create manifest files
         run: |
-          mkdir -p winget-pkgs/manifests/d/dotenvx/dotenvx/1.10.2
-          echo "${{ env.CLEAN_VERSION }}" > winget-pkgs/manifests/d/dotenvx/dotenvx/1.10.2/VERSION
+          mkdir -p winget-pkgs/manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
+          echo "${{ env.CLEAN_VERSION }}" > winget-pkgs/manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/VERSION
       - name: commit and push
         run: |
           cd winget-pkgs
+          ls -al
           git config --global user.name 'motdotenv'
           git config --global user.email 'mot@dotenv.org'
           git branch -d dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
+          git branch
           git add .
           git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}"
+          git branch
           git push origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
