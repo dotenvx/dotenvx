@@ -157,3 +157,33 @@ t.test('#_patterns (envFile set to array)', ct => {
 
   ct.end()
 })
+
+t.test('#_patterns (excludeEnvFile set to string)', ct => {
+  const ls = new Ls(undefined, undefined, '.env')
+
+  const excludePatterns = ls._excludePatterns()
+  const exclude = ls._exclude()
+
+  const expected = ['**/.env']
+  const ignore = ['node_modules/**', '.git/**']
+
+  ct.same(excludePatterns, expected)
+  ct.same(exclude, ignore.concat(expected))
+
+  ct.end()
+})
+
+t.test('#_patterns (excludeEnvFile set to array)', ct => {
+  const ls = new Ls(undefined, undefined, ['.env.keys'])
+
+  const excludePatterns = ls._excludePatterns()
+  const exclude = ls._exclude()
+
+  const expected = ['**/.env.keys']
+  const ignore = ['node_modules/**', '.git/**']
+
+  ct.same(excludePatterns, expected)
+  ct.same(exclude, ignore.concat(expected))
+
+  ct.end()
+})

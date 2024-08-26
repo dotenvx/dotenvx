@@ -12,6 +12,7 @@ const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all o
 class Precommit {
   constructor (options = {}) {
     this.install = options.install
+    this.excludeEnvFile = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
   }
 
   run () {
@@ -40,7 +41,7 @@ class Precommit {
 
       // 2. check .env* files against .gitignore file
       const ig = ignore().add(gitignore)
-      const lsService = new Ls(process.cwd())
+      const lsService = new Ls(process.cwd(), undefined, this.excludeEnvFile)
       const dotenvFiles = lsService.run()
       dotenvFiles.forEach(file => {
         // check if that file is being ignored

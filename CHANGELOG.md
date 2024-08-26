@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.10.4...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.0...main)
+
+## 1.11.0
+
+### Added
+
+* add `--exclude-env-file (-ef)` to `ext ls` ([#356](https://github.com/dotenvx/dotenvx/pull/356))
+
+### Changed
+
+* `ext precommit` ignores `tests/` directory (and similar) ([#356](https://github.com/dotenvx/dotenvx/pull/356))
 
 ## 1.10.4
 
