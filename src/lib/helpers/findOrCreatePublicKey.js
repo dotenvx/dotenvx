@@ -21,14 +21,6 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
     keysSrc = fs.readFileSync(envKeysFilepath, { encoding: ENCODING })
   }
 
-  // preserve shebangs
-  const [firstLine, ...remainingLines] = envSrc.split('\n')
-  let firstLinePreserved = ''
-  if (firstLine.startsWith('#!')) {
-    firstLinePreserved = firstLine + '\n'
-    envSrc = remainingLines.join('\n')
-  }
-
   // parsed
   const envParsed = dotenv.parse(envSrc)
   const keysParsed = dotenv.parse(keysSrc)
@@ -45,6 +37,14 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
       publicKeyAdded: false,
       privateKeyAdded: false
     }
+  }
+
+  // preserve shebang
+  const [firstLine, ...remainingLines] = envSrc.split('\n')
+  let firstLinePreserved = ''
+  if (firstLine.startsWith('#!')) {
+    firstLinePreserved = firstLine + '\n'
+    envSrc = remainingLines.join('\n')
   }
 
   // generate key pair
