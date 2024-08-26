@@ -286,3 +286,38 @@ t.test('#run (finds .env file excluding specified key as string)', ct => {
 
   ct.end()
 })
+
+t.test('#run (finds .env.export file with exported key)', ct => {
+  const envFile = 'tests/.env.export'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt(envFile).run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['KEY'])
+  ct.same(p1.envFilepath, 'tests/.env.export')
+  ct.same(changedFilepaths, ['tests/.env.export'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenv.parse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_EXPORT', 'KEY'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_EXPORT, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.match(parsed.KEY, /^encrypted:/, 'KEY should start with "encrypted:"')
+
+  const output = `#!/usr/bin/env bash
+#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
+#/            public-key encryption for .env files          /
+#/       [how it works](https://dotenvx.com/encryption)     /
+#/----------------------------------------------------------/
+DOTENV_PUBLIC_KEY_EXPORT="${parsed.DOTENV_PUBLIC_KEY_EXPORT}"
+
+# .env.export
+export KEY="${parsed.KEY}"
+`
+  ct.same(p1.envSrc, output)
+
+  ct.end()
+})
