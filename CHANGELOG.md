@@ -8,7 +8,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* `ext ls` can exclude files with `--exclude-env-file (-ef)` ([#357](https://github.com/dotenvx/dotenvx/pull/357))
+* add `--exclude-env-file (-ef)` to `ext ls` ([#356](https://github.com/dotenvx/dotenvx/pull/356))
+
+### Changed
+
+* `ext precommit` ignores `tests/` directory (and similar) ([#356](https://github.com/dotenvx/dotenvx/pull/356))
 
 ## 1.10.4
 
