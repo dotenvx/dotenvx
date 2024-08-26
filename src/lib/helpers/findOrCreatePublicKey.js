@@ -39,6 +39,14 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
     }
   }
 
+  // preserve shebang
+  const [firstLine, ...remainingLines] = envSrc.split('\n')
+  let firstLinePreserved = ''
+  if (firstLine.startsWith('#!')) {
+    firstLinePreserved = firstLine + '\n'
+    envSrc = remainingLines.join('\n')
+  }
+
   // generate key pair
   const { publicKey, privateKey } = keyPair(existingPrivateKey)
 
@@ -66,7 +74,7 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
     ''
   ].join('\n')
 
-  envSrc = `${prependPublicKey}\n${envSrc}`
+  envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
   keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
 
   let privateKeyAdded = false

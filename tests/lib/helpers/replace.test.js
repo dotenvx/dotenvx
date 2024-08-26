@@ -321,3 +321,12 @@ HELLO4=\`world\``
 
   ct.end()
 })
+
+t.test('#replace with export', ct => {
+  const src = 'export HELLO=World'
+
+  const newSrc = replace(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'export HELLO="Universe"')
+
+  ct.end()
+})

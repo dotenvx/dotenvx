@@ -7,13 +7,15 @@ function replace (src, key, value) {
   const parsed = dotenv.parse(src)
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
     const regex = new RegExp(
-      // Match the key at the start of a line or following a newline
-      `(^|\\n)${key}\\s*=\\s*` +
+      // Match the key at the start of a line, following a newline, or prefaced by export
+      `(^|\\n)\\s*(export\\s+)?${key}\\s*=\\s*` +
+      // `(^|\\n)${key}\\s*=\\s*` +
       // Non-capturing group to handle different types of quotations and unquoted values
       '(?:' +
         '(["\'`])' + // Match an opening quote
         '.*?' + // Non-greedy match for any characters within quotes
-        '\\2' + // Match the corresponding closing quote
+        // '\\2' + // Match the corresponding closing quote
+        '\\3' + // Match the corresponding closing quote
       '|' +
         // Match unquoted values; account for escaped newlines
         '(?:[^#\\n\\\\]|\\\\.)*' + // Use non-capturing group for any character except #, newline, or backslash, or any escaped character
@@ -21,7 +23,7 @@ function replace (src, key, value) {
       'gs' // Global and dotAll mode to treat string as single line
     )
 
-    output = src.replace(regex, `$1${formatted}`)
+    output = src.replace(regex, `$1$2${formatted}`)
   } else {
     // append
     if (src.endsWith('\n')) {
