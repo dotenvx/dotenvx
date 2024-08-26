@@ -3,11 +3,12 @@ const path = require('path')
 const picomatch = require('picomatch')
 
 class Ls {
-  constructor (directory = './', envFile = '.env*') {
+  constructor (directory = './', envFile = ['.env*'], excludeEnvFile = []) {
     this.ignore = ['node_modules/**', '.git/**']
 
     this.cwd = path.resolve(directory)
     this.envFile = envFile
+    this.excludeEnvFile = excludeEnvFile
   }
 
   run () {
@@ -15,9 +16,9 @@ class Ls {
   }
 
   _filepaths () {
-    const exclude = picomatch(this.ignore)
+    const exclude = picomatch(this._exclude())
     const include = picomatch(this._patterns(), {
-      ignore: this.ignore
+      ignore: this._exclude()
     })
 
     return new Fdir()
@@ -34,6 +35,22 @@ class Ls {
     }
 
     return this.envFile.map(part => `**/${part}`)
+  }
+
+  _excludePatterns () {
+    if (!Array.isArray(this.excludeEnvFile)) {
+      return [`**/${this.excludeEnvFile}`]
+    }
+
+    return this.excludeEnvFile.map(part => `**/${part}`)
+  }
+
+  _exclude () {
+    if (this._excludePatterns().length > 0) {
+      return this.ignore.concat(this._excludePatterns())
+    } else {
+      return this.ignore
+    }
   }
 }
 

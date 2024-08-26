@@ -184,8 +184,13 @@ export function encrypt(
  *
  * @param directory - current working directory
  * @param envFile - glob pattern to match env files
+ * @param excludeEnvFile - glob pattern to exclude env files
  */
-export function ls(directory: string, envFile: string): string[];
+export function ls(
+  directory: string,
+  envFile: string | string[],
+  excludeEnvFile: string | string[]
+): string[];
 
 /**
  * Get the value of a key from the .env file

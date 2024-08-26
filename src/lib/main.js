@@ -173,8 +173,8 @@ const parse = function (src) {
 }
 
 /** @type {import('./main').ls} */
-const ls = function (directory, envFile) {
-  return new Ls(directory, envFile).run()
+const ls = function (directory, envFile, excludeEnvFile) {
+  return new Ls(directory, envFile, excludeEnvFile).run()
 }
 
 /** @type {import('./main').genexample} */

@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.10.4...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.0...main)
+
+## 1.11.0
+
+### Added
+
+* `ext ls` can exclude files with `--exclude-env-file (-ef)` ([#357](https://github.com/dotenvx/dotenvx/pull/357))
 
 ## 1.10.4
 

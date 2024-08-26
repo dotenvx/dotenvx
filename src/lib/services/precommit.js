@@ -12,6 +12,7 @@ const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all o
 class Precommit {
   constructor (options = {}) {
     this.install = options.install
+    this.ignore = ['test', 'tests', 'spec', 'specs', 'pytest', 'test_suite']
   }
 
   run () {
