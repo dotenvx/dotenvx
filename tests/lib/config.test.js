@@ -98,7 +98,7 @@ t.test('reads path with encoding, parsing output to process.env', ct => {
   const res = dotenvx.config()
 
   ct.same(res.parsed, { BASIC: 'basic' })
-  ct.equal(readFileSyncStub.callCount, 1)
+  ct.equal(readFileSyncStub.callCount, 2) // 2 because it first has to check encoding
 
   readFileSyncStub.restore()
   parseStub.restore()

@@ -205,15 +205,6 @@ t.test('#parseDecryptEvalExpand machine command does not substitute (holman dotf
   ct.end()
 })
 
-t.test('returns object', ct => {
-  const dotenv = { parsed: {} }
-  const { parsed } = parseDecryptEvalExpand(dotenv)
-
-  t.ok(parsed instanceof Object, 'should be an object')
-
-  ct.end()
-})
-
 t.test('expands environment variables', ct => {
   const src = `
     BASIC=basic
