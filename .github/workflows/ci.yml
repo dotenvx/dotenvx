@@ -382,7 +382,7 @@ jobs:
           cd winget-pkgs
           gh pr create --title "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}" \
              --body "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}" \
-             --head dotenvx-dotenvx-${{ env.CLEAN_VERSION }} \
+             --head dotenvx/winget-pkgs:dotenvx-dotenvx-${{ env.CLEAN_VERSION }} \
              --base microsoft/winget-pkgs:master
 
   dotenvx-darwin-amd64:
