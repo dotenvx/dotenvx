@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.2...main)
+
+## 1.11.2
+
+### Added
+
+* detect encoding when reading `.env*` file on `run/get` ([#359](https://github.com/dotenvx/dotenvx/pull/359))
 
 ## 1.11.1
 

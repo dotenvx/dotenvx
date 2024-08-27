@@ -15,6 +15,7 @@ const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 const guessPrivateKeyFilename = require('./../helpers/guessPrivateKeyFilename')
+const detectEncoding = require('./../helpers/detectEncoding')
 
 class Run {
   constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
@@ -89,7 +90,8 @@ class Run {
 
     const filepath = path.resolve(envFilepath)
     try {
-      const src = fs.readFileSync(filepath, { encoding: ENCODING })
+      const encoding = detectEncoding(filepath)
+      const src = fs.readFileSync(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
       // if DOTENV_PRIVATE_KEY_* already set in process.env then use it

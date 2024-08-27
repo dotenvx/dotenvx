@@ -5,7 +5,9 @@ const conventions = require('./../../lib/helpers/conventions')
 const main = require('./../../lib/main')
 
 function get (key) {
-  logger.debug(`key: ${key}`)
+  if (key) {
+    logger.debug(`key: ${key}`)
+  }
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)

@@ -256,7 +256,7 @@ More examples
   ```sh
   $ dotnet new console -n HelloWorld -o HelloWorld
   $ cd HelloWorld
-  $ echo "HELLO=World" > .env
+  $ echo "HELLO=World" | Out-File -FilePath .env -Encoding utf8
   $ echo 'Console.WriteLine($"Hello {Environment.GetEnvironmentVariable("HELLO")}");' > Program.cs
 
   $ dotenvx run -- dotnet run

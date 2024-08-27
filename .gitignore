@@ -16,6 +16,8 @@ tests/tmp
 !tests/.env.local
 !tests/.env.multiline
 !tests/.env.vault
+!tests/.env.utf16le
+!tests/.env.latin1
 !tests/monorepo/**/.env*
 spec/tmp/*
 !spec/tmp/.gitkeep
