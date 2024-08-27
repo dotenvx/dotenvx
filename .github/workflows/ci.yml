@@ -275,6 +275,7 @@ jobs:
           repository: dotenv/dotenvx
           short-description: ${{ github.event.repository.description }}
   winget:
+    needs: release
     runs-on: ubuntu-latest
     steps:
       # GITHUB_ENV operates like a .env file
