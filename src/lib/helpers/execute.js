@@ -1,3 +1,9 @@
-const { exec } = require('tinyexec')
+const execa = require('execa')
 
-module.exports = { exec }
+const execute = {
+  execa (command, args, options) {
+    return execa(command, args, options)
+  }
+}
+
+module.exports = execute

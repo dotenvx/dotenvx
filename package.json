@@ -39,11 +39,11 @@
     "commander": "^11.1.0",
     "dotenv": "^16.4.5",
     "eciesjs": "^0.4.6",
+    "execa": "^5.1.1",
     "fdir": "^6.2.0",
     "ignore": "^5.3.0",
     "object-treeify": "1.1.33",
     "picomatch": "^4.0.2",
-    "tinyexec": "^0.3.0",
     "which": "^4.0.0"
   },
   "devDependencies": {
