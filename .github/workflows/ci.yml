@@ -823,7 +823,7 @@ jobs:
           node-version: 16.x
       - name: run test with bun image
         run: |
-          $EXPECTED_VERSION = node -p "require('./package.json').version"
+          EXPECTED_VERSION=$(node -p "require('./package.json').version")
           docker run --rm \
             -v $(pwd):/workspace \
             -w /workspace \
