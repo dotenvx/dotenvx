@@ -812,27 +812,27 @@ jobs:
           }
         shell: pwsh
 
-    postrelease-bunx:
-      needs: confirm-dotenvx-sh
-      runs-on: ubuntu-latest
-      strategy:
-        fail-fast: true
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 16.x
-        - name: verify dotenvx run
-          run: |
-            echo "HELLO=Bun" > .env
-            EXPECTED_VERSION=$(node -p "require('./package.json').version")
-            docker run --rm \
-              -v $(pwd):/workspace \
-              -w /workspace \
-              oven/bun:1.1.25-alpine \
-              sh -c "bunx @dotenvx/dotenvx@$EXPECTED_VERSION run --overload --quiet -- sh -c 'echo Hello \$HELLO'" | tee output.txt
-            output=$(cat output.txt)
-            if [ "$output" != "Hello Bun" ]; then
-              echo "postrelease dotenvx run failure: expected Hello Bun, got $output"
-              exit 1
-            fi
+  postrelease-bunx:
+    needs: confirm-dotenvx-sh
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - name: verify dotenvx run
+        run: |
+          echo "HELLO=Bun" > .env
+          EXPECTED_VERSION=$(node -p "require('./package.json').version")
+          docker run --rm \
+            -v $(pwd):/workspace \
+            -w /workspace \
+            oven/bun:1.1.25-alpine \
+            sh -c "bunx @dotenvx/dotenvx@$EXPECTED_VERSION run --overload --quiet -- sh -c 'echo Hello \$HELLO'" | tee output.txt
+          output=$(cat output.txt)
+          if [ "$output" != "Hello Bun" ]; then
+            echo "postrelease dotenvx run failure: expected Hello Bun, got $output"
+            exit 1
+          fi
