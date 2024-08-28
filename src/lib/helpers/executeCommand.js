@@ -13,8 +13,6 @@ async function executeCommand (commandArgs, env) {
 
   // handler for SIGINT
   let commandProcess
-  // workaround until error.signal gets added https://github.com/tinylibs/tinyexec/issues/28
-  let signal
   const sigintHandler = () => {
     logger.debug('received SIGINT')
     logger.debug('checking command process')
@@ -22,7 +20,6 @@ async function executeCommand (commandArgs, env) {
 
     if (commandProcess) {
       logger.debug('sending SIGINT to command process')
-      signal = 'SIGINT'
       commandProcess.kill('SIGINT') // Send SIGINT to the command process
     /* c8 ignore start */
     } else {
@@ -40,7 +37,6 @@ async function executeCommand (commandArgs, env) {
 
     if (commandProcess) {
       logger.debug('sending SIGTERM to command process')
-      signal = 'SIGTERM'
       commandProcess.kill('SIGTERM') // Send SIGTEM to the command process
     } else {
       logger.debug('no command process to send SIGTERM to')
@@ -77,11 +73,9 @@ async function executeCommand (commandArgs, env) {
       }
     }
 
-    commandProcess = execute.exec(commandArgs[0], commandArgs.slice(1), {
-      nodeOptions: {
-        stdio: 'inherit',
-        env: { ...process.env, ...env }
-      }
+    commandProcess = execute.execa(commandArgs[0], commandArgs.slice(1), {
+      stdio: 'inherit',
+      env: { ...process.env, ...env }
     })
 
     process.on('SIGINT', sigintHandler)
@@ -92,9 +86,7 @@ async function executeCommand (commandArgs, env) {
     })
 
     // Wait for the command process to finish
-    // exitCode is not in the awaited result, see https://github.com/tinylibs/tinyexec/issues/27
-    await commandProcess
-    const { exitCode } = commandProcess
+    const { exitCode } = await commandProcess
 
     if (exitCode !== 0) {
       logger.debug(`received exitCode ${exitCode}`)
@@ -102,11 +94,11 @@ async function executeCommand (commandArgs, env) {
     }
   } catch (error) {
     // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.
-    if (signal !== 'SIGINT' && signal !== 'SIGTERM') {
+    if (error.signal !== 'SIGINT' && error.signal !== 'SIGTERM') {
       if (error.code === 'ENOENT') {
-        logger.errornocolor(`Unknown command: ${error.path}${error.spawnargs ? ' ' + error.spawnargs.join(' ') : ''}`)
+        logger.errornocolor(`Unknown command: ${error.command}`)
       } else if (error.message.includes('Command failed with exit code 1')) {
-        logger.errornocolor(`Command exited with exit code 1: ${error.path}${error.spawnargs ? ' ' + error.spawnargs.join(' ') : ''}`)
+        logger.errornocolor(`Command exited with exit code 1: ${error.command}`)
       } else {
         logger.errornocolor(error.message)
       }
