@@ -10,19 +10,19 @@ t.beforeEach((ct) => {
 })
 
 t.test('executeCommand - success', async ct => {
-  const execStub = sinon.stub(execute, 'exec').returns({ exitCode: 0 })
+  const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 0 })
   const processExitStub = sinon.stub(process, 'exit')
 
   await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
-  ct.ok(execStub.called, 'tinyexec called')
+  ct.ok(execaStub.called, 'execa called')
   ct.ok(processExitStub.notCalled, 'process.exit should not be called')
 
   ct.end()
 })
 
 t.test('executeCommand - exitCode 1', async ct => {
-  const execStub = sinon.stub(execute, 'exec').returns({ exitCode: 1 })
+  const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 1 })
   const processExitStub = sinon.stub(process, 'exit')
   const loggerDebugStub = sinon.stub(logger, 'debug')
   const loggerErrorStub = sinon.stub(logger, 'errornocolor')
@@ -30,7 +30,7 @@ t.test('executeCommand - exitCode 1', async ct => {
   await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
   ct.ok(processExitStub.called, 'process.exit called')
-  ct.ok(execStub.called, 'tinyexec called')
+  ct.ok(execaStub.called, 'execa called')
   ct.ok(loggerDebugStub.calledWith('received exitCode 1'), 'logger debug')
   ct.ok(loggerErrorStub.calledWith('Command exited with exit code 1'), 'logger error')
 
@@ -38,13 +38,13 @@ t.test('executeCommand - exitCode 1', async ct => {
 })
 
 t.test('executeCommand - command-does-not-exist', async ct => {
-  const execStub = sinon.stub(execute, 'exec').returns({ exitCode: 0 })
+  const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 0 })
   const processExitStub = sinon.stub(process, 'exit')
   const loggerDebugStub = sinon.stub(logger, 'debug')
 
   await executeCommand(['command-does-not-exist', '--', 'command-does-not-exist', 'index.js'], { HELLO: 'World' })
 
-  ct.ok(execStub.called, 'tinyexec called')
+  ct.ok(execaStub.called, 'execa called')
   ct.ok(processExitStub.notCalled, 'process.exit should not be called')
   ct.ok(loggerDebugStub.calledWith('could not expand process command. using [command-does-not-exist -- command-does-not-exist index.js]'), 'logger debug')
 
@@ -56,13 +56,13 @@ t.test('executeCommand - error with OTHER signal', async ct => {
   error.signal = 'OTHER'
   error.exitCode = 1
 
-  const execStub = sinon.stub(execute, 'exec').throws(error)
+  const execaStub = sinon.stub(execute, 'execa').throws(error)
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'errornocolor')
 
   await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
-  ct.ok(execStub.called, 'tinyexec called')
+  ct.ok(execaStub.called, 'execa called')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
   ct.ok(loggerErrorStub.calledWith('Mock Error'), 'logger error')
 
@@ -72,10 +72,10 @@ t.test('executeCommand - error with OTHER signal', async ct => {
 t.test('executeCommand - command failed error', async ct => {
   const error = new Error('Command failed with exit code 1')
   error.signal = 'OTHER'
-  error.path = 'command'
+  error.command = 'command'
   error.exitCode = 1
 
-  sinon.stub(execute, 'exec').throws(error)
+  sinon.stub(execute, 'execa').throws(error)
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'errornocolor')
 
@@ -87,33 +87,14 @@ t.test('executeCommand - command failed error', async ct => {
   ct.end()
 })
 
-t.test('executeCommand - command failed error with args', async ct => {
-  const error = new Error('Command failed with exit code 1')
-  error.signal = 'OTHER'
-  error.path = 'command'
-  error.spawnargs = ['arg1', 'arg2']
-  error.exitCode = 1
-
-  sinon.stub(execute, 'exec').throws(error)
-  const processExitStub = sinon.stub(process, 'exit')
-  const loggerErrorStub = sinon.stub(logger, 'errornocolor')
-
-  await executeCommand(['node', 'index.js'], { HELLO: 'World' })
-
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
-  ct.ok(loggerErrorStub.calledWith('Command exited with exit code 1: command arg1 arg2'), 'logger error')
-
-  ct.end()
-})
-
 t.test('executeCommand - ENOENT', async ct => {
   const error = new Error('Mock Error')
   error.signal = 'OTHER'
   error.code = 'ENOENT'
-  error.path = 'command'
+  error.command = 'command'
   error.exitCode = 1
 
-  sinon.stub(execute, 'exec').throws(error)
+  sinon.stub(execute, 'execa').throws(error)
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'errornocolor')
 
@@ -121,26 +102,6 @@ t.test('executeCommand - ENOENT', async ct => {
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
   ct.ok(loggerErrorStub.calledWith('Unknown command: command'), 'logger error')
-
-  ct.end()
-})
-
-t.test('executeCommand - ENOENT with args', async ct => {
-  const error = new Error('Mock Error')
-  error.signal = 'OTHER'
-  error.code = 'ENOENT'
-  error.path = 'command'
-  error.spawnargs = ['arg1', 'arg2']
-  error.exitCode = 1
-
-  sinon.stub(execute, 'exec').throws(error)
-  const processExitStub = sinon.stub(process, 'exit')
-  const loggerErrorStub = sinon.stub(logger, 'errornocolor')
-
-  await executeCommand(['node', 'index.js'], { HELLO: 'World' })
-
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
-  ct.ok(loggerErrorStub.calledWith('Unknown command: command arg1 arg2'), 'logger error')
 
   ct.end()
 })
