@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.2...main)
 
+### Changed
+
+* default colorDepth to 4 for deno since deno does not support checking it ([#360](https://github.com/dotenvx/dotenvx/pull/360))
+
 ## 1.11.2
 
 ### Added
