@@ -149,6 +149,12 @@ More examples
   Hello World
   ```
 
+  > note: some of you are attempting to use the npm module directly with deno run. Don't! deno has incomplete support for these encryption ciphers.
+  > ```
+  > $ deno run -A npm:@dotenvx/dotenvx encrypt`
+  > Unknown cipher
+  > ```
+
   </details>
 * <details><summary>Bun 🥟</summary><br>
 
