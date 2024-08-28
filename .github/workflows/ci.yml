@@ -8,21 +8,6 @@ on:
     branches: [main]
 
 jobs:
-  test-coverage:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: install shellspec
-        run: curl -sfSL https://git.io/shellspec | sh -s 0.28.1 --yes
-      - run: which shellspec
-      - run: npm install
-      - run: npm run standard
-      - run: npm run test-coverage
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -57,7 +42,21 @@ jobs:
             -d "{\"description\":\"dotenvxTestCount\",\"files\":{\"dotenvxTestCount.json\":{\"content\":\"{ \\\"schemaVersion\\\": 1, \\\"label\\\": \\\"test suite\\\", \\\"message\\\": \\\"$TEST_COUNT_FORMATTED\\\", \\\"color\\\": \\\"green\\\" }\"}}}"
       - run: npm run testshell
       - run: npm audit --omit=dev
-
+  test-coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: install shellspec
+        run: curl -sfSL https://git.io/shellspec | sh -s 0.28.1 --yes
+      - run: which shellspec
+      - run: npm install
+      - run: npm run standard
+      - run: npm run test-coverage
   test-bunx:
     runs-on: ubuntu-latest
     steps:
@@ -67,9 +66,8 @@ jobs:
           docker run --rm \
             -v $(pwd):/workspace \
             -w /workspace \
-            -e HELLO=World \
             oven/bun:1.1.25-alpine \
-            sh -c 'bunx @dotenvx/dotenvx run --env "HELLO=World" --overload -- sh -c "echo Hello $HELLO"' | tee output.txt
+            sh -c 'bunx ./src/cli/dotenvx.js run --env "HELLO=World" --overload -- sh -c "echo Hello $HELLO"' | tee output.txt
           output=$(cat output.txt)
           if [ "$output" != "Hello World" ]; then
             echo "Test failed: $output"
