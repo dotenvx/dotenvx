@@ -69,7 +69,7 @@ jobs:
             -w /workspace \
             -e HELLO=World \
             oven/bun:1.1.25-alpine \
-            sh -c 'bunx @dotenvx/dotenvx run --overload -- sh -c "echo Hello $HELLO"' | tee output.txt
+            sh -c 'bunx @dotenvx/dotenvx run --env "HELLO=World" --overload -- sh -c "echo Hello $HELLO"' | tee output.txt
           output=$(cat output.txt)
           if [ "$output" != "Hello World" ]; then
             echo "Test failed: $output"
