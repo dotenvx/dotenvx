@@ -58,6 +58,25 @@ jobs:
       - run: npm run testshell
       - run: npm audit --omit=dev
 
+  test-bunx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: run test with bun image
+        run: |
+          docker run --rm \
+            -v $(pwd):/workspace \
+            -w /workspace \
+            -e HELLO=World \
+            oven/bun:1.1.25-alpine \
+            sh -c 'bunx @dotenvx/dotenvx run --overload -- sh -c "echo Hello $HELLO"' | tee output.txt
+          output=$(cat output.txt)
+          if [ "$output" != "Hello World" ]; then
+            echo "Test failed: $output"
+            exit 1
+          fi
+          echo "Test passed"
+
   # run only on semantic version tag
   release:
     needs: test
