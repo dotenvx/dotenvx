@@ -275,12 +275,13 @@ jobs:
           repository: dotenv/dotenvx
           short-description: ${{ github.event.repository.description }}
   winget:
+    needs: release
     runs-on: ubuntu-latest
     steps:
       # GITHUB_ENV operates like a .env file
       - name: extract version
         run: |
-          VERSION=v1.11.2
+          VERSION=${GITHUB_REF#refs/tags/}
           CLEAN_VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
