@@ -2,11 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.3...main)
+
+## 1.11.3
 
 ### Changed
 
-* fallback to `process.env.TERM` for color depth for deno and bun ([#360](https://github.com/dotenvx/dotenvx/pull/360))
+* fallback to `process.env.TERM` for color depth where deno and bun do not support it ([#360](https://github.com/dotenvx/dotenvx/pull/360))
 
 ## 1.11.2
 
