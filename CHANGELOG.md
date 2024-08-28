@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.3...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.11.4...main)
+
+## 1.11.4
+
+* bump `tinyexec` and add postrelease-bunx check ([#362](https://github.com/dotenvx/dotenvx/pull/362))
 
 ## 1.11.3
 
