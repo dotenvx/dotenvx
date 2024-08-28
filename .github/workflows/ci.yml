@@ -829,7 +829,7 @@ jobs:
             -v $(pwd):/workspace \
             -w /workspace \
             oven/bun:1.1.25-alpine \
-            sh -c "bunx @dotenvx/dotenvx@1.7.0 run --overload -- sh -c 'echo Hello \$HELLO'" | tee output.txt
+            sh -c "bunx @dotenvx/dotenvx@1.7.0 run --overload --quiet -- sh -c 'echo Hello \$HELLO'" | tee output.txt
           output=$(cat output.txt)
           if [ "$output" != "Hello Bun" ]; then
             echo "postrelease dotenvx run failure: expected Hello Bun, got $output"
