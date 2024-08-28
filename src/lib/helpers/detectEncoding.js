@@ -14,12 +14,6 @@ function detectEncoding (filepath) {
     return 'utf8'
   }
 
-  // Check if the file is entirely US-ASCII (0x00 - 0x7F), which is valid UTF-8
-  for (let i = 0; i < buffer.length; i++) {
-    if (buffer[i] > 0x7F) {
-      break
-    }
-  }
   /* c8 ignore stop */
 
   return 'utf8'
