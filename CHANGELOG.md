@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
-* default colorDepth to 4 for deno since deno does not support checking it ([#360](https://github.com/dotenvx/dotenvx/pull/360))
+* fallback to `process.env.TERM` for color depth for deno and bun ([#360](https://github.com/dotenvx/dotenvx/pull/360))
 
 ## 1.11.2
 
