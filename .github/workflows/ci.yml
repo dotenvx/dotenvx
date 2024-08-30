@@ -586,6 +586,42 @@ jobs:
           git commit -m "${{ env.VERSION }}" --allow-empty
           git tag "${{ env.VERSION }}" --force
           git push origin HEAD --tags --force
+  dotenvx-sh1:
+    needs: publish-all
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: extract version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+      - name: update install.sh with VERSION
+        run: |
+          mkdir -p dist
+          sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist/install.sh
+      - name: checkout dotenvx/dotenvx-sh repo
+        uses: actions/checkout@v4
+        with:
+          repository: "dotenvx/dotenvx-sh"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: "dotenvx-sh"
+      - name: copy install.sh to dotenvx-sh repo
+        run: |
+          cp dist/install.sh dotenvx-sh/install.sh
+          echo "${{ env.CLEAN_VERSION }}" > dotenvx-sh/VERSION
+      - name: commit and push
+        run: |
+          cd dotenvx-sh
+          git config --global user.name 'motdotenv'
+          git config --global user.email 'mot@dotenv.org'
+          git add .
+          git commit -m "${{ env.VERSION }}" --allow-empty
+          git tag "${{ env.VERSION }}" --force
+          git push origin HEAD --tags --force
   confirm-dotenvx-sh:
     needs: dotenvx-sh
     runs-on: ubuntu-latest
