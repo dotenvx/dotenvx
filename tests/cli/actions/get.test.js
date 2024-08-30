@@ -39,6 +39,22 @@ t.test('get KEY', ct => {
   ct.end()
 })
 
+t.test('get --format shell', ct => {
+  const optsStub = sinon.stub().returns({ format: 'shell' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'get').returns({ HELLO: 'World' })
+
+  const stdout = capcon.interceptStdout(() => {
+    get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'main.get() called')
+  t.equal(stdout, 'HELLO=World')
+
+  ct.end()
+})
+
+
 t.test('get --pretty-print', ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }
