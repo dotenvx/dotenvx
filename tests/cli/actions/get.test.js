@@ -54,7 +54,6 @@ t.test('get --format shell', ct => {
   ct.end()
 })
 
-
 t.test('get --pretty-print', ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }
