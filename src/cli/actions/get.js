@@ -20,21 +20,32 @@ function get (key) {
     envs = this.envs
   }
 
-  const value = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
+  const results = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
 
-  if (typeof value === 'object' && value !== null) {
-    let space = 0
-    if (options.prettyPrint) {
-      space = 2
+  if (typeof results === 'object' && results !== null) {
+    // inline shell format - env $(dotenvx get --format shell) your-command
+    if (options.format === 'shell') {
+      let inline = ''
+      for (const [key, value] of Object.entries(results)) {
+        inline += ` ${key}=${value}`
+      }
+
+      process.stdout.write(inline)
+    // json format
+    } else {
+      let space = 0
+      if (options.prettyPrint) {
+        space = 2
+      }
+
+      process.stdout.write(JSON.stringify(results, null, space))
     }
-
-    process.stdout.write(JSON.stringify(value, null, space))
   } else {
-    if (value === undefined) {
+    if (results === undefined) {
       process.stdout.write('')
       process.exit(1)
     } else {
-      process.stdout.write(value)
+      process.stdout.write(results)
     }
   }
 }
