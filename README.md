@@ -1042,6 +1042,31 @@ More examples
   ```
 
   </details>
+* <details><summary>`get --format shell`</summary><br>
+
+  Return a shell formatted response of all key/value pairs in a `.env` file.
+
+  ```sh
+  $ echo "HELLO=World\n" > .env
+  $ echo "KEY=value\n" >> .env
+
+  $ dotenvx get --format shell
+  HELLO="World" KEY="value"
+  ```
+
+  This can be useful when combined with `env` on the command line.
+
+  ```
+  $ env $(dotenvx get format --shell) your-command
+  ```
+
+  or with `export`.
+
+  ```
+  $ export $(dotenvx get format --shell) your-command
+  ```
+
+  </details>
 * <details><summary>`get --all`</summary><br>
 
   Return preset machine envs as well.
