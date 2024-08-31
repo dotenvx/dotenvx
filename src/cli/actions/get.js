@@ -27,9 +27,9 @@ function get (key) {
     if (options.format === 'shell') {
       let inline = ''
       for (const [key, value] of Object.entries(results)) {
-        inline += `${key}=${value} `
+        inline += `${key}="${value}" `
       }
-      inline = inline.trimEnd()
+      inline = inline.trim()
 
       process.stdout.write(inline)
     // json format

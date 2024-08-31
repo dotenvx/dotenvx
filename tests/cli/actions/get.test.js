@@ -49,7 +49,7 @@ t.test('get --format shell', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, 'HELLO=World')
+  t.equal(stdout, 'HELLO="World"')
 
   ct.end()
 })
