@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 1.12.1
 
-* return without quotations for `dotenvx get --format shell` ([#364](https://github.com/dotenvx/dotenvx/pull/364))
+* return without quotations for `dotenvx get --format shell` ([#366](https://github.com/dotenvx/dotenvx/pull/366))
 
 ## 1.12.0
 
