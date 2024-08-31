@@ -1047,11 +1047,11 @@ More examples
   Return a shell formatted response of all key/value pairs in a `.env` file.
 
   ```sh
-  $ echo "HELLO=World\n" > .env
-  $ echo "KEY=value\n" >> .env
+  $ echo "HELLO=World" > .env
+  $ echo "KEY=value" >> .env
 
   $ dotenvx get --format shell
-  HELLO="World" KEY="value"
+  HELLO=World KEY=value
   ```
 
   This can be useful when combined with `env` on the command line.
