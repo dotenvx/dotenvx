@@ -2,25 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.13.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.13.1...main)
+
+## 1.13.1
+
+### Added
+
+* expose `logger` and `setLogLevel` to `lib/main.js` - `const = { logger, setLogLevel } = require('@dotenvx/dotnevx')` ([#368](https://github.com/dotenvx/dotenvx/pull/368))
 
 ## 1.13.0
+
+### Changed
 
 * move `ls` to core commands ([#367](https://github.com/dotenvx/dotenvx/pull/367))
 
 ## 1.12.1
 
+### Changed
+
 * return without quotations for `dotenvx get --format shell` ([#366](https://github.com/dotenvx/dotenvx/pull/366))
 
 ## 1.12.0
+
+### Added
 
 * add `dotenvx get --format shell` option ([#363](https://github.com/dotenvx/dotenvx/pull/363))
 
 ## 1.11.5
 
+### Changed
+
 * revert `tinyexec` for `execa` - to support usage in bun
 
 ## 1.11.4
+
+### Changed
 
 * bump `tinyexec` and add postrelease-bunx check ([#362](https://github.com/dotenvx/dotenvx/pull/362))
 
