@@ -30,8 +30,6 @@ program
     setLogLevel(options)
   })
 
-program.addHelpText('after', '  pro                          🏆 pro\n')
-
 program
   .argument('[command]', 'dynamic command')
   .argument('[args...]', 'dynamic command arguments')
@@ -42,7 +40,7 @@ program
 
 // cli
 program
-  .name(packageJson.name)
+  .name('dotenvx')
   .description(packageJson.description)
   .version(packageJson.version)
   .allowUnknownOption()
@@ -115,6 +113,15 @@ program.command('decrypt')
   .option('--stdout', 'send to stdout')
   .action(decryptAction)
 
+// dotenvx ls
+const lsAction = require('./actions/ls')
+program.command('ls')
+  .description('print all .env files in a tree structure')
+  .argument('[directory]', 'directory to list .env files from', '.')
+  .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
+  .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
+  .action(lsAction)
+
 // dotenvx help
 program.command('help [command]')
   .description('display help for command')
@@ -130,6 +137,12 @@ program.command('help [command]')
       program.outputHelp()
     }
   })
+
+// dotenvx pro
+program.addHelpText('after', ' ')
+program.addHelpText('after', 'Advanced: ')
+program.addHelpText('after', '  pro                          🏆 pro')
+program.addHelpText('after', '  ext                          🔌 extensions')
 
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
@@ -158,13 +171,13 @@ program.command('precommit')
     precommitAction.apply(this, args)
   })
 
-// overide helpInformation to hide DEPRECATED commands
+// overide helpInformation to hide DEPRECATED and 'ext' commands
 program.helpInformation = function () {
   const originalHelp = Command.prototype.helpInformation.call(this)
   const lines = originalHelp.split('\n')
 
   // Filter out the hidden command from the help output
-  const filteredLines = lines.filter(line => !line.includes('DEPRECATED') && !line.includes('help [command]'))
+  const filteredLines = lines.filter(line => !line.includes('DEPRECATED') && !line.includes('help [command]') && !line.includes('🔌 extensions'))
 
   return filteredLines.join('\n')
 }

@@ -26,7 +26,7 @@ ext.command('ls')
   .argument('[directory]', 'directory to list .env files from', '.')
   .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
-  .action(require('./../actions/ext/ls'))
+  .action(require('./../actions/ls'))
 
 // dotenvx ext genexample
 ext.command('genexample')
