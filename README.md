@@ -1274,6 +1274,78 @@ More examples
   ```
 
   </details>
+* <details><summary>`ls`</summary><br>
+
+  Print all `.env` files in a tree structure.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+
+  $ dotenvx ls
+  ├─ .env.production
+  ├─ .env
+  └─ apps
+     └─ backend
+        └─ .env
+  ```
+
+  </details>
+* <details><summary>`ls directory`</summary><br>
+
+  Print all `.env` files inside a specified path to a directory.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+
+  $ dotenvx ls apps/backend
+  └─ .env
+  ```
+
+  </details>
+* <details><summary>`ls -f`</summary><br>
+
+  Glob `.env` filenames matching a wildcard.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+  $ touch apps/backend/.env.prod
+
+  $ dotenvx ls -f **/.env.prod*
+  ├─ .env.production
+  └─ apps
+     └─ backend
+        └─ .env.prod
+  ```
+
+  </details>
+* <details><summary>`ls -ef`</summary><br>
+
+  Glob `.env` filenames excluding a wildcard.
+
+  ```sh
+  $ touch .env
+  $ touch .env.production
+  $ mkdir -p apps/backend
+  $ touch apps/backend/.env
+  $ touch apps/backend/.env.prod
+  
+  $ dotenvx ls -ef '**/.env.prod*'
+  ├─ .env
+  └─ apps
+     └─ backend
+        └─ .env
+  ```
+
+  </details>
 
 * <details><summary>`help`</summary><br>
 
@@ -1281,27 +1353,29 @@ More examples
 
   ```sh
   $ dotenvx help
-  Usage: @dotenvx/dotenvx [options] [command]
+  Usage: dotenvx [options] [command] [command] [args...]
 
   a better dotenv–from the creator of `dotenv`
 
   Options:
-    -l, --log-level <level>           set log level (default: "info")
-    -q, --quiet                       sets log level to error
-    -v, --verbose                     sets log level to verbose
-    -d, --debug                       sets log level to debug
-    -V, --version                     output the version number
-    -h, --help                        display help for command
+    -l, --log-level <level>      set log level (default: "info")
+    -q, --quiet                  sets log level to error
+    -v, --verbose                sets log level to verbose
+    -d, --debug                  sets log level to debug
+    -V, --version                output the version number
+    -h, --help                   display help for command
 
   Commands:
-    run [options]                     inject env at runtime [dotenvx run -- yourcommand]
-    get [options] [key]               return a single environment variable
-    set [options] <KEY> <value>       set a single environment variable
-    encrypt [options]                 convert .env file(s) to encrypted .env file(s)
-    decrypt [options]                 convert encrypted .env file(s) to plain .env file(s)
-    pro                               🏆 pro
-    ext [command] [args...]           🔌 extensions
-    help [command]                    display help for command
+    run [options]                inject env at runtime [dotenvx run -- yourcommand]
+    get [options] [key]          return a single environment variable
+    set [options] <KEY> <value>  set a single environment variable
+    encrypt [options]            convert .env file(s) to encrypted .env file(s)
+    decrypt [options]            convert encrypted .env file(s) to plain .env file(s)
+    ls [options] [directory]     print all .env files in a tree structure
+   
+  Advanced: 
+    pro                          🏆 pro
+    ext                          🔌 extensions
   ```
 
   You can get more detailed help per command with `dotenvx help COMMAND`.
@@ -1351,59 +1425,6 @@ More examples
 
 ### Extensions 🔌
 
-* <details><summary>`ext ls`</summary><br>
-
-  Print all `.env` files in a tree structure.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-
-  $ dotenvx ext ls
-  ├─ .env.production
-  ├─ .env
-  └─ apps
-     └─ backend
-        └─ .env
-  ```
-
-  </details>
-* <details><summary>`ext ls directory`</summary><br>
-
-  Print all `.env` files inside a specified path to a directory.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-
-  $ dotenvx ext ls apps/backend
-  └─ .env
-  ```
-
-  </details>
-* <details><summary>`ext ls -f`</summary><br>
-
-  Glob `.env` filenames matching a wildcard.
-
-  ```sh
-  $ touch .env
-  $ touch .env.production
-  $ mkdir -p apps/backend
-  $ touch apps/backend/.env
-  $ touch apps/backend/.env.prod
-
-  $ dotenvx ext ls -f **/.env.prod*
-  ├─ .env.production
-  └─ apps
-     └─ backend
-        └─ .env.prod
-  ```
-
-  </details>
 * <details><summary>`ext genexample`</summary><br>
 
   In one command, generate a `.env.example` file from your current `.env` file contents.
