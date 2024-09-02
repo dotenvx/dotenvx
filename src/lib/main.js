@@ -1,7 +1,10 @@
 // @ts-check
 const path = require('path')
-const { setLogLevel, logger } = require('./../shared/logger')
 const dotenv = require('dotenv')
+
+// shared
+const { setLogLevel, logger } = require('./../shared/logger')
+const { getColor, bold } = require('./../shared/colors')
 
 // services
 const Ls = require('./services/ls')
@@ -219,7 +222,9 @@ module.exports = {
   get,
   set,
   genexample,
-  // expose for libs depending on @dotenvx/dotenvx
+  // expose for libs depending on @dotenvx/dotenvx - like dotenvx-pro
   setLogLevel,
-  logger
+  logger,
+  getColor,
+  bold
 }
