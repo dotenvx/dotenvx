@@ -15,6 +15,17 @@ function execShell (commands) {
   }).trim()
 }
 
+t.test('ext', ct => {
+  const output = execShell(`${dotenvx} ext`)
+
+  t.match(output, /genexample/, 'shoud say genexample')
+  t.match(output, /gitignore/, 'shoud say gitignore')
+  t.match(output, /prebuild/, 'shoud say prebuild')
+  t.match(output, /precommit/, 'shoud say precommit')
+
+  ct.end()
+})
+
 t.test('ext missing', ct => {
   const output = execShell(`${dotenvx} ext missing`)
 

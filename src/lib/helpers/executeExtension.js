@@ -5,7 +5,7 @@ const { logger } = require('../../shared/logger')
 function executeExtension (ext, command, rawArgs) {
   if (!command) {
     ext.outputHelp()
-    process.exit(1)
+    process.exit(0)
     return
   }
 
