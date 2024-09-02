@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* expose `logger` and `setLogLevel` to `lib/main.js` - `const = { logger, setLogLevel } = require('@dotenvx/dotnevx')` ([#368](https://github.com/dotenvx/dotenvx/pull/368))
+* expose `logger` and `setLogLevel` to `lib/main.js` - `const = { logger, setLogLevel } = require('@dotenvx/dotenvx')` ([#368](https://github.com/dotenvx/dotenvx/pull/368))
 
 ## 1.13.0
 
