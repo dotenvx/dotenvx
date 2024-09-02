@@ -19,7 +19,7 @@ t.test('executeExtension - no command', ct => {
 
   executeExtension(ext, undefined, [])
 
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(processExitStub.calledWith(0), 'process.exit should be called with code 0 to output help command')
 
   ct.end()
 })
