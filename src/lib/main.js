@@ -1,6 +1,6 @@
 // @ts-check
 const path = require('path')
-const { logger } = require('./../shared/logger')
+const { setLogLevel, logger } = require('./../shared/logger')
 const dotenv = require('dotenv')
 
 // services
@@ -15,7 +15,6 @@ const Genexample = require('./services/genexample')
 // helpers
 const conventions = require('./helpers/conventions')
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
-const { setLogLevel } = require('../shared/logger')
 
 // proxies to dotenv
 
@@ -219,5 +218,8 @@ module.exports = {
   ls,
   get,
   set,
-  genexample
+  genexample,
+  // expose for libs depending on @dotenvx/dotenvx
+  setLogLevel,
+  logger
 }
