@@ -8,6 +8,7 @@ const { setLogLevel, logger } = require('../shared/logger')
 const examples = require('./examples')
 const packageJson = require('./../lib/helpers/packageJson')
 const executeDynamic = require('./../lib/helpers/executeDynamic')
+const removeDynamicHelpSection = require('./../lib/helpers/removeDynamicHelpSection')
 
 // for use with run
 const envs = []
@@ -30,6 +31,7 @@ program
     setLogLevel(options)
   })
 
+// for dynamic loading of dotenvx-pro, etc
 program
   .argument('[command]', 'dynamic command')
   .argument('[args...]', 'dynamic command arguments')
@@ -176,8 +178,14 @@ program.helpInformation = function () {
   const originalHelp = Command.prototype.helpInformation.call(this)
   const lines = originalHelp.split('\n')
 
+  removeDynamicHelpSection(lines)
+
   // Filter out the hidden command from the help output
-  const filteredLines = lines.filter(line => !line.includes('DEPRECATED') && !line.includes('help [command]') && !line.includes('🔌 extensions'))
+  const filteredLines = lines.filter(line =>
+    !line.includes('DEPRECATED') &&
+    !line.includes('help [command]') &&
+    !line.includes('🔌 extensions')
+  )
 
   return filteredLines.join('\n')
 }

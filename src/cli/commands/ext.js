@@ -2,6 +2,7 @@ const { Command } = require('commander')
 
 const examples = require('./../examples')
 const executeExtension = require('../../lib/helpers/executeExtension')
+const removeDynamicHelpSection = require('../../lib/helpers/removeDynamicHelpSection')
 
 const ext = new Command('ext')
 
@@ -58,5 +59,15 @@ ext.command('precommit')
 ext.command('scan')
   .description('scan for leaked secrets')
   .action(require('./../actions/ext/scan'))
+
+// overide helpInformation to hide dynamic commands
+ext.helpInformation = function () {
+  const originalHelp = Command.prototype.helpInformation.call(this)
+  const lines = originalHelp.split('\n')
+
+  removeDynamicHelpSection(lines)
+
+  return lines.join('\n')
+}
 
 module.exports = ext
