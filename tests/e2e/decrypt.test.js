@@ -54,6 +54,32 @@ t.test('#decrypt', ct => {
   ct.end()
 })
 
+t.test('#decrypt - missing DOTENV_PRIVATE_KEY', ct => {
+  execShell(`
+    echo "HELLO=World" > .env
+  `)
+
+  execShell(`${dotenvx} encrypt`)
+
+  // rm .env.keys prior to running decrypt
+  execShell('rm .env.keys')
+
+  let output
+  let exitCode
+  try {
+    output = execShell(`${dotenvx} decrypt`)
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    output = error.stdout // capture output if there is any
+    exitCode = error.status // capture the exit code
+  }
+
+  ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
+  ct.equal(output, 'private key missing or blank\n')
+
+  ct.end()
+})
+
 t.test('#decrypt --stdout', ct => {
   execShell(`
     echo "HELLO=World" > .env
@@ -72,6 +98,32 @@ DOTENV_PUBLIC_KEY="${DOTENV_PUBLIC_KEY}"
 
 # .env
 HELLO="World"\n`)
+
+  ct.end()
+})
+
+t.test('#decrypt --stdout - missing DOTENV_PRIVATE_KEY', ct => {
+  execShell(`
+    echo "HELLO=World" > .env
+  `)
+
+  execShell(`${dotenvx} encrypt`)
+
+  // rm .env.keys prior to running decrypt
+  execShell('rm .env.keys')
+
+  let stderr
+  let exitCode
+  try {
+    execShell(`${dotenvx} decrypt --stdout > filename.txt`)
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    stderr = error.stderr // capture stderr if there is any
+    exitCode = error.status // capture the exit code
+  }
+
+  ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
+  ct.equal(stderr, 'private key missing or blank\n')
 
   ct.end()
 })

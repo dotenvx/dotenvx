@@ -9,6 +9,8 @@ function decrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  let errorCount = 0
+
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
@@ -16,9 +18,19 @@ function decrypt () {
     } = main.decrypt(options.envFile, options.key, options.excludeKey)
 
     for (const processedEnvFile of processedEnvFiles) {
-      process.stdout.write(processedEnvFile.envSrc)
+      if (processedEnvFile.error) {
+        errorCount += 1
+        console.error(processedEnvFile.error.message)
+      } else {
+        process.stdout.write(processedEnvFile.envSrc)
+      }
     }
-    process.exit(0) // exit early
+
+    if (errorCount > 0) {
+      process.exit(1)
+    } else {
+      process.exit(0) // exit early
+    }
   } else {
     try {
       const {
@@ -29,12 +41,15 @@ function decrypt () {
 
       for (const processedEnvFile of processedEnvFiles) {
         logger.verbose(`decrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+
         if (processedEnvFile.error) {
+          errorCount += 1
+
           if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
-            logger.warn(processedEnvFile.error.message)
+            logger.error(processedEnvFile.error.message)
             logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx decrypt]`)
           } else {
-            logger.warn(processedEnvFile.error.message)
+            logger.error(processedEnvFile.error.message)
           }
         } else if (processedEnvFile.changed) {
           fs.writeFileSync(processedEnvFile.filepath, processedEnvFile.envSrc, ENCODING)
@@ -51,6 +66,10 @@ function decrypt () {
         logger.info(`no changes (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
+      }
+
+      if (errorCount > 0) {
+        process.exit(1)
       }
     } catch (error) {
       logger.error(error.message)
