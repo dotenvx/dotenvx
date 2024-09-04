@@ -1274,6 +1274,45 @@ More examples
   ```
 
   </details>
+* <details><summary>`keypair`</summary><br>
+
+  Print public/private keys for `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ dotenvx encrypt
+
+  $ dotenvx keypair
+  {"DOTENV_PUBLIC_KEY":"<publicKey>","DOTENV_PRIVATE_KEY":"<privateKey>"}
+  ```
+
+  </details>
+* <details><summary>`keypair -f .env.production`</summary><br>
+
+  Print public/private keys for `.env.production` file.
+
+  ```sh
+  $ echo "HELLO=Production" > .env.production
+  $ dotenvx encrypt -f .env.production
+
+  $ dotenvx keypair -f .env.production
+  {"DOTENV_PUBLIC_KEY_PRODUCTION":"<publicKey>","DOTENV_PRIVATE_KEY_PRODUCTION":"<privateKey>"}
+  ```
+
+  </details>
+* <details><summary>`keypair DOTENV_PRIVATE_KEY`</summary><br>
+
+  Print specific key for `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ dotenvx encrypt
+
+  $ dotenvx keypair DOTENV_PRIVATE_KEY
+  <privateKey>
+  ```
+
+  </details>
 * <details><summary>`ls`</summary><br>
 
   Print all `.env` files in a tree structure.
