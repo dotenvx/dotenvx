@@ -11,6 +11,7 @@ const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Run = require('./services/run')
 const Sets = require('./services/sets')
+const Keypair = require('./services/keypair')
 const Encrypt = require('./services/encrypt')
 const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
@@ -210,6 +211,11 @@ const decrypt = function (envFile, key, excludeKey) {
   return new Decrypt(envFile, key, excludeKey).run()
 }
 
+/** @type {import('./main').keypair} */
+const keypair = function (envFile, key) {
+  return new Keypair(envFile, key).run()
+}
+
 module.exports = {
   // dotenv proxies
   config,
@@ -221,6 +227,7 @@ module.exports = {
   ls,
   get,
   set,
+  keypair,
   genexample,
   // expose for libs depending on @dotenvx/dotenvx - like dotenvx-pro
   setLogLevel,
