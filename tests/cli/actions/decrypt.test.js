@@ -83,6 +83,36 @@ t.test('decrypt - --stdout', ct => {
   ct.end()
 })
 
+t.test('decrypt - --stdout with error', ct => {
+  sinon.stub(fs, 'writeFileSync')
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleErrorStub = sinon.stub(console, 'error')
+  const error = new Error('Mock Error')
+  const optsStub = sinon.stub().returns({ stdout: true })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'decrypt').returns({
+    processedEnvFiles: [{
+      envFilepath: '.env',
+      filepath: '.env',
+      error,
+      changed: false,
+      envSrc: 'HELLO="World"'
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+
+  capcon.interceptStderr(() => {
+    decrypt.call(fakeContext)
+  })
+
+  t.ok(stub.called, 'main.decrypt() called')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
+
+  ct.end()
+})
+
 t.test('decrypt - .env with changes', ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fs, 'writeFileSync')
