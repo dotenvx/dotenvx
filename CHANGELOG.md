@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.13.3...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.14.0...main)
+
+## 1.14.0
+
+### Added
+
+* add `dotenvx keypair` command for printing your public/private keypairs ([#375](https://github.com/dotenvx/dotenvx/pull/375))
 
 ## 1.13.3
 
