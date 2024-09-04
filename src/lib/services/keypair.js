@@ -1,5 +1,3 @@
-const path = require('path')
-
 const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const smartDotenvPublicKey = require('./../helpers/smartDotenvPublicKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
@@ -16,8 +14,6 @@ class Keypair {
 
     const envFilepaths = this._envFilepaths()
     for (const envFilepath of envFilepaths) {
-      const filepath = path.resolve(envFilepath)
-
       // public key
       const publicKeyName = guessPublicKeyName(envFilepath)
       const publicKeyValue = smartDotenvPublicKey(envFilepath)

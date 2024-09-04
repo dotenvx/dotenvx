@@ -1,10 +1,7 @@
 const fs = require('fs')
-const path = require('path')
 const dotenv = require('dotenv')
 
 const ENCODING = 'utf8'
-const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
-const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 
 const guessPublicKeyName = require('./guessPublicKeyName')
 
@@ -27,7 +24,7 @@ function searchEnvFile (publicKeyName, envFilepath) {
 
 function smartDotenvPublicKey (envFilepath) {
   let publicKey = null
-  let publicKeyName = guessPublicKeyName(envFilepath) // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
+  const publicKeyName = guessPublicKeyName(envFilepath) // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
 
   // 1. attempt process.env first
   publicKey = searchProcessEnv(publicKeyName)
