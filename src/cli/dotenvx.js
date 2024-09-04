@@ -124,6 +124,15 @@ program.command('ls')
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
   .action(lsAction)
 
+// dotenvx keypair
+const keypairAction = require('./actions/keypair')
+program.command('keypair')
+  .description('print public/private key for .env* file(s)')
+  .argument('[key]', 'environment variable key name')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .option('-pp, --pretty-print', 'pretty print output')
+  .action(keypairAction)
+
 // dotenvx help
 program.command('help [command]')
   .description('display help for command')
