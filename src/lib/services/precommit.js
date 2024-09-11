@@ -46,7 +46,7 @@ class Precommit {
       const dotenvFiles = lsService.run()
       dotenvFiles.forEach(file => {
         // check if file is going to be commited
-        if (this.isFileToBeCommitted(file)) {
+        if (this.isFileToBeCommitted(file, warnings)) {
           // check if that file is being ignored
           if (ig.ignores(file)) {
             if (file === '.env.example' || file === '.env.vault') {
@@ -81,14 +81,17 @@ class Precommit {
     }
   }
 
-  isFileToBeCommitted (filePath) {
+  isFileToBeCommitted (filePath, warnings) {
     try {
       const output = execSync('git diff --cached --name-only').toString()
       const files = output.split('\n')
       return files.includes(filePath)
     } catch (error) {
-      console.error('Error checking if file is to be committed:', error)
-      return false
+      const warning = new Error('Failed to check if file is to be committed: ' + error.message)
+      warning.help = '? check if git is installed and if you are in a git repository'
+      warnings.push(warning)
+      // consider file to be committed if there is an error so we ensure to check if it is encrypted
+      return true
     }
   }
 
