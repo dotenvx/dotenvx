@@ -11,12 +11,12 @@ const { execSync } = require('child_process')
 const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Precommit {
-  constructor(options = {}) {
+  constructor (options = {}) {
     this.install = options.install
     this.excludeEnvFile = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
   }
 
-  run() {
+  run () {
     if (this.install) {
       const {
         successMessage
@@ -81,18 +81,18 @@ class Precommit {
     }
   }
 
-  isFileToBeCommitted(filePath) {
+  isFileToBeCommitted (filePath) {
     try {
-      const output = execSync('git diff --cached --name-only').toString();
-      const files = output.split('\n');
-      return files.includes(filePath);
+      const output = execSync('git diff --cached --name-only').toString()
+      const files = output.split('\n')
+      return files.includes(filePath)
     } catch (error) {
-      console.error('Error checking if file is to be committed:', error);
-      return false;
+      console.error('Error checking if file is to be committed:', error)
+      return false
     }
   }
 
-  _installPrecommitHook() {
+  _installPrecommitHook () {
     return new InstallPrecommitHook().run()
   }
 }
