@@ -97,6 +97,4 @@ class Precommit {
   }
 }
 
-new Precommit().run()
-
 module.exports = Precommit
