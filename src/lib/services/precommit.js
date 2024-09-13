@@ -7,7 +7,7 @@ const Ls = require('../services/ls')
 const pluralize = require('./../helpers/pluralize')
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
-const { execSync } = require('child_process')
+const childProcess = require('child_process')
 const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Precommit {
@@ -46,7 +46,7 @@ class Precommit {
       const dotenvFiles = lsService.run()
       dotenvFiles.forEach(file => {
         // check if file is going to be commited
-        if (this.isFileToBeCommitted(file, warnings)) {
+        if (this._isFileToBeCommitted(file)) {
           // check if that file is being ignored
           if (ig.ignores(file)) {
             if (file === '.env.example' || file === '.env.vault') {
@@ -81,16 +81,14 @@ class Precommit {
     }
   }
 
-  isFileToBeCommitted (filePath, warnings) {
+  _isFileToBeCommitted (filePath) {
     try {
-      const output = execSync('git diff --cached --name-only').toString()
+      const output = childProcess.execSync('git diff --cached --name-only').toString()
       const files = output.split('\n')
+
       return files.includes(filePath)
     } catch (error) {
-      const warning = new Error('Failed to check if file is to be committed: ' + error.message)
-      warning.help = '? check if git is installed and if you are in a git repository'
-      warnings.push(warning)
-      // consider file to be committed if there is an error so we ensure to check if it is encrypted
+      // consider file to be committed if there is an error (not using git)
       return true
     }
   }

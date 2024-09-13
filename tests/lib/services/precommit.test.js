@@ -1,10 +1,22 @@
 const t = require('tap')
 const fs = require('fs')
 const sinon = require('sinon')
+const childProcess = require('child_process')
 
 const Precommit = require('../../../src/lib/services/precommit')
 const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitHook')
 const Ls = require('../../../src/lib/services/ls')
+
+const originalExecSync = childProcess.execSync
+
+t.beforeEach((ct) => {
+  sinon.restore()
+  childProcess.execSync = sinon.stub()
+})
+
+t.afterEach((ct) => {
+  childProcess.execSync = originalExecSync // restore the original execSync after each test
+})
 
 t.test('#run', ct => {
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
@@ -55,6 +67,7 @@ t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
   readdirSyncStub.returns(['.env.example'])
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['.env.example'])
+  childProcess.execSync.returns(Buffer.from('.env.example'))
 
   const { warnings } = new Precommit().run()
 
@@ -73,6 +86,7 @@ t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
   readdirSyncStub.returns(['.env.vault'])
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['.env.vault'])
+  childProcess.execSync.returns(Buffer.from('.env.vault'))
 
   const { warnings } = new Precommit().run()
   ct.same(warnings[0].message, '.env.vault (currently ignored but should not be)')
@@ -86,6 +100,7 @@ t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
 t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['.env.production'])
+  childProcess.execSync.returns(Buffer.from('.env.production'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync')
   // Stub different return values based on the file path
   readFileSyncStub.callsFake((filePath) => {
@@ -112,6 +127,7 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
 t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['packages/app/.env.production'])
+  childProcess.execSync.returns(Buffer.from('packages/app/.env.production'))
 
   const readFileSyncStub = sinon.stub(fs, 'readFileSync')
   readFileSyncStub.callsFake((filePath) => {
