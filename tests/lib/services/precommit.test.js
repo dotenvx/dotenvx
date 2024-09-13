@@ -124,6 +124,33 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
   ct.end()
 })
 
+t.test('#run (gitignore is not ignore .env.production file and should) AND isFileToBeCommited raises an error (should default to true on the filename)', ct => {
+  const lsServiceStub = sinon.stub(Ls.prototype, 'run')
+  lsServiceStub.returns(['.env.production'])
+  childProcess.execSync.throws(new Error('Mock Error'))
+  const readFileSyncStub = sinon.stub(fs, 'readFileSync')
+  // Stub different return values based on the file path
+  readFileSyncStub.callsFake((filePath) => {
+    if (filePath === '.env') {
+      return '.env'
+    } else if (filePath === '.env.production') {
+      return 'ENV_VAR=value'
+    }
+    return ''
+  })
+
+  try {
+    new Precommit().run()
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.message, '.env.production not encrypted (or not gitignored)')
+  }
+
+  readFileSyncStub.restore()
+  lsServiceStub.restore()
+  ct.end()
+})
+
 t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['packages/app/.env.production'])
