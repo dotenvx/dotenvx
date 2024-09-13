@@ -7,6 +7,7 @@ const Ls = require('../services/ls')
 const pluralize = require('./../helpers/pluralize')
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
+const { execSync } = require('child_process')
 const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Precommit {
@@ -44,23 +45,26 @@ class Precommit {
       const lsService = new Ls(process.cwd(), undefined, this.excludeEnvFile)
       const dotenvFiles = lsService.run()
       dotenvFiles.forEach(file => {
-        // check if that file is being ignored
-        if (ig.ignores(file)) {
-          if (file === '.env.example' || file === '.env.vault') {
-            const warning = new Error(`${file} (currently ignored but should not be)`)
-            warning.help = `? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`
-            warnings.push(warning)
-          }
-        } else {
-          if (file !== '.env.example' && file !== '.env.vault') {
-            const src = fs.readFileSync(file).toString()
-            const encrypted = isFullyEncrypted(src)
+        // check if file is going to be commited
+        if (this.isFileToBeCommitted(file, warnings)) {
+          // check if that file is being ignored
+          if (ig.ignores(file)) {
+            if (file === '.env.example' || file === '.env.vault') {
+              const warning = new Error(`${file} (currently ignored but should not be)`)
+              warning.help = `? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`
+              warnings.push(warning)
+            }
+          } else {
+            if (file !== '.env.example' && file !== '.env.vault') {
+              const src = fs.readFileSync(file).toString()
+              const encrypted = isFullyEncrypted(src)
 
-            // if contents are encrypted don't raise an error
-            if (!encrypted) {
-              const error = new Error(`${file} not encrypted (or not gitignored)`)
-              error.help = `? encrypt it with [dotenvx encrypt -f ${file}] or add ${file} to .gitignore with [echo ".env*" >> .gitignore]`
-              throw error
+              // if contents are encrypted don't raise an error
+              if (!encrypted) {
+                const error = new Error(`${file} not encrypted (or not gitignored)`)
+                error.help = `? encrypt it with [dotenvx encrypt -f ${file}] or add ${file} to .gitignore with [echo ".env*" >> .gitignore]`
+                throw error
+              }
             }
           }
         }
@@ -74,6 +78,20 @@ class Precommit {
         successMessage,
         warnings
       }
+    }
+  }
+
+  isFileToBeCommitted (filePath, warnings) {
+    try {
+      const output = execSync('git diff --cached --name-only').toString()
+      const files = output.split('\n')
+      return files.includes(filePath)
+    } catch (error) {
+      const warning = new Error('Failed to check if file is to be committed: ' + error.message)
+      warning.help = '? check if git is installed and if you are in a git repository'
+      warnings.push(warning)
+      // consider file to be committed if there is an error so we ensure to check if it is encrypted
+      return true
     }
   }
 
