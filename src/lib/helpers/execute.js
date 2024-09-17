@@ -1,5 +1,5 @@
 const execa = require('execa')
-const pkgArgs = process.pkg ? { PKG_EXECPATH: "" } : {}
+const pkgArgs = process.pkg ? { PKG_EXECPATH: '' } : {}
 
 const execute = {
   execa (command, args, options) {
