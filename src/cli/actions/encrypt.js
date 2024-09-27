@@ -18,7 +18,7 @@ function encrypt () {
     } = main.encrypt(options.envFile, options.key, options.excludeKey)
 
     for (const processedEnvFile of processedEnvFiles) {
-      process.stdout.write(processedEnvFile.envSrc)
+      console.log(processedEnvFile.envSrc)
     }
     process.exit(0) // exit early
   } else {

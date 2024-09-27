@@ -78,7 +78,7 @@ t.test('decrypt - --stdout', ct => {
 
   t.ok(stub.called, 'main.decrypt() called')
   t.ok(processExitStub.calledWith(0), 'process.exit(0)')
-  t.equal(stdout, 'HELLO="World"')
+  t.equal(stdout, 'HELLO="World"\n')
 
   ct.end()
 })

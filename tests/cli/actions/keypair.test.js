@@ -20,7 +20,7 @@ t.test('keypair', ct => {
   })
 
   t.ok(stub.called, 'main.keypair() called')
-  t.equal(stdout, JSON.stringify({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }, null, 0))
+  t.equal(stdout, `${JSON.stringify({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }, null, 0)}\n`)
 
   ct.end()
 })
@@ -35,7 +35,7 @@ t.test('keypair KEY', ct => {
   })
 
   t.ok(stub.called, 'main.keypair() called')
-  t.equal(stdout, '<publicKey>')
+  t.equal(stdout, '<publicKey>\n')
 
   ct.end()
 })
@@ -50,7 +50,7 @@ t.test('keypair --pretty-print', ct => {
   })
 
   t.ok(stub.called, 'main.keypair() called')
-  t.equal(stdout, JSON.stringify({ DOTENV_PUBLIC_KEY: '<publicKey>' }, null, 2))
+  t.equal(stdout, `${JSON.stringify({ DOTENV_PUBLIC_KEY: '<publicKey>' }, null, 2)}\n`)
 
   ct.end()
 })
@@ -67,7 +67,7 @@ t.test('keypair KEY (not found)', ct => {
 
   t.ok(stub.called, 'main.keypair() called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
-  t.equal(stdout, '') // send empty string if key's value undefined
+  t.equal(stdout, '\n') // send empty string if key's value undefined
 
   ct.end()
 })

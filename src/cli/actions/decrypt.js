@@ -22,7 +22,7 @@ function decrypt () {
         errorCount += 1
         console.error(processedEnvFile.error.message)
       } else {
-        process.stdout.write(processedEnvFile.envSrc)
+        console.log(processedEnvFile.envSrc)
       }
     }
 

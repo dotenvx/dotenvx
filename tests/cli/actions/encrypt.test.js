@@ -86,7 +86,7 @@ t.test('encrypt - --stdout', ct => {
 
   t.ok(stub.called, 'main.encrypt() called')
   t.ok(processExitStub.calledWith(0), 'process.exit(0)')
-  t.equal(stdout, 'HELLO="encrypted:1234"')
+  t.equal(stdout, 'HELLO="encrypted:1234"\n')
 
   ct.end()
 })

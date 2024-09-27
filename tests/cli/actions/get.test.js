@@ -19,7 +19,7 @@ t.test('get', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, JSON.stringify({ HELLO: 'World' }, null, 0))
+  t.equal(stdout, `${JSON.stringify({ HELLO: 'World' }, null, 0)}\n`)
 
   ct.end()
 })
@@ -34,7 +34,7 @@ t.test('get KEY', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, 'World')
+  t.equal(stdout, 'World\n')
 
   ct.end()
 })
@@ -49,7 +49,7 @@ t.test('get --format shell', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, 'HELLO=World')
+  t.equal(stdout, 'HELLO=World\n')
 
   ct.end()
 })
@@ -64,7 +64,7 @@ t.test('get --pretty-print', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, JSON.stringify({ HELLO: 'World' }, null, 2))
+  t.equal(stdout, `${JSON.stringify({ HELLO: 'World' }, null, 2)}\n`)
 
   ct.end()
 })
@@ -79,7 +79,7 @@ t.test('get KEY --convention', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, 'World')
+  t.equal(stdout, 'World\n')
 
   ct.end()
 })
@@ -96,7 +96,7 @@ t.test('get KEY (not found)', ct => {
 
   t.ok(stub.called, 'main.get() called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
-  t.equal(stdout, '') // send empty string if key's value undefined
+  t.equal(stdout, '\n') // send empty string if key's value undefined
 
   ct.end()
 })
