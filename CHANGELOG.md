@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
-* swap `process.stdout.write` for `console.log` to patch up npx edge case ([#386](https://github.com/dotenvx/dotenvx/pull/380))
+* swap `process.stdout.write` for `console.log` to patch up npx edge case ([#387](https://github.com/dotenvx/dotenvx/pull/387))
 
 ## 1.14.1
 
