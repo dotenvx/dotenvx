@@ -31,7 +31,7 @@ function get (key) {
       }
       inline = inline.trim()
 
-      process.stdout.write(inline)
+      console.log(inline)
     // json format
     } else {
       let space = 0
@@ -39,14 +39,14 @@ function get (key) {
         space = 2
       }
 
-      process.stdout.write(JSON.stringify(results, null, space))
+      console.log(JSON.stringify(results, null, space))
     }
   } else {
     if (results === undefined) {
-      process.stdout.write('')
+      console.log('')
       process.exit(1)
     } else {
-      process.stdout.write(results)
+      console.log(results)
     }
   }
 }
