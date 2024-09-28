@@ -1057,13 +1057,18 @@ More examples
   This can be useful when combined with `env` on the command line.
 
   ```
-  $ env $(dotenvx get format --shell) your-command
+  $ echo "console.log('Hello ' + process.env.KEY + ' ' + process.env.HELLO)" > index.js
+  $ env $(dotenvx get --format=shell) node index.js
+  Hello value World
   ```
 
   or with `export`.
 
   ```
-  $ export $(dotenvx get format --shell) your-command
+  $ echo "console.log('Hello ' + process.env.KEY + ' ' + process.env.HELLO)" > index.js
+  $ export $(dotenvx get --format=shell)
+  $ node index.js
+  Hello value World
   ```
 
   </details>
