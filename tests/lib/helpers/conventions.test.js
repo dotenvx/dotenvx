@@ -3,6 +3,20 @@ const t = require('tap')
 const conventions = require('../../../src/lib/helpers/conventions')
 
 t.test('#conventions', ct => {
+  try {
+    conventions()
+
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    const exampleError = new Error('INVALID_CONVENTION: \'undefined\'. permitted conventions: [\'nextjs\', \'mono\']')
+
+    ct.same(error, exampleError)
+  }
+
+  ct.end()
+})
+
+t.test('#conventions (nextjs)', ct => {
   const envs = conventions('nextjs')
 
   ct.same(envs, [
@@ -15,34 +29,37 @@ t.test('#conventions', ct => {
   ct.end()
 })
 
+t.test('#conventions (mono)', ct => {
+  const envs = conventions('mono')
+
+  ct.same(envs, [
+    { type: 'envFile', value: './../../.env' },
+    { type: 'envFile', value: './../../.env.local' },
+    { type: 'envFile', value: './../../.env.development' },
+    { type: 'envFile', value: './../../.env.development.local' },
+    { type: 'envFile', value: './../.env' },
+    { type: 'envFile', value: './../.env.local' },
+    { type: 'envFile', value: './../.env.development' },
+    { type: 'envFile', value: './../.env.development.local' },
+    { type: 'envFile', value: './.env' },
+    { type: 'envFile', value: './.env.local' },
+    { type: 'envFile', value: './.env.development' },
+    { type: 'envFile', value: './.env.development.local' }
+  ])
+
+  ct.end()
+})
+
 t.test('#conventions (invalid)', ct => {
   try {
     conventions('invalid')
 
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    const exampleError = new Error('INVALID_CONVENTION: \'invalid\'. permitted conventions: [\'nextjs\']')
+    const exampleError = new Error('INVALID_CONVENTION: \'invalid\'. permitted conventions: [\'nextjs\', \'mono\']')
 
     ct.same(error, exampleError)
   }
-
-  ct.end()
-})
-
-t.test('#conventions (process.env.NODE_ENV is test)', ct => {
-  const originalNodeEnv = process.env.NODE_ENV
-
-  process.env.NODE_ENV = 'test'
-
-  const envs = conventions('nextjs')
-
-  ct.same(envs, [
-    { type: 'envFile', value: '.env.test.local' },
-    { type: 'envFile', value: '.env.test' },
-    { type: 'envFile', value: '.env' }
-  ])
-
-  process.env.NODE_ENV = originalNodeEnv
 
   ct.end()
 })
