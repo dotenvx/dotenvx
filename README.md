@@ -1320,7 +1320,7 @@ More examples
   </details>
 * <details><summary>`keypair --format shell`</summary><br>
 
-  Print a shell formatted response of keypair(s).
+  Print a shell formatted reponse of public/private keys.
 
   ```sh
   $ echo "HELLO=World" > .env
