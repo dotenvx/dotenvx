@@ -55,6 +55,21 @@ t.test('keypair --format shell', ct => {
   ct.end()
 })
 
+t.test('keypair --format shell (when null value should be empty string for shell format)', ct => {
+  const optsStub = sinon.stub().returns({ format: 'shell' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'keypair').returns({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: null })
+
+  const stdout = capcon.interceptStdout(() => {
+    keypair.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'main.keypair() called')
+  t.equal(stdout, 'DOTENV_PUBLIC_KEY=<publicKey> DOTENV_PRIVATE_KEY=\n')
+
+  ct.end()
+})
+
 t.test('keypair --pretty-print', ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }

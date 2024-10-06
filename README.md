@@ -1327,7 +1327,7 @@ More examples
   $ dotenx encrypt
 
   $ dotenvx keypair --format shell
-  DOTENV_PRIVATE_KEY=<privateKey> DOTENV_PUBLIC_KEY=<publicKey>
+  DOTENV_PUBLIC_KEY=<publicKey> DOTENV_PRIVATE_KEY=<privateKey>
   ```
 
   </details>
