@@ -122,6 +122,7 @@ program.command('keypair')
   .argument('[key]', 'environment variable key name')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-pp, --pretty-print', 'pretty print output')
+  .option('--format <type>', 'format of the output (json, shell)', 'json')
   .action(keypairAction)
 
 // dotenvx ls

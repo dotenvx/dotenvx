@@ -1307,7 +1307,7 @@ More examples
   </details>
 * <details><summary>`keypair DOTENV_PRIVATE_KEY`</summary><br>
 
-  Print specific key for `.env` file.
+  Print specific keypair for `.env` file.
 
   ```sh
   $ echo "HELLO=World" > .env
@@ -1315,6 +1315,19 @@ More examples
 
   $ dotenvx keypair DOTENV_PRIVATE_KEY
   <privateKey>
+  ```
+
+  </details>
+* <details><summary>`keypair --format shell`</summary><br>
+
+  Print a shell formatted response of keypair(s).
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ dotenx encrypt
+
+  $ dotenvx keypair --format shell
+  DOTENV_PUBLIC_KEY=<publicKey> DOTENV_PRIVATE_KEY=<privateKey>
   ```
 
   </details>

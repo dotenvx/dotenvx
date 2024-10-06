@@ -13,12 +13,24 @@ function keypair (key) {
   const results = main.keypair(options.envFile, key)
 
   if (typeof results === 'object' && results !== null) {
-    let space = 0
-    if (options.prettyPrint) {
-      space = 2
-    }
+    // inline shell format - env $(dotenvx keypair --format=shell) your-command
+    if (options.format === 'shell') {
+      let inline = ''
+      for (const [key, value] of Object.entries(results)) {
+        inline += `${key}=${value || ''} `
+      }
+      inline = inline.trim()
 
-    console.log(JSON.stringify(results, null, space))
+      console.log(inline)
+    // json format
+    } else {
+      let space = 0
+      if (options.prettyPrint) {
+        space = 2
+      }
+
+      console.log(JSON.stringify(results, null, space))
+    }
   } else {
     if (results === undefined) {
       console.log('')
