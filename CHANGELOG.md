@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.15.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.16.0...main)
+
+## 1.16.0
+
+### Changed
+
+* for `dotenvx keypair` call out to `dotenvx pro keypair` if [pro](https://github.com/dotenvx/dotenvx/issues/259) installed ([#390](https://github.com/dotenvx/dotenvx/pull/390))
 
 ## 1.15.0
 
