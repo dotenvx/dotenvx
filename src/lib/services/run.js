@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
+const childProcess = require('child_process')
 
 const ENCODING = 'utf8'
 const TYPE_ENV = 'env'
@@ -13,9 +14,11 @@ const inject = require('./../helpers/inject')
 const decrypt = require('./../helpers/decrypt')
 const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
-const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 const guessPrivateKeyFilename = require('./../helpers/guessPrivateKeyFilename')
+const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const detectEncoding = require('./../helpers/detectEncoding')
+
+const Keypair = require('./../services/keypair')
 
 class Run {
   constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
@@ -94,8 +97,7 @@ class Run {
       const src = fs.readFileSync(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
-      const privateKey = smartDotenvPrivateKey(envFilepath)
+      const privateKey = this._determinePrivateKey(envFilepath)
       const { parsed, processEnv, warnings } = parseDecryptEvalExpand(src, privateKey, this.processEnv)
       row.parsed = parsed
       row.warnings = warnings
@@ -269,6 +271,21 @@ class Run {
     }
 
     return decrypt(ciphertext, dotenvKey)
+  }
+
+  _determinePrivateKey (envFilepath) {
+    const privateKeyName = guessPrivateKeyName(envFilepath)
+
+    let privateKey
+    try {
+      // if installed, smart enough to handle synced db, process.env, .env.keys, etc
+      privateKey = childProcess.execSync(`dotenvx-pro keypair ${privateKeyName} -f ${envFilepath}`).toString().trim()
+    } catch (error) {
+      // smart enough to handle process.env, .env.keys, etc
+      privateKey = new Keypair(envFilepath, privateKeyName).run()
+    }
+
+    return privateKey
   }
 }
 
