@@ -278,11 +278,19 @@ class Run {
 
     let privateKey
     try {
-      // if installed, smart enough to handle synced db, process.env, .env.keys, etc
-      privateKey = childProcess.execSync(`dotenvx-pro keypair ${privateKeyName} -f ${envFilepath}`).toString().trim()
-    } catch (error) {
-      // smart enough to handle process.env, .env.keys, etc
-      privateKey = new Keypair(envFilepath, privateKeyName).run()
+      // if installed as sibling module
+      const projectRoot = path.resolve(process.cwd())
+      const dotenvxProPath = require.resolve('@dotenvx/dotenvx-pro', { paths: [projectRoot] })
+      const { keypair } = require(dotenvxProPath)
+      privateKey = keypair(envFilepath, privateKeyName)
+    } catch (_e) {
+      try {
+        // if installed as binary cli
+        privateKey = childProcess.execSync(`dotenvx-pro keypair ${privateKeyName} -f ${envFilepath} 2>/dev/null`).toString().trim()
+      } catch (_e) {
+        // fallback to local KeyPair - smart enough to handle process.env, .env.keys, etc
+        privateKey = new Keypair(envFilepath, privateKeyName).run()
+      }
     }
 
     return privateKey
