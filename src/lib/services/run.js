@@ -286,7 +286,7 @@ class Run {
     } catch (_e) {
       try {
         // if installed as binary cli
-        privateKey = childProcess.execSync(`dotenvx-pro keypair ${privateKeyName} -f ${envFilepath}`, {stdio: ['pipe', 'pipe', 'ignore']}).toString().trim()
+        privateKey = childProcess.execSync(`dotenvx-pro keypair ${privateKeyName} -f ${envFilepath}`, { stdio: ['pipe', 'pipe', 'ignore'] }).toString().trim()
       } catch (_e) {
         // fallback to local KeyPair - smart enough to handle process.env, .env.keys, etc
         privateKey = new Keypair(envFilepath, privateKeyName).run()
