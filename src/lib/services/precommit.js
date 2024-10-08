@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-const fs = require('fs')
+const fs = require('./../../lib/helpers/filesystem')
 const ignore = require('ignore')
 
 const Ls = require('../services/ls')
