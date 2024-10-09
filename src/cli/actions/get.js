@@ -1,7 +1,7 @@
 const { logger } = require('./../../shared/logger')
 
 const conventions = require('./../../lib/helpers/conventions')
-const escapeQuotes = require('./../../lib/helpers/escapeQuotes')
+const escape = require('./../../lib/helpers/escape')
 
 const main = require('./../../lib/main')
 
@@ -24,30 +24,29 @@ function get (key) {
   const results = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
 
   if (typeof results === 'object' && results !== null) {
-    let inline = ''
+    if (options.format === 'eval') {
+      let inline = ''
+      for (const [key, value] of Object.entries(results)) {
+        inline += `${key}=${escape(value)}\n`
+      }
+      inline = inline.trim()
 
-    switch (options.format) {
-      case 'eval':
-        for (const [key, value] of Object.entries(results)) {
-          inline += `${key}=${escapeQuotes(value)}\n`
-        }
-        inline = inline.trim()
-        console.log(inline)
-        break
-      case 'shell':
-        for (const [key, value] of Object.entries(results)) {
-          inline += `${key}=${value} `
-        }
-        inline = inline.trim()
-        console.log(inline)
-        break
-      default: // json
-        let space = 0
-        if (options.prettyPrint) {
-          space = 2
-        }
-        console.log(JSON.stringify(results, null, space))
-        break
+      console.log(inline)
+    } else if (options.format === 'shell') {
+      let inline = ''
+      for (const [key, value] of Object.entries(results)) {
+        inline += `${key}=${value} `
+      }
+      inline = inline.trim()
+
+      console.log(inline)
+    } else {
+      let space = 0
+      if (options.prettyPrint) {
+        space = 2
+      }
+
+      console.log(JSON.stringify(results, null, space))
     }
   } else {
     if (results === undefined) {

@@ -64,7 +64,7 @@ t.test('get --format shell (with single quotes in value)', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, `HELLO=f'bar\n`)
+  t.equal(stdout, 'HELLO=f\'bar\n')
 
   ct.end()
 })
@@ -79,7 +79,7 @@ t.test('get --format eval (with single quotes in value)', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, `HELLO="f'bar"\n`)
+  t.equal(stdout, 'HELLO="f\'bar"\n')
 
   ct.end()
 })
@@ -87,14 +87,14 @@ t.test('get --format eval (with single quotes in value)', ct => {
 t.test('get --format eval (multiple keys use newlines)', ct => {
   const optsStub = sinon.stub().returns({ format: 'eval' })
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'get').returns({ HELLO: "World", HELLO2: "World2" })
+  const stub = sinon.stub(main, 'get').returns({ HELLO: 'World', HELLO2: 'World2' })
 
   const stdout = capcon.interceptStdout(() => {
     get.call(fakeContext, undefined)
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, `HELLO="World"\nHELLO2="World2"\n`)
+  t.equal(stdout, 'HELLO="World"\nHELLO2="World2"\n')
 
   ct.end()
 })
