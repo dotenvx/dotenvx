@@ -1072,6 +1072,33 @@ More examples
   ```
 
   </details>
+* <details><summary>`get --format eval`</summary><br>
+
+  Return an `eval`-ready shell formatted response of all key/value pairs in a `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo "KEY=value" >> .env
+
+  $ dotenvx get --format eval
+  HELLO="World"
+  KEY="value"
+  ```
+
+  Note that this exports newlines and quoted strings.
+
+  This can be useful for more complex .env values (spaces, escaped characters, quotes, etc) combined with `eval` on the command line.
+
+  ```
+  $ echo "console.log('Hello ' + process.env.KEY + ' ' + process.env.HELLO)" > index.js
+  $ eval $(dotenvx get --format=eval) node index.js
+  Hello value World
+  ```
+
+  Be careful with `eval` as it allows for arbitrary execution of commands. Prefer `dotenvx run --` but in some cases `eval` is a sharp knife that is useful to have.
+
+  </details>
+
 * <details><summary>`get --all`</summary><br>
 
   Return preset machine envs as well.
