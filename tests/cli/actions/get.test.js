@@ -49,7 +49,22 @@ t.test('get --format shell', ct => {
   })
 
   t.ok(stub.called, 'main.get() called')
-  t.equal(stdout, 'HELLO=World\n')
+  t.equal(stdout, 'HELLO="World"\n')
+
+  ct.end()
+})
+
+t.test('get --format shell (with single quotes in value)', ct => {
+  const optsStub = sinon.stub().returns({ format: 'shell' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'get').returns({ HELLO: "f'bar" })
+
+  const stdout = capcon.interceptStdout(() => {
+    get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'main.get() called')
+  t.equal(stdout, `HELLO="f'bar"\n`)
 
   ct.end()
 })

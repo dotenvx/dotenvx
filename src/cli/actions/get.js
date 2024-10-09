@@ -1,6 +1,7 @@
 const { logger } = require('./../../shared/logger')
 
 const conventions = require('./../../lib/helpers/conventions')
+const escapeQuotes = require('./../../lib/helpers/escapeQuotes')
 
 const main = require('./../../lib/main')
 
@@ -27,7 +28,7 @@ function get (key) {
     if (options.format === 'shell') {
       let inline = ''
       for (const [key, value] of Object.entries(results)) {
-        inline += `${key}=${value} `
+        inline += `${key}=${escapeQuotes(value)} `
       }
       inline = inline.trim()
 
