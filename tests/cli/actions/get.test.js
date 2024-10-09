@@ -54,6 +54,51 @@ t.test('get --format shell', ct => {
   ct.end()
 })
 
+t.test('get --format shell (with single quotes in value)', ct => {
+  const optsStub = sinon.stub().returns({ format: 'shell' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'get').returns({ HELLO: "f'bar" })
+
+  const stdout = capcon.interceptStdout(() => {
+    get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'main.get() called')
+  t.equal(stdout, 'HELLO=f\'bar\n')
+
+  ct.end()
+})
+
+t.test('get --format eval (with single quotes in value)', ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'get').returns({ HELLO: "f'bar" })
+
+  const stdout = capcon.interceptStdout(() => {
+    get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'main.get() called')
+  t.equal(stdout, 'HELLO="f\'bar"\n')
+
+  ct.end()
+})
+
+t.test('get --format eval (multiple keys use newlines)', ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'get').returns({ HELLO: 'World', HELLO2: 'World2' })
+
+  const stdout = capcon.interceptStdout(() => {
+    get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'main.get() called')
+  t.equal(stdout, 'HELLO="World"\nHELLO2="World2"\n')
+
+  ct.end()
+})
+
 t.test('get --pretty-print', ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }

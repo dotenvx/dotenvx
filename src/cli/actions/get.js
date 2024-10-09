@@ -1,6 +1,7 @@
 const { logger } = require('./../../shared/logger')
 
 const conventions = require('./../../lib/helpers/conventions')
+const escape = require('./../../lib/helpers/escape')
 
 const main = require('./../../lib/main')
 
@@ -23,8 +24,15 @@ function get (key) {
   const results = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
 
   if (typeof results === 'object' && results !== null) {
-    // inline shell format - env $(dotenvx get --format shell) your-command
-    if (options.format === 'shell') {
+    if (options.format === 'eval') {
+      let inline = ''
+      for (const [key, value] of Object.entries(results)) {
+        inline += `${key}=${escape(value)}\n`
+      }
+      inline = inline.trim()
+
+      console.log(inline)
+    } else if (options.format === 'shell') {
       let inline = ''
       for (const [key, value] of Object.entries(results)) {
         inline += `${key}=${value} `
@@ -32,7 +40,6 @@ function get (key) {
       inline = inline.trim()
 
       console.log(inline)
-    // json format
     } else {
       let space = 0
       if (options.prettyPrint) {

@@ -75,7 +75,7 @@ program.command('get')
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\'])')
   .option('-a, --all', 'include all machine envs as well')
   .option('-pp, --pretty-print', 'pretty print output')
-  .option('--format <type>', 'format of the output (json, shell)', 'json')
+  .option('--format <type>', 'format of the output (json, shell, eval)', 'json')
   .action(function (...args) {
     this.envs = envs
 
