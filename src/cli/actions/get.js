@@ -24,23 +24,30 @@ function get (key) {
   const results = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
 
   if (typeof results === 'object' && results !== null) {
-    // inline shell format - env $(dotenvx get --format shell) your-command
-    if (options.format === 'shell') {
-      let inline = ''
-      for (const [key, value] of Object.entries(results)) {
-        inline += `${key}=${escapeQuotes(value)} `
-      }
-      inline = inline.trim()
+    let inline = ''
 
-      console.log(inline)
-    // json format
-    } else {
-      let space = 0
-      if (options.prettyPrint) {
-        space = 2
-      }
-
-      console.log(JSON.stringify(results, null, space))
+    switch (options.format) {
+      case 'eval':
+        for (const [key, value] of Object.entries(results)) {
+          inline += `${key}=${escapeQuotes(value)}\n`
+        }
+        inline = inline.trim()
+        console.log(inline)
+        break
+      case 'shell':
+        for (const [key, value] of Object.entries(results)) {
+          inline += `${key}=${value} `
+        }
+        inline = inline.trim()
+        console.log(inline)
+        break
+      default: // json
+        let space = 0
+        if (options.prettyPrint) {
+          space = 2
+        }
+        console.log(JSON.stringify(results, null, space))
+        break
     }
   } else {
     if (results === undefined) {
