@@ -1,30 +1,34 @@
 const util = require('util')
 const dotenv = require('dotenv')
 
+const escapeForRegex = require('./escapeForRegex')
+
 function replaceRaw (src, key, replaceValue) {
   let output
-  let formatted = `${key}="${replaceValue}"` // TODO: can we somehow preserve the original quotes here? so not using double quote if that was not original?
+  let escapedValue = util.inspect(replaceValue, { showHidden: false, depth: null, colors: false })
+  if (replaceValue.includes('\n')) {
+    escapedValue = JSON.stringify(replaceValue) // use JSON stringify if string contains newlines
+    escapedValue = escapedValue.replace(/\\n/g, '\n') // fix up newlines
+    escapedValue = escapedValue.replace(/\\r/g, '\r')
+  }
+  let newPart = `${key}=${escapedValue}`
 
   const parsed = dotenv.parse(src)
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
     const originalValue = parsed[key]
 
     const currentPart = new RegExp(
-      `^` + // start of line
-      `(\\s*)?` + // spaces
-      `(export\\s+)?` + // export
+      '^' + // start of line
+      '(\\s*)?' + // spaces
+      '(export\\s+)?' + // export
       key + // KEY
-      `\\s*=\\s*` + // spaces (KEY = value)
+      '\\s*=\\s*' + // spaces (KEY = value)
       '["\'`]?' + // open quote
-      originalValue + // value
+      escapeForRegex(originalValue) + // escaped value
       '["\'`]?' // close quote
       ,
       'gm' // (g)lobal (m)ultiline
     )
-
-    const escapedValue = util.inspect(replaceValue, { showHidden: false, depth: null, colors: false })
-    // const escapedValue = JSON.stringify(replaceValue)
-    const newPart = `${key}=${escapedValue}`
 
     // $1 preserves spaces
     // $2 preserves export
@@ -32,12 +36,12 @@ function replaceRaw (src, key, replaceValue) {
   } else {
     // append
     if (src.endsWith('\n')) {
-      formatted = formatted + '\n'
+      newPart = newPart + '\n'
     } else {
-      formatted = '\n' + formatted
+      newPart = '\n' + newPart
     }
 
-    output = src + formatted
+    output = src + newPart
   }
 
   return output

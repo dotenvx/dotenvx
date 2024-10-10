@@ -13,7 +13,7 @@ function replace (src, key, value) {
       // Match the key at the start of a line, following a newline, or prefaced by export
       `(^|\\n)\\s*(export\\s+)?${key}` +
       // Permit any amount of spaces before or after the equal sign (KEY = value)
-      `\\s*=\\s*` +
+      '\\s*=\\s*' +
       // Non-capturing group to handle different types of quotations and unquoted values
       '(?:' +
         '(["\'`])' + // Match an opening quote

@@ -117,7 +117,7 @@ t.test('#run (encrypt off) (finds .env file)', ct => {
 t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)', ct => {
   const envSrc = [
     '# for testing purposes only',
-    'HELLO="new value" # this is a comment'
+    'HELLO=\'new value\' # this is a comment'
   ].join('\n') + '\n'
 
   const envFile = 'tests/monorepo/apps/frontend/.env'
