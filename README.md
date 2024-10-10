@@ -1089,7 +1089,7 @@ More examples
 
   This can be useful for more complex .env values (spaces, escaped characters, quotes, etc) combined with `eval` on the command line.
 
-  ```
+  ```sh
   $ echo "console.log('Hello ' + process.env.KEY + ' ' + process.env.HELLO)" > index.js
   $ eval $(dotenvx get --format=eval) node index.js
   Hello value World
