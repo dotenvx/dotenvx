@@ -6,7 +6,7 @@ const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const decryptValue = require('./../helpers/decryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
-const replace = require('./../helpers/replace')
+const replace = require('./../helpers/replaceRaw')
 
 const ENCODING = 'utf8'
 
@@ -67,8 +67,6 @@ class Decrypt {
             row.keys.push(key) // track key(s)
 
             const decryptedValue = decryptValue(value, privateKey)
-
-            // console.log('decryptedValue', decryptedValue)
 
             // once newSrc is built write it out
             src = replace(src, key, decryptedValue)

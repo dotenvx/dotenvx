@@ -6,8 +6,7 @@ const dotenv = require('dotenv')
 const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const encryptValue = require('./../helpers/encryptValue')
-// const replace = require('./../helpers/replace')
-const replaceRaw = require('./../helpers/replaceRaw')
+const replace = require('./../helpers/replaceRaw')
 
 const ENCODING = 'utf8'
 
@@ -67,7 +66,7 @@ class Sets {
         }
 
         if (value !== row.originalValue) {
-          row.envSrc = replaceRaw(src, this.key, value)
+          row.envSrc = replace(src, this.key, value)
 
           this.changedFilepaths.add(envFilepath)
           row.changed = true
