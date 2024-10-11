@@ -1243,6 +1243,36 @@ More examples
   ✔ encrypted (.env)
   ```
 
+  Even specify a glob pattern.
+
+  ```sh
+  $ echo "HELLO=World\nHOLA=Mundo" > .env
+
+  $ dotenvx encrypt -k "HE*"
+  ✔ encrypted (.env)
+  ```
+
+  </details>
+* <details><summary>`encrypt -ek`</summary><br>
+
+  Specify the key(s) to NOT encrypt by passing `--exclude-key`.
+
+  ```sh
+  $ echo "HELLO=World\nHELLO2=Universe" > .env
+
+  $ dotenvx encrypt -ek HELLO
+  ✔ encrypted (.env)
+  ```
+
+  Even specify a glob pattern.
+
+  ```sh
+  $ echo "HELLO=World\nHOLA=Mundo" > .env
+
+  $ dotenvx encrypt -ek "HO*"
+  ✔ encrypted (.env)
+  ```
+
   </details>
 * <details><summary>`encrypt --stdout`</summary><br>
 
@@ -1293,6 +1323,52 @@ More examples
   ✔ encrypted (.env.production)
   $ dotenvx decrypt -f .env.production
   ✔ decrypted (.env.production)
+  ```
+
+  </details>
+* <details><summary>`decrypt -k`</summary><br>
+
+  Decrypt the contents of a specified key inside an encrypted `.env` file.
+
+  ```sh
+  $ echo "HELLO=World\nHOLA=Mundo" > .env
+  $ dotenvx encrypt
+  ✔ encrypted (.env)
+  $ dotenvx decrypt -k HELLO
+  ✔ decrypted (.env)
+  ```
+
+  Even specify a glob pattern.
+
+  ```sh
+  $ echo "HELLO=World\nHOLA=Mundo" > .env
+  $ dotenvx encrypt
+  ✔ encrypted (.env)
+  $ dotenvx decrypt -k "HE*"
+  ✔ encrypted (.env)
+  ```
+
+  </details>
+* <details><summary>`decrypt -ek`</summary><br>
+
+  Decrypt the contents inside an encrypted `.env` file except for an exluded key.
+
+  ```sh
+  $ echo "HELLO=World\nHOLA=Mundo" > .env
+  $ dotenvx encrypt
+  ✔ encrypted (.env)
+  $ dotenvx decrypt -ek HOLA
+  ✔ decrypted (.env)
+  ```
+
+  Even specify a glob pattern.
+
+  ```sh
+  $ echo "HELLO=World\nHOLA=Mundo" > .env
+  $ dotenvx encrypt
+  ✔ encrypted (.env)
+  $ dotenvx decrypt -ek "HO*"
+  ✔ encrypted (.env)
   ```
 
   </details>
