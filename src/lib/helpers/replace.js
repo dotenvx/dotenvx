@@ -2,10 +2,12 @@ const util = require('util')
 const dotenv = require('dotenv')
 
 const escapeForRegex = require('./escapeForRegex')
+const escapeDollarSigns = require('./escapeDollarSigns')
 
 function replace (src, key, replaceValue) {
   let output
   let escapedValue = util.inspect(replaceValue, { showHidden: false, depth: null, colors: false })
+
   if (replaceValue.includes('\n')) {
     escapedValue = JSON.stringify(replaceValue) // use JSON stringify if string contains newlines
     escapedValue = escapedValue.replace(/\\n/g, '\n') // fix up newlines
@@ -38,9 +40,11 @@ function replace (src, key, replaceValue) {
       'gm' // (g)lobal (m)ultiline
     )
 
+    const saferInput = escapeDollarSigns(newPart) // cleanse user inputted capture groups ($1, $2 etc)
+
     // $1 preserves spaces
     // $2 preserves export
-    output = src.replace(currentPart, `$1$2${newPart}`)
+    output = src.replace(currentPart, `$1$2${saferInput}`)
   } else {
     // append
     if (src.endsWith('\n')) {
