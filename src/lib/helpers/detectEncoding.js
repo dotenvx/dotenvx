@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('./../../lib/helpers/filesystem')
 
 function detectEncoding (filepath) {
   const buffer = fs.readFileSync(filepath)
