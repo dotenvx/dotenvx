@@ -261,6 +261,18 @@ More examples
   ```
 
   </details>
+* <details><summary>Kotlin 📐</summary><br>
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ echo 'fun main() { val hello = System.getenv("HELLO") ?: ""; println("Hello $hello") }' > index.kt
+  $ kotlinc index.kt -include-runtime -d index.jar
+
+  $ dotenvx run -- java -jar index.jar
+  Hello World
+  ```
+
+  </details>
 * <details><summary>.NET 🔵</summary><br>
 
   ```sh
