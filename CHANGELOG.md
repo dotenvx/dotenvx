@@ -6,9 +6,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 1.18.0
 
+### Added
+
+* `set` and `encrypt` preserve leading spaces ([#395](https://github.com/dotenvx/dotenvx/pull/395/))
+
+```sh
+     HELLO=world
+```
+
 ### Changed
 
-* improve escape and quote handling for `set`, `encrypt`, and `decrypt` ([#395](https://github.com/dotenvx/dotenvx/pull/395/files))
+* improve escape and quote handling for `set`, `encrypt`, and `decrypt` ([#395](https://github.com/dotenvx/dotenvx/pull/395))
 * 🐞 fix `encrypt`, then `decrypt`, then `encrypt` on a json value ([#377](https://github.com/dotenvx/dotenvx/issues/377))
 
 Note: the underlying `replace` engine to support these changes now wraps your values in single quotes. the prior `replace` engine wrapped in double quotes.
