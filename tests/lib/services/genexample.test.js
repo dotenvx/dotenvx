@@ -17,7 +17,7 @@ t.test('#run', ct => {
   const output = `# .env.example - generated with dotenvx
 
 # for testing purposes only
-HELLO="" # this is a comment
+HELLO='' # this is a comment
 `
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })
@@ -36,7 +36,7 @@ t.test('#run (.env.example already exists)', ct => {
   } = genexample.run()
 
   const output = `# .env.example - generated with dotenvx
-HELLO=""
+HELLO=''
 `
   ct.same(envExampleFile, output)
   ct.same(injected, {})
@@ -65,8 +65,8 @@ t.test('#run (.env.example already exists but with different keys)', ct => {
   } = genexample.run()
 
   const output = `# .env.example - generated with dotenvx
-HELLO=""
-HELLO2=""
+HELLO=''
+HELLO2=''
 `
 
   ct.same(envExampleFile, output)
@@ -88,7 +88,7 @@ t.test('#run (string envFile)', ct => {
   const output = `# .env.example - generated with dotenvx
 
 # for testing purposes only
-HELLO="" # this is a comment
+HELLO='' # this is a comment
 `
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })

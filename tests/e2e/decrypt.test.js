@@ -97,7 +97,7 @@ t.test('#decrypt --stdout', ct => {
 DOTENV_PUBLIC_KEY="${DOTENV_PUBLIC_KEY}"
 
 # .env
-HELLO="World"\n\n`)
+HELLO='World'\n\n`)
 
   ct.end()
 })

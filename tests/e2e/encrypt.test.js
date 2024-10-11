@@ -102,14 +102,14 @@ DOTENV_PUBLIC_KEY="${publicKey}"
 
 # .env
 HELLO=World
-HI="encrypted:`
+HI='encrypted:`
 
-  const parts = output.split('HI="encrypted:')
+  const parts = output.split('HI=\'encrypted:')
   const encryptedPart = parts[1]
-  const unencryptedPart = `${parts[0]}HI="encrypted:`
+  const unencryptedPart = `${parts[0]}HI='encrypted:`
 
   ct.equal(unencryptedPart, expectedFixedPart1, 'The fixed part of the output should match the expected output')
-  ct.match(encryptedPart, /.*"/, 'The encrypted part should match the expected pattern')
+  ct.match(encryptedPart, /.*'/, 'The encrypted part should match the expected pattern')
 
   ct.end()
 })
