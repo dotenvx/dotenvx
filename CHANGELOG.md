@@ -2,11 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.17.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.18.0...main)
 
 ## 1.18.0
 
-* leading spaces now respected for `set`
+### Changed
+
+* swap in improved `replace` engine for `set`, `encrypt`, `decrypt`, and `genexample` (note: you'll now see `encrypt` and `set` wrap your values in single quotes in most cases. the prior `replace` engine wrapped in double quotes.) ([#395](https://github.com/dotenvx/dotenvx/pull/395/files))
+* 🐞 fix `encrypt`, then `decrypt`, then `encrypt` on a json value ([#377](https://github.com/dotenvx/dotenvx/issues/377))
 
 ## 1.17.0
 
