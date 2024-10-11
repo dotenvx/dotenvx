@@ -7,7 +7,7 @@ const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const isPublicKey = require('./../helpers/isPublicKey')
-const replace = require('./../helpers/replaceRaw')
+const replace = require('./../helpers/replace')
 
 const ENCODING = 'utf8'
 

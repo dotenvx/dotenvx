@@ -1,36 +1,55 @@
+const util = require('util')
 const dotenv = require('dotenv')
 
-function replace (src, key, value) {
+const escapeForRegex = require('./escapeForRegex')
+
+function replace (src, key, replaceValue) {
   let output
-  let formatted = `${key}="${value}"`
+  let escapedValue = util.inspect(replaceValue, { showHidden: false, depth: null, colors: false })
+  if (replaceValue.includes('\n')) {
+    escapedValue = JSON.stringify(replaceValue) // use JSON stringify if string contains newlines
+    escapedValue = escapedValue.replace(/\\n/g, '\n') // fix up newlines
+    escapedValue = escapedValue.replace(/\\r/g, '\r')
+  }
+  let newPart = `${key}=${escapedValue}`
 
   const parsed = dotenv.parse(src)
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
-    const regex = new RegExp(
-      // Match the key at the start of a line, following a newline, or prefaced by export
-      `(^|\\n)\\s*(export\\s+)?${key}\\s*=\\s*` +
-      '(?:' +
-        '(["\'`])' + // Match an opening quote
-        '.*?' + // Non-greedy match for any characters within quotes
-        // '\\2' + // Match the corresponding closing quote
-        '\\3' + // Match the corresponding closing quote
-      '|' +
-        // Match unquoted values; account for escaped newlines
-        '(?:[^#\\n\\\\]|\\\\.)*' + // Use non-capturing group for any character except #, newline, or backslash, or any escaped character
-      ')',
-      'gs' // Global and dotAll mode to treat string as single line
+    const originalValue = parsed[key]
+    const escapedOriginalValue = escapeForRegex(originalValue)
+
+    // conditionally enforce end of line
+    let enforceEndOfLine = ''
+    if (escapedOriginalValue === '') {
+      enforceEndOfLine = '$' // EMPTY scenario
+    }
+
+    const currentPart = new RegExp(
+      '^' + // start of line
+      '(\\s*)?' + // spaces
+      '(export\\s+)?' + // export
+      key + // KEY
+      '\\s*=\\s*' + // spaces (KEY = value)
+      '["\'`]?' + // open quote
+      escapedOriginalValue + // escaped value
+      '["\'`]?' + // close quote
+      enforceEndOfLine
+      ,
+      'gm' // (g)lobal (m)ultiline
     )
 
-    output = src.replace(regex, `$1$2${formatted}`)
+    // $1 preserves spaces
+    // $2 preserves export
+    output = src.replace(currentPart, `$1$2${newPart}`)
   } else {
     // append
     if (src.endsWith('\n')) {
-      formatted = formatted + '\n'
+      newPart = newPart + '\n'
     } else {
-      formatted = '\n' + formatted
+      newPart = '\n' + newPart
     }
 
-    output = src + formatted
+    output = src + newPart
   }
 
   return output

@@ -6,7 +6,7 @@ const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const decryptValue = require('./../helpers/decryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
-const replace = require('./../helpers/replaceRaw')
+const replace = require('./../helpers/replace')
 
 const ENCODING = 'utf8'
 

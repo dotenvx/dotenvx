@@ -6,7 +6,7 @@ const dotenv = require('dotenv')
 const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const encryptValue = require('./../helpers/encryptValue')
-const replace = require('./../helpers/replaceRaw')
+const replace = require('./../helpers/replace')
 
 const ENCODING = 'utf8'
 

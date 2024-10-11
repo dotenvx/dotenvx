@@ -83,7 +83,7 @@ class Genexample {
         if (key in parsed) {
           preExisted[key] = parsed[key]
         } else {
-          exampleSrc += `${key}=""\n`
+          exampleSrc += `${key}=''\n`
 
           addedKeys.add(key)
 
