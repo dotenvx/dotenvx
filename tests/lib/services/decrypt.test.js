@@ -207,6 +207,31 @@ t.test('#run (finds .env file with specified key as string)', ct => {
   ct.end()
 })
 
+t.test('#run (finds .env file with specified key as glob pattern)', ct => {
+  const envFile = 'tests/monorepo/apps/multiple/.env.production'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Decrypt(envFile, 'HE*').run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, ['HELLO', 'HELLO2', 'HELLO3'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env.production')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env.production'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenv.parse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_PRODUCTION', 'HELLO', 'HELLO2', 'HELLO3'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_PRODUCTION, 'DOTENV_PUBLIC_KEY_PRODUCTION should not be empty')
+  ct.match(parsed.HELLO, 'one', 'HELLO should be decrypted')
+  ct.match(parsed.HELLO2, 'two', 'HELLO2 should be decrypted')
+  ct.match(parsed.HELLO3, 'three', 'HELLO3 should be decrypted')
+
+  ct.end()
+})
+
 t.test('#run (finds .env file with excluded key)', ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const {
@@ -253,6 +278,31 @@ t.test('#run (finds .env file with excluded key as string)', ct => {
   ct.match(parsed.HELLO, 'one', 'HELLO should be decrypted')
   ct.match(parsed.HELLO2, /^encrypted:/, 'HELLO should still be encrypted')
   ct.match(parsed.HELLO3, 'three', 'HELLO3 should be decrypted')
+
+  ct.end()
+})
+
+t.test('#run (finds .env file with excluded key glob string)', ct => {
+  const envFile = 'tests/monorepo/apps/multiple/.env.production'
+  const {
+    processedEnvFiles,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Decrypt(envFile, [], 'HEL*').run()
+
+  const p1 = processedEnvFiles[0]
+  ct.same(p1.keys, [])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env.production')
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, ['tests/monorepo/apps/multiple/.env.production'])
+
+  const parsed = dotenv.parse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_PRODUCTION', 'HELLO', 'HELLO2', 'HELLO3'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_PRODUCTION, 'DOTENV_PUBLIC_KEY_PRODUCTION should not be empty')
+  ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should still be encrypted')
+  ct.match(parsed.HELLO2, /^encrypted:/, 'HELLO2 should still be encrypted')
+  ct.match(parsed.HELLO3, /^encrypted:/, 'HELLO3 should still be encrypted')
 
   ct.end()
 })
