@@ -16,6 +16,13 @@ function replaceRaw (src, key, replaceValue) {
   const parsed = dotenv.parse(src)
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
     const originalValue = parsed[key]
+    const escapedOriginalValue = escapeForRegex(originalValue)
+
+    // conditionally enforce end of line
+    let enforceEndOfLine = ''
+    if (escapedOriginalValue === '') {
+      enforceEndOfLine = '$' // EMPTY scenario
+    }
 
     const currentPart = new RegExp(
       '^' + // start of line
@@ -24,8 +31,9 @@ function replaceRaw (src, key, replaceValue) {
       key + // KEY
       '\\s*=\\s*' + // spaces (KEY = value)
       '["\'`]?' + // open quote
-      escapeForRegex(originalValue) + // escaped value
-      '["\'`]?' // close quote
+      escapedOriginalValue + // escaped value
+      '["\'`]?' + // close quote
+      enforceEndOfLine
       ,
       'gm' // (g)lobal (m)ultiline
     )

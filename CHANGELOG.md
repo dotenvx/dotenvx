@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.17.0...main)
 
+## 1.18.0
+
+* leading spaces now respected for `set`
+
 ## 1.17.0
 
 ### Added
