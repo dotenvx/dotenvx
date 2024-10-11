@@ -2,13 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.18.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.18.1...main)
+
+## 1.18.1
+
+### Added
+
+* escape user inputted regex groupings like `$1` or `$2`. ([#396](https://github.com/dotenvx/dotenvx/pull/396))
 
 ## 1.18.0
 
 ### Added
 
-* `set` and `encrypt` preserve leading spaces ([#395](https://github.com/dotenvx/dotenvx/pull/395/))
+* `set` and `encrypt` preserve leading spaces ([#395](https://github.com/dotenvx/dotenvx/pull/395))
 
 ```sh
      HELLO=world
