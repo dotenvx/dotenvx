@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.18.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.19.0...main)
+
+## 1.19.0
+
+### Added
+
+* support key glob filtering for `encrypt` and `decrypt`. example: `dotenvx encrypt -ek "NEXT_PUBLIC_*"` ([#397](https://github.com/dotenvx/dotenvx/pull/397))
 
 ## 1.18.1
 

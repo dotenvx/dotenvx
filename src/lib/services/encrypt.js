@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
+const picomatch = require('picomatch')
 
 const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
@@ -30,6 +31,9 @@ class Encrypt {
     const envFilepaths = this._envFilepaths()
     const keys = this._keys()
     const excludeKeys = this._excludeKeys()
+    const exclude = picomatch(excludeKeys)
+    const include = picomatch(keys, { ignore: excludeKeys })
+
     for (const envFilepath of envFilepaths) {
       const filepath = path.resolve(envFilepath)
 
@@ -67,12 +71,12 @@ class Encrypt {
         const parsed = dotenv.parse(src)
         for (const [key, value] of Object.entries(parsed)) {
           // key excluded - don't encrypt it
-          if (excludeKeys.includes(key)) {
+          if (exclude(key)) {
             continue
           }
 
           // key effectively excluded (by not being in the list of includes) - don't encrypt it
-          if (keys.length > 0 && !keys.includes(key)) {
+          if (keys.length > 0 && !include(key)) {
             continue
           }
 
