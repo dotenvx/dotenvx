@@ -1437,7 +1437,7 @@ HELLO4=world`
   const newSrc = replace(src, 'HELLO2', 'universe')
 
   const expected = `HELLO=world
-HELLO2=\'universe\'
+HELLO2='universe'
 HELLO3=world
 HELLO4=world`
 
@@ -1456,7 +1456,7 @@ HELLO4="world"`
 
   const expected = `HELLO="world"
 HELLO2="world"
-HELLO3=\'universe\'
+HELLO3='universe'
 HELLO4="world"`
 
   ct.same(newSrc, expected)
@@ -1474,7 +1474,7 @@ HELLO4='world'`
 
   const expected = `HELLO='world'
 HELLO2='world'
-HELLO3=\'universe\'
+HELLO3='universe'
 HELLO4='world'`
 
   ct.same(newSrc, expected)
@@ -1492,7 +1492,7 @@ HELLO4=\`world\``
 
   const expected = `HELLO=\`world\`
 HELLO2=\`world\`
-HELLO3=\'universe\'
+HELLO3='universe'
 HELLO4=\`world\``
 
   ct.same(newSrc, expected)
