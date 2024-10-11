@@ -8,8 +8,26 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
-* swap in improved `replace` engine for `set`, `encrypt`, `decrypt`, and `genexample` (note: you'll now see `encrypt` and `set` wrap your values in single quotes in most cases. the prior `replace` engine wrapped in double quotes.) ([#395](https://github.com/dotenvx/dotenvx/pull/395/files))
+* improve escape and quote handling for `set`, `encrypt`, and `decrypt` ([#395](https://github.com/dotenvx/dotenvx/pull/395/files))
 * 🐞 fix `encrypt`, then `decrypt`, then `encrypt` on a json value ([#377](https://github.com/dotenvx/dotenvx/issues/377))
+
+note: the underlying `replace` engine to support these changes now wraps your values in single quotes. the prior `replace` engine wrapped in double quotes.
+
+So where your `.env` used to look like this:
+
+```sh
+HELLO="encrypted:1234"
+API_KEY="encrypted:5678"
+```
+
+It will not more often look like this:
+
+```sh
+HELLO='encrypted:1234'
+API_KEY='encrypted:5678'
+```
+
+It's an aesthetic side effect of the improved `replace` engine.
 
 ## 1.17.0
 
