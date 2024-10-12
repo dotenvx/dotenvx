@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('../../../src/lib/helpers/fsx')
+const fsx = require('../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 
 const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitHook')
@@ -29,7 +29,7 @@ t.test('#run (exists but does not include dotenvx ext precommit) appends', ct =>
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
   const currentHookStub = sinon.stub(installPrecommitHook, '_currentHook')
-  const appendFileSyncStub = sinon.stub(fs, 'appendFileSync')
+  const appendFileSyncStub = sinon.stub(fsx, 'appendFileSync')
 
   existsStub.returns(true)
   currentHookStub.returns('') // empty file
@@ -38,7 +38,7 @@ t.test('#run (exists but does not include dotenvx ext precommit) appends', ct =>
 
   ct.same(successMessage, 'dotenvx ext precommit appended [.git/hooks/pre-commit]')
 
-  t.ok(appendFileSyncStub.called, 'fs.appendFileSync should be called')
+  t.ok(appendFileSyncStub.called, 'fsx.appendFileSync should be called')
 
   // restore stubs
   existsStub.restore()
@@ -52,8 +52,8 @@ t.test('#run (does not exist) creates', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
-  const writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
-  const chmodSyncStub = sinon.stub(fs, 'chmodSync')
+  const writeFileSyncStub = sinon.stub(fsx, 'writeFileSync')
+  const chmodSyncStub = sinon.stub(fsx, 'chmodSync')
 
   existsStub.returns(false)
 
@@ -61,8 +61,8 @@ t.test('#run (does not exist) creates', ct => {
 
   ct.same(successMessage, 'dotenvx ext precommit installed [.git/hooks/pre-commit]')
 
-  t.ok(writeFileSyncStub.called, 'fs.writeFileSync should be called')
-  t.ok(chmodSyncStub.called, 'fs.chomdSyncStub should be called')
+  t.ok(writeFileSyncStub.called, 'fsx.writeFileSync should be called')
+  t.ok(chmodSyncStub.called, 'fsx.chomdSyncStub should be called')
 
   // restore stubs
   existsStub.restore()
@@ -76,7 +76,7 @@ t.test('#run (fs throws an error) logs error', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
-  const writeFileSyncStub = sinon.stub(fs, 'writeFileSync').throws(new Error('Mock Error'))
+  const writeFileSyncStub = sinon.stub(fsx, 'writeFileSync').throws(new Error('Mock Error'))
 
   existsStub.returns(false)
 
@@ -97,7 +97,7 @@ t.test('#run (fs throws an error) logs error', ct => {
 t.test('#_exists true/false', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
-  const existsSyncStub = sinon.stub(fs, 'existsSync')
+  const existsSyncStub = sinon.stub(fsx, 'existsSync')
 
   existsSyncStub.returns(false)
   let result = installPrecommitHook._exists()
@@ -115,13 +115,13 @@ t.test('#_exists true/false', ct => {
 t.test('#_currentHook', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync')
+  const readFileXStub = sinon.stub(fsx, 'readFileX')
 
-  readFileSyncStub.returns('some file')
+  readFileXStub.returns('some file')
   const result = installPrecommitHook._currentHook()
   ct.equal(result, 'some file')
 
-  readFileSyncStub.restore()
+  readFileXStub.restore()
 
   ct.end()
 })

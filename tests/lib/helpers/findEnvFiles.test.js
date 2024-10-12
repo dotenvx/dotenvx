@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('../../../src/lib/helpers/fsx')
+const fsx = require('../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 
 const findEnvFiles = require('../../../src/lib/helpers/findEnvFiles')
@@ -36,7 +36,7 @@ t.test('#findEnvFiles (other error)', ct => {
   const mockError = new Error('Mock Error')
   mockError.code = 'other'
 
-  const stub = sinon.stub(fs, 'readdirSync').throws(mockError)
+  const stub = sinon.stub(fsx, 'readdirSync').throws(mockError)
 
   try {
     findEnvFiles('.')

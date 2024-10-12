@@ -51,7 +51,7 @@ class InstallPrecommitHook {
   }
 
   _currentHook () {
-    return fsx.readFileSync(this.hookPath, 'utf8')
+    return fsx.readFileX(this.hookPath)
   }
 
   _createHook () {

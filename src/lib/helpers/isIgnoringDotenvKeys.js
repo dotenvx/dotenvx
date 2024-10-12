@@ -6,7 +6,7 @@ function isIgnoringDotenvKeys () {
     return false
   }
 
-  const gitignore = fsx.readFileSync('.gitignore').toString()
+  const gitignore = fsx.readFileX('.gitignore')
   const ig = ignore(gitignore).add(gitignore)
 
   if (!ig.ignores('.env.keys')) {
