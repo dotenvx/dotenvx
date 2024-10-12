@@ -1,4 +1,4 @@
-const fs = require('./../../lib/helpers/filesystem')
+const fs = require('fs')
 const path = require('path')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')

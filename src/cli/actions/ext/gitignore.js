@@ -1,4 +1,4 @@
-const fs = require('./../../../lib/helpers/filesystem')
+const fs = require('fs')
 
 const FORMATS = ['.env*', '!.env.vault']
 const { logger } = require('./../../../shared/logger')

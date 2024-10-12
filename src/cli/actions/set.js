@@ -1,4 +1,4 @@
-const fs = require('./../../lib/helpers/filesystem')
+const fs = require('fs')
 const { logger } = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
