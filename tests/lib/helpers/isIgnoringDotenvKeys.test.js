@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('fs')
+const fs = require('../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 
 const isIgnoringDotenvKeys = require('../../../src/lib/helpers/isIgnoringDotenvKeys')

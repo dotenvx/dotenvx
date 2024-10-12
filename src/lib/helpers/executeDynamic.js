@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./fsx')
 const path = require('path')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
@@ -27,7 +27,7 @@ function executeDynamic (program, command, rawArgs) {
       // logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] commands 🏆`)
       // logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-pro]')
 
-      const pro = fs.readFileSync(path.join(__dirname, './../../cli/pro.txt'), 'utf8')
+      const pro = fsx.readFileSync(path.join(__dirname, './../../cli/pro.txt'), 'utf8')
       console.log(pro)
     } else {
       logger.info(`error: unknown command '${command}'`)

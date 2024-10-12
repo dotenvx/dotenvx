@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./fsx')
 const dotenv = require('dotenv')
 
 const ENCODING = 'utf8'
@@ -12,8 +12,8 @@ function searchProcessEnv (publicKeyName) {
 }
 
 function searchEnvFile (publicKeyName, envFilepath) {
-  if (fs.existsSync(envFilepath)) {
-    const keysSrc = fs.readFileSync(envFilepath, { encoding: ENCODING })
+  if (fsx.existsSync(envFilepath)) {
+    const keysSrc = fsx.readFileSync(envFilepath, { encoding: ENCODING })
     const keysParsed = dotenv.parse(keysSrc)
 
     if (keysParsed[publicKeyName] && keysParsed[publicKeyName].length > 0) {
