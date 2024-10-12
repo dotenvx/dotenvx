@@ -1,4 +1,4 @@
-const fs = require('./../../lib/helpers/filesystem')
+const fs = require('fs')
 const path = require('path')
 
 const dotenv = require('dotenv')
