@@ -1,4 +1,5 @@
 const fs = require('fs')
+const fsx = require('../../src/lib/helpers/fsx')
 const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
@@ -77,31 +78,36 @@ t.test('sets values from both .env.local and .env. but neither is used as value 
 })
 
 t.test('takes option for path along with home directory char ~', ct => {
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo')
+  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('test=foo')
+  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo') // for purpose of encoding check
   const mockedHomedir = '/Users/dummy'
   const homedirStub = sinon.stub(os, 'homedir').returns(mockedHomedir)
   const testPath = '~/.env'
   dotenvx.config({ path: testPath })
 
-  ct.equal(readFileSyncStub.args[0][0], path.join(mockedHomedir, '.env'))
+  ct.equal(readFileXStub.args[0][0], path.join(mockedHomedir, '.env'))
   ct.ok(homedirStub.called)
 
   homedirStub.restore()
+  readFileXStub.restore()
   readFileSyncStub.restore()
   ct.end()
 })
 
 t.test('reads path with encoding, parsing output to process.env', ct => {
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('BASIC=basic')
+  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('BASIC=basic')
+  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo') // for purpose of encoding check
   const parseStub = sinon.stub(dotenvx, 'parse').returns({ BASIC: 'basic' })
 
   const res = dotenvx.config()
 
   ct.same(res.parsed, { BASIC: 'basic' })
-  ct.equal(readFileSyncStub.callCount, 2) // 2 because it first has to check encoding
+  ct.equal(readFileXStub.callCount, 1)
+  ct.equal(readFileSyncStub.callCount, 1) // encoding check
 
-  readFileSyncStub.restore()
+  readFileXStub.restore()
   parseStub.restore()
+  readFileSyncStub.restore()
 
   ct.end()
 })
@@ -177,14 +183,14 @@ t.test('returns parsed object', ct => {
 })
 
 t.test('returns any errors thrown from reading file or parsing', ct => {
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo')
+  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('test=foo')
 
-  readFileSyncStub.throws()
+  readFileXStub.throws()
   const env = dotenvx.config()
 
   ct.type(env.error, Error)
 
-  readFileSyncStub.restore()
+  readFileXStub.restore()
 
   ct.end()
 })
@@ -193,16 +199,16 @@ t.test('logs any errors thrown from reading file or parsing when in debug mode',
   ct.plan(2)
 
   const logStub = sinon.stub(logger, 'warnv')
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo')
+  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('test=foo')
 
-  readFileSyncStub.throws()
+  readFileXStub.throws()
   const env = dotenvx.config({ debug: true })
 
   ct.ok(logStub.called)
   ct.type(env.error, Error)
 
   logStub.restore()
-  readFileSyncStub.restore()
+  readFileXStub.restore()
 })
 
 t.test('logs when in debug mode', ct => {

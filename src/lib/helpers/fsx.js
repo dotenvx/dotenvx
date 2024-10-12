@@ -2,8 +2,12 @@ const fs = require('fs')
 
 const ENCODING = 'utf8'
 
-function readFileX (filepath) {
-  return fs.readFileSync(filepath, ENCODING) // utf8 always. returns string rather than buffer.
+function readFileX (filepath, encoding = null) {
+  if (!encoding) {
+    encoding = ENCODING
+  }
+
+  return fs.readFileSync(filepath, encoding) // utf8 default so it returns a string
 }
 
 function writeFileX (filepath, str) {

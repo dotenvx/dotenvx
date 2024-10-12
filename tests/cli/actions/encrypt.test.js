@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('fs')
+const fsx = require('./../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 const capcon = require('capture-console')
 const proxyquire = require('proxyquire')
@@ -15,7 +15,7 @@ let writeStub
 
 t.beforeEach((ct) => {
   sinon.restore()
-  writeStub = sinon.stub(fs, 'writeFileSync')
+  writeStub = sinon.stub(fsx, 'writeFileX')
 })
 
 t.test('encrypt - nothing', ct => {
@@ -117,7 +117,7 @@ t.test('encrypt - .env with changes', ct => {
   t.ok(stub.called, 'main.encrypt() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"', 'utf8'), 'fs.writeFileSync')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
 
@@ -151,7 +151,7 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   t.ok(stub.called, 'main.encrypt() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"', 'utf8'), 'fs.writeFileSync')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
@@ -191,7 +191,7 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   t.ok(stub.called, 'main.encrypt() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"', 'utf8'), 'fs.writeFileSync')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
@@ -231,7 +231,7 @@ t.test('encrypt - MISSING_ENV_FILE', ct => {
   t.ok(stub.called, 'main.encrypt() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fs.writeFileSync')
+  t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger.warn')
   t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx encrypt]'), 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -269,7 +269,7 @@ t.test('encrypt - OTHER_ERROR', ct => {
   t.ok(stub.called, 'main.encrypt() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fs.writeFileSync')
+  t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -297,7 +297,7 @@ t.test('encrypt - catch error', ct => {
   encrypt.call(fakeContext)
 
   t.ok(stub.called, 'main.encrypt() called')
-  t.ok(writeStub.notCalled, 'fs.writeFileSync')
+  t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger error')

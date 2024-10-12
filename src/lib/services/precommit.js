@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-const fs = require('fs')
+const fsx = require('./../helpers/fsx')
 const ignore = require('ignore')
 
 const Ls = require('../services/ls')
@@ -32,12 +32,12 @@ class Precommit {
       let gitignore = MISSING_GITIGNORE
 
       // 1. check for .gitignore file
-      if (!fs.existsSync('.gitignore')) {
+      if (!fsx.existsSync('.gitignore')) {
         const warning = new Error('.gitignore missing')
         warning.help = '? add it with [touch .gitignore]'
         warnings.push(warning)
       } else {
-        gitignore = fs.readFileSync('.gitignore').toString()
+        gitignore = fsx.readFileX('.gitignore')
       }
 
       // 2. check .env* files against .gitignore file
@@ -56,7 +56,7 @@ class Precommit {
             }
           } else {
             if (file !== '.env.example' && file !== '.env.vault') {
-              const src = fs.readFileSync(file).toString()
+              const src = fsx.readFileX(file)
               const encrypted = isFullyEncrypted(src)
 
               // if contents are encrypted don't raise an error

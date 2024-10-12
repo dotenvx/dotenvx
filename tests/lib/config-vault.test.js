@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('../../src/lib/helpers/fsx')
 const crypto = require('crypto')
 const sinon = require('sinon')
 const t = require('tap')
@@ -47,7 +47,7 @@ t.test('logs', ct => {
 t.test('warns if DOTENV_KEY exists but .env.vault does not exist', ct => {
   logStub = sinon.stub(logger, 'error')
 
-  const existsSync = sinon.stub(fs, 'existsSync').returns(false) // make .env.vault not exist
+  const existsSync = sinon.stub(fsx, 'existsSync').returns(false) // make .env.vault not exist
   dotenvx.config({ path: testPath })
   ct.ok(logStub.called)
   existsSync.restore()
@@ -58,7 +58,7 @@ t.test('warns if DOTENV_KEY exists but .env.vault does not exist', ct => {
 t.test('log if DOTENV_KEY exists but .env.vault does not exist (set as array)', ct => {
   logStub = sinon.stub(logger, 'error')
 
-  const existsSync = sinon.stub(fs, 'existsSync').returns(false) // make .env.vault not exist
+  const existsSync = sinon.stub(fsx, 'existsSync').returns(false) // make .env.vault not exist
   dotenvx.config({ path: [testPath] })
   ct.ok(logStub.called)
   existsSync.restore()
@@ -89,7 +89,7 @@ t.test('returns parsed object (set path as mulit-array)', ct => {
 
 t.test('log NOT_FOUND_DOTENV_ENVIRONMENT if .env.vault is empty', ct => {
   logStub = sinon.stub(logger, 'error')
-  const readFileSync = sinon.stub(fs, 'readFileSync').returns('') // empty file
+  const readFileX = sinon.stub(fsx, 'readFileX').returns('') // empty file
 
   dotenvx.config({ path: testPath })
   ct.ok(logStub.called)
@@ -97,7 +97,7 @@ t.test('log NOT_FOUND_DOTENV_ENVIRONMENT if .env.vault is empty', ct => {
   const expectedMessage = 'NOT_FOUND_DOTENV_ENVIRONMENT: cannot locate environment DOTENV_VAULT_DEVELOPMENT in your .env.vault file'
   ct.ok(logStub.calledWith(expectedMessage))
 
-  readFileSync.restore()
+  readFileX.restore()
   ct.end()
 })
 

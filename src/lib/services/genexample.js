@@ -1,8 +1,6 @@
-const fs = require('fs')
+const fsx = require('./../helpers/fsx')
 const path = require('path')
 const dotenv = require('dotenv')
-
-const ENCODING = 'utf8'
 
 const findEnvFiles = require('../helpers/findEnvFiles')
 const replace = require('../helpers/replace')
@@ -40,7 +38,7 @@ class Genexample {
 
     for (const envFilepath of envFilepaths) {
       const filepath = path.resolve(this.directory, envFilepath)
-      if (!fs.existsSync(filepath)) {
+      if (!fsx.existsSync(filepath)) {
         const code = 'MISSING_ENV_FILE'
         const message = `file does not exist at [${filepath}]`
         const help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx genexample]`
@@ -52,7 +50,7 @@ class Genexample {
       }
 
       // get the original src
-      let src = fs.readFileSync(filepath, { encoding: ENCODING })
+      let src = fsx.readFileX(filepath)
       const parsed = dotenv.parse(src)
       for (const key in parsed) {
         // used later
@@ -65,7 +63,7 @@ class Genexample {
       exampleSrc += `\n${src}`
     }
 
-    if (!fs.existsSync(this.exampleFilepath)) {
+    if (!fsx.existsSync(this.exampleFilepath)) {
       // it doesn't exist so just write this first generated one
       // exampleSrc - already written to from the prior loop
       for (const key of [...keys]) {
@@ -76,7 +74,7 @@ class Genexample {
       }
     } else {
       // it already exists (which means the user might have it modified a way in which they prefer, so replace exampleSrc with their existing .env.example)
-      exampleSrc = fs.readFileSync(this.exampleFilepath, ENCODING)
+      exampleSrc = fsx.readFileX(this.exampleFilepath)
 
       const parsed = dotenv.parse(exampleSrc)
       for (const key of [...keys]) {
