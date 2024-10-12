@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('./fsx')
 const path = require('path')
 
 const HOOK_SCRIPT = `#!/bin/sh
