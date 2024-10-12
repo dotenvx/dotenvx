@@ -1,10 +1,10 @@
-const fs = require('fs')
+const fsx = require('./fsx')
 
 const RESERVED_ENV_FILES = ['.env.vault', '.env.project', '.env.keys', '.env.me', '.env.x', '.env.example']
 
 function findEnvFiles (directory) {
   try {
-    const files = fs.readdirSync(directory)
+    const files = fsx.readdirSync(directory)
     const envFiles = files.filter(file =>
       file.startsWith('.env') &&
       !file.endsWith('.previous') &&

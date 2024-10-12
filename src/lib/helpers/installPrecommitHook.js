@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./fsx')
 const path = require('path')
 
 const HOOK_SCRIPT = `#!/bin/sh
@@ -47,22 +47,22 @@ class InstallPrecommitHook {
   }
 
   _exists () {
-    return fs.existsSync(this.hookPath)
+    return fsx.existsSync(this.hookPath)
   }
 
   _currentHook () {
-    return fs.readFileSync(this.hookPath, 'utf8')
+    return fsx.readFileX(this.hookPath)
   }
 
   _createHook () {
     // If the pre-commit file doesn't exist, create a new one with the hookScript
-    fs.writeFileSync(this.hookPath, HOOK_SCRIPT)
-    fs.chmodSync(this.hookPath, '755') // Make the file executable
+    fsx.writeFileSync(this.hookPath, HOOK_SCRIPT)
+    fsx.chmodSync(this.hookPath, '755') // Make the file executable
   }
 
   _appendHook () {
     // Append 'dotenvx precommit' to the existing file
-    fs.appendFileSync(this.hookPath, '\n' + HOOK_SCRIPT)
+    fsx.appendFileSync(this.hookPath, '\n' + HOOK_SCRIPT)
   }
 }
 

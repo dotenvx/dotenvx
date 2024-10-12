@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('fs')
+const fsx = require('../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 const dotenv = require('dotenv')
 
@@ -17,8 +17,8 @@ t.beforeEach((ct) => {
 })
 
 t.test('#findOrCreatePublicKey when .env.keys AND DOTENV_PUBLIC_KEY is found', ct => {
-  const existingPublicKey = dotenv.parse(fs.readFileSync(envFile)).DOTENV_PUBLIC_KEY
-  const existingPrivateKey = dotenv.parse(fs.readFileSync(envKeysFile)).DOTENV_PRIVATE_KEY
+  const existingPublicKey = dotenv.parse(fsx.readFileX(envFile)).DOTENV_PUBLIC_KEY
+  const existingPrivateKey = dotenv.parse(fsx.readFileX(envKeysFile)).DOTENV_PRIVATE_KEY
 
   const {
     publicKey,
@@ -68,7 +68,7 @@ t.test('#findOrCreatePublicKey when no .env.keys file and no DOTENV_PUBLIC_KEY',
   envFile = 'tests/monorepo/apps/unencrypted/.env'
   envKeysFile = 'tests/monorepo/apps/unencrypted/.env.keys'
 
-  const existingPublicKey = dotenv.parse(fs.readFileSync(envFile)).DOTENV_PUBLIC_KEY
+  const existingPublicKey = dotenv.parse(fsx.readFileX(envFile)).DOTENV_PUBLIC_KEY
   ct.same(existingPublicKey, undefined)
 
   const {
@@ -115,10 +115,10 @@ t.test('#findOrCreatePublicKey when .env.keys found but with no DOTENV_PRIVATE_K
   envFile = 'tests/monorepo/apps/unencrypted/.env'
   envKeysFile = 'tests/monorepo/apps/unencrypted/.env.keys'
 
-  const existsSyncStub = sinon.stub(fs, 'existsSync').returns(true)
-  const originalReadFileSync = fs.readFileSync
+  const existsSyncStub = sinon.stub(fsx, 'existsSync').returns(true)
+  const originalReadFileSync = fsx.readFileX
   const sandbox = sinon.createSandbox()
-  sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
+  sandbox.stub(fsx, 'readFileX').callsFake((filepath, options) => {
     if (filepath === envKeysFile) {
       return 'DOTENV_VAULT_DEVELOPMENT="encrypted"\n'
     } else {
@@ -167,10 +167,10 @@ t.test('#findOrCreatePublicKey when .env.keys found but with no DOTENV_PRIVATE_K
 })
 
 t.test('#findOrCreatePublicKey when .env.keys found but no DOTENV_PUBLIC_KEY', ct => {
-  const existsSyncStub = sinon.stub(fs, 'existsSync').returns(true)
-  const originalReadFileSync = fs.readFileSync
+  const existsSyncStub = sinon.stub(fsx, 'existsSync').returns(true)
+  const originalReadFileSync = fsx.readFileX
   const sandbox = sinon.createSandbox()
-  sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
+  sandbox.stub(fsx, 'readFileX').callsFake((filepath, options) => {
     if (filepath === envFile) {
       return 'HELLO="unencrypted"\n'
     } else {
@@ -178,8 +178,8 @@ t.test('#findOrCreatePublicKey when .env.keys found but no DOTENV_PUBLIC_KEY', c
     }
   })
 
-  const existingPublicKey = dotenv.parse(fs.readFileSync(envFile)).DOTENV_PUBLIC_KEY
-  const existingPrivateKey = dotenv.parse(fs.readFileSync(envKeysFile)).DOTENV_PRIVATE_KEY
+  const existingPublicKey = dotenv.parse(fsx.readFileX(envFile)).DOTENV_PUBLIC_KEY
+  const existingPrivateKey = dotenv.parse(fsx.readFileX(envKeysFile)).DOTENV_PRIVATE_KEY
   ct.same(existingPublicKey, undefined)
   ct.ok(existingPrivateKey)
 

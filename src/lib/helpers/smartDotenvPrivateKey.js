@@ -1,8 +1,7 @@
-const fs = require('fs')
+const fsx = require('./fsx')
 const path = require('path')
 const dotenv = require('dotenv')
 
-const ENCODING = 'utf8'
 const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
 const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 
@@ -18,8 +17,8 @@ function searchKeysFile (privateKeyName, envFilepath) {
   const directory = path.dirname(envFilepath)
   const envKeysFilepath = path.resolve(directory, '.env.keys')
 
-  if (fs.existsSync(envKeysFilepath)) {
-    const keysSrc = fs.readFileSync(envKeysFilepath, { encoding: ENCODING })
+  if (fsx.existsSync(envKeysFilepath)) {
+    const keysSrc = fsx.readFileX(envKeysFilepath)
     const keysParsed = dotenv.parse(keysSrc)
 
     if (keysParsed[privateKeyName] && keysParsed[privateKeyName].length > 0) {
@@ -29,11 +28,11 @@ function searchKeysFile (privateKeyName, envFilepath) {
 }
 
 function invertForPrivateKeyName (envFilepath) {
-  if (!fs.existsSync(envFilepath)) {
+  if (!fsx.existsSync(envFilepath)) {
     return null
   }
 
-  const envSrc = fs.readFileSync(envFilepath, { encoding: ENCODING })
+  const envSrc = fsx.readFileX(envFilepath)
   const envParsed = dotenv.parse(envSrc)
 
   let publicKeyName

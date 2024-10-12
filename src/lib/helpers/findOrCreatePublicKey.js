@@ -1,12 +1,10 @@
-const fs = require('fs')
+const fsx = require('./fsx')
 const path = require('path')
 const dotenv = require('dotenv')
 
 const keyPair = require('./keyPair')
 const guessPublicKeyName = require('./guessPublicKeyName')
 const guessPrivateKeyName = require('./guessPrivateKeyName')
-
-const ENCODING = 'utf8'
 
 function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
   // filename
@@ -15,10 +13,10 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
   const privateKeyName = guessPrivateKeyName(envFilepath)
 
   // src
-  let envSrc = fs.readFileSync(envFilepath, { encoding: ENCODING })
+  let envSrc = fsx.readFileX(envFilepath)
   let keysSrc = ''
-  if (fs.existsSync(envKeysFilepath)) {
-    keysSrc = fs.readFileSync(envKeysFilepath, { encoding: ENCODING })
+  if (fsx.existsSync(envKeysFilepath)) {
+    keysSrc = fsx.readFileX(envKeysFilepath)
   }
 
   // parsed
