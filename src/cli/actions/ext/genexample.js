@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./../../../lib/helpers/fsx')
 const main = require('./../../../lib/main')
 const { logger } = require('./../../../shared/logger')
 
@@ -20,7 +20,7 @@ function genexample (directory) {
 
     logger.verbose(`loading env from ${envFile}`)
 
-    fs.writeFileSync(exampleFilepath, envExampleFile, ENCODING)
+    fsx.writeFileX(exampleFilepath, envExampleFile)
 
     if (addedKeys.length > 0) {
       logger.success(`updated .env.example (${addedKeys.length})`)

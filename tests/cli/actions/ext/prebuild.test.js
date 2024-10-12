@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('fs')
+const fsx = require('../../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 
 const { logger } = require('../../../../src/shared/logger')
@@ -14,7 +14,7 @@ t.beforeEach((ct) => {
 })
 
 t.test('prebuild - .dockerignore file missing', (ct) => {
-  sinon.stub(fs, 'existsSync').returns(false)
+  sinon.stub(fsx, 'existsSync').returns(false)
   const loggerErrorStub = sinon.stub(logger, 'errorvpb')
   const processExitStub = sinon.stub(process, 'exit')
   const loggerHelpStub = sinon.stub(logger, 'help2')
@@ -29,8 +29,8 @@ t.test('prebuild - .dockerignore file missing', (ct) => {
 })
 
 t.test('prebuild - .dockerignore empty but no .env* files', (ct) => {
-  sinon.stub(fs, 'existsSync').returns(true)
-  sinon.stub(fs, 'readFileSync').returns('')
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('')
 
   const loggerSuccessStub = sinon.stub(logger, 'successvpb')
 
@@ -42,9 +42,9 @@ t.test('prebuild - .dockerignore empty but no .env* files', (ct) => {
 })
 
 t.test('prebuild - .dockerignore empty but .env file', (ct) => {
-  sinon.stub(fs, 'existsSync').returns(true)
-  sinon.stub(fs, 'readFileSync').returns('')
-  sinon.stub(fs, 'readdirSync').returns(['.env'])
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('')
+  sinon.stub(fsx, 'readdirSync').returns(['.env'])
 
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'errorvpb')
@@ -62,9 +62,9 @@ t.test('prebuild - .dockerignore empty but .env file', (ct) => {
 })
 
 t.test('prebuild - .dockerignore empty but .env.example file', (ct) => {
-  sinon.stub(fs, 'existsSync').returns(true)
-  sinon.stub(fs, 'readFileSync').returns('')
-  sinon.stub(fs, 'readdirSync').returns(['.env.example'])
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('')
+  sinon.stub(fsx, 'readdirSync').returns(['.env.example'])
 
   const loggerErrorStub = sinon.stub(logger, 'errorvpb')
   const loggerSuccessStub = sinon.stub(logger, 'successvpb')
@@ -78,9 +78,9 @@ t.test('prebuild - .dockerignore empty but .env.example file', (ct) => {
 })
 
 t.test('prebuild - .dockerignore ignoring .env.example but .env.example file', (ct) => {
-  sinon.stub(fs, 'existsSync').returns(true)
-  sinon.stub(fs, 'readFileSync').returns('.env*') // effectively ignores .env.example
-  sinon.stub(fs, 'readdirSync').returns(['.env.example'])
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('.env*') // effectively ignores .env.example
+  sinon.stub(fsx, 'readdirSync').returns(['.env.example'])
 
   const loggerErrorStub = sinon.stub(logger, 'errorvpb')
   const loggerWarnStub = sinon.stub(logger, 'warnv')
@@ -98,9 +98,9 @@ t.test('prebuild - .dockerignore ignoring .env.example but .env.example file', (
 })
 
 t.test('prebuild - .dockerignore empty but .env.vault file', (ct) => {
-  sinon.stub(fs, 'existsSync').returns(true)
-  sinon.stub(fs, 'readFileSync').returns('')
-  sinon.stub(fs, 'readdirSync').returns(['.env.vault'])
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('')
+  sinon.stub(fsx, 'readdirSync').returns(['.env.vault'])
 
   const loggerErrorStub = sinon.stub(logger, 'errorvpb')
   const loggerSuccessStub = sinon.stub(logger, 'successvpb')
@@ -114,9 +114,9 @@ t.test('prebuild - .dockerignore empty but .env.vault file', (ct) => {
 })
 
 t.test('prebuild - .dockerignore ignoring .env.example and .env.vault but .env.example and .env.vault file', (ct) => {
-  sinon.stub(fs, 'existsSync').returns(true)
-  sinon.stub(fs, 'readFileSync').returns('.env*') // effectively ignores .env.example, .env.example
-  sinon.stub(fs, 'readdirSync').returns(['.env.example', '.env.vault'])
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('.env*') // effectively ignores .env.example, .env.example
+  sinon.stub(fsx, 'readdirSync').returns(['.env.example', '.env.vault'])
 
   const loggerErrorStub = sinon.stub(logger, 'errorvpb')
   const loggerSuccessStub = sinon.stub(logger, 'successvpb')
@@ -130,9 +130,9 @@ t.test('prebuild - .dockerignore ignoring .env.example and .env.vault but .env.e
 })
 
 t.test('prebuild - .dockerignore ignoring somefile.txt it does not warn', (ct) => {
-  sinon.stub(fs, 'existsSync').returns(true)
-  sinon.stub(fs, 'readFileSync').returns('.env*\nsomefile.txt') // effectively ignores .env.example
-  sinon.stub(fs, 'readdirSync').returns(['.env', 'somefile.txt'])
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('.env*\nsomefile.txt') // effectively ignores .env.example
+  sinon.stub(fsx, 'readdirSync').returns(['.env', 'somefile.txt'])
 
   const loggerErrorStub = sinon.stub(logger, 'errorvpb')
   const loggerWarnStub = sinon.stub(logger, 'warnv')
