@@ -30,6 +30,7 @@ t.test('#run (no arguments)', ct => {
   ct.same(processedEnvFiles, [{
     key: null,
     value: null,
+    type: 'envFile',
     filepath: path.resolve('.env'),
     envFilepath: '.env',
     changed: false,
@@ -52,6 +53,7 @@ t.test('#run (no env file)', ct => {
   ct.same(processedEnvFiles, [{
     key: null,
     value: null,
+    type: 'envFile',
     filepath: path.resolve('.env'),
     envFilepath: '.env',
     changed: false,
@@ -65,16 +67,20 @@ t.test('#run (no env file)', ct => {
 t.test('#run (no arguments and some other error)', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
 
+  const inst = new Sets()
+  const detectEncodingStub = sinon.stub(inst, '_detectEncoding').returns('utf8')
+
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets().run()
+  } = inst.run()
 
   const exampleError = new Error('Mock Error')
 
   ct.same(processedEnvFiles, [{
     key: null,
     value: null,
+    type: 'envFile',
     filepath: path.resolve('.env'),
     envFilepath: '.env',
     changed: false,
@@ -83,6 +89,7 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(changedFilepaths, [])
 
   readFileXStub.restore()
+  detectEncodingStub.restore()
 
   ct.end()
 })
@@ -95,14 +102,19 @@ t.test('#run (encrypt off) (finds .env file)', ct => {
   ].join('\n') + '\n'
 
   const envFile = 'tests/monorepo/apps/frontend/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets('KEY', 'value', envFile, false).run()
+  } = new Sets('KEY', 'value', envs, false).run()
 
   ct.same(processedEnvFiles, [{
     key: 'KEY',
     value: 'value',
+    type: 'envFile',
     filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
     envFilepath: 'tests/monorepo/apps/frontend/.env',
     changed: true,
@@ -121,14 +133,19 @@ t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)',
   ].join('\n') + '\n'
 
   const envFile = 'tests/monorepo/apps/frontend/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets('HELLO', 'new value', envFile, false).run()
+  } = new Sets('HELLO', 'new value', envs, false).run()
 
   ct.same(processedEnvFiles, [{
     key: 'HELLO',
     value: 'new value',
+    type: 'envFile',
     filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
     envFilepath: 'tests/monorepo/apps/frontend/.env',
     originalValue: 'frontend',
@@ -147,15 +164,20 @@ t.test('#run (encrypt off) (finds .env file and attempts overwrite with same key
   ].join('\n') + '\n'
 
   const envFile = 'tests/monorepo/apps/frontend/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
   const {
     processedEnvFiles,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets('HELLO', 'frontend', envFile, false).run()
+  } = new Sets('HELLO', 'frontend', envs, false).run()
 
   ct.same(processedEnvFiles, [{
     key: 'HELLO',
     value: 'frontend',
+    type: 'envFile',
     filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
     envFilepath: 'tests/monorepo/apps/frontend/.env',
     changed: false,
@@ -176,14 +198,19 @@ t.test('#run (encrypt off) (finds .env file as array)', ct => {
   ].join('\n') + '\n'
 
   const envFile = 'tests/monorepo/apps/frontend/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets('KEY', 'value', [envFile], false).run()
+  } = new Sets('KEY', 'value', envs, false).run()
 
   ct.same(processedEnvFiles, [{
     key: 'KEY',
     value: 'value',
+    type: 'envFile',
     filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
     envFilepath: 'tests/monorepo/apps/frontend/.env',
     changed: true,
@@ -197,10 +224,14 @@ t.test('#run (encrypt off) (finds .env file as array)', ct => {
 
 t.test('#run (finds .env file) with --encrypt', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
   const {
     processedEnvFiles,
     changedFilepaths
-  } = new Sets('KEY', 'value', envFile).run()
+  } = new Sets('KEY', 'value', envs).run()
 
   const row = processedEnvFiles[0]
   const publicKey = row.publicKey
@@ -224,6 +255,7 @@ t.test('#run (finds .env file) with --encrypt', ct => {
   ct.same(processedEnvFiles, [{
     key: 'KEY',
     value: 'value',
+    type: 'envFile',
     filepath: path.resolve('tests/monorepo/apps/frontend/.env'),
     envFilepath: 'tests/monorepo/apps/frontend/.env',
     changed: true,

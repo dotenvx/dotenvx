@@ -90,10 +90,14 @@ program.command('set')
   .allowUnknownOption()
   .argument('KEY', 'KEY')
   .argument('value', 'value')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-c, --encrypt', 'encrypt value (default: true)', true)
   .option('-p, --plain', 'store value as plain text', false)
-  .action(setAction)
+  .action(function (...args) {
+    this.envs = envs
+
+    setAction.apply(this, args)
+  })
 
 // dotenvx encrypt
 const encryptAction = require('./actions/encrypt')

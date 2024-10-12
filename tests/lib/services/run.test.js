@@ -716,28 +716,28 @@ t.test('#_decrypted (can\'t find environment)', ct => {
   ct.end()
 })
 
-t.test('#_determineEnvs when envs is empty array but DOTENV_KEY is set', ct => {
-  const envs = []
-  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
-
-  const run = new Run(envs, false, DOTENV_KEY)
-  const determinedEnvs = run._determineEnvs(envs, DOTENV_KEY)
-
-  ct.same(determinedEnvs, [{ type: 'envVaultFile', value: '.env.vault' }])
-
-  ct.end()
-})
-
-t.test('#_determineEnvs when envs is only --env flags but DOTENV_KEY is set', ct => {
-  const envs = [
-    { type: 'env', value: 'HELLO=string' }
-  ]
-  const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
-
-  const run = new Run(envs, false, DOTENV_KEY)
-  const determinedEnvs = run._determineEnvs(envs, DOTENV_KEY)
-
-  ct.same(determinedEnvs, [{ type: 'envVaultFile', value: '.env.vault' }, { type: 'env', value: 'HELLO=string' }])
-
-  ct.end()
-})
+// t.test('#_determineEnvs when envs is empty array but DOTENV_KEY is set', ct => {
+//   const envs = []
+//   const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+//
+//   const run = new Run(envs, false, DOTENV_KEY)
+//   const determinedEnvs = run._determineEnvs(envs, DOTENV_KEY)
+//
+//   ct.same(determinedEnvs, [{ type: 'envVaultFile', value: '.env.vault' }])
+//
+//   ct.end()
+// })
+//
+// t.test('#_determineEnvs when envs is only --env flags but DOTENV_KEY is set', ct => {
+//   const envs = [
+//     { type: 'env', value: 'HELLO=string' }
+//   ]
+//   const DOTENV_KEY = 'dotenv://:key_e9e9ef8665b828cf2b64b2bf4237876b9a866da6580777633fba4325648cdd34@dotenvx.com/vault/.env.vault?environment=development'
+//
+//   const run = new Run(envs, false, DOTENV_KEY)
+//   const determinedEnvs = run._determineEnvs(envs, DOTENV_KEY)
+//
+//   ct.same(determinedEnvs, [{ type: 'envVaultFile', value: '.env.vault' }, { type: 'env', value: 'HELLO=string' }])
+//
+//   ct.end()
+// })

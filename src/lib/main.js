@@ -197,8 +197,11 @@ const get = function (
 }
 
 /** @type {import('./main').set} */
-const set = function (key, value, envFile, encrypt) {
-  return new Sets(key, value, envFile, encrypt).run()
+// const set = function (key, value, envFile, encrypt) {
+//   return new Sets(key, value, envFile, encrypt).run()
+// }
+const set = function (key, value, envs = [], encrypt) {
+  return new Sets(key, value, envs, encrypt).run()
 }
 
 /** @type {import('./main').encrypt} */

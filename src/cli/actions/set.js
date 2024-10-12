@@ -19,11 +19,14 @@ function set (key, value) {
   }
 
   try {
+    let envs = this.envs
+
     const {
       processedEnvFiles,
       changedFilepaths,
       unchangedFilepaths
-    } = main.set(key, value, options.envFile, encrypt)
+    } = main.set(key, value, envs, encrypt)
+    // } = main.set(key, value, options.envFile, encrypt)
 
     let withEncryption = ''
 

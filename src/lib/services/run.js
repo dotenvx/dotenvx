@@ -1,28 +1,22 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const dotenv = require('dotenv')
-const childProcess = require('child_process')
 
 const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
 const TYPE_ENV_VAULT_FILE = 'envVaultFile'
-const DEFAULT_ENVS = [{ type: TYPE_ENV_FILE, value: '.env' }]
-const DEFAULT_ENV_VAULTS = [{ type: TYPE_ENV_VAULT_FILE, value: '.env.vault' }]
 
 const inject = require('./../helpers/inject')
 const decrypt = require('./../helpers/decrypt')
 const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
-const guessPrivateKeyFilename = require('./../helpers/guessPrivateKeyFilename')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const detectEncoding = require('./../helpers/detectEncoding')
-
-const Keypair = require('./../services/keypair')
+const findPrivateKey = require('./../helpers/findPrivateKey')
+const determineEnvs = require('./../helpers/determineEnvs')
 
 class Run {
   constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
-    this.dotenvPrivateKeyNames = Object.keys(processEnv).filter(key => key.startsWith('DOTENV_PRIVATE_KEY')) // important, must be first. used by determineEnvs
-    this.envs = this._determineEnvs(envs, DOTENV_KEY)
+    this.envs = determineEnvs(envs, processEnv, DOTENV_KEY)
     this.overload = overload
     this.DOTENV_KEY = DOTENV_KEY
     this.processEnv = processEnv
@@ -43,7 +37,7 @@ class Run {
     // ]
 
     for (const env of this.envs) {
-      if (env.type === TYPE_ENV_VAULT_FILE) {
+      if (env.type === TYPE_ENV_VAULT_FILE) { // deprecate someday - for deprecated .env.vault files
         this._injectEnvVaultFile(env.value)
       } else if (env.type === TYPE_ENV_FILE) {
         this._injectEnvFile(env.value)
@@ -96,7 +90,7 @@ class Run {
       const src = fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const privateKey = this._determinePrivateKey(envFilepath)
+      const privateKey = findPrivateKey(envFilepath)
       const { parsed, processEnv, warnings } = parseDecryptEvalExpand(src, privateKey, this.processEnv)
       row.parsed = parsed
       row.warnings = warnings
@@ -189,61 +183,6 @@ class Run {
     return inject(clonedProcessEnv, parsed, overload, processEnv)
   }
 
-  _determineEnvsFromDotenvPrivateKey () {
-    const envs = []
-
-    for (const privateKeyName of this.dotenvPrivateKeyNames) {
-      const filename = guessPrivateKeyFilename(privateKeyName)
-      envs.push({ type: TYPE_ENV_FILE, value: filename })
-    }
-
-    return envs
-  }
-
-  _determineEnvs (envs = [], DOTENV_KEY = '') {
-    if (!envs || envs.length <= 0) {
-      // if process.env.DOTENV_PRIVATE_KEY or process.env.DOTENV_PRIVATE_KEY_${environment} is set, assume inline encryption methodology
-      if (this.dotenvPrivateKeyNames.length > 0) {
-        return this._determineEnvsFromDotenvPrivateKey()
-      }
-
-      if (DOTENV_KEY.length > 0) {
-        // if DOTENV_KEY is set then default to look for .env.vault file
-        return DEFAULT_ENV_VAULTS
-      } else {
-        return DEFAULT_ENVS // default to .env file expectation
-      }
-    } else {
-      let fileAlreadySpecified = false // can be .env or .env.vault type
-
-      for (const env of envs) {
-        // if DOTENV_KEY set then we are checking if a .env.vault file is already specified
-        if (DOTENV_KEY.length > 0 && env.type === TYPE_ENV_VAULT_FILE) {
-          fileAlreadySpecified = true
-        }
-
-        // if DOTENV_KEY not set then we are checking if a .env file is already specified
-        if (DOTENV_KEY.length <= 0 && env.type === TYPE_ENV_FILE) {
-          fileAlreadySpecified = true
-        }
-      }
-
-      // return early since envs array objects already contain 1 .env.vault or .env file
-      if (fileAlreadySpecified) {
-        return envs
-      }
-
-      // no .env.vault or .env file specified as a flag so we assume either .env.vault (if dotenv key is set) or a .env file
-      if (DOTENV_KEY.length > 0) {
-        // if DOTENV_KEY is set then default to look for .env.vault file
-        return [...DEFAULT_ENV_VAULTS, ...envs]
-      } else {
-        // if no DOTENV_KEY then default to look for .env file
-        return [...DEFAULT_ENVS, ...envs]
-      }
-    }
-  }
-
   // handle scenario for comma separated keys - for use with key rotation
   // example: DOTENV_KEY="dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=prod,dotenv://:key_7890@dotenvx.com/vault/.env.vault?environment=prod"
   _dotenvKeys () {
@@ -270,29 +209,6 @@ class Run {
     }
 
     return decrypt(ciphertext, dotenvKey)
-  }
-
-  _determinePrivateKey (envFilepath) {
-    const privateKeyName = guessPrivateKeyName(envFilepath)
-
-    let privateKey
-    try {
-      // if installed as sibling module
-      const projectRoot = path.resolve(process.cwd())
-      const dotenvxProPath = require.resolve('@dotenvx/dotenvx-pro', { paths: [projectRoot] })
-      const { keypair } = require(dotenvxProPath)
-      privateKey = keypair(envFilepath, privateKeyName)
-    } catch (_e) {
-      try {
-        // if installed as binary cli
-        privateKey = childProcess.execSync(`dotenvx-pro keypair ${privateKeyName} -f ${envFilepath}`, { stdio: ['pipe', 'pipe', 'ignore'] }).toString().trim()
-      } catch (_e) {
-        // fallback to local KeyPair - smart enough to handle process.env, .env.keys, etc
-        privateKey = new Keypair(envFilepath, privateKeyName).run()
-      }
-    }
-
-    return privateKey
   }
 }
 
