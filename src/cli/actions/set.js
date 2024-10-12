@@ -19,10 +19,10 @@ function set (key, value) {
   }
 
   try {
-    let envs = this.envs
+    const envs = this.envs
 
     const {
-      processedEnvFiles,
+      processedEnvs,
       changedFilepaths,
       unchangedFilepaths
     } = main.set(key, value, envs, encrypt)
@@ -34,21 +34,21 @@ function set (key, value) {
       withEncryption = ' with encryption'
     }
 
-    for (const processedEnvFile of processedEnvFiles) {
-      logger.verbose(`setting for ${processedEnvFile.envFilepath}`)
+    for (const processedEnv of processedEnvs) {
+      logger.verbose(`setting for ${processedEnv.envFilepath}`)
 
-      if (processedEnvFile.error) {
-        if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
-          logger.warn(processedEnvFile.error.message)
-          logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx set]`)
+      if (processedEnv.error) {
+        if (processedEnv.error.code === 'MISSING_ENV_FILE') {
+          logger.warn(processedEnv.error.message)
+          logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx set]`)
         } else {
-          logger.warn(processedEnvFile.error.message)
+          logger.warn(processedEnv.error.message)
         }
       } else {
-        fsx.writeFileX(processedEnvFile.filepath, processedEnvFile.envSrc)
+        fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
-        logger.verbose(`${processedEnvFile.key} set${withEncryption} (${processedEnvFile.envFilepath})`)
-        logger.debug(`${processedEnvFile.key} set${withEncryption} to ${processedEnvFile.value} (${processedEnvFile.envFilepath})`)
+        logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
+        logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)
       }
     }
 
@@ -60,15 +60,15 @@ function set (key, value) {
       // do nothing
     }
 
-    for (const processedEnvFile of processedEnvFiles) {
-      if (processedEnvFile.privateKeyAdded) {
-        logger.success(`✔ key added to .env.keys (${processedEnvFile.privateKeyName})`)
+    for (const processedEnv of processedEnvs) {
+      if (processedEnv.privateKeyAdded) {
+        logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
 
         if (!isIgnoringDotenvKeys()) {
           logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]')
         }
 
-        logger.help2(`ℹ run [${processedEnvFile.privateKeyName}='${processedEnvFile.privateKey}' dotenvx get ${key}] to test decryption locally`)
+        logger.help2(`ℹ run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get ${key}] to test decryption locally`)
       }
     }
   } catch (error) {

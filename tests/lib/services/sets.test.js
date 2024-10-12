@@ -20,14 +20,14 @@ t.afterEach((ct) => {
 
 t.test('#run (no arguments)', ct => {
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Sets().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     key: null,
     value: null,
     type: 'envFile',
@@ -43,14 +43,14 @@ t.test('#run (no arguments)', ct => {
 
 t.test('#run (no env file)', ct => {
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Sets().run()
 
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     key: null,
     value: null,
     type: 'envFile',
@@ -71,13 +71,13 @@ t.test('#run (no arguments and some other error)', ct => {
   const detectEncodingStub = sinon.stub(inst, '_detectEncoding').returns('utf8')
 
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = inst.run()
 
   const exampleError = new Error('Mock Error')
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     key: null,
     value: null,
     type: 'envFile',
@@ -107,11 +107,11 @@ t.test('#run (encrypt off) (finds .env file)', ct => {
   ]
 
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Sets('KEY', 'value', envs, false).run()
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     key: 'KEY',
     value: 'value',
     type: 'envFile',
@@ -138,11 +138,11 @@ t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)',
   ]
 
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Sets('HELLO', 'new value', envs, false).run()
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     key: 'HELLO',
     value: 'new value',
     type: 'envFile',
@@ -169,12 +169,12 @@ t.test('#run (encrypt off) (finds .env file and attempts overwrite with same key
   ]
 
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Sets('HELLO', 'frontend', envs, false).run()
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     key: 'HELLO',
     value: 'frontend',
     type: 'envFile',
@@ -203,11 +203,11 @@ t.test('#run (encrypt off) (finds .env file as array)', ct => {
   ]
 
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Sets('KEY', 'value', envs, false).run()
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     key: 'KEY',
     value: 'value',
     type: 'envFile',
@@ -229,11 +229,11 @@ t.test('#run (finds .env file) with --encrypt', ct => {
   ]
 
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Sets('KEY', 'value', envs).run()
 
-  const row = processedEnvFiles[0]
+  const row = processedEnvs[0]
   const publicKey = row.publicKey
   const privateKey = row.privateKey
   const privateKeyAdded = row.privateKeyAdded
@@ -252,7 +252,7 @@ t.test('#run (finds .env file) with --encrypt', ct => {
     `KEY='${encryptedValue}'`
   ].join('\n') + '\n'
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     key: 'KEY',
     value: 'value',
     type: 'envFile',
