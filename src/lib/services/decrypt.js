@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./../helpers/fsx')
 const path = require('path')
 const dotenv = require('dotenv')
 const picomatch = require('picomatch')
@@ -8,8 +8,6 @@ const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const decryptValue = require('./../helpers/decryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const replace = require('./../helpers/replace')
-
-const ENCODING = 'utf8'
 
 class Decrypt {
   /**
@@ -43,7 +41,7 @@ class Decrypt {
 
       try {
         // get the src
-        let src = fs.readFileSync(filepath, { encoding: ENCODING })
+        let src = fsx.readFileX(filepath)
 
         // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
         const privateKey = smartDotenvPrivateKey(envFilepath)

@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./../helpers/fsx')
 const path = require('path')
 
 const dotenv = require('dotenv')
@@ -7,8 +7,6 @@ const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const replace = require('./../helpers/replace')
-
-const ENCODING = 'utf8'
 
 class Sets {
   constructor (key, value, envFile = '.env', encrypt = true) {
@@ -36,7 +34,7 @@ class Sets {
 
       try {
         let value = this.value
-        let src = fs.readFileSync(filepath, { encoding: ENCODING })
+        let src = fsx.readFileX(filepath)
         row.originalValue = dotenv.parse(src)[row.key] || null
 
         if (this.encrypt) {
@@ -51,7 +49,7 @@ class Sets {
           } = findOrCreatePublicKey(filepath, envKeysFilepath)
 
           // handle .env.keys write
-          fs.writeFileSync(envKeysFilepath, keysSrc)
+          fsx.writeFileX(envKeysFilepath, keysSrc)
 
           src = envSrc // src was potentially modified by findOrCreatePublicKey so we set it again here
 

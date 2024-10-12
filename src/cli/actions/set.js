@@ -1,11 +1,9 @@
-const fs = require('fs')
+const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
 
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
-
-const ENCODING = 'utf8'
 
 function set (key, value) {
   logger.debug(`key: ${key}`)
@@ -44,7 +42,7 @@ function set (key, value) {
           logger.warn(processedEnvFile.error.message)
         }
       } else {
-        fs.writeFileSync(processedEnvFile.filepath, processedEnvFile.envSrc, ENCODING)
+        fsx.writeFileX(processedEnvFile.filepath, processedEnvFile.envSrc)
 
         logger.verbose(`${processedEnvFile.key} set${withEncryption} (${processedEnvFile.envFilepath})`)
         logger.debug(`${processedEnvFile.key} set${withEncryption} to ${processedEnvFile.value} (${processedEnvFile.envFilepath})`)

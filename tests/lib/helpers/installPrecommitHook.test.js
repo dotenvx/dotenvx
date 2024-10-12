@@ -52,7 +52,7 @@ t.test('#run (does not exist) creates', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
-  const writeFileSyncStub = sinon.stub(fsx, 'writeFileSync')
+  const writeFileXStub = sinon.stub(fsx, 'writeFileX')
   const chmodSyncStub = sinon.stub(fsx, 'chmodSync')
 
   existsStub.returns(false)
@@ -61,12 +61,12 @@ t.test('#run (does not exist) creates', ct => {
 
   ct.same(successMessage, 'dotenvx ext precommit installed [.git/hooks/pre-commit]')
 
-  t.ok(writeFileSyncStub.called, 'fsx.writeFileSync should be called')
+  t.ok(writeFileXStub.called, 'fsx.writeFileX should be called')
   t.ok(chmodSyncStub.called, 'fsx.chomdSyncStub should be called')
 
   // restore stubs
   existsStub.restore()
-  writeFileSyncStub.restore()
+  writeFileXStub.restore()
   chmodSyncStub.restore()
 
   ct.end()
@@ -76,7 +76,7 @@ t.test('#run (fs throws an error) logs error', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
-  const writeFileSyncStub = sinon.stub(fsx, 'writeFileSync').throws(new Error('Mock Error'))
+  const writeFileXStub = sinon.stub(fsx, 'writeFileX').throws(new Error('Mock Error'))
 
   existsStub.returns(false)
 
@@ -89,7 +89,7 @@ t.test('#run (fs throws an error) logs error', ct => {
 
   // restore stubs
   existsStub.restore()
-  writeFileSyncStub.restore()
+  writeFileXStub.restore()
 
   ct.end()
 })

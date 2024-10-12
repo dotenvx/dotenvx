@@ -1,11 +1,9 @@
-const fs = require('fs')
+const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
 
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
-
-const ENCODING = 'utf8'
 
 function encrypt () {
   const options = this.opts()
@@ -39,7 +37,7 @@ function encrypt () {
             logger.warn(processedEnvFile.error.message)
           }
         } else if (processedEnvFile.changed) {
-          fs.writeFileSync(processedEnvFile.filepath, processedEnvFile.envSrc, ENCODING)
+          fsx.writeFileX(processedEnvFile.filepath, processedEnvFile.envSrc)
 
           logger.verbose(`encrypted ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
         } else {

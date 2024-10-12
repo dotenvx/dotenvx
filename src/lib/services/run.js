@@ -1,9 +1,8 @@
-const fs = require('fs')
+const fsx = require('./../helpers/fsx')
 const path = require('path')
 const dotenv = require('dotenv')
 const childProcess = require('child_process')
 
-const ENCODING = 'utf8'
 const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
 const TYPE_ENV_VAULT_FILE = 'envVaultFile'
@@ -94,7 +93,7 @@ class Run {
     const filepath = path.resolve(envFilepath)
     try {
       const encoding = detectEncoding(filepath)
-      const src = fs.readFileSync(filepath, { encoding })
+      const src = fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
       const privateKey = this._determinePrivateKey(envFilepath)
@@ -131,7 +130,7 @@ class Run {
     const filepath = path.resolve(envVaultFilepath)
     this.readableFilepaths.add(envVaultFilepath)
 
-    if (!fs.existsSync(filepath)) {
+    if (!fsx.existsSync(filepath)) {
       const code = 'MISSING_ENV_VAULT_FILE'
       const message = `you set DOTENV_KEY but your .env.vault file is missing: ${filepath}`
       const error = new Error(message)
@@ -253,7 +252,7 @@ class Run {
 
   // { "DOTENV_VAULT_DEVELOPMENT": "<ciphertext>" }
   _parsedVault (filepath) {
-    const src = fs.readFileSync(filepath, { encoding: ENCODING })
+    const src = fsx.readFileX(filepath)
     return dotenv.parse(src)
   }
 

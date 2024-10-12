@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./../../../lib/helpers/fsx')
 
 const ignore = require('ignore')
 
@@ -10,7 +10,7 @@ function prebuild () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   // 1. check for .dockerignore file
-  if (!fs.existsSync('.dockerignore')) {
+  if (!fsx.existsSync('.dockerignore')) {
     logger.errorvpb('.dockerignore missing')
     logger.help2('? add it with [touch .dockerignore]')
     process.exit(1)
@@ -19,8 +19,8 @@ function prebuild () {
 
   // 2. check .env* files against .dockerignore file
   let warningCount = 0
-  const ig = ignore().add(fs.readFileSync('.dockerignore').toString())
-  const files = fs.readdirSync(process.cwd())
+  const ig = ignore().add(fsx.readFileX('.dockerignore'))
+  const files = fsx.readdirSync(process.cwd())
   const dotenvFiles = files.filter(file => file.match(/^\.env(\..+)?$/))
   dotenvFiles.forEach(file => {
     // check if that file is being ignored

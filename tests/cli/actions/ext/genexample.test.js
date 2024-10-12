@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('fs')
+const fsx = require('../../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 
 const main = require('../../../../src/lib/main')
@@ -14,7 +14,7 @@ t.test('genexample calls main.genexample', ct => {
     addedKeys: ['HELLO']
   })
 
-  const fsStub = sinon.stub(fs, 'writeFileSync')
+  const fsStub = sinon.stub(fsx, 'writeFileX')
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = {
@@ -25,7 +25,7 @@ t.test('genexample calls main.genexample', ct => {
   genexample.call(fakeContext, '.')
 
   t.ok(stub.called, 'main.genexample() called')
-  t.ok(fsStub.called, 'fs.writeFileSync() called')
+  t.ok(fsStub.called, 'fs.writeFileX() called')
   stub.restore()
   fsStub.restore()
 
@@ -41,7 +41,7 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
     addedKeys: []
   })
 
-  const fsStub = sinon.stub(fs, 'writeFileSync')
+  const fsStub = sinon.stub(fsx, 'writeFileX')
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = {
@@ -52,7 +52,7 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
   genexample.call(fakeContext, '.')
 
   t.ok(stub.called, 'main.genexample() called')
-  t.ok(fsStub.called, 'fs.writeFileSync() called')
+  t.ok(fsStub.called, 'fsx.writeFileX() called')
   stub.restore()
   fsStub.restore()
 

@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('fs')
+const fsx = require('../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 const childProcess = require('child_process')
 
@@ -47,7 +47,7 @@ t.test('#run (install: true)', ct => {
 })
 
 t.test('#run (no gitignore file)', ct => {
-  const existsSyncStub = sinon.stub(fs, 'existsSync')
+  const existsSyncStub = sinon.stub(fsx, 'existsSync')
   existsSyncStub.returns(false)
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns([])
@@ -61,9 +61,9 @@ t.test('#run (no gitignore file)', ct => {
 })
 
 t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync')
-  readFileSyncStub.returns('.env*')
-  const readdirSyncStub = sinon.stub(fs, 'readdirSync')
+  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  readFileXStub.returns('.env*')
+  const readdirSyncStub = sinon.stub(fsx, 'readdirSync')
   readdirSyncStub.returns(['.env.example'])
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['.env.example'])
@@ -73,16 +73,16 @@ t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
 
   ct.same(warnings[0].message, '.env.example (currently ignored but should not be)')
 
-  readFileSyncStub.restore()
+  readFileXStub.restore()
   readdirSyncStub.restore()
   lsServiceStub.restore()
   ct.end()
 })
 
 t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync')
-  readFileSyncStub.returns('.env*')
-  const readdirSyncStub = sinon.stub(fs, 'readdirSync')
+  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  readFileXStub.returns('.env*')
+  const readdirSyncStub = sinon.stub(fsx, 'readdirSync')
   readdirSyncStub.returns(['.env.vault'])
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['.env.vault'])
@@ -91,7 +91,7 @@ t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
   const { warnings } = new Precommit().run()
   ct.same(warnings[0].message, '.env.vault (currently ignored but should not be)')
 
-  readFileSyncStub.restore()
+  readFileXStub.restore()
   readdirSyncStub.restore()
   lsServiceStub.restore()
   ct.end()
@@ -101,9 +101,9 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['.env.production'])
   childProcess.execSync.returns(Buffer.from('.env.production'))
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync')
+  const readFileXStub = sinon.stub(fsx, 'readFileX')
   // Stub different return values based on the file path
-  readFileSyncStub.callsFake((filePath) => {
+  readFileXStub.callsFake((filePath) => {
     if (filePath === '.env') {
       return '.env'
     } else if (filePath === '.env.production') {
@@ -119,7 +119,7 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
     ct.same(error.message, '.env.production not encrypted (or not gitignored)')
   }
 
-  readFileSyncStub.restore()
+  readFileXStub.restore()
   lsServiceStub.restore()
   ct.end()
 })
@@ -128,9 +128,9 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isFil
   const lsServiceStub = sinon.stub(Ls.prototype, 'run')
   lsServiceStub.returns(['.env.production'])
   childProcess.execSync.throws(new Error('Mock Error'))
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync')
+  const readFileXStub = sinon.stub(fsx, 'readFileX')
   // Stub different return values based on the file path
-  readFileSyncStub.callsFake((filePath) => {
+  readFileXStub.callsFake((filePath) => {
     if (filePath === '.env') {
       return '.env'
     } else if (filePath === '.env.production') {
@@ -146,7 +146,7 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isFil
     ct.same(error.message, '.env.production not encrypted (or not gitignored)')
   }
 
-  readFileSyncStub.restore()
+  readFileXStub.restore()
   lsServiceStub.restore()
   ct.end()
 })
@@ -156,8 +156,8 @@ t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
   lsServiceStub.returns(['packages/app/.env.production'])
   childProcess.execSync.returns(Buffer.from('packages/app/.env.production'))
 
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync')
-  readFileSyncStub.callsFake((filePath) => {
+  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  readFileXStub.callsFake((filePath) => {
     if (filePath === 'packages/app/.env.production') {
       return 'ENV_VAR=value'
     }
@@ -172,7 +172,7 @@ t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
   }
 
   lsServiceStub.restore()
-  readFileSyncStub.restore()
+  readFileXStub.restore()
   ct.end()
 })
 

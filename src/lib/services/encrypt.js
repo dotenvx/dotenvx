@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./../helpers/fsx')
 const path = require('path')
 const dotenv = require('dotenv')
 const picomatch = require('picomatch')
@@ -9,8 +9,6 @@ const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const isPublicKey = require('./../helpers/isPublicKey')
 const replace = require('./../helpers/replace')
-
-const ENCODING = 'utf8'
 
 class Encrypt {
   /**
@@ -44,7 +42,7 @@ class Encrypt {
 
       try {
         // get the original src
-        let src = fs.readFileSync(filepath, { encoding: ENCODING })
+        let src = fsx.readFileX(filepath)
         // get/generate the public key
         const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         const {
@@ -57,7 +55,7 @@ class Encrypt {
         } = findOrCreatePublicKey(filepath, envKeysFilepath)
 
         // handle .env.keys write
-        fs.writeFileSync(envKeysFilepath, keysSrc)
+        fsx.writeFileX(envKeysFilepath, keysSrc)
 
         src = envSrc // src was potentially modified by findOrCreatePublicKey so we set it again here
 

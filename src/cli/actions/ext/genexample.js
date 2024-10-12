@@ -1,8 +1,6 @@
-const fs = require('fs')
+const fsx = require('./../../../lib/helpers/fsx')
 const main = require('./../../../lib/main')
 const { logger } = require('./../../../shared/logger')
-
-const ENCODING = 'utf8'
 
 function genexample (directory) {
   logger.debug(`directory: ${directory}`)
@@ -20,7 +18,7 @@ function genexample (directory) {
 
     logger.verbose(`loading env from ${envFile}`)
 
-    fs.writeFileSync(exampleFilepath, envExampleFile, ENCODING)
+    fsx.writeFileX(exampleFilepath, envExampleFile)
 
     if (addedKeys.length > 0) {
       logger.success(`updated .env.example (${addedKeys.length})`)

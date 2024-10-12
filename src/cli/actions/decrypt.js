@@ -1,9 +1,7 @@
-const fs = require('fs')
+const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
 const main = require('./../../lib/main')
-
-const ENCODING = 'utf8'
 
 function decrypt () {
   const options = this.opts()
@@ -52,7 +50,7 @@ function decrypt () {
             logger.error(processedEnvFile.error.message)
           }
         } else if (processedEnvFile.changed) {
-          fs.writeFileSync(processedEnvFile.filepath, processedEnvFile.envSrc, ENCODING)
+          fsx.writeFileX(processedEnvFile.filepath, processedEnvFile.envSrc)
 
           logger.verbose(`decrypted ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
         } else {

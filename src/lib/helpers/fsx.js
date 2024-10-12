@@ -2,8 +2,16 @@ const fs = require('fs')
 
 const ENCODING = 'utf8'
 
-function readFileX (filepath) {
-  return fs.readFileSync(filepath, ENCODING) // always use utf8. returns string rather than buffer. if you need a buffer use fs
+function readFileX (filepath, encoding = null) {
+  if (!encoding) {
+    encoding = ENCODING
+  }
+
+  return fs.readFileSync(filepath, encoding) // utf8 default so it returns a string
+}
+
+function writeFileX (filepath, str) {
+  return fs.writeFileSync(filepath, str, ENCODING) // utf8 always
 }
 
 const fsx = {
@@ -15,7 +23,8 @@ const fsx = {
   appendFileSync: fs.appendFileSync,
 
   // fsx special commands
-  readFileX
+  readFileX,
+  writeFileX
 }
 
 module.exports = fsx

@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fsx = require('./../../../lib/helpers/fsx')
 
 const FORMATS = ['.env*', '!.env.vault']
 const { logger } = require('./../../../shared/logger')
@@ -11,21 +11,21 @@ class Generic {
   }
 
   append (str) {
-    fs.appendFileSync(this.filename, `\n${str}`)
+    fsx.appendFileSync(this.filename, `\n${str}`)
   }
 
   run () {
-    if (!fs.existsSync(this.filename)) {
+    if (!fsx.existsSync(this.filename)) {
       if (this.touchFile === true) {
         logger.info(`creating ${this.filename}`)
 
-        fs.writeFileSync(this.filename, '')
+        fsx.writeFileX(this.filename, '')
       } else {
         return
       }
     }
 
-    const lines = fs.readFileSync(this.filename, 'utf8').split(/\r?\n/)
+    const lines = fsx.readFileX(this.filename).split(/\r?\n/)
     this.formats.forEach(format => {
       if (!lines.includes(format.trim())) {
         logger.info(`appending ${format} to ${this.filename}`)

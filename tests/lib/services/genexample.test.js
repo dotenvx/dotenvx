@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('fs')
+const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
 
@@ -46,9 +46,9 @@ HELLO=''
 })
 
 t.test('#run (.env.example already exists but with different keys)', ct => {
-  const originalReadFileSync = fs.readFileSync
+  const originalReadFileSync = fsx.readFileX
   const sandbox = sinon.createSandbox()
-  sandbox.stub(fs, 'readFileSync').callsFake((filepath, options) => {
+  sandbox.stub(fsx, 'readFileX').callsFake((filepath, options) => {
     if (filepath === path.resolve('tests/monorepo/apps/backend/.env')) {
       return 'HELLO=world\nHELLO2=universe'
     } else {

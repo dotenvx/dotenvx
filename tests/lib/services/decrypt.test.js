@@ -1,21 +1,21 @@
 const t = require('tap')
-const fs = require('fs')
+const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
 const dotenv = require('dotenv')
 
 const Decrypt = require('../../../src/lib/services/decrypt')
 
-let writeFileSyncStub
+let writeFileXStub
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
-  writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
+  writeFileXStub = sinon.stub(fsx, 'writeFileX')
 })
 
 t.afterEach((ct) => {
-  writeFileSyncStub.restore()
+  writeFileXStub.restore()
 })
 
 t.test('#run (no arguments)', ct => {
@@ -63,7 +63,7 @@ t.test('#run (no env file)', ct => {
 })
 
 t.test('#run (no arguments and some other error)', ct => {
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync').throws(new Error('Mock Error'))
+  const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
 
   const {
     processedEnvFiles,
@@ -80,7 +80,7 @@ t.test('#run (no arguments and some other error)', ct => {
   }])
   ct.same(changedFilepaths, [])
 
-  readFileSyncStub.restore()
+  readFileXStub.restore()
 
   ct.end()
 })
