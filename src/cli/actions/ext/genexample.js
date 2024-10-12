@@ -2,8 +2,6 @@ const fsx = require('./../../../lib/helpers/fsx')
 const main = require('./../../../lib/main')
 const { logger } = require('./../../../shared/logger')
 
-const ENCODING = 'utf8'
-
 function genexample (directory) {
   logger.debug(`directory: ${directory}`)
 
