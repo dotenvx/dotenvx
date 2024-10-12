@@ -1,5 +1,5 @@
 const t = require('tap')
-const fs = require('fs')
+const fsx = require('./../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 const capcon = require('capture-console')
 
@@ -14,7 +14,7 @@ t.beforeEach((ct) => {
 
 t.test('decrypt - nothing', ct => {
   sinon.stub(process, 'exit')
-  sinon.stub(fs, 'writeFileSync')
+  sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(main, 'decrypt').returns({
@@ -31,7 +31,7 @@ t.test('decrypt - nothing', ct => {
 })
 
 t.test('decrypt - .env but no changes', ct => {
-  sinon.stub(fs, 'writeFileSync')
+  sinon.stub(fsx, 'writeFileX')
   sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -56,7 +56,7 @@ t.test('decrypt - .env but no changes', ct => {
 })
 
 t.test('decrypt - --stdout', ct => {
-  sinon.stub(fs, 'writeFileSync')
+  sinon.stub(fsx, 'writeFileX')
   const processExitStub = sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
@@ -84,7 +84,7 @@ t.test('decrypt - --stdout', ct => {
 })
 
 t.test('decrypt - --stdout with error', ct => {
-  sinon.stub(fs, 'writeFileSync')
+  sinon.stub(fsx, 'writeFileX')
   const processExitStub = sinon.stub(process, 'exit')
   const consoleErrorStub = sinon.stub(console, 'error')
   const error = new Error('Mock Error')
@@ -115,7 +115,7 @@ t.test('decrypt - --stdout with error', ct => {
 
 t.test('decrypt - .env with changes', ct => {
   sinon.stub(process, 'exit')
-  const writeStub = sinon.stub(fs, 'writeFileSync')
+  const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(main, 'decrypt').returns({
@@ -138,7 +138,7 @@ t.test('decrypt - .env with changes', ct => {
   t.ok(stub.called, 'main.decrypt() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="World"', 'utf8'), 'fs.writeFileSync')
+  t.ok(writeStub.calledWith('.env', 'HELLO="World"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('decrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ decrypted (.env)'), 'logger.success')
 
@@ -147,7 +147,7 @@ t.test('decrypt - .env with changes', ct => {
 
 t.test('decrypt - MISSING_ENV_FILE', ct => {
   sinon.stub(process, 'exit')
-  const writeStub = sinon.stub(fs, 'writeFileSync')
+  const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'
   const optsStub = sinon.stub().returns({})
@@ -174,7 +174,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   t.ok(stub.called, 'main.decrypt() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fs.writeFileSync')
+  t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
   t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx decrypt]'), 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -184,7 +184,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
 
 t.test('decrypt - OTHER_ERROR', ct => {
   sinon.stub(process, 'exit')
-  const writeStub = sinon.stub(fs, 'writeFileSync')
+  const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
   error.code = 'OTHER_ERROR'
   const optsStub = sinon.stub().returns({})
@@ -211,7 +211,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   t.ok(stub.called, 'main.decrypt() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fs.writeFileSync')
+  t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -220,7 +220,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
 })
 
 t.test('decrypt - catch error', ct => {
-  const writeStub = sinon.stub(fs, 'writeFileSync')
+  const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
   error.help = 'Mock Help'
   error.debug = 'Mock Debug'
@@ -239,7 +239,7 @@ t.test('decrypt - catch error', ct => {
 
   decrypt.call(fakeContext)
 
-  t.ok(writeStub.notCalled, 'fs.writeFileSync')
+  t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger error')
