@@ -7,7 +7,6 @@ const Keypair = require('../../../src/lib/services/keypair')
 let writeFileSyncStub
 
 t.beforeEach((ct) => {
-  // important, clear process.env before each test
   process.env = {}
   writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
 })

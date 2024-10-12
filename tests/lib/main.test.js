@@ -13,6 +13,8 @@ const Encrypt = require('../../src/lib/services/encrypt')
 const Decrypt = require('../../src/lib/services/decrypt')
 const Genexample = require('../../src/lib/services/genexample')
 
+const { logger } = require('../../src/shared/logger')
+
 t.test('config calls Run.run', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
@@ -26,7 +28,7 @@ t.test('config calls Run.run', ct => {
   ct.end()
 })
 
-t.test('config with convention  - calls Run.run with proper envs', ct => {
+t.test('config with convention - calls Run.run with proper envs', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
@@ -35,6 +37,23 @@ t.test('config with convention  - calls Run.run with proper envs', ct => {
   t.ok(stub.called, 'new Run().run() called')
 
   stub.restore()
+
+  ct.end()
+})
+
+t.test('config with Run.run error', ct => {
+  const loggerWarnStub = sinon.stub(logger, 'warnv')
+  const error = new Error('some error')
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({ processedEnvs: [{ error }], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.config()
+
+  t.ok(stub.called, 'new Run().run() called')
+  ct.ok(loggerWarnStub.calledWith('some error'), 'warn')
+
+  stub.restore()
+  loggerWarnStub.restore()
 
   ct.end()
 })

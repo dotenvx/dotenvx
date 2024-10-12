@@ -108,13 +108,13 @@ const config = function (options = {}) {
         if (processedEnv.error.code === 'MISSING_ENV_FILE') {
           // do not warn for conventions (too noisy)
           if (!options.convention) {
-            logger.warnv(processedEnv.error)
+            logger.warnv(processedEnv.error.message)
             logger.help(
               `? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- yourcommand]`
             )
           }
         } else {
-          logger.warnv(processedEnv.error)
+          logger.warnv(processedEnv.error.message)
         }
       } else {
         Object.assign(parsedAll, processedEnv.injected)
