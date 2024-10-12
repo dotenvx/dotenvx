@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('./../../lib/helpers/filesystem')
 const dotenv = require('dotenv')
 
 const ENCODING = 'utf8'

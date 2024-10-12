@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('./../../lib/helpers/filesystem')
 
 const RESERVED_ENV_FILES = ['.env.vault', '.env.project', '.env.keys', '.env.me', '.env.x', '.env.example']
 
