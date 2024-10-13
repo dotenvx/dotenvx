@@ -11,8 +11,10 @@ async function executeCommand (commandArgs, env) {
 
   logger.debug(`executing process command [${commandArgs.join(' ')}]`)
 
-  // handler for SIGINT
   let commandProcess
+  let signalSent
+
+  /* c8 ignore start */
   const sigintHandler = () => {
     logger.debug('received SIGINT')
     logger.debug('checking command process')
@@ -20,16 +22,13 @@ async function executeCommand (commandArgs, env) {
 
     if (commandProcess) {
       logger.debug('sending SIGINT to command process')
+      signalSent = 'SIGINT'
       commandProcess.kill('SIGINT') // Send SIGINT to the command process
-    /* c8 ignore start */
     } else {
       logger.debug('no command process to send SIGINT to')
     }
-    /* c8 ignore stop */
   }
-  // handler for SIGTERM
 
-  /* c8 ignore start */
   const sigtermHandler = () => {
     logger.debug('received SIGTERM')
     logger.debug('checking command process')
@@ -37,7 +36,8 @@ async function executeCommand (commandArgs, env) {
 
     if (commandProcess) {
       logger.debug('sending SIGTERM to command process')
-      commandProcess.kill('SIGTERM') // Send SIGTEM to the command process
+      signalSent = 'SIGTERM'
+      commandProcess.kill('SIGTERM') // Send SIGTERM to the command process
     } else {
       logger.debug('no command process to send SIGTERM to')
     }
@@ -94,13 +94,11 @@ async function executeCommand (commandArgs, env) {
     }
   } catch (error) {
     // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.
-    if (error.signal !== 'SIGINT' && error.signal !== 'SIGTERM') {
+    if (!['SIGINT', 'SIGTERM'].includes(signalSent || error.signal)) {
       if (error.code === 'ENOENT') {
-        logger.errornocolor(`Unknown command: ${error.command}`)
-      } else if (error.message.includes('Command failed with exit code 1')) {
-        logger.errornocolor(`Command exited with exit code 1: ${error.command}`)
+        console.error(`Unknown command: ${error.command}`)
       } else {
-        logger.errornocolor(error.message)
+        console.error(error.message)
       }
     }
 
