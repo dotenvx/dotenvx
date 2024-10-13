@@ -167,7 +167,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: publish checksums to release
-        uses: wangzuo/action-release-checksums
+        uses: wangzuo/action-release-checksums@main
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
