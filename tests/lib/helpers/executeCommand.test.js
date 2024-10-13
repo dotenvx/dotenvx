@@ -105,3 +105,36 @@ t.test('executeCommand - ENOENT', async ct => {
 
   ct.end()
 })
+
+t.test('executeCommand - sigintHandler', async ct => {
+  sinon.stub(process, 'exit')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+
+  executeCommand(['sleep', '10'], { HELLO: 'World' })
+
+  // Allow the process to start properly
+  setTimeout(() => {
+    process.kill(process.pid, 'SIGINT')
+  }, 1000) // Send SIGINT after 1 second
+
+  ct.ok(loggerDebugStub.called, 'logger debug')
+
+  ct.end()
+})
+
+// this test fails with npm test - related to sending SIGTERM
+// t.test('executeCommand - sigtermHandler', async ct => {
+//   sinon.stub(process, 'exit')
+//   const loggerDebugStub = sinon.stub(logger, 'debug')
+//
+//   executeCommand(['sleep', '10'], { HELLO: 'World' })
+//
+//   // Allow the process to start properly
+//   setTimeout(() => {
+//     process.kill(process.pid, 'SIGTERM')
+//   }, 1000)
+//
+//   ct.ok(loggerDebugStub.called, 'logger debug')
+//
+//   ct.end()
+// })

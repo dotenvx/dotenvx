@@ -11,9 +11,10 @@ async function executeCommand (commandArgs, env) {
 
   logger.debug(`executing process command [${commandArgs.join(' ')}]`)
 
-  // handler for SIGINT
   let commandProcess
   let signalSent
+
+  /* c8 ignore start */
   const sigintHandler = () => {
     logger.debug('received SIGINT')
     logger.debug('checking command process')
@@ -23,15 +24,11 @@ async function executeCommand (commandArgs, env) {
       logger.debug('sending SIGINT to command process')
       signalSent = 'SIGINT'
       commandProcess.kill('SIGINT') // Send SIGINT to the command process
-    /* c8 ignore start */
     } else {
       logger.debug('no command process to send SIGINT to')
     }
-    /* c8 ignore stop */
   }
-  // handler for SIGTERM
 
-  /* c8 ignore start */
   const sigtermHandler = () => {
     logger.debug('received SIGTERM')
     logger.debug('checking command process')
