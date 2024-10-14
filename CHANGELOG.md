@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.19.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.19.2...main)
+
+## 1.19.2
+
+### Changed
+
+* forward additional signals like `SIGUSR2` ([#403](https://github.com/dotenvx/dotenvx/pull/403))
 
 ## 1.19.1
 
