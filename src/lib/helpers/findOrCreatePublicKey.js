@@ -12,9 +12,6 @@ function findOrCreatePublicKey (envFilepath, envKeysFilepath) {
   const publicKeyName = guessPublicKeyName(envFilepath)
   const privateKeyName = guessPrivateKeyName(envFilepath)
 
-  // process.env
-  // let privateKey = process.env[privateKeyName]
-
   // src
   let envSrc = fsx.readFileX(envFilepath)
   let keysSrc = ''

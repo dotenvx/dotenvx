@@ -26,7 +26,6 @@ function set (key, value) {
       changedFilepaths,
       unchangedFilepaths
     } = main.set(key, value, envs, encrypt)
-    // } = main.set(key, value, options.envFile, encrypt)
 
     let withEncryption = ''
 
@@ -43,6 +42,9 @@ function set (key, value) {
           logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx set]`)
         } else {
           logger.warn(processedEnv.error.message)
+          if (processedEnv.error.help) {
+            logger.help(processedEnv.error.help)
+          }
         }
       } else {
         fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
