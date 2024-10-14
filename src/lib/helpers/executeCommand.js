@@ -11,19 +11,19 @@ async function executeCommand (commandArgs, env) {
 
   logger.debug(`executing process command [${commandArgs.join(' ')}]`)
 
-  let commandProcess
+  let child
   let signalSent
 
   /* c8 ignore start */
   const sigintHandler = () => {
     logger.debug('received SIGINT')
     logger.debug('checking command process')
-    logger.debug(commandProcess)
+    logger.debug(child)
 
-    if (commandProcess) {
+    if (child) {
       logger.debug('sending SIGINT to command process')
       signalSent = 'SIGINT'
-      commandProcess.kill('SIGINT') // Send SIGINT to the command process
+      child.kill('SIGINT') // Send SIGINT to the command process
     } else {
       logger.debug('no command process to send SIGINT to')
     }
@@ -32,12 +32,12 @@ async function executeCommand (commandArgs, env) {
   const sigtermHandler = () => {
     logger.debug('received SIGTERM')
     logger.debug('checking command process')
-    logger.debug(commandProcess)
+    logger.debug(child)
 
-    if (commandProcess) {
+    if (child) {
       logger.debug('sending SIGTERM to command process')
       signalSent = 'SIGTERM'
-      commandProcess.kill('SIGTERM') // Send SIGTERM to the command process
+      child.kill('SIGTERM') // Send SIGTERM to the command process
     } else {
       logger.debug('no command process to send SIGTERM to')
     }
@@ -45,6 +45,7 @@ async function executeCommand (commandArgs, env) {
 
   const handleOtherSignal = (signal) => {
     logger.debug(`received ${signal}`)
+    child.kill(signal)
   }
   /* c8 ignore stop */
 
@@ -73,7 +74,7 @@ async function executeCommand (commandArgs, env) {
       }
     }
 
-    commandProcess = execute.execa(commandArgs[0], commandArgs.slice(1), {
+    child = execute.execa(commandArgs[0], commandArgs.slice(1), {
       stdio: 'inherit',
       env: { ...process.env, ...env }
     })
@@ -86,7 +87,7 @@ async function executeCommand (commandArgs, env) {
     })
 
     // Wait for the command process to finish
-    const { exitCode } = await commandProcess
+    const { exitCode } = await child
 
     if (exitCode !== 0) {
       logger.debug(`received exitCode ${exitCode}`)
