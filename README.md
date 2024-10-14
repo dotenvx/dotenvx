@@ -432,6 +432,17 @@ More examples
   ```
 
   </details>
+* <details><summary>asdf</summary><br>
+
+  ```sh
+  # use dotenvx with asdf
+  $ asdf plugin add dotenvx
+  $ asdf install dotenvx latest
+  ```
+
+  thank you [@jgburet](https://github.com/jgburet/asdf-dotenvx) of Paris 🇫🇷
+
+  </details>
 * <details><summary>Git</summary><br>
 
   ```sh
