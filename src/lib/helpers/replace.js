@@ -13,6 +13,11 @@ function replace (src, key, replaceValue) {
     escapedValue = escapedValue.replace(/\\n/g, '\n') // fix up newlines
     escapedValue = escapedValue.replace(/\\r/g, '\r')
   }
+
+  if (replaceValue.includes('\\')) {
+    escapedValue = escapedValue.replace(/\\\\/, '\\')
+  }
+
   let newPart = `${key}=${escapedValue}`
 
   const parsed = dotenv.parse(src)
