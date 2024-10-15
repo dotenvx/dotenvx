@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.19.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.19.3...main)
+
+## 1.19.3
+
+### Changed
+
+* 🐞 fix decrypt re-encrypt of values containing backslashes ([#406](https://github.com/dotenvx/dotenvx/pull/407))
 
 ## 1.19.2
 
