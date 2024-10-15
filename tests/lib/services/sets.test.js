@@ -343,7 +343,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt and changes original
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
     '# .env',
-    `HELLO='${encryptedValue}'`,
+    `HELLO='${encryptedValue}'`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -374,25 +374,8 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
   ]
 
   const {
-    processedEnvs,
-    changedFilepaths
+    processedEnvs
   } = new Sets('HELLO', 'new value', envs).run()
-
-  const row = processedEnvs[0]
-  const publicKey = row.publicKey
-  const privateKey = row.privateKey
-  const privateKeyName = row.privateKeyName
-  const encryptedValue = row.encryptedValue
-  const envSrc = [
-    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
-    '#/            public-key encryption for .env files          /',
-    '#/       [how it works](https://dotenvx.com/encryption)     /',
-    '#/----------------------------------------------------------/',
-    `DOTENV_PUBLIC_KEY="${publicKey}"`,
-    '',
-    '# .env',
-    `HELLO='${encryptedValue}'`,
-  ].join('\n') + '\n'
 
   const error = new Error('derived public key (03eaf21…) does not match the existing public key (12345…)')
   error.code = 'INVALID_DOTENV_PRIVATE_KEY'
@@ -414,9 +397,9 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
 
 t.test('#run (finds .env file only) with --encrypt', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
-  sandbox = sinon.createSandbox()
+  const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    const { envFilepath, key } = this
+    const { key } = this
     // Custom logic depending on constructor arguments
     if (key === 'DOTENV_PUBLIC_KEY') {
       return '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba'
@@ -447,7 +430,7 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
     '# .env',
-    `HELLO='${encryptedValue}'`,
+    `HELLO='${encryptedValue}'`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -473,10 +456,8 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
 
 t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
-  sandbox = sinon.createSandbox()
+  const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    const { envFilepath, key } = this
-    // Custom logic depending on constructor arguments
     return null
   })
 
@@ -505,7 +486,7 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
     '# .env',
-    `HELLO='${encryptedValue}'`,
+    `HELLO='${encryptedValue}'`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -533,10 +514,8 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
 
 t.test('#run (finds .env and .env.keys file but they are not quite blank) with --encrypt', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
-  sandbox = sinon.createSandbox()
+  const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    const { envFilepath, key } = this
-    // Custom logic depending on constructor arguments
     return null
   })
 
@@ -592,13 +571,10 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
   ct.end()
 })
 
-
 t.test('#run (finds .env with a shebang) with --encrypt', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
-  sandbox = sinon.createSandbox()
+  const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    const { envFilepath, key } = this
-    // Custom logic depending on constructor arguments
     return null
   })
 
@@ -626,7 +602,7 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
     '# .env',
-    `HELLO='${encryptedValue}'`,
+    `HELLO='${encryptedValue}'`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
