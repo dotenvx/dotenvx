@@ -21,7 +21,6 @@ class Sets {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.value = value
-    // this.envFile = envFile
     this.encrypt = encrypt
 
     this.processedEnvs = []
