@@ -1272,12 +1272,12 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
-ESCAPED2='test\\test'
+ESCAPED2='test\\test\\test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'ESCAPED2', 'test\\test')
+  const newSrc = replace(src, 'ESCAPED2', 'test\\test\\test\\test')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).ESCAPED2, 'test\\test')
+  ct.same(parse(newSrc).ESCAPED2, 'test\\test\\test\\test')
   ct.end()
 })
 
