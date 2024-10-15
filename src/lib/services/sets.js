@@ -7,6 +7,7 @@ const TYPE_ENV_FILE = 'envFile'
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
+const decryptValue = require('./../helpers/decryptValue')
 const replace = require('./../helpers/replace')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
@@ -81,6 +82,10 @@ class Sets {
           publicKey = kp.publicKey
           privateKey = kp.privateKey
 
+          if (row.originalValue) {
+            row.originalValue = decryptValue(row.originalValue, privateKey)
+          }
+
           // if derivation doesn't match what's in the file (or preset in env)
           if (existingPublicKey && existingPublicKey !== publicKey) {
             const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
@@ -94,6 +99,7 @@ class Sets {
           // .env.keys
           let keysSrc = ''
           const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          console.log('envKeysFilepath', envKeysFilepath)
           if (fsx.existsSync(envKeysFilepath)) {
             keysSrc = fsx.readFileX(envKeysFilepath)
           }
@@ -150,12 +156,7 @@ class Sets {
         row.privateKeyName = privateKeyName
       }
 
-      if (this.encrypt) {
-        // TODO make this smarter based on if the decrypted value matched or not
-        row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
-        this.changedFilepaths.add(envFilepath)
-        row.changed = true
-      } else if (row.originalValue && this.value === row.originalValue) {
+      if (row.originalValue && this.value === row.originalValue) {
         row.envSrc = envSrc
         this.unchangedFilepaths.add(envFilepath)
         row.changed = false

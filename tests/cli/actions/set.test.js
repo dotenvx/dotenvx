@@ -139,6 +139,7 @@ t.test('set - OTHER_ERROR', ct => {
   const fakeContext = { opts: optsStub }
   const error = new Error('Mock Error')
   error.code = 'OTHER_ERROR'
+  error.help = 'some help'
 
   const stub = sinon.stub(main, 'set').returns({
     processedEnvs: [{
@@ -165,7 +166,7 @@ t.test('set - OTHER_ERROR', ct => {
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
-  t.ok(loggerHelpStub.notCalled, 'logger help')
+  t.ok(loggerHelpStub.calledWith('some help'), 'logger.help')
 
   ct.end()
 })
