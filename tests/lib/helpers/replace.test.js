@@ -37,6 +37,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
 t.test('appends new key', ct => {
@@ -74,6 +75,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'DOESNOTEXIST', 'ttt')
@@ -117,6 +119,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'
 
 
@@ -163,6 +166,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'HELLO', 'ttt')
@@ -206,6 +210,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'SPACER', 'ttt')
@@ -249,6 +254,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'SPACEL', 'ttt')
@@ -292,6 +298,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'SPACEB', 'ttt')
@@ -335,6 +342,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'SINGLE', 'ttt')
@@ -378,6 +386,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'DOUBLE', 'ttt')
@@ -421,6 +430,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'JSON', '{"other": 2}')
@@ -464,6 +474,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'JSON2', '{"other": 2}')
@@ -507,6 +518,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'QUOTE', '"')
@@ -550,6 +562,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'QUOTE2', "'")
@@ -593,6 +606,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'EXPORT', 'ttt')
@@ -636,6 +650,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'PAD', 'ttt')
@@ -679,6 +694,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'BAD', 'f"bar')
@@ -722,6 +738,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'BAD2', "f'bar")
@@ -763,6 +780,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'MULTI', 'ttt')
@@ -806,6 +824,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'MULTI2', `hi
@@ -853,6 +872,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'MULTI3', `hi
@@ -900,6 +920,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'EVAL', 'ttt')
@@ -943,6 +964,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'EMPTY', 'ttt')
@@ -986,6 +1008,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'NEWLINES', 'ttt')
@@ -1029,6 +1052,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'COMMENT', 'ttt')
@@ -1072,6 +1096,7 @@ HASHTAG='ttt'
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'HASHTAG', 'ttt')
@@ -1115,6 +1140,7 @@ HASHTAG="h #tag"
 D.O.T.S='ttt'
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'D.O.T.S', 'ttt')
@@ -1158,6 +1184,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='ttt'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'DONT_CHOKE1', 'ttt')
@@ -1201,11 +1228,56 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED='ttt'
+ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'ESCAPED', 'ttt')
   ct.same(newSrc, expected)
   ct.same(parse(newSrc).ESCAPED, 'ttt')
+  ct.end()
+})
+
+t.test('#ESCAPED2 replacing itself', ct => {
+  const expected = `HELLO=a
+SPACER= b
+SPACEL =c
+SPACEB = d
+SINGLE='e'
+DOUBLE="f"
+BACKTICK=\`g\`
+JSON={"hi": 1}
+JSON2="{"hi": 1}"
+QUOTE="'"
+QUOTE2='"'
+export EXPORT=k
+EXPORT2='export EXPORT=k'
+export EXPORT=k
+  PAD=l
+BAD=f'bar
+BAD2=f"bar
+MULTI='-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----'
+MULTI2="-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----"
+MULTI3=\`-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----\`
+EVAL=$(echo world)
+EMPTY=
+NEWLINES="expand\nnew\nlines"
+COMMENT=g # comment
+HASHTAG="h #tag"
+D.O.T.S=i
+DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
+ESCAPED=\`ESCAPED
+ESCAPED2='test\\test\\test\\test'
+GROUP='$1$2'`
+
+  const newSrc = replace(src, 'ESCAPED2', 'test\\test\\test\\test')
+  ct.same(newSrc, expected)
+  ct.same(parse(newSrc).ESCAPED2, 'test\\test\\test\\test')
   ct.end()
 })
 
@@ -1244,6 +1316,7 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
+ESCAPED2='test\\test'
 GROUP='$bar$baz$paz$1234'`
 
   const newSrc = replace(src, 'GROUP', '$bar$baz$paz$1234')
