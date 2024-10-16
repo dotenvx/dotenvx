@@ -8,7 +8,6 @@ const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
 const Run = require('../../src/lib/services/run')
 const Keypair = require('../../src/lib/services/keypair')
-const Decrypt = require('../../src/lib/services/decrypt')
 const Genexample = require('../../src/lib/services/genexample')
 
 const { logger } = require('../../src/shared/logger')
