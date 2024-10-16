@@ -1,105 +1,185 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-
 const dotenv = require('dotenv')
 
-const findOrCreatePublicKey = require('./../helpers/findOrCreatePublicKey')
+const TYPE_ENV_FILE = 'envFile'
+
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
+const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
+const decryptValue = require('./../helpers/decryptValue')
 const replace = require('./../helpers/replace')
+const detectEncoding = require('./../helpers/detectEncoding')
+const determineEnvs = require('./../helpers/determineEnvs')
+const findPrivateKey = require('./../helpers/findPrivateKey')
+const findPublicKey = require('./../helpers/findPublicKey')
+const keyPair = require('./../helpers/keyPair')
+const truncate = require('./../helpers/truncate')
 
 class Sets {
-  constructor (key, value, envFile = '.env', encrypt = true) {
+  constructor (key, value, envs = [], encrypt = true) {
+    this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.value = value
-    this.envFile = envFile
     this.encrypt = encrypt
 
-    this.processedEnvFiles = []
+    this.processedEnvs = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
+    this.readableFilepaths = new Set()
   }
 
   run () {
-    const envFilepaths = this._envFilepaths()
-    for (const envFilepath of envFilepaths) {
-      const filepath = path.resolve(envFilepath)
+    // example
+    // envs [
+    //   { type: 'envFile', value: '.env' }
+    // ]
 
-      const row = {}
-      row.key = this.key
-      row.value = this.value
-      row.filepath = filepath
-      row.envFilepath = envFilepath
-      row.changed = false
-
-      try {
-        let value = this.value
-        let src = fsx.readFileX(filepath)
-        row.originalValue = dotenv.parse(src)[row.key] || null
-
-        if (this.encrypt) {
-          const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-          const {
-            envSrc,
-            keysSrc,
-            publicKey,
-            privateKey,
-            publicKeyAdded,
-            privateKeyAdded
-          } = findOrCreatePublicKey(filepath, envKeysFilepath)
-
-          // handle .env.keys write
-          fsx.writeFileX(envKeysFilepath, keysSrc)
-
-          src = envSrc // src was potentially modified by findOrCreatePublicKey so we set it again here
-
-          value = encryptValue(value, publicKey)
-
-          row.changed = publicKeyAdded // track change
-          row.encryptedValue = value
-          row.publicKey = publicKey
-          row.privateKey = privateKey
-          row.privateKeyAdded = privateKeyAdded
-          row.privateKeyName = guessPrivateKeyName(filepath)
-        }
-
-        if (value !== row.originalValue) {
-          row.envSrc = replace(src, this.key, value)
-
-          this.changedFilepaths.add(envFilepath)
-          row.changed = true
-        } else {
-          row.envSrc = src
-
-          this.unchangedFilepaths.add(envFilepath)
-        }
-      } catch (e) {
-        if (e.code === 'ENOENT') {
-          const error = new Error(`missing ${envFilepath} file (${filepath})`)
-          error.code = 'MISSING_ENV_FILE'
-
-          row.error = error
-        } else {
-          row.error = e
-        }
+    for (const env of this.envs) {
+      if (env.type === TYPE_ENV_FILE) {
+        this._setEnvFile(env.value)
       }
-
-      this.processedEnvFiles.push(row)
     }
 
     return {
-      processedEnvFiles: this.processedEnvFiles,
+      processedEnvs: this.processedEnvs,
       changedFilepaths: [...this.changedFilepaths],
       unchangedFilepaths: [...this.unchangedFilepaths]
     }
   }
 
-  _envFilepaths () {
-    if (!Array.isArray(this.envFile)) {
-      return [this.envFile]
+  _setEnvFile (envFilepath) {
+    const row = {}
+    row.key = this.key || null
+    row.value = this.value || null
+    row.type = TYPE_ENV_FILE
+
+    const filename = path.basename(envFilepath)
+    const filepath = path.resolve(envFilepath)
+    row.filepath = filepath
+    row.envFilepath = envFilepath
+    row.changed = false
+
+    try {
+      const encoding = this._detectEncoding(filepath)
+      let envSrc = fsx.readFileX(filepath, { encoding })
+      const envParsed = dotenv.parse(envSrc)
+      row.originalValue = envParsed[row.key] || null
+      this.readableFilepaths.add(envFilepath)
+
+      if (this.encrypt) {
+        let publicKey
+        let privateKey
+
+        const publicKeyName = guessPublicKeyName(envFilepath)
+        const privateKeyName = guessPrivateKeyName(envFilepath)
+        const existingPrivateKey = findPrivateKey(envFilepath)
+        const existingPublicKey = findPublicKey(envFilepath)
+
+        if (existingPrivateKey) {
+          const kp = keyPair(existingPrivateKey)
+          publicKey = kp.publicKey
+          privateKey = kp.privateKey
+
+          if (row.originalValue) {
+            row.originalValue = decryptValue(row.originalValue, privateKey)
+          }
+
+          // if derivation doesn't match what's in the file (or preset in env)
+          if (existingPublicKey && existingPublicKey !== publicKey) {
+            const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
+            error.code = 'INVALID_DOTENV_PRIVATE_KEY'
+            error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(existingPublicKey)})`
+            throw error
+          }
+        } else if (existingPublicKey) {
+          publicKey = existingPublicKey
+        } else {
+          // .env.keys
+          let keysSrc = ''
+          const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          console.log('envKeysFilepath', envKeysFilepath)
+          if (fsx.existsSync(envKeysFilepath)) {
+            keysSrc = fsx.readFileX(envKeysFilepath)
+          }
+
+          // preserve shebang
+          const [firstLine, ...remainingLines] = envSrc.split('\n')
+          let firstLinePreserved = ''
+          if (firstLine.startsWith('#!')) {
+            firstLinePreserved = firstLine + '\n'
+            envSrc = remainingLines.join('\n')
+          }
+
+          const kp = keyPair() // generates a fresh keypair in memory
+          publicKey = kp.publicKey
+          privateKey = kp.privateKey
+
+          // publicKey
+          const prependPublicKey = [
+            '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+            '#/            public-key encryption for .env files          /',
+            '#/       [how it works](https://dotenvx.com/encryption)     /',
+            '#/----------------------------------------------------------/',
+            `${publicKeyName}="${publicKey}"`,
+            '',
+            `# ${filename}`
+          ].join('\n')
+
+          // privateKey
+          const firstTimeKeysSrc = [
+            '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
+            '#/ private decryption keys. DO NOT commit to source control /',
+            '#/     [how it works](https://dotenvx.com/encryption)       /',
+            '#/----------------------------------------------------------/'
+          ].join('\n')
+          const appendPrivateKey = [
+            `# ${filename}`,
+            `${privateKeyName}="${privateKey}"`,
+            ''
+          ].join('\n')
+
+          envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
+          keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
+          keysSrc = `${keysSrc}\n${appendPrivateKey}`
+
+          // write to .env.keys
+          fsx.writeFileX(envKeysFilepath, keysSrc)
+
+          row.privateKeyAdded = true
+        }
+
+        row.publicKey = publicKey
+        row.privateKey = privateKey
+        row.encryptedValue = encryptValue(this.value, publicKey)
+        row.privateKeyName = privateKeyName
+      }
+
+      if (row.originalValue && this.value === row.originalValue) {
+        row.envSrc = envSrc
+        this.unchangedFilepaths.add(envFilepath)
+        row.changed = false
+      } else {
+        row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
+        this.changedFilepaths.add(envFilepath)
+        row.changed = true
+      }
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        const error = new Error(`missing ${envFilepath} file (${filepath})`)
+        error.code = 'MISSING_ENV_FILE'
+
+        row.error = error
+      } else {
+        row.error = e
+      }
     }
 
-    return this.envFile
+    this.processedEnvs.push(row)
+  }
+
+  _detectEncoding (filepath) {
+    return detectEncoding(filepath)
   }
 }
 

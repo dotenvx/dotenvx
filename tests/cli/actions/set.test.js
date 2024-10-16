@@ -19,7 +19,7 @@ t.test('set - no changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(main, 'set').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       key: 'HELLO',
       value: 'World',
       filepath: '.env',
@@ -49,7 +49,7 @@ t.test('set - changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(main, 'set').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       key: 'HELLO',
       value: 'World',
       filepath: '.env',
@@ -81,7 +81,7 @@ t.test('set - no changes and no unchanged', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(main, 'set').returns({
-    processedEnvFiles: [],
+    processedEnvs: [],
     changedFilepaths: [],
     unchangedFilepaths: []
   })
@@ -104,7 +104,7 @@ t.test('set - MISSING_ENV_FILE', ct => {
   error.code = 'MISSING_ENV_FILE'
 
   const stub = sinon.stub(main, 'set').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       key: 'HELLO',
       value: 'World',
       filepath: '.env',
@@ -139,9 +139,10 @@ t.test('set - OTHER_ERROR', ct => {
   const fakeContext = { opts: optsStub }
   const error = new Error('Mock Error')
   error.code = 'OTHER_ERROR'
+  error.help = 'some help'
 
   const stub = sinon.stub(main, 'set').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       key: 'HELLO',
       value: 'World',
       filepath: '.env',
@@ -165,7 +166,7 @@ t.test('set - OTHER_ERROR', ct => {
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
-  t.ok(loggerHelpStub.notCalled, 'logger help')
+  t.ok(loggerHelpStub.calledWith('some help'), 'logger.help')
 
   ct.end()
 })
@@ -175,7 +176,7 @@ t.test('set - changes --plain', ct => {
   const optsStub = sinon.stub().returns({ plain: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(main, 'set').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       key: 'HELLO',
       value: 'World',
       filepath: '.env',
@@ -207,7 +208,7 @@ t.test('set - privateKeyAdded', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(main, 'set').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       key: 'HELLO',
       value: 'World',
       filepath: '.env',
@@ -245,7 +246,7 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(main, 'set').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       key: 'HELLO',
       value: 'World',
       filepath: '.env',
