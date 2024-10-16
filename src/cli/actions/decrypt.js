@@ -1,7 +1,7 @@
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
-const main = require('./../../lib/main')
+const Decrypt = require('./../../lib/services/decrypt')
 
 function decrypt () {
   const options = this.opts()
@@ -13,7 +13,7 @@ function decrypt () {
   if (options.stdout) {
     const {
       processedEnvFiles
-    } = main.decrypt(options.envFile, options.key, options.excludeKey)
+    } = new Decrypt(options.envFile, options.key, options.excludeKey).run()
 
     for (const processedEnvFile of processedEnvFiles) {
       if (processedEnvFile.error) {
@@ -35,7 +35,7 @@ function decrypt () {
         processedEnvFiles,
         changedFilepaths,
         unchangedFilepaths
-      } = main.decrypt(options.envFile, options.key, options.excludeKey)
+      } = new Decrypt(options.envFile, options.key, options.excludeKey).run()
 
       for (const processedEnvFile of processedEnvFiles) {
         logger.verbose(`decrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)

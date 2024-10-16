@@ -1,7 +1,7 @@
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
-const main = require('./../../lib/main')
+const Sets = require('./../../lib/services/sets')
 
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
@@ -25,7 +25,7 @@ function set (key, value) {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = main.set(key, value, envs, encrypt)
+    } = new Sets(key, value, envs, encrypt).run()
 
     let withEncryption = ''
 
