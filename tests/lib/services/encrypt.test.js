@@ -441,7 +441,6 @@ t.test('#run (finds .env file only)', ct => {
   const publicKey = row.publicKey
   const privateKey = row.privateKey
   const privateKeyName = row.privateKeyName
-  const encryptedValue = row.encryptedValue
   const envSrc = row.envSrc
 
   ct.same(processedEnvs, [{
@@ -460,4 +459,3 @@ t.test('#run (finds .env file only)', ct => {
 
   ct.end()
 })
-
