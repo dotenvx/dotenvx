@@ -20,7 +20,7 @@ t.afterEach((ct) => {
 
 t.test('#run (no arguments)', ct => {
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt().run()
@@ -28,7 +28,7 @@ t.test('#run (no arguments)', ct => {
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     keys: [],
     filepath: path.resolve('.env'),
     envFilepath: '.env',
@@ -42,7 +42,7 @@ t.test('#run (no arguments)', ct => {
 
 t.test('#run (no env file)', ct => {
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt().run()
@@ -50,7 +50,7 @@ t.test('#run (no env file)', ct => {
   const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     keys: [],
     filepath: path.resolve('.env'),
     envFilepath: '.env',
@@ -66,13 +66,13 @@ t.test('#run (no arguments and some other error)', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
 
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Encrypt().run()
 
   const exampleError = new Error('Mock Error')
 
-  ct.same(processedEnvFiles, [{
+  ct.same(processedEnvs, [{
     keys: [],
     envFilepath: '.env',
     filepath: path.resolve('.env'),
@@ -88,12 +88,12 @@ t.test('#run (no arguments and some other error)', ct => {
 t.test('#run (finds .env file)', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile).run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/frontend/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
@@ -111,12 +111,12 @@ t.test('#run (finds .env file)', ct => {
 t.test('#run (finds .env file with multiline value)', ct => {
   const envFile = 'tests/monorepo/apps/multiline/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile).run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiline/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiline/.env'])
@@ -145,11 +145,11 @@ HELLO='${parsed.HELLO}'
 t.test('#run (finds .env file as array)', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Encrypt([envFile]).run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/frontend/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
@@ -160,12 +160,12 @@ t.test('#run (finds .env file as array)', ct => {
 t.test('#run (finds .env file already encrypted)', ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile).run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, [])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/encrypted/.env')
   ct.same(changedFilepaths, [])
@@ -177,11 +177,11 @@ t.test('#run (finds .env file already encrypted)', ct => {
 t.test('#run (finds .env file as array)', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths
   } = new Encrypt([envFile]).run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/frontend/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
@@ -192,12 +192,12 @@ t.test('#run (finds .env file as array)', ct => {
 t.test('#run (finds .env file with specified key)', ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile, ['HELLO2']).run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO2'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
@@ -216,12 +216,12 @@ t.test('#run (finds .env file with specified key)', ct => {
 t.test('#run (finds .env file with specified key as string)', ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile, 'HELLO2').run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO2'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
@@ -240,12 +240,12 @@ t.test('#run (finds .env file with specified key as string)', ct => {
 t.test('#run (finds .env file with specified glob string)', ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile, 'H*').run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO2', 'HELLO3'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
@@ -265,12 +265,12 @@ t.test('#run (finds .env file with specified glob string)', ct => {
 t.test('#run (finds .env file excluding specified key)', ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile, [], ['HELLO2']).run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO3'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
@@ -290,12 +290,12 @@ t.test('#run (finds .env file excluding specified key)', ct => {
 t.test('#run (finds .env file excluding specified key as string)', ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile, [], 'HELLO3').run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO2'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
@@ -315,12 +315,12 @@ t.test('#run (finds .env file excluding specified key as string)', ct => {
 t.test('#run (finds .env file excluding specified key globbed)', ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile, [], 'HE*').run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, [])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
@@ -340,12 +340,12 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
 t.test('#run (finds .env.export file with exported key)', ct => {
   const envFile = 'tests/.env.export'
   const {
-    processedEnvFiles,
+    processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt(envFile).run()
 
-  const p1 = processedEnvFiles[0]
+  const p1 = processedEnvs[0]
   ct.same(p1.keys, ['KEY'])
   ct.same(p1.envFilepath, 'tests/.env.export')
   ct.same(changedFilepaths, ['tests/.env.export'])

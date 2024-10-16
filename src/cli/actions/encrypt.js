@@ -9,39 +9,41 @@ function encrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  const envs = this.envs
+
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
-      processedEnvFiles
+      processedEnvs
     } = new Encrypt(options.envFile, options.key, options.excludeKey).run()
 
-    for (const processedEnvFile of processedEnvFiles) {
-      console.log(processedEnvFile.envSrc)
+    for (const processedEnv of processedEnvs) {
+      console.log(processedEnv.envSrc)
     }
     process.exit(0) // exit early
   } else {
     try {
       const {
-        processedEnvFiles,
+        processedEnvs,
         changedFilepaths,
         unchangedFilepaths
       } = new Encrypt(options.envFile, options.key, options.excludeKey).run()
 
-      for (const processedEnvFile of processedEnvFiles) {
-        logger.verbose(`encrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
-        if (processedEnvFile.error) {
-          if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
-            logger.warn(processedEnvFile.error.message)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx encrypt]`)
+      for (const processedEnv of processedEnvs) {
+        logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+        if (processedEnv.error) {
+          if (processedEnv.error.code === 'MISSING_ENV_FILE') {
+            logger.warn(processedEnv.error.message)
+            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx encrypt]`)
           } else {
-            logger.warn(processedEnvFile.error.message)
+            logger.warn(processedEnv.error.message)
           }
-        } else if (processedEnvFile.changed) {
-          fsx.writeFileX(processedEnvFile.filepath, processedEnvFile.envSrc)
+        } else if (processedEnv.changed) {
+          fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
-          logger.verbose(`encrypted ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+          logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
-          logger.verbose(`no changes ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+          logger.verbose(`no changes ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
       }
 
@@ -53,15 +55,15 @@ function encrypt () {
         // do nothing - scenario when no .env files found
       }
 
-      for (const processedEnvFile of processedEnvFiles) {
-        if (processedEnvFile.privateKeyAdded) {
-          logger.success(`✔ key added to .env.keys (${processedEnvFile.privateKeyName})`)
+      for (const processedEnv of processedEnvs) {
+        if (processedEnv.privateKeyAdded) {
+          logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
 
           if (!isIgnoringDotenvKeys()) {
             logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]')
           }
 
-          logger.help2(`ℹ run [${processedEnvFile.privateKeyName}='${processedEnvFile.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
+          logger.help2(`ℹ run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
         }
       }
     } catch (error) {

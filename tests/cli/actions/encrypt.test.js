@@ -22,7 +22,7 @@ t.test('encrypt - nothing', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
-    processedEnvFiles: [],
+    processedEnvs: [],
     changedFilepaths: [],
     unchangedFilepaths: []
   })
@@ -38,7 +38,7 @@ t.test('encrypt - .env but no changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error: null,
@@ -66,7 +66,7 @@ t.test('encrypt - --stdout', ct => {
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error: null,
@@ -95,7 +95,7 @@ t.test('encrypt - .env with changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error: null,
@@ -128,7 +128,7 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error: null,
@@ -168,7 +168,7 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error: null,
@@ -207,7 +207,7 @@ t.test('encrypt - MISSING_ENV_FILE', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error,
@@ -245,7 +245,7 @@ t.test('encrypt - OTHER_ERROR', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error,
