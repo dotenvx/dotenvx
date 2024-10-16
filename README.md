@@ -1790,7 +1790,7 @@ That said, the `.env.vault` tooling will still stick around for at least 1 year 
 
 #### How do I migrate my `.env.vault` file(s) to encrypted `.env` files?
 
-Run `$ dotenvx vault migrate` and follow the instructions.
+Run `$ dotenvx ext vault migrate` and follow the instructions.
 
 &nbsp;
 
