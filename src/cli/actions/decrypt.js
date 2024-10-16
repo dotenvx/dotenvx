@@ -3,6 +3,8 @@ const { logger } = require('./../../shared/logger')
 
 const Decrypt = require('./../../lib/services/decrypt')
 
+const catchAndLog = require('../../lib/helpers/catchAndLog')
+
 function decrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -12,15 +14,15 @@ function decrypt () {
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
-      processedEnvFiles
+      processedEnvs
     } = new Decrypt(options.envFile, options.key, options.excludeKey).run()
 
-    for (const processedEnvFile of processedEnvFiles) {
-      if (processedEnvFile.error) {
+    for (const processedEnv of processedEnvs) {
+      if (processedEnv.error) {
         errorCount += 1
-        console.error(processedEnvFile.error.message)
+        console.error(processedEnv.error.message)
       } else {
-        console.log(processedEnvFile.envSrc)
+        console.log(processedEnv.envSrc)
       }
     }
 
@@ -32,29 +34,29 @@ function decrypt () {
   } else {
     try {
       const {
-        processedEnvFiles,
+        processedEnvs,
         changedFilepaths,
         unchangedFilepaths
       } = new Decrypt(options.envFile, options.key, options.excludeKey).run()
 
-      for (const processedEnvFile of processedEnvFiles) {
-        logger.verbose(`decrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+      for (const processedEnv of processedEnvs) {
+        logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
 
-        if (processedEnvFile.error) {
+        if (processedEnv.error) {
           errorCount += 1
 
-          if (processedEnvFile.error.code === 'MISSING_ENV_FILE') {
-            logger.error(processedEnvFile.error.message)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnvFile.envFilepath}] and re-run [dotenvx decrypt]`)
+          if (processedEnv.error.code === 'MISSING_ENV_FILE') {
+            logger.error(processedEnv.error.message)
+            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx decrypt]`)
           } else {
-            logger.error(processedEnvFile.error.message)
+            logger.error(processedEnv.error.message)
           }
-        } else if (processedEnvFile.changed) {
-          fsx.writeFileX(processedEnvFile.filepath, processedEnvFile.envSrc)
+        } else if (processedEnv.changed) {
+          fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
-          logger.verbose(`decrypted ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+          logger.verbose(`decrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
-          logger.verbose(`no changes ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)
+          logger.verbose(`no changes ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
       }
 
@@ -70,16 +72,7 @@ function decrypt () {
         process.exit(1)
       }
     } catch (error) {
-      logger.error(error.message)
-      if (error.help) {
-        logger.help(error.help)
-      }
-      if (error.debug) {
-        logger.debug(error.debug)
-      }
-      if (error.code) {
-        logger.debug(`ERROR_CODE: ${error.code}`)
-      }
+      catchAndLog(error)
       process.exit(1)
     }
   }

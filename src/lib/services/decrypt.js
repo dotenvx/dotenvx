@@ -19,7 +19,7 @@ class Decrypt {
     this.envFile = envFile
     this.key = key
     this.excludeKey = excludeKey
-    this.processedEnvFiles = []
+    this.processedEnvs = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
   }
@@ -94,11 +94,11 @@ class Decrypt {
         }
       }
 
-      this.processedEnvFiles.push(row)
+      this.processedEnvs.push(row)
     }
 
     return {
-      processedEnvFiles: this.processedEnvFiles,
+      processedEnvs: this.processedEnvs,
       changedFilepaths: [...this.changedFilepaths],
       unchangedFilepaths: [...this.unchangedFilepaths]
     }

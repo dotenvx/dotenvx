@@ -18,7 +18,7 @@ t.test('decrypt - nothing', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
-    processedEnvFiles: [],
+    processedEnvs: [],
     changedFilepaths: [],
     unchangedFilepaths: []
   })
@@ -36,7 +36,7 @@ t.test('decrypt - .env but no changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   sinon.stub(Decrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error: null,
@@ -61,7 +61,7 @@ t.test('decrypt - --stdout', ct => {
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error: null,
@@ -91,7 +91,7 @@ t.test('decrypt - --stdout with error', ct => {
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error,
@@ -119,7 +119,7 @@ t.test('decrypt - .env with changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error: null,
@@ -153,7 +153,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error,
@@ -190,7 +190,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
-    processedEnvFiles: [{
+    processedEnvs: [{
       envFilepath: '.env',
       filepath: '.env',
       error,
