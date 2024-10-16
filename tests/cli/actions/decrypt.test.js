@@ -3,7 +3,7 @@ const fsx = require('./../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 const capcon = require('capture-console')
 
-const main = require('./../../../src/lib/main')
+const Decrypt = require('./../../../src/lib/services/decrypt')
 const { logger } = require('../../../src/shared/logger')
 
 const decrypt = require('./../../../src/cli/actions/decrypt')
@@ -17,7 +17,7 @@ t.test('decrypt - nothing', ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'decrypt').returns({
+  const stub = sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvFiles: [],
     changedFilepaths: [],
     unchangedFilepaths: []
@@ -25,7 +25,7 @@ t.test('decrypt - nothing', ct => {
 
   decrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.decrypt() called')
+  t.ok(stub.called, 'Decrypt().run() called')
 
   ct.end()
 })
@@ -35,7 +35,7 @@ t.test('decrypt - .env but no changes', ct => {
   sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  sinon.stub(main, 'decrypt').returns({
+  sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -60,7 +60,7 @@ t.test('decrypt - --stdout', ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'decrypt').returns({
+  const stub = sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -76,7 +76,7 @@ t.test('decrypt - --stdout', ct => {
     decrypt.call(fakeContext)
   })
 
-  t.ok(stub.called, 'main.decrypt() called')
+  t.ok(stub.called, 'Decrypt().run() called')
   t.ok(processExitStub.calledWith(0), 'process.exit(0)')
   t.equal(stdout, 'HELLO="World"\n')
 
@@ -90,7 +90,7 @@ t.test('decrypt - --stdout with error', ct => {
   const error = new Error('Mock Error')
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'decrypt').returns({
+  const stub = sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -106,7 +106,7 @@ t.test('decrypt - --stdout with error', ct => {
     decrypt.call(fakeContext)
   })
 
-  t.ok(stub.called, 'main.decrypt() called')
+  t.ok(stub.called, 'Decrypt().run() called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
   t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
 
@@ -118,7 +118,7 @@ t.test('decrypt - .env with changes', ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'decrypt').returns({
+  const stub = sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -135,7 +135,7 @@ t.test('decrypt - .env with changes', ct => {
 
   decrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.decrypt() called')
+  t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="World"'), 'fsx.writeFileX')
@@ -152,7 +152,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   error.code = 'MISSING_ENV_FILE'
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'decrypt').returns({
+  const stub = sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -171,7 +171,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
 
   decrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.decrypt() called')
+  t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -189,7 +189,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   error.code = 'OTHER_ERROR'
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'decrypt').returns({
+  const stub = sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -208,7 +208,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
 
   decrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.decrypt() called')
+  t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -228,7 +228,7 @@ t.test('decrypt - catch error', ct => {
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  sinon.stub(main, 'decrypt').throws(error)
+  sinon.stub(Decrypt.prototype, 'run').throws(error)
 
   const processExitStub = sinon.stub(process, 'exit')
   const loggerInfoStub = sinon.stub(logger, 'info')

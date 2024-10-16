@@ -1,7 +1,7 @@
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
-const main = require('./../../lib/main')
+const Encrypt = require('./../../lib/services/encrypt')
 
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
@@ -13,7 +13,7 @@ function encrypt () {
   if (options.stdout) {
     const {
       processedEnvFiles
-    } = main.encrypt(options.envFile, options.key, options.excludeKey)
+    } = new Encrypt(options.envFile, options.key, options.excludeKey).run()
 
     for (const processedEnvFile of processedEnvFiles) {
       console.log(processedEnvFile.envSrc)
@@ -25,7 +25,7 @@ function encrypt () {
         processedEnvFiles,
         changedFilepaths,
         unchangedFilepaths
-      } = main.encrypt(options.envFile, options.key, options.excludeKey)
+      } = new Encrypt(options.envFile, options.key, options.excludeKey).run()
 
       for (const processedEnvFile of processedEnvFiles) {
         logger.verbose(`encrypting ${processedEnvFile.envFilepath} (${processedEnvFile.filepath})`)

@@ -11,8 +11,6 @@ const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Run = require('./services/run')
 const Keypair = require('./services/keypair')
-const Encrypt = require('./services/encrypt')
-const Decrypt = require('./services/decrypt')
 const Genexample = require('./services/genexample')
 
 // helpers
@@ -195,16 +193,6 @@ const get = function (
   return new Get(key, envs, overload, DOTENV_KEY, all).run()
 }
 
-/** @type {import('./main').encrypt} */
-const encrypt = function (envFile, key, excludeKey) {
-  return new Encrypt(envFile, key, excludeKey).run()
-}
-
-/** @type {import('./main').encrypt} */
-const decrypt = function (envFile, key, excludeKey) {
-  return new Decrypt(envFile, key, excludeKey).run()
-}
-
 /** @type {import('./main').keypair} */
 const keypair = function (envFile, key) {
   return new Keypair(envFile, key).run()
@@ -216,8 +204,6 @@ module.exports = {
   configDotenv,
   parse,
   // actions related
-  encrypt,
-  decrypt,
   ls,
   get,
   keypair,

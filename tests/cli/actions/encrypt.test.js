@@ -4,7 +4,7 @@ const sinon = require('sinon')
 const capcon = require('capture-console')
 const proxyquire = require('proxyquire')
 
-const main = require('./../../../src/lib/main')
+const Encrypt = require('./../../../src/lib/services/encrypt')
 const { logger } = require('../../../src/shared/logger')
 
 const encrypt = proxyquire('../../../src/cli/actions/encrypt', {
@@ -21,7 +21,7 @@ t.beforeEach((ct) => {
 t.test('encrypt - nothing', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').returns({
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvFiles: [],
     changedFilepaths: [],
     unchangedFilepaths: []
@@ -29,7 +29,7 @@ t.test('encrypt - nothing', ct => {
 
   encrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
 
   ct.end()
 })
@@ -37,7 +37,7 @@ t.test('encrypt - nothing', ct => {
 t.test('encrypt - .env but no changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').returns({
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -55,7 +55,7 @@ t.test('encrypt - .env but no changes', ct => {
 
   encrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger.info')
 
   ct.end()
@@ -65,7 +65,7 @@ t.test('encrypt - --stdout', ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').returns({
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -84,7 +84,7 @@ t.test('encrypt - --stdout', ct => {
     encrypt.call(fakeContext)
   })
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
   t.ok(processExitStub.calledWith(0), 'process.exit(0)')
   t.equal(stdout, 'HELLO="encrypted:1234"\n')
 
@@ -94,7 +94,7 @@ t.test('encrypt - --stdout', ct => {
 t.test('encrypt - .env with changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').returns({
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -114,7 +114,7 @@ t.test('encrypt - .env with changes', ct => {
 
   encrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
@@ -127,7 +127,7 @@ t.test('encrypt - .env with changes', ct => {
 t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').returns({
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -148,7 +148,7 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
 
   encrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
@@ -167,7 +167,7 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').returns({
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -188,7 +188,7 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
 
   encryptNotIgnoring.call(fakeContext)
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
@@ -206,7 +206,7 @@ t.test('encrypt - MISSING_ENV_FILE', ct => {
   error.code = 'MISSING_ENV_FILE'
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').returns({
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -228,7 +228,7 @@ t.test('encrypt - MISSING_ENV_FILE', ct => {
 
   encrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -244,7 +244,7 @@ t.test('encrypt - OTHER_ERROR', ct => {
   error.code = 'OTHER_ERROR'
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').returns({
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvFiles: [{
       envFilepath: '.env',
       filepath: '.env',
@@ -266,7 +266,7 @@ t.test('encrypt - OTHER_ERROR', ct => {
 
   encrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -285,7 +285,7 @@ t.test('encrypt - catch error', ct => {
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(main, 'encrypt').throws(error)
+  const stub = sinon.stub(Encrypt.prototype, 'run').throws(error)
 
   const processExitStub = sinon.stub(process, 'exit')
   const loggerInfoStub = sinon.stub(logger, 'info')
@@ -296,7 +296,7 @@ t.test('encrypt - catch error', ct => {
 
   encrypt.call(fakeContext)
 
-  t.ok(stub.called, 'main.encrypt() called')
+  t.ok(stub.called, 'Encrypt().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')

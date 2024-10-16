@@ -8,7 +8,6 @@ const Ls = require('../../src/lib/services/ls')
 const Get = require('../../src/lib/services/get')
 const Run = require('../../src/lib/services/run')
 const Keypair = require('../../src/lib/services/keypair')
-const Encrypt = require('../../src/lib/services/encrypt')
 const Decrypt = require('../../src/lib/services/decrypt')
 const Genexample = require('../../src/lib/services/genexample')
 
@@ -77,32 +76,6 @@ t.test('parse calls dotenv.parse', ct => {
   main.parse()
 
   t.ok(stub.called, 'dotenv.parse() called')
-
-  stub.restore()
-
-  ct.end()
-})
-
-t.test('encrypt calls Encrypt.run', ct => {
-  const stub = sinon.stub(Encrypt.prototype, 'run')
-  stub.returns({})
-
-  main.encrypt()
-
-  t.ok(stub.called, 'new Encrypt().run() called')
-
-  stub.restore()
-
-  ct.end()
-})
-
-t.test('decrypt calls Decrypt.run', ct => {
-  const stub = sinon.stub(Decrypt.prototype, 'run')
-  stub.returns({})
-
-  main.decrypt()
-
-  t.ok(stub.called, 'new Decrypt().run() called')
 
   stub.restore()
 
