@@ -107,7 +107,11 @@ program.command('encrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--stdout', 'send to stdout')
-  .action(encryptAction)
+  .action(function (...args) {
+    this.envs = envs
+
+    encryptAction.apply(this, args)
+  })
 
 // dotenvx decrypt
 const decryptAction = require('./actions/decrypt')
