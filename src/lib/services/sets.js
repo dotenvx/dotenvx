@@ -98,7 +98,6 @@ class Sets {
           // .env.keys
           let keysSrc = ''
           const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-          console.log('envKeysFilepath', envKeysFilepath)
           if (fsx.existsSync(envKeysFilepath)) {
             keysSrc = fsx.readFileX(envKeysFilepath)
           }
