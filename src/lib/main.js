@@ -10,7 +10,6 @@ const { getColor, bold } = require('./../shared/colors')
 const Ls = require('./services/ls')
 const Get = require('./services/get')
 const Run = require('./services/run')
-const Sets = require('./services/sets')
 const Keypair = require('./services/keypair')
 const Encrypt = require('./services/encrypt')
 const Decrypt = require('./services/decrypt')
@@ -196,11 +195,6 @@ const get = function (
   return new Get(key, envs, overload, DOTENV_KEY, all).run()
 }
 
-/** @type {import('./main').set} */
-const set = function (key, value, envs = [], encrypt) {
-  return new Sets(key, value, envs, encrypt).run()
-}
-
 /** @type {import('./main').encrypt} */
 const encrypt = function (envFile, key, excludeKey) {
   return new Encrypt(envFile, key, excludeKey).run()
@@ -226,7 +220,6 @@ module.exports = {
   decrypt,
   ls,
   get,
-  set,
   keypair,
   genexample,
   // expose for libs depending on @dotenvx/dotenvx - like dotenvx-pro
