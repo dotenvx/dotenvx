@@ -387,3 +387,77 @@ export KEY='${parsed.KEY}'
 
   ct.end()
 })
+
+t.test('#run (finds .env and .env.keys file) but derived public key does not match configured public key', ct => {
+  process.env.DOTENV_PUBLIC_KEY = '12345'
+
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs
+  } = new Encrypt(envs).run()
+
+  const error = new Error('derived public key (03eaf21…) does not match the existing public key (12345…)')
+  error.code = 'INVALID_DOTENV_PRIVATE_KEY'
+  error.help = 'debug info: DOTENV_PRIVATE_KEY=ec9e800… (derived DOTENV_PUBLIC_KEY=03eaf21… vs existing DOTENV_PUBLIC_KEY=12345…)'
+
+  ct.same(processedEnvs, [{
+    keys: [],
+    type: 'envFile',
+    filepath: path.resolve('tests/monorepo/apps/encrypted/.env'),
+    envFilepath: 'tests/monorepo/apps/encrypted/.env',
+    error
+  }])
+
+  ct.end()
+})
+
+t.test('#run (finds .env file only)', ct => {
+  const Keypair = require('../../../src/lib/services/keypair')
+  const sandbox = sinon.createSandbox()
+  sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
+    const { key } = this
+    // Custom logic depending on constructor arguments
+    if (key === 'DOTENV_PUBLIC_KEY') {
+      return '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba'
+    }
+    return null
+  })
+
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    unchangedFilepaths
+  } = new Encrypt(envs).run()
+
+  const row = processedEnvs[0]
+  const publicKey = row.publicKey
+  const privateKey = row.privateKey
+  const privateKeyName = row.privateKeyName
+  const encryptedValue = row.encryptedValue
+  const envSrc = row.envSrc
+
+  ct.same(processedEnvs, [{
+    keys: [],
+    type: 'envFile',
+    filepath: path.resolve('tests/monorepo/apps/encrypted/.env'),
+    envFilepath: 'tests/monorepo/apps/encrypted/.env',
+    publicKey,
+    privateKey,
+    privateKeyName,
+    envSrc
+  }])
+  ct.same(unchangedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+
+  sandbox.restore()
+
+  ct.end()
+})
+
