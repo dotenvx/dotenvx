@@ -3,6 +3,7 @@ const { logger } = require('./../../shared/logger')
 
 const Sets = require('./../../lib/services/sets')
 
+const catchAndLog = require('../../lib/helpers/catchAndLog')
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
 function set (key, value) {
@@ -74,16 +75,7 @@ function set (key, value) {
       }
     }
   } catch (error) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.help(error.help)
-    }
-    if (error.debug) {
-      logger.debug(error.debug)
-    }
-    if (error.code) {
-      logger.debug(`ERROR_CODE: ${error.code}`)
-    }
+    catchAndLog(error)
     process.exit(1)
   }
 }

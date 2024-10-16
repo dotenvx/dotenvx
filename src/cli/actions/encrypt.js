@@ -3,6 +3,7 @@ const { logger } = require('./../../shared/logger')
 
 const Encrypt = require('./../../lib/services/encrypt')
 
+const catchAndLog = require('../../lib/helpers/catchAndLog')
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
 function encrypt () {
@@ -67,16 +68,7 @@ function encrypt () {
         }
       }
     } catch (error) {
-      logger.error(error.message)
-      if (error.help) {
-        logger.help(error.help)
-      }
-      if (error.debug) {
-        logger.debug(error.debug)
-      }
-      if (error.code) {
-        logger.debug(`ERROR_CODE: ${error.code}`)
-      }
+      catchAndLog(error)
       process.exit(1)
     }
   }

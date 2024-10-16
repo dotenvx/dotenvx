@@ -3,6 +3,8 @@ const { logger } = require('./../../shared/logger')
 
 const Decrypt = require('./../../lib/services/decrypt')
 
+const catchAndLog = require('../../lib/helpers/catchAndLog')
+
 function decrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -70,16 +72,7 @@ function decrypt () {
         process.exit(1)
       }
     } catch (error) {
-      logger.error(error.message)
-      if (error.help) {
-        logger.help(error.help)
-      }
-      if (error.debug) {
-        logger.debug(error.debug)
-      }
-      if (error.code) {
-        logger.debug(`ERROR_CODE: ${error.code}`)
-      }
+      catchAndLog(error)
       process.exit(1)
     }
   }
