@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.19.3...main)
 
+* respect `process.env.DOTENV_PRIVATE_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `set` ([#401](https://github.com/dotenvx/dotenvx/pull/401))
+
 ## 1.19.3
 
 ### Changed
