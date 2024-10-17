@@ -9,13 +9,15 @@ function decrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  const envs = this.envs
+
   let errorCount = 0
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Decrypt(options.envFile, options.key, options.excludeKey).run()
+    } = new Decrypt(envs, options.key, options.excludeKey).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
@@ -37,7 +39,7 @@ function decrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Decrypt(options.envFile, options.key, options.excludeKey).run()
+      } = new Decrypt(envs, options.key, options.excludeKey).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

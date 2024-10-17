@@ -3,98 +3,43 @@ const path = require('path')
 const dotenv = require('dotenv')
 const picomatch = require('picomatch')
 
-const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
+const TYPE_ENV_FILE = 'envFile'
+
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
+const findPrivateKey = require('./../helpers/findPrivateKey')
 const decryptValue = require('./../helpers/decryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const replace = require('./../helpers/replace')
+const detectEncoding = require('./../helpers/detectEncoding')
+const determineEnvs = require('./../helpers/determineEnvs')
 
 class Decrypt {
-  /**
-   * @param {string|string[]} [envFile]
-   * @param {string|string[]} [key]
-   * @param {string|string[]} [excludeKey]
-   **/
-  constructor (envFile = '.env', key = [], excludeKey = []) {
-    this.envFile = envFile
+  constructor (envs = [], key = [], excludeKey = []) {
+    this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
+
     this.processedEnvs = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
   }
 
   run () {
-    const envFilepaths = this._envFilepaths()
-    const keys = this._keys()
+    // example
+    // envs [
+    //   { type: 'envFile', value: '.env' }
+    // ]
+
+    this.keys = this._keys()
     const excludeKeys = this._excludeKeys()
-    const exclude = picomatch(excludeKeys)
-    const include = picomatch(keys, { ignore: excludeKeys })
 
-    for (const envFilepath of envFilepaths) {
-      const filepath = path.resolve(envFilepath)
+    this.exclude = picomatch(excludeKeys)
+    this.include = picomatch(this.keys, { ignore: excludeKeys })
 
-      const row = {}
-      row.keys = []
-      row.filepath = filepath
-      row.envFilepath = envFilepath
-
-      try {
-        // get the src
-        let src = fsx.readFileX(filepath)
-
-        // if DOTENV_PRIVATE_KEY_* already set in process.env then use it
-        const privateKey = smartDotenvPrivateKey(envFilepath)
-        row.privateKey = privateKey
-        row.privateKeyName = guessPrivateKeyName(filepath)
-
-        // track possible changes
-        row.changed = false
-
-        // iterate over all non-encrypted values and encrypt them
-        const parsed = dotenv.parse(src)
-        for (const [key, value] of Object.entries(parsed)) {
-          // key excluded - don't decrypt it
-          if (exclude(key)) {
-            continue
-          }
-
-          // key effectively excluded (by not being in the list of includes) - don't encrypt it
-          if (keys.length > 0 && !include(key)) {
-            continue
-          }
-
-          const encrypted = isEncrypted(key, value)
-          if (encrypted) {
-            row.keys.push(key) // track key(s)
-
-            const decryptedValue = decryptValue(value, privateKey)
-            // once newSrc is built write it out
-            src = replace(src, key, decryptedValue)
-
-            row.changed = true // track change
-          }
-        }
-
-        if (row.changed) {
-          row.envSrc = src
-          this.changedFilepaths.add(envFilepath)
-        } else {
-          row.envSrc = src
-          this.unchangedFilepaths.add(envFilepath)
-        }
-      } catch (e) {
-        if (e.code === 'ENOENT') {
-          const error = new Error(`missing ${envFilepath} file (${filepath})`)
-          error.code = 'MISSING_ENV_FILE'
-
-          row.error = error
-        } else {
-          row.error = e
-        }
+    for (const env of this.envs) {
+      if (env.type === TYPE_ENV_FILE) {
+        this._decryptEnvFile(env.value)
       }
-
-      this.processedEnvs.push(row)
     }
 
     return {
@@ -104,12 +49,68 @@ class Decrypt {
     }
   }
 
-  _envFilepaths () {
-    if (!Array.isArray(this.envFile)) {
-      return [this.envFile]
+  _decryptEnvFile (envFilepath) {
+    const row = {}
+    row.keys = []
+    row.type = TYPE_ENV_FILE
+
+    const filepath = path.resolve(envFilepath)
+    row.filepath = filepath
+    row.envFilepath = envFilepath
+
+    try {
+      const encoding = this._detectEncoding(filepath)
+      let envSrc = fsx.readFileX(filepath, { encoding })
+      const envParsed = dotenv.parse(envSrc)
+
+      const privateKey = findPrivateKey(envFilepath)
+      const privateKeyName = guessPrivateKeyName(envFilepath)
+
+      row.privateKey = privateKey
+      row.privateKeyName = privateKeyName
+      row.changed = false // track possible changes
+
+      for (const [key, value] of Object.entries(envParsed)) {
+        // key excluded - don't decrypt it
+        if (this.exclude(key)) {
+          continue
+        }
+
+        // key effectively excluded (by not being in the list of includes) - don't decrypt it
+        if (this.keys.length > 0 && !this.include(key)) {
+          continue
+        }
+
+        const encrypted = isEncrypted(key, value)
+        if (encrypted) {
+          row.keys.push(key) // track key(s)
+
+          const decryptedValue = decryptValue(value, privateKey)
+          // once newSrc is built write it out
+          envSrc = replace(envSrc, key, decryptedValue)
+
+          row.changed = true // track change
+        }
+      }
+
+      row.envSrc = envSrc
+      if (row.changed) {
+        this.changedFilepaths.add(envFilepath)
+      } else {
+        this.unchangedFilepaths.add(envFilepath)
+      }
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        const error = new Error(`missing ${envFilepath} file (${filepath})`)
+        error.code = 'MISSING_ENV_FILE'
+
+        row.error = error
+      } else {
+        row.error = e
+      }
     }
 
-    return this.envFile
+    this.processedEnvs.push(row)
   }
 
   _keys () {
@@ -126,6 +127,10 @@ class Decrypt {
     }
 
     return this.excludeKey
+  }
+
+  _detectEncoding (filepath) {
+    return detectEncoding(filepath)
   }
 }
 

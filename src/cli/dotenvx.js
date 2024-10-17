@@ -59,7 +59,6 @@ program.command('run')
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\'])')
   .action(function (...args) {
     this.envs = envs
-
     runAction.apply(this, args)
   })
 
@@ -78,7 +77,6 @@ program.command('get')
   .option('--format <type>', 'format of the output (json, shell, eval)', 'json')
   .action(function (...args) {
     this.envs = envs
-
     getAction.apply(this, args)
   })
 
@@ -95,7 +93,6 @@ program.command('set')
   .option('-p, --plain', 'store value as plain text', false)
   .action(function (...args) {
     this.envs = envs
-
     setAction.apply(this, args)
   })
 
@@ -103,13 +100,12 @@ program.command('set')
 const encryptAction = require('./actions/encrypt')
 program.command('encrypt')
   .description('convert .env file(s) to encrypted .env file(s)')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
-
     encryptAction.apply(this, args)
   })
 
@@ -117,11 +113,14 @@ program.command('encrypt')
 const decryptAction = require('./actions/decrypt')
 program.command('decrypt')
   .description('convert encrypted .env file(s) to plain .env file(s)')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
   .option('--stdout', 'send to stdout')
-  .action(decryptAction)
+  .action(function (...args) {
+    this.envs = envs
+    decryptAction.apply(this, args)
+  })
 
 // dotenvx keypair
 const keypairAction = require('./actions/keypair')
