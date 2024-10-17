@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.19.3...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.20.0...main)
+
+### Changed
+
+* respect `process.env.DOTENV_PRIVATE_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `set` ([#401](https://github.com/dotenvx/dotenvx/pull/401))
+* respect `process.env.DOTENV_PRIVATE_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `encrypt` ([#411](https://github.com/dotenvx/dotenvx/pull/411))
+* respect `process.env.DOTENV_PRIVATE_KEY` on `decrypt` ([#412](https://github.com/dotenvx/dotenvx/pull/412))
+
+### Removed
 
 * remove `main.decrypt,encrypt,set` ([#410](https://github.com/dotenvx/dotenvx/pull/410))
-* respect `process.env.DOTENV_PRIVATE_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `set` ([#401](https://github.com/dotenvx/dotenvx/pull/401))
-* respect `process.env.DOTENV_PUBLIC_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `encrypt` ([#411](https://github.com/dotenvx/dotenvx/pull/411))
 
 ## 1.19.3
 
