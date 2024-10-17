@@ -63,7 +63,6 @@ class Encrypt {
     const filepath = path.resolve(envFilepath)
     row.filepath = filepath
     row.envFilepath = envFilepath
-    // row.changed = changed
 
     try {
       const encoding = this._detectEncoding(filepath)
