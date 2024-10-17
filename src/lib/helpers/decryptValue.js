@@ -1,5 +1,7 @@
 const { decrypt } = require('eciesjs')
 
+const truncate = require('./truncate')
+
 const PREFIX = 'encrypted:'
 
 function decryptValue (value, privateKey) {
@@ -27,9 +29,9 @@ function decryptValue (value, privateKey) {
         break
       } catch (e) {
         if (e.message === 'Invalid private key') {
-          decryptionError = new Error('private key looks invalid')
+          decryptionError = new Error(`private key [${truncate(privateKey)}] looks invalid`)
         } else if (e.message === 'Unsupported state or unable to authenticate data') {
-          decryptionError = new Error('private key looks wrong')
+          decryptionError = new Error(`private key [${truncate(privateKey)}] looks wrong`)
         } else if (e.message === 'Point of length 65 was invalid. Expected 33 compressed bytes or 65 uncompressed bytes') {
           decryptionError = new Error('encrypted data looks malformed')
         } else {

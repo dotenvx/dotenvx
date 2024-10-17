@@ -242,6 +242,7 @@ t.test('encrypt - MISSING_ENV_FILE', ct => {
 t.test('encrypt - OTHER_ERROR', ct => {
   const error = new Error('Mock Error')
   error.code = 'OTHER_ERROR'
+  error.help = 'some help'
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -271,7 +272,7 @@ t.test('encrypt - OTHER_ERROR', ct => {
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger.warn')
-  t.ok(loggerHelpStub.notCalled, 'logger.help')
+  t.ok(loggerHelpStub.calledWith('some help'), 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
 
   ct.end()

@@ -7,7 +7,9 @@ const colors16 = new Map([
   ['olive', 33],
   ['orangered', 31], // mapped to red
   ['plum', 35], // mapped to magenta
-  ['red', 31]
+  ['red', 31],
+  ['electricblue', 36],
+  ['dodgerblue', 36]
 ])
 
 const colors256 = new Map([
@@ -17,7 +19,9 @@ const colors256 = new Map([
   ['olive', 142],
   ['orangered', 202],
   ['plum', 182],
-  ['red', 196]
+  ['red', 196],
+  ['electricblue', 45],
+  ['dodgerblue', 33]
 ])
 
 function getColor (color) {

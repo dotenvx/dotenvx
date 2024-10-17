@@ -38,6 +38,9 @@ function encrypt () {
             logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx encrypt]`)
           } else {
             logger.warn(processedEnv.error.message)
+            if (processedEnv.error.help) {
+              logger.help(processedEnv.error.help)
+            }
           }
         } else if (processedEnv.changed) {
           fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)

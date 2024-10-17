@@ -79,7 +79,7 @@ t.test('#decryptValue invalid privateKey', ct => {
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
-    ct.same(error.message, 'private key looks invalid')
+    ct.same(error.message, 'private key [invalid…] looks invalid')
   }
 
   ct.end()
@@ -107,7 +107,7 @@ t.test('#decryptValue wrong privateKey', ct => {
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
-    ct.same(error.message, 'private key looks wrong')
+    ct.same(error.message, 'private key [9c1ab41…] looks wrong')
   }
 
   ct.end()

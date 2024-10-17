@@ -84,7 +84,7 @@ t.test('logger.help', (ct) => {
     logger.help(message)
   })
 
-  ct.equal(stdout, `${getColor('blue')('message1')}\n`)
+  ct.equal(stdout, `${getColor('dodgerblue')('message1')}\n`)
 
   ct.end()
 })
