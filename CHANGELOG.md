@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 * respect `process.env.DOTENV_PRIVATE_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `set` ([#401](https://github.com/dotenvx/dotenvx/pull/401))
 * respect `process.env.DOTENV_PRIVATE_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `encrypt` ([#411](https://github.com/dotenvx/dotenvx/pull/411))
 * respect `process.env.DOTENV_PRIVATE_KEY` on `decrypt` ([#412](https://github.com/dotenvx/dotenvx/pull/412))
+* change `logger.help` to use brighter blue ([#414](https://github.com/dotenvx/dotenvx/pull/414))
 
 ### Removed
 

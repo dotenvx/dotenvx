@@ -28,7 +28,7 @@ const error = (m) => bold(getColor('red')(m))
 const warn = getColor('orangered')
 const success = getColor('green')
 const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
-const help = getColor('blue')
+const help = getColor('dodgerblue')
 const help2 = getColor('gray')
 const verbose = getColor('plum')
 const debug = getColor('plum')
