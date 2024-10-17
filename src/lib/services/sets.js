@@ -15,6 +15,7 @@ const findPrivateKey = require('./../helpers/findPrivateKey')
 const findPublicKey = require('./../helpers/findPublicKey')
 const keyPair = require('./../helpers/keyPair')
 const truncate = require('./../helpers/truncate')
+const isEncrypted = require('./../helpers/isEncrypted')
 
 class Sets {
   constructor (key, value, envs = [], encrypt = true) {
@@ -65,6 +66,7 @@ class Sets {
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenv.parse(envSrc)
       row.originalValue = envParsed[row.key] || null
+      const wasPlainText = !isEncrypted(row.originalValue)
       this.readableFilepaths.add(envFilepath)
 
       if (this.encrypt) {
@@ -154,14 +156,16 @@ class Sets {
         row.privateKeyName = privateKeyName
       }
 
-      if (row.originalValue && this.value === row.originalValue) {
-        row.envSrc = envSrc
-        this.unchangedFilepaths.add(envFilepath)
-        row.changed = false
-      } else {
+      const goingFromPlainTextToEncrypted = wasPlainText && this.encrypt
+      const valueChanged = this.value !== row.originalValue
+      if (goingFromPlainTextToEncrypted || valueChanged) {
         row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
         this.changedFilepaths.add(envFilepath)
         row.changed = true
+      } else {
+        row.envSrc = envSrc
+        this.unchangedFilepaths.add(envFilepath)
+        row.changed = false
       }
     } catch (e) {
       if (e.code === 'ENOENT') {

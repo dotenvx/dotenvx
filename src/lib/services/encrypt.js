@@ -161,7 +161,7 @@ class Encrypt {
           continue
         }
 
-        const encrypted = isEncrypted(key, value) || isPublicKey(key, value)
+        const encrypted = isEncrypted(value) || isPublicKey(key, value)
         if (!encrypted) {
           row.keys.push(key) // track key(s)
 

@@ -7,7 +7,7 @@ function isFullyEncrypted (src) {
   const parsed = dotenv.parse(src)
 
   for (const [key, value] of Object.entries(parsed)) {
-    const result = isEncrypted(key, value) || isPublicKey(key, value)
+    const result = isEncrypted(value) || isPublicKey(key, value)
     if (!result) {
       return false
     }

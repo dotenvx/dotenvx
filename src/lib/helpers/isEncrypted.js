@@ -1,6 +1,6 @@
 const ENCRYPTION_PATTERN = /^encrypted:.+/
 
-function isEncrypted (key, value) {
+function isEncrypted (value) {
   return ENCRYPTION_PATTERN.test(value)
 }
 

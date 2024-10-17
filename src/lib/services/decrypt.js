@@ -81,7 +81,7 @@ class Decrypt {
           continue
         }
 
-        const encrypted = isEncrypted(key, value)
+        const encrypted = isEncrypted(value)
         if (encrypted) {
           row.keys.push(key) // track key(s)
 

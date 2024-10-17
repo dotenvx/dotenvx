@@ -626,3 +626,55 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
 
   ct.end()
 })
+
+t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted to encrypted same value', ct => {
+  const Keypair = require('../../../src/lib/services/keypair')
+  const sandbox = sinon.createSandbox()
+  sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
+    const { key } = this
+    // Custom logic depending on constructor arguments
+    if (key === 'DOTENV_PUBLIC_KEY') {
+      return '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba'
+    }
+    return null
+  })
+
+  const envFile = 'tests/monorepo/apps/unencrypted/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    changedFilepaths
+  } = new Sets('HELLO', 'unencrypted', envs).run() // this value should be the same value as currently in the file
+
+  const row = processedEnvs[0]
+  const publicKey = row.publicKey
+  const privateKey = row.privateKey
+  const privateKeyName = row.privateKeyName
+  const encryptedValue = row.encryptedValue
+  const envSrc = [
+    `HELLO='${encryptedValue}'`
+  ].join('\n') + '\n'
+
+  ct.same(processedEnvs, [{
+    key: 'HELLO',
+    value: 'unencrypted',
+    type: 'envFile',
+    filepath: path.resolve('tests/monorepo/apps/unencrypted/.env'),
+    envFilepath: 'tests/monorepo/apps/unencrypted/.env',
+    changed: true,
+    originalValue: 'unencrypted',
+    publicKey,
+    privateKey,
+    encryptedValue,
+    privateKeyName,
+    envSrc
+  }])
+  ct.same(changedFilepaths, ['tests/monorepo/apps/unencrypted/.env'])
+
+  sandbox.restore()
+
+  ct.end()
+})
