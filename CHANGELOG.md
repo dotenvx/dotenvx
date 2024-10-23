@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
+* update [eciesjs](https://github.com/ecies/js/issues/802) ([#421](https://github.com/dotenvx/dotenvx/pull/421))
 * remove default values for ts interface - no longer permitted by latest ts ([#419](https://github.com/dotenvx/dotenvx/pull/419))
 
 ## 1.20.0
