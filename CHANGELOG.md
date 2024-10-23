@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
+* remove default values for ts interface - no longer permitted by latest ts ([#419](https://github.com/dotenvx/dotenvx/pull/419))
+
+## 1.20.0
+
+### Changed
+
 * respect `process.env.DOTENV_PRIVATE_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `set` ([#401](https://github.com/dotenvx/dotenvx/pull/401))
 * respect `process.env.DOTENV_PRIVATE_KEY` and/or `process.env.DOTENV_PUBLIC_KEY` on `encrypt` ([#411](https://github.com/dotenvx/dotenvx/pull/411))
 * respect `process.env.DOTENV_PRIVATE_KEY` on `decrypt` ([#412](https://github.com/dotenvx/dotenvx/pull/412))
