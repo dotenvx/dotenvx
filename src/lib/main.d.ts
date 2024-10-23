@@ -203,10 +203,10 @@ export function ls(
  */
 export function get(
   key?: string,
-  envs: string[] = [],
-  overload = false,
-  DOTENV_KEY = '',
-  all = false
+  envs?: string[],
+  overload?: boolean,
+  DOTENV_KEY?: string,
+  all?: boolean
 ): Record<string, string | undefined> | string | undefined;
 
 export type SetOutput = {
