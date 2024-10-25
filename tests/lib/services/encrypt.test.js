@@ -150,7 +150,7 @@ t.test('#run (finds .env file with multiline value)', ct => {
 DOTENV_PUBLIC_KEY="${parsed.DOTENV_PUBLIC_KEY}"
 
 # .env
-HELLO='${parsed.HELLO}'
+HELLO="${parsed.HELLO}"
 `
   ct.same(p1.envSrc, output)
 
@@ -381,7 +381,7 @@ t.test('#run (finds .env.export file with exported key)', ct => {
 DOTENV_PUBLIC_KEY_EXPORT="${parsed.DOTENV_PUBLIC_KEY_EXPORT}"
 
 # .env.export
-export KEY='${parsed.KEY}'
+export KEY=${parsed.KEY}
 `
   ct.same(p1.envSrc, output)
 

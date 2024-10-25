@@ -79,7 +79,7 @@ ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'DOESNOTEXIST', 'ttt')
-  ct.same(newSrc, expected + '\nDOESNOTEXIST=\'ttt\'')
+  ct.same(newSrc, expected + '\nDOESNOTEXIST="ttt"')
   ct.same(parse(newSrc).DOESNOTEXIST, 'ttt')
   ct.end()
 })
@@ -126,13 +126,13 @@ GROUP='$1$2'
 `
 
   const newSrc = replace(src, 'DOESNOTEXIST', 'ttt')
-  ct.same(newSrc, expected.trim() + '\nDOESNOTEXIST=\'ttt\'')
+  ct.same(newSrc, expected.trim() + '\nDOESNOTEXIST="ttt"')
   ct.same(parse(newSrc).DOESNOTEXIST, 'ttt')
   ct.end()
 })
 
 t.test('HELLO', ct => {
-  const expected = `HELLO='ttt'
+  const expected = `HELLO=ttt
 SPACER= b
 SPACEL =c
 SPACEB = d
@@ -177,7 +177,7 @@ GROUP='$1$2'`
 
 t.test('#SPACER', ct => {
   const expected = `HELLO=a
-SPACER='ttt'
+SPACER=ttt
 SPACEL =c
 SPACEB = d
 SINGLE='e'
@@ -222,7 +222,7 @@ GROUP='$1$2'`
 t.test('#SPACEL', ct => {
   const expected = `HELLO=a
 SPACER= b
-SPACEL='ttt'
+SPACEL=ttt
 SPACEB = d
 SINGLE='e'
 DOUBLE="f"
@@ -267,7 +267,7 @@ t.test('#SPACEB', ct => {
   const expected = `HELLO=a
 SPACER= b
 SPACEL =c
-SPACEB='ttt'
+SPACEB=ttt
 SINGLE='e'
 DOUBLE="f"
 BACKTICK=\`g\`
@@ -357,7 +357,7 @@ SPACER= b
 SPACEL =c
 SPACEB = d
 SINGLE='e'
-DOUBLE='ttt'
+DOUBLE="ttt"
 BACKTICK=\`g\`
 JSON={"hi": 1}
 JSON2="{"hi": 1}"
@@ -403,7 +403,7 @@ SPACEB = d
 SINGLE='e'
 DOUBLE="f"
 BACKTICK=\`g\`
-JSON='{"other": 2}'
+JSON={"other": 2}
 JSON2="{"hi": 1}"
 QUOTE="'"
 QUOTE2='"'
@@ -448,7 +448,7 @@ SINGLE='e'
 DOUBLE="f"
 BACKTICK=\`g\`
 JSON={"hi": 1}
-JSON2='{"other": 2}'
+JSON2="{"hi": 2}"
 QUOTE="'"
 QUOTE2='"'
 export EXPORT=k
@@ -477,9 +477,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'JSON2', '{"other": 2}')
+  const newSrc = replace(src, 'JSON2', '{"hi": 2}')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).JSON2, '{"other": 2}')
+  ct.same(parse(newSrc).JSON2, '{"hi": 2}')
   ct.end()
 })
 
@@ -493,7 +493,7 @@ DOUBLE="f"
 BACKTICK=\`g\`
 JSON={"hi": 1}
 JSON2="{"hi": 1}"
-QUOTE='"'
+QUOTE="""
 QUOTE2='"'
 export EXPORT=k
 EXPORT2='export EXPORT=k'
@@ -538,7 +538,7 @@ BACKTICK=\`g\`
 JSON={"hi": 1}
 JSON2="{"hi": 1}"
 QUOTE="'"
-QUOTE2="'"
+QUOTE2='''
 export EXPORT=k
 EXPORT2='export EXPORT=k'
 export EXPORT=k
@@ -583,9 +583,9 @@ JSON={"hi": 1}
 JSON2="{"hi": 1}"
 QUOTE="'"
 QUOTE2='"'
-export EXPORT='ttt'
+export EXPORT=ttt
 EXPORT2='export EXPORT=k'
-export EXPORT='ttt'
+export EXPORT=ttt
   PAD=l
 BAD=f'bar
 BAD2=f"bar
@@ -630,7 +630,7 @@ QUOTE2='"'
 export EXPORT=k
 EXPORT2='export EXPORT=k'
 export EXPORT=k
-  PAD='ttt'
+  PAD=ttt
 BAD=f'bar
 BAD2=f"bar
 MULTI='-----BEGIN RSA PRIVATE KEY-----
@@ -675,7 +675,7 @@ export EXPORT=k
 EXPORT2='export EXPORT=k'
 export EXPORT=k
   PAD=l
-BAD='f"bar'
+BAD=f"bar
 BAD2=f"bar
 MULTI='-----BEGIN RSA PRIVATE KEY-----
 ABCD
@@ -720,7 +720,7 @@ EXPORT2='export EXPORT=k'
 export EXPORT=k
   PAD=l
 BAD=f'bar
-BAD2="f'bar"
+BAD2=f'bar
 MULTI='-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----'
@@ -861,9 +861,9 @@ ABCD
 MULTI2="-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----"
-MULTI3="hi
+MULTI3=\`hi
 my
-friend"
+friend\`
 EVAL=$(echo world)
 EMPTY=
 NEWLINES="expand\nnew\nlines"
@@ -912,7 +912,7 @@ ABCD
 MULTI3=\`-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----\`
-EVAL='ttt'
+EVAL=ttt
 EMPTY=
 NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
@@ -957,7 +957,7 @@ MULTI3=\`-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----\`
 EVAL=$(echo world)
-EMPTY='ttt'
+EMPTY=ttt
 NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
 HASHTAG="h #tag"
@@ -1002,7 +1002,7 @@ ABCD
 -----END RSA PRIVATE KEY-----\`
 EVAL=$(echo world)
 EMPTY=
-NEWLINES='ttt'
+NEWLINES="ttt"
 COMMENT=g # comment
 HASHTAG="h #tag"
 D.O.T.S=i
@@ -1047,7 +1047,7 @@ ABCD
 EVAL=$(echo world)
 EMPTY=
 NEWLINES="expand\nnew\nlines"
-COMMENT='ttt' # comment
+COMMENT=ttt # comment
 HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
@@ -1092,7 +1092,7 @@ EVAL=$(echo world)
 EMPTY=
 NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
-HASHTAG='ttt'
+HASHTAG="ttt"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
@@ -1137,7 +1137,7 @@ EMPTY=
 NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
 HASHTAG="h #tag"
-D.O.T.S='ttt'
+D.O.T.S=ttt
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
@@ -1227,7 +1227,7 @@ COMMENT=g # comment
 HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
-ESCAPED='ttt'
+ESCAPED=ttt
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
@@ -1329,7 +1329,7 @@ t.test('#replace', ct => {
   const src = 'HELLO=World'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO=Universe')
 
   ct.end()
 })
@@ -1347,7 +1347,7 @@ t.test('#replace with double quotes', ct => {
   const src = 'HELLO="World"'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
@@ -1356,7 +1356,7 @@ t.test('#replace appends when key does not yet exist', ct => {
   const src = 'HELLO=World'
 
   const newSrc = replace(src, 'API_KEY', '1234')
-  ct.same(newSrc, 'HELLO=World\nAPI_KEY=\'1234\'')
+  ct.same(newSrc, 'HELLO=World\nAPI_KEY="1234"')
 
   ct.end()
 })
@@ -1365,7 +1365,7 @@ t.test('#replace appends smartly if ending newline already', ct => {
   const src = 'HELLO=World\n'
 
   const newSrc = replace(src, 'API_KEY', '1234')
-  ct.same(newSrc, 'HELLO=World\nAPI_KEY=\'1234\'\n')
+  ct.same(newSrc, 'HELLO=World\nAPI_KEY="1234"\n')
 
   ct.end()
 })
@@ -1378,7 +1378,7 @@ JKLM
 -----END RSA PRIVATE KEY-----"`
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
@@ -1404,7 +1404,7 @@ IS
 -----END RSA PRIVATE KEY-----\``
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO=`Universe`')
 
   ct.end()
 })
@@ -1413,7 +1413,7 @@ t.test('#replace evals', ct => {
   const src = 'HELLO="$(echo world)"'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
@@ -1422,7 +1422,7 @@ t.test('#replace empty', ct => {
   const src = 'HELLO='
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO=Universe')
 
   ct.end()
 })
@@ -1431,7 +1431,7 @@ t.test('#replace empty backticks', ct => {
   const src = 'HELLO=``'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO=`Universe`')
 
   ct.end()
 })
@@ -1449,13 +1449,13 @@ t.test('#replace spaced double quotes', ct => {
   const src = 'HELLO="    single quote   "'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
 
 t.test('#replace double quotes inside single quotes', ct => {
-  const src = 'HELLO=\'double "quotes" inside single quotes'
+  const src = 'HELLO=\'double "quotes" inside single quotes\''
 
   const newSrc = replace(src, 'HELLO', 'Universe')
   ct.same(newSrc, 'HELLO=\'Universe\'')
@@ -1467,7 +1467,7 @@ t.test('#replace single quotes inside double quotes', ct => {
   const src = 'HELLO="single \'quotes\' inside single quotes"'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
@@ -1476,7 +1476,7 @@ t.test('#replace double quotes and single quotes inside backticks', ct => {
   const src = 'HELLO=`double "quotes" and single \'quotes\' inside backticks`'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO=`Universe`')
 
   ct.end()
 })
@@ -1485,7 +1485,7 @@ t.test('#replace newlines', ct => {
   const src = 'HELLO="expand\nnew\nlines"'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
@@ -1494,7 +1494,7 @@ t.test('#replace unquoted newlines to best ability', ct => {
   const src = 'HELLO=dontexpand\nnewlines'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, `HELLO='Universe'
+  ct.same(newSrc, `HELLO=Universe
 newlines`)
 
   ct.end()
@@ -1504,16 +1504,7 @@ t.test('#replace inline comments', ct => {
   const src = 'HELLO=inline comments # work #very #well'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\' # work #very #well')
-
-  ct.end()
-})
-
-t.test('#replace inline comments', ct => {
-  const src = 'HELLO=inline comments # work #very #well'
-
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\' # work #very #well') // make a little smarter to handle the spaces
+  ct.same(newSrc, 'HELLO=Universe # work #very #well')
 
   ct.end()
 })
@@ -1522,7 +1513,7 @@ t.test('#replace hashtag in quotes', ct => {
   const src = 'HELLO="hash #tag quoted"'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
@@ -1531,7 +1522,7 @@ t.test('#replace equal signs', ct => {
   const src = 'HELLO=equals=='
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO=Universe')
 
   ct.end()
 })
@@ -1540,7 +1531,7 @@ t.test('#replace inner quotes', ct => {
   const src = 'HELLO={"foo": "bar"}'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO=Universe')
 
   ct.end()
 })
@@ -1558,7 +1549,7 @@ t.test('#replace inner quotes as backticks', ct => {
   const src = 'HELLO=`{"foo": "bar\'s"}`'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  ct.same(newSrc, 'HELLO=`Universe`')
 
   ct.end()
 })
@@ -1567,7 +1558,7 @@ t.test('#replace spaced key', ct => {
   const src = '     HELLO=parsed'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, '     HELLO=\'Universe\'')
+  ct.same(newSrc, '     HELLO=Universe')
 
   ct.end()
 })
@@ -1581,7 +1572,7 @@ HELLO4=world`
   const newSrc = replace(src, 'HELLO2', 'universe')
 
   const expected = `HELLO=world
-HELLO2='universe'
+HELLO2=universe
 HELLO3=world
 HELLO4=world`
 
@@ -1600,7 +1591,7 @@ HELLO4="world"`
 
   const expected = `HELLO="world"
 HELLO2="world"
-HELLO3='universe'
+HELLO3="universe"
 HELLO4="world"`
 
   ct.same(newSrc, expected)
@@ -1636,7 +1627,7 @@ HELLO4=\`world\``
 
   const expected = `HELLO=\`world\`
 HELLO2=\`world\`
-HELLO3='universe'
+HELLO3=\`universe\`
 HELLO4=\`world\``
 
   ct.same(newSrc, expected)
@@ -1648,7 +1639,7 @@ t.test('#replace with export', ct => {
   const src = 'export HELLO=World'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'export HELLO=\'Universe\'')
+  ct.same(newSrc, 'export HELLO=Universe')
 
   ct.end()
 })

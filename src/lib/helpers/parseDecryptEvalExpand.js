@@ -3,6 +3,7 @@ const dotenvEval = require('./dotenvEval')
 const dotenvExpand = require('./dotenvExpand')
 const decryptValue = require('./decryptValue')
 const truncate = require('./truncate')
+const quotes = require('./quotes')
 
 function warning (e, key, privateKey = null) {
   const warning = new Error(`[${e.code}] could not decrypt ${key} using private key '${truncate(privateKey)}'`)
@@ -15,8 +16,10 @@ function warning (e, key, privateKey = null) {
 function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.env) {
   const warnings = []
 
-  // parse
+  // parse and quotes
   const parsed = dotenv.parse(src)
+  const _quotes = quotes(src)
+  const originalParsed = { ...parsed }
   for (const key in parsed) {
     try {
       const decryptedValue = decryptValue(parsed[key], privateKey)
@@ -39,7 +42,13 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
     parsed: evaled
   }
   const expanded = dotenvExpand.expand(inputEvaled)
+
   for (const key in expanded.parsed) {
+    // unset eval and expansion for single quotes
+    if (_quotes[key] === "'") {
+      expanded.parsed[key] = originalParsed[key] // reset to original
+    }
+
     try {
       const decryptedValue = decryptValue(expanded.parsed[key], privateKey)
       expanded.parsed[key] = decryptedValue
@@ -48,6 +57,11 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
     }
   }
   for (const key in processEnv) {
+    // unset eval and expansion for single quotes
+    if (_quotes[key] === "'") {
+      processEnv[key] = originalParsed[key] // reset to original
+    }
+
     try {
       const decryptedValue = decryptValue(processEnv[key], privateKey)
       processEnv[key] = decryptedValue
