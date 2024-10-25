@@ -17,7 +17,7 @@ t.test('#run', ct => {
   const output = `# .env.example - generated with dotenvx
 
 # for testing purposes only
-HELLO='' # this is a comment
+HELLO="" # this is a comment
 `
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })
@@ -88,7 +88,7 @@ t.test('#run (string envFile)', ct => {
   const output = `# .env.example - generated with dotenvx
 
 # for testing purposes only
-HELLO='' # this is a comment
+HELLO="" # this is a comment
 `
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })

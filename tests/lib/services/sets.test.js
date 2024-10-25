@@ -129,7 +129,7 @@ t.test('#run (encrypt off) (finds .env file)', ct => {
 t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)', ct => {
   const envSrc = [
     '# for testing purposes only',
-    'HELLO=\'new value\' # this is a comment'
+    'HELLO="new value" # this is a comment'
   ].join('\n') + '\n'
 
   const envFile = 'tests/monorepo/apps/frontend/.env'
@@ -343,7 +343,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt and changes original
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
     '# .env',
-    `HELLO='${encryptedValue}'`
+    `HELLO="${encryptedValue}"`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -430,7 +430,7 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
     '# .env',
-    `HELLO='${encryptedValue}'`
+    `HELLO="${encryptedValue}"`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -602,7 +602,7 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
     '# .env',
-    `HELLO='${encryptedValue}'`
+    `HELLO="${encryptedValue}"`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -655,7 +655,7 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
   const privateKeyName = row.privateKeyName
   const encryptedValue = row.encryptedValue
   const envSrc = [
-    `HELLO='${encryptedValue}'`
+    `HELLO="${encryptedValue}"`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
