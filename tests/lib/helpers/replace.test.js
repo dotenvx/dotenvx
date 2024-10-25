@@ -79,7 +79,7 @@ ESCAPED2='test\\test'
 GROUP='$1$2'`
 
   const newSrc = replace(src, 'DOESNOTEXIST', 'ttt')
-  ct.same(newSrc, expected + '\nDOESNOTEXIST=\'ttt\'')
+  ct.same(newSrc, expected + '\nDOESNOTEXIST="ttt"')
   ct.same(parse(newSrc).DOESNOTEXIST, 'ttt')
   ct.end()
 })
@@ -126,7 +126,7 @@ GROUP='$1$2'
 `
 
   const newSrc = replace(src, 'DOESNOTEXIST', 'ttt')
-  ct.same(newSrc, expected.trim() + '\nDOESNOTEXIST=\'ttt\'')
+  ct.same(newSrc, expected.trim() + '\nDOESNOTEXIST="ttt"')
   ct.same(parse(newSrc).DOESNOTEXIST, 'ttt')
   ct.end()
 })
@@ -1356,7 +1356,7 @@ t.test('#replace appends when key does not yet exist', ct => {
   const src = 'HELLO=World'
 
   const newSrc = replace(src, 'API_KEY', '1234')
-  ct.same(newSrc, 'HELLO=World\nAPI_KEY=\'1234\'')
+  ct.same(newSrc, 'HELLO=World\nAPI_KEY="1234"')
 
   ct.end()
 })
@@ -1365,7 +1365,7 @@ t.test('#replace appends smartly if ending newline already', ct => {
   const src = 'HELLO=World\n'
 
   const newSrc = replace(src, 'API_KEY', '1234')
-  ct.same(newSrc, 'HELLO=World\nAPI_KEY=\'1234\'\n')
+  ct.same(newSrc, 'HELLO=World\nAPI_KEY="1234"\n')
 
   ct.end()
 })

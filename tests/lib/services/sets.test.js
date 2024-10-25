@@ -98,7 +98,7 @@ t.test('#run (encrypt off) (finds .env file)', ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="frontend" # this is a comment',
-    'KEY=\'value\''
+    'KEY="value"'
   ].join('\n') + '\n'
 
   const envFile = 'tests/monorepo/apps/frontend/.env'
@@ -194,7 +194,7 @@ t.test('#run (encrypt off) (finds .env file as array)', ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="frontend" # this is a comment',
-    'KEY=\'value\''
+    'KEY="value"'
   ].join('\n') + '\n'
 
   const envFile = 'tests/monorepo/apps/frontend/.env'
@@ -249,7 +249,7 @@ t.test('#run (finds .env file) with --encrypt', ct => {
     '# .env',
     '# for testing purposes only',
     'HELLO="frontend" # this is a comment',
-    `KEY='${encryptedValue}'`
+    `KEY="${encryptedValue}"`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -297,7 +297,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt', ct => {
     '',
     '# .env',
     'HELLO="encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=="',
-    `KEY='${encryptedValue}'`
+    `KEY="${encryptedValue}"`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -486,7 +486,7 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
     `DOTENV_PUBLIC_KEY="${publicKey}"`,
     '',
     '# .env',
-    `HELLO='${encryptedValue}'`
+    `HELLO="${encryptedValue}"`
   ].join('\n') + '\n'
 
   ct.same(processedEnvs, [{
@@ -545,7 +545,7 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
     '',
     '# .env',
     '## hi',
-    `HELLO='${encryptedValue}'`
+    `HELLO="${encryptedValue}"`
   ].join('\n')
 
   ct.same(processedEnvs, [{
