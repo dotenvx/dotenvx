@@ -292,12 +292,12 @@ t.test('does not choke', ct => {
   const env = dotenvx.config({ path: testPath })
 
   ct.equal(env.parsed.DONT_CHOKE1, '.kZh`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!')
-  ct.equal(env.parsed.DONT_CHOKE2, '=;+=CNy3)-D=zI6gRP2w$B@0K;Y]e^EFnCmx$Dx?;.9wf-rgk1BcTR0]JtY<S:b_')
+  ct.equal(env.parsed.DONT_CHOKE2, '=;+=CNy3)-D=zI6gRP2w\\$B@0K;Y]e^EFnCmx\\$Dx?;.9wf-rgk1BcTR0]JtY<S:b_')
   ct.equal(env.parsed.DONT_CHOKE3, 'MUcKSGSY@HCON<1S_siWTP`DgS*Ug],mu]SkqI|7V2eOk9:>&fw;>HEwms`D8E2H')
   ct.equal(env.parsed.DONT_CHOKE4, 'm]zjzfRItw2gs[2:{p{ugENyFw9m)tH6_VCQzer`*noVaI<vqa3?FZ9+6U;K#Bfd')
   ct.equal(env.parsed.DONT_CHOKE5, '#la__nK?IxNlQ%`5q&DpcZ>Munx=[1-AMgAcwmPkToxTaB?kgdF5y`A8m=Oa-B!)')
-  ct.equal(env.parsed.DONT_CHOKE6, 'xlC&*<j4J<d._<JKH0RBJV!4(ZQEN-+&!0p137<g*hdY2H4xk?/;KO1$(W{:Wc}Q')
-  ct.equal(env.parsed.DONT_CHOKE7, '?$6)m*xhTVewc#NVVgxX%eBhJjoHYzpXFg=gzn[rWXPLj5UWj@z$/UDm8o79n/p%')
+  ct.equal(env.parsed.DONT_CHOKE6, 'xlC&*<j4J<d._<JKH0RBJV!4(ZQEN-+&!0p137<g*hdY2H4xk?/;KO1\\$(W{:Wc}Q')
+  ct.equal(env.parsed.DONT_CHOKE7, '?\\$6)m*xhTVewc#NVVgxX%eBhJjoHYzpXFg=gzn[rWXPLj5UWj@z\\$/UDm8o79n/p%')
   ct.equal(env.parsed.DONT_CHOKE8, '@}:[4#g%[R-CFR});bY(Z[KcDQDsVn2_y4cSdU<Mjy!c^F`G<!Ks7]kbS]N1:bP:')
 
   ct.end()
