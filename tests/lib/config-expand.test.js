@@ -312,3 +312,12 @@ t.test('expands DOMAIN with $HOST', ct => {
 
   ct.end()
 })
+
+t.test('does NOT expand SINGLE_QUOTE', ct => {
+  const testPath = 'tests/.env.expand'
+  const env = dotenvx.config({ path: testPath })
+
+  ct.equal(env.parsed.SINGLE_QUOTE, '$BASIC')
+
+  ct.end()
+})
