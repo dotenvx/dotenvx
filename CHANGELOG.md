@@ -2,7 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.20.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.21.0...main)
+
+## 1.21.0
+
+### Changed
+
+* treat single quotes literally ([#423](https://github.com/dotenvx/dotenvx/pull/423))
+* respect user chosen quotes ([#423](https://github.com/dotenvx/dotenvx/pull/423) [#377](https://github.com/dotenvx/dotenvx/issues/377))
+
+🎓 now if you choose to single quote, double quote, no quote, or backtick your value it will be respected - including for encrypted values. this more intuitively handles complex cases like escaped characters, literals, and json.
 
 ## 1.20.1
 
