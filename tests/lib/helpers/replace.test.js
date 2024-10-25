@@ -1449,25 +1449,25 @@ t.test('#replace spaced double quotes', ct => {
   const src = 'HELLO="    single quote   "'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\"Universe\"')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
 
-// t.test('#replace double quotes inside single quotes', ct => {
-//   const src = 'HELLO=\'double "quotes" inside single quotes'
-//
-//   const newSrc = replace(src, 'HELLO', 'Universe')
-//   ct.same(newSrc, 'HELLO=\'Universe\'')
-//
-//   ct.end()
-// })
+t.test('#replace double quotes inside single quotes', ct => {
+  const src = 'HELLO=\'double "quotes" inside single quotes\''
+
+  const newSrc = replace(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=\'Universe\'')
+
+  ct.end()
+})
 
 t.test('#replace single quotes inside double quotes', ct => {
   const src = 'HELLO="single \'quotes\' inside single quotes"'
 
   const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\"Universe\"')
+  ct.same(newSrc, 'HELLO="Universe"')
 
   ct.end()
 })
