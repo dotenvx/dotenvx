@@ -1,4 +1,3 @@
-const util = require('util')
 const dotenv = require('dotenv')
 
 const quotes = require('./quotes')
