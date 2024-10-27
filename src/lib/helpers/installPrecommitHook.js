@@ -3,7 +3,7 @@ const path = require('path')
 
 const HOOK_SCRIPT = `#!/bin/sh
 
-if ! command -v dotenvx &> /dev/null
+if ! command -v dotenvx 2>&1 >/dev/null
 then
   echo "[dotenvx][precommit] 'dotenvx' command not found"
   echo "[dotenvx][precommit] ? install it with [brew install dotenvx/brew/dotenvx]"
