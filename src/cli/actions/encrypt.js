@@ -62,11 +62,6 @@ function encrypt () {
       for (const processedEnv of processedEnvs) {
         if (processedEnv.privateKeyAdded) {
           logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
-
-          if (!isIgnoringDotenvKeys()) {
-            logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]')
-          }
-
           logger.help2(`ℹ run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
         }
       }
