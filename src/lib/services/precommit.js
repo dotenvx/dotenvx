@@ -4,7 +4,6 @@ const ignore = require('ignore')
 
 const Ls = require('../services/ls')
 
-const pluralize = require('./../helpers/pluralize')
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 const childProcess = require('child_process')
