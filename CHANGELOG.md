@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Changed
 
 * for `--convention nextjs` ingnore `.env.local` for TEST environment ([#425](https://github.com/dotenvx/dotenvx/pull/425))
+* for `precommit` redirect missing `dotenvx` command using POSIX compliant redirection ([#424](https://github.com/dotenvx/dotenvx/pull/424))
 
 ## 1.21.0
 
