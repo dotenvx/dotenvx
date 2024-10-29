@@ -116,7 +116,7 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, '.env.production not encrypted (or not gitignored)')
+    ct.same(error.message, '.env.production not protected (encrypted or gitignored)')
   }
 
   readFileXStub.restore()
@@ -143,7 +143,7 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isFil
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, '.env.production not encrypted (or not gitignored)')
+    ct.same(error.message, '.env.production not protected (encrypted or gitignored)')
   }
 
   readFileXStub.restore()
@@ -168,7 +168,7 @@ t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, 'packages/app/.env.production not encrypted (or not gitignored)')
+    ct.same(error.message, 'packages/app/.env.production not protected (encrypted or gitignored)')
   }
 
   lsServiceStub.restore()
