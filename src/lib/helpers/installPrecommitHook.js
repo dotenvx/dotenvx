@@ -6,7 +6,7 @@ const HOOK_SCRIPT = `#!/bin/sh
 if ! command -v dotenvx 2>&1 >/dev/null
 then
   echo "[dotenvx][precommit] 'dotenvx' command not found"
-  echo "[dotenvx][precommit] ? install it with [brew install dotenvx/brew/dotenvx]"
+  echo "[dotenvx][precommit] ? install it with [curl -fsS https://dotenvx.sh | sh]"
   echo "[dotenvx][precommit] ? other install options [https://dotenvx.com/docs/install]"
   exit 1
 fi
