@@ -83,6 +83,7 @@ program.command('get')
 // dotenvx set
 const setAction = require('./actions/set')
 program.command('set')
+  .usage('<KEY> <value> [options]')
   .description('set a single environment variable')
   .addHelpText('after', examples.set)
   .allowUnknownOption()
