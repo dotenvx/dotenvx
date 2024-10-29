@@ -9,6 +9,7 @@ const examples = require('./examples')
 const packageJson = require('./../lib/helpers/packageJson')
 const executeDynamic = require('./../lib/helpers/executeDynamic')
 const removeDynamicHelpSection = require('./../lib/helpers/removeDynamicHelpSection')
+const removeOptionsHelpParts = require('./../lib/helpers/removeOptionsHelpParts')
 
 // for use with run
 const envs = []
@@ -21,6 +22,7 @@ function collectEnvs (type) {
 
 // global log levels
 program
+  .usage('run -- yourcommand')
   .option('-l, --log-level <level>', 'set log level', 'info')
   .option('-q, --quiet', 'sets log level to error')
   .option('-v, --verbose', 'sets log level to verbose')
@@ -65,8 +67,9 @@ program.command('run')
 // dotenvx get
 const getAction = require('./actions/get')
 program.command('get')
+  .usage('[KEY] [options]')
   .description('return a single environment variable')
-  .argument('[key]', 'environment variable name')
+  .argument('[KEY]', 'environment variable name')
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
@@ -126,8 +129,9 @@ program.command('decrypt')
 // dotenvx keypair
 const keypairAction = require('./actions/keypair')
 program.command('keypair')
+  .usage('[KEY] [options]')
   .description('print public/private keys for .env file(s)')
-  .argument('[key]', 'environment variable key name')
+  .argument('[KEY]', 'environment variable key name')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--format <type>', 'format of the output (json, shell)', 'json')
@@ -197,6 +201,7 @@ program.helpInformation = function () {
   const lines = originalHelp.split('\n')
 
   removeDynamicHelpSection(lines)
+  removeOptionsHelpParts(lines)
 
   // Filter out the hidden command from the help output
   const filteredLines = lines.filter(line =>
