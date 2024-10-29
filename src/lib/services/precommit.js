@@ -27,8 +27,8 @@ class Precommit {
         warnings: []
       }
     } else {
+      let count = 0
       const warnings = []
-      let successMessage = 'success'
       let gitignore = MISSING_GITIGNORE
 
       // 1. check for .gitignore file
@@ -45,13 +45,15 @@ class Precommit {
       const lsService = new Ls(process.cwd(), undefined, this.excludeEnvFile)
       const dotenvFiles = lsService.run()
       dotenvFiles.forEach(file => {
+        count += 1
+
         // check if file is going to be commited
         if (this._isFileToBeCommitted(file)) {
           // check if that file is being ignored
           if (ig.ignores(file)) {
             if (file === '.env.example' || file === '.env.vault') {
               const warning = new Error(`${file} (currently ignored but should not be)`)
-              warning.help = `? add !${file} to .gitignore with [echo "!${file}" >> .gitignore]`
+              warning.help = `? add !${file} to .gitignore [echo "!${file}" >> .gitignore]`
               warnings.push(warning)
             }
           } else {
@@ -61,8 +63,8 @@ class Precommit {
 
               // if contents are encrypted don't raise an error
               if (!encrypted) {
-                const error = new Error(`${file} not encrypted (or not gitignored)`)
-                error.help = `? encrypt it with [dotenvx encrypt -f ${file}] or add ${file} to .gitignore with [echo ".env*" >> .gitignore]`
+                const error = new Error(`${file} not protected (encrypted or gitignored)`)
+                error.help = `? encrypt it [dotenvx encrypt -f ${file}] or gitignore it [echo "${file}" >> .gitignore]`
                 throw error
               }
             }
@@ -70,8 +72,12 @@ class Precommit {
         }
       })
 
+      let successMessage = `.env files (${count}) protected (encrypted or gitignored)`
+      if (count === 0) {
+        successMessage = 'zero .env files'
+      }
       if (warnings.length > 0) {
-        successMessage = `success (with ${pluralize('warning', warnings.length)})`
+        successMessage += ` with warnings (${warnings.length})`
       }
 
       return {
