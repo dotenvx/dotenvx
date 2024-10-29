@@ -1536,7 +1536,7 @@ More examples
 
   ```sh
   $ dotenvx help
-  Usage: dotenvx [options] [command] [command] [args...]
+  Usage: dotenvx run -- yourcommand
 
   a better dotenv–from the creator of `dotenv`
 
@@ -1549,12 +1549,13 @@ More examples
     -h, --help                   display help for command
 
   Commands:
-    run [options]                inject env at runtime [dotenvx run -- yourcommand]
-    get [options] [key]          return a single environment variable
-    set [options] <KEY> <value>  set a single environment variable
-    encrypt [options]            convert .env file(s) to encrypted .env file(s)
-    decrypt [options]            convert encrypted .env file(s) to plain .env file(s)
-    ls [options] [directory]     print all .env files in a tree structure
+    run                inject env at runtime [dotenvx run -- yourcommand]
+    get [KEY]          return a single environment variable
+    set <KEY> <value>  set a single environment variable
+    encrypt            convert .env file(s) to encrypted .env file(s)
+    decrypt            convert encrypted .env file(s) to plain .env file(s)
+    keypair [KEY]      print public/private keys for .env file(s)
+    ls [directory]     print all .env files in a tree structure
    
   Advanced: 
     pro                          🏆 pro
