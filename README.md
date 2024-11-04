@@ -1222,8 +1222,8 @@ More examples
   $ dotenvx encrypt
   ✔ encrypted (.env)
   ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
-  ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
-  ℹ run [DOTENV_PRIVATE_KEY='122...0b8' dotenvx run -- yourcommand] to test decryption locally
+  ⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
+  ⮕  next run [DOTENV_PRIVATE_KEY='122...0b8' dotenvx run -- yourcommand] to test decryption locally
   ```
 
   </details>
@@ -1238,8 +1238,8 @@ More examples
   $ dotenvx encrypt -f .env.production
   ✔ encrypted (.env.production)
   ✔ key added to .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION)
-  ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
-  ℹ run [DOTENV_PRIVATE_KEY_PRODUCTION='bff..bc4' dotenvx run -- yourcommand] to test decryption locally
+  ⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
+  ⮕  next run [DOTENV_PRIVATE_KEY='bff...bc4' dotenvx run -- yourcommand] to test decryption locally
   ```
 
   </details>
