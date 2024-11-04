@@ -79,9 +79,9 @@ t.test('Vercel calls Generic', ct => {
 })
 
 t.test('Generic class - constructor initializes correctly', (ct) => {
-  const generic = new Generic('.gitignore', true)
+  const generic = new Generic('.gitignore', undefined, true)
   ct.equal(generic.filename, '.gitignore', 'filename should be initialized correctly')
-  ct.same(generic.formats, ['.env*', '!.env.vault'], 'formats should be initialized correctly')
+  ct.same(generic.patterns, ['.env*'], 'patterns should be initialized correctly')
   ct.equal(generic.touchFile, true, 'touchFile should be initialized correctly')
   ct.end()
 })
@@ -102,11 +102,11 @@ t.test('Generic class - run method - creates file if it does not exist and touch
   const writeFileXStub = sinon.stub(fsx, 'writeFileX')
   const loggerInfoStub = sinon.stub(logger, 'info')
 
-  const generic = new Generic('.gitignore', true)
+  const generic = new Generic('.gitignore', ['.env*'], true)
   generic.run()
 
   ct.ok(existsSyncStub.calledWith('.gitignore'), 'existsSync should be called with correct filename')
-  ct.ok(loggerInfoStub.calledWith('creating .gitignore'), 'logger.info should log the creation message')
+  ct.ok(loggerInfoStub.calledWith('no changes (.gitignore)'), 'logger.info should log the creation message')
   ct.ok(writeFileXStub.calledWith('.gitignore', ''), 'writeFileX should be called to create the file')
 
   ct.end()
@@ -125,23 +125,18 @@ t.test('Generic class - run method - does nothing if file does not exist and tou
   ct.end()
 })
 
-t.test('Generic class - run method - appends formats to existing file', (ct) => {
+t.test('Generic class - run method - appends patterns to existing file', (ct) => {
   const existsSyncStub = sinon.stub(fsx, 'existsSync').returns(true)
   const readFileXStub = sinon.stub(fsx, 'readFileX').returns('some content\n')
   const appendStub = sinon.stub(Generic.prototype, 'append')
-  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
 
-  const generic = new Generic('.gitignore', false)
+  const generic = new Generic('.gitignore', ['.env.keys'], false)
   generic.run()
 
   ct.ok(existsSyncStub.calledWith('.gitignore'), 'existsSync should be called with correct filename')
   ct.ok(readFileXStub.calledWith('.gitignore'), 'readFileX should be called with correct arguments')
-
-  const formats = ['.env*', '!.env.vault']
-  formats.forEach(format => {
-    ct.ok(appendStub.calledWith(format), `append should be called with ${format}`)
-    ct.ok(loggerInfoStub.calledWith(`appending ${format} to .gitignore`), `logger.info should log appending ${format}`)
-  })
-
+  ct.ok(appendStub.calledWith('.env.keys'), 'append stub called with .env.keys pattern')
+  ct.ok(loggerSuccessStub.calledWith('✔ ignored .env.keys (.gitignore)'), 'logger.success should log the creation message')
   ct.end()
 })

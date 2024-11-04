@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.21.1...main)
 
+### Changed
+
+* clarify next steps after first time encrypting ([#430](https://github.com/dotenvx/dotenvx/pull/430))
+
 ## 1.21.1
 
 ### Changed

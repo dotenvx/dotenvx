@@ -78,13 +78,14 @@ Examples:
 
   \`\`\`
   $ dotenvx ext gitignore
+  $ dotenvx ext gitignore --pattern .env.keys
   \`\`\`
 
 Try it:
 
   \`\`\`
   $ dotenvx ext gitignore
-  done
+  ✔ ignored .env* (.gitignore)
   \`\`\`
   `
   t.equal(gitignore(), expected)

@@ -224,7 +224,7 @@ t.test('set - privateKeyAdded', ct => {
   })
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerHelp2Stub = sinon.stub(logger, 'help2')
+  const loggerHelpStub = sinon.stub(logger, 'help')
 
   set.call(fakeContext, 'HELLO', 'World')
 
@@ -233,7 +233,7 @@ t.test('set - privateKeyAdded', ct => {
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelp2Stub.calledWith('ℹ run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help2')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
 
   ct.end()
 })
@@ -262,7 +262,7 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
   })
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerHelp2Stub = sinon.stub(logger, 'help2')
+  const loggerHelpStub = sinon.stub(logger, 'help')
 
   setNotIgnoring.call(fakeContext, 'HELLO', 'World')
 
@@ -271,8 +271,8 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelp2Stub.calledWith('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]'), 'logger help2')
-  t.ok(loggerHelp2Stub.calledWith('ℹ run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help2')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
 
   ct.end()
 })

@@ -40,6 +40,7 @@ ext.command('genexample')
 ext.command('gitignore')
   .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
   .addHelpText('after', examples.gitignore)
+  .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
   .action(require('./../actions/ext/gitignore'))
 
 // dotenvx ext prebuild

@@ -64,10 +64,10 @@ function encrypt () {
           logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
 
           if (!isIgnoringDotenvKeys()) {
-            logger.help2('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]')
+            logger.help('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
           }
 
-          logger.help2(`ℹ run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
+          logger.help(`⮕  next run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
         }
       }
     } catch (error) {

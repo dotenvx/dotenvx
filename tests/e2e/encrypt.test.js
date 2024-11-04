@@ -49,8 +49,8 @@ t.test('#encrypt', ct => {
 
   ct.equal(output, `✔ encrypted (.env)
 ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
-ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
-ℹ run [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
+⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
+⮕  next run [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
 
   ct.end()
 })
@@ -69,8 +69,8 @@ t.test('#encrypt -k', ct => {
 
   ct.equal(output, `✔ encrypted (.env)
 ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
-ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]
-ℹ run [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
+⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
+⮕  next run [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
 
   execShell('rm .env.keys')
 
