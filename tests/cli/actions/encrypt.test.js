@@ -144,7 +144,7 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerHelp2Stub = sinon.stub(logger, 'help2')
+  const loggerHelpStub = sinon.stub(logger, 'help')
 
   encrypt.call(fakeContext)
 
@@ -155,7 +155,7 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelp2Stub.calledWith('ℹ run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx run -- yourcommand] to test decryption locally'), 'logger help2')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx run -- yourcommand] to test decryption locally'), 'logger help')
 
   ct.end()
 })
@@ -184,7 +184,7 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerHelp2Stub = sinon.stub(logger, 'help2')
+  const loggerHelpStub = sinon.stub(logger, 'help')
 
   encryptNotIgnoring.call(fakeContext)
 
@@ -195,8 +195,8 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelp2Stub.calledWith('ℹ add .env.keys to .gitignore: [echo ".env.keys" >> .gitignore]'), 'logger help2')
-  t.ok(loggerHelp2Stub.calledWith('ℹ run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx run -- yourcommand] to test decryption locally'), 'logger help2')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx run -- yourcommand] to test decryption locally'), 'logger help')
 
   ct.end()
 })

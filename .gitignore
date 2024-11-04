@@ -21,3 +21,9 @@ tests/tmp
 !tests/monorepo/**/.env*
 spec/tmp/*
 !spec/tmp/.gitkeep
+
+.env*
+.env*
+.env*
+.env*
+.env*
