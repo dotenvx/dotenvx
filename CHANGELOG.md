@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.21.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.22.0...main)
+
+## 1.22.0
+
+### Added
+
+* add `--pattern` argument to `ext gitignore` (`dotenvx ext gitignore --pattern .env.keys`) ([#430](https://github.com/dotenvx/dotenvx/pull/430))
 
 ### Changed
 
