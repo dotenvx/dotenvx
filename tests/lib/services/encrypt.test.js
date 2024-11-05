@@ -362,16 +362,17 @@ t.test('#run (finds .env.export file with exported key)', ct => {
   } = new Encrypt(envs).run()
 
   const p1 = processedEnvs[0]
-  ct.same(p1.keys, ['KEY'])
+  ct.same(p1.keys, ['ENCRYPT'])
   ct.same(p1.envFilepath, 'tests/.env.export')
   ct.same(changedFilepaths, ['tests/.env.export'])
   ct.same(unchangedFilepaths, [])
 
   const parsed = dotenv.parse(p1.envSrc)
 
-  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_EXPORT', 'KEY'])
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_EXPORT', 'ENCRYPT', 'EXPOSE'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY_EXPORT, 'DOTENV_PUBLIC_KEY should not be empty')
-  ct.match(parsed.KEY, /^encrypted:/, 'KEY should start with "encrypted:"')
+  ct.match(parsed.ENCRYPT, /^encrypted:/, 'ENCRYPT should start with "encrypted:"')
+  ct.match(parsed.EXPOSE, 'value', 'EXPOSE should not be encrypted')
 
   const output = `#!/usr/bin/env bash
 #/-------------------[DOTENV_PUBLIC_KEY]--------------------/
@@ -381,7 +382,8 @@ t.test('#run (finds .env.export file with exported key)', ct => {
 DOTENV_PUBLIC_KEY_EXPORT="${parsed.DOTENV_PUBLIC_KEY_EXPORT}"
 
 # .env.export
-export KEY=${parsed.KEY}
+ENCRYPT=${parsed.ENCRYPT}
+export EXPOSE=${parsed.EXPOSE}
 `
   ct.same(p1.envSrc, output)
 
