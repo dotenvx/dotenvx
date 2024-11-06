@@ -867,7 +867,7 @@ More examples
 
   ```sh
   $ touch .env.ci
-  $ dotenvx set HELLO "ci encrypted" -f .env.production
+  $ dotenvx set HELLO "ci encrypted" -f .env.ci
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   # check .env.keys for your privateKey
