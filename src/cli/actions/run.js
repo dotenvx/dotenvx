@@ -13,6 +13,19 @@ async function run () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  if (commandArgs.length < 1) {
+    const hasSeparator = process.argv.indexOf('--') !== -1
+
+    if (hasSeparator) {
+      console.error('missing command after [dotenvx run --]. try [dotenvx run -- yourcommand]')
+    } else {
+      const realExample = options['envFile'][0] || '.env'
+      console.error(`ambiguous command due to missing '--' separator. try [dotenvx run -f ${realExample} -- yourcommand]`)
+    }
+
+    process.exit(1)
+  }
+
   try {
     let envs = []
     // handle shorthand conventions - like --convention=nextjs
@@ -106,17 +119,7 @@ async function run () {
     }
   }
 
-  // Extract command and arguments after '--'
-  const commandIndex = process.argv.indexOf('--')
-  if (commandIndex === -1 || commandIndex === process.argv.length - 1) {
-    logger.error('missing command after [dotenvx run --]')
-    logger.error('')
-    logger.error('  get help: [dotenvx help run]')
-    logger.error('  or try:   [dotenvx run -- npm run dev]')
-    process.exit(1)
-  } else {
-    await executeCommand(commandArgs, process.env)
-  }
+  await executeCommand(commandArgs, process.env)
 }
 
 module.exports = run
