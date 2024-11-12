@@ -19,7 +19,7 @@ async function run () {
     if (hasSeparator) {
       console.error('missing command after [dotenvx run --]. try [dotenvx run -- yourcommand]')
     } else {
-      const realExample = options['envFile'][0] || '.env'
+      const realExample = options.envFile[0] || '.env'
       console.error(`ambiguous command due to missing '--' separator. try [dotenvx run -f ${realExample} -- yourcommand]`)
     }
 
