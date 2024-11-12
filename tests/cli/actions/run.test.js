@@ -548,7 +548,7 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const loggerErrorStub = sinon.stub(logger, 'error')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const processExitStub = sinon.stub(process, 'exit')
 
   await run.call(fakeContext)
@@ -558,7 +558,89 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
   t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
-  t.ok(loggerErrorStub.calledWith('missing command after [dotenvx run --]'), 'logger.error')
+  t.ok(consoleErrorStub.calledWith('missing command after [dotenvx run --]. try [dotenvx run -- yourcommand]'), 'console.error')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+
+  ct.end()
+})
+
+t.test('run - envFile (ambigious arguments, missing --)', async ct => {
+  const optsStub = sinon.stub().returns({ envFile: ['.env.production'] })
+  const fakeContext = { opts: optsStub, args: [], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '-f', '.env.production', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [{
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {
+        HELLO: 'World'
+      },
+      injected: {
+        HELLO: 'World'
+      },
+      preExisted: {}
+    }],
+    readableStrings: [],
+    readableFilepaths: ['.env'],
+    uniqueInjectedKeys: ['HELLO']
+  })
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+  const consoleErrorStub = sinon.stub(console, 'error')
+  const processExitStub = sinon.stub(process, 'exit')
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
+  t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
+  t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
+
+  t.ok(consoleErrorStub.calledWith('ambiguous command due to missing \'--\' separator. try [dotenvx run -f .env.production -- yourcommand]'), 'console.error')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+
+  ct.end()
+})
+
+t.test('run - envFile (ambigious arguments, missing -- and envFile is empty)', async ct => {
+  const optsStub = sinon.stub().returns({ envFile: [] })
+  const fakeContext = { opts: optsStub, args: [], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '-f', '.env', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [{
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {
+        HELLO: 'World'
+      },
+      injected: {
+        HELLO: 'World'
+      },
+      preExisted: {}
+    }],
+    readableStrings: [],
+    readableFilepaths: ['.env'],
+    uniqueInjectedKeys: ['HELLO']
+  })
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+  const consoleErrorStub = sinon.stub(console, 'error')
+  const processExitStub = sinon.stub(process, 'exit')
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
+  t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
+  t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
+
+  t.ok(consoleErrorStub.calledWith('ambiguous command due to missing \'--\' separator. try [dotenvx run -f .env -- yourcommand]'), 'console.error')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()
