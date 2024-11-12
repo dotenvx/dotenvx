@@ -307,3 +307,15 @@ t.test('no value in process.env', ct => {
 
   ct.end()
 })
+
+t.test('value in process.env and src using single quotes', ct => {
+  process.env.BASIC = 'exists'
+
+  const src = 'BASIC=\'basic\''
+  const { parsed, processEnv } = parseDecryptEvalExpand(src, null, process.env)
+
+  ct.equal(parsed.BASIC, 'basic')
+  ct.equal(processEnv.BASIC, 'exists')
+
+  ct.end()
+})
