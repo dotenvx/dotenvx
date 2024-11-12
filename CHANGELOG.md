@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.22.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.22.1...main)
+
+## 1.22.1
+
+### Changed
+
+* 🐞 patch loading order issue with single quotes ([#436](https://github.com/dotenvx/dotenvx/pull/436))
 
 ## 1.22.0
 

@@ -20,6 +20,7 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
   const parsed = dotenv.parse(src)
   const _quotes = quotes(src)
   const originalParsed = { ...parsed }
+  const originalProcessEnv = { ...processEnv }
   for (const key in parsed) {
     try {
       const decryptedValue = decryptValue(parsed[key], privateKey)
@@ -56,10 +57,11 @@ function parseDecryptEvalExpand (src, privateKey = null, processEnv = process.en
       warnings.push(warning(e, key, privateKey))
     }
   }
+
   for (const key in processEnv) {
     // unset eval and expansion for single quotes
     if (_quotes[key] === "'") {
-      processEnv[key] = originalParsed[key] // reset to original
+      processEnv[key] = originalProcessEnv[key] || originalParsed[key] // reset to original
     }
 
     try {
