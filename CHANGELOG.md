@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.22.1...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.22.2...main)
+
+## 1.22.2
+
+### Changed
+
+* more lenient handling of `--` separator and better error messaging when flags are ambiguous ([#438](https://github.com/dotenvx/dotenvx/pull/438))
 
 ## 1.22.1
 
