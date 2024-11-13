@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.22.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.23.0...main)
+
+## 1.23.0
+
+### Added
+
+* deeper variable expansion support and protection against self-referencing variables 🛡️ ([#439](https://github.com/dotenvx/dotenvx/pull/439))
 
 ## 1.22.2
 
