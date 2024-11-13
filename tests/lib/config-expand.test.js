@@ -122,11 +122,11 @@ t.test('expands .env.expand correctly', ct => {
   ct.equal(env.parsed.UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED2, '/default/path:with/colon')
   ct.equal(process.env.UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED2, '/default/path:with/colon')
 
-  ct.equal(env.parsed.NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS, '/default/path:with/colon')
-  ct.equal(process.env.NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS, '/default/path:with/colon')
+  ct.equal(env.parsed.NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS, ':-/default/path:with/colon')
+  ct.equal(process.env.NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS, ':-/default/path:with/colon')
 
-  ct.equal(env.parsed.NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2, '/default/path:with/colon')
-  ct.equal(process.env.NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2, '/default/path:with/colon')
+  ct.equal(env.parsed.NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2, '-/default/path:with/colon')
+  ct.equal(process.env.NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2, '-/default/path:with/colon')
 
   ct.end()
 })
@@ -282,7 +282,7 @@ t.test('handles two dollar signs', ct => {
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath })
 
-  ct.equal(env.parsed.TWO_DOLLAR_SIGNS, 'abcd$')
+  ct.equal(env.parsed.TWO_DOLLAR_SIGNS, 'abcd$$1234')
 
   ct.end()
 })
@@ -321,3 +321,23 @@ t.test('does NOT expand SINGLE_QUOTE', ct => {
 
   ct.end()
 })
+
+t.test('handles deep nesting', ct => {
+  const testPath = 'tests/.env.expand'
+  const env = dotenvx.config({ path: testPath })
+
+  ct.equal(env.parsed.DEEP8, 'prefix5-prefix4-prefix3-prefix2-prefix1-basic-suffix1-suffix2-suffix3-suffix4-suffix5')
+
+  ct.end()
+})
+
+t.test('handles self referencing', ct => {
+  const testPath = 'tests/.env.expand'
+  const env = dotenvx.config({ path: testPath })
+
+  ct.equal(env.parsed.EXPAND_SELF, '')
+  ct.equal(env.parsed.DEEP_SELF, 'basic-bar')
+
+  ct.end()
+})
+
