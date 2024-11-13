@@ -36,7 +36,7 @@ jobs:
        - name: pkg
          run: |
            echo "pkg-ing"
-           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
+           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
            echo "change ownership"
            sudo chown -R root:root bin/
            cd bin/linux-arm64/
