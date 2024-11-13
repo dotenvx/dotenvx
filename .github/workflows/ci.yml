@@ -44,7 +44,7 @@ jobs:
         run: |
           cd bin/linux-x86_64/
           RELEASED_VERSION=$(./dotenvx --version)
-          EXPECTED_VERSION=$(node -p "require('./package.json').version")
+          EXPECTED_VERSION=$(node -p "require('./../../package.json').version")
           echo $RELEASED_VERSION
           echo $EXPECTED_VERSION
           if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
