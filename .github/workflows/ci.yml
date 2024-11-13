@@ -23,6 +23,27 @@ jobs:
       - run: npm install
       - run: npm run standard
       - run: npm run test-coverage
+  test-pkg:
+     runs-on: ubuntu-latest
+     strategy:
+       fail-fast: true
+     steps:
+       - uses: actions/checkout@v4
+       - uses: actions/setup-node@v4
+         with:
+           node-version: 16.x
+       - run: npm install
+       - name: pkg
+         run: |
+           echo "pkg-ing"
+           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
+           echo "change ownership"
+           sudo chown -R root:root bin/
+           cd bin/linux-arm64/
+           echo "test commands"
+           OUTPUTTED_VERSION=$(./dotenvx --version)
+           echo $OUTPUTTED_VERSION
+           echo "did version output?"
   test:
     runs-on: ubuntu-latest
     strategy:
