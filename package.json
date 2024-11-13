@@ -47,7 +47,7 @@
     "which": "^4.0.0"
   },
   "devDependencies": {
-    "@yao-pkg/pkg": "^5.16.1",
+    "@yao-pkg/pkg": "5.9.0",
     "capture-console": "^1.0.2",
     "patch-package": "^8.0.0",
     "proxyquire": "^2.1.3",

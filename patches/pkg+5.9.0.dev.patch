@@ -1,4 +1,4 @@
-diff --git a/node_modules/pkg/prelude/bootstrap.js b/node_modules/pkg/prelude/bootstrap.js
+diff --git a/node_modules/@yao-pkg/pkg/prelude/bootstrap.js b/node_modules/pkg/prelude/bootstrap.js
 index 034bd15..90e02d7 100644
 --- a/node_modules/pkg/prelude/bootstrap.js
 +++ b/node_modules/pkg/prelude/bootstrap.js
