@@ -28,22 +28,36 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 16.x
-      - name: ldid for macos binary building
-        uses: MOZGIII/install-ldid-action@v1
-        with:
-          tag: v2.1.5-procursus2
-      - name: npm install
-        run: npm install
+      - run: npm install
       - name: pkg
         run: |
           echo "pkg-ing"
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-macos-arm64 --output bin/darwin-arm64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
+          echo "change ownership"
+          sudo chown -R root:root bin/
+          echo "test commands"
+          ./bin/linux-arm64/dotenvx --version
+      - name: verify dotenvx run/get
+        run: |
+          echo "HELLO=Ubuntu" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(./bin/linux-arm64/dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "postrelease dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+          EXPECTED_VALUE=$(./bin/linux-arm64/dotenvx get HELLO)
+          echo $EXPECTED_VALUE
+          if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
+            echo "postrelease dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+            exit 1
+          fi
+
   test:
     runs-on: ubuntu-latest
     strategy:
