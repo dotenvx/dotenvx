@@ -100,15 +100,15 @@ jobs:
       - name: pkg
         run: |
           echo "pkg-ing"
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-macos-x64 --output bin/darwin-amd64/dotenvx
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-macos-x64 --output bin/darwin-x86_64/dotenvx
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-macos-arm64 --output bin/darwin-arm64/dotenvx
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-linuxstatic-x64 --output bin/linux-amd64/dotenvx
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-linuxstatic-x64 --output bin/linux-x86_64/dotenvx
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-linuxstatic-arm64 --output bin/linux-aarch64/dotenvx
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-win-x64 --output bin/windows-amd64/dotenvx.exe
-          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-win-x64 --output bin/windows-x86_64/dotenvx.exe
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-amd64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-x64 --output bin/darwin-x86_64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-macos-arm64 --output bin/darwin-arm64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-amd64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-x64 --output bin/linux-x86_64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-arm64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-linuxstatic-arm64 --output bin/linux-aarch64/dotenvx
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-amd64/dotenvx.exe
+          ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node16-win-x64 --output bin/windows-x86_64/dotenvx.exe
           echo "change ownership"
           sudo chown -R root:root bin/
           echo "dist-ing"
