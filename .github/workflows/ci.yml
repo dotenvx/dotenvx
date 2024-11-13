@@ -40,12 +40,45 @@ jobs:
           ./node_modules/.bin/pkg . --no-bytecode --public-packages "*" --public --target node20-linuxstatic-x86_64 --output bin/linux-x86_64/dotenvx
           echo "change ownership"
           sudo chown -R root:root bin/
+      - name: verify version
+        run: |
           cd bin/linux-x86_64/
-          echo "test commands"
-          OUTPUTTED_VERSION=$(./dotenvx --version)
-          echo $OUTPUTTED_VERSION
-          echo "did version output?"
-
+          RELEASED_VERSION=$(./dotenvx --version)
+          EXPECTED_VERSION=$(node -p "require('./package.json').version")
+          echo $RELEASED_VERSION
+          echo $EXPECTED_VERSION
+          if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "postrelease version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+            exit 1
+          fi
+      - name: verify dotenvx run/get
+        run: |
+          cd bin/linux-x86_64/
+          echo "HELLO=Ubuntu" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(./dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "postrelease dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+          EXPECTED_VALUE=$(./dotenvx get HELLO)
+          echo $EXPECTED_VALUE
+          if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
+            echo "postrelease dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+            exit 1
+          fi
+      - name: verify nested invocations
+        run: |
+          cd bin/linux-x86_64/
+          echo "HELLO=Ubuntu" > .env
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(./dotenvx run --quiet -- dotenvx run --quiet -- ./dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "postrelease dotenvx nested invocations: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
   test:
     runs-on: ubuntu-latest
     strategy:
