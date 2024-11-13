@@ -342,4 +342,3 @@ t.test('handles self referencing', ct => {
 
   ct.end()
 })
-
