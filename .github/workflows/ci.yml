@@ -34,6 +34,7 @@ jobs:
         with:
           node-version: 20.x
       - run: npm install
+      - run: npm run patch
       - name: pkg
         run: |
           echo "pkg-ing"
@@ -147,6 +148,9 @@ jobs:
 
       - name: npm install
         run: npm install
+
+      - name: npm patch
+        run: npm run patch
 
       - name: pkg
         run: |
