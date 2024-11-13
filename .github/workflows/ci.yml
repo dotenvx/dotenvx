@@ -72,7 +72,7 @@ jobs:
           cd bin/linux-x86_64/
           echo "HELLO=Ubuntu" > .env
           echo "console.log('Hello ' + process.env.HELLO)" > index.js
-          EXPECTED_MESSAGE=$(./dotenvx run --quiet -- dotenvx run --quiet -- ./dotenvx run --quiet -- node index.js)
+          EXPECTED_MESSAGE=$(./dotenvx run --quiet -- ./dotenvx run --quiet -- ./dotenvx run --quiet -- node index.js)
           echo $EXPECTED_MESSAGE
           if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
             echo "postrelease dotenvx nested invocations: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
