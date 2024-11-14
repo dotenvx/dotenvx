@@ -3,10 +3,15 @@ const t = require('tap')
 const Parse = require('../../../src/lib/helpers/parse')
 
 let src
+let privateKey
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
-  process.env = {}
+  process.env = {
+    MACHINE: 'machine'
+  }
+
+  privateKey = 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1'
 
   // reset
   src = `#!/usr/bin/env bash
@@ -33,9 +38,9 @@ BACKTICKS_SPACED=\`    backticks    \`
 DOUBLE_QUOTES_INSIDE_BACKTICKS=\`double "quotes" work inside backticks\`
 SINGLE_QUOTES_INSIDE_BACKTICKS=\`single 'quotes' work inside backticks\`
 DOUBLE_AND_SINGLE_QUOTES_INSIDE_BACKTICKS=\`double "quotes" and single 'quotes' work inside backticks\`
-EXPAND_NEWLINES="expand\nnew\nlines"
-# DONT_EXPAND_UNQUOTED=dontexpand\nnewlines
-# DONT_EXPAND_SQUOTED='dontexpand\nnewlines'
+EXPAND_NEWLINES="expand\\nnew\\nlines"
+DONT_EXPAND_UNQUOTED=dontexpand\\nnewlines
+DONT_EXPAND_SQUOTED='dontexpand\\nnewlines'
 # COMMENTS=work
 INLINE_COMMENTS=inline comments # work #very #well
 INLINE_COMMENTS_SINGLE_QUOTES='inline comments outside of #singlequotes' # work
@@ -49,11 +54,40 @@ RETAIN_INNER_QUOTES_AS_BACKTICKS=\`{"foo": "bar's"}\`
 TRIM_SPACE_FROM_UNQUOTED=    some spaced out string
 USERNAME=therealnerdybeast@example.tld
     SPACED_KEY = parsed
+ENCRYPTED="encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=="
+ECHO="$(echo echo)"
+ECHO_SQUOTED='$(echo echo)'
+ECHO_UNQUOTED=$(echo echo)
+BASIC=basic
+BASIC_EXPAND=$BASIC
+MACHINE=file
+MACHINE_EXPAND=$MACHINE
+ESCAPED_EXPAND=\\$ESCAPED
+EXPAND_DEFAULT=\$\{MACHINE:-default\}
+EXPAND_DEFAULT_NESTED=\$\{MACHINE:-\$\{UNDEFINED:-default\}\}
+EXPAND_DEFAULT_NESTED2=\$\{MACHINE-\$\{UNDEFINED-default\}\}
+EXPAND_DEFAULT_NESTED_TWICE=\$\{UNDEFINED:-\$\{MACHINE\}\$\{UNDEFINED:-default\}\}
+EXPAND_DEFAULT_NESTED_TWICE2=\$\{UNDEFINED-\$\{MACHINE\}\$\{UNDEFINED-default\}\}
+EXPAND_DEFAULT_SPECIAL_CHARACTERS=\$\{MACHINE:-/default/path:with/colon\}
+EXPAND_DEFAULT_SPECIAL_CHARACTERS2=\$\{MACHINE-/default/path:with/colon\}
+
+# https://github.com/dotenvx/dotenvx/issues/422#issuecomment-2438293073
+SINGLE_QUOTE='$BASIC'
+
+# https://github.com/dotenvx/dotenvx/issues/433
+DEEP8=\$\{QUXX:-prefix5-\$\{QUX:-prefix4-\$\{BAZ:-prefix3-\$\{BAR:-prefix2-\$\{FOO:-prefix1-\$\{BASIC:-test\}-suffix1\}-suffix2\}-suffix3\}-suffix4\}-suffix5\}
+DEEP_SELF=\$\{DEEP_SELF:-\$\{BASIC:-test\}-bar\}
+DEEP_SELF_PRIOR=foo
+DEEP_SELF_PRIOR=prefix2-\$\{DEEP_SELF_PRIOR:-prefix1-\$\{BASIC:-test\}-suffix2\}-suffix2
+
+# progressive update
+PROGRESSIVE=first
+PROGRESSIVE=\$\{PROGRESSIVE\}-second
 `
 })
 
 t.test('#run', ct => {
-  const { parsed } = new Parse(src).run()
+  const { parsed } = new Parse(src, privateKey).run()
 
   ct.same(parsed, {
     HELLO: 'world',
@@ -81,8 +115,8 @@ t.test('#run', ct => {
     EXPAND_NEWLINES: `expand
 new
 lines`,
-    // DONT_EXPAND_UNQUOTED: 'dude'
-    // DONT_EXPAND_SQUOTED: 'dontexpand\nnewlines'
+    DONT_EXPAND_UNQUOTED: "dontexpand\\nnewlines",
+    DONT_EXPAND_SQUOTED: 'dontexpand\\nnewlines',
     INLINE_COMMENTS: 'inline comments',
     INLINE_COMMENTS_SINGLE_QUOTES: 'inline comments outside of #singlequotes',
     INLINE_COMMENTS_DOUBLE_QUOTES: 'inline comments outside of #doublequotes',
@@ -94,7 +128,28 @@ lines`,
     RETAIN_INNER_QUOTES_AS_BACKTICKS: '{"foo": "bar\'s"}',
     TRIM_SPACE_FROM_UNQUOTED: 'some spaced out string',
     USERNAME: 'therealnerdybeast@example.tld',
-    SPACED_KEY: 'parsed'
+    SPACED_KEY: 'parsed',
+    ENCRYPTED: 'encrypted',
+    ECHO: 'echo',
+    ECHO_SQUOTED: '$(echo echo)',
+    ECHO_UNQUOTED: 'echo',
+    BASIC: 'basic',
+    BASIC_EXPAND: 'basic',
+    MACHINE: 'machine',
+    MACHINE_EXPAND: 'machine',
+    ESCAPED_EXPAND: '$ESCAPED',
+    EXPAND_DEFAULT: 'machine',
+    EXPAND_DEFAULT_NESTED: 'machine',
+    EXPAND_DEFAULT_NESTED2: 'machine',
+    EXPAND_DEFAULT_NESTED_TWICE: 'machinedefault',
+    EXPAND_DEFAULT_NESTED_TWICE2: 'machinedefault',
+    EXPAND_DEFAULT_SPECIAL_CHARACTERS: 'machine',
+    EXPAND_DEFAULT_SPECIAL_CHARACTERS2: 'machine',
+    SINGLE_QUOTE: '$BASIC',
+    DEEP8: 'prefix5-prefix4-prefix3-prefix2-prefix1-basic-suffix1-suffix2-suffix3-suffix4-suffix5',
+    DEEP_SELF: 'basic-bar',
+    DEEP_SELF_PRIOR: 'prefix2-prefix1-basic-suffix2-suffix2',
+    PROGRESSIVE: "first-second",
   })
 
   ct.end()
