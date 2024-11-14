@@ -342,3 +342,12 @@ t.test('handles self referencing', ct => {
 
   ct.end()
 })
+
+t.test('handles progressive updating', ct => {
+  const testPath = 'tests/.env.expand'
+  const env = dotenvx.config({ path: testPath })
+
+  ct.equal(env.parsed.PROGRESSIVE, 'first-second')
+
+  ct.end()
+})
