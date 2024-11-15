@@ -7,10 +7,11 @@ const { execSync } = require('child_process')
 class Parse {
   static LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
 
-  constructor (src, privateKey = null, processEnv = process.env) {
+  constructor (src, privateKey = null, processEnv = process.env, overload = false) {
     this.src = src
     this.privateKey = privateKey
     this.processEnv = processEnv
+    this.overload = overload
 
     //
     this.parsed = {}
@@ -18,6 +19,8 @@ class Parse {
 
     // for use with progressive expansion
     this.runningParsed = {}
+    this.preExisted = {}
+    this.injected = {}
   }
 
   run () {
@@ -30,8 +33,12 @@ class Parse {
       const quote = this.quote(value) // must be raw match
       this.parsed[key] = this.clean(value, quote) // file value
 
-      // handle existing value - process.env wins
-      this.parsed[key] = this.processEnv[key] || this.parsed[key]
+      // process.env wins unless overload is true
+      if (this.overload) {
+        this.parsed[key] = this.parsed[key]
+      } else {
+        this.parsed[key] = this.processEnv[key] || this.parsed[key]
+      }
 
       // decrypt
       try {
@@ -52,10 +59,20 @@ class Parse {
 
       // for use with progressive expansion
       this.runningParsed[key] = this.parsed[key]
+
+      if (Object.prototype.hasOwnProperty.call(this.processEnv, key) && !this.overload) {
+        this.preExisted[key] = this.processEnv[key] // track preExisted
+      } else {
+        this.injected[key] = this.parsed[key] // track injected
+      }
     }
 
     return {
-      parsed: this.parsed
+      parsed: this.parsed,
+      processEnv: this.processEnv,
+      injected: this.injected,
+      warnings: this.warnings,
+      preExisted: this.preExisted
     }
   }
 

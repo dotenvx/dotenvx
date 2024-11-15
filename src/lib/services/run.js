@@ -6,9 +6,9 @@ const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
 const TYPE_ENV_VAULT_FILE = 'envVaultFile'
 
-const inject = require('./../helpers/inject')
 const decrypt = require('./../helpers/decrypt')
 const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
+const Parse = require('./../helpers/parse')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const detectEncoding = require('./../helpers/detectEncoding')
 const findPrivateKey = require('./../helpers/findPrivateKey')
@@ -60,14 +60,15 @@ class Run {
     row.string = env
 
     try {
-      const { parsed, processEnv, warnings } = parseDecryptEvalExpand(env, null, this.processEnv)
+      const { parsed, processEnv, warnings, injected, preExisted } = new Parse(env, null, this.processEnv, this.overload).run()
       row.parsed = parsed
       row.warnings = warnings
-      this.readableStrings.add(env)
-
-      const { injected, preExisted } = this._inject(processEnv, parsed, this.overload, this.processEnv)
       row.injected = injected
       row.preExisted = preExisted
+
+      this.inject(row.parsed) // inject
+
+      this.readableStrings.add(env)
 
       for (const key of Object.keys(injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
@@ -91,13 +92,13 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const privateKey = findPrivateKey(envFilepath)
-      const { parsed, processEnv, warnings } = parseDecryptEvalExpand(src, privateKey, this.processEnv)
+      const { parsed, processEnv, warnings, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload).run()
       row.parsed = parsed
       row.warnings = warnings
-
-      const { injected, preExisted } = this._inject(processEnv, parsed, this.overload, this.processEnv)
       row.injected = injected
       row.preExisted = preExisted
+
+      this.inject(row.parsed) // inject
 
       for (const key of Object.keys(injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
@@ -161,13 +162,13 @@ class Run {
 
     try {
       // parse this. it's the equivalent of the .env file
-      const { parsed, processEnv, warnings } = parseDecryptEvalExpand(decrypted, null, this.processEnv)
+      const { parsed, processEnv, warnings, injected, preExisted } = new Parse(decrypted, null, this.processEnv, this.overload).run()
       row.parsed = parsed
       row.warnings = warnings
-
-      const { injected, preExisted } = this._inject(processEnv, parsed, this.overload, this.processEnv)
       row.injected = injected
       row.preExisted = preExisted
+
+      this.inject(row.parsed) // inject
 
       for (const key of Object.keys(injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
@@ -179,8 +180,10 @@ class Run {
     this.processedEnvs.push(row)
   }
 
-  _inject (clonedProcessEnv, parsed, overload, processEnv) {
-    return inject(clonedProcessEnv, parsed, overload, processEnv)
+  inject (parsed) {
+    for (const key of Object.keys(parsed)) {
+      this.processEnv[key] = parsed[key] // inject to process.env
+    }
   }
 
   // handle scenario for comma separated keys - for use with key rotation

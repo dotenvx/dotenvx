@@ -337,8 +337,7 @@ t.test('handles self referencing', ct => {
 
   ct.equal(env.parsed.EXPAND_SELF, '')
   ct.equal(env.parsed.DEEP_SELF, 'basic-bar')
-  ct.equal(env.parsed.DEEP_SELF_PRIOR, 'prefix2-prefix1-basic-suffix2-suffix2')
-  // docker-compose parses this way: ct.equal(env.parsed.DEEP_SELF_PRIOR, 'prefix2-foo-suffix2') // currently i feel that is too sharp a knife - the ability to change the value of a variable from a prior set one earlier in the file. instead last value always wins and keep keys uniquely named in file
+  ct.equal(env.parsed.DEEP_SELF_PRIOR, 'prefix2-foo-suffix2')
 
   ct.end()
 })

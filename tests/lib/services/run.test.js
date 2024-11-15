@@ -223,14 +223,11 @@ t.test('#run (finds .env file but HELLO already exists)', ct => {
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
-  exampleError.code = 'MISSING_ENV_FILE'
-
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/monorepo/apps/frontend/.env',
     parsed: {
-      HELLO: 'frontend'
+      HELLO: 'World'
     },
     injected: {},
     warnings: [],
@@ -355,7 +352,7 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
   exampleError.code = 'MISSING_ENV_FILE'
   const run = new Run(envs)
   const mockError = new Error('Mock Error')
-  const injectStub = sinon.stub(run, '_inject').throws(mockError)
+  const injectStub = sinon.stub(run, 'inject').throws(mockError)
 
   const {
     processedEnvs
@@ -374,7 +371,11 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
       warnings: [],
       parsed: {
         HELLO: 'string'
-      }
+      },
+      injected: {
+        HELLO: 'string'
+      },
+      preExisted: {}
     }
   ])
 
@@ -407,7 +408,7 @@ t.test('#run (mixed string and file)', ct => {
     {
       type: 'envFile',
       filepath: 'tests/monorepo/apps/frontend/.env',
-      parsed: { HELLO: 'frontend' },
+      parsed: { HELLO: 'string' },
       injected: {},
       warnings: [],
       preExisted: { HELLO: 'string' }
@@ -541,7 +542,7 @@ t.test('#run (.env.vault and DOTENV_KEY with errors somehow from inject)', ct =>
 
   const run = new Run(envs, false, DOTENV_KEY)
   const mockError = new Error('Mock Error')
-  const injectStub = sinon.stub(run, '_inject').throws(mockError)
+  const injectStub = sinon.stub(run, 'inject').throws(mockError)
 
   const {
     processedEnvs
@@ -555,7 +556,11 @@ t.test('#run (.env.vault and DOTENV_KEY with errors somehow from inject)', ct =>
       warnings: [],
       parsed: {
         HELLO: 'backend'
-      }
+      },
+      injected: {
+        HELLO: 'backend'
+      },
+      preExisted: {}
     }
   ])
 
@@ -582,7 +587,7 @@ t.test('#run (.env.vault and DOTENV_KEY and machine env already set)', ct => {
     {
       type: 'envVaultFile',
       filepath: 'tests/monorepo/apps/backend/.env.vault',
-      parsed: { HELLO: 'backend' },
+      parsed: { HELLO: 'machine' },
       injected: {},
       warnings: [],
       preExisted: { HELLO: 'machine' }
