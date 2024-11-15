@@ -14,6 +14,9 @@ class Parse {
     //
     this.parsed = {}
     this.warnings = []
+
+    // for use with progressive expansion
+    this.runningParsed = {}
   }
 
   run () {
@@ -45,6 +48,9 @@ class Parse {
       if (quote != "'") {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
+
+      // for use with progressive expansion
+      this.runningParsed[key] = this.parsed[key]
     }
 
     return {
@@ -115,7 +121,7 @@ class Parse {
   }
 
   expand (value) {
-    const env = { ...this.parsed, ...this.processEnv } // current parsed and current process.env with process.env winning as default
+    const env = { ...this.runningParsed, ...this.processEnv } // current parsed and current process.env with process.env winning as default
     const regex = /(?<!\\)\${([^{}]+)}|(?<!\\)\$([A-Za-z_][A-Za-z0-9_]*)/g
 
     let result = value
