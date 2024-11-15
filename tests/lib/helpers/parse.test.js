@@ -63,37 +63,40 @@ BASIC_EXPAND=$BASIC
 MACHINE=file
 MACHINE_EXPAND=$MACHINE
 ESCAPED_EXPAND=\\$ESCAPED
-EXPAND_DEFAULT=\$\{MACHINE:-default\}
-EXPAND_DEFAULT_NESTED=\$\{MACHINE:-\$\{UNDEFINED:-default\}\}
-EXPAND_DEFAULT_NESTED2=\$\{MACHINE-\$\{UNDEFINED-default\}\}
-EXPAND_DEFAULT_NESTED_TWICE=\$\{UNDEFINED:-\$\{MACHINE\}\$\{UNDEFINED:-default\}\}
-EXPAND_DEFAULT_NESTED_TWICE2=\$\{UNDEFINED-\$\{MACHINE\}\$\{UNDEFINED-default\}\}
-EXPAND_DEFAULT_SPECIAL_CHARACTERS=\$\{MACHINE:-/default/path:with/colon\}
-EXPAND_DEFAULT_SPECIAL_CHARACTERS2=\$\{MACHINE-/default/path:with/colon\}
-UNDEFINED_EXPAND=\$UNDEFINED
-UNDEFINED_EXPAND_NESTED=\$\{UNDEFINED:-\$\{MACHINE:-default\}\}
-UNDEFINED_EXPAND_DEFAULT=\$\{UNDEFINED:-default\}
-UNDEFINED_EXPAND_DEFAULT2=\$\{UNDEFINED-default\}
-UNDEFINED_EXPAND_DEFAULT_NESTED=\$\{UNDEFINED:-\$\{UNDEFINED:-default\}\}
-UNDEFINED_EXPAND_DEFAULT_NESTED2=\$\{UNDEFINED-\$\{UNDEFINED-default\}\}
-UNDEFINED_EXPAND_DEFAULT_NESTED_TWICE=\$\{UNDEFINED:-\$\{UNDEFINED:-\$\{UNDEFINED:-default\}\}\}
-UNDEFINED_EXPAND_DEFAULT_NESTED_TWICE2=\$\{UNDEFINED-\$\{UNDEFINED-\$\{UNDEFINED-default\}\}\}
-UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS=\$\{UNDEFINED:-/default/path:with/colon\}
-UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2=\$\{UNDEFINED-/default/path:with/colon\}
-UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED=\$\{UNDEFINED:-\$\{UNDEFINED_2:-/default/path:with/colon\}\}
-UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED2=\$\{UNDEFINED-\$\{UNDEFINED_2-/default/path:with/colon\}\}
+EXPAND_DEFAULT=$\{MACHINE:-default}
+EXPAND_DEFAULT_NESTED=$\{MACHINE:-$\{UNDEFINED:-default}}
+EXPAND_DEFAULT_NESTED2=$\{MACHINE-$\{UNDEFINED-default}}
+EXPAND_DEFAULT_NESTED_TWICE=$\{UNDEFINED:-$\{MACHINE}$\{UNDEFINED:-default}}
+EXPAND_DEFAULT_NESTED_TWICE2=$\{UNDEFINED-$\{MACHINE}$\{UNDEFINED-default}}
+EXPAND_DEFAULT_SPECIAL_CHARACTERS=$\{MACHINE:-/default/path:with/colon}
+EXPAND_DEFAULT_SPECIAL_CHARACTERS2=$\{MACHINE-/default/path:with/colon}
+UNDEFINED_EXPAND=$UNDEFINED
+UNDEFINED_EXPAND_NESTED=$\{UNDEFINED:-$\{MACHINE:-default}}
+UNDEFINED_EXPAND_DEFAULT=$\{UNDEFINED:-default}
+UNDEFINED_EXPAND_DEFAULT2=$\{UNDEFINED-default}
+UNDEFINED_EXPAND_DEFAULT_NESTED=$\{UNDEFINED:-$\{UNDEFINED:-default}}
+UNDEFINED_EXPAND_DEFAULT_NESTED2=$\{UNDEFINED-$\{UNDEFINED-default}}
+UNDEFINED_EXPAND_DEFAULT_NESTED_TWICE=$\{UNDEFINED:-$\{UNDEFINED:-$\{UNDEFINED:-default}}}
+UNDEFINED_EXPAND_DEFAULT_NESTED_TWICE2=$\{UNDEFINED-$\{UNDEFINED-$\{UNDEFINED-default}}}
+UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS=$\{UNDEFINED:-/default/path:with/colon}
+UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2=$\{UNDEFINED-/default/path:with/colon}
+UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED=$\{UNDEFINED:-$\{UNDEFINED_2:-/default/path:with/colon}}
+UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED2=$\{UNDEFINED-$\{UNDEFINED_2-/default/path:with/colon}}
 # https://github.com/dotenvx/dotenvx/issues/422#issuecomment-2438293073
 SINGLE_QUOTE='$BASIC'
 
 # https://github.com/dotenvx/dotenvx/issues/433
-DEEP8=\$\{QUXX:-prefix5-\$\{QUX:-prefix4-\$\{BAZ:-prefix3-\$\{BAR:-prefix2-\$\{FOO:-prefix1-\$\{BASIC:-test\}-suffix1\}-suffix2\}-suffix3\}-suffix4\}-suffix5\}
-DEEP_SELF=\$\{DEEP_SELF:-\$\{BASIC:-test\}-bar\}
+DEEP8=$\{QUXX:-prefix5-$\{QUX:-prefix4-$\{BAZ:-prefix3-$\{BAR:-prefix2-$\{FOO:-prefix1-$\{BASIC:-test}-suffix1}-suffix2}-suffix3}-suffix4}-suffix5}
+DEEP_SELF=$\{DEEP_SELF:-$\{BASIC:-test}-bar}
 DEEP_SELF_PRIOR=foo
-DEEP_SELF_PRIOR=prefix2-\$\{DEEP_SELF_PRIOR:-prefix1-\$\{BASIC:-test\}-suffix2\}-suffix2
+DEEP_SELF_PRIOR=prefix2-$\{DEEP_SELF_PRIOR:-prefix1-$\{BASIC:-test}-suffix2}-suffix2
+
+NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS=$UNDEFINED:-/default/path:with/colon
+NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2=$UNDEFINED-/default/path:with/colon
 
 # progressive update
 PROGRESSIVE=first
-PROGRESSIVE=\$\{PROGRESSIVE\}-second
+PROGRESSIVE=$\{PROGRESSIVE}-second
 `
 })
 
@@ -114,19 +117,18 @@ t.test('#run', ct => {
     DOUBLE_QUOTES_SPACED: '    double quotes    ',
     DOUBLE_QUOTES_INSIDE_SINGLE: 'double "quotes" work inside single quotes',
     // DOUBLE_QUOTES_WITH_NO_SPACE_BRACKET: '{ port: $MONGOLAB_PORT}',
-    DOUBLE_QUOTES_INSIDE_SINGLE: 'double "quotes" work inside single quotes',
     SINGLE_QUOTES_INSIDE_DOUBLE: "single 'quotes' work inside double quotes",
     BACKTICKS_INSIDE_SINGLE: '`backticks` work inside single quotes',
-    BACKTICKS_INSIDE_DOUBLE: "`backticks` work inside double quotes",
+    BACKTICKS_INSIDE_DOUBLE: '`backticks` work inside double quotes',
     BACKTICKS: 'backticks',
     BACKTICKS_SPACED: '    backticks    ',
     DOUBLE_QUOTES_INSIDE_BACKTICKS: 'double "quotes" work inside backticks',
     SINGLE_QUOTES_INSIDE_BACKTICKS: "single 'quotes' work inside backticks",
-    DOUBLE_AND_SINGLE_QUOTES_INSIDE_BACKTICKS: `double "quotes" and single 'quotes' work inside backticks`,
+    DOUBLE_AND_SINGLE_QUOTES_INSIDE_BACKTICKS: 'double "quotes" and single \'quotes\' work inside backticks',
     EXPAND_NEWLINES: `expand
 new
 lines`,
-    DONT_EXPAND_UNQUOTED: "dontexpand\\nnewlines",
+    DONT_EXPAND_UNQUOTED: 'dontexpand\\nnewlines',
     DONT_EXPAND_SQUOTED: 'dontexpand\\nnewlines',
     INLINE_COMMENTS: 'inline comments',
     INLINE_COMMENTS_SINGLE_QUOTES: 'inline comments outside of #singlequotes',
@@ -168,11 +170,13 @@ lines`,
     UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2: '/default/path:with/colon',
     UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED: '/default/path:with/colon',
     UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED2: '/default/path:with/colon',
+    NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS: ':-/default/path:with/colon',
+    NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2: '-/default/path:with/colon',
     SINGLE_QUOTE: '$BASIC',
     DEEP8: 'prefix5-prefix4-prefix3-prefix2-prefix1-basic-suffix1-suffix2-suffix3-suffix4-suffix5',
     DEEP_SELF: 'basic-bar',
     DEEP_SELF_PRIOR: 'prefix2-foo-suffix2',
-    PROGRESSIVE: "first-second",
+    PROGRESSIVE: 'first-second'
   })
 
   ct.end()

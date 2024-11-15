@@ -1,4 +1,5 @@
 const chomp = require('./chomp')
+const truncate = require('./truncate')
 const decryptValue = require('./decryptValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
 const { execSync } = require('child_process')
@@ -35,17 +36,17 @@ class Parse {
       // decrypt
       try {
         this.parsed[key] = this.decrypt(this.parsed[key])
-      } catch (_e) {
+      } catch (e) {
         this.warnings.push(this.warning(e, key))
       }
 
       // eval empty, double, or backticks
-      if (quote != "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
+      if (quote !== "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
         this.parsed[key] = this.eval(this.parsed[key])
       }
 
       // expand empty, double, or backticks
-      if (quote != "'") {
+      if (quote !== "'") {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
 
@@ -78,7 +79,7 @@ class Parse {
         break
       // backtick
       case '`':
-        q =  '`'
+        q = '`'
         break
       // empty
       default:
