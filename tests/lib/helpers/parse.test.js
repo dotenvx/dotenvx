@@ -289,3 +289,37 @@ CUSTOM_CONFIG=$\{USE_CUSTOM_CONFIG:+custom-config.json}
 
   ct.end()
 })
+
+t.test('#run - mix of self-referencing from process.env to file', ct => {
+  process.env.FOO = 'bar'
+
+  src = `# .env
+FOO="$\{FOO:-start}-suffix1"
+FOO="$\{FOO}-suffix2"
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    FOO: 'bar'
+  })
+
+  ct.end()
+})
+
+t.test('#run - mix of self-referencing from process.env to file example 2', ct => {
+  process.env.BAR = 'bar'
+
+  src = `# .env
+FOO="$\{BAR:-start}-suffix1"
+FOO="$\{FOO}-suffix2"
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    FOO: 'bar-suffix1-suffix2'
+  })
+
+  ct.end()
+})
