@@ -97,6 +97,11 @@ NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2=$UNDEFINED-/default
 # progressive update
 PROGRESSIVE=first
 PROGRESSIVE=$\{PROGRESSIVE}-second
+
+DASH=hi-dash
+
+USE_IF_SET=true
+ALTERNATE=$\{USE_IF_SET:+alternate}
 `
 })
 
@@ -176,7 +181,10 @@ lines`,
     DEEP8: 'prefix5-prefix4-prefix3-prefix2-prefix1-basic-suffix1-suffix2-suffix3-suffix4-suffix5',
     DEEP_SELF: 'basic-bar',
     DEEP_SELF_PRIOR: 'prefix2-foo-suffix2',
-    PROGRESSIVE: 'first-second'
+    PROGRESSIVE: 'first-second',
+    DASH: 'hi-dash',
+    USE_IF_SET: 'true',
+    ALTERNATE: 'alternate'
   })
 
   ct.end()
@@ -231,6 +239,52 @@ ITSELF2=$ITSELF2`
   ct.same(parsed, {
     ITSELF: '',
     ITSELF2: ''
+  })
+
+  ct.end()
+})
+
+t.test('#run - alternate', ct => {
+  src = `# .env
+USE_CUSTOM_CONFIG=true
+CUSTOM_CONFIG=$\{USE_CUSTOM_CONFIG:+custom-config.json}
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    USE_CUSTOM_CONFIG: 'true',
+    CUSTOM_CONFIG: 'custom-config.json'
+  })
+
+  ct.end()
+})
+
+t.test('#run - alternate but not set', ct => {
+  src = `# .env
+CUSTOM_CONFIG=$\{USE_CUSTOM_CONFIG:+custom-config.json}
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    CUSTOM_CONFIG: ''
+  })
+
+  ct.end()
+})
+
+t.test('#run - alternate but set in process.env', ct => {
+  process.env.USE_CUSTOM_CONFIG = '1'
+
+  src = `# .env
+CUSTOM_CONFIG=$\{USE_CUSTOM_CONFIG:+custom-config.json}
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    CUSTOM_CONFIG: 'custom-config.json'
   })
 
   ct.end()

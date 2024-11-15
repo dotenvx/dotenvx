@@ -149,10 +149,28 @@ class Parse {
 
       const [template, bracedExpression, unbracedExpression] = match
       const expression = bracedExpression || unbracedExpression
-      const r = expression.split(/:-|-/)
-      const key = r.shift()
-      const defaultValue = r.join('-')
-      const value = env[key]
+
+      // match the operators `:+`, `+`, `:-`, and `-`
+      const opRegex = /(:\+|\+|:-|-)/
+      // find first match
+      const opMatch = expression.match(opRegex)
+      const splitter = opMatch ? opMatch[0] : null
+
+      const r = expression.split(splitter)
+
+      let key
+      let defaultValue
+      let value
+
+      if ([':+', '+'].includes(splitter)) {
+        key = r.shift()
+        defaultValue  = env[key] ? r.join(splitter) : ''
+        value = null
+      } else {
+        key = r.shift()
+        defaultValue = r.join(splitter)
+        value = env[key]
+      }
 
       if (value) {
         // self-referential check

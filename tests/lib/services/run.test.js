@@ -791,9 +791,9 @@ options="$\{options} optD"`
     {
       type: 'env',
       string: src,
-      parsed: { options: ' optA optB optC  optD', configX: 'blah' },
+      parsed: { options: ' optA optB optC optX optD', configX: 'blah' },
       warnings: [],
-      injected: { options: ' optA optB optC  optD', configX: 'blah' },
+      injected: { options: ' optA optB optC optX optD', configX: 'blah' },
       preExisted: {}
     }
   ])
