@@ -168,7 +168,7 @@ t.test('#run (finds .env file) with already falsy value', ct => {
     type: 'envFile',
     filepath: 'tests/monorepo/apps/frontend/.env',
     parsed: {
-      HELLO: 'frontend'
+      HELLO: ''
     },
     injected: {},
     warnings: [],

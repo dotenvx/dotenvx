@@ -7,7 +7,6 @@ const TYPE_ENV_FILE = 'envFile'
 const TYPE_ENV_VAULT_FILE = 'envVaultFile'
 
 const decrypt = require('./../helpers/decrypt')
-const parseDecryptEvalExpand = require('./../helpers/parseDecryptEvalExpand')
 const Parse = require('./../helpers/parse')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const detectEncoding = require('./../helpers/detectEncoding')
@@ -60,7 +59,7 @@ class Run {
     row.string = env
 
     try {
-      const { parsed, processEnv, warnings, injected, preExisted } = new Parse(env, null, this.processEnv, this.overload).run()
+      const { parsed, warnings, injected, preExisted } = new Parse(env, null, this.processEnv, this.overload).run()
       row.parsed = parsed
       row.warnings = warnings
       row.injected = injected
@@ -92,7 +91,8 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const privateKey = findPrivateKey(envFilepath)
-      const { parsed, processEnv, warnings, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload).run()
+      const { parsed, warnings, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload).run()
+
       row.parsed = parsed
       row.warnings = warnings
       row.injected = injected
@@ -162,7 +162,7 @@ class Run {
 
     try {
       // parse this. it's the equivalent of the .env file
-      const { parsed, processEnv, warnings, injected, preExisted } = new Parse(decrypted, null, this.processEnv, this.overload).run()
+      const { parsed, warnings, injected, preExisted } = new Parse(decrypted, null, this.processEnv, this.overload).run()
       row.parsed = parsed
       row.warnings = warnings
       row.injected = injected

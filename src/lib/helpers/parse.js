@@ -33,11 +33,8 @@ class Parse {
       const quote = this.quote(value) // must be raw match
       this.parsed[key] = this.clean(value, quote) // file value
 
-      // process.env wins unless overload is true
-      if (this.overload) {
-        this.parsed[key] = this.parsed[key]
-      } else {
-        this.parsed[key] = this.processEnv[key] || this.parsed[key]
+      if (!this.overload && this.inProcessEnv(key)) {
+        this.parsed[key] = this.processEnv[key] // use process.env pre-existing value
       }
 
       // decrypt
@@ -129,17 +126,18 @@ class Parse {
     const matches = value.match(/\$\([^()]+\)/) || []
 
     return matches.reduce(function (newValue, match) {
-      // get command
-      const command = match.substring(2, match.length - 1)
-      // execute command
-      const value = chomp(execSync(command).toString())
-      // replace with command value
-      return newValue.replace(match, value)
+      const command = match.substring(2, match.length - 1) // get command
+      const value = chomp(execSync(command).toString()) // execute command
+      return newValue.replace(match, value) // replace with command value
     }, value)
   }
 
   expand (value) {
-    const env = { ...this.runningParsed, ...this.processEnv } // current parsed and current process.env with process.env winning as default
+    let env = { ...this.runningParsed, ...this.processEnv } // typically process.env wins
+    if (this.overload) {
+      env = { ...this.processEnv, ...this.runningParsed } // parsed wins
+    }
+
     const regex = /(?<!\\)\${([^{}]+)}|(?<!\\)\$([A-Za-z_][A-Za-z0-9_]*)/g
 
     let result = value

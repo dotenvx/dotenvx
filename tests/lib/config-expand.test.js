@@ -29,8 +29,7 @@ t.test('expands using the machine value first (if it exists)', ct => {
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath })
 
-  ct.equal(env.parsed.MACHINE, 'machine') // this is because .parsed here conceptually is the final output to process.env. it's just a convenient getter, unlike other internal 'parsed' objects. TODO: improve naming of this internally ct.equal(process.env.MACHINE, 'machine')
-
+  ct.equal(env.parsed.MACHINE, 'machine')
   ct.equal(env.parsed.MACHINE_EXPAND, 'machine')
   ct.equal(process.env.MACHINE_EXPAND, 'machine')
 
@@ -205,6 +204,9 @@ t.test('expands .env.expand correctly when MACHINE already set but overload is t
 
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath, overload: true })
+
+  ct.equal(env.parsed.MACHINE, 'file')
+  ct.equal(env.parsed.MACHINE_EXPAND, 'file')
 
   ct.equal(env.parsed.EXPAND_DEFAULT, 'file')
   ct.equal(process.env.EXPAND_DEFAULT, 'file')
