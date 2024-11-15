@@ -29,8 +29,7 @@ t.test('expands using the machine value first (if it exists)', ct => {
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath })
 
-  ct.equal(env.parsed.MACHINE, 'machine') // this is because .parsed here conceptually is the final output to process.env. it's just a convenient getter, unlike other internal 'parsed' objects. TODO: improve naming of this internally ct.equal(process.env.MACHINE, 'machine')
-
+  ct.equal(env.parsed.MACHINE, 'machine')
   ct.equal(env.parsed.MACHINE_EXPAND, 'machine')
   ct.equal(process.env.MACHINE_EXPAND, 'machine')
 
@@ -206,6 +205,9 @@ t.test('expands .env.expand correctly when MACHINE already set but overload is t
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath, overload: true })
 
+  ct.equal(env.parsed.MACHINE, 'file')
+  ct.equal(env.parsed.MACHINE_EXPAND, 'file')
+
   ct.equal(env.parsed.EXPAND_DEFAULT, 'file')
   ct.equal(process.env.EXPAND_DEFAULT, 'file')
 
@@ -337,8 +339,16 @@ t.test('handles self referencing', ct => {
 
   ct.equal(env.parsed.EXPAND_SELF, '')
   ct.equal(env.parsed.DEEP_SELF, 'basic-bar')
-  ct.equal(env.parsed.DEEP_SELF_PRIOR, 'prefix2-prefix1-basic-suffix2-suffix2')
-  // docker-compose parses this way: ct.equal(env.parsed.DEEP_SELF_PRIOR, 'prefix2-foo-suffix2') // currently i feel that is too sharp a knife - the ability to change the value of a variable from a prior set one earlier in the file. instead last value always wins and keep keys uniquely named in file
+  ct.equal(env.parsed.DEEP_SELF_PRIOR, 'prefix2-foo-suffix2')
+
+  ct.end()
+})
+
+t.test('handles progressive updating', ct => {
+  const testPath = 'tests/.env.expand'
+  const env = dotenvx.config({ path: testPath })
+
+  ct.equal(env.parsed.PROGRESSIVE, 'first-second')
 
   ct.end()
 })

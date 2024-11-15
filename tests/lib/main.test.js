@@ -1,6 +1,5 @@
 const t = require('tap')
 const sinon = require('sinon')
-const dotenv = require('dotenv')
 
 const main = require('../../src/lib/main')
 
@@ -9,6 +8,7 @@ const Get = require('../../src/lib/services/get')
 const Run = require('../../src/lib/services/run')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
+const Parse = require('../../src/lib/helpers/parse')
 
 const { logger } = require('../../src/shared/logger')
 
@@ -55,26 +55,26 @@ t.test('config with Run.run error', ct => {
   ct.end()
 })
 
-t.test('configDotenv calls dotenv.configDotenv', ct => {
-  const stub = sinon.stub(dotenv, 'configDotenv')
+t.test('parse calls Parse.run', ct => {
+  const stub = sinon.stub(Parse.prototype, 'run')
   stub.returns({})
 
-  main.configDotenv()
+  main.parse()
 
-  t.ok(stub.called, 'dotenv.configDotenv() called')
+  t.ok(stub.called, 'new Parse().run() called')
 
   stub.restore()
 
   ct.end()
 })
 
-t.test('parse calls dotenv.parse', ct => {
-  const stub = sinon.stub(dotenv, 'parse')
+t.test('parse calls Parse.run with options.processEnv', ct => {
+  const stub = sinon.stub(Parse.prototype, 'run')
   stub.returns({})
 
-  main.parse()
+  main.parse('HELLO=World', { processEnv: {} })
 
-  t.ok(stub.called, 'dotenv.parse() called')
+  t.ok(stub.called, 'new Parse().run() called')
 
   stub.restore()
 

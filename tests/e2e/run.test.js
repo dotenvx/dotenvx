@@ -81,7 +81,7 @@ loading env from .env.local (${tempDir}/.env.local)
 HELLO set
 HELLO set to local
 loading env from .env (${tempDir}/.env)
-{"HELLO":"World"}
+{"HELLO":"local"}
 HELLO pre-exists (protip: use --overload to override)
 HELLO pre-exists as local (protip: use --overload to override)
 [dotenvx@${version}] injecting env (1) from .env.local, .env
@@ -165,7 +165,7 @@ loading env from string (HELLO=String)
 HELLO set
 HELLO set to String
 loading env from .env (${tempDir}/.env)
-{"HELLO":"World"}
+{"HELLO":"String"}
 HELLO pre-exists (protip: use --overload to override)
 HELLO pre-exists as String (protip: use --overload to override)
 [dotenvx@${version}] injecting env (1) from .env, and --env flag

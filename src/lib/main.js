@@ -1,6 +1,5 @@
 // @ts-check
 const path = require('path')
-const dotenv = require('dotenv')
 
 // shared
 const { setLogLevel, logger } = require('./../shared/logger')
@@ -16,8 +15,7 @@ const Genexample = require('./services/genexample')
 // helpers
 const conventions = require('./helpers/conventions')
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
-
-// proxies to dotenv
+const Parse = require('./helpers/parse')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -162,14 +160,23 @@ const config = function (options = {}) {
   }
 }
 
-/** @type {import('./main').configDotenv} */
-const configDotenv = function (options) {
-  return dotenv.configDotenv(options)
-}
-
 /** @type {import('./main').parse} */
-const parse = function (src) {
-  return dotenv.parse(src)
+const parse = function (src, options = {}) {
+  // allow user to set processEnv to read from
+  let processEnv = process.env
+  if (options && options.processEnv != null) {
+    processEnv = options.processEnv
+  }
+
+  // private decryption key
+  const privateKey = null // implement later
+
+  // overload
+  const overload = options.overload || options.override
+
+  const { parsed } = new Parse(src, privateKey, processEnv, overload).run()
+
+  return parsed
 }
 
 /** @type {import('./main').ls} */
@@ -201,7 +208,6 @@ const keypair = function (envFile, key) {
 module.exports = {
   // dotenv proxies
   config,
-  configDotenv,
   parse,
   // actions related
   ls,
