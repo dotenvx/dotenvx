@@ -181,3 +181,57 @@ lines`,
 
   ct.end()
 })
+
+t.test('#run - self referencing', ct => {
+  src = `# .env
+ITSELF=$ITSELF
+ITSELF2=$ITSELF2`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    ITSELF: '',
+    ITSELF2: ''
+  })
+
+  ct.end()
+})
+
+t.test('#run - self referencing and set in process.env', ct => {
+  // for testing the 'seen' set check
+  process.env = {
+    ITSELF: 'itself'
+  }
+
+  src = `# .env
+ITSELF=$ITSELF
+ITSELF2=$ITSELF2`
+
+  const { parsed } = new Parse(src).run()
+
+  ct.same(parsed, {
+    ITSELF: 'itself',
+    ITSELF2: ''
+  })
+
+  ct.end()
+})
+
+t.test('#run - self referencing and also self referenced in process.env', ct => {
+  process.env = {
+    ITSELF: '$ITSELF'
+  }
+
+  src = `# .env
+ITSELF=$ITSELF
+ITSELF2=$ITSELF2`
+
+  const { parsed } = new Parse(src).run()
+
+  ct.same(parsed, {
+    ITSELF: '',
+    ITSELF2: ''
+  })
+
+  ct.end()
+})
