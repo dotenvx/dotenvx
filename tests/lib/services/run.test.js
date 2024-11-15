@@ -772,7 +772,6 @@ options="$\{options} optD"`
     { type: 'env', value: src }
   ]
 
-  // it should still prepend a type 'envFile': value: '.env'
   const {
     processedEnvs,
     readableFilepaths,

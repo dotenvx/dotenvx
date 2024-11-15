@@ -13,14 +13,13 @@ class Parse {
     this.processEnv = processEnv
     this.overload = overload
 
-    //
     this.parsed = {}
+    this.preExisted = {}
+    this.injected = {}
     this.warnings = []
 
     // for use with progressive expansion
     this.runningParsed = {}
-    this.preExisted = {}
-    this.injected = {}
   }
 
   run () {
