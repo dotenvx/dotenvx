@@ -2,7 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.23.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.0...main)
+
+## 1.24.0
+
+### Added
+
+* support progressive append/update ([#445](https://github.com/dotenvx/dotenvx/pull/445))
+
+```ini
+FOO=foo
+FOO=${FOO}bar
+# foobar
+```
+
+* support alternate value expansion ([#445](https://github.com/dotenvx/dotenvx/pull/445))
+
+<img width="1608" alt="image" src="https://github.com/user-attachments/assets/fdd55a0a-9b36-4cb3-b0c6-6b019441aef4">
+
+### Changed
+
+* `dotenvx.parse` now maps to dotenvx's internal parser. (prior it was mapping to [dotenv's](https://github.com/motdotla/dotenv))
+
+### Removed
+
+* removed `dotenvx.configDotenv()`. use `dotenvx.config()` ([#445](https://github.com/dotenvx/dotenvx/pull/445))
 
 ## 1.23.0
 
