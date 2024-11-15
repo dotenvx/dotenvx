@@ -757,3 +757,48 @@ t.test('#_decrypted (can\'t find environment)', ct => {
 
   ct.end()
 })
+
+// https://github.com/dotenvx/dotenvx/issues/441
+t.test('#run (kanaka scenario)', ct => {
+  const src = `# combined
+# config1 definitions
+options="$\{options} optA"
+configX=blah
+# config2 definitions
+options="$\{options} optB optC $\{configX:+optX}"
+# config3 defintions
+options="$\{options} optD"`
+  const envs = [
+    { type: 'env', value: src }
+  ]
+
+  // it should still prepend a type 'envFile': value: '.env'
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new Run(envs).run()
+
+  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  exampleError.code = 'MISSING_ENV_FILE'
+
+  ct.same(processedEnvs, [
+    {
+      type: 'envFile',
+      filepath: '.env',
+      error: exampleError
+    },
+    {
+      type: 'env',
+      string: src,
+      parsed: { options: ' optA optB optC  optD', configX: 'blah' },
+      warnings: [],
+      injected: { options: ' optA optB optC  optD', configX: 'blah' },
+      preExisted: {}
+    }
+  ])
+  ct.same(readableFilepaths, [])
+  ct.same(uniqueInjectedKeys, ['options', 'configX'])
+
+  ct.end()
+})
