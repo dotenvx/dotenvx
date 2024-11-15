@@ -164,7 +164,7 @@ class Parse {
 
       if ([':+', '+'].includes(splitter)) {
         key = r.shift()
-        defaultValue  = env[key] ? r.join(splitter) : ''
+        defaultValue = env[key] ? r.join(splitter) : ''
         value = null
       } else {
         key = r.shift()
