@@ -125,17 +125,6 @@ export interface DotenvPopulateInput {
 export function config(options?: DotenvConfigOptions): DotenvConfigOutput;
 
 /**
- * Loads `.env` file contents into process.env.
- *
- * @see https://dotenvx.com/docs
- *
- * @param options - additional options. example: `{ path: './custom/path', encoding: 'latin1', debug: true, override: false }`
- * @returns an object with a `parsed` key if successful or `error` key if an error occurred. example: { parsed: { KEY: 'value' } }
- *
- */
-export function configDotenv(options?: DotenvConfigOptions): DotenvConfigOutput;
-
-/**
  * Decrypt ciphertext
  *
  * @see https://dotenvx.com/docs

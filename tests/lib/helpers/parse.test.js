@@ -323,3 +323,11 @@ FOO="$\{FOO}-suffix2"
 
   ct.end()
 })
+
+t.test('#run - undefined src', ct => {
+  const { parsed } = new Parse(undefined).run()
+
+  ct.same(parsed, {})
+
+  ct.end()
+})

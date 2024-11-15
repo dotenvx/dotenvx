@@ -193,7 +193,7 @@ class Parse {
   }
 
   getLines () {
-    return this.src.toString().replace(/\r\n?/mg, '\n') // Convert buffer to string and Convert line breaks to same format
+    return (this.src || '').toString().replace(/\r\n?/mg, '\n') // Convert buffer to string and Convert line breaks to same format
   }
 
   warning (e, key) {

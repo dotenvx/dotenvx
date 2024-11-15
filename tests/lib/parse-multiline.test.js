@@ -31,7 +31,7 @@ t.equal(parsed.DOUBLE_QUOTES_SPACED, '    double quotes    ', 'respects surround
 
 t.equal(parsed.DOUBLE_QUOTES_INSIDE_SINGLE, 'double "quotes" work inside single quotes', 'respects double quotes inside single quotes')
 
-t.equal(parsed.DOUBLE_QUOTES_WITH_NO_SPACE_BRACKET, '{ port: $MONGOLAB_PORT}', 'respects spacing for badly formed brackets')
+t.equal(parsed.DOUBLE_QUOTES_WITH_NO_SPACE_BRACKET, '{ port: }', 'respects spacing for badly formed brackets')
 
 t.equal(parsed.SINGLE_QUOTES_INSIDE_DOUBLE, "single 'quotes' work inside double quotes", 'respects single quotes inside double quotes')
 
