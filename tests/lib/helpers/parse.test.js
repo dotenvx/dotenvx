@@ -369,3 +369,51 @@ EXPANDED=ab-$SOURCE-cd-ef-gh
 
   ct.end()
 })
+
+t.test('#run - https://github.com/motdotla/dotenv-expand/issues/120', ct => {
+  src = `# .env
+# https://github.com/motdotla/dotenv-expand/issues/120
+PASSWORD=password
+PASSWORD_EXPAND=$\{PASSWORD}
+PASSWORD_EXPAND_SIMPLE=$PASSWORD
+PASSWORD_EXPAND_NESTED=$\{PASSWORD_EXPAND}
+PASSWORD_EXPAND_NESTED_NESTED=$\{PASSWORD_EXPAND_NESTED}
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    PASSWORD: 'password',
+    PASSWORD_EXPAND: 'password',
+    PASSWORD_EXPAND_SIMPLE: 'password',
+    PASSWORD_EXPAND_NESTED: 'password',
+    PASSWORD_EXPAND_NESTED_NESTED: 'password'
+  })
+
+  ct.end()
+})
+
+t.test('#run - https://github.com/motdotla/dotenv-expand/issues/120 when process.env has PASSWORD preset with an expandable $ dollar sign but should be treated literally', ct => {
+  process.env.PASSWORD = 'pas$word'
+
+  src = `# .env
+# https://github.com/motdotla/dotenv-expand/issues/120
+PASSWORD=password
+PASSWORD_EXPAND=$\{PASSWORD}
+PASSWORD_EXPAND_SIMPLE=$PASSWORD
+PASSWORD_EXPAND_NESTED=$\{PASSWORD_EXPAND}
+PASSWORD_EXPAND_NESTED_NESTED=$\{PASSWORD_EXPAND_NESTED}
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    PASSWORD: 'pas$word',
+    PASSWORD_EXPAND: 'pas$word',
+    PASSWORD_EXPAND_SIMPLE: 'pas$word',
+    PASSWORD_EXPAND_NESTED: 'pas$word',
+    PASSWORD_EXPAND_NESTED_NESTED: 'pas$word'
+  })
+
+  ct.end()
+})
