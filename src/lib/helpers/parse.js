@@ -49,7 +49,7 @@ class Parse {
       }
 
       // expand empty, double, or backticks
-      if (quote !== "'") {
+      if (quote !== "'" && !this.processEnv[key]) {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
 
@@ -162,12 +162,6 @@ class Parse {
 
       const key = r.shift()
 
-      // short-circuit if exact value already in process.env already
-      // const inProcessEnv = Object.prototype.hasOwnProperty.call(this.processEnv, key)
-      // if (!this.overload && !!this.processEnv[key] && (env[key] === this.processEnv[key])) {
-      //   return this.processEnv[key]
-      // }
-
       if ([':+', '+'].includes(splitter)) {
         defaultValue = env[key] ? r.join(splitter) : ''
         value = null
@@ -185,6 +179,12 @@ class Parse {
         }
       } else {
         result = result.replace(template, defaultValue)
+      }
+
+      // if the result equaled what was in process.env and runningParsed then stop expanding
+      // if (result === this.processEnv[key] || result === this.runningParsed[key]) {
+      if (result === this.runningParsed[key]) {
+        break
       }
 
       regex.lastIndex = 0 // reset regex search position to re-evaluate after each replacement
