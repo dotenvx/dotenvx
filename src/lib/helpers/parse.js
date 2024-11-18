@@ -157,16 +157,21 @@ class Parse {
 
       const r = expression.split(splitter)
 
-      let key
       let defaultValue
       let value
 
+      const key = r.shift()
+
+      // short-circuit if exact value already in process.env already
+      // const inProcessEnv = Object.prototype.hasOwnProperty.call(this.processEnv, key)
+      // if (!this.overload && !!this.processEnv[key] && (env[key] === this.processEnv[key])) {
+      //   return this.processEnv[key]
+      // }
+
       if ([':+', '+'].includes(splitter)) {
-        key = r.shift()
         defaultValue = env[key] ? r.join(splitter) : ''
         value = null
       } else {
-        key = r.shift()
         defaultValue = r.join(splitter)
         value = env[key]
       }
