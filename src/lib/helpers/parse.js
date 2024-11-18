@@ -173,8 +173,8 @@ class Parse {
         result = result.replace(template, defaultValue)
       }
 
-      // if the result equaled what was in runningParsed then stop expanding - handle self-referential check as well
-      if (result === this.runningParsed[key]) {
+      // if the result equaled what was in env then stop expanding - handle self-referential check as well
+      if (result === env[key]) {
         break
       }
 
