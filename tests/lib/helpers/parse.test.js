@@ -352,3 +352,20 @@ PROJECT_PUBLIC_HOST=$\{MOCK_SERVER_HOST}
 
   ct.end()
 })
+
+t.test('#run - expansion affecting vite', ct => {
+  src = `# .env
+# https://github.com/motdotla/dotenv-expand/issues/124
+SOURCE=12345
+EXPANDED=ab-$SOURCE-cd-ef-gh
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    SOURCE: '12345',
+    EXPANDED: 'ab-12345-cd-ef-gh'
+  })
+
+  ct.end()
+})
