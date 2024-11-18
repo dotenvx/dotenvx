@@ -374,8 +374,6 @@ lines`,
   ct.end()
 })
 
-
-
 t.test('#run - self referencing', ct => {
   src = `# .env
 ITSELF=$ITSELF
@@ -432,7 +430,7 @@ ITSELF2=$ITSELF2`
 
 t.test('#run - self referencing dotenv-expand example', ct => {
   process.env.EXPAND_SELF = '$EXPAND_SELF'
-  src = `EXPAND_SELF=$EXPAND_SELF`
+  src = 'EXPAND_SELF=$EXPAND_SELF'
 
   const { parsed } = new Parse(src, privateKey).run()
 
