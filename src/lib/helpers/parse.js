@@ -141,11 +141,8 @@ class Parse {
 
     let result = value
     let match
-    const seen = new Set() // self-referential checker
 
     while ((match = regex.exec(result)) !== null) {
-      seen.add(result)
-
       const [template, bracedExpression, unbracedExpression] = match
       const expression = bracedExpression || unbracedExpression
 
@@ -171,18 +168,12 @@ class Parse {
       }
 
       if (value) {
-        // self-referential check
-        if (seen.has(value)) {
-          result = result.replace(template, defaultValue)
-        } else {
-          result = result.replace(template, value)
-        }
+        result = result.replace(template, value)
       } else {
         result = result.replace(template, defaultValue)
       }
 
-      // if the result equaled what was in process.env and runningParsed then stop expanding
-      // if (result === this.processEnv[key] || result === this.runningParsed[key]) {
+      // if the result equaled what was in runningParsed then stop expanding - handle self-referential check as well
       if (result === this.runningParsed[key]) {
         break
       }
