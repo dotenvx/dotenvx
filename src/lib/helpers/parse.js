@@ -49,7 +49,7 @@ class Parse {
       }
 
       // expand empty, double, or backticks
-      if (quote !== "'") {
+      if (quote !== "'" && !this.processEnv[key]) {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
 
@@ -141,11 +141,8 @@ class Parse {
 
     let result = value
     let match
-    const seen = new Set() // self-referential checker
 
     while ((match = regex.exec(result)) !== null) {
-      seen.add(result)
-
       const [template, bracedExpression, unbracedExpression] = match
       const expression = bracedExpression || unbracedExpression
 
@@ -162,12 +159,6 @@ class Parse {
 
       const key = r.shift()
 
-      // short-circuit if exact value already in process.env already
-      // const inProcessEnv = Object.prototype.hasOwnProperty.call(this.processEnv, key)
-      // if (!this.overload && !!this.processEnv[key] && (env[key] === this.processEnv[key])) {
-      //   return this.processEnv[key]
-      // }
-
       if ([':+', '+'].includes(splitter)) {
         defaultValue = env[key] ? r.join(splitter) : ''
         value = null
@@ -177,14 +168,14 @@ class Parse {
       }
 
       if (value) {
-        // self-referential check
-        if (seen.has(value)) {
-          result = result.replace(template, defaultValue)
-        } else {
-          result = result.replace(template, value)
-        }
+        result = result.replace(template, value)
       } else {
         result = result.replace(template, defaultValue)
+      }
+
+      // if the result equaled what was in env then stop expanding - handle self-referential check as well
+      if (result === env[key]) {
+        break
       }
 
       regex.lastIndex = 0 // reset regex search position to re-evaluate after each replacement

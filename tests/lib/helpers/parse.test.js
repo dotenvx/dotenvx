@@ -102,6 +102,9 @@ DASH=hi-dash
 
 USE_IF_SET=true
 ALTERNATE=$\{USE_IF_SET:+alternate}
+
+# https://github.com/motdotla/dotenv-expand/issues/98
+EXPAND_SELF=$EXPAND_SELF
 `
 })
 
@@ -184,7 +187,188 @@ lines`,
     PROGRESSIVE: 'first-second',
     DASH: 'hi-dash',
     USE_IF_SET: 'true',
-    ALTERNATE: 'alternate'
+    ALTERNATE: 'alternate',
+    EXPAND_SELF: ''
+  })
+
+  ct.end()
+})
+
+t.test('#run - bring your own process.env', ct => {
+  const processEnv = {
+    MACHINE: 'machine'
+  }
+
+  const { parsed } = new Parse(src, privateKey, processEnv).run()
+
+  ct.same(parsed, {
+    HELLO: 'world',
+    EXPORT: 'export',
+    AFTER_LINE: 'after_line',
+    EMPTY: '',
+    EMPTY_SINGLE_QUOTES: '',
+    EMPTY_DOUBLE_QUOTES: '',
+    EMPTY_BACKTICKS: '',
+    SINGLE_QUOTES: 'single_quotes',
+    SINGLE_QUOTES_SPACED: '    single quotes    ',
+    DOUBLE_QUOTES: 'double_quotes',
+    DOUBLE_QUOTES_SPACED: '    double quotes    ',
+    DOUBLE_QUOTES_INSIDE_SINGLE: 'double "quotes" work inside single quotes',
+    // DOUBLE_QUOTES_WITH_NO_SPACE_BRACKET: '{ port: $MONGOLAB_PORT}',
+    SINGLE_QUOTES_INSIDE_DOUBLE: "single 'quotes' work inside double quotes",
+    BACKTICKS_INSIDE_SINGLE: '`backticks` work inside single quotes',
+    BACKTICKS_INSIDE_DOUBLE: '`backticks` work inside double quotes',
+    BACKTICKS: 'backticks',
+    BACKTICKS_SPACED: '    backticks    ',
+    DOUBLE_QUOTES_INSIDE_BACKTICKS: 'double "quotes" work inside backticks',
+    SINGLE_QUOTES_INSIDE_BACKTICKS: "single 'quotes' work inside backticks",
+    DOUBLE_AND_SINGLE_QUOTES_INSIDE_BACKTICKS: 'double "quotes" and single \'quotes\' work inside backticks',
+    EXPAND_NEWLINES: `expand
+new
+lines`,
+    DONT_EXPAND_UNQUOTED: 'dontexpand\\nnewlines',
+    DONT_EXPAND_SQUOTED: 'dontexpand\\nnewlines',
+    INLINE_COMMENTS: 'inline comments',
+    INLINE_COMMENTS_SINGLE_QUOTES: 'inline comments outside of #singlequotes',
+    INLINE_COMMENTS_DOUBLE_QUOTES: 'inline comments outside of #doublequotes',
+    INLINE_COMMENTS_BACKTICKS: 'inline comments outside of #backticks',
+    INLINE_COMMENTS_SPACE: 'inline comments start with a',
+    EQUAL_SIGNS: 'equals==',
+    RETAIN_INNER_QUOTES: '{"foo": "bar"}',
+    RETAIN_INNER_QUOTES_AS_STRING: '{"foo": "bar"}',
+    RETAIN_INNER_QUOTES_AS_BACKTICKS: '{"foo": "bar\'s"}',
+    TRIM_SPACE_FROM_UNQUOTED: 'some spaced out string',
+    USERNAME: 'therealnerdybeast@example.tld',
+    SPACED_KEY: 'parsed',
+    ENCRYPTED: 'encrypted',
+    ECHO: 'echo',
+    ECHO_SQUOTED: '$(echo echo)',
+    ECHO_UNQUOTED: 'echo',
+    BASIC: 'basic',
+    BASIC_EXPAND: 'basic',
+    MACHINE: 'machine',
+    MACHINE_EXPAND: 'machine',
+    ESCAPED_EXPAND: '$ESCAPED',
+    EXPAND_DEFAULT: 'machine',
+    EXPAND_DEFAULT_NESTED: 'machine',
+    EXPAND_DEFAULT_NESTED2: 'machine',
+    EXPAND_DEFAULT_NESTED_TWICE: 'machinedefault',
+    EXPAND_DEFAULT_NESTED_TWICE2: 'machinedefault',
+    EXPAND_DEFAULT_SPECIAL_CHARACTERS: 'machine',
+    EXPAND_DEFAULT_SPECIAL_CHARACTERS2: 'machine',
+    UNDEFINED_EXPAND: '',
+    UNDEFINED_EXPAND_NESTED: 'machine',
+    UNDEFINED_EXPAND_DEFAULT: 'default',
+    UNDEFINED_EXPAND_DEFAULT2: 'default',
+    UNDEFINED_EXPAND_DEFAULT_NESTED: 'default',
+    UNDEFINED_EXPAND_DEFAULT_NESTED2: 'default',
+    UNDEFINED_EXPAND_DEFAULT_NESTED_TWICE: 'default',
+    UNDEFINED_EXPAND_DEFAULT_NESTED_TWICE2: 'default',
+    UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS: '/default/path:with/colon',
+    UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2: '/default/path:with/colon',
+    UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED: '/default/path:with/colon',
+    UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED2: '/default/path:with/colon',
+    NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS: ':-/default/path:with/colon',
+    NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2: '-/default/path:with/colon',
+    SINGLE_QUOTE: '$BASIC',
+    DEEP8: 'prefix5-prefix4-prefix3-prefix2-prefix1-basic-suffix1-suffix2-suffix3-suffix4-suffix5',
+    DEEP_SELF: 'basic-bar',
+    DEEP_SELF_PRIOR: 'prefix2-foo-suffix2',
+    PROGRESSIVE: 'first-second',
+    DASH: 'hi-dash',
+    USE_IF_SET: 'true',
+    ALTERNATE: 'alternate',
+    EXPAND_SELF: ''
+  })
+
+  ct.end()
+})
+
+t.test('#run - bring your own process.env with overload true', ct => {
+  const processEnv = {
+    MACHINE: 'machine'
+  }
+
+  const { parsed } = new Parse(src, privateKey, processEnv, true).run()
+
+  ct.same(parsed, {
+    HELLO: 'world',
+    EXPORT: 'export',
+    AFTER_LINE: 'after_line',
+    EMPTY: '',
+    EMPTY_SINGLE_QUOTES: '',
+    EMPTY_DOUBLE_QUOTES: '',
+    EMPTY_BACKTICKS: '',
+    SINGLE_QUOTES: 'single_quotes',
+    SINGLE_QUOTES_SPACED: '    single quotes    ',
+    DOUBLE_QUOTES: 'double_quotes',
+    DOUBLE_QUOTES_SPACED: '    double quotes    ',
+    DOUBLE_QUOTES_INSIDE_SINGLE: 'double "quotes" work inside single quotes',
+    // DOUBLE_QUOTES_WITH_NO_SPACE_BRACKET: '{ port: $MONGOLAB_PORT}',
+    SINGLE_QUOTES_INSIDE_DOUBLE: "single 'quotes' work inside double quotes",
+    BACKTICKS_INSIDE_SINGLE: '`backticks` work inside single quotes',
+    BACKTICKS_INSIDE_DOUBLE: '`backticks` work inside double quotes',
+    BACKTICKS: 'backticks',
+    BACKTICKS_SPACED: '    backticks    ',
+    DOUBLE_QUOTES_INSIDE_BACKTICKS: 'double "quotes" work inside backticks',
+    SINGLE_QUOTES_INSIDE_BACKTICKS: "single 'quotes' work inside backticks",
+    DOUBLE_AND_SINGLE_QUOTES_INSIDE_BACKTICKS: 'double "quotes" and single \'quotes\' work inside backticks',
+    EXPAND_NEWLINES: `expand
+new
+lines`,
+    DONT_EXPAND_UNQUOTED: 'dontexpand\\nnewlines',
+    DONT_EXPAND_SQUOTED: 'dontexpand\\nnewlines',
+    INLINE_COMMENTS: 'inline comments',
+    INLINE_COMMENTS_SINGLE_QUOTES: 'inline comments outside of #singlequotes',
+    INLINE_COMMENTS_DOUBLE_QUOTES: 'inline comments outside of #doublequotes',
+    INLINE_COMMENTS_BACKTICKS: 'inline comments outside of #backticks',
+    INLINE_COMMENTS_SPACE: 'inline comments start with a',
+    EQUAL_SIGNS: 'equals==',
+    RETAIN_INNER_QUOTES: '{"foo": "bar"}',
+    RETAIN_INNER_QUOTES_AS_STRING: '{"foo": "bar"}',
+    RETAIN_INNER_QUOTES_AS_BACKTICKS: '{"foo": "bar\'s"}',
+    TRIM_SPACE_FROM_UNQUOTED: 'some spaced out string',
+    USERNAME: 'therealnerdybeast@example.tld',
+    SPACED_KEY: 'parsed',
+    ENCRYPTED: 'encrypted',
+    ECHO: 'echo',
+    ECHO_SQUOTED: '$(echo echo)',
+    ECHO_UNQUOTED: 'echo',
+    BASIC: 'basic',
+    BASIC_EXPAND: 'basic',
+    MACHINE: 'file',
+    MACHINE_EXPAND: 'file',
+    ESCAPED_EXPAND: '$ESCAPED',
+    EXPAND_DEFAULT: 'file',
+    EXPAND_DEFAULT_NESTED: 'file',
+    EXPAND_DEFAULT_NESTED2: 'file',
+    EXPAND_DEFAULT_NESTED_TWICE: 'filedefault',
+    EXPAND_DEFAULT_NESTED_TWICE2: 'filedefault',
+    EXPAND_DEFAULT_SPECIAL_CHARACTERS: 'file',
+    EXPAND_DEFAULT_SPECIAL_CHARACTERS2: 'file',
+    UNDEFINED_EXPAND: '',
+    UNDEFINED_EXPAND_NESTED: 'file',
+    UNDEFINED_EXPAND_DEFAULT: 'default',
+    UNDEFINED_EXPAND_DEFAULT2: 'default',
+    UNDEFINED_EXPAND_DEFAULT_NESTED: 'default',
+    UNDEFINED_EXPAND_DEFAULT_NESTED2: 'default',
+    UNDEFINED_EXPAND_DEFAULT_NESTED_TWICE: 'default',
+    UNDEFINED_EXPAND_DEFAULT_NESTED_TWICE2: 'default',
+    UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS: '/default/path:with/colon',
+    UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2: '/default/path:with/colon',
+    UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED: '/default/path:with/colon',
+    UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS_NESTED2: '/default/path:with/colon',
+    NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS: ':-/default/path:with/colon',
+    NO_CURLY_BRACES_UNDEFINED_EXPAND_DEFAULT_SPECIAL_CHARACTERS2: '-/default/path:with/colon',
+    SINGLE_QUOTE: '$BASIC',
+    DEEP8: 'prefix5-prefix4-prefix3-prefix2-prefix1-basic-suffix1-suffix2-suffix3-suffix4-suffix5',
+    DEEP_SELF: 'basic-bar',
+    DEEP_SELF_PRIOR: 'prefix2-foo-suffix2',
+    PROGRESSIVE: 'first-second',
+    DASH: 'hi-dash',
+    USE_IF_SET: 'true',
+    ALTERNATE: 'alternate',
+    EXPAND_SELF: ''
   })
 
   ct.end()
@@ -237,8 +421,21 @@ ITSELF2=$ITSELF2`
   const { parsed } = new Parse(src).run()
 
   ct.same(parsed, {
-    ITSELF: '',
+    ITSELF: '$ITSELF',
     ITSELF2: ''
+  })
+
+  ct.end()
+})
+
+t.test('#run - self referencing dotenv-expand example', ct => {
+  process.env.EXPAND_SELF = '$EXPAND_SELF'
+  src = 'EXPAND_SELF=$EXPAND_SELF'
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    EXPAND_SELF: '$EXPAND_SELF'
   })
 
   ct.end()
@@ -365,6 +562,96 @@ EXPANDED=ab-$SOURCE-cd-ef-gh
   ct.same(parsed, {
     SOURCE: '12345',
     EXPANDED: 'ab-12345-cd-ef-gh'
+  })
+
+  ct.end()
+})
+
+t.test('#run - https://github.com/motdotla/dotenv-expand/issues/120', ct => {
+  src = `# .env
+# https://github.com/motdotla/dotenv-expand/issues/120
+PASSWORD=password
+PASSWORD_EXPAND=$\{PASSWORD}
+PASSWORD_EXPAND_SIMPLE=$PASSWORD
+PASSWORD_EXPAND_NESTED=$\{PASSWORD_EXPAND}
+PASSWORD_EXPAND_NESTED_NESTED=$\{PASSWORD_EXPAND_NESTED}
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    PASSWORD: 'password',
+    PASSWORD_EXPAND: 'password',
+    PASSWORD_EXPAND_SIMPLE: 'password',
+    PASSWORD_EXPAND_NESTED: 'password',
+    PASSWORD_EXPAND_NESTED_NESTED: 'password'
+  })
+
+  ct.end()
+})
+
+t.test('does not attempt to expand password if already existed in processEnv', ct => {
+  process.env.PASSWORD = 'pas$word'
+
+  src = `# .env
+PASSWORD=password
+`
+
+  const { parsed } = new Parse(src).run()
+
+  ct.equal(process.env.PASSWORD, 'pas$word')
+  ct.same(parsed, {
+    PASSWORD: 'pas$word'
+  })
+
+  ct.end()
+})
+
+t.test('#run - https://github.com/motdotla/dotenv-expand/issues/120 when process.env has PASSWORD preset with an expandable $ dollar sign but should be treated literally', ct => {
+  process.env.PASSWORD = 'pas$word'
+
+  src = `# .env
+# https://github.com/motdotla/dotenv-expand/issues/120
+PASSWORD=password
+PASSWORD_EXPAND=$\{PASSWORD}
+PASSWORD_EXPAND_SIMPLE=$PASSWORD
+PASSWORD_EXPAND_NESTED=$\{PASSWORD_EXPAND}
+PASSWORD_EXPAND_NESTED_NESTED=$\{PASSWORD_EXPAND_NESTED}
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    PASSWORD: 'pas$word',
+    PASSWORD_EXPAND: 'pas$word',
+    PASSWORD_EXPAND_SIMPLE: 'pas$word',
+    PASSWORD_EXPAND_NESTED: 'pas$word',
+    PASSWORD_EXPAND_NESTED_NESTED: 'pas$word'
+  })
+
+  ct.end()
+})
+
+t.test('#run - https://github.com/motdotla/dotenv-expand/issues/120 when process.env has PASSWORD preset with an expandable $ dollar sign but should be treated literally but overload is true', ct => {
+  process.env.PASSWORD = 'pas$word'
+
+  src = `# .env
+# https://github.com/motdotla/dotenv-expand/issues/120
+PASSWORD=password
+PASSWORD_EXPAND=$\{PASSWORD}
+PASSWORD_EXPAND_SIMPLE=$PASSWORD
+PASSWORD_EXPAND_NESTED=$\{PASSWORD_EXPAND}
+PASSWORD_EXPAND_NESTED_NESTED=$\{PASSWORD_EXPAND_NESTED}
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    PASSWORD: 'password',
+    PASSWORD_EXPAND: 'password',
+    PASSWORD_EXPAND_SIMPLE: 'password',
+    PASSWORD_EXPAND_NESTED: 'password',
+    PASSWORD_EXPAND_NESTED_NESTED: 'password'
   })
 
   ct.end()
