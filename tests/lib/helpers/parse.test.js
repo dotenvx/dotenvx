@@ -347,7 +347,7 @@ PROJECT_PUBLIC_HOST=$\{MOCK_SERVER_HOST}
     FIRST_PAGE_URL: '/first-page',
     MOCK_SERVER_HOST: 'http://localhost:',
     MOCK_SERVER_PORT: '8090',
-    PROJECT_PUBLIC_HOST: 'http://localhost:',
+    PROJECT_PUBLIC_HOST: 'http://localhost:'
   })
 
   ct.end()
