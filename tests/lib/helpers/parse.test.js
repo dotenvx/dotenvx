@@ -331,3 +331,24 @@ t.test('#run - undefined src', ct => {
 
   ct.end()
 })
+
+t.test('#run - reverse ordered expansion not possible (and never should be. see bash and docker-compose behavior)', ct => {
+  src = `# .env
+# https://github.com/motdotla/dotenv-expand/issues/123
+FIRST_PAGE_URL=$\{PROJECT_PUBLIC_HOST}/first-page
+MOCK_SERVER_HOST=http://localhost:$\{MOCK_SERVER_PORT}
+MOCK_SERVER_PORT=8090
+PROJECT_PUBLIC_HOST=$\{MOCK_SERVER_HOST}
+`
+
+  const { parsed } = new Parse(src, privateKey).run()
+
+  ct.same(parsed, {
+    FIRST_PAGE_URL: '/first-page',
+    MOCK_SERVER_HOST: 'http://localhost:',
+    MOCK_SERVER_PORT: '8090',
+    PROJECT_PUBLIC_HOST: 'http://localhost:'
+  })
+
+  ct.end()
+})

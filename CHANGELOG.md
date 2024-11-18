@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.0...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.1...main)
+
+## 1.24.1
+
+### Changed
+
+* bump `cross-spawn` to prevent potential ReDoS [CVE-2024-21538](https://github.com/advisories/ghsa-3xgq-45jj-v275) ([#449](https://github.com/dotenvx/dotenvx/pull/449))
 
 ## 1.24.0
 
