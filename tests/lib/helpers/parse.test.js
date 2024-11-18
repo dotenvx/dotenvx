@@ -404,12 +404,11 @@ PASSWORD=password
 
   ct.equal(process.env.PASSWORD, 'pas$word')
   ct.same(parsed, {
-    PASSWORD: 'pas$word',
+    PASSWORD: 'pas$word'
   })
 
   ct.end()
 })
-
 
 t.test('#run - https://github.com/motdotla/dotenv-expand/issues/120 when process.env has PASSWORD preset with an expandable $ dollar sign but should be treated literally', ct => {
   process.env.PASSWORD = 'pas$word'
