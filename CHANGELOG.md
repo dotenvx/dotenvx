@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.3...main)
+
+## 1.24.3
+
+### Changed
+
+* 🐞 fix command substitution for more complex commands ([#455](https://github.com/dotenvx/dotenvx/pull/455))
 
 ## 1.24.2
 
