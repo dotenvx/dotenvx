@@ -668,6 +668,8 @@ ECHO5=$(echo "I want the results of a command that includes a parenthesis \\( li
 ECHO6="$(echo "I want the results of a command that includes a parenthesis \\( like this \\).")"
 ECHO7=$(echo "I want the results of a command that includes a parenthesis "'('"like this"')'".")
 ECHO8="$(echo "I want the results of a command that includes a parenthesis "'('"like this"')'".")"
+ECHO9=$(echo 'This should have a value of ﹩PWD because it is in single-quotes: $PWD')
+ECHO10=$(echo This should say hello there: hello $(echo there))
 `
 
   const { parsed } = new Parse(src, null, process.env, true).run()
@@ -680,7 +682,9 @@ ECHO8="$(echo "I want the results of a command that includes a parenthesis "'('"
     ECHO5: 'I want the results of a command that includes a parenthesis \\( like this \\).',
     ECHO6: 'I want the results of a command that includes a parenthesis \\( like this \\).',
     ECHO7: 'I want the results of a command that includes a parenthesis (like this).',
-    ECHO8: 'I want the results of a command that includes a parenthesis (like this).'
+    ECHO8: 'I want the results of a command that includes a parenthesis (like this).',
+    ECHO9: 'This should have a value of ﹩PWD because it is in single-quotes: ', // because $PWD then gets expanded
+    ECHO10: 'This should say hello there: hello there'
   })
 
   ct.end()
