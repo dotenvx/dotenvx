@@ -656,3 +656,18 @@ PASSWORD_EXPAND_NESTED_NESTED=$\{PASSWORD_EXPAND_NESTED}
 
   ct.end()
 })
+
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/453 more complex command substitution', ct => {
+  src = `# .env
+# https://github.com/dotenvx/dotenvx/issues/453
+ECHO1=$(echo "I want the results of a command that includes a parenthesis (like this).")
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    ECHO1: '$(echo "I want the results of a command that includes a parenthesis (like this).")',
+  })
+
+  ct.end()
+})
