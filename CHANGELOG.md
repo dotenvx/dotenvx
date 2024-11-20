@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.4...main)
+
+## [1.24.4](https://github.com/dotenvx/dotenvx/compare/v1.24.3...v1.24.4)
+
+### Changed
+
+* do not expand command substitution ([#456](https://github.com/dotenvx/dotenvx/pull/456))
 
 ## [1.24.3](https://github.com/dotenvx/dotenvx/compare/v1.24.2...v1.24.3)
 

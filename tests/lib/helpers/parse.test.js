@@ -683,27 +683,27 @@ ECHO10=$(echo This should say hello there: hello $(echo there))
     ECHO6: 'I want the results of a command that includes a parenthesis \\( like this \\).',
     ECHO7: 'I want the results of a command that includes a parenthesis (like this).',
     ECHO8: 'I want the results of a command that includes a parenthesis (like this).',
-    ECHO9: 'This should have a value of ﹩PWD because it is in single-quotes: ', // because $PWD then gets expanded
+    ECHO9: 'This should have a value of ﹩PWD because it is in single-quotes: $PWD',
     ECHO10: 'This should say hello there: hello there'
   })
 
   ct.end()
 })
 
-t.test('#run - https://github.com/dotenvx/dotenvx/issues/454 more complex command substitution', ct => {
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/454 do not expand evaled', ct => {
   src = `# .env
 # https://github.com/dotenvx/dotenvx/issues/454
 JSON1='{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}'
-JSON2={"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}
-JSON3="{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}"
+JSON2=$(echo '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}')
+JSON3="$(echo '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}')"
 `
 
   const { parsed } = new Parse(src, null, process.env, true).run()
 
   ct.same(parsed, {
     JSON1: '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}',
-    JSON2: '{"":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}', // $ schema gone because it attempts to expand it
-    JSON3: '{"":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}' // $ schema gone because it attempts to expand it
+    JSON2: '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}',
+    JSON3: '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}'
   })
 
   ct.end()
