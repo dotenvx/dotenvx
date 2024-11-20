@@ -2,27 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.3...main)
 
-## [1.24.3](https://github.com/dotenvx/dotenvx/compare/v1.24.2...1.24.3)
+## [1.24.3](https://github.com/dotenvx/dotenvx/compare/v1.24.2...v1.24.3)
 
 ### Changed
 
 * 🐞 fix command substitution for more complex commands ([#455](https://github.com/dotenvx/dotenvx/pull/455))
 
-## [1.24.2](https://github.com/dotenvx/dotenvx/compare/v1.24.1...1.24.2)
+## [1.24.2](https://github.com/dotenvx/dotenvx/compare/v1.24.1...v1.24.2)
 
 ### Changed
 
 * treat pre-existing expandable values as literal in `process.env` ([#450](https://github.com/dotenvx/dotenvx/pull/450))
 
-## [1.24.1](https://github.com/dotenvx/dotenvx/compare/v1.24.0...1.24.1)
+## [1.24.1](https://github.com/dotenvx/dotenvx/compare/v1.24.0...v1.24.1)
 
 ### Changed
 
 * bump `cross-spawn` to prevent potential ReDoS [CVE-2024-21538](https://github.com/advisories/ghsa-3xgq-45jj-v275) ([#449](https://github.com/dotenvx/dotenvx/pull/449))
 
-## 1.24.0
+## [1.24.0](https://github.com/dotenvx/dotenvx/compare/v1.23.0...v1.24.0)
 
 ### Added
 
