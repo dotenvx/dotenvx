@@ -44,12 +44,17 @@ class Parse {
       }
 
       // eval empty, double, or backticks
+      let evaled = false
       if (quote !== "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
-        this.parsed[key] = this.eval(this.parsed[key])
+        const priorEvaled = this.parsed[key]
+        this.parsed[key] = this.eval(priorEvaled)
+        if (priorEvaled !== this.parsed[key]) {
+          evaled = true
+        }
       }
 
       // expand empty, double, or backticks
-      if (quote !== "'" && !this.processEnv[key]) {
+      if (!evaled && quote !== "'" && !this.processEnv[key]) {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
 
