@@ -661,12 +661,26 @@ t.test('#run - https://github.com/dotenvx/dotenvx/issues/453 more complex comman
   src = `# .env
 # https://github.com/dotenvx/dotenvx/issues/453
 ECHO1=$(echo "I want the results of a command that includes a parenthesis (like this).")
+ECHO2="$(echo "I want the results of a command that includes a parenthesis (like this).")"
+ECHO3=$(echo "I want the results of a command that includes a parenthesis \\(like this\\).")
+ECHO4="$(echo "I want the results of a command that includes a parenthesis \\(like this\\).")"
+ECHO5=$(echo "I want the results of a command that includes a parenthesis \\( like this \\).")
+ECHO6="$(echo "I want the results of a command that includes a parenthesis \\( like this \\).")"
+ECHO7=$(echo "I want the results of a command that includes a parenthesis "'('"like this"')'".")
+ECHO8="$(echo "I want the results of a command that includes a parenthesis "'('"like this"')'".")"
 `
 
   const { parsed } = new Parse(src, null, process.env, true).run()
 
   ct.same(parsed, {
-    ECHO1: '$(echo "I want the results of a command that includes a parenthesis (like this).")',
+    ECHO1: 'I want the results of a command that includes a parenthesis (like this).',
+    ECHO2: 'I want the results of a command that includes a parenthesis (like this).',
+    ECHO3: 'I want the results of a command that includes a parenthesis \\(like this\\).',
+    ECHO4: 'I want the results of a command that includes a parenthesis \\(like this\\).',
+    ECHO5: 'I want the results of a command that includes a parenthesis \\( like this \\).',
+    ECHO6: 'I want the results of a command that includes a parenthesis \\( like this \\).',
+    ECHO7: 'I want the results of a command that includes a parenthesis (like this).',
+    ECHO8: 'I want the results of a command that includes a parenthesis (like this).'
   })
 
   ct.end()

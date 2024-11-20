@@ -122,12 +122,13 @@ class Parse {
   }
 
   eval (value) {
-    const matches = value.match(/\$\([^()]+\)/) || []
+    // Match everything between the outermost $() using a regex with non-capturing groups
+    const matches = value.match(/\$\(([^)]+(?:\)[^(]*)*)\)/g) || []
 
     return matches.reduce(function (newValue, match) {
-      const command = match.substring(2, match.length - 1) // get command
-      const value = chomp(execSync(command).toString()) // execute command
-      return newValue.replace(match, value) // replace with command value
+      const command = match.slice(2, -1) // Extract command by removing $() wrapper
+      const result = chomp(execSync(command).toString()) // execute command
+      return newValue.replace(match, result) // Replace match with result
     }, value)
   }
 
