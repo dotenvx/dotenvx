@@ -1,10 +1,10 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const dotenv = require('dotenv')
 const picomatch = require('picomatch')
 
 const TYPE_ENV_FILE = 'envFile'
 
+const parseEnv = require('./../helpers/parseEnv')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
@@ -67,7 +67,7 @@ class Encrypt {
     try {
       const encoding = this._detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
-      const envParsed = dotenv.parse(envSrc)
+      const parsed = parseEnv(envSrc)
 
       let publicKey
       let privateKey
@@ -150,7 +150,7 @@ class Encrypt {
       row.privateKeyName = privateKeyName
 
       // iterate over all non-encrypted values and encrypt them
-      for (const [key, value] of Object.entries(envParsed)) {
+      for (const { key, value, isExported } of parsed) {
         // key excluded - don't encrypt it
         if (this.exclude(key)) {
           continue
@@ -158,6 +158,11 @@ class Encrypt {
 
         // key effectively excluded (by not being in the list of includes) - don't encrypt it
         if (this.keys.length > 0 && !this.include(key)) {
+          continue
+        }
+
+        // key is explicitly exported - don't encrypt it
+        if (isExported) {
           continue
         }
 
