@@ -2,15 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.2...main)
+## [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.3...main)
 
-## 1.24.2
+## [1.24.3](https://github.com/dotenvx/dotenvx/compare/v1.24.2...1.24.3)
+
+### Changed
+
+* 🐞 fix command substitution for more complex commands ([#455](https://github.com/dotenvx/dotenvx/pull/455))
+
+## [1.24.2](https://github.com/dotenvx/dotenvx/compare/v1.24.1...1.24.2)
 
 ### Changed
 
 * treat pre-existing expandable values as literal in `process.env` ([#450](https://github.com/dotenvx/dotenvx/pull/450))
 
-## 1.24.1
+## [1.24.1](https://github.com/dotenvx/dotenvx/compare/v1.24.0...1.24.1)
 
 ### Changed
 

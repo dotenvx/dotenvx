@@ -656,3 +656,55 @@ PASSWORD_EXPAND_NESTED_NESTED=$\{PASSWORD_EXPAND_NESTED}
 
   ct.end()
 })
+
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/453 more complex command substitution', ct => {
+  src = `# .env
+# https://github.com/dotenvx/dotenvx/issues/453
+ECHO1=$(echo "I want the results of a command that includes a parenthesis (like this).")
+ECHO2="$(echo "I want the results of a command that includes a parenthesis (like this).")"
+ECHO3=$(echo "I want the results of a command that includes a parenthesis \\(like this\\).")
+ECHO4="$(echo "I want the results of a command that includes a parenthesis \\(like this\\).")"
+ECHO5=$(echo "I want the results of a command that includes a parenthesis \\( like this \\).")
+ECHO6="$(echo "I want the results of a command that includes a parenthesis \\( like this \\).")"
+ECHO7=$(echo "I want the results of a command that includes a parenthesis "'('"like this"')'".")
+ECHO8="$(echo "I want the results of a command that includes a parenthesis "'('"like this"')'".")"
+ECHO9=$(echo 'This should have a value of ﹩PWD because it is in single-quotes: $PWD')
+ECHO10=$(echo This should say hello there: hello $(echo there))
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    ECHO1: 'I want the results of a command that includes a parenthesis (like this).',
+    ECHO2: 'I want the results of a command that includes a parenthesis (like this).',
+    ECHO3: 'I want the results of a command that includes a parenthesis \\(like this\\).',
+    ECHO4: 'I want the results of a command that includes a parenthesis \\(like this\\).',
+    ECHO5: 'I want the results of a command that includes a parenthesis \\( like this \\).',
+    ECHO6: 'I want the results of a command that includes a parenthesis \\( like this \\).',
+    ECHO7: 'I want the results of a command that includes a parenthesis (like this).',
+    ECHO8: 'I want the results of a command that includes a parenthesis (like this).',
+    ECHO9: 'This should have a value of ﹩PWD because it is in single-quotes: ', // because $PWD then gets expanded
+    ECHO10: 'This should say hello there: hello there'
+  })
+
+  ct.end()
+})
+
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/454 more complex command substitution', ct => {
+  src = `# .env
+# https://github.com/dotenvx/dotenvx/issues/454
+JSON1='{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}'
+JSON2={"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}
+JSON3="{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    JSON1: '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}',
+    JSON2: '{"":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}', // $ schema gone because it attempts to expand it
+    JSON3: '{"":"https://json.schemastore.org/eslintrc.json","rules":{"@typescript-eslint/no-explicit-any":"error"}}' // $ schema gone because it attempts to expand it
+  })
+
+  ct.end()
+})
