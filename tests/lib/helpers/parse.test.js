@@ -708,3 +708,27 @@ JSON3="$(echo '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{
 
   ct.end()
 })
+
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/457', ct => {
+  src = `# .env
+# https://github.com/dotenvx/dotenvx/issues/457
+VAR_WITH_LITERAL_VALUE='$\{THIS_IS_A_LITERAL_VALUE} empty'
+SOME_VAR="Why"
+ANOTHER_VAR="$\{SOME_VAR} is $\{VAR_WITH_LITERAL_VALUE}"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  /* eslint-disable no-template-curly-in-string */
+  const varWithLiteralValue = '${THIS_IS_A_LITERAL_VALUE} empty'
+  const anotherVar = 'Why is ${THIS_IS_A_LITERAL_VALUE} empty'
+  /* eslint-enable no-template-curly-in-string */
+
+  ct.same(parsed, {
+    VAR_WITH_LITERAL_VALUE: varWithLiteralValue,
+    SOME_VAR: 'Why',
+    ANOTHER_VAR: anotherVar
+  })
+
+  ct.end()
+})
