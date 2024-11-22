@@ -168,9 +168,7 @@ class Parse {
 
       let defaultValue
       let value
-
       const key = r.shift()
-      // check if THIS_IS_A_LITERAL_VALUE is already set as a literal value - then don't try and expand
 
       if ([':+', '+'].includes(splitter)) {
         defaultValue = env[key] ? r.join(splitter) : ''
