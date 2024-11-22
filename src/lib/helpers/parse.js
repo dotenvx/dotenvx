@@ -20,6 +20,8 @@ class Parse {
 
     // for use with progressive expansion
     this.runningParsed = {}
+    // for use with stopping expansion for literals
+    this.literals = {}
   }
 
   run () {
@@ -56,6 +58,10 @@ class Parse {
       // expand empty, double, or backticks
       if (!evaled && quote !== "'" && !this.processEnv[key]) {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
+      }
+
+      if (quote === "'") {
+        this.literals[key] = this.parsed[key]
       }
 
       // for use with progressive expansion
@@ -164,6 +170,7 @@ class Parse {
       let value
 
       const key = r.shift()
+      // check if THIS_IS_A_LITERAL_VALUE is already set as a literal value - then don't try and expand
 
       if ([':+', '+'].includes(splitter)) {
         defaultValue = env[key] ? r.join(splitter) : ''
@@ -181,6 +188,11 @@ class Parse {
 
       // if the result equaled what was in env then stop expanding - handle self-referential check as well
       if (result === env[key]) {
+        break
+      }
+
+      // if the result came from what was a literal value then stop expanding
+      if (this.literals[key]) {
         break
       }
 
