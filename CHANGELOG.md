@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.5...main)
 
+* exit code 1 when `run` surfaces any errors ([#tbd](https://github.com/dotenvx/dotenvx/pull/tbd))
+
 ## [1.24.5](https://github.com/dotenvx/dotenvx/compare/v1.24.4...v1.24.5)
 
 ### Changed

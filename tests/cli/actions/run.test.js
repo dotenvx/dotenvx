@@ -504,6 +504,7 @@ t.test('run - envFile (prexists)', async ct => {
 })
 
 t.test('run - throws error', async ct => {
+  const processExitStub = sinon.stub(process, 'exit')
   const error = new Error('Mock Error')
   error.help = 'Mock Help'
 
@@ -520,6 +521,7 @@ t.test('run - throws error', async ct => {
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerHelpStub.calledWith('Mock Help'), 'logger.help')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()
 })

@@ -117,6 +117,7 @@ async function run () {
     if (error.help) {
       logger.help(error.help)
     }
+    process.exit(1)
   }
 
   await executeCommand(commandArgs, process.env)
