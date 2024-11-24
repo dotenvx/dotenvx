@@ -398,6 +398,7 @@ t.test('run - env (two strings)', async ct => {
 t.test('run - MISSING_ENV_FILE', async ct => {
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'
+  error.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
@@ -425,7 +426,7 @@ t.test('run - MISSING_ENV_FILE', async ct => {
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- echo ]'), 'logger.help')
+  t.ok(loggerHelpStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- echo ]'), 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
 
   ct.end()

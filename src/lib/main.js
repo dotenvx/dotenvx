@@ -92,13 +92,13 @@ const config = function (options = {}) {
           if (error.code === 'MISSING_ENV_FILE') {
             // do not warn for conventions (too noisy)
             if (!options.convention) {
-              logger.warnv(error.message)
-              logger.help(
-                `? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- yourcommand]`
-              )
+              logger.warnv(error.message) // TODO: replace with console.log
+              if (error.help) {
+                logger.help(error.help)
+              }
             }
           } else {
-            logger.warnv(error.message)
+            logger.warnv(error.message) // TODO: replace with console.log
           }
         }
       }

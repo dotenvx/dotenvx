@@ -67,7 +67,9 @@ async function run () {
           if (error.code === 'MISSING_ENV_FILE') {
             if (!options.convention) { // do not output error for conventions (too noisy)
               console.error(error.message)
-              logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
+              if (error.help) {
+                logger.help(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
+              }
             }
           } else {
             console.error(error.message)
