@@ -513,14 +513,14 @@ t.test('run - throws error', async ct => {
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
   const stub = sinon.stub(Run.prototype, 'run')
   stub.throws(error)
-  const loggerErrorStub = sinon.stub(logger, 'error')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerHelpStub.calledWith('Mock Help'), 'logger.help')
-  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()

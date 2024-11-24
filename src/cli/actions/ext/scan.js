@@ -10,7 +10,7 @@ function scan () {
     // redirect stderr to stdout to capture and ignore it
     childProcess.execSync('gitleaks version', { stdio: ['ignore', 'pipe', 'ignore'] })
   } catch (error) {
-    logger.error('gitleaks: command not found')
+    console.error('gitleaks: command not found')
     logger.help('? install gitleaks:      [brew install gitleaks]')
     logger.help2('? other install options: [https://github.com/gitleaks/gitleaks]')
     process.exit(1)
@@ -21,7 +21,7 @@ function scan () {
     const output = childProcess.execSync('gitleaks detect -v 2>&1', { stdio: 'pipe' }).toString() // gitleaks sends output as stderr for strange reason
     logger.blank(output)
   } catch (error) {
-    logger.error(error.message)
+    console.error(error.message)
 
     process.exit(1)
   }

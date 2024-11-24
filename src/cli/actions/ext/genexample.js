@@ -26,7 +26,7 @@ function genexample (directory) {
       logger.blank('no changes (.env.example)')
     }
   } catch (error) {
-    logger.error(error.message)
+    console.error(error.message)
     if (error.help) {
       logger.help(error.help)
     }

@@ -64,18 +64,21 @@ t.test('#decrypt - missing DOTENV_PRIVATE_KEY', ct => {
   // rm .env.keys prior to running decrypt
   execShell('rm .env.keys')
 
-  let output
+  let stdout
+  let stderr
   let exitCode
   try {
     output = execShell(`${dotenvx} decrypt`)
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    output = error.stdout // capture output if there is any
+    stdout = error.stdout // capture output if there is any
+    stderr = error.stderr // capture output if there is any
     exitCode = error.status // capture the exit code
   }
 
   ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
-  ct.equal(output, 'private key missing or blank\n')
+  ct.equal(stdout, '')
+  ct.equal(stderr, 'private key missing or blank\n')
 
   ct.end()
 })

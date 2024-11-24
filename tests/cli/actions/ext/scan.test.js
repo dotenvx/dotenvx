@@ -23,14 +23,14 @@ t.test('scan - gitleaks not installed', (ct) => {
   childProcess.execSync.throws(new Error('gitleaks: command not found'))
 
   const processExitStub = sinon.stub(process, 'exit')
-  const loggerErrorStub = sinon.stub(logger, 'error')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerHelp2Stub = sinon.stub(logger, 'help2')
 
   scan.call(fakeContext)
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
-  ct.ok(loggerErrorStub.calledWith('gitleaks: command not found'), 'logger.error logs')
+  ct.ok(consoleErrorStub.calledWith('gitleaks: command not found'), 'console.error logs')
   ct.ok(loggerHelpStub.calledWith('? install gitleaks:      [brew install gitleaks]'), 'logger.help logs')
   ct.ok(loggerHelp2Stub.calledWith('? other install options: [https://github.com/gitleaks/gitleaks]'), 'logger.help2 logs')
 
@@ -67,12 +67,12 @@ t.test('scan - gitleaks installed and raises error', (ct) => {
   childProcess.execSync.throws(new Error('some error happened'))
 
   const processExitStub = sinon.stub(process, 'exit')
-  const loggerErrorStub = sinon.stub(logger, 'error')
+  const consoleErrorStub = sinon.stub(console, 'error')
 
   scan.call(fakeContext)
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
-  ct.ok(loggerErrorStub.calledWith('some error happened'), 'logger.error logs')
+  ct.ok(consoleErrorStub.calledWith('some error happened'), 'console.error logs')
 
   ct.end()
 })

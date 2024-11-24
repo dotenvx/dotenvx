@@ -291,7 +291,7 @@ t.test('set - catch error', ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerErrorStub = sinon.stub(logger, 'error')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerDebugStub = sinon.stub(logger, 'debug')
 
@@ -301,7 +301,7 @@ t.test('set - catch error', ct => {
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')
-  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger error')
+  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console error')
   t.ok(loggerHelpStub.calledWith('Mock Help'), 'logger help')
   t.ok(loggerDebugStub.calledWith('Mock Debug'), 'logger debug')
   t.ok(loggerDebugStub.calledWith('ERROR_CODE: 500'), 'logger debug')
