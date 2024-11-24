@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.5...main)
 
-* exit code 1 when `run` surfaces any errors ([#tbd](https://github.com/dotenvx/dotenvx/pull/tbd))
+* exit code 1 when `run` surfaces any errors ([#459](https://github.com/dotenvx/dotenvx/pull/459))
+* log `MISSING_ENV_FILE` and `DECRYPTION_FAILED` errors to stderr (prior was stdout as a warning) ([#459](https://github.com/dotenvx/dotenvx/pull/459))
 
 ## [1.24.5](https://github.com/dotenvx/dotenvx/compare/v1.24.4...v1.24.5)
 
