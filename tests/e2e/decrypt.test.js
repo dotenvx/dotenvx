@@ -68,7 +68,7 @@ t.test('#decrypt - missing DOTENV_PRIVATE_KEY', ct => {
   let stderr
   let exitCode
   try {
-    output = execShell(`${dotenvx} decrypt`)
+    execShell(`${dotenvx} decrypt`)
     ct.fail('should have raised an error but did not')
   } catch (error) {
     stdout = error.stdout // capture output if there is any
