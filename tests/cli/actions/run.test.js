@@ -185,7 +185,7 @@ t.test('run - envFile (with errors)', async ct => {
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const loggerWarnStub = sinon.stub(logger, 'warn')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
@@ -194,7 +194,7 @@ t.test('run - envFile (with errors)', async ct => {
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
-  t.ok(loggerWarnStub.calledWith('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…'), 'logger.warn')
+  t.ok(consoleErrorStub.calledWith('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…'), 'console.error')
   t.ok(loggerHelpStub.calledWith('[DECRYPTION_FAILED] ? encrypted data looks malformed'), 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
 

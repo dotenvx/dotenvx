@@ -4,7 +4,7 @@ const os = require('os')
 const path = require('path')
 const which = require('which')
 const dotenv = require('dotenv')
-const { execSync } = require('child_process')
+const { spawnSync } = require('child_process')
 
 const packageJson = require('../../src/lib/helpers/packageJson')
 const version = packageJson.version
@@ -17,10 +17,16 @@ const node = path.resolve(which.sync('node')) // /opt/homebrew/node
 const dotenvx = `${node} ${path.join(originalDir, 'src/cli/dotenvx.js')}`
 
 function execShell (commands) {
-  return execSync(commands, {
+  const result = spawnSync(commands, {
     encoding: 'utf8',
-    shell: true
-  }).trim()
+    shell: true,
+  })
+
+  return {
+    stdout: result.stdout ? result.stdout.trim() : null,
+    stderr: result.stderr ? result.stderr.trim() : null,
+    exitCode: result.status, // Exit code of the command
+  }
 }
 
 t.beforeEach((ct) => {
@@ -45,10 +51,10 @@ t.test('#run', ct => {
   `)
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${node} index.js`), 'Hello undefined')
-  ct.equal(execShell(`${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env\nHello World`)
-  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`), 'Hello World') // --quiet
-  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${node} index.js`).stdout, 'Hello undefined')
+  ct.equal(execShell(`${dotenvx} run -- ${command}`).stdout, `[dotenvx@${version}] injecting env (1) from .env\nHello World`)
+  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello World') // --quiet
+  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[]}
 loading env from .env (${tempDir}/.env)
@@ -71,9 +77,9 @@ t.test('#run - multiple .env files', ct => {
   `)
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello local`)
-  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --quiet -- ${command}`), 'Hello local') // --quiet
-  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env -- ${command}`).stdout, `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello local`)
+  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --quiet -- ${command}`).stdout, 'Hello local') // --quiet
+  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[".env.local",".env"],"envVaultFile":[]}
 loading env from .env.local (${tempDir}/.env.local)
@@ -100,9 +106,9 @@ t.test('#run - multiple .env files --overload', ct => {
   `)
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello World`)
-  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --quiet -- ${command}`), 'Hello World') // --quiet
-  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload -- ${command}`).stdout, `[dotenvx@${version}] injecting env (1) from .env.local, .env\nHello World`)
+  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --quiet -- ${command}`).stdout, 'Hello World') // --quiet
+  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[".env.local",".env"],"envVaultFile":[],"overload":true}
 loading env from .env.local (${tempDir}/.env.local)
@@ -128,8 +134,8 @@ t.test('#run - Variable Expansion', ct => {
   `)
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${node} index.js`), 'DATABASE_URL undefined')
-  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`), 'DATABASE_URL postgres://username@localhost/my_database')
+  ct.equal(execShell(`${node} index.js`).stdout, 'DATABASE_URL undefined')
+  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'DATABASE_URL postgres://username@localhost/my_database')
 
   ct.end()
 })
@@ -141,9 +147,9 @@ t.test('#run - Command Substitution', ct => {
   `)
 
   const command = `${node} index.js`
-  const whoami = execShell('whoami')
-  ct.equal(execShell(`${node} index.js`), 'DATABASE_URL undefined')
-  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`), `DATABASE_URL postgres://${whoami}@localhost/my_database`)
+  const whoami = execShell('whoami').stdout
+  ct.equal(execShell(`${node} index.js`).stdout, 'DATABASE_URL undefined')
+  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, `DATABASE_URL postgres://${whoami}@localhost/my_database`)
 
   ct.end()
 })
@@ -155,9 +161,9 @@ t.test('#run - --env', ct => {
   `)
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env -- ${command}`), `[dotenvx@${version}] injecting env (1) from .env, and --env flag\nHello String`)
-  ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --quiet -- ${command}`), 'Hello String') // --quiet
-  ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env -- ${command}`).stdout, `[dotenvx@${version}] injecting env (1) from .env, and --env flag\nHello String`)
+  ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --quiet -- ${command}`).stdout, 'Hello String') // --quiet
+  ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
 options: {"env":["HELLO=String"],"envFile":[".env"],"envVaultFile":[]}
 loading env from string (HELLO=String)
@@ -187,9 +193,9 @@ t.test('#run - encrypted .env', ct => {
   const DOTENV_PUBLIC_KEY = parsedEnv.DOTENV_PUBLIC_KEY
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
-  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`), 'Hello encrypted') // --quiet
-  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`), `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run -- ${command}`).stdout, `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
+  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello encrypted') // --quiet
+  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[]}
 loading env from .env (${tempDir}/.env)
@@ -220,15 +226,22 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   execShell('rm .env.keys')
 
   const command = `${node} index.js`
-  ct.equal(execShell(`${dotenvx} run -- ${command}`), `[DECRYPTION_FAILED] could not decrypt HELLO using private key ''
-[DECRYPTION_FAILED] ? private key missing or blank
+
+  let o = execShell(`${dotenvx} run -- ${command}`)
+  ct.equal(o.stderr, `[DECRYPTION_FAILED] could not decrypt HELLO using private key ''`)
+  ct.equal(o.stdout, `[DECRYPTION_FAILED] ? private key missing or blank
 [dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
-  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`), `Hello ${encrypted}`) // --quiet
-  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`), `Setting log level to debug
+
+  o = execShell(`${dotenvx} run --quiet -- ${command}`)
+  ct.equal(o.stderr, `[DECRYPTION_FAILED] could not decrypt HELLO using private key ''`)
+  ct.equal(o.stdout, `Hello ${encrypted}`) // --quiet
+
+  o = execShell(`${dotenvx} run --debug -- ${command}`)
+  ct.equal(o.stderr, `[DECRYPTION_FAILED] could not decrypt HELLO using private key ''`)
+  ct.equal(o.stdout, `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[]}
 loading env from .env (${tempDir}/.env)
-[DECRYPTION_FAILED] could not decrypt HELLO using private key ''
 [DECRYPTION_FAILED] ? private key missing or blank
 {"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"${encrypted}"}
 DOTENV_PUBLIC_KEY set
@@ -259,8 +272,8 @@ t.test('#run - encrypted .env with no .env.keys, with DOTENV_PRIVATE_KEY', ct =>
   process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY // set already on server
 
   const command = `${node} index.js`
-  ct.equal(execShell(`DOTENV_PRIVATE_KEY=${DOTENV_PRIVATE_KEY} ${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
-  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`), 'Hello encrypted') // --quiet
+  ct.equal(execShell(`DOTENV_PRIVATE_KEY=${DOTENV_PRIVATE_KEY} ${dotenvx} run -- ${command}`).stdout, `[dotenvx@${version}] injecting env (2) from .env\nHello encrypted`)
+  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello encrypted') // --quiet
 
   ct.end()
 })
@@ -281,8 +294,8 @@ t.test('#run - encrypted .env.production with no .env.keys, with DOTENV_PRIVATE_
   process.env.DOTENV_PRIVATE_KEY_PRODUCTION = DOTENV_PRIVATE_KEY_PRODUCTION // set already on server
 
   const command = `${node} index.js`
-  ct.equal(execShell(`DOTENV_PRIVATE_KEY_PRODUCTION=${DOTENV_PRIVATE_KEY_PRODUCTION} ${dotenvx} run -- ${command}`), `[dotenvx@${version}] injecting env (2) from .env.production\nHello production`)
-  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`), 'Hello production') // --quiet
+  ct.equal(execShell(`DOTENV_PRIVATE_KEY_PRODUCTION=${DOTENV_PRIVATE_KEY_PRODUCTION} ${dotenvx} run -- ${command}`).stdout, `[dotenvx@${version}] injecting env (2) from .env.production\nHello production`)
+  ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello production') // --quiet
 
   ct.end()
 })
