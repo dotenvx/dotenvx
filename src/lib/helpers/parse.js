@@ -16,7 +16,7 @@ class Parse {
     this.parsed = {}
     this.preExisted = {}
     this.injected = {}
-    this.warnings = []
+    this.errors = []
 
     // for use with progressive expansion
     this.runningParsed = {}
@@ -42,7 +42,7 @@ class Parse {
       try {
         this.parsed[key] = this.decrypt(this.parsed[key])
       } catch (e) {
-        this.warnings.push(this.warning(e, key))
+        this.errors.push(this.error(e, key))
       }
 
       // eval empty, double, or backticks
@@ -78,8 +78,8 @@ class Parse {
       parsed: this.parsed,
       processEnv: this.processEnv,
       injected: this.injected,
-      warnings: this.warnings,
-      preExisted: this.preExisted
+      preExisted: this.preExisted,
+      errors: this.errors
     }
   }
 
@@ -208,12 +208,12 @@ class Parse {
     return (this.src || '').toString().replace(/\r\n?/mg, '\n') // Convert buffer to string and Convert line breaks to same format
   }
 
-  warning (e, key) {
-    const warning = new Error(`[${e.code}] could not decrypt ${key} using private key '${truncate(this.privateKey)}'`)
-    warning.code = e.code
-    warning.help = `[${e.code}] ? ${e.message}`
+  error (e, key) {
+    const error = new Error(`[${e.code}] could not decrypt ${key} using private key '${truncate(this.privateKey)}'`)
+    error.code = e.code
+    error.help = `[${e.code}] ? ${e.message}`
 
-    return warning
+    return error
   }
 }
 

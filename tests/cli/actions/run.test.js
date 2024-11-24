@@ -156,10 +156,10 @@ t.test('run - envFile', async ct => {
   ct.end()
 })
 
-t.test('run - envFile (with warnings)', async ct => {
-  const warning = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…')
-  warning.code = 'DECRYPTION_FAILED'
-  warning.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
+t.test('run - envFile (with errors)', async ct => {
+  const error = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…')
+  error.code = 'DECRYPTION_FAILED'
+  error.help = '[DECRYPTION_FAILED] ? encrypted data looks malformed'
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
@@ -175,7 +175,7 @@ t.test('run - envFile (with warnings)', async ct => {
       injected: {
         HELLO: 'World'
       },
-      warnings: [warning],
+      errors: [error],
       preExisted: {}
     }],
     readableStrings: [],

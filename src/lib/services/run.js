@@ -59,9 +59,9 @@ class Run {
     row.string = env
 
     try {
-      const { parsed, warnings, injected, preExisted } = new Parse(env, null, this.processEnv, this.overload).run()
+      const { parsed, errors, injected, preExisted } = new Parse(env, null, this.processEnv, this.overload).run()
       row.parsed = parsed
-      row.warnings = warnings
+      row.errors = errors
       row.injected = injected
       row.preExisted = preExisted
 
@@ -91,10 +91,10 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const privateKey = findPrivateKey(envFilepath)
-      const { parsed, warnings, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload).run()
+      const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload).run()
 
       row.parsed = parsed
-      row.warnings = warnings
+      row.errors = errors
       row.injected = injected
       row.preExisted = preExisted
 
@@ -162,9 +162,9 @@ class Run {
 
     try {
       // parse this. it's the equivalent of the .env file
-      const { parsed, warnings, injected, preExisted } = new Parse(decrypted, null, this.processEnv, this.overload).run()
+      const { parsed, errors, injected, preExisted } = new Parse(decrypted, null, this.processEnv, this.overload).run()
       row.parsed = parsed
-      row.warnings = warnings
+      row.errors = errors
       row.injected = injected
       row.preExisted = preExisted
 
