@@ -77,24 +77,12 @@ const config = function (options = {}) {
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
-        logger.verbose(
-          `loading env from encrypted ${processedEnv.filepath} (${path.resolve(
-            processedEnv.filepath
-          )})`
-        )
-        logger.debug(
-          `decrypting encrypted env from ${
-            processedEnv.filepath
-          } (${path.resolve(processedEnv.filepath)})`
-        )
+        logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
+        logger.debug(`decrypting encrypted env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
 
       if (processedEnv.type === 'envFile') {
-        logger.verbose(
-          `loading env from ${processedEnv.filepath} (${path.resolve(
-            processedEnv.filepath
-          )})`
-        )
+        logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
 
       if (processedEnv.errors) {
@@ -115,31 +103,22 @@ const config = function (options = {}) {
         }
       }
 
-      if (processedEnv.injected) {
-        Object.assign(parsedAll, processedEnv.injected)
-        Object.assign(parsedAll, processedEnv.preExisted) // preExisted 'wins'
+      Object.assign(parsedAll, processedEnv.injected || {})
+      Object.assign(parsedAll, processedEnv.preExisted || {}) // preExisted 'wins'
 
-        // debug parsed
-        const parsed = processedEnv.parsed
-        logger.debug(parsed)
+      // debug parsed
+      logger.debug(processedEnv.parsed)
 
-        // verbose/debug injected key/value
-        const injected = processedEnv.injected
-        for (const [key, value] of Object.entries(injected)) {
-          logger.verbose(`${key} set`)
-          logger.debug(`${key} set to ${value}`)
-        }
+      // verbose/debug injected key/value
+      for (const [key, value] of Object.entries(processedEnv.injected || {})) {
+        logger.verbose(`${key} set`)
+        logger.debug(`${key} set to ${value}`)
+      }
 
-        // verbose/debug preExisted key/value
-        const preExisted = processedEnv.preExisted
-        for (const [key, value] of Object.entries(preExisted)) {
-          logger.verbose(
-            `${key} pre-exists (protip: use --overload to override)`
-          )
-          logger.debug(
-            `${key} pre-exists as ${value} (protip: use --overload to override)`
-          )
-        }
+      // verbose/debug preExisted key/value
+      for (const [key, value] of Object.entries(processedEnv.preExisted || {})) {
+        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
+        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
     }
 

@@ -79,19 +79,16 @@ async function run () {
       }
 
       // debug parsed
-      const parsed = processedEnv.parsed
-      logger.debug(parsed)
+      logger.debug(processedEnv.parsed)
 
       // verbose/debug injected key/value
-      const injected = processedEnv.injected
-      for (const [key, value] of Object.entries(injected)) {
+      for (const [key, value] of Object.entries(processedEnv.injected || {})) {
         logger.verbose(`${key} set`)
         logger.debug(`${key} set to ${value}`)
       }
 
       // verbose/debug preExisted key/value
-      const preExisted = processedEnv.preExisted
-      for (const [key, value] of Object.entries(preExisted)) {
+      for (const [key, value] of Object.entries(processedEnv.preExisted || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
         logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
