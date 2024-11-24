@@ -417,14 +417,14 @@ t.test('run - MISSING_ENV_FILE', async ct => {
   })
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const loggerWarnvStub = sinon.stub(logger, 'warnv')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
-  t.ok(loggerWarnvStub.calledWith('Mock Error'), 'logger.warnv')
+  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
   t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- echo ]'), 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
 
@@ -453,14 +453,14 @@ t.test('run - OTHER_ERROR', async ct => {
   })
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const loggerWarnvStub = sinon.stub(logger, 'warnv')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
-  t.ok(loggerWarnvStub.calledWith('Mock Error'), 'logger.warnv')
+  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
 
