@@ -19,13 +19,13 @@ const dotenvx = `${node} ${path.join(originalDir, 'src/cli/dotenvx.js')}`
 function execShell (commands) {
   const result = spawnSync(commands, {
     encoding: 'utf8',
-    shell: true,
+    shell: true
   })
 
   return {
     stdout: result.stdout ? result.stdout.trim() : null,
     stderr: result.stderr ? result.stderr.trim() : null,
-    exitCode: result.status, // Exit code of the command
+    exitCode: result.status // Exit code of the command
   }
 }
 
@@ -228,16 +228,16 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   const command = `${node} index.js`
 
   let o = execShell(`${dotenvx} run -- ${command}`)
-  ct.equal(o.stderr, `[DECRYPTION_FAILED] could not decrypt HELLO using private key ''`)
+  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'')
   ct.equal(o.stdout, `[DECRYPTION_FAILED] ? private key missing or blank
 [dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
 
   o = execShell(`${dotenvx} run --quiet -- ${command}`)
-  ct.equal(o.stderr, `[DECRYPTION_FAILED] could not decrypt HELLO using private key ''`)
+  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'')
   ct.equal(o.stdout, `Hello ${encrypted}`) // --quiet
 
   o = execShell(`${dotenvx} run --debug -- ${command}`)
-  ct.equal(o.stderr, `[DECRYPTION_FAILED] could not decrypt HELLO using private key ''`)
+  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'')
   ct.equal(o.stdout, `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[]}
