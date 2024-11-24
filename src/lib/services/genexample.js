@@ -2,6 +2,7 @@ const fsx = require('./../helpers/fsx')
 const path = require('path')
 const dotenv = require('dotenv')
 
+const Errors = require('../helpers/errors')
 const findEnvFiles = require('../helpers/findEnvFiles')
 const replace = require('../helpers/replace')
 
@@ -39,13 +40,8 @@ class Genexample {
     for (const envFilepath of envFilepaths) {
       const filepath = path.resolve(this.directory, envFilepath)
       if (!fsx.existsSync(filepath)) {
-        const code = 'MISSING_ENV_FILE'
-        const message = `file does not exist at [${filepath}]`
-        const help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx genexample]`
-
-        const error = new Error(message)
-        error.code = code
-        error.help = help
+        const error = new Errors({ envFilepath, filepath }).missingEnvFile()
+        error.help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx genexample]`
         throw error
       }
 

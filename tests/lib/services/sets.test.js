@@ -24,7 +24,7 @@ t.test('#run (no arguments)', ct => {
     changedFilepaths
   } = new Sets().run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
@@ -47,7 +47,7 @@ t.test('#run (no env file)', ct => {
     changedFilepaths
   } = new Sets().run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
