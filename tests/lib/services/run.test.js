@@ -17,7 +17,7 @@ t.test('#run (no arguments)', ct => {
     uniqueInjectedKeys
   } = new Run().run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
@@ -291,7 +291,7 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
     uniqueInjectedKeys
   } = new Run(envs, true).run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
@@ -353,7 +353,7 @@ t.test('#run (with envs as string)', ct => {
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
   ct.same(processedEnvs, [
     {
@@ -385,7 +385,7 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
     { type: 'env', value: 'HELLO=string' }
   ]
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
   const run = new Run(envs)
   const mockError = new Error('Mock Error')
@@ -778,7 +778,7 @@ options="$\{options} optD"`
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [
