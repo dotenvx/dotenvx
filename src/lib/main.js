@@ -97,21 +97,25 @@ const config = function (options = {}) {
         )
       }
 
-      if (processedEnv.error) {
-        lastError = processedEnv.error
+      if (processedEnv.errors) {
+        for (const error of processedEnv.errors) {
+          lastError = error // surface later in { error }
 
-        if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-          // do not warn for conventions (too noisy)
-          if (!options.convention) {
-            logger.warnv(processedEnv.error.message)
-            logger.help(
-              `? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- yourcommand]`
-            )
+          if (error.code === 'MISSING_ENV_FILE') {
+            // do not warn for conventions (too noisy)
+            if (!options.convention) {
+              logger.warnv(error.message)
+              logger.help(
+                `? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- yourcommand]`
+              )
+            }
+          } else {
+            logger.warnv(error.message)
           }
-        } else {
-          logger.warnv(processedEnv.error.message)
         }
-      } else {
+      }
+
+      if (processedEnv.injected) {
         Object.assign(parsedAll, processedEnv.injected)
         Object.assign(parsedAll, processedEnv.preExisted) // preExisted 'wins'
 

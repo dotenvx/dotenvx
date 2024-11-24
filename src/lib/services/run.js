@@ -74,7 +74,7 @@ class Run {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
     } catch (e) {
-      row.error = e
+      row.errors = [e]
     }
 
     this.processedEnvs.push(row)
@@ -106,9 +106,9 @@ class Run {
       }
     } catch (e) {
       if (e.code === 'ENOENT') {
-        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+        row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]
       } else {
-        row.error = e
+        row.errors = [e]
       }
     }
 
@@ -172,7 +172,7 @@ class Run {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
     } catch (e) {
-      row.error = e
+      row.errors = [e]
     }
 
     this.processedEnvs.push(row)

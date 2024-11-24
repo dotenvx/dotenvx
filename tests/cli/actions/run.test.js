@@ -404,7 +404,7 @@ t.test('run - MISSING_ENV_FILE', async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [{
-      error,
+      errors: [error],
       type: 'envFile',
       filepath: '.env',
       parsed: {},
@@ -440,7 +440,7 @@ t.test('run - OTHER_ERROR', async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [{
-      error,
+      errors: [error],
       type: 'envFile',
       filepath: '.env',
       parsed: {},

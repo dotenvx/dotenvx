@@ -62,42 +62,38 @@ async function run () {
         logger.verbose(`loading env from string (${processedEnv.string})`)
       }
 
-      if (processedEnv.error) {
-        if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-          if (!options.convention) { // do not output error for conventions (too noisy)
-            console.error(processedEnv.error.message)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
-          }
-        } else {
-          console.error(processedEnv.error.message)
-        }
-      } else {
-        if (processedEnv.errors) {
-          for (const error of processedEnv.errors) {
+      if (processedEnv.errors) {
+        for (const error of processedEnv.errors) {
+          if (error.code === 'MISSING_ENV_FILE') {
+            if (!options.convention) { // do not output error for conventions (too noisy)
+              console.error(error.message)
+              logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
+            }
+          } else {
             console.error(error.message)
             if (error.help) {
               logger.help(error.help)
             }
           }
         }
+      }
 
-        // debug parsed
-        const parsed = processedEnv.parsed
-        logger.debug(parsed)
+      // debug parsed
+      const parsed = processedEnv.parsed
+      logger.debug(parsed)
 
-        // verbose/debug injected key/value
-        const injected = processedEnv.injected
-        for (const [key, value] of Object.entries(injected)) {
-          logger.verbose(`${key} set`)
-          logger.debug(`${key} set to ${value}`)
-        }
+      // verbose/debug injected key/value
+      const injected = processedEnv.injected
+      for (const [key, value] of Object.entries(injected)) {
+        logger.verbose(`${key} set`)
+        logger.debug(`${key} set to ${value}`)
+      }
 
-        // verbose/debug preExisted key/value
-        const preExisted = processedEnv.preExisted
-        for (const [key, value] of Object.entries(preExisted)) {
-          logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-          logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
-        }
+      // verbose/debug preExisted key/value
+      const preExisted = processedEnv.preExisted
+      for (const [key, value] of Object.entries(preExisted)) {
+        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
+        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
     }
 

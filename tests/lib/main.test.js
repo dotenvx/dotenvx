@@ -38,11 +38,11 @@ t.test('config with convention - calls Run.run with proper envs', ct => {
   ct.end()
 })
 
-t.test('config with Run.run error', ct => {
+t.test('config with Run.run errors', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warnv')
-  const error = new Error('some error')
+  const errors = [new Error('some error')]
   const stub = sinon.stub(Run.prototype, 'run')
-  stub.returns({ processedEnvs: [{ error }], readableFilepaths: [], uniqueInjectedKeys: [] })
+  stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
   main.config()
 

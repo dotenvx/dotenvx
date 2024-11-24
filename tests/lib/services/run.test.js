@@ -23,7 +23,7 @@ t.test('#run (no arguments)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: '.env',
-    error: exampleError
+    errors: [exampleError]
   }])
   ct.same(readableFilepaths, [])
   ct.same(uniqueInjectedKeys, [])
@@ -45,7 +45,7 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: '.env',
-    error: exampleError
+    errors: [exampleError]
   }])
   ct.same(readableFilepaths, [])
   ct.same(uniqueInjectedKeys, [])
@@ -359,7 +359,7 @@ t.test('#run (with envs as string)', ct => {
     {
       type: 'envFile',
       filepath: '.env',
-      error: exampleError
+      errors: [exampleError]
     },
     {
       type: 'env',
@@ -399,13 +399,12 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
     {
       type: 'envFile',
       filepath: '.env',
-      error: exampleError
+      errors: [exampleError]
     },
     {
       type: 'env',
       string: 'HELLO=string',
-      error: mockError,
-      errors: [],
+      errors: [mockError],
       parsed: {
         HELLO: 'string'
       },
@@ -589,8 +588,7 @@ t.test('#run (.env.vault and DOTENV_KEY with errors somehow from inject)', ct =>
     {
       type: 'envVaultFile',
       filepath: 'tests/monorepo/apps/backend/.env.vault',
-      error: mockError,
-      errors: [],
+      errors: [mockError],
       parsed: {
         HELLO: 'backend'
       },
@@ -785,7 +783,7 @@ options="$\{options} optD"`
     {
       type: 'envFile',
       filepath: '.env',
-      error: exampleError
+      errors: [exampleError]
     },
     {
       type: 'env',
