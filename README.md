@@ -1704,12 +1704,10 @@ More examples
 
   ```sh
   $ node index.js
-  [dotenvx@1.24.5] injecting env (1) from .env.local, .env
-  Hello World
+  Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
   ```
 
   </details>
-
 
 ### Extensions 🔌
 
