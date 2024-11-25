@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Removed
 
-* removed `dotenvx.get()` from `lib/main.js`. (`parse` already historically exists for this purpose) ([#461](https://github.com/dotenvx/dotenvx/pull/461))
+* remove `dotenvx.get()` function from `lib/main.js`. (`parse` already historically exists for this purpose) ([#461](https://github.com/dotenvx/dotenvx/pull/461))
 
 ## [1.24.5](https://github.com/dotenvx/dotenvx/compare/v1.24.4...v1.24.5)
 
