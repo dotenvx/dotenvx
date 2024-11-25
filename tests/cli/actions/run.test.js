@@ -648,3 +648,31 @@ t.test('run - envFile (ambigious arguments, missing -- and envFile is empty)', a
 
   ct.end()
 })
+
+t.test('run - envFile - parsed, injected, and preExisted missing for some reason upstream - it doesn\'t choke', async ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [{
+      type: 'envFile',
+      filepath: '.env'
+    }],
+    readableStrings: [],
+    readableFilepaths: ['.env'],
+    uniqueInjectedKeys: []
+  })
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (0) from .env'), 'logger.successv')
+
+  ct.end()
+})
+
