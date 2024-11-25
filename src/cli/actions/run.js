@@ -104,8 +104,6 @@ async function run () {
 
     logger.successv(msg)
   } catch (error) {
-    if (options.strict) throw error // throw immediately if strict
-
     console.error(error.message)
     if (error.help) {
       logger.help(error.help)
