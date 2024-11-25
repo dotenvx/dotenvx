@@ -1058,11 +1058,8 @@ More examples
 
   ```sh
   $ dotenvx get DOES_NOT_EXIST --strict
-  [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
-  [MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env.missing]
+  [MISSING_KEY] missing DOES_NOT_EXIST key
   ```
-
-  This can be useful in `ci` scripts where you want to fail the ci if your `.env` file could not be decrypted at runtime.
 
   </details>
 
