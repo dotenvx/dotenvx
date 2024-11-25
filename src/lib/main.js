@@ -29,7 +29,10 @@ const config = function (options = {}) {
   // overload
   const overload = options.overload || options.override
 
-  // DOTENV_KEY
+  // strict
+  const strict = options.strict
+
+  // DOTENV_KEY (DEPRECATED)
   let DOTENV_KEY = process.env.DOTENV_KEY
   if (options && options.DOTENV_KEY) {
     DOTENV_KEY = options.DOTENV_KEY
@@ -82,6 +85,8 @@ const config = function (options = {}) {
       }
 
       for (const error of processedEnv.errors || []) {
+        if (strict) throw error // throw immediately if strict
+
         lastError = error // surface later in { error }
 
         if (error.code === 'MISSING_ENV_FILE') {
@@ -130,6 +135,8 @@ const config = function (options = {}) {
       return { parsed: parsedAll }
     }
   } catch (error) {
+    if (strict) throw error // throw immediately if strict
+
     logger.error(error.message)
     if (error.help) {
       logger.help(error.help)

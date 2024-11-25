@@ -281,3 +281,22 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend', ct
 
   ct.end()
 })
+
+t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --strict it throws', ct => {
+  const processEnv = {}
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend'],
+    strict: true
+  }
+
+  try {
+    main.config(options)
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.equal(error.code, 'MISSING_ENV_FILE')
+  }
+
+  ct.end()
+})
