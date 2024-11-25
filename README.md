@@ -1626,6 +1626,8 @@ More examples
 
 * <details><summary>`config()`</summary><br>
 
+  Use directly in node.js code.
+
   ```ini
   # .env
   HELLO="World"
