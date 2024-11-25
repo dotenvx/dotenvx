@@ -1,4 +1,5 @@
 const Run = require('./run')
+const Errors = require('./../helpers/errors')
 
 class Get {
   constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false, strict = false) {
@@ -14,15 +15,27 @@ class Get {
     const processEnv = { ...process.env }
     const { processedEnvs } = new Run(this.envs, this.overload, this.DOTENV_KEY, processEnv).run()
 
+    const errors = []
+    for (const processedEnv of processedEnvs) {
+      for (const error of processedEnv.errors) {
+        errors.push(error)
+      }
+    }
+
     if (this.key) {
       const parsed = {}
-      parsed[this.key] = processEnv[this.key]
+      const value = processEnv[this.key]
+      parsed[this.key] = value
 
-      return { parsed }
+      if (value === undefined) {
+        errors.push(new Errors({ key: this.key }).missingKey())
+      }
+
+      return { parsed, errors }
     } else {
       // if user wants to return ALL envs (even prior set on machine)
       if (this.all) {
-        return { parsed: processEnv }
+        return { parsed: processEnv, errors }
       }
 
       // typical scenario - return only envs that were identified in the .env file
@@ -38,7 +51,7 @@ class Get {
         }
       }
 
-      return { parsed }
+      return { parsed, errors }
     }
   }
 }

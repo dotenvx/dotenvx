@@ -21,41 +21,57 @@ function get (key) {
     envs = this.envs
   }
 
-  const { parsed } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all).run()
+  try {
+    const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all).run()
 
-  if (key) {
-    const single = parsed[key]
-    if (single === undefined) {
-      console.log('')
-      process.exit(1)
-    } else {
-      console.log(single)
+    for (const error of errors || []) {
+      if (options.strict) throw error // throw immediately if strict
+
+      console.error(error.message)
+      if (error.help) {
+        console.error(error.help)
+      }
     }
-  } else {
-    if (options.format === 'eval') {
-      let inline = ''
-      for (const [key, value] of Object.entries(parsed)) {
-        inline += `${key}=${escape(value)}\n`
-      }
-      inline = inline.trim()
 
-      console.log(inline)
-    } else if (options.format === 'shell') {
-      let inline = ''
-      for (const [key, value] of Object.entries(parsed)) {
-        inline += `${key}=${value} `
+    if (key) {
+      const single = parsed[key]
+      if (single === undefined) {
+        console.log('')
+      } else {
+        console.log(single)
       }
-      inline = inline.trim()
-
-      console.log(inline)
     } else {
-      let space = 0
-      if (options.prettyPrint) {
-        space = 2
-      }
+      if (options.format === 'eval') {
+        let inline = ''
+        for (const [key, value] of Object.entries(parsed)) {
+          inline += `${key}=${escape(value)}\n`
+        }
+        inline = inline.trim()
 
-      console.log(JSON.stringify(parsed, null, space))
+        console.log(inline)
+      } else if (options.format === 'shell') {
+        let inline = ''
+        for (const [key, value] of Object.entries(parsed)) {
+          inline += `${key}=${value} `
+        }
+        inline = inline.trim()
+
+        console.log(inline)
+      } else {
+        let space = 0
+        if (options.prettyPrint) {
+          space = 2
+        }
+
+        console.log(JSON.stringify(parsed, null, space))
+      }
     }
+  } catch (error) {
+    console.error(error.message)
+    if (error.help) {
+      console.error(error.help)
+    }
+    process.exit(1)
   }
 }
 
