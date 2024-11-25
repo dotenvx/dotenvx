@@ -969,6 +969,21 @@ More examples
   Available log levels are `error, warn, info, verbose, debug, silly` ([source](https://docs.npmjs.com/cli/v8/using-npm/logging#setting-log-levels))
 
   </details>
+* <details><summary>`run --strict`</summary><br>
+
+  Exit with code `1` if any errors are encountered - like a missing .env file or decryption failure.
+
+  ```sh
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ dotenvx run -f .env.missing --strict -- node index.js
+  [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
+  [MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env.missing]
+  ```
+
+  This can be useful in `ci` scripts where you want to fail the ci if your `.env` file could not be decrypted at runtime.
+
+  </details>
 * <details><summary>`run --convention=nextjs`</summary><br>
 
   Load envs using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:

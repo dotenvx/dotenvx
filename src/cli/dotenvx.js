@@ -58,6 +58,7 @@ program.command('run')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables')
+  .option('--strict', 'process.exit(1) on any errors (default: false)', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\'])')
   .action(function (...args) {
     this.envs = envs

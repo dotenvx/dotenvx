@@ -60,6 +60,8 @@ async function run () {
       }
 
       for (const error of processedEnv.errors || []) {
+        if (options.strict) throw error // throw immediately if strict
+
         if (error.code === 'MISSING_ENV_FILE') {
           if (!options.convention) { // do not output error for conventions (too noisy)
             console.error(error.message)
