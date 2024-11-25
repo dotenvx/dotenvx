@@ -76,9 +76,9 @@ t.test('run - DOTENV_KEY', async ct => {
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
-  t.ok(loggerWarnStub.calledWith('DEPRECATION NOTICE: Setting DOTENV_KEY with .env.vault is deprecated.'), 'logger.warn')
-  t.ok(loggerWarnStub.calledWith('DEPRECATION NOTICE: Run [dotenvx ext vault migrate] for instructions on converting your .env.vault file to encrypted .env files (using public key encryption algorithm secp256k1)'), 'logger.warn')
-  t.ok(loggerWarnStub.calledWith('DEPRECATION NOTICE: Read more at [https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md#0380]'), 'logger.warn')
+  t.ok(loggerWarnStub.calledWith('[DEPRECATION NOTICE] Setting DOTENV_KEY with .env.vault is deprecated.'), 'logger.warn')
+  t.ok(loggerWarnStub.calledWith('[DEPRECATION NOTICE] Run [dotenvx ext vault migrate] for instructions on converting your .env.vault file to encrypted .env files (using public key encryption algorithm secp256k1)'), 'logger.warn')
+  t.ok(loggerWarnStub.calledWith('[DEPRECATION NOTICE] Read more at [https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md#0380]'), 'logger.warn')
 
   ct.end()
 })
@@ -665,7 +665,6 @@ t.test('run - envFile - parsed, injected, and preExisted missing for some reason
   })
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const loggerDebugStub = sinon.stub(logger, 'debug')
 
   await run.call(fakeContext)
 
@@ -675,4 +674,3 @@ t.test('run - envFile - parsed, injected, and preExisted missing for some reason
 
   ct.end()
 })
-

@@ -16,6 +16,7 @@ const Genexample = require('./services/genexample')
 const conventions = require('./helpers/conventions')
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
 const Parse = require('./helpers/parse')
+const DeprecationNotice = require('./helpers/deprecationNotice')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -46,11 +47,7 @@ const config = function (options = {}) {
       envs = conventions(options.convention).concat(envs)
     }
 
-    if (process.env.DOTENV_KEY) {
-      logger.warn('DEPRECATION NOTICE: Setting DOTENV_KEY with .env.vault is deprecated.')
-      logger.warn('DEPRECATION NOTICE: Run [dotenvx ext vault migrate] for instructions on converting your .env.vault file to encrypted .env files (using public key encryption algorithm secp256k1)')
-      logger.warn('DEPRECATION NOTICE: Read more at [https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md#0380]')
-    }
+    new DeprecationNotice({ DOTENV_KEY }).dotenvKey() // DEPRECATION NOTICE
 
     for (const optionPath of optionPaths) {
       // if DOTENV_KEY is set then assume we are checking envVaultFile

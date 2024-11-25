@@ -5,6 +5,7 @@ const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
 
 const conventions = require('./../../lib/helpers/conventions')
+const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
 
 async function run () {
   const commandArgs = this.args
@@ -35,11 +36,7 @@ async function run () {
       envs = this.envs
     }
 
-    if (process.env.DOTENV_KEY) {
-      logger.warn('DEPRECATION NOTICE: Setting DOTENV_KEY with .env.vault is deprecated.')
-      logger.warn('DEPRECATION NOTICE: Run [dotenvx ext vault migrate] for instructions on converting your .env.vault file to encrypted .env files (using public key encryption algorithm secp256k1)')
-      logger.warn('DEPRECATION NOTICE: Read more at [https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md#0380]')
-    }
+    new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
 
     const {
       processedEnvs,
