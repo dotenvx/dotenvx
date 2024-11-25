@@ -3,7 +3,7 @@ const { logger } = require('./../../shared/logger')
 const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
 
-const main = require('./../../lib/main')
+const Get = require('./../../lib/services/get')
 
 function get (key) {
   if (key) {
@@ -21,7 +21,7 @@ function get (key) {
     envs = this.envs
   }
 
-  const results = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
+  const results = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all).run()
 
   if (typeof results === 'object' && results !== null) {
     if (options.format === 'eval') {

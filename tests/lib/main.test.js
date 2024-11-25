@@ -4,7 +4,6 @@ const sinon = require('sinon')
 const main = require('../../src/lib/main')
 
 const Ls = require('../../src/lib/services/ls')
-const Get = require('../../src/lib/services/get')
 const Run = require('../../src/lib/services/run')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
@@ -112,19 +111,6 @@ t.test('ls calls Ls.run', ct => {
   main.ls()
 
   t.ok(stub.called, 'new Ls().run() called')
-
-  stub.restore()
-
-  ct.end()
-})
-
-t.test('get calls Get.run', ct => {
-  const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns({})
-
-  main.get()
-
-  t.ok(stub.called, 'new Get().run() called')
 
   stub.restore()
 

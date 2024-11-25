@@ -1,12 +1,13 @@
 const Run = require('./run')
 
 class Get {
-  constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false) {
+  constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false, strict = false) {
     this.key = key
     this.envs = envs
     this.overload = overload
     this.DOTENV_KEY = DOTENV_KEY
     this.all = all
+    this.strict = strict
   }
 
   run () {
