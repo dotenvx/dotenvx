@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.24.5...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.25.0...main)
+
+## [1.25.0](https://github.com/dotenvx/dotenvx/compare/v1.24.5...v1.25.0)
 
 ### Added
 
@@ -13,6 +15,10 @@ All notable changes to this project will be documented in this file. See [standa
 ### Changed
 
 * log `MISSING_ENV_FILE` and `DECRYPTION_FAILED` errors to stderr (prior was stdout as a warning) ([#459](https://github.com/dotenvx/dotenvx/pull/459))
+
+### Removed
+
+* removed `dotenvx.get()` from `lib/main.js`. (`parse` already historically exists for this purpose) ([#461](https://github.com/dotenvx/dotenvx/pull/461))
 
 ## [1.24.5](https://github.com/dotenvx/dotenvx/compare/v1.24.4...v1.24.5)
 
