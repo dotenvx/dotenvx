@@ -437,7 +437,7 @@ t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'
   error.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
-  const optsStub = sinon.stub().returns({strict: true})
+  const optsStub = sinon.stub().returns({ strict: true })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--strict', '--', 'echo', ''])
   const stub = sinon.stub(Run.prototype, 'run')
