@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Added
 
 * add `run --strict` flag to exit with code `1` if any errors are encountered - like a missing `.env` file or decryption failure ([#460](https://github.com/dotenvx/dotenvx/pull/460))
+* add `get --strict` flag to exit with code `1` if any errors are encountered - like a missing `.env` file or decryption failure ([#461](https://github.com/dotenvx/dotenvx/pull/461))
 * add `strict` option to `config()` to throw for any errors ([#459](https://github.com/dotenvx/dotenvx/pull/459))
 
 ### Changed
