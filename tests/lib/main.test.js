@@ -12,6 +12,11 @@ const Parse = require('../../src/lib/helpers/parse')
 
 const { logger } = require('../../src/shared/logger')
 
+t.beforeEach((ct) => {
+  sinon.restore()
+  process.env = {}
+})
+
 t.test('config calls Run.run', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
@@ -148,6 +153,131 @@ t.test('genexample calls Genexample.run', ct => {
   t.ok(stub.called, 'new Genexample().run() called')
 
   stub.restore()
+
+  ct.end()
+})
+
+t.test('config monorepo/apps/backend/.env', ct => {
+  const processEnv = {}
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env']
+  }
+
+  const { parsed, error } = main.config(options)
+
+  t.equal(processEnv.HELLO, 'backend')
+  t.equal(parsed.HELLO, 'backend')
+  t.equal(error, undefined)
+
+  ct.end()
+})
+
+t.test('config monorepo/apps/backend/.env alredy set', ct => {
+  const processEnv = {
+    HELLO: 'world'
+  }
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env']
+  }
+
+  const { parsed, error } = main.config(options)
+
+  t.equal(processEnv.HELLO, 'world')
+  t.equal(parsed.HELLO, 'world')
+  t.equal(error, undefined)
+
+  ct.end()
+})
+
+t.test('config monorepo/apps/backend/.env alredy set --overload', ct => {
+  const processEnv = {
+    HELLO: 'world'
+  }
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env'],
+    overload: true
+  }
+
+  const { parsed, error } = main.config(options)
+
+  t.equal(processEnv.HELLO, 'backend')
+  t.equal(parsed.HELLO, 'backend')
+  t.equal(error, undefined)
+
+  ct.end()
+})
+
+t.test('config monorepo/apps/backend/.env AND frontend/.env', ct => {
+  const processEnv = {}
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend/.env']
+  }
+
+  const { parsed, error } = main.config(options)
+
+  t.equal(processEnv.HELLO, 'backend')
+  t.equal(parsed.HELLO, 'backend')
+  t.equal(error, undefined)
+
+  ct.end()
+})
+
+t.test('config monorepo/apps/backend/.env AND frontend/.env --overload', ct => {
+  const processEnv = {}
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend/.env'],
+    overload: true
+  }
+
+  const { parsed, error } = main.config(options)
+
+  t.equal(processEnv.HELLO, 'frontend')
+  t.equal(parsed.HELLO, 'frontend')
+  t.equal(error, undefined)
+
+  ct.end()
+})
+
+t.test('config monorepo/apps/backend/.env AND frontend/missing', ct => {
+  const processEnv = {}
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend/missing']
+  }
+
+  const { parsed, error } = main.config(options)
+
+  t.equal(processEnv.HELLO, 'backend')
+  t.equal(parsed.HELLO, 'backend')
+  t.equal(error.code, 'MISSING_ENV_FILE')
+
+  ct.end()
+})
+
+t.test('config monorepo/apps/backend/.env AND attempt on directory frontend', ct => {
+  const processEnv = {}
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend']
+  }
+
+  const { parsed, error } = main.config(options)
+
+  t.equal(processEnv.HELLO, 'backend')
+  t.equal(parsed.HELLO, 'backend')
+  t.equal(error.code, 'MISSING_ENV_FILE')
 
   ct.end()
 })

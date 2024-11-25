@@ -105,7 +105,7 @@ class Run {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
     } catch (e) {
-      if (e.code === 'ENOENT') {
+      if (e.code === 'ENOENT' || e.code === 'EISDIR') {
         row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]
       } else {
         row.errors = [e]
