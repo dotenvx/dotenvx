@@ -1052,7 +1052,7 @@ More examples
   ```
 
   </details>
-* <details><summary>`get --strict`</summary><br>
+* <details><summary>`get KEY --strict`</summary><br>
 
   Exit with code `1` if any errors are encountered - like a missing key, missing .env file, or decryption failure.
 
@@ -1062,7 +1062,6 @@ More examples
   ```
 
   </details>
-
 * <details><summary>`get KEY --convention=nextjs`</summary><br>
 
   Return a single environment variable's value using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:
