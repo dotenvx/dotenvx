@@ -1607,6 +1607,108 @@ More examples
 
   </details>
 
+### config() 📦
+
+* <details><summary>`config()`</summary><br>
+
+  ```ini
+  # .env
+  HELLO="World"
+  ```
+
+  ```js
+  // index.js
+  require('@dotenvx/dotenvx').config()
+
+  console.log(`Hello ${process.env.HELLO}`)
+  ```
+
+  ```sh
+  $ node index.js
+  [dotenvx@1.24.5] injecting env (1) from .env
+  Hello World
+  ```
+
+  </details>
+* <details><summary>`config(path: ['.env.local', '.env'])` - multiple files</summary><br>
+
+  Specify path(s) to multiple .env files.
+
+  ```ini
+  # .env.local
+  HELLO="Me"
+  ```
+
+  ```ini
+  # .env
+  HELLO="World"
+  ```
+
+  ```js
+  // index.js
+  require('@dotenvx/dotenvx').config({path: ['.env.local', '.env']})
+
+  console.log(`Hello ${process.env.HELLO}`)
+  ```
+
+  ```sh
+  $ node index.js
+  [dotenvx@1.24.5] injecting env (1) from .env.local, .env
+  Hello Me
+  ```
+
+  </details>
+* <details><summary>`config(overload: true)` - overload</summary><br>
+
+  User `overload` to overwrite the prior set value.
+
+  ```ini
+  # .env.local
+  HELLO="Me"
+  ```
+
+  ```ini
+  # .env
+  HELLO="World"
+  ```
+
+  ```js
+  // index.js
+  require('@dotenvx/dotenvx').config({path: ['.env.local', '.env'], overload: true})
+
+  console.log(`Hello ${process.env.HELLO}`)
+  ```
+
+  ```sh
+  $ node index.js
+  [dotenvx@1.24.5] injecting env (1) from .env.local, .env
+  Hello World
+  ```
+
+  </details>
+* <details><summary>`config(strict: true)` - strict</summary><br>
+
+  Use `strict` to throw if an error is encountered - like a missing .env file.
+
+  ```ini
+  # .env
+  HELLO="World"
+  ```
+
+  ```js
+  // index.js
+  require('@dotenvx/dotenvx').config({path: ['.env.missing', '.env'], strict: true})
+
+  console.log(`Hello ${process.env.HELLO}`)
+  ```
+
+  ```sh
+  $ node index.js
+  Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
+  ```
+
+  </details>
+
 ### Extensions 🔌
 
 * <details><summary>`ext genexample`</summary><br>

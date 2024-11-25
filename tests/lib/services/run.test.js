@@ -17,13 +17,14 @@ t.test('#run (no arguments)', ct => {
     uniqueInjectedKeys
   } = new Run().run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
+  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: '.env',
-    error: exampleError
+    errors: [exampleError]
   }])
   ct.same(readableFilepaths, [])
   ct.same(uniqueInjectedKeys, [])
@@ -45,7 +46,7 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: '.env',
-    error: exampleError
+    errors: [exampleError]
   }])
   ct.same(readableFilepaths, [])
   ct.same(uniqueInjectedKeys, [])
@@ -75,7 +76,7 @@ t.test('#run (finds .env file)', ct => {
     injected: {
       HELLO: 'frontend'
     },
-    warnings: [],
+    errors: [],
     preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
@@ -106,7 +107,7 @@ t.test('#run (encrypted .env finds .env.keys next to itself)', ct => {
       DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted'
     },
-    warnings: [],
+    errors: [],
     preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
@@ -128,9 +129,9 @@ t.test('#run (encrypted .env with bad private key)', ct => {
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const warning = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key \'bad-pri…\'')
-  warning.code = 'DECRYPTION_FAILED'
-  warning.help = '[DECRYPTION_FAILED] ? private key [bad-pri…] looks invalid'
+  const error = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key \'bad-pri…\'')
+  error.code = 'DECRYPTION_FAILED'
+  error.help = '[DECRYPTION_FAILED] ? private key [bad-pri…] looks invalid'
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -139,7 +140,7 @@ t.test('#run (encrypted .env with bad private key)', ct => {
       DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=='
     },
-    warnings: [warning],
+    errors: [error],
     injected: {
       DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=='
@@ -177,7 +178,7 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set', ct => {
       DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted'
     },
-    warnings: [],
+    errors: [],
     preExisted: {}
   }])
   ct.same(readableFilepaths, ['.env'])
@@ -208,7 +209,7 @@ t.test('#run (finds .env file) with already falsy value', ct => {
       HELLO: ''
     },
     injected: {},
-    warnings: [],
+    errors: [],
     preExisted: {
       HELLO: ''
     }
@@ -238,7 +239,7 @@ t.test('#run (finds .env file as array)', ct => {
     injected: {
       HELLO: 'frontend'
     },
-    warnings: [],
+    errors: [],
     preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
@@ -267,7 +268,7 @@ t.test('#run (finds .env file but HELLO already exists)', ct => {
       HELLO: 'World'
     },
     injected: {},
-    warnings: [],
+    errors: [],
     preExisted: {
       HELLO: 'World'
     }
@@ -291,7 +292,8 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
     uniqueInjectedKeys
   } = new Run(envs, true).run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
+  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
@@ -303,7 +305,7 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
     injected: {
       HELLO: 'frontend'
     },
-    warnings: [],
+    errors: [],
     preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
@@ -332,7 +334,7 @@ t.test('#run (command substitution)', ct => {
     injected: {
       HELLO: 'world'
     },
-    warnings: [],
+    errors: [],
     preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/.env.eval'])
@@ -353,13 +355,14 @@ t.test('#run (with envs as string)', ct => {
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
+  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   exampleError.code = 'MISSING_ENV_FILE'
   ct.same(processedEnvs, [
     {
       type: 'envFile',
       filepath: '.env',
-      error: exampleError
+      errors: [exampleError]
     },
     {
       type: 'env',
@@ -370,7 +373,7 @@ t.test('#run (with envs as string)', ct => {
       injected: {
         HELLO: 'string'
       },
-      warnings: [],
+      errors: [],
       preExisted: {}
     }
   ])
@@ -385,7 +388,8 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
     { type: 'env', value: 'HELLO=string' }
   ]
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
+  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   exampleError.code = 'MISSING_ENV_FILE'
   const run = new Run(envs)
   const mockError = new Error('Mock Error')
@@ -399,13 +403,12 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
     {
       type: 'envFile',
       filepath: '.env',
-      error: exampleError
+      errors: [exampleError]
     },
     {
       type: 'env',
       string: 'HELLO=string',
-      error: mockError,
-      warnings: [],
+      errors: [mockError],
       parsed: {
         HELLO: 'string'
       },
@@ -439,7 +442,7 @@ t.test('#run (mixed string and file)', ct => {
       string: 'HELLO=string',
       parsed: { HELLO: 'string' },
       injected: { HELLO: 'string' },
-      warnings: [],
+      errors: [],
       preExisted: {}
     },
     {
@@ -447,7 +450,7 @@ t.test('#run (mixed string and file)', ct => {
       filepath: 'tests/monorepo/apps/frontend/.env',
       parsed: { HELLO: 'string' },
       injected: {},
-      warnings: [],
+      errors: [],
       preExisted: { HELLO: 'string' }
     }
   ])
@@ -532,7 +535,7 @@ t.test('#run (partly failed-decryption DOTENV_KEY argument second key succeeds. 
       filepath: 'tests/monorepo/apps/backend/.env.vault',
       parsed: { HELLO: 'backend' },
       injected: { HELLO: 'backend' },
-      warnings: [],
+      errors: [],
       preExisted: {}
     }
   ])
@@ -561,7 +564,7 @@ t.test('#run (.env.vault and DOTENV_KEY)', ct => {
       filepath: 'tests/monorepo/apps/backend/.env.vault',
       parsed: { HELLO: 'backend' },
       injected: { HELLO: 'backend' },
-      warnings: [],
+      errors: [],
       preExisted: {}
     }
   ])
@@ -589,8 +592,7 @@ t.test('#run (.env.vault and DOTENV_KEY with errors somehow from inject)', ct =>
     {
       type: 'envVaultFile',
       filepath: 'tests/monorepo/apps/backend/.env.vault',
-      error: mockError,
-      warnings: [],
+      errors: [mockError],
       parsed: {
         HELLO: 'backend'
       },
@@ -626,7 +628,7 @@ t.test('#run (.env.vault and DOTENV_KEY and machine env already set)', ct => {
       filepath: 'tests/monorepo/apps/backend/.env.vault',
       parsed: { HELLO: 'machine' },
       injected: {},
-      warnings: [],
+      errors: [],
       preExisted: { HELLO: 'machine' }
     }
   ])
@@ -657,7 +659,7 @@ t.test('#run (.env.vault and DOTENV_KEY and machine env already set but overload
       filepath: 'tests/monorepo/apps/backend/.env.vault',
       parsed: { HELLO: 'backend' },
       injected: { HELLO: 'backend' },
-      warnings: [],
+      errors: [],
       preExisted: {}
     }
   ])
@@ -778,20 +780,21 @@ options="$\{options} optD"`
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
+  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [
     {
       type: 'envFile',
       filepath: '.env',
-      error: exampleError
+      errors: [exampleError]
     },
     {
       type: 'env',
       string: src,
       parsed: { options: ' optA optB optC optX optD', configX: 'blah' },
-      warnings: [],
+      errors: [],
       injected: { options: ' optA optB optC optX optD', configX: 'blah' },
       preExisted: {}
     }

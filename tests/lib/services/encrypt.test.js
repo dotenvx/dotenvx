@@ -25,7 +25,8 @@ t.test('#run (no arguments)', ct => {
     unchangedFilepaths
   } = new Encrypt().run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
+  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
@@ -48,7 +49,8 @@ t.test('#run (no env file)', ct => {
     unchangedFilepaths
   } = new Encrypt().run()
 
-  const exampleError = new Error(`missing .env file (${path.resolve('.env')})`)
+  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
+  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{

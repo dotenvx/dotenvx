@@ -4,6 +4,7 @@ const dotenv = require('dotenv')
 
 const TYPE_ENV_FILE = 'envFile'
 
+const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
@@ -169,10 +170,7 @@ class Sets {
       }
     } catch (e) {
       if (e.code === 'ENOENT') {
-        const error = new Error(`missing ${envFilepath} file (${filepath})`)
-        error.code = 'MISSING_ENV_FILE'
-
-        row.error = error
+        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
       } else {
         row.error = e
       }

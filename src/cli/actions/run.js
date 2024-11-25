@@ -5,6 +5,7 @@ const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
 
 const conventions = require('./../../lib/helpers/conventions')
+const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
 
 async function run () {
   const commandArgs = this.args
@@ -35,11 +36,7 @@ async function run () {
       envs = this.envs
     }
 
-    if (process.env.DOTENV_KEY) {
-      logger.warn('DEPRECATION NOTICE: Setting DOTENV_KEY with .env.vault is deprecated.')
-      logger.warn('DEPRECATION NOTICE: Run [dotenvx ext vault migrate] for instructions on converting your .env.vault file to encrypted .env files (using public key encryption algorithm secp256k1)')
-      logger.warn('DEPRECATION NOTICE: Read more at [https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md#0380]')
-    }
+    new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
 
     const {
       processedEnvs,
@@ -62,43 +59,35 @@ async function run () {
         logger.verbose(`loading env from string (${processedEnv.string})`)
       }
 
-      if (processedEnv.error) {
-        if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-          // do not warn for conventions (too noisy)
-          if (!options.convention) {
-            logger.warnv(processedEnv.error.message)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
-          }
-        } else {
-          logger.warnv(processedEnv.error.message)
-        }
-      } else {
-        if (processedEnv.warnings) {
-          for (const warning of processedEnv.warnings) {
-            logger.warn(warning.message)
-            if (warning.help) {
-              logger.help(warning.help)
+      for (const error of processedEnv.errors || []) {
+        if (error.code === 'MISSING_ENV_FILE') {
+          if (!options.convention) { // do not output error for conventions (too noisy)
+            console.error(error.message)
+            if (error.help) {
+              logger.help(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
             }
           }
+        } else {
+          console.error(error.message)
+          if (error.help) {
+            logger.help(error.help)
+          }
         }
+      }
 
-        // debug parsed
-        const parsed = processedEnv.parsed
-        logger.debug(parsed)
+      // debug parsed
+      logger.debug(processedEnv.parsed)
 
-        // verbose/debug injected key/value
-        const injected = processedEnv.injected
-        for (const [key, value] of Object.entries(injected)) {
-          logger.verbose(`${key} set`)
-          logger.debug(`${key} set to ${value}`)
-        }
+      // verbose/debug injected key/value
+      for (const [key, value] of Object.entries(processedEnv.injected || {})) {
+        logger.verbose(`${key} set`)
+        logger.debug(`${key} set to ${value}`)
+      }
 
-        // verbose/debug preExisted key/value
-        const preExisted = processedEnv.preExisted
-        for (const [key, value] of Object.entries(preExisted)) {
-          logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-          logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
-        }
+      // verbose/debug preExisted key/value
+      for (const [key, value] of Object.entries(processedEnv.preExisted || {})) {
+        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
+        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
     }
 
@@ -113,10 +102,11 @@ async function run () {
 
     logger.successv(msg)
   } catch (error) {
-    logger.error(error.message)
+    console.error(error.message)
     if (error.help) {
       logger.help(error.help)
     }
+    process.exit(1)
   }
 
   await executeCommand(commandArgs, process.env)

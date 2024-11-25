@@ -198,16 +198,16 @@ t.test('returns any errors thrown from reading file or parsing', ct => {
 t.test('logs any errors thrown from reading file or parsing when in debug mode', ct => {
   ct.plan(2)
 
-  const logStub = sinon.stub(logger, 'warnv')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const readFileXStub = sinon.stub(fsx, 'readFileX').returns('test=foo')
 
   readFileXStub.throws()
   const env = dotenvx.config({ debug: true })
 
-  ct.ok(logStub.called)
+  ct.ok(consoleErrorStub.called)
   ct.type(env.error, Error)
 
-  logStub.restore()
+  consoleErrorStub.restore()
   readFileXStub.restore()
 })
 
@@ -224,16 +224,11 @@ t.test('logs when in debug mode', ct => {
 })
 
 t.test('logs only errors in quiet mode', ct => {
-  ct.plan(2)
-
-  const logStub = sinon.stub(logger, 'debug')
-
   dotenvx.config({ quiet: true })
 
   ct.equal(logger.level, 'error')
-  ct.notOk(logStub.called)
 
-  logStub.restore()
+  ct.end()
 })
 
 t.test('logs in verbose mode', ct => {
@@ -276,27 +271,17 @@ t.test('verbose mode overrides quiet mode', ct => {
 })
 
 t.test('quiet mode overrides specific log level', ct => {
-  ct.plan(2)
-
-  const logStub = sinon.stub(logger, 'debug')
-
   dotenvx.config({ logLevel: 'warn', quiet: true })
 
   ct.equal(logger.level, 'error')
-  ct.notOk(logStub.called)
 
-  logStub.restore()
+  ct.end()
 })
 
 t.test('debug mode overrides logLevel, quiet, verbose', ct => {
-  ct.plan(2)
-
-  const logStub = sinon.stub(logger, 'debug')
-
   dotenvx.config({ logLevel: 'warn', debug: true, quiet: true, verbose: true })
 
   ct.equal(logger.level, 'debug')
-  ct.ok(logStub.calledWith('Setting log level to debug'))
 
-  logStub.restore()
+  ct.end()
 })

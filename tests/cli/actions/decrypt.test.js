@@ -166,7 +166,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerErrorStub = sinon.stub(logger, 'error')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   decrypt.call(fakeContext)
@@ -175,7 +175,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
   t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx decrypt]'), 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
 
@@ -203,7 +203,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerErrorStub = sinon.stub(logger, 'error')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   decrypt.call(fakeContext)
@@ -212,7 +212,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
 
@@ -233,7 +233,7 @@ t.test('decrypt - catch error', ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerErrorStub = sinon.stub(logger, 'error')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerDebugStub = sinon.stub(logger, 'debug')
 
@@ -242,7 +242,7 @@ t.test('decrypt - catch error', ct => {
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')
-  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger error')
+  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console error')
   t.ok(loggerHelpStub.calledWith('Mock Help'), 'logger help')
   t.ok(loggerDebugStub.calledWith('Mock Debug'), 'logger debug')
   t.ok(loggerDebugStub.calledWith('ERROR_CODE: 500'), 'logger debug')

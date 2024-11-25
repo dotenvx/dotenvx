@@ -48,10 +48,10 @@ function decrypt () {
           errorCount += 1
 
           if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-            logger.error(processedEnv.error.message)
+            console.error(processedEnv.error.message)
             logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx decrypt]`)
           } else {
-            logger.error(processedEnv.error.message)
+            console.error(processedEnv.error.message)
           }
         } else if (processedEnv.changed) {
           fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)

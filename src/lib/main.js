@@ -16,6 +16,7 @@ const Genexample = require('./services/genexample')
 const conventions = require('./helpers/conventions')
 const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
 const Parse = require('./helpers/parse')
+const DeprecationNotice = require('./helpers/deprecationNotice')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -28,7 +29,10 @@ const config = function (options = {}) {
   // overload
   const overload = options.overload || options.override
 
-  // DOTENV_KEY
+  // strict
+  const strict = options.strict
+
+  // DOTENV_KEY (DEPRECATED)
   let DOTENV_KEY = process.env.DOTENV_KEY
   if (options && options.DOTENV_KEY) {
     DOTENV_KEY = options.DOTENV_KEY
@@ -46,11 +50,7 @@ const config = function (options = {}) {
       envs = conventions(options.convention).concat(envs)
     }
 
-    if (process.env.DOTENV_KEY) {
-      logger.warn('DEPRECATION NOTICE: Setting DOTENV_KEY with .env.vault is deprecated.')
-      logger.warn('DEPRECATION NOTICE: Run [dotenvx ext vault migrate] for instructions on converting your .env.vault file to encrypted .env files (using public key encryption algorithm secp256k1)')
-      logger.warn('DEPRECATION NOTICE: Read more at [https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md#0380]')
-    }
+    new DeprecationNotice({ DOTENV_KEY }).dotenvKey() // DEPRECATION NOTICE
 
     for (const optionPath of optionPaths) {
       // if DOTENV_KEY is set then assume we are checking envVaultFile
@@ -64,12 +64,11 @@ const config = function (options = {}) {
       }
     }
 
-    const { processedEnvs, readableFilepaths, uniqueInjectedKeys } = new Run(
-      envs,
-      overload,
-      DOTENV_KEY,
-      processEnv
-    ).run()
+    const {
+      processedEnvs,
+      readableFilepaths,
+      uniqueInjectedKeys
+    } = new Run(envs, overload, DOTENV_KEY, processEnv).run()
 
     let lastError
     /** @type {Record<string, string>} */
@@ -77,65 +76,50 @@ const config = function (options = {}) {
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
-        logger.verbose(
-          `loading env from encrypted ${processedEnv.filepath} (${path.resolve(
-            processedEnv.filepath
-          )})`
-        )
-        logger.debug(
-          `decrypting encrypted env from ${
-            processedEnv.filepath
-          } (${path.resolve(processedEnv.filepath)})`
-        )
+        logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
+        logger.debug(`decrypting encrypted env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
 
       if (processedEnv.type === 'envFile') {
-        logger.verbose(
-          `loading env from ${processedEnv.filepath} (${path.resolve(
-            processedEnv.filepath
-          )})`
-        )
+        logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
 
-      if (processedEnv.error) {
-        lastError = processedEnv.error
+      for (const error of processedEnv.errors || []) {
+        if (strict) throw error // throw immediately if strict
 
-        if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-          // do not warn for conventions (too noisy)
-          if (!options.convention) {
-            logger.warnv(processedEnv.error.message)
-            logger.help(
-              `? add one with [echo "HELLO=World" > ${processedEnv.filepath}] and re-run [dotenvx run -- yourcommand]`
-            )
+        lastError = error // surface later in { error }
+
+        if (error.code === 'MISSING_ENV_FILE') {
+          if (!options.convention) { // do not output error for conventions (too noisy)
+            console.error(error.message)
+            if (error.help) {
+              logger.help(error.help)
+            }
           }
         } else {
-          logger.warnv(processedEnv.error.message)
+          console.error(error.message)
+          if (error.help) {
+            logger.help(error.help)
+          }
         }
-      } else {
-        Object.assign(parsedAll, processedEnv.injected)
-        Object.assign(parsedAll, processedEnv.preExisted) // preExisted 'wins'
+      }
 
-        // debug parsed
-        const parsed = processedEnv.parsed
-        logger.debug(parsed)
+      Object.assign(parsedAll, processedEnv.injected || {})
+      Object.assign(parsedAll, processedEnv.preExisted || {}) // preExisted 'wins'
 
-        // verbose/debug injected key/value
-        const injected = processedEnv.injected
-        for (const [key, value] of Object.entries(injected)) {
-          logger.verbose(`${key} set`)
-          logger.debug(`${key} set to ${value}`)
-        }
+      // debug parsed
+      logger.debug(processedEnv.parsed)
 
-        // verbose/debug preExisted key/value
-        const preExisted = processedEnv.preExisted
-        for (const [key, value] of Object.entries(preExisted)) {
-          logger.verbose(
-            `${key} pre-exists (protip: use --overload to override)`
-          )
-          logger.debug(
-            `${key} pre-exists as ${value} (protip: use --overload to override)`
-          )
-        }
+      // verbose/debug injected key/value
+      for (const [key, value] of Object.entries(processedEnv.injected || {})) {
+        logger.verbose(`${key} set`)
+        logger.debug(`${key} set to ${value}`)
+      }
+
+      // verbose/debug preExisted key/value
+      for (const [key, value] of Object.entries(processedEnv.preExisted || {})) {
+        logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
+        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
     }
 
@@ -151,6 +135,8 @@ const config = function (options = {}) {
       return { parsed: parsedAll }
     }
   } catch (error) {
+    if (strict) throw error // throw immediately if strict
+
     logger.error(error.message)
     if (error.help) {
       logger.help(error.help)

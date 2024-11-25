@@ -8,6 +8,7 @@ const TYPE_ENV_VAULT_FILE = 'envVaultFile'
 
 const decrypt = require('./../helpers/decrypt')
 const Parse = require('./../helpers/parse')
+const Errors = require('./../helpers/errors')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const detectEncoding = require('./../helpers/detectEncoding')
 const findPrivateKey = require('./../helpers/findPrivateKey')
@@ -59,9 +60,9 @@ class Run {
     row.string = env
 
     try {
-      const { parsed, warnings, injected, preExisted } = new Parse(env, null, this.processEnv, this.overload).run()
+      const { parsed, errors, injected, preExisted } = new Parse(env, null, this.processEnv, this.overload).run()
       row.parsed = parsed
-      row.warnings = warnings
+      row.errors = errors
       row.injected = injected
       row.preExisted = preExisted
 
@@ -73,7 +74,7 @@ class Run {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
     } catch (e) {
-      row.error = e
+      row.errors = [e]
     }
 
     this.processedEnvs.push(row)
@@ -91,10 +92,10 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const privateKey = findPrivateKey(envFilepath)
-      const { parsed, warnings, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload).run()
+      const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload).run()
 
       row.parsed = parsed
-      row.warnings = warnings
+      row.errors = errors
       row.injected = injected
       row.preExisted = preExisted
 
@@ -104,13 +105,10 @@ class Run {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
     } catch (e) {
-      if (e.code === 'ENOENT') {
-        const error = new Error(`missing ${envFilepath} file (${filepath})`)
-        error.code = 'MISSING_ENV_FILE'
-
-        row.error = error
+      if (e.code === 'ENOENT' || e.code === 'EISDIR') {
+        row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]
       } else {
-        row.error = e
+        row.errors = [e]
       }
     }
 
@@ -162,9 +160,9 @@ class Run {
 
     try {
       // parse this. it's the equivalent of the .env file
-      const { parsed, warnings, injected, preExisted } = new Parse(decrypted, null, this.processEnv, this.overload).run()
+      const { parsed, errors, injected, preExisted } = new Parse(decrypted, null, this.processEnv, this.overload).run()
       row.parsed = parsed
-      row.warnings = warnings
+      row.errors = errors
       row.injected = injected
       row.preExisted = preExisted
 
@@ -174,7 +172,7 @@ class Run {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
     } catch (e) {
-      row.error = e
+      row.errors = [e]
     }
 
     this.processedEnvs.push(row)
