@@ -186,7 +186,6 @@ t.test('run - envFile (with errors)', async ct => {
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
   const consoleErrorStub = sinon.stub(console, 'error')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
 
@@ -195,7 +194,7 @@ t.test('run - envFile (with errors)', async ct => {
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
   t.ok(consoleErrorStub.calledWith('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…'), 'console.error')
-  t.ok(loggerHelpStub.calledWith('[DECRYPTION_FAILED] ? encrypted data looks malformed'), 'logger.help')
+  t.ok(consoleErrorStub.calledWith('[DECRYPTION_FAILED] ? encrypted data looks malformed'), 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
 
   ct.end()
@@ -419,14 +418,13 @@ t.test('run - MISSING_ENV_FILE', async ct => {
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const consoleErrorStub = sinon.stub(console, 'error')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(loggerHelpStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- echo ]'), 'logger.help')
+  t.ok(consoleErrorStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- echo ]'), 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
 
   ct.end()
@@ -457,14 +455,13 @@ t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const consoleErrorStub = sinon.stub(console, 'error')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(loggerHelpStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'), 'logger.help')
+  t.ok(consoleErrorStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'), 'logger.help')
   t.notOk(loggerSuccessvStub.called, 'logger.successv')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
 
@@ -494,14 +491,12 @@ t.test('run - OTHER_ERROR', async ct => {
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const consoleErrorStub = sinon.stub(console, 'error')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
 
   ct.end()
@@ -554,13 +549,12 @@ t.test('run - throws error', async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.throws(error)
   const consoleErrorStub = sinon.stub(console, 'error')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
-  t.ok(loggerHelpStub.calledWith('Mock Help'), 'logger.help')
   t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
+  t.ok(consoleErrorStub.calledWith('Mock Help'), 'console.error')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()

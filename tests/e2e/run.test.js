@@ -228,21 +228,19 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   const command = `${node} index.js`
 
   let o = execShell(`${dotenvx} run -- ${command}`)
-  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'')
-  ct.equal(o.stdout, `[DECRYPTION_FAILED] ? private key missing or blank
-[dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
+  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'\n[DECRYPTION_FAILED] ? private key missing or blank')
+  ct.equal(o.stdout, `[dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
 
   o = execShell(`${dotenvx} run --quiet -- ${command}`)
-  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'')
+  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'\n[DECRYPTION_FAILED] ? private key missing or blank')
   ct.equal(o.stdout, `Hello ${encrypted}`) // --quiet
 
   o = execShell(`${dotenvx} run --debug -- ${command}`)
-  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'')
+  ct.equal(o.stderr, '[DECRYPTION_FAILED] could not decrypt HELLO using private key \'\'\n[DECRYPTION_FAILED] ? private key missing or blank')
   ct.equal(o.stdout, `Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"envVaultFile":[],"strict":false}
 loading env from .env (${tempDir}/.env)
-[DECRYPTION_FAILED] ? private key missing or blank
 {"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"${encrypted}"}
 DOTENV_PUBLIC_KEY set
 DOTENV_PUBLIC_KEY set to ${DOTENV_PUBLIC_KEY}
