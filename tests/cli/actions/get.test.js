@@ -14,13 +14,13 @@ t.test('get', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns({ HELLO: 'World' })
+  stub.returns({ parsed: { HELLO: 'World' } })
 
   const stdout = capcon.interceptStdout(() => {
     get.call(fakeContext, undefined)
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.equal(stdout, `${JSON.stringify({ HELLO: 'World' }, null, 0)}\n`)
 
   ct.end()
@@ -30,13 +30,13 @@ t.test('get KEY', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns('World')
+  stub.returns({ parsed: { HELLO: 'World' } })
 
   const stdout = capcon.interceptStdout(() => {
     get.call(fakeContext, 'HELLO')
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.equal(stdout, 'World\n')
 
   ct.end()
@@ -46,13 +46,13 @@ t.test('get --format shell', ct => {
   const optsStub = sinon.stub().returns({ format: 'shell' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns({ HELLO: 'World' })
+  stub.returns({ parsed: { HELLO: 'World' } })
 
   const stdout = capcon.interceptStdout(() => {
     get.call(fakeContext, undefined)
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.equal(stdout, 'HELLO=World\n')
 
   ct.end()
@@ -62,13 +62,13 @@ t.test('get --format shell (with single quotes in value)', ct => {
   const optsStub = sinon.stub().returns({ format: 'shell' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns({ HELLO: "f'bar" })
+  stub.returns({ parsed: { HELLO: "f'bar" } })
 
   const stdout = capcon.interceptStdout(() => {
     get.call(fakeContext, undefined)
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.equal(stdout, 'HELLO=f\'bar\n')
 
   ct.end()
@@ -78,13 +78,13 @@ t.test('get --format eval (with single quotes in value)', ct => {
   const optsStub = sinon.stub().returns({ format: 'eval' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns({ HELLO: "f'bar" })
+  stub.returns({ parsed: { HELLO: "f'bar" } })
 
   const stdout = capcon.interceptStdout(() => {
     get.call(fakeContext, undefined)
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.equal(stdout, 'HELLO="f\'bar"\n')
 
   ct.end()
@@ -94,13 +94,13 @@ t.test('get --format eval (multiple keys use newlines)', ct => {
   const optsStub = sinon.stub().returns({ format: 'eval' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns({ HELLO: 'World', HELLO2: 'World2' })
+  stub.returns({ parsed: { HELLO: 'World', HELLO2: 'World2' } })
 
   const stdout = capcon.interceptStdout(() => {
     get.call(fakeContext, undefined)
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.equal(stdout, 'HELLO="World"\nHELLO2="World2"\n')
 
   ct.end()
@@ -110,13 +110,13 @@ t.test('get --pretty-print', ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns({ HELLO: 'World' })
+  stub.returns({ parsed: { HELLO: 'World' } })
 
   const stdout = capcon.interceptStdout(() => {
     get.call(fakeContext, undefined)
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.equal(stdout, `${JSON.stringify({ HELLO: 'World' }, null, 2)}\n`)
 
   ct.end()
@@ -126,13 +126,13 @@ t.test('get KEY --convention', ct => {
   const optsStub = sinon.stub().returns({ convention: 'nextjs' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns('World')
+  stub.returns({ parsed: { HELLO: 'World' } })
 
   const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, undefined)
+    get.call(fakeContext, 'HELLO')
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.equal(stdout, 'World\n')
 
   ct.end()
@@ -143,7 +143,7 @@ t.test('get KEY (not found)', ct => {
   const fakeContext = { opts: optsStub }
 
   const stub = sinon.stub(Get.prototype, 'run')
-  stub.returns(undefined)
+  stub.returns({ parsed: { HELLO: 'World' } })
 
   const processExitStub = sinon.stub(process, 'exit')
 
@@ -151,7 +151,7 @@ t.test('get KEY (not found)', ct => {
     get.call(fakeContext, 'NOTFOUND')
   })
 
-  t.ok(stub.called, 'main.get() called')
+  t.ok(stub.called, 'Get().run() called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
   t.equal(stdout, '\n') // send empty string if key's value undefined
 

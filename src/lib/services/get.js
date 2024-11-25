@@ -14,29 +14,32 @@ class Get {
     const processEnv = { ...process.env }
     const { processedEnvs } = new Run(this.envs, this.overload, this.DOTENV_KEY, processEnv).run()
 
-    if (!this.key) {
+    if (this.key) {
+      const parsed = {}
+      parsed[this.key] = processEnv[this.key]
+
+      return { parsed }
+    } else {
       // if user wants to return ALL envs (even prior set on machine)
       if (this.all) {
-        return processEnv
+        return { parsed: processEnv }
       }
 
       // typical scenario - return only envs that were identified in the .env file
       // iterate over all processedEnvs.parsed and grab from processEnv
       /** @type {Record<string, string>} */
-      const result = {}
+      const parsed = {}
       for (const processedEnv of processedEnvs) {
         // parsed means we saw the key in a file or --env flag. this effectively filters out any preset machine envs - while still respecting complex evaluating, expansion, and overload. in other words, the value might be the machine value because the key was displayed in a .env file
         if (processedEnv.parsed) {
           for (const key of Object.keys(processedEnv.parsed)) {
-            result[key] = processEnv[key]
+            parsed[key] = processEnv[key]
           }
         }
       }
 
-      return result
+      return { parsed }
     }
-
-    return processEnv[this.key]
   }
 }
 

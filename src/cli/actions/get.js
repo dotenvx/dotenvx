@@ -21,12 +21,20 @@ function get (key) {
     envs = this.envs
   }
 
-  const results = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all).run()
+  const { parsed } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all).run()
 
-  if (typeof results === 'object' && results !== null) {
+  if (key) {
+    const single = parsed[key]
+    if (single === undefined) {
+      console.log('')
+      process.exit(1)
+    } else {
+      console.log(single)
+    }
+  } else {
     if (options.format === 'eval') {
       let inline = ''
-      for (const [key, value] of Object.entries(results)) {
+      for (const [key, value] of Object.entries(parsed)) {
         inline += `${key}=${escape(value)}\n`
       }
       inline = inline.trim()
@@ -34,7 +42,7 @@ function get (key) {
       console.log(inline)
     } else if (options.format === 'shell') {
       let inline = ''
-      for (const [key, value] of Object.entries(results)) {
+      for (const [key, value] of Object.entries(parsed)) {
         inline += `${key}=${value} `
       }
       inline = inline.trim()
@@ -46,14 +54,7 @@ function get (key) {
         space = 2
       }
 
-      console.log(JSON.stringify(results, null, space))
-    }
-  } else {
-    if (results === undefined) {
-      console.log('')
-      process.exit(1)
-    } else {
-      console.log(results)
+      console.log(JSON.stringify(parsed, null, space))
     }
   }
 }
