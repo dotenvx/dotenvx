@@ -7,7 +7,6 @@ const { getColor, bold } = require('./../shared/colors')
 
 // services
 const Ls = require('./services/ls')
-const Get = require('./services/get')
 const Run = require('./services/run')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
@@ -175,17 +174,6 @@ const genexample = function (directory, envFile) {
   return new Genexample(directory, envFile).run()
 }
 
-/** @type {import('./main').get} */
-const get = function (
-  key,
-  envs = [],
-  overload = false,
-  DOTENV_KEY = '',
-  all = false
-) {
-  return new Get(key, envs, overload, DOTENV_KEY, all).run()
-}
-
 /** @type {import('./main').keypair} */
 const keypair = function (envFile, key) {
   return new Keypair(envFile, key).run()
@@ -197,7 +185,6 @@ module.exports = {
   parse,
   // actions related
   ls,
-  get,
   keypair,
   genexample,
   // expose for libs depending on @dotenvx/dotenvx - like dotenvx-pro

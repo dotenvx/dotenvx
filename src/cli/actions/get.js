@@ -3,7 +3,7 @@ const { logger } = require('./../../shared/logger')
 const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
 
-const main = require('./../../lib/main')
+const Get = require('./../../lib/services/get')
 
 function get (key) {
   if (key) {
@@ -21,40 +21,57 @@ function get (key) {
     envs = this.envs
   }
 
-  const results = main.get(key, envs, options.overload, process.env.DOTENV_KEY, options.all)
+  try {
+    const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all).run()
 
-  if (typeof results === 'object' && results !== null) {
-    if (options.format === 'eval') {
-      let inline = ''
-      for (const [key, value] of Object.entries(results)) {
-        inline += `${key}=${escape(value)}\n`
+    for (const error of errors || []) {
+      if (options.strict) throw error // throw immediately if strict
+
+      console.error(error.message)
+      if (error.help) {
+        console.error(error.help)
       }
-      inline = inline.trim()
-
-      console.log(inline)
-    } else if (options.format === 'shell') {
-      let inline = ''
-      for (const [key, value] of Object.entries(results)) {
-        inline += `${key}=${value} `
-      }
-      inline = inline.trim()
-
-      console.log(inline)
-    } else {
-      let space = 0
-      if (options.prettyPrint) {
-        space = 2
-      }
-
-      console.log(JSON.stringify(results, null, space))
     }
-  } else {
-    if (results === undefined) {
-      console.log('')
-      process.exit(1)
+
+    if (key) {
+      const single = parsed[key]
+      if (single === undefined) {
+        console.log('')
+      } else {
+        console.log(single)
+      }
     } else {
-      console.log(results)
+      if (options.format === 'eval') {
+        let inline = ''
+        for (const [key, value] of Object.entries(parsed)) {
+          inline += `${key}=${escape(value)}\n`
+        }
+        inline = inline.trim()
+
+        console.log(inline)
+      } else if (options.format === 'shell') {
+        let inline = ''
+        for (const [key, value] of Object.entries(parsed)) {
+          inline += `${key}=${value} `
+        }
+        inline = inline.trim()
+
+        console.log(inline)
+      } else {
+        let space = 0
+        if (options.prettyPrint) {
+          space = 2
+        }
+
+        console.log(JSON.stringify(parsed, null, space))
+      }
     }
+  } catch (error) {
+    console.error(error.message)
+    if (error.help) {
+      console.error(error.help)
+    }
+    process.exit(1)
   }
 }
 

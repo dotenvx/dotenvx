@@ -1052,6 +1052,17 @@ More examples
   ```
 
   </details>
+* <details><summary>`get --strict`</summary><br>
+
+  Exit with code `1` if any errors are encountered - like a missing key, missing .env file, or decryption failure.
+
+  ```sh
+  $ dotenvx get DOES_NOT_EXIST --strict
+  [MISSING_KEY] missing DOES_NOT_EXIST key
+  ```
+
+  </details>
+
 * <details><summary>`get KEY --convention=nextjs`</summary><br>
 
   Return a single environment variable's value using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:

@@ -66,13 +66,13 @@ async function run () {
           if (!options.convention) { // do not output error for conventions (too noisy)
             console.error(error.message)
             if (error.help) {
-              logger.help(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
+              console.error(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
             }
           }
         } else {
           console.error(error.message)
           if (error.help) {
-            logger.help(error.help)
+            console.error(error.help)
           }
         }
       }
@@ -106,7 +106,7 @@ async function run () {
   } catch (error) {
     console.error(error.message)
     if (error.help) {
-      logger.help(error.help)
+      console.error(error.help)
     }
     process.exit(1)
   }

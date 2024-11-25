@@ -8,9 +8,9 @@ t.beforeEach((ct) => {
 })
 
 t.test('#run (missing key returns the entire processEnv as object)', ct => {
-  const json = new Get().run()
+  const { parsed } = new Get().run()
 
-  ct.same(json, {})
+  ct.same(parsed, {})
 
   ct.end()
 })
@@ -18,11 +18,11 @@ t.test('#run (missing key returns the entire processEnv as object)', ct => {
 t.test('#run (all object) with preset process.env', ct => {
   process.env.PRESET_ENV_EXAMPLE = 'something/on/machine'
 
-  const json = new Get(null, [], false, '', true).run()
-  ct.same(json, { PRESET_ENV_EXAMPLE: 'something/on/machine' })
+  const { parsed } = new Get(null, [], false, '', true).run()
+  ct.same(parsed, { PRESET_ENV_EXAMPLE: 'something/on/machine' })
 
-  const json2 = new Get(null, [], false, '', false).run()
-  ct.same(json2, {})
+  const result = new Get(null, [], false, '', false).run()
+  ct.same(result.parsed, {})
 
   ct.end()
 })
@@ -31,9 +31,9 @@ t.test('#run (missing key returns the entire processEnv as object)', ct => {
   const envs = [
     { type: 'envFile', value: 'tests/.env.local' }
   ]
-  const json = new Get(null, envs).run()
+  const { parsed } = new Get(null, envs).run()
 
-  ct.same(json, { BASIC: 'local_basic', LOCAL: 'local' })
+  ct.same(parsed, { BASIC: 'local_basic', LOCAL: 'local' })
 
   ct.end()
 })
@@ -42,9 +42,9 @@ t.test('#run (missing key returns empty string when fetching single key)', ct =>
   const envs = [
     { type: 'envFile', value: 'tests/.env.local' }
   ]
-  const value = new Get('BAZ', envs).run()
+  const { parsed } = new Get('BAZ', envs).run()
 
-  ct.same(value, undefined)
+  ct.same(parsed.BAZ, undefined)
 
   ct.end()
 })
@@ -53,9 +53,9 @@ t.test('#run', ct => {
   const envs = [
     { type: 'envFile', value: 'tests/.env' }
   ]
-  const value = new Get('BASIC', envs).run()
+  const { parsed } = new Get('BASIC', envs).run()
 
-  ct.same(value, 'basic')
+  ct.same(parsed.BASIC, 'basic')
 
   ct.end()
 })
@@ -65,9 +65,9 @@ t.test('#run (as multi-array)', ct => {
     { type: 'envFile', value: 'tests/.env' },
     { type: 'envFile', value: 'tests/.env.local' }
   ]
-  const value = new Get('BASIC', envs).run()
+  const { parsed } = new Get('BASIC', envs).run()
 
-  ct.same(value, 'basic')
+  ct.same(parsed.BASIC, 'basic')
 
   ct.end()
 })
@@ -78,9 +78,9 @@ t.test('#run (as multi-array reversed (first wins))', ct => {
     { type: 'envFile', value: 'tests/.env' }
   ]
 
-  const value = new Get('BASIC', envs).run()
+  const { parsed } = new Get('BASIC', envs).run()
 
-  ct.same(value, 'local_basic')
+  ct.same(parsed.BASIC, 'local_basic')
 
   ct.end()
 })
@@ -91,9 +91,9 @@ t.test('#run (as multi-array reversed with overload (second wins))', ct => {
     { type: 'envFile', value: 'tests/.env' }
   ]
 
-  const value = new Get('BASIC', envs, true).run()
+  const { parsed } = new Get('BASIC', envs, true).run()
 
-  ct.same(value, 'basic')
+  ct.same(parsed.BASIC, 'basic')
 
   ct.end()
 })
@@ -104,9 +104,9 @@ t.test('#run (as multi-array - some not found)', ct => {
     { type: 'envFile', value: 'tests/.env' }
   ]
 
-  const value = new Get('BASIC', envs, true).run()
+  const { parsed } = new Get('BASIC', envs, true).run()
 
-  ct.same(value, 'basic')
+  ct.same(parsed.BASIC, 'basic')
 
   ct.end()
 })
@@ -118,9 +118,9 @@ t.test('#run (process.env already exists on machine)', ct => {
     { type: 'envFile', value: 'tests/.env.local' }
   ]
 
-  const value = new Get('BASIC', envs).run()
+  const { parsed } = new Get('BASIC', envs).run()
 
-  ct.same(value, 'existing')
+  ct.same(parsed.BASIC, 'existing')
 
   ct.end()
 })
@@ -132,9 +132,9 @@ t.test('#run (no key and process.env already exists on machine)', ct => {
     { type: 'envFile', value: 'tests/.env.local' }
   ]
 
-  const json = new Get(null, envs).run()
+  const { parsed } = new Get(null, envs).run()
 
-  ct.same(json, { BASIC: 'existing', LOCAL: 'local' })
+  ct.same(parsed, { BASIC: 'existing', LOCAL: 'local' })
 
   ct.end()
 })
@@ -144,9 +144,9 @@ t.test('#run expansion', ct => {
     { type: 'envFile', value: 'tests/.env.expand' }
   ]
 
-  const value = new Get('BASIC_EXPAND', envs).run()
+  const { parsed } = new Get('BASIC_EXPAND', envs).run()
 
-  ct.same(value, 'basic')
+  ct.same(parsed.BASIC_EXPAND, 'basic')
 
   ct.end()
 })
