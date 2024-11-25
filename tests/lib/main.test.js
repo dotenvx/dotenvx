@@ -39,18 +39,37 @@ t.test('config with convention - calls Run.run with proper envs', ct => {
 })
 
 t.test('config with Run.run errors', ct => {
-  const loggerWarnStub = sinon.stub(logger, 'warnv')
-  const errors = [new Error('some error')]
+  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+
+  const error = new Error('some error')
+  error.help = 'some help'
+  const errors = [error]
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
   main.config()
 
   t.ok(stub.called, 'new Run().run() called')
-  ct.ok(loggerWarnStub.calledWith('some error'), 'warn')
+  ct.ok(loggerErrorStub.calledWith('some error'), 'console.error')
+  ct.ok(loggerHelpStub.calledWith('some help'), 'logger.help')
 
   stub.restore()
-  loggerWarnStub.restore()
+  loggerErrorStub.restore()
+  loggerHelpStub.restore()
+
+  ct.end()
+})
+
+t.test('config with Run.run processedEnv with undefined processedEnv.errors', ct => {
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({ processedEnvs: [{}], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.config()
+
+  t.ok(stub.called, 'new Run().run() called')
+
+  stub.restore()
 
   ct.end()
 })

@@ -198,16 +198,16 @@ t.test('returns any errors thrown from reading file or parsing', ct => {
 t.test('logs any errors thrown from reading file or parsing when in debug mode', ct => {
   ct.plan(2)
 
-  const logStub = sinon.stub(logger, 'warnv')
+  const consoleErrorStub = sinon.stub(console, 'error')
   const readFileXStub = sinon.stub(fsx, 'readFileX').returns('test=foo')
 
   readFileXStub.throws()
   const env = dotenvx.config({ debug: true })
 
-  ct.ok(logStub.called)
+  ct.ok(consoleErrorStub.called)
   ct.type(env.error, Error)
 
-  logStub.restore()
+  consoleErrorStub.restore()
   readFileXStub.restore()
 })
 

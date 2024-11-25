@@ -61,12 +61,11 @@ const config = function (options = {}) {
       }
     }
 
-    const { processedEnvs, readableFilepaths, uniqueInjectedKeys } = new Run(
-      envs,
-      overload,
-      DOTENV_KEY,
-      processEnv
-    ).run()
+    const {
+      processedEnvs,
+      readableFilepaths,
+      uniqueInjectedKeys
+    } = new Run(envs, overload, DOTENV_KEY, processEnv).run()
 
     let lastError
     /** @type {Record<string, string>} */
@@ -82,20 +81,20 @@ const config = function (options = {}) {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
 
-      if (processedEnv.errors) {
-        for (const error of processedEnv.errors) {
-          lastError = error // surface later in { error }
+      for (const error of processedEnv.errors || []) {
+        lastError = error // surface later in { error }
 
-          if (error.code === 'MISSING_ENV_FILE') {
-            // do not warn for conventions (too noisy)
-            if (!options.convention) {
-              logger.warnv(error.message) // TODO: replace with console.log
-              if (error.help) {
-                logger.help(error.help)
-              }
+        if (error.code === 'MISSING_ENV_FILE') {
+          if (!options.convention) { // do not output error for conventions (too noisy)
+            console.error(error.message)
+            if (error.help) {
+              logger.help(error.help)
             }
-          } else {
-            logger.warnv(error.message) // TODO: replace with console.log
+          }
+        } else {
+          console.error(error.message)
+          if (error.help) {
+            logger.help(error.help)
           }
         }
       }

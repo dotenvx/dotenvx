@@ -59,20 +59,18 @@ async function run () {
         logger.verbose(`loading env from string (${processedEnv.string})`)
       }
 
-      if (processedEnv.errors) {
-        for (const error of processedEnv.errors) {
-          if (error.code === 'MISSING_ENV_FILE') {
-            if (!options.convention) { // do not output error for conventions (too noisy)
-              console.error(error.message)
-              if (error.help) {
-                logger.help(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
-              }
-            }
-          } else {
+      for (const error of processedEnv.errors || []) {
+        if (error.code === 'MISSING_ENV_FILE') {
+          if (!options.convention) { // do not output error for conventions (too noisy)
             console.error(error.message)
             if (error.help) {
-              logger.help(error.help)
+              logger.help(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
             }
+          }
+        } else {
+          console.error(error.message)
+          if (error.help) {
+            logger.help(error.help)
           }
         }
       }
