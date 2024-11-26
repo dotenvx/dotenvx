@@ -85,7 +85,7 @@ class Sets {
           privateKey = kp.privateKey
 
           if (row.originalValue) {
-            row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKey)
+            row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
           }
 
           // if derivation doesn't match what's in the file (or preset in env)

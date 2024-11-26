@@ -4,6 +4,8 @@ class Errors {
     this.envFilepath = options.envFilepath
 
     this.key = options.key
+    this.privateKey = options.privateKey
+    this.privateKeyName = options.privateKeyName
   }
 
   missingEnvFile () {

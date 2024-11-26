@@ -10,7 +10,7 @@ t.test('#encryptValue', ct => {
   const result = encryptValue('hello', publicKey)
   ct.ok(result.startsWith('encrypted:'))
 
-  const decrypted = decryptKeyValue('KEY', result, privateKey)
+  const decrypted = decryptKeyValue('KEY', result, 'DOTENV_PRIVATE_KEY', privateKey)
   ct.same(decrypted, 'hello')
 
   ct.end()

@@ -86,7 +86,7 @@ class Decrypt {
         if (encrypted) {
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptKeyValue(key, value, privateKey)
+          const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKey)
           // once newSrc is built write it out
           envSrc = replace(envSrc, key, decryptedValue)
 

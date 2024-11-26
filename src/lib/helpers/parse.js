@@ -7,9 +7,10 @@ const { execSync } = require('child_process')
 class Parse {
   static LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
 
-  constructor (src, privateKey = null, processEnv = process.env, overload = false) {
+  constructor (src, privateKey = null, processEnv = process.env, overload = false, privateKeyName = null) {
     this.src = src
     this.privateKey = privateKey
+    this.privateKeyName = privateKeyName
     this.processEnv = processEnv
     this.overload = overload
 
@@ -129,7 +130,7 @@ class Parse {
   }
 
   decrypt (key, value) {
-    return decryptKeyValue(key, value, this.privateKey)
+    return decryptKeyValue(key, value, this.privateKeyName, this.privateKey)
   }
 
   eval (value) {

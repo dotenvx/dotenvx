@@ -8,7 +8,7 @@ const privateKey = '1fc1cafa954a7a2bf0a6fbff46189c9e03e3a66b4d1133108ab9fcdb9e15
 
 t.test('#decryptKeyValue', ct => {
   const encryptedString = encryptValue('hello', publicKey)
-  const decrypted = decryptKeyValue('KEY', encryptedString, privateKey)
+  const decrypted = decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', privateKey)
   ct.same(decrypted, 'hello')
 
   ct.end()
@@ -29,7 +29,7 @@ t.test('#decryptKeyValue - privateKey null', ct => {
 })
 
 t.test('#decryptKeyValue (does not start with encrypted:) returns raw value', ct => {
-  const decrypted = decryptKeyValue('KEY', 'world', privateKey)
+  const decrypted = decryptKeyValue('KEY', 'world', 'DOTENV_PRIVATE_KEY', privateKey)
   ct.same(decrypted, 'world') // return the original raw value
 
   ct.end()
@@ -37,7 +37,7 @@ t.test('#decryptKeyValue (does not start with encrypted:) returns raw value', ct
 
 t.test('#decryptKeyValue invalid short encrypted value raises error', ct => {
   try {
-    decryptKeyValue('KEY', 'encrypted:1234', privateKey)
+    decryptKeyValue('KEY', 'encrypted:1234', 'DOTENV_PRIVATE_KEY', privateKey)
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
@@ -49,7 +49,7 @@ t.test('#decryptKeyValue invalid short encrypted value raises error', ct => {
 
 t.test('#decryptKeyValue invalid encrypted value raises error', ct => {
   try {
-    decryptKeyValue('KEY', 'encrypted:ADJIvD6DxJdTcFdg1tcasYa9G1O5YVtFJs0yJgem+aGIlRJl9N1Fbq6kdPtIwfS0c6VJF4EN6H+D0JUwJ4FmoerQi0XQ4mv4AyA73KjrxVEqmSypg2InsV0e4WxdP5Qx/jVVSgxD', privateKey)
+    decryptKeyValue('KEY', 'encrypted:ADJIvD6DxJdTcFdg1tcasYa9G1O5YVtFJs0yJgem+aGIlRJl9N1Fbq6kdPtIwfS0c6VJF4EN6H+D0JUwJ4FmoerQi0XQ4mv4AyA73KjrxVEqmSypg2InsV0e4WxdP5Qx/jVVSgxD', 'DOTENV_PRIVATE_KEY', privateKey)
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
@@ -61,7 +61,7 @@ t.test('#decryptKeyValue invalid encrypted value raises error', ct => {
 
 t.test('#decryptKeyValue invalid empty encrypted value raises error', ct => {
   try {
-    decryptKeyValue('KEY', 'encrypted:', privateKey)
+    decryptKeyValue('KEY', 'encrypted:', 'DOTENV_PRIVATE_KEY', privateKey)
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
@@ -75,7 +75,7 @@ t.test('#decryptKeyValue invalid privateKey', ct => {
   const encryptedString = encryptValue('hello', publicKey)
 
   try {
-    decryptKeyValue('KEY', encryptedString, 'invalid-private-key')
+    decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', 'invalid-private-key')
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
@@ -89,7 +89,7 @@ t.test('#decryptKeyValue empty privateKey', ct => {
   const encryptedString = encryptValue('hello', publicKey)
 
   try {
-    decryptKeyValue('KEY', encryptedString, '')
+    decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', '')
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
@@ -103,7 +103,7 @@ t.test('#decryptKeyValue wrong privateKey', ct => {
   const encryptedString = encryptValue('hello', publicKey)
 
   try {
-    decryptKeyValue('KEY', encryptedString, '9c1ab41477004e68066129a8866887d316ba5d7177593dbc5e3026d6f64d32f8')
+    decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', '9c1ab41477004e68066129a8866887d316ba5d7177593dbc5e3026d6f64d32f8')
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
@@ -115,14 +115,14 @@ t.test('#decryptKeyValue wrong privateKey', ct => {
 
 t.test('#decryptKeyValue when empty string', ct => {
   const encryptedString = encryptValue('', publicKey)
-  const decrypted = decryptKeyValue('KEY', encryptedString, privateKey)
+  const decrypted = decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', privateKey)
   ct.same(decrypted, '')
 
   ct.end()
 })
 
 t.test('#decryptKeyValue - hardcoded scenario', ct => {
-  const decrypted = decryptKeyValue('KEY', 'encrypted:BMVCQpz/+NYDcGZhbXyqbwP8IDJSTXl4xDQsgusQHEVFAWOXQnKRBTOzRiwuYIJzjuWnKkrQJEDEi8Av9xnfx61jVTJymVWLjVmFK7CM+6lmKOnIhPMzu0Mi0dH82P81bOXjkZTHIIcA', privateKey)
+  const decrypted = decryptKeyValue('KEY', 'encrypted:BMVCQpz/+NYDcGZhbXyqbwP8IDJSTXl4xDQsgusQHEVFAWOXQnKRBTOzRiwuYIJzjuWnKkrQJEDEi8Av9xnfx61jVTJymVWLjVmFK7CM+6lmKOnIhPMzu0Mi0dH82P81bOXjkZTHIIcA', 'DOTENV_PRIVATE_KEY', privateKey)
   ct.same(decrypted, 'expanded')
 
   ct.end()

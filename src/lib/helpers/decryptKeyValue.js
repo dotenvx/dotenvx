@@ -5,7 +5,7 @@ const Errors = require('./errors')
 
 const PREFIX = 'encrypted:'
 
-function decryptKeyValue (key, value, privateKey) {
+function decryptKeyValue (key, value, privateKeyName, privateKey) {
   let decryptedValue
   let decryptionError
 
@@ -15,7 +15,7 @@ function decryptKeyValue (key, value, privateKey) {
 
   privateKey = privateKey || ''
   if (privateKey.length <= 0) {
-    decryptionError = new Errors({ key }).missingPrivateKey()
+    decryptionError = new Errors({ key, privateKeyName, privateKey }).missingPrivateKey()
     // decryptionError = new Error('private key missing or blank')
     // decryptionError.code = 'DECRYPTION_FAILED'
   } else {
