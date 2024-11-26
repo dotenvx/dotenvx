@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.25.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.25.1...main)
+
+## [1.25.1](https://github.com/dotenvx/dotenvx/compare/v1.25.0...v1.25.1)
+
+### Changed
+
+* improve helpful error messaging around decryption failures by specifying specific key and private key name ([#463](https://github.com/dotenvx/dotenvx/pull/463))
 
 ## [1.25.0](https://github.com/dotenvx/dotenvx/compare/v1.24.5...v1.25.0)
 
