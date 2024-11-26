@@ -28,7 +28,7 @@ class Errors {
 
   missingPrivateKey () {
     const code = 'DECRYPTION_FAILED'
-    const message = `private key missing or blank`
+    const message = 'private key missing or blank'
 
     const e = new Error(message)
     e.code = code
