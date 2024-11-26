@@ -129,9 +129,9 @@ t.test('#run (encrypted .env with bad private key)', ct => {
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const error = new Error('[DECRYPTION_FAILED] could not decrypt HELLO using private key \'bad-pri…\'')
-  error.code = 'DECRYPTION_FAILED'
-  error.help = '[DECRYPTION_FAILED] ? private key [bad-pri…] looks invalid'
+  const error = new Error('[INVALID_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=bad-pri…\'')
+  error.code = 'INVALID_PRIVATE_KEY'
+  error.help = '[INVALID_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/465'
 
   ct.same(processedEnvs, [{
     type: 'envFile',

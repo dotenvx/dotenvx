@@ -78,7 +78,7 @@ t.test('#decrypt - missing DOTENV_PRIVATE_KEY', ct => {
 
   ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
   ct.equal(stdout, '')
-  ct.equal(stderr, 'private key missing or blank\n')
+  ct.equal(stderr, '[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'\n')
 
   ct.end()
 })
@@ -126,7 +126,7 @@ t.test('#decrypt --stdout - missing DOTENV_PRIVATE_KEY', ct => {
   }
 
   ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
-  ct.equal(stderr, 'private key missing or blank\n')
+  ct.equal(stderr, '[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'\n')
 
   ct.end()
 })

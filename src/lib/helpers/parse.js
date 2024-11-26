@@ -1,5 +1,4 @@
 const chomp = require('./chomp')
-const truncate = require('./truncate')
 const decryptKeyValue = require('./decryptKeyValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
 const { execSync } = require('child_process')
@@ -43,7 +42,7 @@ class Parse {
       try {
         this.parsed[key] = this.decrypt(key, this.parsed[key])
       } catch (e) {
-        this.errors.push(this.error(e, key))
+        this.errors.push(e)
       }
 
       // eval empty, double, or backticks
@@ -207,14 +206,6 @@ class Parse {
 
   getLines () {
     return (this.src || '').toString().replace(/\r\n?/mg, '\n') // Convert buffer to string and Convert line breaks to same format
-  }
-
-  error (e, key) {
-    const error = new Error(`[${e.code}] could not decrypt ${key} using private key '${truncate(this.privateKey)}'`)
-    error.code = e.code
-    error.help = `[${e.code}] ? ${e.message}`
-
-    return error
   }
 }
 
