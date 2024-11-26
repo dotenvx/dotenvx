@@ -8,7 +8,7 @@ const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
-const decryptValue = require('./../helpers/decryptValue')
+const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const replace = require('./../helpers/replace')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
@@ -85,7 +85,7 @@ class Sets {
           privateKey = kp.privateKey
 
           if (row.originalValue) {
-            row.originalValue = decryptValue(row.originalValue, privateKey)
+            row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
           }
 
           // if derivation doesn't match what's in the file (or preset in env)

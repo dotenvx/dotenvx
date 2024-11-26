@@ -12,6 +12,7 @@ const Errors = require('./../helpers/errors')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const detectEncoding = require('./../helpers/detectEncoding')
 const findPrivateKey = require('./../helpers/findPrivateKey')
+const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Run {
@@ -92,7 +93,8 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const privateKey = findPrivateKey(envFilepath)
-      const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload).run()
+      const privateKeyName = guessPrivateKeyName(envFilepath)
+      const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload, privateKeyName).run()
 
       row.parsed = parsed
       row.errors = errors

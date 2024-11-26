@@ -1,15 +1,15 @@
 const chomp = require('./chomp')
-const truncate = require('./truncate')
-const decryptValue = require('./decryptValue')
+const decryptKeyValue = require('./decryptKeyValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
 const { execSync } = require('child_process')
 
 class Parse {
   static LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
 
-  constructor (src, privateKey = null, processEnv = process.env, overload = false) {
+  constructor (src, privateKey = null, processEnv = process.env, overload = false, privateKeyName = null) {
     this.src = src
     this.privateKey = privateKey
+    this.privateKeyName = privateKeyName
     this.processEnv = processEnv
     this.overload = overload
 
@@ -40,9 +40,9 @@ class Parse {
 
       // decrypt
       try {
-        this.parsed[key] = this.decrypt(this.parsed[key])
+        this.parsed[key] = this.decrypt(key, this.parsed[key])
       } catch (e) {
-        this.errors.push(this.error(e, key))
+        this.errors.push(e)
       }
 
       // eval empty, double, or backticks
@@ -128,8 +128,8 @@ class Parse {
     return v
   }
 
-  decrypt (value) {
-    return decryptValue(value, this.privateKey)
+  decrypt (key, value) {
+    return decryptKeyValue(key, value, this.privateKeyName, this.privateKey)
   }
 
   eval (value) {
@@ -206,14 +206,6 @@ class Parse {
 
   getLines () {
     return (this.src || '').toString().replace(/\r\n?/mg, '\n') // Convert buffer to string and Convert line breaks to same format
-  }
-
-  error (e, key) {
-    const error = new Error(`[${e.code}] could not decrypt ${key} using private key '${truncate(this.privateKey)}'`)
-    error.code = e.code
-    error.help = `[${e.code}] ? ${e.message}`
-
-    return error
   }
 }
 

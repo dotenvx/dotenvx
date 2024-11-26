@@ -1,9 +1,15 @@
+const truncate = require('./truncate')
+
 class Errors {
   constructor (options = {}) {
     this.filepath = options.filepath
     this.envFilepath = options.envFilepath
 
     this.key = options.key
+    this.privateKey = options.privateKey
+    this.privateKeyName = options.privateKeyName
+
+    this.message = options.message
   }
 
   missingEnvFile () {
@@ -20,6 +26,59 @@ class Errors {
   missingKey () {
     const code = 'MISSING_KEY'
     const message = `[${code}] missing ${this.key} key`
+
+    const e = new Error(message)
+    e.code = code
+    return e
+  }
+
+  missingPrivateKey () {
+    const code = 'MISSING_PRIVATE_KEY'
+    const message = `[${code}] could not decrypt ${this.key} using private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
+    const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/464`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  invalidPrivateKey () {
+    const code = 'INVALID_PRIVATE_KEY'
+    const message = `[${code}] could not decrypt ${this.key} using private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
+    const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/465`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  looksWrongPrivateKey () {
+    const code = 'WRONG_PRIVATE_KEY'
+    const message = `[${code}] could not decrypt ${this.key} using private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
+    const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/466`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  malformedEncryptedData () {
+    const code = 'MALFORMED_ENCRYPTED_DATA'
+    const message = `[${code}] could not decrypt ${this.key} because encrypted data appears malformed`
+    const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/467`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  decryptionFailed () {
+    const code = 'DECRYPTION_FAILED'
+    const message = this.message
 
     const e = new Error(message)
     e.code = code
