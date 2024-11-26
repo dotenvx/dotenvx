@@ -8,7 +8,7 @@ const TYPE_ENV_FILE = 'envFile'
 const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const findPrivateKey = require('./../helpers/findPrivateKey')
-const decryptValue = require('./../helpers/decryptValue')
+const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const replace = require('./../helpers/replace')
 const detectEncoding = require('./../helpers/detectEncoding')
@@ -86,7 +86,7 @@ class Decrypt {
         if (encrypted) {
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptValue(value, privateKey)
+          const decryptedValue = decryptKeyValue(key, value, privateKey)
           // once newSrc is built write it out
           envSrc = replace(envSrc, key, decryptedValue)
 

@@ -1,6 +1,6 @@
 const chomp = require('./chomp')
 const truncate = require('./truncate')
-const decryptValue = require('./decryptValue')
+const decryptKeyValue = require('./decryptKeyValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
 const { execSync } = require('child_process')
 
@@ -40,7 +40,7 @@ class Parse {
 
       // decrypt
       try {
-        this.parsed[key] = this.decrypt(this.parsed[key])
+        this.parsed[key] = this.decrypt(key, this.parsed[key])
       } catch (e) {
         this.errors.push(this.error(e, key))
       }
@@ -128,8 +128,8 @@ class Parse {
     return v
   }
 
-  decrypt (value) {
-    return decryptValue(value, this.privateKey)
+  decrypt (key, value) {
+    return decryptKeyValue(key, value, this.privateKey)
   }
 
   eval (value) {

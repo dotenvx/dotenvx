@@ -1,10 +1,11 @@
 const { decrypt } = require('eciesjs')
 
 const truncate = require('./truncate')
+const Errors = require('./errors')
 
 const PREFIX = 'encrypted:'
 
-function decryptValue (value, privateKey) {
+function decryptKeyValue (key, value, privateKey) {
   let decryptedValue
   let decryptionError
 
@@ -14,8 +15,9 @@ function decryptValue (value, privateKey) {
 
   privateKey = privateKey || ''
   if (privateKey.length <= 0) {
-    decryptionError = new Error('private key missing or blank')
-    decryptionError.code = 'DECRYPTION_FAILED'
+    decryptionError = new Errors({ key }).missingPrivateKey()
+    // decryptionError = new Error('private key missing or blank')
+    // decryptionError.code = 'DECRYPTION_FAILED'
   } else {
     const privateKeys = privateKey.split(',')
     for (const key of privateKeys) {
@@ -50,4 +52,4 @@ function decryptValue (value, privateKey) {
   return decryptedValue
 }
 
-module.exports = decryptValue
+module.exports = decryptKeyValue
