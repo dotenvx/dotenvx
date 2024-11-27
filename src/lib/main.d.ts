@@ -125,50 +125,6 @@ export interface DotenvPopulateInput {
 export function config(options?: DotenvConfigOptions): DotenvConfigOutput;
 
 /**
- * Decrypt ciphertext
- *
- * @see https://dotenvx.com/docs
- *
- * @param envFile - the encrypted ciphertext string
- * @param key - the decryption key(s)
- */
-export function decrypt(
-  envFile?: string | string[],
-  key?: string | string[]
-): string;
-
-export type EncryptRowOutput = {
-  keys: string[];
-  filepath: string;
-  envFilepath: string;
-  publicKey: string;
-  privateKey: string;
-  privateKeyName: string;
-  privateKeyAdded: boolean;
-  envSrc: string;
-  changed: boolean;
-  error?: Error;
-};
-
-export type EncryptOutput = {
-  processedEnvFiles: EncryptRowOutput[];
-  changedFilepaths: string[];
-  unchangedFilepaths: string[];
-};
-
-/**
- * Encrypt plaintext
- *
- * @see https://dotenvx.com/docs
- * @param envFile - path to the .env file(s)
- * @param key - keys(s) to encrypt env file(s) (default: all keys in .env file)
- */
-export function encrypt(
-  envFile?: string | string[],
-  key?: string | string[]
-): EncryptOutput;
-
-/**
  * List all env files in the current working directory
  *
  * @param directory - current working directory
@@ -180,53 +136,6 @@ export function ls(
   envFile: string | string[],
   excludeEnvFile: string | string[]
 ): string[];
-
-/**
- * Get the value of a key from the .env file
- *
- * @param [key] - the key to get the value of
- * @param [envs] - the environment(s) to get the value from
- * @param [overload] - whether to overload the value from the .env file
- * @param [DOTENV_KEY] - the decryption key string
- * @param [all] - whether to return all values
- */
-export function get(
-  key?: string,
-  envs?: string[],
-  overload?: boolean,
-  DOTENV_KEY?: string,
-  all?: boolean
-): Record<string, string | undefined> | string | undefined;
-
-export type SetOutput = {
-  key: string;
-  value: string;
-  filepath: string;
-  envFilepath: string;
-  envSrc: string;
-  changed: boolean;
-  encryptedValue?: string;
-  publicKey?: string;
-  privateKey?: string;
-  privateKeyAdded?: boolean;
-  privateKeyName?: string;
-  error?: Error;
-};
-
-/**
- * Set the value of a key in the .env file
- *
- * @param key - the key to set the value of
- * @param value - the value to set
- * @param envFile - the path to the .env file
- * @param [encrypt] - whether to encrypt the value
- */
-export function set(
-  key: string,
-  value: string,
-  envFile: string | string,
-  encrypt?: boolean
-): EncryptOutput;
 
 export type GenExampleOutput = {
   envExampleFile: string;
