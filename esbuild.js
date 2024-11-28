@@ -4,7 +4,7 @@ const pkgJson = require('./package.json')
 
 const outputDir = 'build'
 
-function cleanPkgJson(json) {
+function cleanPkgJson (json) {
   delete json.devDependencies
   delete json.optionalDependencies
   delete json.dependencies
@@ -12,7 +12,7 @@ function cleanPkgJson(json) {
   return json
 }
 
-async function emptyDir(dir) {
+async function emptyDir (dir) {
   try {
     await rm(dir, { recursive: true })
   } catch (err) {
@@ -23,20 +23,19 @@ async function emptyDir(dir) {
   await mkdir(dir)
 }
 
-async function printSize(fileName) {
+async function printSize (fileName) {
   const stats = await stat(fileName)
 
   // print size in MB
   console.log(`Bundle size: ${Math.round(stats.size / 10000) / 100}MB\n\n`)
 }
 
-async function main() {
+async function main () {
   const start = Date.now()
   // clean build folder
   await emptyDir(outputDir)
 
   const outfile = `${outputDir}/index.js`
-
 
   /** @type { import('esbuild').BuildOptions } */
   const config = {
