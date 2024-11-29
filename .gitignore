@@ -3,10 +3,13 @@
 .tap
 coverage/
 node_modules/
+build/*
+bin/*
 dist/*
 .env*
 !.env.vault
 tests/tmp
+.vscode
 
 # for test purposes
 !tests/.env
