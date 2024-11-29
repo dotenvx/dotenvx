@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.25.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.25.2...main)
+
+## [1.25.2](https://github.com/dotenvx/dotenvx/compare/v1.25.1...v1.25.2)
+
+### Added
+
+* for binaries add pre-build step using esbuild ([#471](https://github.com/dotenvx/dotenvx/pull/471))
+
+### Removed
+
+* remove types for functions that were removed a while back ([2aa660](https://github.com/dotenvx/dotenvx/commit/2aa660695757143f65751a201115f074b81942a8))
 
 ## [1.25.1](https://github.com/dotenvx/dotenvx/compare/v1.25.0...v1.25.1)
 
