@@ -154,7 +154,7 @@ const parse = function (src, options = {}) {
   }
 
   // private decryption key
-  const privateKey = null // implement later
+  const privateKey = options.privateKey || null
 
   // overload
   const overload = options.overload || options.override
