@@ -1,5 +1,6 @@
 const t = require('tap')
 const sinon = require('sinon')
+const capcon = require('capture-console')
 
 const main = require('../../src/lib/main')
 
@@ -79,27 +80,36 @@ t.test('config with Run.run processedEnv with undefined processedEnv.errors', ct
 })
 
 t.test('parse calls Parse.run', ct => {
-  const stub = sinon.stub(Parse.prototype, 'run')
-  stub.returns({})
+  const parsed = main.parse('HELLO=World')
 
-  main.parse()
-
-  t.ok(stub.called, 'new Parse().run() called')
-
-  stub.restore()
+  ct.equal(parsed.HELLO, 'World')
 
   ct.end()
 })
 
 t.test('parse calls Parse.run with options.processEnv', ct => {
-  const stub = sinon.stub(Parse.prototype, 'run')
-  stub.returns({})
+  const parsed = main.parse('HELLO=World', { processEnv: {} })
 
-  main.parse('HELLO=World', { processEnv: {} })
+  ct.equal(parsed.HELLO, 'World')
 
-  t.ok(stub.called, 'new Parse().run() called')
+  ct.end()
+})
 
-  stub.restore()
+t.test('parse calls Parse.run with options.privateKey', ct => {
+  const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c' })
+
+  ct.equal(parsed.HELLO, 'World')
+
+  ct.end()
+})
+
+t.test('parse calls Parse.run with invalid options.privateKey', ct => {
+  const { stderr } = capcon.interceptStdio(() => {
+    const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: '12345' })
+    ct.equal(parsed.HELLO, 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l')
+  })
+
+  ct.ok(stderr.includes('INVALID_PRIVATE_KEY'), 'stderr contains INVALID_PRIVATE_KEY')
 
   ct.end()
 })

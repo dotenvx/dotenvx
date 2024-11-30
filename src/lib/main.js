@@ -162,7 +162,7 @@ const parse = function (src, options = {}) {
   const { parsed, errors } = new Parse(src, privateKey, processEnv, overload).run()
 
   // display any errors
-  for (const error of errors || []) {
+  for (const error of errors) {
     console.error(error.message)
     if (error.help) {
       console.error(error.help)
