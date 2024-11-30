@@ -154,12 +154,20 @@ const parse = function (src, options = {}) {
   }
 
   // private decryption key
-  const privateKey = null // implement later
+  const privateKey = options.privateKey || null
 
   // overload
   const overload = options.overload || options.override
 
-  const { parsed } = new Parse(src, privateKey, processEnv, overload).run()
+  const { parsed, errors } = new Parse(src, privateKey, processEnv, overload).run()
+
+  // display any errors
+  for (const error of errors) {
+    console.error(error.message)
+    if (error.help) {
+      console.error(error.help)
+    }
+  }
 
   return parsed
 }
