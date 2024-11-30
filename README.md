@@ -1879,7 +1879,7 @@ More examples
   </details>
 * <details><summary>`parse(src, {processEnv:})`</summary><br>
 
-  Sometimes, you want to run `parse` without it accessing `process.env`. (You can also control or pass a fake processEnv this way. Sometimes that is useful.)
+  Sometimes, you want to run `parse` without it accessing `process.env`. (You can pass a fake processEnv this way as well - sometimes useful.)
 
   ```js
   // index.js
