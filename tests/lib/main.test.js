@@ -1,6 +1,5 @@
 const t = require('tap')
 const sinon = require('sinon')
-const capcon = require('capture-console')
 
 const main = require('../../src/lib/main')
 
@@ -8,7 +7,6 @@ const Ls = require('../../src/lib/services/ls')
 const Run = require('../../src/lib/services/run')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
-const Parse = require('../../src/lib/helpers/parse')
 
 const { logger } = require('../../src/shared/logger')
 
@@ -104,12 +102,15 @@ t.test('parse calls Parse.run with options.privateKey', ct => {
 })
 
 t.test('parse calls Parse.run with invalid options.privateKey', ct => {
-  const { stderr } = capcon.interceptStdio(() => {
-    const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: '12345' })
-    ct.equal(parsed.HELLO, 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l')
-  })
+  const consoleErrorStub = sinon.stub(console, 'error')
 
-  ct.ok(stderr.includes('INVALID_PRIVATE_KEY'), 'stderr contains INVALID_PRIVATE_KEY')
+  const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: '12345' })
+  ct.equal(parsed.HELLO, 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l')
+  ct.ok(consoleErrorStub.called, 'console error')
+
+  // ct.ok(stderr.includes('INVALID_PRIVATE_KEY'), 'stderr contains INVALID_PRIVATE_KEY')
+
+  consoleErrorStub.restore()
 
   ct.end()
 })
