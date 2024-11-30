@@ -108,8 +108,6 @@ t.test('parse calls Parse.run with invalid options.privateKey', ct => {
   ct.equal(parsed.HELLO, 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l')
   ct.ok(consoleErrorStub.called, 'console error')
 
-  // ct.ok(stderr.includes('INVALID_PRIVATE_KEY'), 'stderr contains INVALID_PRIVATE_KEY')
-
   consoleErrorStub.restore()
 
   ct.end()
