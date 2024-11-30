@@ -1876,7 +1876,7 @@ More examples
   Hello World
   ```
   </details>
-* <details><summary>`parse(privateKey: 'a4547d')`</summary><br>
+* <details><summary>`parse(privateKey:)`</summary><br>
 
   Decrypt an encrypted `.env` string with `privateKey`.
 
