@@ -121,6 +121,37 @@ jobs:
             echo "postrelease dotenvx nested invocations: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
             exit 1
           fi
+      - name: verify dotenvx encrypt then run/get then decrypt then run/get
+        run: |
+          cd bin/linux-x86_64/
+          echo "HELLO=Ubuntu" > .env
+          ./dotenvx encrypt
+          echo "console.log('Hello ' + process.env.HELLO)" > index.js
+          EXPECTED_MESSAGE=$(./dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "postrelease dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+          EXPECTED_VALUE=$(./dotenvx get HELLO)
+          echo $EXPECTED_VALUE
+          if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
+            echo "postrelease dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+            exit 1
+          fi
+          ./dotenvx decrypt
+          EXPECTED_MESSAGE=$(./dotenvx run --quiet -- node index.js)
+          echo $EXPECTED_MESSAGE
+          if [ "$EXPECTED_MESSAGE" != "Hello Ubuntu" ]; then
+            echo "postrelease dotenvx run failure: expected Hello Ubuntu, got $EXPECTED_MESSAGE"
+            exit 1
+          fi
+          EXPECTED_VALUE=$(./dotenvx get HELLO)
+          echo $EXPECTED_VALUE
+          if [ "$EXPECTED_VALUE" != "Ubuntu" ]; then
+            echo "postrelease dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
+            exit 1
+          fi
 
   # run only on semantic version tag
   release:
