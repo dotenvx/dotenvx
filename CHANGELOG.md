@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.26.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.26.1...main)
+
+## [1.26.1](https://github.com/dotenvx/dotenvx/compare/v1.26.0...v1.26.1)
+
+### Added
+
+* add typescript type definitions for `main.parse` method ([#475](https://github.com/dotenvx/dotenvx/pull/475))
 
 ## [1.26.0](https://github.com/dotenvx/dotenvx/compare/v1.25.2...v1.26.0)
 
