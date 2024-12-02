@@ -26,7 +26,7 @@ export interface DotenvParseOptions {
   /**
    * Specify a privateKey to decrypt any encrypted contents with.
    *
-   * @default null
+   * @default undefined
    * @example require('@dotenvx/dotenvx').parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c' })
    */
   privateKey?: string;
