@@ -792,6 +792,7 @@ DB_MAIN="$\{ENV_DB_MAIN:-mysql://root:root@localhost:3306/local-nora}"
   const { parsed } = new Parse(src, null, process.env, true).run()
 
   ct.same(parsed, {
+    ENV_DB_MAIN: '',
     DB_MAIN: 'mysql://root:root@localhost:3306/local-nora'
   })
 
