@@ -1,5 +1,29 @@
 import type { URL } from 'url';
 
+export interface DotenvParseOptions {
+  /**
+   * Override any environment variables that have already been set on your machine with values from your .env file.
+   * @default false
+   * @example require('@dotenvx/dotenvx').config({ overload: true })
+   * @alias overload
+   */
+  overload?: boolean;
+
+  /**
+   * @default false
+   * @alias override
+   */
+  override?: boolean;
+
+  /**
+   * Specify an object to read existing environment variables from. Defaults to process.env environment variables.
+   *
+   * @default process.env
+   * @example const processEnv = {}; require('@dotenvx/dotenvx').parse('HELLO=World', { processEnv: processEnv })
+   */
+  processEnv?: DotenvPopulateInput;
+}
+
 export interface DotenvParseOutput {
   [name: string]: string;
 }
@@ -9,14 +33,16 @@ export interface DotenvParseOutput {
  *
  * @see https://dotenvx.com/docs
  * @param src - contents to be parsed. example: `'DB_HOST=localhost'`
+ * @param options - additional options. example: `{ prcoessEnv: {}, privateKey: '<privateKey>', overload: false }`
  * @returns an object with keys and values based on `src`. example: `{ DB_HOST : 'localhost' }`
  */
 export function parse<T extends DotenvParseOutput = DotenvParseOutput>(
-  src: string | Buffer
+  src: string | Buffer,
+  options?: DotenvParseOptions
 ): T;
 
 export interface DotenvConfigOptions {
-  /**   *
+  /**
    * Specify a custom path if your file containing environment variables is located elsewhere.
    * Can also be an array of strings, specifying multiple paths.
    *
@@ -37,16 +63,16 @@ export interface DotenvConfigOptions {
   /**
    * Override any environment variables that have already been set on your machine with values from your .env file.
    * @default false
-   * @example require('@dotenvx/dotenvx').config({ override: true })
+   * @example require('@dotenvx/dotenvx').config({ overload: true })
    * @alias overload
    */
-  override?: boolean;
+  overload?: boolean;
 
   /**
    * @default false
    * @alias override
    */
-  overload?: boolean;
+  override?: boolean;
 
   /**
    * Specify an object to write your secrets to. Defaults to process.env environment variables.
@@ -118,7 +144,7 @@ export interface DotenvPopulateInput {
  *
  * @see https://dotenvx.com/docs
  *
- * @param options - additional options. example: `{ path: './custom/path', encoding: 'latin1', debug: true, override: false }`
+ * @param options - additional options. example: `{ path: './custom/path', encoding: 'latin1', debug: true, overload: false }`
  * @returns an object with a `parsed` key if successful or `error` key if an error occurred. example: { parsed: { KEY: 'value' } }
  *
  */
