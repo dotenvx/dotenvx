@@ -732,3 +732,69 @@ ANOTHER_VAR="$\{SOME_VAR} is $\{VAR_WITH_LITERAL_VALUE}"
 
   ct.end()
 })
+
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2511193247', ct => {
+  src = `# .env
+# https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2511193247
+DB_MAIN="$\{ENV_DB_MAIN:-mysql://root:root@localhost:3306/local-nora}"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    DB_MAIN: 'mysql://root:root@localhost:3306/local-nora'
+  })
+
+  ct.end()
+})
+
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2511193247 when ENV_DB_MAIN is set to empty string on process.env', ct => {
+  process.env.ENV_DB_MAIN = ''
+
+  src = `# .env
+# https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2511193247
+DB_MAIN="$\{ENV_DB_MAIN:-mysql://root:root@localhost:3306/local-nora}"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    DB_MAIN: 'mysql://root:root@localhost:3306/local-nora'
+  })
+
+  ct.end()
+})
+
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2511193247 when ENV_DB_MAIN is set to spaced string on process.env', ct => {
+  process.env.ENV_DB_MAIN = ' '
+
+  src = `# .env
+# https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2511193247
+DB_MAIN="$\{ENV_DB_MAIN:-mysql://root:root@localhost:3306/local-nora}"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    DB_MAIN: ' '
+  })
+
+  ct.end()
+})
+
+t.test('#run - https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2511193247 when ENV_DB_MAIN is set to empty string in .env file', ct => {
+  src = `# .env
+# https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2511193247
+ENV_DB_MAIN=''
+DB_MAIN="$\{ENV_DB_MAIN:-mysql://root:root@localhost:3306/local-nora}"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    ENV_DB_MAIN: '',
+    DB_MAIN: 'mysql://root:root@localhost:3306/local-nora'
+  })
+
+  ct.end()
+})
