@@ -811,7 +811,7 @@ TABS_SINGLE='hi\\tfriend'
   ct.same(parsed, {
     TABS_NONE: 'hi\\tfriend',
     TABS_SINGLE: 'hi\\tfriend',
-    TABS_DOUBLE: 'hi\tfriend', // will format to 'hi  friend'
+    TABS_DOUBLE: 'hi\tfriend' // will format to 'hi  friend'
   })
 
   ct.end()

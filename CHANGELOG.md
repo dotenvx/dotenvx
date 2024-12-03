@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.26.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.27.0...main)
+
+## [1.27.0](https://github.com/dotenvx/dotenvx/compare/v1.26.2...v1.27.0)
+
+### Added
+
+* add support for `\t` expansion when double quoted. (e.g. `TAB="hi\tfriend"` becomes `hi	friend`) ([#479](https://github.com/dotenvx/dotenvx/pull/479))
 
 ## [1.26.2](https://github.com/dotenvx/dotenvx/compare/v1.26.1...v1.26.2)
 
