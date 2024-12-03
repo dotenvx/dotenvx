@@ -798,3 +798,21 @@ DB_MAIN="$\{ENV_DB_MAIN:-mysql://root:root@localhost:3306/local-nora}"
 
   ct.end()
 })
+
+t.test('#run - expand tabs when double quoted', ct => {
+  src = `# .env
+TABS_NONE=hi\\tfriend
+TABS_DOUBLE="hi\\tfriend"
+TABS_SINGLE='hi\\tfriend'
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    TABS_NONE: 'hi\\tfriend',
+    TABS_SINGLE: 'hi\\tfriend',
+    TABS_DOUBLE: 'hi\tfriend', // will format to 'hi  friend'
+  })
+
+  ct.end()
+})

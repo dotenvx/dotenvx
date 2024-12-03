@@ -121,8 +121,9 @@ class Parse {
 
     // Expand newlines if double quoted
     if (_quote === '"') {
-      v = v.replace(/\\n/g, '\n')
-      v = v.replace(/\\r/g, '\r')
+      v = v.replace(/\\n/g, '\n') // newline
+      v = v.replace(/\\r/g, '\r') // carriage return
+      v = v.replace(/\\t/g, '\t') // tabs
     }
 
     return v
