@@ -137,7 +137,7 @@ class Sets {
           ].join('\n')
           const appendPrivateKey = [
             `# ${filename}`,
-            `${privateKeyName}="${privateKey}"`,
+            `${privateKeyName}=${privateKey}`,
             ''
           ].join('\n')
 
