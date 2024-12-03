@@ -2,13 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.27.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.28.0...main)
+
+## [1.28.0](https://github.com/dotenvx/dotenvx/compare/v1.27.0...v1.28.0)
+
+### Changed
+
+* `.env.keys` file is generated WITHOUT quotes going forward. This is to minimize friction around Docker gotchas to developers - old versions of Docker do not support `--env-file` containing quoted keys/values. ([#480](https://github.com/dotenvx/dotenvx/pull/480)) ([additional note](https://github.com/dotenvx/dotenvx/issues/465#issuecomment-2515279676))
 
 ## [1.27.0](https://github.com/dotenvx/dotenvx/compare/v1.26.2...v1.27.0)
 
 ### Added
 
-* add support for `\t` expansion when double quoted. (e.g. `TAB="hi\tfriend"` becomes `hi	friend`) ([#479](https://github.com/dotenvx/dotenvx/pull/479))
+* add support for `\t` expansion when double quoted. (e.g. `TAB="hi\tfriend"` becomes `hi   friend`) ([#479](https://github.com/dotenvx/dotenvx/pull/479))
 
 ## [1.26.2](https://github.com/dotenvx/dotenvx/compare/v1.26.1...v1.26.2)
 
