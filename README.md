@@ -1715,7 +1715,7 @@ More examples
 
   ```sh
   $ dotenvx ext precommit
-  [dotenvx][precommit] success
+  [dotenvx][precommit] .env files (1) protected (encrypted or gitignored)
   ```
 
   </details>
@@ -1725,7 +1725,7 @@ More examples
 
   ```sh
   $ dotenvx ext precommit --install
-  [dotenvx][precommit] dotenvx precommit installed [.git/hooks/pre-commit]
+  [dotenvx][precommit] dotenvx ext precommit installed [.git/hooks/pre-commit]
   ```
 
   </details>
@@ -1736,6 +1736,7 @@ More examples
   Add it to your `Dockerfile`.
 
   ```sh
+  # Dockerfile
   RUN curl -fsS https://dotenvx.sh | sh
 
   ...
@@ -1788,6 +1789,8 @@ More examples
   Hello World
   ```
 
+  It defaults to looking for a `.env` file.
+
   </details>
 * <details><summary>`config(path: ['.env.local', '.env'])` - multiple files</summary><br>
 
@@ -1819,7 +1822,7 @@ More examples
   </details>
 * <details><summary>`config(overload: true)` - overload</summary><br>
 
-  User `overload` to overwrite the prior set value.
+  Use `overload` to overwrite the prior set value.
 
   ```ini
   # .env.local
