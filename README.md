@@ -1695,9 +1695,17 @@ More examples
 
   ```sh
   $ dotenvx ext gitignore
-  creating .gitignore
-  appending .env* to .gitignore
-  done
+  ✔ ignored .env* (.gitignore)
+  ```
+
+  </details>
+* <details><summary>`ext gitignore --pattern`</summary><br>
+
+  Gitignore specific pattern(s) of `.env` files.
+
+  ```sh
+  $ dotenvx ext gitignore --pattern .env.keys
+  ✔ ignored .env.keys (.gitignore)
   ```
 
   </details>
