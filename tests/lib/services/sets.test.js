@@ -25,7 +25,7 @@ t.test('#run (no arguments)', ct => {
   } = new Sets().run()
 
   const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
+  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
@@ -49,7 +49,7 @@ t.test('#run (no env file)', ct => {
   } = new Sets().run()
 
   const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
+  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
   exampleError.code = 'MISSING_ENV_FILE'
 
   ct.same(processedEnvs, [{
