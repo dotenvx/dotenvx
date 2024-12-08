@@ -16,9 +16,10 @@ const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Run {
-  constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env) {
+  constructor (envs = [], overload = false, ignore = [], DOTENV_KEY = '', processEnv = process.env) {
     this.envs = determineEnvs(envs, processEnv, DOTENV_KEY)
     this.overload = overload
+    this.ignore = ignore
     this.DOTENV_KEY = DOTENV_KEY
     this.processEnv = processEnv
 

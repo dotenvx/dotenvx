@@ -60,6 +60,7 @@ program.command('run')
   .option('-o, --overload', 'override existing env variables')
   .option('--strict', 'process.exit(1) on any errors (default: false)', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\'])')
+  .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .action(function (...args) {
     this.envs = envs
     runAction.apply(this, args)

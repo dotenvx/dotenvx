@@ -18,10 +18,10 @@ t.test('#run (missing key returns the entire processEnv as object)', ct => {
 t.test('#run (all object) with preset process.env', ct => {
   process.env.PRESET_ENV_EXAMPLE = 'something/on/machine'
 
-  const { parsed } = new Get(null, [], false, '', true).run()
+  const { parsed } = new Get(null, [], false, [], '', true).run()
   ct.same(parsed, { PRESET_ENV_EXAMPLE: 'something/on/machine' })
 
-  const result = new Get(null, [], false, '', false).run()
+  const result = new Get(null, [], false, [], '', false).run()
   ct.same(result.parsed, {})
 
   ct.end()

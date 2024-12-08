@@ -28,6 +28,9 @@ const config = function (options = {}) {
   // overload
   const overload = options.overload || options.override
 
+  // ignore
+  const ignore = options.ignore || []
+
   // strict
   const strict = options.strict
 
@@ -67,7 +70,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, DOTENV_KEY, processEnv).run()
+    } = new Run(envs, overload, ignore, DOTENV_KEY, processEnv).run()
 
     let lastError
     /** @type {Record<string, string>} */
