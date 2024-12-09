@@ -15,7 +15,7 @@ class Errors {
   missingEnvFile () {
     const code = 'MISSING_ENV_FILE'
     const message = `[${code}] missing ${this.envFilepath} file (${this.filepath})`
-    const help = `[${code}] ? add one with [echo "HELLO=World" > ${this.envFilepath}]`
+    const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/484`
 
     const e = new Error(message)
     e.code = code

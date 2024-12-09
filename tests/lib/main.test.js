@@ -8,8 +8,6 @@ const Run = require('../../src/lib/services/run')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
 
-const { logger } = require('../../src/shared/logger')
-
 t.beforeEach((ct) => {
   sinon.restore()
   process.env = {}
@@ -43,7 +41,6 @@ t.test('config with convention - calls Run.run with proper envs', ct => {
 
 t.test('config with Run.run errors', ct => {
   const loggerErrorStub = sinon.stub(console, 'error')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   const error = new Error('some error')
   error.help = 'some help'
@@ -55,11 +52,31 @@ t.test('config with Run.run errors', ct => {
 
   t.ok(stub.called, 'new Run().run() called')
   ct.ok(loggerErrorStub.calledWith('some error'), 'console.error')
-  ct.ok(loggerHelpStub.calledWith('some help'), 'logger.help')
+  ct.ok(loggerErrorStub.calledWith('some help'), 'logger.help')
 
   stub.restore()
   loggerErrorStub.restore()
-  loggerHelpStub.restore()
+
+  ct.end()
+})
+
+t.test('config with Run.run errors and ignore', ct => {
+  const loggerErrorStub = sinon.stub(console, 'error')
+
+  const error = new Error('some error')
+  error.code = 'SOME_ERROR'
+  error.help = 'some help'
+  const errors = [error]
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.config({ ignore: ['SOME_ERROR'] })
+
+  t.ok(stub.called, 'new Run().run() called')
+  ct.ok(loggerErrorStub.notCalled, 'console.error')
+
+  stub.restore()
+  loggerErrorStub.restore()
 
   ct.end()
 })

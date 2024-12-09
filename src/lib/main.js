@@ -28,6 +28,9 @@ const config = function (options = {}) {
   // overload
   const overload = options.overload || options.override
 
+  // ignore
+  const ignore = options.ignore || []
+
   // strict
   const strict = options.strict
 
@@ -86,19 +89,23 @@ const config = function (options = {}) {
       for (const error of processedEnv.errors || []) {
         if (strict) throw error // throw immediately if strict
 
+        if (ignore.includes(error.code)) {
+          continue // ignore error
+        }
+
         lastError = error // surface later in { error }
 
         if (error.code === 'MISSING_ENV_FILE') {
           if (!options.convention) { // do not output error for conventions (too noisy)
             console.error(error.message)
             if (error.help) {
-              logger.help(error.help)
+              console.error(error.help)
             }
           }
         } else {
           console.error(error.message)
           if (error.help) {
-            logger.help(error.help)
+            console.error(error.help)
           }
         }
       }
