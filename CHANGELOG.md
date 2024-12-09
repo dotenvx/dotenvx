@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.28.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.29.0...main)
+
+## [1.29.0](https://github.com/dotenvx/dotenvx/compare/v1.28.0...v1.29.0)
+
+### Added
+
+* add `--ignore` flag to suppress specified errors. example: `dotenvx run --ignore=MISSING_ENV_FILE` ([#485](https://github.com/dotenvx/dotenvx/pull/485))
 
 ## [1.28.0](https://github.com/dotenvx/dotenvx/compare/v1.27.0...v1.28.0)
 
