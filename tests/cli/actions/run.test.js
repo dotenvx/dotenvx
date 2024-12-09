@@ -474,7 +474,7 @@ t.test('run - MISSING_ENV_FILE --ignore flag', async ct => {
   error.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
   const optsStub = sinon.stub().returns({ ignore: ['MISSING_ENV_FILE'] })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
-  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run','--ignore=MISSING_ENV_FILE', '--', 'echo', ''])
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--ignore=MISSING_ENV_FILE', '--', 'echo', ''])
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [{

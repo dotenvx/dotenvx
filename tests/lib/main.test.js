@@ -8,8 +8,6 @@ const Run = require('../../src/lib/services/run')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
 
-const { logger } = require('../../src/shared/logger')
-
 t.beforeEach((ct) => {
   sinon.restore()
   process.env = {}
