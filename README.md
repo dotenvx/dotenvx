@@ -984,6 +984,18 @@ More examples
   This can be useful in `ci` scripts where you want to fail the ci if your `.env` file could not be decrypted at runtime.
 
   </details>
+* <details><summary>`run --ignore`</summary><br>
+
+  Ignore errors like `MISSING_ENV_FILE`.
+
+  ```sh
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ dotenvx run -f .env.missing --ignore=MISSING_ENV_FILE -- node index.js
+  ...
+  ```
+
+  </details>
 * <details><summary>`run --convention=nextjs`</summary><br>
 
   Load envs using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:
@@ -1867,6 +1879,29 @@ More examples
   ```sh
   $ node index.js
   Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
+  ```
+
+  </details>
+* <details><summary>`config(ignore:)` - ignore</summary><br>
+
+  Use `ignore` to suppress specific errors like `MISSING_ENV_FILE`.
+
+  ```ini
+  # .env
+  HELLO="World"
+  ```
+
+  ```js
+  // index.js
+  require('@dotenvx/dotenvx').config({path: ['.env.missing', '.env'], ignore: ['MISSING_ENV_FILE']})
+
+  console.log(`Hello ${process.env.HELLO}`)
+  ```
+
+  ```sh
+  $ node index.js
+  [dotenvx@1.24.5] injecting env (1) from .env.local, .env
+  Hello World
   ```
 
   </details>
