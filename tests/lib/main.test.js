@@ -62,6 +62,27 @@ t.test('config with Run.run errors', ct => {
   ct.end()
 })
 
+t.test('config with Run.run errors and ignore', ct => {
+  const loggerErrorStub = sinon.stub(console, 'error')
+
+  const error = new Error('some error')
+  error.code = 'SOME_ERROR'
+  error.help = 'some help'
+  const errors = [error]
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.config({ ignore: ['SOME_ERROR'] })
+
+  t.ok(stub.called, 'new Run().run() called')
+  ct.ok(loggerErrorStub.notCalled, 'console.error')
+
+  stub.restore()
+  loggerErrorStub.restore()
+
+  ct.end()
+})
+
 t.test('config with Run.run processedEnv with undefined processedEnv.errors', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [{}], readableFilepaths: [], uniqueInjectedKeys: [] })

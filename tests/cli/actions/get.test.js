@@ -144,6 +144,7 @@ t.test('get KEY (not found)', ct => {
 
   const stub = sinon.stub(Get.prototype, 'run')
   const error = new Error('MISSING_KEY')
+  error.code = 'MISSING_KEY'
   error.help = 'some help'
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
 
@@ -168,6 +169,7 @@ t.test('get KEY (not found) --strict', ct => {
 
   const stub = sinon.stub(Get.prototype, 'run')
   const error = new Error('MISSING_KEY')
+  error.code = 'MISSING_KEY'
   error.help = 'some help'
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
 
@@ -182,6 +184,31 @@ t.test('get KEY (not found) --strict', ct => {
   t.equal(stdout, '') // send empty string if key's value undefined
   t.ok(stderr.includes('MISSING_KEY'), 'stderr contains MISSING_KEY')
   t.ok(stderr.includes('some help'), 'stderr contains some help')
+
+  ct.end()
+})
+
+t.test('get KEY (not found) --ignore', ct => {
+  const optsStub = sinon.stub().returns({ ignore: ['MISSING_KEY'] })
+  const fakeContext = { opts: optsStub }
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('MISSING_KEY')
+  error.code = 'MISSING_KEY'
+  error.help = 'some help'
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'NOTFOUND')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.notOk(processExitStub.called)
+  t.equal(stdout, '\n') // send empty string if key's value undefined
+  console.log('stderr', stderr)
+  t.ok(!stderr.includes('MISSING_KEY'), 'stderr does not contain MISSING_KEY')
 
   ct.end()
 })
