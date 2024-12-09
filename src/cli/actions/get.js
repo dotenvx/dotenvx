@@ -27,6 +27,10 @@ function get (key) {
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict
 
+      if (options.ignore.includes(error.code)) {
+        continue // ignore error
+      }
+
       console.error(error.message)
       if (error.help) {
         console.error(error.help)
