@@ -13,6 +13,8 @@ function get (key) {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  const ignore = options.ignore || []
+
   let envs = []
   // handle shorthand conventions - like --convention=nextjs
   if (options.convention) {
@@ -27,7 +29,7 @@ function get (key) {
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict
 
-      if (options.ignore.includes(error.code)) {
+      if (ignore.includes(error.code)) {
         continue // ignore error
       }
 
