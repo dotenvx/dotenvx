@@ -101,7 +101,11 @@ class Sets {
         } else {
           // .env.keys
           let keysSrc = ''
-          const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          if (this.envKeysFilepath) {
+            envKeysFilepath = path.resolve(this.envKeysFilepath)
+          }
+
           if (fsx.existsSync(envKeysFilepath)) {
             keysSrc = fsx.readFileX(envKeysFilepath)
           }
@@ -150,7 +154,7 @@ class Sets {
           fsx.writeFileX(envKeysFilepath, keysSrc)
 
           row.privateKeyAdded = true
-          row.envKeysFilepath = path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
+          row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
         }
 
         row.publicKey = publicKey
