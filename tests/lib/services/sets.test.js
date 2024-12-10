@@ -239,6 +239,7 @@ t.test('#run (finds .env file) with --encrypt', ct => {
   const publicKey = row.publicKey
   const privateKey = row.privateKey
   const privateKeyAdded = row.privateKeyAdded
+  const envKeysFilepath = row.envKeysFilepath
   const privateKeyName = row.privateKeyName
   const encryptedValue = row.encryptedValue
   const envSrc = [
@@ -265,6 +266,7 @@ t.test('#run (finds .env file) with --encrypt', ct => {
     encryptedValue,
     publicKey,
     privateKey,
+    envKeysFilepath,
     privateKeyAdded,
     privateKeyName,
     envSrc
@@ -500,6 +502,7 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
     changed: true,
     originalValue: null,
     privateKeyAdded: true,
+    envKeysFilepath: 'tests/monorepo/apps/encrypted/.env.keys',
     publicKey,
     privateKey,
     encryptedValue,
@@ -559,6 +562,7 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
     changed: true,
     originalValue: null,
     privateKeyAdded: true,
+    envKeysFilepath: 'tests/monorepo/apps/encrypted/.env.keys',
     publicKey,
     privateKey,
     encryptedValue,
@@ -613,6 +617,7 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
     type: 'envFile',
     filepath: path.resolve('tests/monorepo/apps/shebang/.env'),
     envFilepath: 'tests/monorepo/apps/shebang/.env',
+    envKeysFilepath: 'tests/monorepo/apps/shebang/.env.keys',
     changed: true,
     originalValue: 'shebang',
     privateKeyAdded: true,

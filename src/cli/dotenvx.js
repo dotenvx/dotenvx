@@ -97,6 +97,7 @@ program.command('set')
   .argument('KEY', 'KEY')
   .argument('value', 'value')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-c, --encrypt', 'encrypt value (default: true)', true)
   .option('-p, --plain', 'store value as plain text', false)
   .action(function (...args) {

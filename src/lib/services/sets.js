@@ -19,11 +19,12 @@ const truncate = require('./../helpers/truncate')
 const isEncrypted = require('./../helpers/isEncrypted')
 
 class Sets {
-  constructor (key, value, envs = [], encrypt = true) {
+  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.value = value
     this.encrypt = encrypt
+    this.envKeysFilepath = envKeysFilepath
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -149,6 +150,7 @@ class Sets {
           fsx.writeFileX(envKeysFilepath, keysSrc)
 
           row.privateKeyAdded = true
+          row.envKeysFilepath = path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
         }
 
         row.publicKey = publicKey
