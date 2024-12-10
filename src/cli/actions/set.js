@@ -21,12 +21,13 @@ function set (key, value) {
 
   try {
     const envs = this.envs
+    const envKeysFilepath = options.envKeysFile
 
     const {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = new Sets(key, value, envs, encrypt).run()
+    } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
 
     let withEncryption = ''
 
@@ -65,7 +66,7 @@ function set (key, value) {
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.privateKeyAdded) {
-        logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
+        logger.success(`✔ key added to ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName})`)
 
         if (!isIgnoringDotenvKeys()) {
           logger.help('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')

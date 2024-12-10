@@ -19,11 +19,12 @@ const truncate = require('./../helpers/truncate')
 const isEncrypted = require('./../helpers/isEncrypted')
 
 class Sets {
-  constructor (key, value, envs = [], encrypt = true) {
+  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.value = value
     this.encrypt = encrypt
+    this.envKeysFilepath = envKeysFilepath
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -100,7 +101,11 @@ class Sets {
         } else {
           // .env.keys
           let keysSrc = ''
-          const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          if (this.envKeysFilepath) {
+            envKeysFilepath = path.resolve(this.envKeysFilepath)
+          }
+
           if (fsx.existsSync(envKeysFilepath)) {
             keysSrc = fsx.readFileX(envKeysFilepath)
           }
@@ -149,6 +154,7 @@ class Sets {
           fsx.writeFileX(envKeysFilepath, keysSrc)
 
           row.privateKeyAdded = true
+          row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
         }
 
         row.publicKey = publicKey
