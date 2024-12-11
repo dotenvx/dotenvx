@@ -583,7 +583,7 @@ More examples
   </details>
 * <details><summary>`--log-level` flag</summary><br>
 
-  Set `--log-level` to whatever you wish. For example, to supress warnings (risky), set log level to `error`:
+  Set `--log-level` to whatever you wish. For example, to suppress warnings (risky), set log level to `error`:
 
   ```sh
   $ echo "HELLO=production" > .env.production
@@ -956,7 +956,7 @@ More examples
   </details>
 * <details><summary>`run --log-level`</summary><br>
 
-  Set `--log-level` to whatever you wish. For example, to supress warnings (risky), set log level to `error`:
+  Set `--log-level` to whatever you wish. For example, to suppress warnings (risky), set log level to `error`:
 
   ```sh
   $ echo "HELLO=production" > .env.production
