@@ -405,12 +405,7 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
 
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    const { key } = this
-    // Custom logic depending on constructor arguments
-    if (key === 'DOTENV_PUBLIC_KEY') {
-      return '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba'
-    }
-    return null
+    return { 'DOTENV_PUBLIC_KEY': '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
   })
   sandbox.stub(ProKeypair.prototype, 'run').callsFake(function () {
     return {}
@@ -468,7 +463,7 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
   const ProKeypair = require('../../../src/lib/helpers/proKeypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return null
+    return {}
   })
   sandbox.stub(ProKeypair.prototype, 'run').callsFake(function () {
     return {}
@@ -531,7 +526,7 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
   const ProKeypair = require('../../../src/lib/helpers/proKeypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return null
+    return {}
   })
   sandbox.stub(ProKeypair.prototype, 'run').callsFake(function () {
     return {}
@@ -594,7 +589,7 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return null
+    return {}
   })
 
   const envFile = 'tests/monorepo/apps/shebang/.env'
@@ -651,12 +646,7 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
   const Keypair = require('../../../src/lib/services/keypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    const { key } = this
-    // Custom logic depending on constructor arguments
-    if (key === 'DOTENV_PUBLIC_KEY') {
-      return '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba'
-    }
-    return null
+    return { 'DOTENV_PUBLIC_KEY': '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
   })
 
   const envFile = 'tests/monorepo/apps/unencrypted/.env'

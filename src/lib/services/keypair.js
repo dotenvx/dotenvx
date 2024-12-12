@@ -4,9 +4,8 @@ const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
 
 class Keypair {
-  constructor (envFile = '.env', key = undefined) {
+  constructor (envFile = '.env') {
     this.envFile = envFile
-    this.key = key
   }
 
   run () {
@@ -26,11 +25,7 @@ class Keypair {
       out[privateKeyName] = privateKeyValue
     }
 
-    if (this.key) {
-      return out[this.key]
-    } else {
-      return out
-    }
+    return out
   }
 
   _envFilepaths () {

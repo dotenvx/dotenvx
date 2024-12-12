@@ -191,7 +191,8 @@ const genexample = function (directory, envFile) {
 
 /** @type {import('./main').keypair} */
 const keypair = function (envFile, key) {
-  return new Keypair(envFile, key).run()
+  const keypairs = new Keypair(envFile).run()
+  return keypairs[key]
 }
 
 module.exports = {
