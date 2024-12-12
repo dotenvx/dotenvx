@@ -1,6 +1,9 @@
 const path = require('path')
 const childProcess = require('child_process')
 
+const guessPrivateKeyName = require('./guessPrivateKeyName')
+const guessPublicKeyName = require('./guessPublicKeyName')
+
 class ProKeypair {
   constructor (envFilepath) {
     this.envFilepath = envFilepath
@@ -23,7 +26,12 @@ class ProKeypair {
 
         result = JSON.parse(output)
       } catch (_e) {
-        // do nothing
+        const privateKeyName = guessPrivateKeyName(this.envFilepath)
+        const publicKeyName = guessPublicKeyName(this.envFilepath)
+
+        // match format of dotenvx-pro
+        result[privateKeyName] = null
+        result[publicKeyName] = null
       }
     }
 
