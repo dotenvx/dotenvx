@@ -10,7 +10,7 @@ function proKeypair (envFilepath) {
     const dotenvxProPath = require.resolve('@dotenvx/dotenvx-pro', { paths: [projectRoot] })
     const { keypair } = require(dotenvxProPath)
 
-    result =  keypair(envFilepath)
+    result = keypair(envFilepath)
   } catch (_e) {
     try {
       // if installed as binary cli

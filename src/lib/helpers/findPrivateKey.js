@@ -8,8 +8,7 @@ const Keypair = require('./../services/keypair')
 function findPrivateKey (envFilepath) {
   const privateKeyName = guessPrivateKeyName(envFilepath)
   const proKeypairs = proKeypair(envFilepath)
-
-  return proKeypair[privateKeyName] || new Keypair(envFilepath, privateKeyName).run()
+  return proKeypairs[privateKeyName] || new Keypair(envFilepath, privateKeyName).run()
 }
 
 module.exports = findPrivateKey
