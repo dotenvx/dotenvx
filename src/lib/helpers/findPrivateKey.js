@@ -1,13 +1,13 @@
 // helpers
 const guessPrivateKeyName = require('./guessPrivateKeyName')
-const proKeypair = require('./proKeypair')
+const ProKeypair = require('./proKeypair')
 
 // services
 const Keypair = require('./../services/keypair')
 
 function findPrivateKey (envFilepath) {
   const privateKeyName = guessPrivateKeyName(envFilepath)
-  const proKeypairs = proKeypair(envFilepath)
+  const proKeypairs = new ProKeypair(envFilepath).run()
   return proKeypairs[privateKeyName] || new Keypair(envFilepath, privateKeyName).run()
 }
 
