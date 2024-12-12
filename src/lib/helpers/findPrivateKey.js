@@ -10,7 +10,7 @@ function findPrivateKey (envFilepath, envKeysFilepath = null) {
   const privateKeyName = guessPrivateKeyName(envFilepath)
 
   const proKeypairs = new ProKeypair(envFilepath).run() // TODO: implement custom envKeysFilepath
-  const keypairs = new Keypair(envFilepath).run()
+  const keypairs = new Keypair(envFilepath, envKeysFilepath).run()
 
   return proKeypairs[privateKeyName] || keypairs[privateKeyName]
 }

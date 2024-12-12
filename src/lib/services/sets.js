@@ -80,8 +80,6 @@ class Sets {
         const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
         const existingPublicKey = findPublicKey(envFilepath)
 
-        console.log('existingPrivateKey', existingPrivateKey)
-
         if (existingPrivateKey) {
           const kp = keypair(existingPrivateKey)
           publicKey = kp.publicKey
@@ -166,9 +164,6 @@ class Sets {
       }
 
       const goingFromPlainTextToEncrypted = wasPlainText && this.encrypt
-
-      console.log('original', this.value, row.originalValue)
-
       const valueChanged = this.value !== row.originalValue
       if (goingFromPlainTextToEncrypted || valueChanged) {
         row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
