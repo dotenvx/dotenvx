@@ -14,7 +14,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 const findPrivateKey = require('./../helpers/findPrivateKey')
 const findPublicKey = require('./../helpers/findPublicKey')
-const keyPair = require('./../helpers/keyPair')
+const keypair = require('./../helpers/keypair')
 const truncate = require('./../helpers/truncate')
 const isEncrypted = require('./../helpers/isEncrypted')
 
@@ -81,7 +81,7 @@ class Sets {
         const existingPublicKey = findPublicKey(envFilepath)
 
         if (existingPrivateKey) {
-          const kp = keyPair(existingPrivateKey)
+          const kp = keypair(existingPrivateKey)
           publicKey = kp.publicKey
           privateKey = kp.privateKey
 
@@ -118,7 +118,7 @@ class Sets {
             envSrc = remainingLines.join('\n')
           }
 
-          const kp = keyPair() // generates a fresh keypair in memory
+          const kp = keypair() // generates a fresh keypair in memory
           publicKey = kp.publicKey
           privateKey = kp.privateKey
 
