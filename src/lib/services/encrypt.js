@@ -20,10 +20,11 @@ const truncate = require('./../helpers/truncate')
 const isPublicKey = require('./../helpers/isPublicKey')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = []) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
+    this.envKeysFilepath = envKeysFilepath
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -75,7 +76,7 @@ class Encrypt {
 
       const publicKeyName = guessPublicKeyName(envFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
-      const existingPrivateKey = findPrivateKey(envFilepath)
+      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
       const existingPublicKey = findPublicKey(envFilepath)
 
       if (existingPrivateKey) {
@@ -95,7 +96,11 @@ class Encrypt {
       } else {
         // .env.keys
         let keysSrc = ''
-        const envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+        let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+        if (this.envKeysFilepath) {
+          envKeysFilepath = path.resolve(this.envKeysFilepath)
+        }
+
         if (fsx.existsSync(envKeysFilepath)) {
           keysSrc = fsx.readFileX(envKeysFilepath)
         }
@@ -144,6 +149,7 @@ class Encrypt {
         fsx.writeFileX(envKeysFilepath, keysSrc)
 
         row.privateKeyAdded = true
+        row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
       }
 
       row.publicKey = publicKey
