@@ -405,7 +405,7 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
 
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return { 'DOTENV_PUBLIC_KEY': '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
+    return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
   })
   sandbox.stub(ProKeypair.prototype, 'run').callsFake(function () {
     return {}
@@ -646,7 +646,7 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
   const Keypair = require('../../../src/lib/services/keypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return { 'DOTENV_PUBLIC_KEY': '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
+    return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
   })
 
   const envFile = 'tests/monorepo/apps/unencrypted/.env'
