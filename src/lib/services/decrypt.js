@@ -15,10 +15,11 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Decrypt {
-  constructor (envs = [], key = [], excludeKey = []) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
+    this.envKeysFilepath = envKeysFilepath
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -64,7 +65,7 @@ class Decrypt {
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenv.parse(envSrc)
 
-      const privateKey = findPrivateKey(envFilepath)
+      const privateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
 
       row.privateKey = privateKey

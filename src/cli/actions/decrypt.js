@@ -17,7 +17,7 @@ function decrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Decrypt(envs, options.key, options.excludeKey).run()
+    } = new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
@@ -42,7 +42,7 @@ function decrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Decrypt(envs, options.key, options.excludeKey).run()
+      } = new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
