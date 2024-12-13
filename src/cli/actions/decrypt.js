@@ -23,6 +23,9 @@ function decrypt () {
       if (processedEnv.error) {
         errorCount += 1
         console.error(processedEnv.error.message)
+        if (processedEnv.error.help) {
+          console.error(processedEnv.error.help)
+        }
       } else {
         console.log(processedEnv.envSrc)
       }
@@ -52,6 +55,9 @@ function decrypt () {
             logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx decrypt]`)
           } else {
             console.error(processedEnv.error.message)
+            if (processedEnv.error.help) {
+              console.error(processedEnv.error.help)
+            }
           }
         } else if (processedEnv.changed) {
           fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
