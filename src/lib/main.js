@@ -161,24 +161,21 @@ const parse = function (src, options = {}) {
 
 /* @type {import('./main').set} */
 const set = function (key, value, options = {}) {
-  // // build envs using user set option.path
-  // const optionPaths = dotenvOptionPaths(options) // [ '.env' ]
+  // encrypt
+  let encrypt = true
+  if (options.plain) {
+    encrypt = false
+  } else if (options.encrypt === false) {
+    encrypt = false
+  }
 
-  // let envs = []
-  // // handle shorthand conventions - like --convention=nextjs
-  // if (options.convention) {
-  //   envs = conventions(options.convention).concat(envs)
-  // }
+  // envKeysFile
+  const envKeysFile = options.envKeysFile
 
-  // for (const optionPath of optionPaths) {
-  //   envs.push({ type: 'envFile', value: optionPath })
-  // }
+  // envs
+  const envs = buildEnvs(options)
 
-  // // envFile
-  // // envKeysFile
-  // // encrypt
-  // // plain
-  // return new Sets(key, value, envs).run()
+  return new Sets(key, value, envs, encrypt, envKeysFile).run()
 }
 
 /** @type {import('./main').ls} */
@@ -206,6 +203,7 @@ module.exports = {
   config,
   parse,
   // actions related
+  set,
   ls,
   keypair,
   genexample,
