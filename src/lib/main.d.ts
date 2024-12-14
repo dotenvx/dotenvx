@@ -41,7 +41,7 @@ export interface DotenvParseOutput {
  *
  * @see https://dotenvx.com/docs
  * @param src - contents to be parsed. example: `'DB_HOST=localhost'`
- * @param options - additional options. example: `{ prcoessEnv: {}, privateKey: '<privateKey>', overload: false }`
+ * @param options - additional options. example: `{ processEnv: {}, privateKey: '<privateKey>', overload: false }`
  * @returns an object with keys and values based on `src`. example: `{ DB_HOST : 'localhost' }`
  */
 export function parse<T extends DotenvParseOutput = DotenvParseOutput>(
@@ -179,6 +179,59 @@ export interface DotenvPopulateInput {
  *
  */
 export function config(options?: DotenvConfigOptions): DotenvConfigOutput;
+
+export interface SetOptions {
+  /**
+   * Specify a custom path if your file containing environment variables is located elsewhere.
+   * Can also be an array of strings, specifying multiple paths.
+   *
+   * @default require('path').resolve(process.cwd(), '.env')
+   * @example require('@dotenvx/dotenvx').set(key, value, { path: '/custom/path/to/.env' })
+   * @example require('@dotenvx/dotenvx').set(key, value, { path: ['/path/to/first.env', '/path/to/second.env'] })
+   */
+  path?: string | string[] | URL;
+
+  /**
+   * Customize the path to your .env.keys file. This is useful with monorepos.
+   * @default []
+   * @example require('@dotenvx/dotenvx').config(key, value, { envKeysFile: '../../.env.keys'} })
+   */
+  envKeysFile?: string;
+
+  /**
+   * Set a .env convention (available conventions: 'nextjs')
+   */
+  convention?: string;
+}
+
+export type SetOutput = {
+  key: string;
+  value: string;
+  filepath: string;
+  envFilepath: string;
+  envSrc: string;
+  changed: boolean;
+  encryptedValue?: string;
+  publicKey?: string;
+  privateKey?: string;
+  privateKeyAdded?: boolean;
+  privateKeyName?: string;
+  error?: Error;
+};
+
+/**
+ * Set a single environment variable.
+ *
+ * @see https://dotenvx.com/docs
+ * @param key - KEY 
+ * @param value - value
+ * @param options - additional options. example: `{ encrypt: false }`
+ */
+export function set(
+  key: string,
+  value: string,
+  options?: SetOptions
+): SetOutput;
 
 /**
  * List all env files in the current working directory
