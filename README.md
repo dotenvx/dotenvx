@@ -1040,6 +1040,20 @@ More examples
   ```
 
   </details>
+* <details><summary>`get KEY -fk`</summary><br>
+
+  Specify path to `.env.keys`. This is useful for monorepos.
+
+  ```sh
+  $ mkdir -p apps/app1
+  $ touch apps/app1/.env
+  $ dotenvx set HELLO world -fk .env.keys -f apps/app1/.env
+
+  $ dotenvx get HELLO -fk .env.keys -f apps/app1/.env
+  world
+  ```
+
+  </details>
 * <details><summary>`get KEY --env`</summary><br>
 
   Return a single environment variable's value from a `--env` string.
@@ -1215,7 +1229,7 @@ More examples
   </details>
 * <details><summary>`set KEY value -fk`</summary><br>
 
-  Specify the path to `.env.keys`. This is useful for monorepos.
+  Specify path to `.env.keys`. This is useful for monorepos.
 
   ```sh
   $ mkdir -p apps/app1
@@ -1315,7 +1329,7 @@ More examples
   $ echo "HELLO=World" > apps/app1/.env
 
   $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
-  encrypted (apps/app1/.env)
+  ✔ encrypted (apps/app1/.env)
   ```
 
   Put it to use.
@@ -1426,6 +1440,21 @@ More examples
   ```
 
   </details>
+* <details><summary>`decrypt -fk`</summary><br>
+
+  Specify path to `.env.keys`. This is useful for monorepos.
+
+  ```sh
+  $ mkdir -p apps/app1
+  $ echo "HELLO=World" > apps/app1/.env
+
+  $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
+  ✔ encrypted (apps/app1/.env)
+  $ dotenvx decrypt -fk .env.keys -f apps/app1/.env
+  ✔ decrypted (apps/app1/.env)
+  ```
+
+  </details>
 * <details><summary>`decrypt -k`</summary><br>
 
   Decrypt the contents of a specified key inside an encrypted `.env` file.
@@ -1507,7 +1536,7 @@ More examples
   ```
 
   </details>
-* <details><summary>`keypair -f .env.production`</summary><br>
+* <details><summary>`keypair -f`</summary><br>
 
   Print public/private keys for `.env.production` file.
 
@@ -1517,6 +1546,20 @@ More examples
 
   $ dotenvx keypair -f .env.production
   {"DOTENV_PUBLIC_KEY_PRODUCTION":"<publicKey>","DOTENV_PRIVATE_KEY_PRODUCTION":"<privateKey>"}
+  ```
+
+  </details>
+* <details><summary>`keypair -fk`</summary><br>
+
+  Specify path to `.env.keys`. This is useful for printing public/private keys for monorepos.
+
+  ```sh
+  $ mkdir -p apps/app1
+  $ echo "HELLO=World" > apps/app1/.env
+  $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
+
+  $ dotenvx keypair -fk .env.keys -f apps/app1/.env
+  {"DOTENV_PUBLIC_KEY":"<publicKey>","DOTENV_PRIVATE_KEY":"<privateKey>"}
   ```
 
   </details>
