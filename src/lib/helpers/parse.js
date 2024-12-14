@@ -136,10 +136,9 @@ class Parse {
   eval (value) {
     // Match everything between the outermost $() using a regex with non-capturing groups
     const matches = value.match(/\$\(([^)]+(?:\)[^(]*)*)\)/g) || []
-
-    return matches.reduce(function (newValue, match) {
+    return matches.reduce((newValue, match) => {
       const command = match.slice(2, -1) // Extract command by removing $() wrapper
-      const result = chomp(execSync(command).toString()) // execute command
+      const result = chomp(execSync(command, { env: { ...this.processEnv, ...this.runningParsed } }).toString()) // execute command (including runningParsed)
       return newValue.replace(match, result) // Replace match with result
     }, value)
   }

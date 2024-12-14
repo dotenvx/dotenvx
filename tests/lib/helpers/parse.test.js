@@ -816,3 +816,19 @@ TABS_SINGLE='hi\\tfriend'
 
   ct.end()
 })
+
+t.test('#run - combine complex expansion and evaluation from same .env file - https://github.com/dotenvx/dotenvx/issues/488', ct => {
+  src = `# .env
+FILENAME=$(echo tests/monorepo/apps/unencrypted/.env)
+CONTENTS=$(cat $\{FILENAME})
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    FILENAME: 'tests/monorepo/apps/unencrypted/.env',
+    CONTENTS: 'HELLO="unencrypted"'
+  })
+
+  ct.end()
+})
