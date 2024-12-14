@@ -83,12 +83,34 @@ export interface DotenvConfigOptions {
   override?: boolean;
 
   /**
+   * Throw immediately if an error is encountered - like a missing .env file.
+   * @default false
+   * @example require('@dotenvx/dotenvx').config({ strict: true })
+   */
+  strict?: boolean;
+
+  /**
+   * Suppress specific errors like MISSING_ENV_FILE. The error keys can be found
+   * in src/lib/helpers/errors.js
+   * @default []
+   * @example require('@dotenvx/dotenvx').config({ ignore: ['MISSING_ENV_FILE'] })
+   */
+  ignore?: string[];
+
+  /**
    * Specify an object to write your secrets to. Defaults to process.env environment variables.
    *
    * @default process.env
    * @example const processEnv = {}; require('@dotenvx/dotenvx').config({ processEnv: processEnv })
    */
   processEnv?: DotenvPopulateInput;
+
+  /**
+   * Customize the path to your .env.keys file. This is useful with monorepos.
+   * @default []
+   * @example require('@dotenvx/dotenvx').config({ envKeysFile: '../../.env.keys'} })
+   */
+  envKeysFile?: string;
 
   /**
    * Pass the DOTENV_KEY directly to config options. Defaults to looking for process.env.DOTENV_KEY environment variable. Note this only applies to decrypting .env.vault files. If passed as null or undefined, or not passed at all, dotenv falls back to its traditional job of parsing a .env file.
