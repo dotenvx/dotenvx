@@ -5,6 +5,7 @@ const main = require('../../src/lib/main')
 
 const Ls = require('../../src/lib/services/ls')
 const Run = require('../../src/lib/services/run')
+const Sets = require('../../src/lib/services/sets')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
 
@@ -323,6 +324,63 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
   } catch (error) {
     ct.equal(error.code, 'MISSING_ENV_FILE')
   }
+
+  ct.end()
+})
+
+t.test('set calls Sets.run', ct => {
+  const stub = sinon.stub(Sets.prototype, 'run')
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.set('KEY', 'value')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.equal(stub.thisValues[0].encrypt, true, 'Sets was called with encrypt true')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run with encrypt false', ct => {
+  const stub = sinon.stub(Sets.prototype, 'run')
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.set('KEY', 'value', { encrypt: false })
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.equal(stub.thisValues[0].encrypt, false, 'Sets was called with encrypt false')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run with plain true', ct => {
+  const stub = sinon.stub(Sets.prototype, 'run')
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.set('KEY', 'value', { plain: true })
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.equal(stub.thisValues[0].encrypt, false, 'Sets was called with encrypt false')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run with custom envKeysFile', ct => {
+  const stub = sinon.stub(Sets.prototype, 'run')
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.set('KEY', 'value', { envKeysFile: 'path/to/.env.keys' })
+
+  t.ok(stub.called, 'new Sets().run() called')
+
+  t.equal(stub.thisValues[0].envKeysFilepath, 'path/to/.env.keys', 'Sets was called with custom .env.keys path')
+
+  stub.restore()
 
   ct.end()
 })

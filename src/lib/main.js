@@ -8,14 +8,13 @@ const { getColor, bold } = require('./../shared/colors')
 // services
 const Ls = require('./services/ls')
 const Run = require('./services/run')
+const Sets = require('./services/sets')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
 
 // helpers
-const conventions = require('./helpers/conventions')
-const dotenvOptionPaths = require('./helpers/dotenvOptionPaths')
+const buildEnvs = require('./helpers/buildEnvs')
 const Parse = require('./helpers/parse')
-const DeprecationNotice = require('./helpers/deprecationNotice')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -45,30 +44,8 @@ const config = function (options = {}) {
 
   if (options) setLogLevel(options)
 
-  // build envs using user set option.path
-  const optionPaths = dotenvOptionPaths(options) // [ '.env' ]
-
   try {
-    let envs = []
-    // handle shorthand conventions - like --convention=nextjs
-    if (options.convention) {
-      envs = conventions(options.convention).concat(envs)
-    }
-
-    new DeprecationNotice({ DOTENV_KEY }).dotenvKey() // DEPRECATION NOTICE
-
-    for (const optionPath of optionPaths) {
-      // if DOTENV_KEY is set then assume we are checking envVaultFile
-      if (DOTENV_KEY) {
-        envs.push({
-          type: 'envVaultFile',
-          value: path.join(path.dirname(optionPath), '.env.vault')
-        })
-      } else {
-        envs.push({ type: 'envFile', value: optionPath })
-      }
-    }
-
+    const envs = buildEnvs(options, DOTENV_KEY)
     const {
       processedEnvs,
       readableFilepaths,
@@ -182,6 +159,25 @@ const parse = function (src, options = {}) {
   return parsed
 }
 
+/* @type {import('./main').set} */
+const set = function (key, value, options = {}) {
+  // encrypt
+  let encrypt = true
+  if (options.plain) {
+    encrypt = false
+  } else if (options.encrypt === false) {
+    encrypt = false
+  }
+
+  // envKeysFile
+  const envKeysFile = options.envKeysFile
+
+  // envs
+  const envs = buildEnvs(options)
+
+  return new Sets(key, value, envs, encrypt, envKeysFile).run()
+}
+
 /** @type {import('./main').ls} */
 const ls = function (directory, envFile, excludeEnvFile) {
   return new Ls(directory, envFile, excludeEnvFile).run()
@@ -207,6 +203,7 @@ module.exports = {
   config,
   parse,
   // actions related
+  set,
   ls,
   keypair,
   genexample,
