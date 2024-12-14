@@ -1215,7 +1215,7 @@ More examples
   </details>
 * <details><summary>`set KEY value -fk`</summary><br>
 
-  Set a custom path to your .env.keys file. This is useful for monorepos.
+  Specify the path to `.env.keys`. This is useful for monorepos.
 
   ```sh
   $ mkdir -p apps/app1
@@ -1225,17 +1225,17 @@ More examples
   set HELLO with encryption (.env)
   ```
 
-  Then to use it.
+  Put it to use.
 
   ```sh
   $ dotenvx get -fk .env.keys -f apps/app1/.env
   ```
 
-  Or using a relative path.
+  Use it with a relative path.
 
   ```sh
   $ cd apps/app1
-  $ dotenvx run -fk ../../.env.keys -f .env
+  $ dotenvx get -fk ../../.env.keys -f .env
   ```
 
   </details>
@@ -1308,7 +1308,7 @@ More examples
   </details>
 * <details><summary>`encrypt -fk`</summary><br>
 
-  Set a custom path to your .env.keys file. This is useful for monorepos.
+  Specify path to `.env.keys`. This is useful for monorepos.
 
   ```sh
   $ mkdir -p apps/app1
@@ -1318,13 +1318,13 @@ More examples
   encrypted (apps/app1/.env)
   ```
 
-  Then to use it.
+  Put it to use.
 
   ```sh
   $ dotenvx run -fk .env.keys -f apps/app1/.env
   ```
 
-  Or using a relative path.
+  Use with a relative path.
 
   ```sh
   $ cd apps/app1
