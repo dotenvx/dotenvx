@@ -79,6 +79,12 @@ class Encrypt {
       const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
       const existingPublicKey = findPublicKey(envFilepath)
 
+      let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+      if (this.envKeysFilepath) {
+        envKeysFilepath = path.resolve(this.envKeysFilepath)
+      }
+      const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
+
       if (existingPrivateKey) {
         const kp = keypair(existingPrivateKey)
         publicKey = kp.publicKey
@@ -91,42 +97,36 @@ class Encrypt {
           error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(existingPublicKey)})`
           throw error
         }
+
+        // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
+        if (!existingPublicKey) {
+          const ps = this._preserveShebang(envSrc)
+          const firstLinePreserved = ps.firstLinePreserved
+          envSrc = ps.envSrc
+
+          const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+
+          envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
+        }
       } else if (existingPublicKey) {
         publicKey = existingPublicKey
       } else {
         // .env.keys
         let keysSrc = ''
-        let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-        if (this.envKeysFilepath) {
-          envKeysFilepath = path.resolve(this.envKeysFilepath)
-        }
 
         if (fsx.existsSync(envKeysFilepath)) {
           keysSrc = fsx.readFileX(envKeysFilepath)
         }
 
-        // preserve shebang
-        const [firstLine, ...remainingLines] = envSrc.split('\n')
-        let firstLinePreserved = ''
-        if (firstLine.startsWith('#!')) {
-          firstLinePreserved = firstLine + '\n'
-          envSrc = remainingLines.join('\n')
-        }
+        const ps = this._preserveShebang(envSrc)
+        const firstLinePreserved = ps.firstLinePreserved
+        envSrc = ps.envSrc
 
         const kp = keypair() // generates a fresh keypair in memory
         publicKey = kp.publicKey
         privateKey = kp.privateKey
 
-        // publicKey
-        const prependPublicKey = [
-          '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
-          '#/            public-key encryption for .env files          /',
-          '#/       [how it works](https://dotenvx.com/encryption)     /',
-          '#/----------------------------------------------------------/',
-          `${publicKeyName}="${publicKey}"`,
-          '',
-          `# ${filename}`
-        ].join('\n')
+        const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
         // privateKey
         const firstTimeKeysSrc = [
@@ -215,6 +215,34 @@ class Encrypt {
 
   _detectEncoding (filepath) {
     return detectEncoding(filepath)
+  }
+
+  _prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath = '') {
+    return [
+      '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+      '#/            public-key encryption for .env files          /',
+      '#/       [how it works](https://dotenvx.com/encryption)     /',
+      '#/----------------------------------------------------------/',
+      `${publicKeyName}="${publicKey}" # -fk ${relativeFilepath}`,
+      '',
+      `# ${filename}`
+    ].join('\n')
+  }
+
+  _preserveShebang (envSrc) {
+    // preserve shebang
+    const [firstLine, ...remainingLines] = envSrc.split('\n')
+    let firstLinePreserved = ''
+
+    if (firstLine.startsWith('#!')) {
+      firstLinePreserved = firstLine + '\n'
+      envSrc = remainingLines.join('\n')
+    }
+
+    return {
+      firstLinePreserved,
+      envSrc
+    }
   }
 }
 
