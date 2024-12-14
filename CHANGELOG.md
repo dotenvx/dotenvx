@@ -2,7 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.29.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.30.0...main)
+
+## [1.30.0](https://github.com/dotenvx/dotenvx/compare/v1.29.0...v1.30.0)
+
+### Added
+
+* add `-fk` (`--env-keys-file`) flag to customize the path to your `.env.keys` file with `run, get, set, encrypt, decrypt, and keypair` 🎉 ([#486](https://github.com/dotenvx/dotenvx/pull/486))
+
+This is great for monorepos. Maintain one `.env.keys` file across multiple monorepos `.env*` files.
+
+```sh
+$ dotenvx encrypt -fk .env.keys -f apps/backend/.env
+$ dotenvx encrypt -fk .env.keys -f apps/frontend/.env
+
+$ tree -a .
+├── .env.keys
+└── apps
+    ├── backend
+    │   └── .env
+    └── frontend
+        └── .env
+
+$ dotenvx get -fk .env.keys -f apps/backend/.env
+```
 
 ## [1.29.0](https://github.com/dotenvx/dotenvx/compare/v1.28.0...v1.29.0)
 
