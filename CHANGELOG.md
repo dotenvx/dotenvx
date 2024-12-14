@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.30.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.31.0...main)
+
+## [1.31.0](https://github.com/dotenvx/dotenvx/compare/v1.30.1...v1.31.0)
+
+### Added
+
+* expose `main.set` function ([#492](https://github.com/dotenvx/dotenvx/pull/492))
+* add missing types for `main.config` ([#491](https://github.com/dotenvx/dotenvx/pull/491))
 
 ## [1.30.1](https://github.com/dotenvx/dotenvx/compare/v1.30.0...v1.30.1)
 
