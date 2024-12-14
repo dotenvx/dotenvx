@@ -1015,6 +1015,19 @@ More examples
   (more conventions available upon request)
 
   </details>
+* <details><summary>`run -fk`</summary><br>
+
+  Specify path to `.env.keys`. This is useful with monorepos.
+
+  ```sh
+  $ mkdir -p apps/app1
+  $ touch apps/app1/.env
+  $ dotenvx set HELLO world -fk .env.keys -f apps/app1/.env
+
+  $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
+  ```
+
+  </details>
 * <details><summary>`get KEY`</summary><br>
 
   Return a single environment variable's value.
@@ -1042,7 +1055,7 @@ More examples
   </details>
 * <details><summary>`get KEY -fk`</summary><br>
 
-  Specify path to `.env.keys`. This is useful for monorepos.
+  Specify path to `.env.keys`. This is useful with monorepos.
 
   ```sh
   $ mkdir -p apps/app1
@@ -1229,7 +1242,7 @@ More examples
   </details>
 * <details><summary>`set KEY value -fk`</summary><br>
 
-  Specify path to `.env.keys`. This is useful for monorepos.
+  Specify path to `.env.keys`. This is useful with monorepos.
 
   ```sh
   $ mkdir -p apps/app1
@@ -1322,7 +1335,7 @@ More examples
   </details>
 * <details><summary>`encrypt -fk`</summary><br>
 
-  Specify path to `.env.keys`. This is useful for monorepos.
+  Specify path to `.env.keys`. This is useful with monorepos.
 
   ```sh
   $ mkdir -p apps/app1
@@ -1442,7 +1455,7 @@ More examples
   </details>
 * <details><summary>`decrypt -fk`</summary><br>
 
-  Specify path to `.env.keys`. This is useful for monorepos.
+  Specify path to `.env.keys`. This is useful with monorepos.
 
   ```sh
   $ mkdir -p apps/app1
@@ -1997,6 +2010,21 @@ More examples
   $ node index.js
   [dotenvx@1.24.5] injecting env (1) from .env.local, .env
   Hello World
+  ```
+
+  </details>
+* <details><summary>`config(envKeysFile:)` - envKeysFile</summary><br>
+
+  Use `envKeysFile` to customize the path to your `.env.keys` file. This is useful with monorepos.
+
+  ```ini
+  # .env
+  HELLO="World"
+  ```
+
+  ```js
+  // index.js
+  require('@dotenvx/dotenvx').config({envKeysFile: '../../.env.keys'})
   ```
 
   </details>
