@@ -218,12 +218,14 @@ class Encrypt {
   }
 
   _prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath = '') {
+    const comment = relativeFilepath === '.env.keys' ? '' : ` # ${relativeFilepath}`
+
     return [
       '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
       '#/            public-key encryption for .env files          /',
       '#/       [how it works](https://dotenvx.com/encryption)     /',
       '#/----------------------------------------------------------/',
-      `${publicKeyName}="${publicKey}" # -fk ${relativeFilepath}`,
+      `${publicKeyName}="${publicKey}"${comment}`,
       '',
       `# ${filename}`
     ].join('\n')

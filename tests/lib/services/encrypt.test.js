@@ -149,7 +149,7 @@ t.test('#run (finds .env file with multiline value)', ct => {
 #/            public-key encryption for .env files          /
 #/       [how it works](https://dotenvx.com/encryption)     /
 #/----------------------------------------------------------/
-DOTENV_PUBLIC_KEY="${parsed.DOTENV_PUBLIC_KEY}" # -fk .env.keys
+DOTENV_PUBLIC_KEY="${parsed.DOTENV_PUBLIC_KEY}"
 
 # .env
 HELLO="${parsed.HELLO}"
@@ -380,7 +380,7 @@ t.test('#run (finds .env.export file with exported key)', ct => {
 #/            public-key encryption for .env files          /
 #/       [how it works](https://dotenvx.com/encryption)     /
 #/----------------------------------------------------------/
-DOTENV_PUBLIC_KEY_EXPORT="${parsed.DOTENV_PUBLIC_KEY_EXPORT}" # -fk .env.keys
+DOTENV_PUBLIC_KEY_EXPORT="${parsed.DOTENV_PUBLIC_KEY_EXPORT}"
 
 # .env.export
 export KEY=${parsed.KEY}

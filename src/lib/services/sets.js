@@ -188,13 +188,15 @@ class Sets {
     return detectEncoding(filepath)
   }
 
-  _prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath = '') {
+  _prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath = '.env.keys') {
+    const comment = relativeFilepath === '.env.keys' ? '' : ` # -fk ${relativeFilepath}`
+
     return [
       '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
       '#/            public-key encryption for .env files          /',
       '#/       [how it works](https://dotenvx.com/encryption)     /',
       '#/----------------------------------------------------------/',
-      `${publicKeyName}="${publicKey}" # -fk ${relativeFilepath}`,
+      `${publicKeyName}="${publicKey}"${comment}`,
       '',
       `# ${filename}`
     ].join('\n')
