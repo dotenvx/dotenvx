@@ -98,7 +98,7 @@ t.test('#run - encrypt -k --stdout', ct => {
 #/            public-key encryption for .env files          /
 #/       [how it works](https://dotenvx.com/encryption)     /
 #/----------------------------------------------------------/
-DOTENV_PUBLIC_KEY="${publicKey}"
+DOTENV_PUBLIC_KEY="${publicKey}" # -fk .env.keys
 
 # .env
 HELLO=World
