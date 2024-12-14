@@ -1213,6 +1213,32 @@ More examples
   ```
 
   </details>
+* <details><summary>`set KEY value -fk`</summary><br>
+
+  Set a custom path to your .env.keys file. This is useful for monorepos.
+
+  ```sh
+  $ mkdir -p apps/app1
+  $ touch apps/app1/.env
+
+  $ dotenvx set HELLO world -fk .env.keys -f apps/app1/.env
+  set HELLO with encryption (.env)
+  ```
+
+  Then to use it.
+
+  ```sh
+  $ dotenvx get -fk .env.keys -f apps/app1/.env
+  ```
+
+  Or using a relative path.
+
+  ```sh
+  $ cd apps/app1
+  $ dotenvx run -fk ../../.env.keys -f .env
+  ```
+
+  </details>
 * <details><summary>`set KEY "value with spaces"`</summary><br>
 
   Set a value containing spaces.
@@ -1277,6 +1303,32 @@ More examples
   ✔ key added to .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION)
   ⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
   ⮕  next run [DOTENV_PRIVATE_KEY='bff...bc4' dotenvx run -- yourcommand] to test decryption locally
+  ```
+
+  </details>
+* <details><summary>`encrypt -fk`</summary><br>
+
+  Set a custom path to your .env.keys file. This is useful for monorepos.
+
+  ```sh
+  $ mkdir -p apps/app1
+  $ echo "HELLO=World" > apps/app1/.env
+
+  $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
+  encrypted (apps/app1/.env)
+  ```
+
+  Then to use it.
+
+  ```sh
+  $ dotenvx run -fk .env.keys -f apps/app1/.env
+  ```
+
+  Or using a relative path.
+
+  ```sh
+  $ cd apps/app1
+  $ dotenvx run -fk ../../.env.keys -f .env
   ```
 
   </details>
