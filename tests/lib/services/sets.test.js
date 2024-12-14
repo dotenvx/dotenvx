@@ -740,3 +740,52 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath', ct =>
 
   ct.end()
 })
+
+t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and privateKey already exists', ct => {
+  const envKeysFilepath = 'tests/monorepo/.env.keys'
+  const envFile = 'tests/monorepo/apps/app1/.env.production'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    changedFilepaths
+  } = new Sets('KEY', 'value', envs, true, envKeysFilepath).run()
+
+  const row = processedEnvs[0]
+  const publicKey = row.publicKey
+  const privateKey = row.privateKey
+  const privateKeyName = row.privateKeyName
+  const encryptedValue = row.encryptedValue
+  const envSrc = [
+    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+    '#/            public-key encryption for .env files          /',
+    '#/       [how it works](https://dotenvx.com/encryption)     /',
+    '#/----------------------------------------------------------/',
+    `DOTENV_PUBLIC_KEY_PRODUCTION="${publicKey}" # -fk ../../.env.keys`,
+    '',
+    '# .env.production',
+    '# for testing purposes only',
+    'HELLO="production"',
+    `KEY="${encryptedValue}"`
+  ].join('\n') + '\n'
+
+  ct.same(processedEnvs, [{
+    key: 'KEY',
+    value: 'value',
+    type: 'envFile',
+    filepath: path.resolve('tests/monorepo/apps/app1/.env.production'),
+    envFilepath: 'tests/monorepo/apps/app1/.env.production',
+    changed: true,
+    originalValue: null,
+    encryptedValue,
+    publicKey,
+    privateKey,
+    privateKeyName,
+    envSrc
+  }])
+  ct.same(changedFilepaths, ['tests/monorepo/apps/app1/.env.production'])
+
+  ct.end()
+})
