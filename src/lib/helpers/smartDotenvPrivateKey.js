@@ -13,12 +13,14 @@ function searchProcessEnv (privateKeyName) {
   }
 }
 
-function searchKeysFile (privateKeyName, envFilepath) {
-  const directory = path.dirname(envFilepath)
-  const envKeysFilepath = path.resolve(directory, '.env.keys')
+function searchKeysFile (privateKeyName, envFilepath, envKeysFilepath = null) {
+  let keysFilepath = path.resolve(path.dirname(envFilepath), '.env.keys') // typical scenario
+  if (envKeysFilepath) { // user specified -fk flag
+    keysFilepath = path.resolve(envKeysFilepath)
+  }
 
-  if (fsx.existsSync(envKeysFilepath)) {
-    const keysSrc = fsx.readFileX(envKeysFilepath)
+  if (fsx.existsSync(keysFilepath)) {
+    const keysSrc = fsx.readFileX(keysFilepath)
     const keysParsed = dotenv.parse(keysSrc)
 
     if (keysParsed[privateKeyName] && keysParsed[privateKeyName].length > 0) {
@@ -49,7 +51,7 @@ function invertForPrivateKeyName (envFilepath) {
   return null
 }
 
-function smartDotenvPrivateKey (envFilepath) {
+function smartDotenvPrivateKey (envFilepath, envKeysFilepath = null) {
   let privateKey = null
   let privateKeyName = guessPrivateKeyName(envFilepath) // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
 
@@ -60,7 +62,7 @@ function smartDotenvPrivateKey (envFilepath) {
   }
 
   // 2. attempt .env.keys second (path/to/.env.keys)
-  privateKey = searchKeysFile(privateKeyName, envFilepath)
+  privateKey = searchKeysFile(privateKeyName, envFilepath, envKeysFilepath)
   if (privateKey) {
     return privateKey
   }
@@ -75,7 +77,7 @@ function smartDotenvPrivateKey (envFilepath) {
     }
 
     // 3.2. attempt .env.keys second (path/to/.env.keys)
-    privateKey = searchKeysFile(privateKeyName, envFilepath)
+    privateKey = searchKeysFile(privateKeyName, envFilepath, envKeysFilepath)
     if (privateKey) {
       return privateKey
     }

@@ -421,12 +421,7 @@ t.test('#run (finds .env file only)', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    const { key } = this
-    // Custom logic depending on constructor arguments
-    if (key === 'DOTENV_PUBLIC_KEY') {
-      return '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba'
-    }
-    return null
+    return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
   })
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
@@ -458,6 +453,77 @@ t.test('#run (finds .env file only)', ct => {
   ct.same(unchangedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
 
   sandbox.restore()
+
+  ct.end()
+})
+
+t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
+  const envKeysFilepath = 'tests/monorepo/.env.keys'
+  const envFile = 'tests/monorepo/apps/app1/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    changedFilepaths
+  } = new Encrypt(envs, [], [], envKeysFilepath).run()
+
+  const row = processedEnvs[0]
+  const publicKey = row.publicKey
+  const privateKey = row.privateKey
+  const privateKeyAdded = row.privateKeyAdded
+  const privateKeyName = row.privateKeyName
+  const envSrc = row.envSrc
+
+  ct.same(processedEnvs, [{
+    keys: ['HELLO'],
+    type: 'envFile',
+    filepath: path.resolve('tests/monorepo/apps/app1/.env'),
+    envFilepath: 'tests/monorepo/apps/app1/.env',
+    changed: true,
+    publicKey,
+    privateKey,
+    envKeysFilepath: 'tests/monorepo/.env.keys',
+    privateKeyAdded,
+    privateKeyName,
+    envSrc
+  }])
+  ct.same(changedFilepaths, ['tests/monorepo/apps/app1/.env'])
+
+  ct.end()
+})
+
+t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already exists', ct => {
+  const envKeysFilepath = 'tests/monorepo/.env.keys'
+  const envFile = 'tests/monorepo/apps/app1/.env.production'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    changedFilepaths
+  } = new Encrypt(envs, [], [], envKeysFilepath).run()
+
+  const row = processedEnvs[0]
+  const publicKey = row.publicKey
+  const privateKey = row.privateKey
+  const privateKeyName = row.privateKeyName
+  const envSrc = row.envSrc
+
+  ct.same(processedEnvs, [{
+    keys: ['HELLO'],
+    type: 'envFile',
+    filepath: path.resolve('tests/monorepo/apps/app1/.env.production'),
+    envFilepath: 'tests/monorepo/apps/app1/.env.production',
+    changed: true,
+    publicKey,
+    privateKey,
+    privateKeyName,
+    envSrc
+  }])
+  ct.same(changedFilepaths, ['tests/monorepo/apps/app1/.env.production'])
 
   ct.end()
 })

@@ -88,6 +88,7 @@ t.test('decrypt - --stdout with error', ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const consoleErrorStub = sinon.stub(console, 'error')
   const error = new Error('Mock Error')
+  error.help = 'https://github.com/dotenvx/dotenvx'
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
@@ -109,6 +110,7 @@ t.test('decrypt - --stdout with error', ct => {
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
   t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
+  t.ok(consoleErrorStub.calledWith('https://github.com/dotenvx/dotenvx'), 'console.error')
 
   ct.end()
 })
@@ -149,6 +151,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
+  error.help = 'https://github.com/dotenvx/dotenvx'
   error.code = 'MISSING_ENV_FILE'
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -186,6 +189,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
+  error.help = 'https://github.com/dotenvx/dotenvx'
   error.code = 'OTHER_ERROR'
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -213,6 +217,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
+  t.ok(consoleErrorStub.calledWith('https://github.com/dotenvx/dotenvx'), 'console.error')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
 

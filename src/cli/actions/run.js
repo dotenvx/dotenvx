@@ -45,7 +45,7 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, options.overload, process.env.DOTENV_KEY).run()
+    } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {

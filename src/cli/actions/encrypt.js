@@ -16,7 +16,7 @@ function encrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Encrypt(envs, options.key, options.excludeKey).run()
+    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -28,7 +28,7 @@ function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Encrypt(envs, options.key, options.excludeKey).run()
+      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

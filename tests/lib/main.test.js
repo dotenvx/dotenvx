@@ -156,6 +156,20 @@ t.test('keypair calls Keypair.run', ct => {
   ct.end()
 })
 
+t.test('keypair calls Keypair.run with key specified', ct => {
+  const stub = sinon.stub(Keypair.prototype, 'run')
+  stub.returns({ KEY: 'value' })
+
+  const result = main.keypair('.env', 'KEY')
+
+  t.ok(stub.called, 'new Keypair().run() called')
+  t.equal(result, 'value')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('genexample calls Genexample.run', ct => {
   const stub = sinon.stub(Genexample.prototype, 'run')
   stub.returns({})

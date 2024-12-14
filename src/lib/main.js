@@ -34,6 +34,9 @@ const config = function (options = {}) {
   // strict
   const strict = options.strict
 
+  // envKeysFile
+  const envKeysFile = options.envKeysFile
+
   // DOTENV_KEY (DEPRECATED)
   let DOTENV_KEY = process.env.DOTENV_KEY
   if (options && options.DOTENV_KEY) {
@@ -70,7 +73,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, DOTENV_KEY, processEnv).run()
+    } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile).run()
 
     let lastError
     /** @type {Record<string, string>} */
@@ -190,8 +193,13 @@ const genexample = function (directory, envFile) {
 }
 
 /** @type {import('./main').keypair} */
-const keypair = function (envFile, key) {
-  return new Keypair(envFile, key).run()
+const keypair = function (envFile, key, envKeysFile = null) {
+  const keypairs = new Keypair(envFile, envKeysFile).run()
+  if (key) {
+    return keypairs[key]
+  } else {
+    return keypairs
+  }
 }
 
 module.exports = {

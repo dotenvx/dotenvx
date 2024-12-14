@@ -17,6 +17,9 @@ t.test('#run', ct => {
     '.env.multiline',
     '.env.utf16le',
     '.env.vault',
+    'monorepo/.env.keys',
+    'monorepo/apps/app1/.env',
+    'monorepo/apps/app1/.env.production',
     'monorepo/apps/backend/.env',
     'monorepo/apps/backend/.env.example',
     'monorepo/apps/backend/.env.keys',
@@ -45,6 +48,9 @@ t.test('#run (with directory argument)', ct => {
   const envFiles = ls.run()
 
   const expected = [
+    '.env.keys',
+    'apps/app1/.env',
+    'apps/app1/.env.production',
     'apps/backend/.env',
     'apps/backend/.env.example',
     'apps/backend/.env.keys',
@@ -73,6 +79,9 @@ t.test('#run (with somehow malformed directory argument)', ct => {
   const envFiles = ls.run()
 
   const expected = [
+    '.env.keys',
+    'apps/app1/.env',
+    'apps/app1/.env.production',
     'apps/backend/.env',
     'apps/backend/.env.example',
     'apps/backend/.env.keys',
@@ -110,6 +119,9 @@ t.test('#_filepaths', ct => {
     '.env.multiline',
     '.env.utf16le',
     '.env.vault',
+    'monorepo/.env.keys',
+    'monorepo/apps/app1/.env',
+    'monorepo/apps/app1/.env.production',
     'monorepo/apps/backend/.env',
     'monorepo/apps/backend/.env.example',
     'monorepo/apps/backend/.env.keys',

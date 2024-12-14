@@ -17,12 +17,15 @@ function decrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Decrypt(envs, options.key, options.excludeKey).run()
+    } = new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
         errorCount += 1
         console.error(processedEnv.error.message)
+        if (processedEnv.error.help) {
+          console.error(processedEnv.error.help)
+        }
       } else {
         console.log(processedEnv.envSrc)
       }
@@ -39,7 +42,7 @@ function decrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Decrypt(envs, options.key, options.excludeKey).run()
+      } = new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -52,6 +55,9 @@ function decrypt () {
             logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx decrypt]`)
           } else {
             console.error(processedEnv.error.message)
+            if (processedEnv.error.help) {
+              console.error(processedEnv.error.help)
+            }
           }
         } else if (processedEnv.changed) {
           fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)

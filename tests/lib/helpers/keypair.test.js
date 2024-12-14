@@ -1,8 +1,8 @@
 const t = require('tap')
-const keyPair = require('../../../src/lib/helpers/keyPair')
+const keypair = require('../../../src/lib/helpers/keypair')
 
-t.test('#keyPair', ct => {
-  const { publicKey, privateKey } = keyPair()
+t.test('#keypair', ct => {
+  const { publicKey, privateKey } = keypair()
 
   t.ok(publicKey, 'Public key should be defined')
   t.ok(privateKey, 'Private key should be defined')
@@ -12,9 +12,9 @@ t.test('#keyPair', ct => {
   ct.end()
 })
 
-t.test('keyPair uses provided private key to generate public key', (t) => {
+t.test('keypair uses provided private key to generate public key', (t) => {
   const existingPrivateKey = '4c06b1f9ffc4af11d0d206fd43f28bc96b68647158c1666edc4832f19857cef9'
-  const { publicKey, privateKey } = keyPair(existingPrivateKey)
+  const { publicKey, privateKey } = keypair(existingPrivateKey)
 
   t.equal(privateKey, existingPrivateKey, 'Private key should match the provided private key')
   t.ok(publicKey, 'Public key should be defined')
