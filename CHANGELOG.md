@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * add `-fk` (`--env-keys-file`) flag to customize the path to your `.env.keys` file with `run, get, set, encrypt, decrypt, and keypair` 🎉 ([#486](https://github.com/dotenvx/dotenvx/pull/486))
 
-This is great for monorepos. Maintain one `.env.keys` file across multiple monorepos `.env*` files.
+This is great for monorepos. Maintain one `.env.keys` file across all your apps.
 
 ```sh
 $ dotenvx encrypt -fk .env.keys -f apps/backend/.env
