@@ -2081,6 +2081,17 @@ More examples
   Hello World
   ```
   </details>
+* <details><summary>`set(KEY, value)`</summary><br>
+
+  Programatically set an environment variable. 
+
+  ```js
+  // index.js
+  const dotenvx = require('@dotenvx/dotenvx')
+  dotenvx.set('HELLO', 'World', { path: '.env' })
+  ```
+
+  </details>
 
 &nbsp;
 
