@@ -69,8 +69,7 @@ class Encrypt {
     try {
       const encoding = this._detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
-      // const envParsed = dotenvParse(envSrc, true) // skip expanding \n for double quotes
-      const envParsed = dotenvParse(envSrc) // skip expanding \n for double quotes
+      const envParsed = dotenvParse(envSrc)
 
       let publicKey
       let privateKey

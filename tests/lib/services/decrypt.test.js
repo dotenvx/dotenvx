@@ -151,6 +151,7 @@ ABCD
 EFGH
 IJKL
 -----END RSA PRIVATE KEY-----"
+ALOHA="-----BEGIN RSA PRIVATE KEY-----\\nABCD\\nEFGH\\nIJKL\\n-----END RSA PRIVATE KEY-----"
 `
   ct.same(p1.envSrc, output)
 
