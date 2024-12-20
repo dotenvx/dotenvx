@@ -374,7 +374,7 @@ jobs:
           short-description: ${{ github.event.repository.description }}
   winget:
     needs: release
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       # GITHUB_ENV operates like a .env file
       - name: extract version
@@ -383,108 +383,10 @@ jobs:
           CLEAN_VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
-      - name: checkout dotenvx/winget-pkgs repo
-        uses: actions/checkout@v4
-        with:
-          repository: "dotenvx/winget-pkgs"
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          path: "winget-pkgs"
-      - name: git config and pull
-        run: |
-          cd winget-pkgs
-          git config --global user.name 'motdotenv'
-          git config --global user.email 'mot@dotenv.org'
-          git branch
-          git branch dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
-          git checkout dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
-      - name: check if branch exists and pull
-        run: |
-          cd winget-pkgs
-          BRANCH_EXISTS=$(git ls-remote --heads origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }} | wc -l)
-          if [ "$BRANCH_EXISTS" -eq 1 ]; then
-            git pull origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
-          else
-            echo "Branch does not exist on the remote; skipping pull."
-          fi
-      - name: create dotenvx.dotenvx.yaml
-        run: |
-          cd winget-pkgs
-          mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
-          cat <<EOT > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.yaml
-          PackageIdentifier: dotenvx.dotenvx
-          PackageVersion: ${{ env.CLEAN_VERSION }}
-          DefaultLocale: en-US
-          ManifestType: version
-          ManifestVersion: 1.6.0
-          EOT
-      - name: create dotenvx.dotenvx.locale.en-US.yaml
-        run: |
-          cd winget-pkgs
-          mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
-          cat <<EOT > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.locale.en-US.yaml
-          PackageIdentifier: dotenvx.dotenvx
-          PackageVersion: ${{ env.CLEAN_VERSION }}
-          PackageLocale: en-US
-          Publisher: dotenvx
-          PublisherUrl: https://dotenvx.com
-          Author: motdotla
-          PackageName: dotenvx
-          PackageUrl: https://github.com/dotenvx/dotenvx
-          License: BSD-3-Clause
-          ShortDescription: a better dotenv–from the creator of dotenv
-          Description: a better dotenv–from the creator of dotenv
-          Tags: ["env", "dotenv", "environment", "variables", "dotenvx", "cli", "encryption"]
-          Moniker: dotenvx
-          ManifestType: defaultLocale
-          ManifestVersion: 1.6.0
-          EOT
-      - name: calculate sha256 for x64 installer
-        run: |
-          INSTALLER_URL="https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip"
-          curl -L $INSTALLER_URL -o dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip
-          SHA_X86=$(sha256sum dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip | awk '{ print $1 }')
-          echo "SHA_X86=$SHA_X86" >> $GITHUB_ENV
-      - name: create dotenvx.dotenvx.installer.yaml
-        run: |
-          cd winget-pkgs
-          mkdir -p manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}
-          CURRENT_DATE=$(date +"%Y-%m-%d")
-          cat <<EOT > manifests/d/dotenvx/dotenvx/${{ env.CLEAN_VERSION }}/dotenvx.dotenvx.installer.yaml
-          PackageIdentifier: dotenvx.dotenvx
-          PackageVersion: ${{ env.CLEAN_VERSION }}
-          InstallerLocale: en-US
-          InstallerType: zip
-          ReleaseDate: "$CURRENT_DATE"
-          Installers:
-            - Architecture: x64
-              NestedInstallerType: portable
-              NestedInstallerFiles:
-                - RelativeFilePath: dotenvx.exe
-                  PortableCommandAlias: dotenvx
-              InstallerUrl: https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip
-              InstallerSha256: ${{ env.SHA_X86 }}
-              UpgradeBehavior: uninstallPrevious
-          ManifestType: installer
-          ManifestVersion: 1.6.0
-          EOT
-      - name: commit and push
-        run: |
-          cd winget-pkgs
-          git add .
-          git commit -m "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}" --allow-empty
-          git branch
-          git push origin dotenvx-dotenvx-${{ env.CLEAN_VERSION }}
-      - name: create pull request
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        run: |
-          cd winget-pkgs
-          gh pr create --repo microsoft/winget-pkgs \
-            --base master \
-            --head dotenvx:dotenvx-dotenvx-${{ env.CLEAN_VERSION }} \
-            --title "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}" \
-            --body "New version: dotenvx.dotenvx ${{ env.CLEAN_VERSION }}"
-
+      - name: Submit using wingetcreate
+        run: | 
+          iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+          .\wingetcreate.exe update dotenvx.dotenvx -s -v ${{ env.CLEAN_VERSION }} -u https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip -t ${{ secrets.PERSONAL_ACCESS_TOKEN }}
   dotenvx-darwin-amd64:
     needs: release
     runs-on: ubuntu-latest
