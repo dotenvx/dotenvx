@@ -139,7 +139,7 @@ t.test('#run (finds .env file with multiline value)', ct => {
 
   const parsed = dotenv.parse(p1.envSrc)
 
-  ct.same(Object.keys(parsed), ['HELLO'])
+  ct.same(Object.keys(parsed), ['HELLO', 'ALOHA'])
   ct.same(parsed.HELLO, `-----BEGIN RSA PRIVATE KEY-----
 ABCD
 EFGH
