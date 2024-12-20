@@ -8,6 +8,22 @@ on:
     branches: [main]
 
 jobs:
+  winget-test:
+    needs: release
+    runs-on: windows-latest
+    steps:
+      - name: extract version using powershell
+        shell: pwsh
+        run: |
+          $VERSION = $env:GITHUB_REF -replace 'refs/tags/', ''
+          $CLEAN_VERSION = $VERSION -replace '^v', ''
+          echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "CLEAN_VERSION=$CLEAN_VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Submit using wingetcreate
+        run: | 
+          iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+          .\wingetcreate.exe update dotenvx.dotenvx -s -v ${{ env.CLEAN_VERSION }} -u https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip -t ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
   standard:
     runs-on: ubuntu-latest
     strategy:
@@ -376,13 +392,13 @@ jobs:
     needs: release
     runs-on: windows-latest
     steps:
-      # GITHUB_ENV operates like a .env file
-      - name: extract version
+      - name: extract version using powershell
+        shell: pwsh
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          CLEAN_VERSION=${VERSION#v}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+          $VERSION = $env:GITHUB_REF -replace 'refs/tags/', ''
+          $CLEAN_VERSION = $VERSION -replace '^v', ''
+          echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "CLEAN_VERSION=$CLEAN_VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Submit using wingetcreate
         run: | 
           iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
