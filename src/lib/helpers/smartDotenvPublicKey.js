@@ -1,5 +1,5 @@
 const fsx = require('./fsx')
-const dotenv = require('dotenv')
+const dotenvParse = require('./dotenvParse')
 
 const guessPublicKeyName = require('./guessPublicKeyName')
 
@@ -12,7 +12,7 @@ function searchProcessEnv (publicKeyName) {
 function searchEnvFile (publicKeyName, envFilepath) {
   if (fsx.existsSync(envFilepath)) {
     const keysSrc = fsx.readFileX(envFilepath)
-    const keysParsed = dotenv.parse(keysSrc)
+    const keysParsed = dotenvParse(keysSrc)
 
     if (keysParsed[publicKeyName] && keysParsed[publicKeyName].length > 0) {
       return keysParsed[publicKeyName]

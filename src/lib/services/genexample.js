@@ -1,10 +1,10 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const dotenv = require('dotenv')
 
 const Errors = require('../helpers/errors')
 const findEnvFiles = require('../helpers/findEnvFiles')
 const replace = require('../helpers/replace')
+const dotenvParse = require('../helpers/dotenvParse')
 
 class Genexample {
   constructor (directory = '.', envFile) {
@@ -47,7 +47,7 @@ class Genexample {
 
       // get the original src
       let src = fsx.readFileX(filepath)
-      const parsed = dotenv.parse(src)
+      const parsed = dotenvParse(src)
       for (const key in parsed) {
         // used later
         keys.add(key)
@@ -72,7 +72,7 @@ class Genexample {
       // it already exists (which means the user might have it modified a way in which they prefer, so replace exampleSrc with their existing .env.example)
       exampleSrc = fsx.readFileX(this.exampleFilepath)
 
-      const parsed = dotenv.parse(exampleSrc)
+      const parsed = dotenvParse(exampleSrc)
       for (const key of [...keys]) {
         if (key in parsed) {
           preExisted[key] = parsed[key]

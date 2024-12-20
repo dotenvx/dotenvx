@@ -1,6 +1,5 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const dotenv = require('dotenv')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -10,6 +9,7 @@ const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const replace = require('./../helpers/replace')
+const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 const findPrivateKey = require('./../helpers/findPrivateKey')
@@ -66,7 +66,7 @@ class Sets {
     try {
       const encoding = this._detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
-      const envParsed = dotenv.parse(envSrc)
+      const envParsed = dotenvParse(envSrc)
       row.originalValue = envParsed[row.key] || null
       const wasPlainText = !isEncrypted(row.originalValue)
       this.readableFilepaths.add(envFilepath)

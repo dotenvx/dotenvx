@@ -2,7 +2,8 @@ const t = require('tap')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
-const dotenv = require('dotenv')
+
+const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
 
 const Encrypt = require('../../../src/lib/services/encrypt')
 
@@ -112,7 +113,7 @@ t.test('#run (finds .env file)', ct => {
   ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
   ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -121,7 +122,7 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with multiline value)', ct => {
+t.test('#run (finds .env file with multiline values - implicit and explicit newline)', ct => {
   const envFile = 'tests/monorepo/apps/multiline/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -134,16 +135,17 @@ t.test('#run (finds .env file with multiline value)', ct => {
   } = new Encrypt(envs).run()
 
   const p1 = processedEnvs[0]
-  ct.same(p1.keys, ['HELLO'])
+  ct.same(p1.keys, ['HELLO', 'ALOHA'])
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiline/.env')
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiline/.env'])
   ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
-  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'ALOHA'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
   ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
+  ct.match(parsed.ALOHA, /^encrypted:/, 'ALOHA should start with "encrypted:"')
 
   const output = `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
 #/            public-key encryption for .env files          /
@@ -153,6 +155,7 @@ DOTENV_PUBLIC_KEY="${parsed.DOTENV_PUBLIC_KEY}"
 
 # .env
 HELLO="${parsed.HELLO}"
+ALOHA="${parsed.ALOHA}"
 `
   ct.same(p1.envSrc, output)
 
@@ -198,7 +201,7 @@ t.test('#run (finds .env file with specified key)', ct => {
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
   ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'HELLO2', 'HELLO3'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -226,7 +229,7 @@ t.test('#run (finds .env file with specified key as string)', ct => {
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
   ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'HELLO2', 'HELLO3'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -254,7 +257,7 @@ t.test('#run (finds .env file with specified glob string)', ct => {
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
   ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'HELLO2', 'HELLO3'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -283,7 +286,7 @@ t.test('#run (finds .env file excluding specified key)', ct => {
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
   ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'HELLO2', 'HELLO3'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -312,7 +315,7 @@ t.test('#run (finds .env file excluding specified key as string)', ct => {
   ct.same(changedFilepaths, ['tests/monorepo/apps/multiple/.env'])
   ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'HELLO2', 'HELLO3'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -340,7 +343,7 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
   ct.same(p1.envFilepath, 'tests/monorepo/apps/multiple/.env')
   ct.same(changedFilepaths, [])
   ct.same(unchangedFilepaths, ['tests/monorepo/apps/multiple/.env'])
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO', 'HELLO2', 'HELLO3'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -369,7 +372,7 @@ t.test('#run (finds .env.export file with exported key)', ct => {
   ct.same(changedFilepaths, ['tests/.env.export'])
   ct.same(unchangedFilepaths, [])
 
-  const parsed = dotenv.parse(p1.envSrc)
+  const parsed = dotenvParse(p1.envSrc)
 
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_EXPORT', 'KEY'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY_EXPORT, 'DOTENV_PUBLIC_KEY should not be empty')

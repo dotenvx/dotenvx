@@ -1,10 +1,10 @@
 const fsx = require('./fsx')
 const path = require('path')
-const dotenv = require('dotenv')
 
 const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
 const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 
+const dotenvParse = require('./dotenvParse')
 const guessPrivateKeyName = require('./guessPrivateKeyName')
 
 function searchProcessEnv (privateKeyName) {
@@ -21,7 +21,7 @@ function searchKeysFile (privateKeyName, envFilepath, envKeysFilepath = null) {
 
   if (fsx.existsSync(keysFilepath)) {
     const keysSrc = fsx.readFileX(keysFilepath)
-    const keysParsed = dotenv.parse(keysSrc)
+    const keysParsed = dotenvParse(keysSrc)
 
     if (keysParsed[privateKeyName] && keysParsed[privateKeyName].length > 0) {
       return keysParsed[privateKeyName]
@@ -35,7 +35,7 @@ function invertForPrivateKeyName (envFilepath) {
   }
 
   const envSrc = fsx.readFileX(envFilepath)
-  const envParsed = dotenv.parse(envSrc)
+  const envParsed = dotenvParse(envSrc)
 
   let publicKeyName
   for (const keyName of Object.keys(envParsed)) {

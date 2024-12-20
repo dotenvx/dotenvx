@@ -1,6 +1,5 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const dotenv = require('dotenv')
 
 const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
@@ -9,6 +8,7 @@ const TYPE_ENV_VAULT_FILE = 'envVaultFile'
 const decrypt = require('./../helpers/decrypt')
 const Parse = require('./../helpers/parse')
 const Errors = require('./../helpers/errors')
+const dotenvParse = require('./../helpers/dotenvParse')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const detectEncoding = require('./../helpers/detectEncoding')
 const findPrivateKey = require('./../helpers/findPrivateKey')
@@ -196,7 +196,7 @@ class Run {
   // { "DOTENV_VAULT_DEVELOPMENT": "<ciphertext>" }
   _parsedVault (filepath) {
     const src = fsx.readFileX(filepath)
-    return dotenv.parse(src)
+    return dotenvParse(src)
   }
 
   _decrypted (dotenvKey, parsedVault) {

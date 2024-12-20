@@ -15,3 +15,29 @@ t.test('#encryptValue', ct => {
 
   ct.end()
 })
+
+t.test('#encryptValue - implicit newlines', ct => {
+  const value = `line 1
+line 2
+line 3`
+
+  const result = encryptValue(value, publicKey)
+  ct.ok(result.startsWith('encrypted:'))
+
+  const decrypted = decryptKeyValue('KEY', result, 'DOTENV_PRIVATE_KEY', privateKey)
+  ct.same(decrypted, value)
+
+  ct.end()
+})
+
+t.test('#encryptValue - explicit newlines', ct => {
+  const value = 'line 1\nline 2\nline 3'
+
+  const result = encryptValue(value, publicKey)
+  ct.ok(result.startsWith('encrypted:'))
+
+  const decrypted = decryptKeyValue('KEY', result, 'DOTENV_PRIVATE_KEY', privateKey)
+  ct.same(decrypted, value)
+
+  ct.end()
+})

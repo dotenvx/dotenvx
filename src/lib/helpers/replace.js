@@ -1,6 +1,5 @@
-const dotenv = require('dotenv')
-
 const quotes = require('./quotes')
+const dotenvParse = require('./dotenvParse')
 const escapeForRegex = require('./escapeForRegex')
 const escapeDollarSigns = require('./escapeDollarSigns')
 
@@ -8,7 +7,7 @@ function replace (src, key, replaceValue) {
   let output
   let newPart = ''
 
-  const parsed = dotenv.parse(src)
+  const parsed = dotenvParse(src, true) // skip expanding \n
   const _quotes = quotes(src)
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
     const quote = _quotes[key]
