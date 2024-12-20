@@ -1,4 +1,3 @@
-const fsx = require('./fsx')
 const path = require('path')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
@@ -27,7 +26,29 @@ function executeDynamic (program, command, rawArgs) {
       // logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] commands 🏆`)
       // logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-pro]')
 
-      const pro = fsx.readFileX(path.join(__dirname, './../../cli/pro.txt'))
+      const pro = `_______________________________________________________________
+|                                                             |
+|  coming soon! (for small business)                          |
+|                                                             |
+|      | |     | |                                            |
+|    __| | ___ | |_ ___ _ ____   ____  __  _ __  _ __ ___     |
+|   / _\` |/ _ \\| __/ _ \\ '_ \\ \\ / /\\ \\/ / | '_ \\| '__/ _ \\    |
+|  | (_| | (_) | ||  __/ | | \\ V /  >  <  | |_) | | | (_) |   |
+|   \\__,_|\\___/ \\__\\___|_| |_|\\_/  /_/\\_\\ | .__/|_|  \\___/    |
+|                                         | |                 |
+|                                         |_|                 |
+| ## learn more on github 🐙                                  |
+|                                                             |
+| >> https://github.com/dotenvx/dotenvx/issues/259            |
+|                                                             |
+| ## subscribe on github to be notified 📣                    |
+|                                                             |
+| >> https://github.com/dotenvx/dotenvx/issues/259            |
+|                                                             |
+| ----------------------------------------------------------- |
+| - thank you for using dotenvx! - @motdotla                  |
+|_____________________________________________________________|`
+
       console.log(pro)
     } else {
       logger.info(`error: unknown command '${command}'`)
