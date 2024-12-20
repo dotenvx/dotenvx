@@ -9,7 +9,6 @@ on:
 
 jobs:
   winget-test:
-    needs: release
     runs-on: windows-latest
     steps:
       - name: extract version using powershell
