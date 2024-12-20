@@ -385,7 +385,7 @@ jobs:
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
       - name: Install wingetcreate
         run: |
-          curl -L https://github.com/microsoft/winget-create/releases/download/v1.9.2.0/wingetcreate.exe -o wingetcreate.exe
+          curl -L https://github.com/microsoft/winget-create/releases/latest/wingetcreate.exe -o wingetcreate.exe
       - name: Submit using wingetcreate
         run: |
           wingetcreate.exe update --submit --token ${{ secrets.PERSONAL_ACCESS_TOKEN }} --urls https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip --version ${{ env.CLEAN_VERSION }} dotenvx.dotenvx
