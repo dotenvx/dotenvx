@@ -28,8 +28,9 @@ function dotenvParse (src, skipExpandForDoubleQuotes = false) {
 
     // Expand newlines if double quoted
     if (maybeQuote === '"' && !skipExpandForDoubleQuotes) {
-      value = value.replace(/\\n/g, '\n')
-      value = value.replace(/\\r/g, '\r')
+      value = value.replace(/\\n/g, '\n') // newline
+      value = value.replace(/\\r/g, '\r') // carriage return
+      value = value.replace(/\\t/g, '\t') // tabs
     }
 
     // Add to object

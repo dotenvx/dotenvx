@@ -31,7 +31,7 @@ line 3`
 })
 
 t.test('#encryptValue - explicit newlines', ct => {
-  const value = `line 1\nline 2\nline 3`
+  const value = 'line 1\nline 2\nline 3'
 
   const result = encryptValue(value, publicKey)
   ct.ok(result.startsWith('encrypted:'))
