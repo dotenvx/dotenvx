@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.31.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.31.3...main)
+
+## [1.31.3](https://github.com/dotenvx/dotenvx/compare/v1.31.2...v1.31.3)
+
+### Changed
+
+* adjust wingetcreate to use powershell when parsing version
 
 ## [1.31.2](https://github.com/dotenvx/dotenvx/compare/v1.31.1...v1.31.2)
 
