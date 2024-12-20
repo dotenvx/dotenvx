@@ -387,8 +387,9 @@ jobs:
         run: |
           curl -L https://github.com/microsoft/winget-create/releases/latest/wingetcreate.exe -o wingetcreate.exe
       - name: Submit using wingetcreate
-        run: |
-          wingetcreate.exe update --submit --token ${{ secrets.PERSONAL_ACCESS_TOKEN }} --urls https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip --version ${{ env.CLEAN_VERSION }} dotenvx.dotenvx
+        run: | 
+          iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+          .\wingetcreate.exe update dotenvx.dotenvx -s -v ${{ env.CLEAN_VERSION }} -u https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip -t ${{ secrets.PERSONAL_ACCESS_TOKEN }}
   dotenvx-darwin-amd64:
     needs: release
     runs-on: ubuntu-latest
