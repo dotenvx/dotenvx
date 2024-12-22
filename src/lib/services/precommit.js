@@ -88,7 +88,7 @@ class Precommit {
 
   _isFileToBeCommitted (filePath) {
     try {
-      const output = childProcess.execSync('git diff --name-only').toString()
+      const output = childProcess.execSync('git diff HEAD --name-only').toString()
       const files = output.split('\n')
 
       return files.includes(filePath)
