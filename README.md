@@ -427,7 +427,7 @@ More examples
   > start
   > ./node_modules/.bin/dotenvx run -- node index.js
 
-  [dotenvx][info] loading env (1) from .env
+  [dotenvx@1.X.X] injecting env (1) from .env.production
   Hello World
   ```
 
@@ -504,7 +504,7 @@ $ echo "HELLO=production" > .env.production
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run -f .env.production -- node index.js
-[dotenvx][info] loading env (1) from .env.production
+[dotenvx@1.X.X] injecting env (1) from .env.production
 Hello production
 > ^^
 ```
@@ -519,7 +519,7 @@ More examples
   $ echo "HELLO=World" > .env
 
   $ dotenvx run -f .env.local -f .env -- node index.js
-  [dotenvx][info] loading env (1) from .env.local,.env
+  [dotenvx@1.X.X] injecting env (1) from .env.local,.env
   Hello local
   ```
 
@@ -533,7 +533,7 @@ More examples
   $ echo "HELLO=World" > .env
 
   $ dotenvx run -f .env.local -f .env --overload -- node index.js
-  [dotenvx][info] loading env (1) from .env.local,.env
+  [dotenvx@1.X.X] injecting env (1) from .env.local,.env
   Hello World
   ```
 
@@ -545,7 +545,7 @@ More examples
   $ dotenvx run -f .env.production --verbose -- node index.js
   [dotenvx][verbose] injecting env from /path/to/.env.production
   [dotenvx][verbose] HELLO set
-  [dotenvx][info] loading env (1) from .env.production
+  [dotenvx@1.X.X] injecting env (1) from .env.production
   Hello production
   ```
 
@@ -564,7 +564,7 @@ More examples
   [dotenvx][debug] writing env from /path/to/.env.production
   [dotenvx][verbose] HELLO set
   [dotenvx][debug] HELLO set to production
-  [dotenvx][info] loading env (1) from .env.production
+  [dotenvx@1.X.X] injecting env (1) from .env.production
   Hello production
   ```
 
@@ -638,7 +638,7 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -- node index.js
-  [dotenvx] injecting env (2) from .env
+  [dotenvx@1.X.X] injecting env (2) from .env
   Hello World
   ```
 
@@ -651,7 +651,7 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ DOTENV_PRIVATE_KEY_PRODUCTION="<.env.production private key>" dotenvx run -- node index.js
-  [dotenvx] injecting env (2) from .env.production
+  [dotenvx@1.X.X] injecting env (2) from .env.production
   Hello Production
   ```
 
@@ -666,7 +666,7 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ DOTENV_PRIVATE_KEY_CI="<.env.ci private key>" dotenvx run -- node index.js
-  [dotenvx] injecting env (2) from .env.ci
+  [dotenvx@1.X.X] injecting env (2) from .env.ci
   Hello Ci
   ```
 
@@ -681,7 +681,7 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ DOTENV_PRIVATE_KEY="<.env private key>" DOTENV_PRIVATE_KEY_PRODUCTION="<.env.production private key>" dotenvx run -- node index.js
-  [dotenvx] injecting env (3) from .env, .env.production
+  [dotenvx@1.X.X] injecting env (3) from .env, .env.production
   Hello World
   ```
 
@@ -698,11 +698,11 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ DOTENV_PRIVATE_KEY_CI="<app1/privat ci key>,<app2/private ci key>" dotenvx run -f app1/.env.ci -f app2/.env.ci -- node index.js
-  [dotenvx] injecting env (2) from app1/.env.ci,app2/.env.ci
+  [dotenvx@1.X.X] injecting env (2) from app1/.env.ci,app2/.env.ci
   Hello app1
 
   $ DOTENV_PRIVATE_KEY_CI="<app1/privat ci key>,<app2/private ci key>" dotenvx run -f app1/.env.ci -f app2/.env.ci --overload -- node index.js
-  [dotenvx] injecting env (2) from app1/.env.ci,app2/.env.ci
+  [dotenvx@1.X.X] injecting env (2) from app1/.env.ci,app2/.env.ci
   Hello app2
   ```
 
@@ -749,7 +749,7 @@ More examples
   ```
   ```sh
   $ dotenvx run --debug -- node index.js
-  [dotenvx] injecting env (2) from .env
+  [dotenvx@1.X.X] injecting env (2) from .env
   DATABASE_URL postgres://username@localhost/my_database
   ```
 
@@ -768,7 +768,7 @@ More examples
   ```
   ```sh
   $ dotenvx run --debug -- node index.js
-  [dotenvx] injecting env (1) from .env
+  [dotenvx@1.X.X] injecting env (1) from .env
   DATABASE_URL postgres://yourusername@localhost/my_database
   ```
 
@@ -793,7 +793,7 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env.local -f .env -- node index.js
-  [dotenvx] injecting env (1) from .env.local, .env
+  [dotenvx@1.X.X] injecting env (1) from .env.local, .env
   Hello local
   ```
 
@@ -807,7 +807,7 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run --env HELLO=String -f .env -- node index.js
-  [dotenvx] injecting env (1) from .env, and --env flag
+  [dotenvx@1.X.X] injecting env (1) from .env, and --env flag
   Hello String
   ```
 
@@ -822,7 +822,7 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env.local -f .env --overload -- node index.js
-  [dotenvx] injecting env (1) from .env.local, .env
+  [dotenvx@1.X.X] injecting env (1) from .env.local, .env
   Hello World
   ```
 
@@ -838,7 +838,7 @@ More examples
 
   # check your .env.keys files for your privateKey
   $ DOTENV_PRIVATE_KEY="122...0b8" dotenvx run -- node index.js
-  [dotenvx] injecting env (2) from .env
+  [dotenvx@1.X.X] injecting env (2) from .env
   Hello encrypted
   ```
 
@@ -854,7 +854,7 @@ More examples
 
   # check .env.keys for your privateKey
   $ DOTENV_PRIVATE_KEY_PRODUCTION="122...0b8" dotenvx run -- node index.js
-  [dotenvx] injecting env (2) from .env.production
+  [dotenvx@1.X.X] injecting env (2) from .env.production
   Hello production encrypted
   ```
 
@@ -872,7 +872,7 @@ More examples
 
   # check .env.keys for your privateKey
   $ DOTENV_PRIVATE_KEY_CI="122...0b8" dotenvx run -- node index.js
-  [dotenvx] injecting env (2) from .env.ci
+  [dotenvx@1.X.X] injecting env (2) from .env.ci
   Hello ci encrypted
   ```
 
@@ -892,11 +892,11 @@ More examples
 
   # check .env.keys for your privateKeys
   $ DOTENV_PRIVATE_KEY="122...0b8" DOTENV_PRIVATE_KEY_PRODUCTION="122...0b8" dotenvx run -- node index.js
-  [dotenvx] injecting env (3) from .env, .env.production
+  [dotenvx@1.X.X] injecting env (3) from .env, .env.production
   Hello encrypted
 
   $ DOTENV_PRIVATE_KEY_PRODUCTION="122...0b8" DOTENV_PRIVATE_KEY="122...0b8" dotenvx run -- node index.js
-  [dotenvx] injecting env (3) from .env.production, .env
+  [dotenvx@1.X.X] injecting env (3) from .env.production, .env
   Hello production encrypted
   ```
 
@@ -914,7 +914,7 @@ More examples
   $ dotenvx run -f .env.production --verbose -- node index.js
   loading env from .env.production (/path/to/.env.production)
   HELLO set
-  [dotenvx] injecting env (1) from .env.production
+  [dotenvx@1.X.X] injecting env (1) from .env.production
   Hello production
   ```
 
@@ -934,7 +934,7 @@ More examples
   {"HELLO":"production"}
   HELLO set
   HELLO set to production
-  [dotenvx] injecting env (1) from .env.production
+  [dotenvx@1.X.X] injecting env (1) from .env.production
   executing process command [node index.js]
   expanding process command to [/opt/homebrew/bin/node index.js]
   Hello production
@@ -1008,7 +1008,7 @@ More examples
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run --convention=nextjs -- node index.js
-  [dotenvx] injecting env (1) from .env.development.local, .env.local, .env.development, .env
+  [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.local, .env.development, .env
   Hello development local
   ```
 
@@ -1736,7 +1736,7 @@ More examples
     $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
     $ dotenvx run -- node index.js
-    [dotenvx] injecting env (1) from .env
+    [dotenvx@1.X.X] injecting env (1) from .env
     Hello World
   ```
 
@@ -1905,7 +1905,7 @@ More examples
 
   ```sh
   $ node index.js
-  [dotenvx@1.24.5] injecting env (1) from .env
+  [dotenvx@1.X.X] injecting env (1) from .env
   Hello World
   ```
 
@@ -1935,7 +1935,7 @@ More examples
 
   ```sh
   $ node index.js
-  [dotenvx@1.24.5] injecting env (1) from .env.local, .env
+  [dotenvx@1.X.X] injecting env (1) from .env.local, .env
   Hello Me
   ```
 
@@ -1963,7 +1963,7 @@ More examples
 
   ```sh
   $ node index.js
-  [dotenvx@1.24.5] injecting env (1) from .env.local, .env
+  [dotenvx@1.X.X] injecting env (1) from .env.local, .env
   Hello World
   ```
 
@@ -2008,7 +2008,7 @@ More examples
 
   ```sh
   $ node index.js
-  [dotenvx@1.24.5] injecting env (1) from .env.local, .env
+  [dotenvx@1.X.X] injecting env (1) from .env.local, .env
   Hello World
   ```
 
