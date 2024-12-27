@@ -4,20 +4,12 @@ const { getColor, bold } = require('./colors')
 const levels = {
   error: 0,
   errorv: 0,
-  errorvp: 0,
-  errorvpb: 0,
   errornocolor: 0,
   warn: 1,
-  warnv: 1,
-  warnvp: 1,
-  warnvpb: 1,
   success: 2,
   successv: 2,
-  successvp: 2,
-  successvpb: 2,
   info: 2,
   help: 2,
-  help2: 2,
   blank: 2,
   verbose: 4,
   debug: 5,
@@ -29,7 +21,6 @@ const warn = getColor('orangered')
 const success = getColor('green')
 const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
 const help = getColor('dodgerblue')
-const help2 = getColor('gray')
 const verbose = getColor('plum')
 const debug = getColor('plum')
 
@@ -55,38 +46,22 @@ function formatMessage (level, message) {
       return error(formattedMessage)
     case 'errorv':
       return error(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'errorvp':
-      return error(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
-    case 'errorvpb':
-      return error(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     case 'errornocolor':
       return formattedMessage
     // warns
     case 'warn':
       return warn(formattedMessage)
-    case 'warnv':
-      return warn(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'warnvp':
-      return warn(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
-    case 'warnvpb':
-      return warn(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     // successes
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'
       return successv(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'successvp': // success with 'version' and precommit
-      return success(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
-    case 'successvpb': // success with 'version' and precommit
-      return success(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     // info
     case 'info':
       return formattedMessage
     // help
     case 'help':
       return help(formattedMessage)
-    case 'help2':
-      return help2(formattedMessage)
     // verbose
     case 'verbose':
       return verbose(formattedMessage)
@@ -106,24 +81,16 @@ const logger = {
   // errors
   error: (msg) => log('error', msg),
   errorv: (msg) => log('errorv', msg),
-  errorvp: (msg) => log('errorvp', msg),
-  errorvpb: (msg) => log('errorvpb', msg),
   errornocolor: (msg) => log('errornocolor', msg),
   // warns
   warn: (msg) => log('warn', msg),
-  warnv: (msg) => log('warnv', msg),
-  warnvp: (msg) => log('warnvp', msg),
-  warnvpb: (msg) => log('warnvpb', msg),
   // success
   success: (msg) => log('success', msg),
   successv: (msg) => log('successv', msg),
-  successvp: (msg) => log('successvp', msg),
-  successvpb: (msg) => log('successvpb', msg),
   // info
   info: (msg) => log('info', msg),
   // help
   help: (msg) => log('help', msg),
-  help2: (msg) => log('help2', msg),
   // verbose
   verbose: (msg) => log('verbose', msg),
   // debug

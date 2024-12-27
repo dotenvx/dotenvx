@@ -13,15 +13,15 @@ function precommit () {
     } = new Precommit(options).run()
 
     for (const warning of warnings) {
-      logger.warnv(warning.message)
+      logger.warn(warning.message)
       if (warning.help) {
         logger.help(warning.help)
       }
     }
 
-    logger.successvp(successMessage)
+    logger.success(successMessage)
   } catch (error) {
-    logger.errorvp(error.message)
+    logger.error(error.message)
     if (error.help) {
       logger.help(error.help)
     }
