@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.31.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.32.0...main)
+
+## [1.32.0](https://github.com/dotenvx/dotenvx/compare/v1.31.3...v1.32.0)
+
+### Added
+
+* add support for `precommit` on git modified state as well as git staged. this has utility for using `dotenvx ext precommit` without the `--install` flag in automated scripts and ci servers. ([#499](https://github.com/dotenvx/dotenvx/pull/499))
 
 ## [1.31.3](https://github.com/dotenvx/dotenvx/compare/v1.31.2...v1.31.3)
 
