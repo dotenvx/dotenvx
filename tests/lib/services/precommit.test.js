@@ -5,9 +5,12 @@ const childProcess = require('child_process')
 
 const Precommit = require('../../../src/lib/services/precommit')
 const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitHook')
+const packageJson = require('../../../src/lib/helpers/packageJson')
 const Ls = require('../../../src/lib/services/ls')
 
 const originalExecSync = childProcess.execSync
+
+const prefix = `[dotenvx@${packageJson.version}][precommit]`
 
 t.beforeEach((ct) => {
   sinon.restore()
@@ -53,7 +56,7 @@ t.test('#run (no gitignore file)', ct => {
   lsServiceStub.returns([])
 
   const { warnings } = new Precommit().run()
-  ct.same(warnings[0].message, '.gitignore missing')
+  ct.same(warnings[0].message, `${prefix} .gitignore missing`)
 
   existsSyncStub.restore()
   lsServiceStub.restore()
@@ -71,7 +74,7 @@ t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
 
   const { warnings } = new Precommit().run()
 
-  ct.same(warnings[0].message, '.env.example (currently ignored but should not be)')
+  ct.same(warnings[0].message, `${prefix} .env.example (currently ignored but should not be)`)
 
   readFileXStub.restore()
   readdirSyncStub.restore()
@@ -89,7 +92,7 @@ t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
   childProcess.execSync.returns(Buffer.from('.env.vault'))
 
   const { warnings } = new Precommit().run()
-  ct.same(warnings[0].message, '.env.vault (currently ignored but should not be)')
+  ct.same(warnings[0].message, `${prefix} .env.vault (currently ignored but should not be)`)
 
   readFileXStub.restore()
   readdirSyncStub.restore()
@@ -116,7 +119,7 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, '.env.production not protected (encrypted or gitignored)')
+    ct.same(error.message, `${prefix} .env.production not protected (encrypted or gitignored)`)
   }
 
   readFileXStub.restore()
@@ -143,7 +146,7 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isFil
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, '.env.production not protected (encrypted or gitignored)')
+    ct.same(error.message, `${prefix} .env.production not protected (encrypted or gitignored)`)
   }
 
   readFileXStub.restore()
@@ -168,7 +171,7 @@ t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, 'packages/app/.env.production not protected (encrypted or gitignored)')
+    ct.same(error.message, `${prefix} packages/app/.env.production not protected (encrypted or gitignored)`)
   }
 
   lsServiceStub.restore()

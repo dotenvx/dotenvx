@@ -113,18 +113,6 @@ t.test('logger.successvpb', (ct) => {
   ct.end()
 })
 
-t.test('logger.successvp', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.successvp(message)
-  })
-
-  ct.equal(stdout, `${getColor('green')(`[dotenvx@${packageJson.version}][precommit] message1`)}\n`)
-
-  ct.end()
-})
-
 t.test('logger.successv', (ct) => {
   const message = 'message1'
 
@@ -161,18 +149,6 @@ t.test('logger.warnvpb', (ct) => {
   ct.end()
 })
 
-t.test('logger.warnvp', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.warnvp(message)
-  })
-
-  ct.equal(stdout, `${getColor('orangered')(`[dotenvx@${packageJson.version}][precommit] message1`)}\n`)
-
-  ct.end()
-})
-
 t.test('logger.warnv', (ct) => {
   const message = 'message1'
 
@@ -205,18 +181,6 @@ t.test('logger.errorvpb', (ct) => {
   })
 
   ct.equal(stdout, `${bold(getColor('red')(`[dotenvx@${packageJson.version}][prebuild] message1`))}\n`)
-
-  ct.end()
-})
-
-t.test('logger.errorvp', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.errorvp(message)
-  })
-
-  ct.equal(stdout, `${bold(getColor('red')(`[dotenvx@${packageJson.version}][precommit] message1`))}\n`)
 
   ct.end()
 })

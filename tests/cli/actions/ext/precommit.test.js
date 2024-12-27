@@ -20,11 +20,11 @@ t.test('precommit - successMessage', (ct) => {
     warnings: []
   })
 
-  const loggerSuccessStub = sinon.stub(logger, 'successvp')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
 
   precommit.call(fakeContext)
 
-  ct.ok(loggerSuccessStub.calledWith('success'), 'logger.successvp logs')
+  ct.ok(loggerSuccessStub.calledWith('success'), 'logger.success logs')
 
   ct.end()
 })
@@ -38,14 +38,14 @@ t.test('precommit - success with warnings', (ct) => {
     warnings: [warning]
   })
 
-  const loggerSuccessStub = sinon.stub(logger, 'successvp')
-  const loggerWarnStub = sinon.stub(logger, 'warnv')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   precommit.call(fakeContext)
 
-  ct.ok(loggerSuccessStub.calledWith('success (with 1 warning)'), 'logger.successvp logs')
-  ct.ok(loggerWarnStub.calledWith('.gitignore missing'), 'logger.warnv logs')
+  ct.ok(loggerSuccessStub.calledWith('success (with 1 warning)'), 'logger.success logs')
+  ct.ok(loggerWarnStub.calledWith('.gitignore missing'), 'logger.warn logs')
   ct.ok(loggerHelpStub.calledWith('? add it with [touch .gitignore]'), 'logger.help logs')
 
   ct.end()
@@ -58,13 +58,13 @@ t.test('precommit - error raised', (ct) => {
   })
 
   const processExitStub = sinon.stub(process, 'exit')
-  const loggerErrorStub = sinon.stub(logger, 'errorvp')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   precommit.call(fakeContext)
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
-  ct.ok(loggerErrorStub.calledWith('An error occurred'), 'logger.successvp logs')
+  ct.ok(loggerErrorStub.calledWith('An error occurred'), 'logger.success logs')
   ct.ok(loggerHelpStub.calledWith('Help message for error'), 'logger.help logs')
 
   ct.end()
