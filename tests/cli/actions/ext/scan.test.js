@@ -25,14 +25,13 @@ t.test('scan - gitleaks not installed', (ct) => {
   const processExitStub = sinon.stub(process, 'exit')
   const consoleErrorStub = sinon.stub(console, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
-  const loggerHelp2Stub = sinon.stub(logger, 'help2')
 
   scan.call(fakeContext)
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleErrorStub.calledWith('gitleaks: command not found'), 'console.error logs')
   ct.ok(loggerHelpStub.calledWith('? install gitleaks:      [brew install gitleaks]'), 'logger.help logs')
-  ct.ok(loggerHelp2Stub.calledWith('? other install options: [https://github.com/gitleaks/gitleaks]'), 'logger.help2 logs')
+  ct.ok(loggerHelpStub.calledWith('? other install options: [https://github.com/gitleaks/gitleaks]'), 'logger.help logs')
 
   ct.end()
 })

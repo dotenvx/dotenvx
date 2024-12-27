@@ -6,12 +6,10 @@ const levels = {
   errorv: 0,
   errornocolor: 0,
   warn: 1,
-  warnv: 1,
   success: 2,
   successv: 2,
   info: 2,
   help: 2,
-  help2: 2,
   blank: 2,
   verbose: 4,
   debug: 5,
@@ -23,7 +21,6 @@ const warn = getColor('orangered')
 const success = getColor('green')
 const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
 const help = getColor('dodgerblue')
-const help2 = getColor('gray')
 const verbose = getColor('plum')
 const debug = getColor('plum')
 
@@ -54,8 +51,6 @@ function formatMessage (level, message) {
     // warns
     case 'warn':
       return warn(formattedMessage)
-    case 'warnv':
-      return warn(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
     // successes
     case 'success':
       return success(formattedMessage)
@@ -67,8 +62,6 @@ function formatMessage (level, message) {
     // help
     case 'help':
       return help(formattedMessage)
-    case 'help2':
-      return help2(formattedMessage)
     // verbose
     case 'verbose':
       return verbose(formattedMessage)
@@ -91,7 +84,6 @@ const logger = {
   errornocolor: (msg) => log('errornocolor', msg),
   // warns
   warn: (msg) => log('warn', msg),
-  warnv: (msg) => log('warnv', msg),
   // success
   success: (msg) => log('success', msg),
   successv: (msg) => log('successv', msg),
@@ -99,7 +91,6 @@ const logger = {
   info: (msg) => log('info', msg),
   // help
   help: (msg) => log('help', msg),
-  help2: (msg) => log('help2', msg),
   // verbose
   verbose: (msg) => log('verbose', msg),
   // debug

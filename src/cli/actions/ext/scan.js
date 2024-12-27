@@ -12,7 +12,7 @@ function scan () {
   } catch (error) {
     console.error('gitleaks: command not found')
     logger.help('? install gitleaks:      [brew install gitleaks]')
-    logger.help2('? other install options: [https://github.com/gitleaks/gitleaks]')
+    logger.help('? other install options: [https://github.com/gitleaks/gitleaks]')
     process.exit(1)
     return
   }

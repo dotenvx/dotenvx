@@ -65,18 +65,6 @@ t.test('logger.verbose', (ct) => {
   ct.end()
 })
 
-t.test('logger.help2', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.help2(message)
-  })
-
-  ct.equal(stdout, `${getColor('gray')('message1')}\n`)
-
-  ct.end()
-})
-
 t.test('logger.help', (ct) => {
   const message = 'message1'
 
@@ -121,18 +109,6 @@ t.test('logger.success', (ct) => {
   })
 
   ct.equal(stdout, `${getColor('green')('message1')}\n`)
-
-  ct.end()
-})
-
-t.test('logger.warnv', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.warnv(message)
-  })
-
-  ct.equal(stdout, `${getColor('orangered')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
