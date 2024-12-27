@@ -4,14 +4,11 @@ const { getColor, bold } = require('./colors')
 const levels = {
   error: 0,
   errorv: 0,
-  errorvpb: 0,
   errornocolor: 0,
   warn: 1,
   warnv: 1,
-  warnvpb: 1,
   success: 2,
   successv: 2,
-  successvpb: 2,
   info: 2,
   help: 2,
   help2: 2,
@@ -52,8 +49,6 @@ function formatMessage (level, message) {
       return error(formattedMessage)
     case 'errorv':
       return error(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'errorvpb':
-      return error(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     case 'errornocolor':
       return formattedMessage
     // warns
@@ -61,15 +56,11 @@ function formatMessage (level, message) {
       return warn(formattedMessage)
     case 'warnv':
       return warn(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'warnvpb':
-      return warn(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     // successes
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'
       return successv(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'successvpb': // success with 'version' and precommit
-      return success(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     // info
     case 'info':
       return formattedMessage
@@ -97,16 +88,13 @@ const logger = {
   // errors
   error: (msg) => log('error', msg),
   errorv: (msg) => log('errorv', msg),
-  errorvpb: (msg) => log('errorvpb', msg),
   errornocolor: (msg) => log('errornocolor', msg),
   // warns
   warn: (msg) => log('warn', msg),
   warnv: (msg) => log('warnv', msg),
-  warnvpb: (msg) => log('warnvpb', msg),
   // success
   success: (msg) => log('success', msg),
   successv: (msg) => log('successv', msg),
-  successvpb: (msg) => log('successvpb', msg),
   // info
   info: (msg) => log('info', msg),
   // help

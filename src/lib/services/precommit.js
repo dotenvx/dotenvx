@@ -62,8 +62,15 @@ class Precommit {
 
               // if contents are encrypted don't raise an error
               if (!encrypted) {
-                const error = new Error(`[dotenvx@${packageJson.version}][precommit] ${file} not protected (encrypted or gitignored)`)
-                error.help = `[dotenvx@${packageJson.version}][precommit] ⮕  run [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
+                let errorMsg = `[dotenvx@${packageJson.version}][precommit] ${file} not protected (encrypted or gitignored)`
+                let errorHelp = `[dotenvx@${packageJson.version}][precommit] ⮕  run [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
+                if (file.includes('.env.keys')) {
+                  errorMsg = `[dotenvx@${packageJson.version}][precommit] ${file} not protected (gitignored)`
+                  errorHelp = `[dotenvx@${packageJson.version}][precommit] ⮕  run [dotenvx ext gitignore --pattern ${file}]`
+                }
+
+                const error = new Error(errorMsg)
+                error.help = errorHelp
                 throw error
               }
             }

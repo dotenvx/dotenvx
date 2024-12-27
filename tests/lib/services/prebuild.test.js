@@ -3,14 +3,13 @@ const fsx = require('../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 const childProcess = require('child_process')
 
-const Precommit = require('../../../src/lib/services/precommit')
-const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitHook')
+const Prebuild = require('../../../src/lib/services/prebuild')
 const packageJson = require('../../../src/lib/helpers/packageJson')
 const Ls = require('../../../src/lib/services/ls')
 
 const originalExecSync = childProcess.execSync
 
-const prefix = `[dotenvx@${packageJson.version}][precommit]`
+const prefix = `[dotenvx@${packageJson.version}][prebuild]`
 
 t.beforeEach((ct) => {
   sinon.restore()
@@ -23,64 +22,52 @@ t.afterEach((ct) => {
 
 t.test('#run', ct => {
   sinon.stub(Ls.prototype, 'run').returns([])
-  const precommit = new Precommit()
-  const installPrecommitHookStub = sinon.stub(precommit, '_installPrecommitHook')
+  const prebuild = new Prebuild()
 
-  precommit.run()
-
-  t.ok(installPrecommitHookStub.notCalled, '_installPrecommitHook should not be called')
+  prebuild.run()
 
   ct.end()
 })
 
-t.test('#run (install: true)', ct => {
-  const precommit = new Precommit({ install: true })
-  const installPrecommitHookStub = sinon.stub(precommit, '_installPrecommitHook')
-  installPrecommitHookStub.returns({ successMessage: 'success' })
-
-  precommit.run()
-
-  t.ok(installPrecommitHookStub.called, '_installPrecommitHook should be called')
-
-  ct.end()
-})
-
-t.test('#run (no gitignore file)', ct => {
+t.test('#run (no dockerignore file)', ct => {
   sinon.stub(fsx, 'existsSync').returns(false)
   sinon.stub(Ls.prototype, 'run').returns([])
 
-  const { warnings } = new Precommit().run()
-  ct.same(warnings[0].message, `${prefix} .gitignore missing`)
+  const { warnings } = new Prebuild().run()
+  ct.same(warnings[0].message, `${prefix} .dockerignore missing`)
 
   ct.end()
 })
 
-t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
+t.test('#run (dockerignore is ignoring .env.example file and shouldn\'t)', ct => {
+  sinon.stub(fsx, 'existsSync').returns(true)
   sinon.stub(fsx, 'readFileX').returns('.env*')
   sinon.stub(fsx, 'readdirSync').returns(['.env.example'])
   sinon.stub(Ls.prototype, 'run').returns(['.env.example'])
   childProcess.execSync.returns(Buffer.from('.env.example'))
 
-  const { warnings } = new Precommit().run()
+  const { warnings } = new Prebuild().run()
 
   ct.same(warnings[0].message, `${prefix} .env.example (currently ignored but should not be)`)
 
   ct.end()
 })
 
-t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
+t.test('#run (dockerignore is ignoring .env.vault file and shouldn\'t)', ct => {
+  sinon.stub(fsx, 'existsSync').returns(true)
   sinon.stub(fsx, 'readFileX').returns('.env*')
   sinon.stub(fsx, 'readdirSync').returns(['.env.vault'])
   sinon.stub(Ls.prototype, 'run').returns(['.env.vault'])
   childProcess.execSync.returns(Buffer.from('.env.vault'))
 
-  const { warnings } = new Precommit().run()
+  const { warnings } = new Prebuild().run()
   ct.same(warnings[0].message, `${prefix} .env.vault (currently ignored but should not be)`)
 
   ct.end()
 })
 
-t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
+t.test('#run (dockerignore is not ignore .env.production file and should)', ct => {
+  sinon.stub(fsx, 'existsSync').returns(true)
   sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
   childProcess.execSync.returns(Buffer.from('.env.production'))
   const readFileXStub = sinon.stub(fsx, 'readFileX')
@@ -95,16 +82,17 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
   })
 
   try {
-    new Precommit().run()
+    new Prebuild().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.production not protected (encrypted or gitignored)`)
+    ct.same(error.message, `${prefix} .env.production not protected (encrypted or dockerignored)`)
   }
 
   ct.end()
 })
 
-t.test('#run (gitignore is not ignore .env.keys file and should)', ct => {
+t.test('#run (dockerignore is not ignore .env.keys file and should)', ct => {
+  sinon.stub(fsx, 'existsSync').returns(true)
   sinon.stub(Ls.prototype, 'run').returns(['.env.keys'])
   childProcess.execSync.returns(Buffer.from('.env.keys'))
   const readFileXStub = sinon.stub(fsx, 'readFileX')
@@ -119,16 +107,16 @@ t.test('#run (gitignore is not ignore .env.keys file and should)', ct => {
   })
 
   try {
-    new Precommit().run()
+    new Prebuild().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.keys not protected (gitignored)`)
+    ct.same(error.message, `${prefix} .env.keys not protected (dockerignored)`)
   }
 
   ct.end()
 })
 
-t.test('#run (gitignore is not ignore .env.production file and should) AND isFileToBeCommited raises an error (should default to true on the filename)', ct => {
+t.test('#run (dockerignore is not ignore .env.production file and should) AND isFileToBeCommited raises an error (should default to true on the filename)', ct => {
   sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
   childProcess.execSync.throws(new Error('Mock Error'))
   const readFileXStub = sinon.stub(fsx, 'readFileX')
@@ -143,16 +131,16 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isFil
   })
 
   try {
-    new Precommit().run()
+    new Prebuild().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.production not protected (encrypted or gitignored)`)
+    ct.same(error.message, `${prefix} .env.production not protected (encrypted or dockerignored)`)
   }
 
   ct.end()
 })
 
-t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
+t.test('#run (.env files in subfolders throw error in prebuild hook)', ct => {
   sinon.stub(Ls.prototype, 'run').returns(['packages/app/.env.production'])
   childProcess.execSync.returns(Buffer.from('packages/app/.env.production'))
 
@@ -165,22 +153,11 @@ t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
   })
 
   try {
-    new Precommit().run()
+    new Prebuild().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} packages/app/.env.production not protected (encrypted or gitignored)`)
+    ct.same(error.message, `${prefix} packages/app/.env.production not protected (encrypted or dockerignored)`)
   }
-
-  ct.end()
-})
-
-t.test('_installPrecommitHook calls InstallPrecommitHook.run', ct => {
-  const stub = sinon.stub(InstallPrecommitHook.prototype, 'run').returns({})
-
-  const precommit = new Precommit()
-  precommit._installPrecommitHook()
-
-  t.ok(stub.called, 'new InstallPrecommitHook().run() called')
 
   ct.end()
 })
