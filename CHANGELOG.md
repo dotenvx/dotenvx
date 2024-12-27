@@ -8,7 +8,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* add support for `precommit` on git modified state as well as git staged. this has utility for using `dotenvx ext precommit` without the `--install` flag in automated scripts and ci servers. ([#499](https://github.com/dotenvx/dotenvx/pull/499))
+* add encrypted check support for `ext prebuild` ([#501](https://github.com/dotenvx/dotenvx/pull/501))
+
+### Changed
+
+* modify `ext precommit` to check git modified state as well as git staged state - useful for using `dotenvx ext precommit` without the `--install` flag in automated scripts and ci. ([#499](https://github.com/dotenvx/dotenvx/pull/499))
+
+### Removed
+
+* remove internal logger methods `errorvp, errorvpb, warnv, warnvp, warnvpb, successvp, successvpb, help2` ([#501](https://github.com/dotenvx/dotenvx/pull/501))
 
 ## [1.31.3](https://github.com/dotenvx/dotenvx/compare/v1.31.2...v1.31.3)
 
