@@ -5,6 +5,7 @@ const ignore = require('ignore')
 const Ls = require('../services/ls')
 
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
+const packageJson = require('./../helpers/packageJson')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 const childProcess = require('child_process')
 const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
@@ -32,8 +33,7 @@ class Precommit {
 
       // 1. check for .gitignore file
       if (!fsx.existsSync('.gitignore')) {
-        const warning = new Error('.gitignore missing')
-        warning.help = '? add it with [touch .gitignore]'
+        const warning = new Error(`[dotenvx@${packageJson.version}][precommit] .gitignore missing`)
         warnings.push(warning)
       } else {
         gitignore = fsx.readFileX('.gitignore')
@@ -51,8 +51,8 @@ class Precommit {
           // check if that file is being ignored
           if (ig.ignores(file)) {
             if (file === '.env.example' || file === '.env.vault') {
-              const warning = new Error(`${file} (currently ignored but should not be)`)
-              warning.help = `? add !${file} to .gitignore [echo "!${file}" >> .gitignore]`
+              const warning = new Error(`[dotenvx@${packageJson.version}][precommit] ${file} (currently ignored but should not be)`)
+              warning.help = `[dotenvx@${packageJson.version}][precommit] ⮕  run [dotenvx ext gitignore --pattern !${file}]`
               warnings.push(warning)
             }
           } else {
@@ -62,8 +62,8 @@ class Precommit {
 
               // if contents are encrypted don't raise an error
               if (!encrypted) {
-                const error = new Error(`${file} not protected (encrypted or gitignored)`)
-                error.help = `? encrypt it [dotenvx encrypt -f ${file}] or gitignore it [echo "${file}" >> .gitignore]`
+                const error = new Error(`[dotenvx@${packageJson.version}][precommit] ${file} not protected (encrypted or gitignored)`)
+                error.help = `[dotenvx@${packageJson.version}][precommit] ⮕  run [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
                 throw error
               }
             }
@@ -71,9 +71,9 @@ class Precommit {
         }
       })
 
-      let successMessage = `.env files (${count}) protected (encrypted or gitignored)`
+      let successMessage = `[dotenvx@${packageJson.version}][precommit] .env files (${count}) protected (encrypted or gitignored)`
       if (count === 0) {
-        successMessage = 'zero .env files'
+        successMessage = `[dotenvx@${packageJson.version}][precommit] zero .env files`
       }
       if (warnings.length > 0) {
         successMessage += ` with warnings (${warnings.length})`

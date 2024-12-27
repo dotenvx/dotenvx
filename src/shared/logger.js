@@ -4,16 +4,13 @@ const { getColor, bold } = require('./colors')
 const levels = {
   error: 0,
   errorv: 0,
-  errorvp: 0,
   errorvpb: 0,
   errornocolor: 0,
   warn: 1,
   warnv: 1,
-  warnvp: 1,
   warnvpb: 1,
   success: 2,
   successv: 2,
-  successvp: 2,
   successvpb: 2,
   info: 2,
   help: 2,
@@ -55,8 +52,6 @@ function formatMessage (level, message) {
       return error(formattedMessage)
     case 'errorv':
       return error(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'errorvp':
-      return error(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'errorvpb':
       return error(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     case 'errornocolor':
@@ -66,8 +61,6 @@ function formatMessage (level, message) {
       return warn(formattedMessage)
     case 'warnv':
       return warn(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'warnvp':
-      return warn(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'warnvpb':
       return warn(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     // successes
@@ -75,8 +68,6 @@ function formatMessage (level, message) {
       return success(formattedMessage)
     case 'successv': // success with 'version'
       return successv(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'successvp': // success with 'version' and precommit
-      return success(`[dotenvx@${packageJson.version}][precommit] ${formattedMessage}`)
     case 'successvpb': // success with 'version' and precommit
       return success(`[dotenvx@${packageJson.version}][prebuild] ${formattedMessage}`)
     // info
@@ -106,18 +97,15 @@ const logger = {
   // errors
   error: (msg) => log('error', msg),
   errorv: (msg) => log('errorv', msg),
-  errorvp: (msg) => log('errorvp', msg),
   errorvpb: (msg) => log('errorvpb', msg),
   errornocolor: (msg) => log('errornocolor', msg),
   // warns
   warn: (msg) => log('warn', msg),
   warnv: (msg) => log('warnv', msg),
-  warnvp: (msg) => log('warnvp', msg),
   warnvpb: (msg) => log('warnvpb', msg),
   // success
   success: (msg) => log('success', msg),
   successv: (msg) => log('successv', msg),
-  successvp: (msg) => log('successvp', msg),
   successvpb: (msg) => log('successvpb', msg),
   // info
   info: (msg) => log('info', msg),
