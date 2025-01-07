@@ -80,7 +80,7 @@ tar -xzf dotenvx.tar.gz
 </details>
 
 
-<details><summary>or with windows 🪟</summary><br>
+<details><summary>or windows 🪟</summary><br>
 
 ```sh
 winget install dotenvx
