@@ -2008,7 +2008,7 @@ More examples
 
   ```sh
   $ node index.js
-  [dotenvx@1.X.X] injecting env (1) from .env.local, .env
+  [dotenvx@1.X.X] injecting env (1) from .env
   Hello World
   ```
 
