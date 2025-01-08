@@ -2024,7 +2024,7 @@ More examples
 
   ```js
   // index.js
-  require('@dotenvx/dotenvx').config({envKeysFile: '../../.env.keys'})
+  require('@dotenvx/dotenvx').config({path: ['.env'], envKeysFile: '../../.env.keys'})
   ```
 
   </details>
