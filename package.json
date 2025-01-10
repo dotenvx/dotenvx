@@ -19,6 +19,19 @@
   ],
   "main": "src/lib/main.js",
   "types": "src/lib/main.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/lib/main.d.ts",
+      "default": "./src/lib/main.js"
+    },
+    "./config": {
+      "types": "./src/lib/config.d.ts",
+      "default": "./src/lib/config.js"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    }
+  },
   "bin": {
     "dotenvx": "./src/cli/dotenvx.js",
     "git-dotenvx": "./src/cli/dotenvx.js"
