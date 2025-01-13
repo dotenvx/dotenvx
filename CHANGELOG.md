@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.32.1...main)
 
+### Added
+
+* support ESM import convenience `import '@dotenvx/dotenvx/config'` ([#508](https://github.com/dotenvx/dotenvx/pull/508))
+
 ## [1.32.1](https://github.com/dotenvx/dotenvx/compare/v1.32.0...v1.32.1)
 
 ### Changed
