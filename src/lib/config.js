@@ -1,1 +1,1 @@
-require("./main.js").config();
+require('./main.js').config()
