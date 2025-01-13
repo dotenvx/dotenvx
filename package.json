@@ -22,15 +22,12 @@
   "exports": {
     ".": {
       "types": "./src/lib/main.d.ts",
+      "require": "./src/lib/main.js",
       "default": "./src/lib/main.js"
     },
-    "./config": {
-      "types": "./src/lib/config.d.ts",
-      "default": "./src/lib/config.js"
-    },
-    "./package.json": {
-      "default": "./package.json"
-    }
+    "./config": "./src/lib/config.js",
+    "./config.js": "./src/lib/config.js",
+    "./package.json": "./package.json"
   },
   "bin": {
     "dotenvx": "./src/cli/dotenvx.js",
