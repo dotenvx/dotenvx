@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.33.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.34.0...main)
+
+## [1.34.0](https://github.com/dotenvx/dotenvx/compare/v1.33.0...v1.34.0)
+
+### Added
+
+* `main.set` method now writes to files ([#517](https://github.com/dotenvx/dotenvx/pull/517))
 
 ## [1.33.0](https://github.com/dotenvx/dotenvx/compare/v1.32.1...v1.33.0)
 
