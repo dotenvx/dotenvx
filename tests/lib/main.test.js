@@ -1,7 +1,10 @@
 const t = require('tap')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire').noCallThru()
 
-const main = require('../../src/lib/main')
+const main = proxyquire('../../src/lib/main', {
+  '../../src/lib/helpers/isIgnoringDotenvKeys': () => true
+})
 
 const Ls = require('../../src/lib/services/ls')
 const Run = require('../../src/lib/services/run')
@@ -9,8 +12,14 @@ const Sets = require('../../src/lib/services/sets')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
 
+const fsx = require('../../src/lib/helpers/fsx')
+const { logger } = require('../../src/shared/logger')
+
+let writeStub
+
 t.beforeEach((ct) => {
   sinon.restore()
+  writeStub = sinon.stub(fsx, 'writeFileX')
   process.env = {}
 })
 
@@ -330,7 +339,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
 
 t.test('set calls Sets.run', ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
-  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+  stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
   main.set('KEY', 'value')
 
@@ -344,7 +353,7 @@ t.test('set calls Sets.run', ct => {
 
 t.test('set calls Sets.run with encrypt false', ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
-  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+  stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
   main.set('KEY', 'value', { encrypt: false })
 
@@ -358,7 +367,7 @@ t.test('set calls Sets.run with encrypt false', ct => {
 
 t.test('set calls Sets.run with plain true', ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
-  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+  stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
   main.set('KEY', 'value', { plain: true })
 
@@ -372,13 +381,252 @@ t.test('set calls Sets.run with plain true', ct => {
 
 t.test('set calls Sets.run with custom envKeysFile', ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
-  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+  stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
   main.set('KEY', 'value', { envKeysFile: 'path/to/.env.keys' })
 
   t.ok(stub.called, 'new Sets().run() called')
 
   t.equal(stub.thisValues[0].envKeysFilepath, 'path/to/.env.keys', 'Sets was called with custom .env.keys path')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - no changes', ct => {
+  const stub = sinon.stub(Sets.prototype, 'run')
+  const processedEnvs = [{
+    key: 'HELLO',
+    value: 'World',
+    filepath: '.env',
+    envFilepath: '.env',
+    envSrc: 'HELLO=World',
+    privateKeyAdded: false,
+    privateKeyName: null,
+    privateKey: null,
+    error: null
+  }]
+  stub.returns({ processedEnvs, changedFilepaths: [], unchangedFilepaths: [] })
+
+  main.set('KEY', 'value')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.equal(stub.thisValues[0].encrypt, true, 'Sets was called with encrypt true')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - no changes', ct => {
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: false,
+      privateKeyName: null,
+      privateKey: null,
+      error: null
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+
+  main.set('HELLO', 'World')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger info')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - changes', ct => {
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: false,
+      privateKeyName: null,
+      privateKey: null,
+      error: null
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+
+  main.set('HELLO', 'World')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(loggerInfoStub.notCalled, 'logger info')
+  t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - MISSING_ENV_FILE', ct => {
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerWarnStub = sinon.stub(logger, 'warn')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+
+  const error = new Error('Mock Error')
+  error.code = 'MISSING_ENV_FILE'
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: false,
+      privateKeyName: null,
+      privateKey: null,
+      error
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+
+  main.set('HELLO', 'World')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger info')
+  t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
+  t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx set]'), 'logger help')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - OTHER_ERROR', ct => {
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerWarnStub = sinon.stub(logger, 'warn')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+
+  const error = new Error('Mock Error')
+  error.code = 'OTHER_ERROR'
+  error.help = 'some help'
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: false,
+      privateKeyName: null,
+      privateKey: null,
+      error
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+
+  main.set('HELLO', 'World')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger info')
+  t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
+  t.ok(loggerHelpStub.calledWith('some help'), 'logger help')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - privateKeyAdded', ct => {
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envKeysFilepath: '.env.keys',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+
+  main.set('HELLO', 'World')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(loggerInfoStub.notCalled, 'logger info')
+  t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys', ct => {
+  const mainNotIgnoring = proxyquire('../../src/lib/main', {
+    '../../src/lib/helpers/isIgnoringDotenvKeys': () => false
+  })
+
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envKeysFilepath: '.env.keys',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+
+  mainNotIgnoring.set('HELLO', 'World')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(loggerInfoStub.notCalled, 'logger info')
+  t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
 
   stub.restore()
 
