@@ -15,6 +15,8 @@ const Genexample = require('./services/genexample')
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
 const Parse = require('./helpers/parse')
+const fsx = require('./helpers/fsx')
+const isIgnoringDotenvKeys = require('./helpers/isIgnoringDotenvKeys')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -169,13 +171,67 @@ const set = function (key, value, options = {}) {
     encrypt = false
   }
 
-  // envKeysFile
-  const envKeysFile = options.envKeysFile
-
-  // envs
   const envs = buildEnvs(options)
+  const envKeysFilepath = options.envKeysFile
 
-  return new Sets(key, value, envs, encrypt, envKeysFile).run()
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
+
+  let withEncryption = ''
+
+  if (encrypt) {
+    withEncryption = ' with encryption'
+  }
+
+  for (const processedEnv of processedEnvs) {
+    logger.verbose(`setting for ${processedEnv.envFilepath}`)
+
+    if (processedEnv.error) {
+      if (processedEnv.error.code === 'MISSING_ENV_FILE') {
+        logger.warn(processedEnv.error.message)
+        logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx set]`)
+      } else {
+        logger.warn(processedEnv.error.message)
+        if (processedEnv.error.help) {
+          logger.help(processedEnv.error.help)
+        }
+      }
+    } else {
+      fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+
+      logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
+      logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)
+    }
+  }
+
+  if (changedFilepaths.length > 0) {
+    logger.success(`✔ set ${key}${withEncryption} (${changedFilepaths.join(',')})`)
+  } else if (unchangedFilepaths.length > 0) {
+    logger.info(`no changes (${unchangedFilepaths})`)
+  } else {
+    // do nothing
+  }
+
+  for (const processedEnv of processedEnvs) {
+    if (processedEnv.privateKeyAdded) {
+      logger.success(`✔ key added to ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName})`)
+
+      if (!isIgnoringDotenvKeys()) {
+        logger.help('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
+      }
+
+      logger.help(`⮕  next run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get ${key}] to test decryption locally`)
+    }
+  }
+
+  return {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  }
 }
 
 /** @type {import('./main').ls} */
