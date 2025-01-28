@@ -19,7 +19,7 @@ npm install @dotenvx/dotenvx --save
 ```js
 // index.js
 require('@dotenvx/dotenvx').config()
-// or import('@dotenvx/dotenvx/config') if you're using esm
+// or import('@dotenvx/dotenvx/config') // for esm
 
 console.log(`Hello ${process.env.HELLO}`)
 ```
