@@ -194,6 +194,13 @@ export interface SetOptions {
    * Set a .env convention (available conventions: 'nextjs')
    */
   convention?: string;
+
+  /**
+   * Specify whether the variable has to be encrypted
+   * @default true
+   * @example require('@dotenvx/dotenvx').config(key, value, { encrypt: false } })
+   */
+  encrypt?: boolean;
 }
 
 export type SetOutput = {
