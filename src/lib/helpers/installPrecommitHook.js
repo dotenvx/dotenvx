@@ -3,15 +3,19 @@ const path = require('path')
 
 const HOOK_SCRIPT = `#!/bin/sh
 
-if ! command -v dotenvx 2>&1 >/dev/null
+if command -v dotenvx 2>&1 >/dev/null
 then
+  dotenvx ext precommit
+elif [ -x  node_modules/.bin/dotenvx ]
+then
+  npx dotenvx ext precommit
+else
   echo "[dotenvx][precommit] 'dotenvx' command not found"
   echo "[dotenvx][precommit] ? install it with [curl -fsS https://dotenvx.sh | sh]"
   echo "[dotenvx][precommit] ? other install options [https://dotenvx.com/docs/install]"
   exit 1
 fi
-
-dotenvx ext precommit`
+`
 
 class InstallPrecommitHook {
   constructor () {
