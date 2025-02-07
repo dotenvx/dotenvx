@@ -6,7 +6,7 @@ const HOOK_SCRIPT = `#!/bin/sh
 if command -v dotenvx 2>&1 >/dev/null
 then
   dotenvx ext precommit
-elif [ -x  node_modules/.bin/dotenvx ]
+elif npx dotenvx -V >/dev/null 2>&1
 then
   npx dotenvx ext precommit
 else
