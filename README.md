@@ -802,6 +802,8 @@ More examples
   Hello local
   ```
 
+  Note subsequent files do NOT override pre-existing variables defined in previous files or env. This follows historic principle. For example, above `local` wins – from the first file.
+
   </details>
 * <details><summary>`run --env HELLO=String`</summary><br>
 
@@ -830,6 +832,8 @@ More examples
   [dotenvx@1.X.X] injecting env (1) from .env.local, .env
   Hello World
   ```
+
+  Note that with `--overload` subsequent files DO override pre-existing variables defined in previous files.
 
   </details>
 * <details><summary>`DOTENV_PRIVATE_KEY=key run`</summary><br>
