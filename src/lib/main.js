@@ -238,6 +238,9 @@ const set = function (key, value, options = {}) {
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
 
+  // ignore
+  const ignore = options.ignore || []
+
   const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile).run()
 
   for (const error of errors || []) {
