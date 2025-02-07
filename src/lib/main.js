@@ -9,6 +9,7 @@ const { getColor, bold } = require('./../shared/colors')
 const Ls = require('./services/ls')
 const Run = require('./services/run')
 const Sets = require('./services/sets')
+const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
 
@@ -57,7 +58,6 @@ const config = function (options = {}) {
     let lastError
     /** @type {Record<string, string>} */
     const parsedAll = {}
-
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
         logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
@@ -234,6 +234,55 @@ const set = function (key, value, options = {}) {
   }
 }
 
+/* @type {import('./main').get} */
+const get = function (key, options = {}) {
+  const envs = buildEnvs(options)
+
+  const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile).run()
+
+  for (const error of errors || []) {
+    if (options.strict) throw error // throw immediately if strict
+
+    if (ignore.includes(error.code)) {
+      continue // ignore error
+    }
+
+    console.error(error.message)
+    if (error.help) {
+      console.error(error.help)
+    }
+  }
+
+  if (key) {
+    const single = parsed[key]
+    if (single === undefined) {
+      return undefined
+    } else {
+      return single
+    }
+  } else {
+    if (options.format === 'eval') {
+      let inline = ''
+      for (const [key, value] of Object.entries(parsed)) {
+        inline += `${key}=${escape(value)}\n`
+      }
+      inline = inline.trim()
+
+      return inline
+    } else if (options.format === 'shell') {
+      let inline = ''
+      for (const [key, value] of Object.entries(parsed)) {
+        inline += `${key}=${value} `
+      }
+      inline = inline.trim()
+
+      return inline
+    } else {
+      return parsed
+    }
+  }
+}
+
 /** @type {import('./main').ls} */
 const ls = function (directory, envFile, excludeEnvFile) {
   return new Ls(directory, envFile, excludeEnvFile).run()
@@ -260,6 +309,7 @@ module.exports = {
   parse,
   // actions related
   set,
+  get,
   ls,
   keypair,
   genexample,
