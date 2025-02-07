@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
+* `npx dotenvx precommit` support as a convenience ([#523](https://github.com/dotenvx/dotenvx/pull/523))
 * `main.get` method ([#524](https://github.com/dotenvx/dotenvx/pull/524))
 
 The addition of `main.get` facilitates what we term Decryption at Access, a concept explored in greater detail in our [whitepaper](https://dotenvx.com/dotenvx.pdf).
