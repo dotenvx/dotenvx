@@ -9,6 +9,7 @@ const main = proxyquire('../../src/lib/main', {
 const Ls = require('../../src/lib/services/ls')
 const Run = require('../../src/lib/services/run')
 const Sets = require('../../src/lib/services/sets')
+const Get = require('../../src/lib/services/get')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
 
@@ -629,6 +630,154 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys', ct => 
   t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
 
   stub.restore()
+
+  ct.end()
+})
+
+t.test('get calls Get.run', ct => {
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+  const result = main.get('KEY')
+  t.equal(result, 'value')
+
+  t.ok(stub.called, 'new Get().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('get calls Get.run undefined', ct => {
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: undefined }, errors: [] })
+
+  const result = main.get('KEY')
+  t.equal(result, undefined)
+
+  t.ok(stub.called, 'new Get().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('get calls Get.run with no key', ct => {
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+  const result = main.get(null)
+  t.equal(result.KEY, 'value')
+
+  t.ok(stub.called, 'new Get().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('get calls Get.run format eval', ct => {
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+  const result = main.get(null, { format: 'eval' })
+  t.equal(result, 'KEY=value')
+
+  t.ok(stub.called, 'new Get().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('get calls Get.run format shell', ct => {
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+  const result = main.get(null, { format: 'shell' })
+  t.equal(result, 'KEY=value')
+
+  t.ok(stub.called, 'new Get().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --strict it throws', ct => {
+  const processEnv = {}
+
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend'],
+    strict: true
+  }
+
+  try {
+    main.get('HELLO', options)
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.equal(error.code, 'MISSING_ENV_FILE')
+  }
+
+  ct.end()
+})
+
+t.test('get with Get.run errors', ct => {
+  const loggerErrorStub = sinon.stub(console, 'error')
+
+  const error = new Error('some error')
+  error.code = 'SOME_ERROR'
+  error.help = 'some help'
+  const errors = [error]
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors })
+
+  main.get('KEY')
+
+  t.ok(stub.called, 'new Get().run() called')
+  ct.ok(loggerErrorStub.called, 'console.error')
+
+  stub.restore()
+  loggerErrorStub.restore()
+
+  ct.end()
+})
+
+t.test('get with Get.run undefined errors', ct => {
+  const loggerErrorStub = sinon.stub(console, 'error')
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors: undefined })
+
+  main.get('KEY')
+
+  t.ok(stub.called, 'new Get().run() called')
+  ct.ok(loggerErrorStub.notCalled, 'console.error')
+
+  stub.restore()
+  loggerErrorStub.restore()
+
+  ct.end()
+})
+
+t.test('get with Get.run errors and ignore', ct => {
+  const loggerErrorStub = sinon.stub(console, 'error')
+
+  const error = new Error('some error')
+  error.code = 'SOME_ERROR'
+  error.help = 'some help'
+  const errors = [error]
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors })
+
+  main.get('KEY', { ignore: ['SOME_ERROR'] })
+
+  t.ok(stub.called, 'new Get().run() called')
+  ct.ok(loggerErrorStub.notCalled, 'console.error')
+
+  stub.restore()
+  loggerErrorStub.restore()
 
   ct.end()
 })
