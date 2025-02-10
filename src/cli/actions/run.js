@@ -62,12 +62,12 @@ async function run () {
       }
 
       for (const error of processedEnv.errors || []) {
-        if (options.strict) throw error // throw immediately if strict
-
         if (ignore.includes(error.code)) {
           logger.verbose(`ignored: ${error.message}`)
           continue // ignore error
         }
+
+        if (options.strict) throw error // throw if strict and not ignored
 
         if (error.code === 'MISSING_ENV_FILE') {
           if (!options.convention) { // do not output error for conventions (too noisy)
