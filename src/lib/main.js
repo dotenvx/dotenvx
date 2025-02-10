@@ -69,11 +69,12 @@ const config = function (options = {}) {
       }
 
       for (const error of processedEnv.errors || []) {
-        if (strict) throw error // throw immediately if strict
-
         if (ignore.includes(error.code)) {
+          logger.verbose(`ignored: ${error.message}`)
           continue // ignore error
         }
+
+        if (strict) throw error // throw if strict and not ignored
 
         lastError = error // surface later in { error }
 
