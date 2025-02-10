@@ -245,11 +245,11 @@ const get = function (key, options = {}) {
   const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile).run()
 
   for (const error of errors || []) {
-    if (options.strict) throw error // throw immediately if strict
-
     if (ignore.includes(error.code)) {
       continue // ignore error
     }
+
+    if (options.strict) throw error // throw immediately if strict
 
     console.error(error.message)
     if (error.help) {
