@@ -6,6 +6,8 @@
 * multi-environment
 * encrypted envs
 
+[Read the whitepaper](https://dotenvx.com/dotenvx.pdf)
+
 &nbsp;
 
 
