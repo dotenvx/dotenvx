@@ -503,6 +503,43 @@ t.test('run - MISSING_ENV_FILE --ignore flag', async ct => {
   ct.end()
 })
 
+t.test('run - MISSING_ENV_FILE --strict flag and MISSING_ENV_FILE --ignore flag', async ct => {
+  const processExitStub = sinon.stub(process, 'exit')
+  const error = new Error('Mock Error')
+  error.code = 'MISSING_ENV_FILE'
+  error.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
+  const optsStub = sinon.stub().returns({ strict: true, ignore: ['MISSING_ENV_FILE'] })
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--strict', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [{
+      errors: [error],
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {},
+      injected: {},
+      preExisted: {}
+    }],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const consoleErrorStub = sinon.stub(console, 'error')
+
+  await run.call(fakeContext)
+
+  ct.ok(stub.called, 'new Run().run() called')
+  ct.ok(consoleErrorStub.notCalled, 'console.error')
+  ct.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
+  ct.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
+  ct.ok(processExitStub.notCalled, 'process.exit should NOT be called')
+
+  ct.end()
+})
+
 t.test('run - OTHER_ERROR', async ct => {
   const error = new Error('Mock Error')
   error.code = 'OTHER_ERROR'

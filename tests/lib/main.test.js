@@ -338,6 +338,30 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
   ct.end()
 })
 
+t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --strict but error ALSO ignored', ct => {
+  const loggerErrorStub = sinon.stub(console, 'error')
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  const processEnv = {}
+  const options = {
+    processEnv,
+    path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend'],
+    strict: true,
+    ignore: ['MISSING_ENV_FILE']
+  }
+
+  main.config(options)
+
+  ct.ok(stub.called, 'new Run().run() called')
+  ct.ok(loggerErrorStub.notCalled, 'console.error')
+
+  stub.restore()
+  loggerErrorStub.restore()
+
+  ct.end()
+})
+
 t.test('set calls Sets.run', ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
