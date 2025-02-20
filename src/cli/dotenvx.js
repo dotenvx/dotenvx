@@ -135,6 +135,20 @@ program.command('decrypt')
     decryptAction.apply(this, args)
   })
 
+// dotenvx rotate
+const rotateAction = require('./actions/rotate')
+program.command('rotate')
+  .description('rotate keypair(s) and re-encrypt .env file(s)')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
+  .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
+  .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
+  .option('--stdout', 'send to stdout')
+  .action(function (...args) {
+    this.envs = envs
+    rotateAction.apply(this, args)
+  })
+
 // dotenvx keypair
 const keypairAction = require('./actions/keypair')
 program.command('keypair')
