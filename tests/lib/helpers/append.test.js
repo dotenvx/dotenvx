@@ -1,7 +1,7 @@
 const t = require('tap')
 const { parse } = require('../../../src/lib/main')
 
-const replace = require('../../../src/lib/helpers/replace')
+const append = require('../../../src/lib/helpers/append')
 
 const src = `HELLO=a
 SPACER= b
@@ -78,7 +78,7 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'DOESNOTEXIST', 'ttt')
+  const newSrc = append(src, 'DOESNOTEXIST', 'ttt')
   ct.same(newSrc, expected + '\nDOESNOTEXIST="ttt"')
   ct.same(parse(newSrc).DOESNOTEXIST, 'ttt')
   ct.end()
@@ -125,14 +125,14 @@ GROUP='$1$2'
 
 `
 
-  const newSrc = replace(src, 'DOESNOTEXIST', 'ttt')
+  const newSrc = append(src, 'DOESNOTEXIST', 'ttt')
   ct.same(newSrc, expected.trim() + '\nDOESNOTEXIST="ttt"')
   ct.same(parse(newSrc).DOESNOTEXIST, 'ttt')
   ct.end()
 })
 
 t.test('HELLO', ct => {
-  const expected = `HELLO=ttt
+  const expected = `HELLO=a,ttt
 SPACER= b
 SPACEL =c
 SPACEB = d
@@ -169,15 +169,15 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'HELLO', 'ttt')
+  const newSrc = append(src, 'HELLO', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).HELLO, 'ttt')
+  ct.same(parse(newSrc).HELLO, 'a,ttt')
   ct.end()
 })
 
 t.test('#SPACER', ct => {
   const expected = `HELLO=a
-SPACER=ttt
+SPACER=b,ttt
 SPACEL =c
 SPACEB = d
 SINGLE='e'
@@ -213,16 +213,16 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'SPACER', 'ttt')
+  const newSrc = append(src, 'SPACER', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).SPACER, 'ttt')
+  ct.same(parse(newSrc).SPACER, 'b,ttt')
   ct.end()
 })
 
 t.test('#SPACEL', ct => {
   const expected = `HELLO=a
 SPACER= b
-SPACEL=ttt
+SPACEL=c,ttt
 SPACEB = d
 SINGLE='e'
 DOUBLE="f"
@@ -257,9 +257,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'SPACEL', 'ttt')
+  const newSrc = append(src, 'SPACEL', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).SPACEL, 'ttt')
+  ct.same(parse(newSrc).SPACEL, 'c,ttt')
   ct.end()
 })
 
@@ -267,7 +267,7 @@ t.test('#SPACEB', ct => {
   const expected = `HELLO=a
 SPACER= b
 SPACEL =c
-SPACEB=ttt
+SPACEB=d,ttt
 SINGLE='e'
 DOUBLE="f"
 BACKTICK=\`g\`
@@ -301,9 +301,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'SPACEB', 'ttt')
+  const newSrc = append(src, 'SPACEB', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).SPACEB, 'ttt')
+  ct.same(parse(newSrc).SPACEB, 'd,ttt')
   ct.end()
 })
 
@@ -312,7 +312,7 @@ t.test('#SINGLE', ct => {
 SPACER= b
 SPACEL =c
 SPACEB = d
-SINGLE='ttt'
+SINGLE='e,ttt'
 DOUBLE="f"
 BACKTICK=\`g\`
 JSON={"hi": 1}
@@ -345,9 +345,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'SINGLE', 'ttt')
+  const newSrc = append(src, 'SINGLE', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).SINGLE, 'ttt')
+  ct.same(parse(newSrc).SINGLE, 'e,ttt')
   ct.end()
 })
 
@@ -357,7 +357,7 @@ SPACER= b
 SPACEL =c
 SPACEB = d
 SINGLE='e'
-DOUBLE="ttt"
+DOUBLE="f,ttt"
 BACKTICK=\`g\`
 JSON={"hi": 1}
 JSON2="{"hi": 1}"
@@ -389,9 +389,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'DOUBLE', 'ttt')
+  const newSrc = append(src, 'DOUBLE', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).DOUBLE, 'ttt')
+  ct.same(parse(newSrc).DOUBLE, 'f,ttt')
   ct.end()
 })
 
@@ -403,7 +403,7 @@ SPACEB = d
 SINGLE='e'
 DOUBLE="f"
 BACKTICK=\`g\`
-JSON={"other": 2}
+JSON={"hi": 1},{"other": 2}
 JSON2="{"hi": 1}"
 QUOTE="'"
 QUOTE2='"'
@@ -433,9 +433,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'JSON', '{"other": 2}')
+  const newSrc = append(src, 'JSON', '{"other": 2}')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).JSON, '{"other": 2}')
+  ct.same(parse(newSrc).JSON, '{"hi": 1},{"other": 2}')
   ct.end()
 })
 
@@ -448,7 +448,7 @@ SINGLE='e'
 DOUBLE="f"
 BACKTICK=\`g\`
 JSON={"hi": 1}
-JSON2="{"hi": 2}"
+JSON2="{"hi": 1},{"hi": 2}"
 QUOTE="'"
 QUOTE2='"'
 export EXPORT=k
@@ -477,9 +477,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'JSON2', '{"hi": 2}')
+  const newSrc = append(src, 'JSON2', '{"hi": 2}')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).JSON2, '{"hi": 2}')
+  ct.same(parse(newSrc).JSON2, '{"hi": 1},{"hi": 2}')
   ct.end()
 })
 
@@ -493,7 +493,7 @@ DOUBLE="f"
 BACKTICK=\`g\`
 JSON={"hi": 1}
 JSON2="{"hi": 1}"
-QUOTE="""
+QUOTE="',""
 QUOTE2='"'
 export EXPORT=k
 EXPORT2='export EXPORT=k'
@@ -521,9 +521,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'QUOTE', '"')
+  const newSrc = append(src, 'QUOTE', '"')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).QUOTE, '"')
+  ct.same(parse(newSrc).QUOTE, '\',"')
   ct.end()
 })
 
@@ -538,7 +538,7 @@ BACKTICK=\`g\`
 JSON={"hi": 1}
 JSON2="{"hi": 1}"
 QUOTE="'"
-QUOTE2='''
+QUOTE2='",''
 export EXPORT=k
 EXPORT2='export EXPORT=k'
 export EXPORT=k
@@ -565,9 +565,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'QUOTE2', "'")
+  const newSrc = append(src, 'QUOTE2', "'")
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).QUOTE2, "'")
+  ct.same(parse(newSrc).QUOTE2, "\",'")
   ct.end()
 })
 
@@ -583,9 +583,9 @@ JSON={"hi": 1}
 JSON2="{"hi": 1}"
 QUOTE="'"
 QUOTE2='"'
-export EXPORT=ttt
+export EXPORT=k,ttt
 EXPORT2='export EXPORT=k'
-export EXPORT=ttt
+export EXPORT=k,ttt
   PAD=l
 BAD=f'bar
 BAD2=f"bar
@@ -609,9 +609,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'EXPORT', 'ttt')
+  const newSrc = append(src, 'EXPORT', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).EXPORT, 'ttt')
+  ct.same(parse(newSrc).EXPORT, 'k,ttt')
   ct.end()
 })
 
@@ -630,7 +630,7 @@ QUOTE2='"'
 export EXPORT=k
 EXPORT2='export EXPORT=k'
 export EXPORT=k
-  PAD=ttt
+  PAD=l,ttt
 BAD=f'bar
 BAD2=f"bar
 MULTI='-----BEGIN RSA PRIVATE KEY-----
@@ -653,9 +653,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'PAD', 'ttt')
+  const newSrc = append(src, 'PAD', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).PAD, 'ttt')
+  ct.same(parse(newSrc).PAD, 'l,ttt')
   ct.end()
 })
 
@@ -675,7 +675,7 @@ export EXPORT=k
 EXPORT2='export EXPORT=k'
 export EXPORT=k
   PAD=l
-BAD=f"bar
+BAD=f'bar,f"bar
 BAD2=f"bar
 MULTI='-----BEGIN RSA PRIVATE KEY-----
 ABCD
@@ -697,9 +697,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'BAD', 'f"bar')
+  const newSrc = append(src, 'BAD', 'f"bar')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).BAD, 'f"bar')
+  ct.same(parse(newSrc).BAD, 'f\'bar,f"bar')
   ct.end()
 })
 
@@ -720,7 +720,7 @@ EXPORT2='export EXPORT=k'
 export EXPORT=k
   PAD=l
 BAD=f'bar
-BAD2=f'bar
+BAD2=f"bar,f'bar
 MULTI='-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----'
@@ -741,9 +741,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'BAD2', "f'bar")
+  const newSrc = append(src, 'BAD2', "f'bar")
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).BAD2, 'f\'bar')
+  ct.same(parse(newSrc).BAD2, 'f"bar,f\'bar')
   ct.end()
 })
 
@@ -765,7 +765,9 @@ export EXPORT=k
   PAD=l
 BAD=f'bar
 BAD2=f"bar
-MULTI='ttt'
+MULTI='-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----,ttt'
 MULTI2="-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----"
@@ -783,9 +785,11 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'MULTI', 'ttt')
+  const newSrc = append(src, 'MULTI', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).MULTI, 'ttt')
+  ct.same(parse(newSrc).MULTI, `-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----,ttt`)
   ct.end()
 })
 
@@ -810,7 +814,9 @@ BAD2=f"bar
 MULTI='-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----'
-MULTI2="hi
+MULTI2="-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----,hi
 my
 friend"
 MULTI3=\`-----BEGIN RSA PRIVATE KEY-----
@@ -827,11 +833,13 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'MULTI2', `hi
+  const newSrc = append(src, 'MULTI2', `hi
 my
 friend`)
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).MULTI2, `hi
+  ct.same(parse(newSrc).MULTI2, `-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----,hi
 my
 friend`)
   ct.end()
@@ -861,7 +869,9 @@ ABCD
 MULTI2="-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----"
-MULTI3=\`hi
+MULTI3=\`-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----,hi
 my
 friend\`
 EVAL=$(echo world)
@@ -875,11 +885,13 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'MULTI3', `hi
+  const newSrc = append(src, 'MULTI3', `hi
 my
 friend`)
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).MULTI3, `hi
+  ct.same(parse(newSrc).MULTI3, `-----BEGIN RSA PRIVATE KEY-----
+ABCD
+-----END RSA PRIVATE KEY-----,hi
 my
 friend`)
   ct.end()
@@ -912,7 +924,7 @@ ABCD
 MULTI3=\`-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----\`
-EVAL=ttt
+EVAL=$(echo world),ttt
 EMPTY=
 NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
@@ -923,9 +935,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'EVAL', 'ttt')
+  const newSrc = append(src, 'EVAL', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).EVAL, 'ttt')
+  ct.same(parse(newSrc).EVAL, 'world,ttt')
   ct.end()
 })
 
@@ -957,7 +969,7 @@ MULTI3=\`-----BEGIN RSA PRIVATE KEY-----
 ABCD
 -----END RSA PRIVATE KEY-----\`
 EVAL=$(echo world)
-EMPTY=ttt
+EMPTY=,ttt
 NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
 HASHTAG="h #tag"
@@ -967,9 +979,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'EMPTY', 'ttt')
+  const newSrc = append(src, 'EMPTY', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).EMPTY, 'ttt')
+  ct.same(parse(newSrc).EMPTY, ',ttt')
   ct.end()
 })
 
@@ -1002,7 +1014,7 @@ ABCD
 -----END RSA PRIVATE KEY-----\`
 EVAL=$(echo world)
 EMPTY=
-NEWLINES="ttt"
+NEWLINES="expand\nnew\nlines,ttt"
 COMMENT=g # comment
 HASHTAG="h #tag"
 D.O.T.S=i
@@ -1011,9 +1023,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'NEWLINES', 'ttt')
+  const newSrc = append(src, 'NEWLINES', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).NEWLINES, 'ttt')
+  ct.same(parse(newSrc).NEWLINES, 'expand\nnew\nlines,ttt')
   ct.end()
 })
 
@@ -1047,7 +1059,7 @@ ABCD
 EVAL=$(echo world)
 EMPTY=
 NEWLINES="expand\nnew\nlines"
-COMMENT=ttt # comment
+COMMENT=g,ttt # comment
 HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
@@ -1055,9 +1067,9 @@ ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'COMMENT', 'ttt')
+  const newSrc = append(src, 'COMMENT', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).COMMENT, 'ttt')
+  ct.same(parse(newSrc).COMMENT, 'g,ttt')
   ct.end()
 })
 
@@ -1092,16 +1104,16 @@ EVAL=$(echo world)
 EMPTY=
 NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
-HASHTAG="ttt"
+HASHTAG="h #tag,ttt"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'HASHTAG', 'ttt')
+  const newSrc = append(src, 'HASHTAG', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).HASHTAG, 'ttt')
+  ct.same(parse(newSrc).HASHTAG, 'h #tag,ttt')
   ct.end()
 })
 
@@ -1137,15 +1149,15 @@ EMPTY=
 NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
 HASHTAG="h #tag"
-D.O.T.S=ttt
+D.O.T.S=i,ttt
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'D.O.T.S', 'ttt')
+  const newSrc = append(src, 'D.O.T.S', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc)['D.O.T.S'], 'ttt')
+  ct.same(parse(newSrc)['D.O.T.S'], 'i,ttt')
   ct.end()
 })
 
@@ -1182,14 +1194,14 @@ NEWLINES="expand\nnew\nlines"
 COMMENT=g # comment
 HASHTAG="h #tag"
 D.O.T.S=i
-DONT_CHOKE1='ttt'
+DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!,ttt'
 ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'DONT_CHOKE1', 'ttt')
+  const newSrc = append(src, 'DONT_CHOKE1', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).DONT_CHOKE1, 'ttt')
+  ct.same(parse(newSrc).DONT_CHOKE1, '.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!,ttt')
   ct.end()
 })
 
@@ -1227,13 +1239,13 @@ COMMENT=g # comment
 HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
-ESCAPED=ttt
+ESCAPED=\`ESCAPED,ttt
 ESCAPED2='test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'ESCAPED', 'ttt')
+  const newSrc = append(src, 'ESCAPED', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).ESCAPED, 'ttt')
+  ct.same(parse(newSrc).ESCAPED, '`ESCAPED,ttt')
   ct.end()
 })
 
@@ -1272,12 +1284,12 @@ HASHTAG="h #tag"
 D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
-ESCAPED2='test\\test\\test\\test'
+ESCAPED2='test\\test,test\\test\\test\\test'
 GROUP='$1$2'`
 
-  const newSrc = replace(src, 'ESCAPED2', 'test\\test\\test\\test')
+  const newSrc = append(src, 'ESCAPED2', 'test\\test\\test\\test')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).ESCAPED2, 'test\\test\\test\\test')
+  ct.same(parse(newSrc).ESCAPED2, 'test\\test,test\\test\\test\\test')
   ct.end()
 })
 
@@ -1317,262 +1329,264 @@ D.O.T.S=i
 DONT_CHOKE1='.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!'
 ESCAPED=\`ESCAPED
 ESCAPED2='test\\test'
-GROUP='$bar$baz$paz$1234'`
+GROUP='$1$2,$bar$baz$paz$1234'`
 
-  const newSrc = replace(src, 'GROUP', '$bar$baz$paz$1234')
+  const newSrc = append(src, 'GROUP', '$bar$baz$paz$1234')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).GROUP, '$bar$baz$paz$1234')
+  ct.same(parse(newSrc).GROUP, '$1$2,$bar$baz$paz$1234')
   ct.end()
 })
 
-t.test('#replace', ct => {
+t.test('#append', ct => {
   const src = 'HELLO=World'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=Universe')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=World,Universe')
 
   ct.end()
 })
 
-t.test('#replace with single quotes', ct => {
+t.test('#append with single quotes', ct => {
   const src = 'HELLO=\'World\''
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=\'World,Universe\'')
 
   ct.end()
 })
 
-t.test('#replace with double quotes', ct => {
+t.test('#append with double quotes', ct => {
   const src = 'HELLO="World"'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="World,Universe"')
 
   ct.end()
 })
 
-t.test('#replace appends when key does not yet exist', ct => {
+t.test('#append appends when key does not yet exist', ct => {
   const src = 'HELLO=World'
 
-  const newSrc = replace(src, 'API_KEY', '1234')
+  const newSrc = append(src, 'API_KEY', '1234')
   ct.same(newSrc, 'HELLO=World\nAPI_KEY="1234"')
 
   ct.end()
 })
 
-t.test('#replace appends smartly if ending newline already', ct => {
+t.test('#append appends smartly if ending newline already', ct => {
   const src = 'HELLO=World\n'
 
-  const newSrc = replace(src, 'API_KEY', '1234')
+  const newSrc = append(src, 'API_KEY', '1234')
   ct.same(newSrc, 'HELLO=World\nAPI_KEY="1234"\n')
 
   ct.end()
 })
 
-t.test('#replace with double quoted multiline', ct => {
+t.test('#append with double quoted multiline', ct => {
   const src = `HELLO="-----BEGIN RSA PRIVATE KEY-----
 ABCD
 EFGH
 JKLM
 -----END RSA PRIVATE KEY-----"`
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, `HELLO="-----BEGIN RSA PRIVATE KEY-----
+ABCD
+EFGH
+JKLM
+-----END RSA PRIVATE KEY-----,Universe"`)
 
   ct.end()
 })
 
-t.test('#replace with single quoted multiline', ct => {
+t.test('#append with single quoted multiline', ct => {
   const src = `HELLO='-----BEGIN RSA PRIVATE KEY-----
 ABCD
 EFGH
 JKLM
 -----END RSA PRIVATE KEY-----'`
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, `HELLO='-----BEGIN RSA PRIVATE KEY-----
+ABCD
+EFGH
+JKLM
+-----END RSA PRIVATE KEY-----,Universe'`)
 
   ct.end()
 })
 
-t.test('#replace with backtick quoted multiline', ct => {
+t.test('#append with backtick quoted multiline', ct => {
   const src = `HELLO=\`-----BEGIN RSA PRIVATE KEY-----
 THIS
 IS
 "MULTILINE's"
 -----END RSA PRIVATE KEY-----\``
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=`Universe`')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, `HELLO=\`-----BEGIN RSA PRIVATE KEY-----
+THIS
+IS
+"MULTILINE's"
+-----END RSA PRIVATE KEY-----,Universe\``)
 
   ct.end()
 })
 
-t.test('#replace evals', ct => {
+t.test('#append evals', ct => {
   const src = 'HELLO="$(echo world)"'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="$(echo world),Universe"')
 
   ct.end()
 })
 
-t.test('#replace empty', ct => {
+t.test('#append empty', ct => {
   const src = 'HELLO='
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=Universe')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=,Universe')
 
   ct.end()
 })
 
-t.test('#replace empty backticks', ct => {
+t.test('#append empty backticks', ct => {
   const src = 'HELLO=``'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=`Universe`')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=`,Universe`')
 
   ct.end()
 })
 
-t.test('#replace spaced single quotes', ct => {
+t.test('#append spaced single quotes', ct => {
   const src = 'HELLO=\'    single quote   \''
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=\'    single quote   ,Universe\'')
 
   ct.end()
 })
 
-t.test('#replace spaced double quotes', ct => {
+t.test('#append spaced double quotes', ct => {
   const src = 'HELLO="    single quote   "'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="    single quote   ,Universe"')
 
   ct.end()
 })
 
-t.test('#replace double quotes inside single quotes', ct => {
+t.test('#append double quotes inside single quotes', ct => {
   const src = 'HELLO=\'double "quotes" inside single quotes\''
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=\'double "quotes" inside single quotes,Universe\'')
 
   ct.end()
 })
 
-t.test('#replace single quotes inside double quotes', ct => {
+t.test('#append single quotes inside double quotes', ct => {
   const src = 'HELLO="single \'quotes\' inside single quotes"'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="single \'quotes\' inside single quotes,Universe"')
 
   ct.end()
 })
 
-t.test('#replace double quotes and single quotes inside backticks', ct => {
+t.test('#append double quotes and single quotes inside backticks', ct => {
   const src = 'HELLO=`double "quotes" and single \'quotes\' inside backticks`'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=`Universe`')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=`double "quotes" and single \'quotes\' inside backticks,Universe`')
 
   ct.end()
 })
 
-t.test('#replace newlines', ct => {
+t.test('#append newlines', ct => {
   const src = 'HELLO="expand\nnew\nlines"'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="expand\nnew\nlines,Universe"')
 
   ct.end()
 })
 
-t.test('#replace unquoted newlines to best ability', ct => {
-  const src = 'HELLO=dontexpand\nnewlines'
-
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, `HELLO=Universe
-newlines`)
-
-  ct.end()
-})
-
-t.test('#replace inline comments', ct => {
+t.test('#append inline comments', ct => {
   const src = 'HELLO=inline comments # work #very #well'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=Universe # work #very #well')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=inline comments,Universe # work #very #well')
 
   ct.end()
 })
 
-t.test('#replace hashtag in quotes', ct => {
+t.test('#append hashtag in quotes', ct => {
   const src = 'HELLO="hash #tag quoted"'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO="Universe"')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO="hash #tag quoted,Universe"')
 
   ct.end()
 })
 
-t.test('#replace equal signs', ct => {
+t.test('#append equal signs', ct => {
   const src = 'HELLO=equals=='
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=Universe')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=equals==,Universe')
 
   ct.end()
 })
 
-t.test('#replace inner quotes', ct => {
+t.test('#append inner quotes', ct => {
   const src = 'HELLO={"foo": "bar"}'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=Universe')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO={"foo": "bar"},Universe')
 
   ct.end()
 })
 
-t.test('#replace inner quotes as string', ct => {
+t.test('#append inner quotes as string', ct => {
   const src = 'HELLO=\'{"foo": "bar"}\''
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=\'Universe\'')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=\'{"foo": "bar"},Universe\'')
 
   ct.end()
 })
 
-t.test('#replace inner quotes as backticks', ct => {
+t.test('#append inner quotes as backticks', ct => {
   const src = 'HELLO=`{"foo": "bar\'s"}`'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'HELLO=`Universe`')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'HELLO=`{"foo": "bar\'s"},Universe`')
 
   ct.end()
 })
 
-t.test('#replace spaced key', ct => {
+t.test('#append spaced key', ct => {
   const src = '     HELLO=parsed'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, '     HELLO=Universe')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, '     HELLO=parsed,Universe')
 
   ct.end()
 })
 
-t.test('#replace somewhere in the middle', ct => {
+t.test('#append somewhere in the middle', ct => {
   const src = `HELLO=world
 HELLO2=world
 HELLO3=world
 HELLO4=world`
 
-  const newSrc = replace(src, 'HELLO2', 'universe')
+  const newSrc = append(src, 'HELLO2', 'universe')
 
   const expected = `HELLO=world
-HELLO2=universe
+HELLO2=world,universe
 HELLO3=world
 HELLO4=world`
 
@@ -1581,17 +1595,17 @@ HELLO4=world`
   ct.end()
 })
 
-t.test('#replace somewhere in the middle when double quoted', ct => {
+t.test('#append somewhere in the middle when double quoted', ct => {
   const src = `HELLO="world"
 HELLO2="world"
 HELLO3="world"
 HELLO4="world"`
 
-  const newSrc = replace(src, 'HELLO3', 'universe')
+  const newSrc = append(src, 'HELLO3', 'universe')
 
   const expected = `HELLO="world"
 HELLO2="world"
-HELLO3="universe"
+HELLO3="world,universe"
 HELLO4="world"`
 
   ct.same(newSrc, expected)
@@ -1599,17 +1613,17 @@ HELLO4="world"`
   ct.end()
 })
 
-t.test('#replace somewhere in the middle when single quoted', ct => {
+t.test('#append somewhere in the middle when single quoted', ct => {
   const src = `HELLO='world'
 HELLO2='world'
 HELLO3='world'
 HELLO4='world'`
 
-  const newSrc = replace(src, 'HELLO3', 'universe')
+  const newSrc = append(src, 'HELLO3', 'universe')
 
   const expected = `HELLO='world'
 HELLO2='world'
-HELLO3='universe'
+HELLO3='world,universe'
 HELLO4='world'`
 
   ct.same(newSrc, expected)
@@ -1617,17 +1631,17 @@ HELLO4='world'`
   ct.end()
 })
 
-t.test('#replace somewhere in the middle when backtick quoted', ct => {
+t.test('#append somewhere in the middle when backtick quoted', ct => {
   const src = `HELLO=\`world\`
 HELLO2=\`world\`
 HELLO3=\`world\`
 HELLO4=\`world\``
 
-  const newSrc = replace(src, 'HELLO3', 'universe')
+  const newSrc = append(src, 'HELLO3', 'universe')
 
   const expected = `HELLO=\`world\`
 HELLO2=\`world\`
-HELLO3=\`universe\`
+HELLO3=\`world,universe\`
 HELLO4=\`world\``
 
   ct.same(newSrc, expected)
@@ -1635,11 +1649,11 @@ HELLO4=\`world\``
   ct.end()
 })
 
-t.test('#replace with export', ct => {
+t.test('#append with export', ct => {
   const src = 'export HELLO=World'
 
-  const newSrc = replace(src, 'HELLO', 'Universe')
-  ct.same(newSrc, 'export HELLO=Universe')
+  const newSrc = append(src, 'HELLO', 'Universe')
+  ct.same(newSrc, 'export HELLO=World,Universe')
 
   ct.end()
 })
