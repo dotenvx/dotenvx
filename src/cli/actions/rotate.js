@@ -20,6 +20,7 @@ function rotate () {
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
+      console.log('')
       console.log(processedEnv.envKeysSrc)
     }
     process.exit(0) // exit early
