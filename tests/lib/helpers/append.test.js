@@ -1201,7 +1201,7 @@ GROUP='$1$2'`
 
   const newSrc = append(src, 'DONT_CHOKE1', 'ttt')
   ct.same(newSrc, expected)
-  ct.same(parse(newSrc).DONT_CHOKE1, '.kZh\`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!,ttt')
+  ct.same(parse(newSrc).DONT_CHOKE1, '.kZh`>4[,[DDU-*Jt+[;8-,@K=,9%;F9KsoXqOE)gpG^X!{)Q+/9Fc(QF}i[NEi!,ttt')
   ct.end()
 })
 
