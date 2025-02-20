@@ -15,11 +15,8 @@ const append = require('./../helpers/append')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 const findPrivateKey = require('./../helpers/findPrivateKey')
-const findPublicKey = require('./../helpers/findPublicKey')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const keypair = require('./../helpers/keypair')
-const truncate = require('./../helpers/truncate')
-const isPublicKey = require('./../helpers/isPublicKey')
 
 class Rotate {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
@@ -63,7 +60,6 @@ class Rotate {
     row.keys = []
     row.type = TYPE_ENV_FILE
 
-    const filename = path.basename(envFilepath)
     const filepath = path.resolve(envFilepath)
     row.filepath = filepath
     row.envFilepath = envFilepath
