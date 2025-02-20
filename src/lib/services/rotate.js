@@ -28,6 +28,8 @@ class Rotate {
     this.processedEnvs = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
+
+    this.envKeysSources = {}
   }
 
   run () {
@@ -77,9 +79,11 @@ class Rotate {
       if (this.envKeysFilepath) {
         envKeysFilepath = path.resolve(this.envKeysFilepath)
       }
-      row.envKeysFilepath = envKeysFilepath
       const keysEncoding = this._detectEncoding(envKeysFilepath)
-      let envKeysSrc = fsx.readFileX(envKeysFilepath, { encoding: keysEncoding })
+
+      row.envKeysFilepath = envKeysFilepath
+      this.envKeysSources[envKeysFilepath] ||= fsx.readFileX(envKeysFilepath, { encoding: keysEncoding })
+      let envKeysSrc = this.envKeysSources[envKeysFilepath]
 
       // new keypair
       const nkp = keypair() // generates a fresh keypair in memory
@@ -117,6 +121,7 @@ class Rotate {
       row.privateKeyName = privateKeyName
       row.privateKey = newPrivateKey
       envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
+      this.envKeysSources[envKeysFilepath] = envKeysSrc
       row.envKeysSrc = envKeysSrc
 
       this.changedFilepaths.add(envFilepath)
