@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 * add `dotenvx rotate` command 🎉 ([#530](https://github.com/dotenvx/dotenvx/pull/530))
 
+also: [our whitepaper](https://dotenvx.com/dotenvx.pdf) is released as a draft.
+
 ## [1.36.0](https://github.com/dotenvx/dotenvx/compare/v1.35.0...v1.36.0)
 
 ### Changed
