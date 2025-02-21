@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.36.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.37.0...main)
+
+## [1.37.0](https://github.com/dotenvx/dotenvx/compare/v1.36.0...v1.37.0)
+
+### Added
+
+* add `dotenvx rotate` command 🎉 ([#530](https://github.com/dotenvx/dotenvx/pull/530))
 
 ## [1.36.0](https://github.com/dotenvx/dotenvx/compare/v1.35.0...v1.36.0)
 
