@@ -1556,7 +1556,7 @@ More examples
   $ dotenvx encrypt
   ✔ encrypted (.env)
   $ dotenvx rotate
-  ✔ ✔ rotated (.env)
+  ✔ rotated (.env)
   ```
 
   </details>
