@@ -8,9 +8,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
-* Support `encrypt` when mutliline contains windows `CRLF` (`\\r\\n`) ([#534](https://github.com/dotenvx/dotenvx/pull/534))
+* Support `encrypt` when mutliline contains windows `CRLF` (`\r\n`) ([#534](https://github.com/dotenvx/dotenvx/pull/534))
 
-Note: dotenvx will convert these `\\r\\n` newlines to `\\n`. Our recommendation is to stop using CRLF - its origin is from typewriter days. Instead, set your editor or gitattributes to use LF.
+Note: dotenvx will convert these `\r\n` newlines to `\n`. Our recommendation is to stop using `CRLF` - its origin is from typewriter days. Instead, set your editor or gitattributes to use `LF`.
 
 ## [1.38.0](https://github.com/dotenvx/dotenvx/compare/v1.37.0...v1.38.0)
 
