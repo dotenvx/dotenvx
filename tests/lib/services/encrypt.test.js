@@ -185,19 +185,19 @@ t.test('#run (finds .env file with CRLF multiline values - implicit and explicit
   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_CRLF', 'HELLO', 'ALOHA'])
   ct.ok(parsed.DOTENV_PUBLIC_KEY_CRLF, 'DOTENV_PUBLIC_KEY_CRLF should not be empty')
   ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
-  // ct.match(parsed.ALOHA, /^encrypted:/, 'ALOHA should start with "encrypted:"')
+  ct.match(parsed.ALOHA, /^encrypted:/, 'ALOHA should start with "encrypted:"')
 
   const output = `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
 #/            public-key encryption for .env files          /
 #/       [how it works](https://dotenvx.com/encryption)     /
 #/----------------------------------------------------------/
-DOTENV_PUBLIC_KEY="${parsed.DOTENV_PUBLIC_KEY}"
+DOTENV_PUBLIC_KEY_CRLF="${parsed.DOTENV_PUBLIC_KEY_CRLF}"
 
-# .env
-HELLO="${parsed.HELLO}"
-ALOHA="${parsed.ALOHA}"
+# .env.crlf
+HELLO="${parsed.HELLO}"\r
+ALOHA="${parsed.ALOHA}"\r
 `
-  // ct.same(p1.envSrc, output)
+  ct.same(p1.envSrc, output)
 
   ct.end()
 })

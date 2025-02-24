@@ -1657,3 +1657,12 @@ t.test('#append with export', ct => {
 
   ct.end()
 })
+
+t.test('#append multiline CRLF (\\r\\n)', ct => {
+  const src = 'MULTI_CRLF=\'-----BEGIN RSA PRIVATE KEY-----\r\nABCD\r\n-----END RSA PRIVATE KEY-----\''
+
+  const newSrc = append(src, 'MULTI_CRLF', 'Universe')
+  ct.same(newSrc, 'MULTI_CRLF=\'-----BEGIN RSA PRIVATE KEY-----\r\nABCD\r\n-----END RSA PRIVATE KEY-----,Universe\'')
+
+  ct.end()
+})
