@@ -2213,7 +2213,7 @@ More examples
   ```
 
   </details>
-* <details><summary>`get(KEY) "Decryption at Access"`</summary><br>
+* <details><summary>`get(KEY)` - *Decryption at Access*</summary><br>
 
   Programatically get an environment variable. 
 
@@ -2224,7 +2224,7 @@ More examples
   console.log(decryptedValue)
   ```
 
-  This is known as "Decryption at Access" and is written about in [the whitepaper](https://dotenvx.com/dotenvx.pdf).
+  This is known as *Decryption at Access* and is written about in [the whitepaper](https://dotenvx.com/dotenvx.pdf).
 
   </details>
 
