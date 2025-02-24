@@ -2213,7 +2213,7 @@ More examples
   ```
 
   </details>
-* <details><summary>`get(KEY)` - *Decryption at Access*</summary><br>
+* <details><summary>`get(KEY)` - <i>Decryption at Access</i></summary><br>
 
   Programatically get an environment variable. 
 
