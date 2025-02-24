@@ -2215,7 +2215,7 @@ More examples
   </details>
 * <details><summary>`get(KEY)` - <i>Decryption at Access</i></summary><br>
 
-  Programatically get an environment variable. 
+  Programatically get an environment variable at access/runtime.
 
   ```js
   // index.js
