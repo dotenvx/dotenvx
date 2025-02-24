@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.2...main)
+
+## [1.38.2](https://github.com/dotenvx/dotenvx/compare/v1.38.1...v1.38.2)
+
+### Added
+
+* Add typescript types for `main.get`.
 
 ## [1.38.1](https://github.com/dotenvx/dotenvx/compare/v1.38.0...v1.38.1)
 
