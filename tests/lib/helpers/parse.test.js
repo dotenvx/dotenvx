@@ -832,3 +832,21 @@ CONTENTS=$(cat $\{FILENAME})
 
   ct.end()
 })
+
+t.test('#run - failed command substitution should not result in losing other keys from .env file - https://github.com/dotenvx/dotenvx/issues/529', ct => {
+  src = `# .env
+CURRENT_DATE=$(thisisnotadatecommand)
+HELLO=World
+HELLO2="Hello $CURRENT_DATE"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    CURRENT_DATE: '$(thisisnotadatecommand)',
+    HELLO: 'World',
+    HELLO2: 'Hello $(thisisnotadatecommand)'
+  })
+
+  ct.end()
+})

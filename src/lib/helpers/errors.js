@@ -8,6 +8,7 @@ class Errors {
     this.key = options.key
     this.privateKey = options.privateKey
     this.privateKeyName = options.privateKeyName
+    this.command = options.command
 
     this.message = options.message
   }
@@ -82,6 +83,17 @@ class Errors {
 
     const e = new Error(message)
     e.code = code
+    return e
+  }
+
+  commandSubstitutionFailed () {
+    const code = 'COMMAND_SUBSTITUTION_FAILED'
+    const message = `[${code}] could not eval ${this.key} containing command '${this.command}': ${this.message}`
+    const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/532`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
     return e
   }
 }

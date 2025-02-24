@@ -1,7 +1,6 @@
-const chomp = require('./chomp')
 const decryptKeyValue = require('./decryptKeyValue')
+const evalKeyValue = require('./evalKeyValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
-const { execSync } = require('child_process')
 
 class Parse {
   static LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
@@ -49,7 +48,12 @@ class Parse {
       let evaled = false
       if (quote !== "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
         const priorEvaled = this.parsed[key]
-        this.parsed[key] = this.eval(priorEvaled)
+        // eval
+        try {
+          this.parsed[key] = this.eval(key, priorEvaled)
+        } catch (e) {
+          this.errors.push(e)
+        }
         if (priorEvaled !== this.parsed[key]) {
           evaled = true
         }
@@ -133,14 +137,8 @@ class Parse {
     return decryptKeyValue(key, value, this.privateKeyName, this.privateKey)
   }
 
-  eval (value) {
-    // Match everything between the outermost $() using a regex with non-capturing groups
-    const matches = value.match(/\$\(([^)]+(?:\)[^(]*)*)\)/g) || []
-    return matches.reduce((newValue, match) => {
-      const command = match.slice(2, -1) // Extract command by removing $() wrapper
-      const result = chomp(execSync(command, { env: { ...this.processEnv, ...this.runningParsed } }).toString()) // execute command (including runningParsed)
-      return newValue.replace(match, result) // Replace match with result
-    }, value)
+  eval (key, value) {
+    return evalKeyValue(key, value, this.processEnv, this.runningParsed)
   }
 
   expand (value) {
