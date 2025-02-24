@@ -162,6 +162,46 @@ ALOHA="${parsed.ALOHA}"
   ct.end()
 })
 
+t.test('#run (finds .env file with CRLF multiline values - implicit and explicit CRLF newline)', ct => {
+  const envFile = 'tests/monorepo/apps/multiline/.env.crlf'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt(envs).run()
+
+  const p1 = processedEnvs[0]
+  ct.same(p1.keys, ['HELLO', 'ALOHA'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/multiline/.env.crlf')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/multiline/.env.crlf'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenvParse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_CRLF', 'HELLO', 'ALOHA'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_CRLF, 'DOTENV_PUBLIC_KEY_CRLF should not be empty')
+  ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
+  ct.match(parsed.ALOHA, /^encrypted:/, 'ALOHA should start with "encrypted:"')
+
+  const output = `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
+#/            public-key encryption for .env files          /
+#/       [how it works](https://dotenvx.com/encryption)     /
+#/----------------------------------------------------------/
+DOTENV_PUBLIC_KEY_CRLF="${parsed.DOTENV_PUBLIC_KEY_CRLF}"
+
+# .env.crlf
+HELLO="${parsed.HELLO}"\r
+ALOHA="${parsed.ALOHA}"\r
+`
+  ct.same(p1.envSrc, output)
+
+  ct.end()
+})
+
 t.test('#run (finds .env file already encrypted)', ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [

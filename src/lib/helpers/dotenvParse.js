@@ -1,14 +1,16 @@
 // historical dotenv.parse - https://github.com/motdotla/dotenv)
 const LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
 
-function dotenvParse (src, skipExpandForDoubleQuotes = false) {
+function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWindowsNewlines = false) {
   const obj = {}
 
   // Convert buffer to string
   let lines = src.toString()
 
   // Convert line breaks to same format
-  lines = lines.replace(/\r\n?/mg, '\n')
+  if (!skipConvertingWindowsNewlines) {
+    lines = lines.replace(/\r\n?/mg, '\n')
+  }
 
   let match
   while ((match = LINE.exec(lines)) != null) {

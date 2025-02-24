@@ -1643,3 +1643,12 @@ t.test('#replace with export', ct => {
 
   ct.end()
 })
+
+t.test('#replace multiline CRLF (\\r\\n)', ct => {
+  const src = 'MULTI_CRLF=\'-----BEGIN RSA PRIVATE KEY-----\r\nABCD\r\n-----END RSA PRIVATE KEY-----\''
+
+  const newSrc = replace(src, 'MULTI_CRLF', 'Universe')
+  ct.same(newSrc, 'MULTI_CRLF=\'Universe\'')
+
+  ct.end()
+})

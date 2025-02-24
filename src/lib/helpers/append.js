@@ -7,7 +7,7 @@ function append (src, key, appendValue) {
   let output
   let newPart = ''
 
-  const parsed = dotenvParse(src, true) // skip expanding \n
+  const parsed = dotenvParse(src, true, true) // skip expanding \n and skip converting \r\n
   const _quotes = quotes(src)
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
     const quote = _quotes[key]
