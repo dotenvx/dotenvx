@@ -232,6 +232,50 @@ export function set(
   options?: SetOptions
 ): SetOutput;
 
+export interface GetOptions {
+  /**
+   * Suppress specific errors like MISSING_ENV_FILE. The error keys can be found
+   * in src/lib/helpers/errors.js
+   * @default []
+   * @example require('@dotenvx/dotenvx').get('KEY', { ignore: ['MISSING_ENV_FILE'] })
+   */
+  ignore?: string[];
+
+  /**
+   * Override any environment variables that have already been set on your machine with values from your .env file.
+   * @default false
+   * @example require('@dotenvx/dotenvx').get('KEY', { overload: true })
+   * @alias overload
+   */
+  overload?: boolean;
+
+  /**
+   * Customize the path to your .env.keys file. This is useful with monorepos.
+   * @default []
+   * @example require('@dotenvx/dotenvx').get('KEY', { envKeysFile: '../../.env.keys'} })
+   */
+  envKeysFile?: string;
+
+  /**
+   * Throw immediately if an error is encountered - like a missing .env file.
+   * @default false
+   * @example require('@dotenvx/dotenvx').get('KEY', { strict: true })
+   */
+  strict?: boolean;
+}
+
+/**
+ * Get a single environment variable.
+ *
+ * @see https://dotenvx.com/docs
+ * @param key - KEY 
+ * @param options - additional options. example: `{ overload: true }`
+ */
+export function get(
+  key: string,
+  options?: GetOptions
+): string;
+
 /**
  * List all env files in the current working directory
  *
