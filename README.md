@@ -2213,9 +2213,9 @@ More examples
   ```
 
   </details>
-* <details><summary>`get(KEY)`</summary><br>
+* <details><summary>`get(KEY) "Decryption at Access"`</summary><br>
 
-  Programatically get an environment variable. This is known as "Decryption at Access" and is written about in [the whitepaper](https://dotenvx.com/dotenvx.pdf).
+  Programatically get an environment variable. 
 
   ```js
   // index.js
@@ -2223,6 +2223,8 @@ More examples
   const decryptedValue = dotenvx.get('HELLO')
   console.log(decryptedValue)
   ```
+
+  This is known as "Decryption at Access" and is written about in [the whitepaper](https://dotenvx.com/dotenvx.pdf).
 
   </details>
 
