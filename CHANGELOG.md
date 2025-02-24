@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.37.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.0...main)
+
+## [1.38.0](https://github.com/dotenvx/dotenvx/compare/v1.37.0...v1.38.0)
+
+### Changed
+
+* Command substitution failures no longer halt further processing of keys in a .env file ([#533](https://github.com/dotenvx/dotenvx/pull/533))
+* A more helpful error is raised if a command substitution failure occurs ([#533](https://github.com/dotenvx/dotenvx/pull/533))
 
 ## [1.37.0](https://github.com/dotenvx/dotenvx/compare/v1.36.0...v1.37.0)
 
