@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.3...main)
+
+## [1.38.3](https://github.com/dotenvx/dotenvx/compare/v1.38.2...v1.38.3)
+
+### Changed
+
+* 🐞 Fix self-referencing expansion when key exists already in `process.env` ([#536](https://github.com/dotenvx/dotenvx/pull/536))
 
 ## [1.38.2](https://github.com/dotenvx/dotenvx/compare/v1.38.1...v1.38.2)
 
