@@ -889,7 +889,7 @@ NODE_OPTIONS="$NODE_OPTIONS --inspect"
 
 t.test('#run - self referencing dotenv-expand example', ct => {
   process.env.EXPAND_SELF = 'self'
-  src = `EXPAND_SELF=$EXPAND_SELF`
+  src = 'EXPAND_SELF=$EXPAND_SELF'
 
   const { parsed } = new Parse(src, null, process.env, true).run()
 
