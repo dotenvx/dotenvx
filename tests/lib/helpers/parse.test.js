@@ -850,3 +850,52 @@ HELLO2="Hello $CURRENT_DATE"
 
   ct.end()
 })
+
+t.test('#run - expand without override - https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2682845041', ct => {
+  process.env = {
+    NODE_OPTIONS: '--max-old-space-size=1024'
+  }
+
+  src = `# .env
+NODE_OPTIONS="$NODE_OPTIONS --inspect"
+`
+
+  const { parsed } = new Parse(src, null, process.env, false).run()
+
+  ct.same(parsed, {
+    NODE_OPTIONS: '--max-old-space-size=1024'
+  })
+
+  ct.end()
+})
+
+t.test('#run - expand with override - https://github.com/dotenvx/dotenvx/issues/433#issuecomment-2682845041', ct => {
+  process.env = {
+    NODE_OPTIONS: '--max-old-space-size=1024'
+  }
+
+  src = `# .env
+NODE_OPTIONS="$NODE_OPTIONS --inspect"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    NODE_OPTIONS: '--max-old-space-size=1024 --inspect'
+  })
+
+  ct.end()
+})
+
+t.test('#run - self referencing dotenv-expand example', ct => {
+  process.env.EXPAND_SELF = 'self'
+  src = 'EXPAND_SELF=$EXPAND_SELF'
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    EXPAND_SELF: 'self'
+  })
+
+  ct.end()
+})

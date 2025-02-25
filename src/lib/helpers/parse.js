@@ -60,7 +60,7 @@ class Parse {
       }
 
       // expand empty, double, or backticks
-      if (!evaled && quote !== "'" && !this.processEnv[key]) {
+      if (!evaled && quote !== "'" && (!this.processEnv[key] || this.overload)) {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
 
