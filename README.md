@@ -2232,27 +2232,48 @@ More examples
 
 ## Guides
 
-> Go deeper into using `dotenvx` with detailed framework and platform guides.
+> Go deeper with `dotenvx` – detailed framework and platform guides.
 >
 
-* <a href="https://dotenvx.com/docs/platforms/digital-ocean">Digital Ocean <img src="https://api.iconify.design/devicon/digitalocean.svg" alt="Digital Ocean" width="20" /></a>
-* <a href="https://dotenvx.com/docs/platforms/docker">Docker <img src="https://api.iconify.design/skill-icons/docker.svg" alt="Docker" width="20" /></a>
-* <a href="https://dotenvx.com/docs/platforms/fly">Fly.io <img src="https://api.iconify.design/logos/fly-icon.svg" alt="Fly.io" width="20" /></a>
-* <a href="https://dotenvx.com/docs/cis/github-actions">GitHub Actions <img src="https://api.iconify.design/devicon/github.svg" alt="GitHub" width="20" /></a>
-* <a href="https://dotenvx.com/docs/platforms/heroku">Heroku <img src="https://api.iconify.design/skill-icons/heroku.svg" alt="Heroku" width="20" /></a>
-* <a href="https://dotenvx.com/docs/platforms/netlify">Netlify <img src="https://api.iconify.design/skill-icons/netlify-light.svg" alt="Netlify" width="20" /></a>
-* <a href="https://dotenvx.com/docs/package-managers/npm">NPM <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/npm.svg" alt="NPM Logo" width="20" height="20" style="fill:#CB3837;"></a>
-* <a href="https://dotenvx.com/docs/monorepos/nx">Nx <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/nx.svg" alt="Nx Logo" width="20" height="20" style="fill:#143055;"></a>
-* <a href="https://dotenvx.com/docs/platforms/render">Render <img src="https://api.iconify.design/simple-icons/render.svg" alt="Render" width="20" /></a>
-* <a href="https://dotenvx.com/docs/platforms/railway">Railway <img src="https://api.iconify.design/simple-icons/railway.svg" alt="Railway" width="20" /></a>
-* <a href="https://dotenvx.com/docs/monorepos/turborepo">Turborepo <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/turborepo.svg" alt="Turborepo Logo" width="20" height="20" style="fill:#EF4444;"></a>
-* <a href="https://dotenvx.com/docs/platforms/vercel">Vercel <img src="https://api.iconify.design/devicon/vercel.svg" alt="Vercel" width="20" /></a>
-* [more](https://dotenvx.com/docs/guides)
-  * <a href="https://dotenvx.com/docs/guides#node-js">Node.js <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/nodejs.svg" alt="Node.js Logo" width="20" height="20" style="fill:#5FA04E;"></a>
-  * <a href="https://dotenvx.com/docs/guides#python">Python <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/python.svg" alt="Python Logo" width="20" height="20" style="fill:#3776AB;"></a>
-  * <a href="https://dotenvx.com/docs/guides#php">PHP <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/php.svg" alt="PHP Logo" width="20" height="20" style="fill:#777BB4;"></a>
-  * <a href="https://dotenvx.com/docs/guides#ruby">Ruby <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/ruby.svg" alt="Ruby Logo" width="20" height="20" style="fill:#CC342D;"></a>
-  * <a href="https://dotenvx.com/docs/guides#rust">Rust <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/rust.svg" alt="Rust Logo" width="20" height="20" style="fill:#000000;"></a>
+* [Languages](https://dotenvx.com/docs#languages)
+  * [Node.js](https://dotenvx.com/docs/languages/nodejs)
+  * [Python](https://dotenvx.com/docs/languages/python)
+  * [Ruby](https://dotenvx.com/docs/languages/ruby)
+  * [Go](https://dotenvx.com/docs/languages/go)
+  * [PHP](https://dotenvx.com/docs/languages/php)
+  * [Rust](https://dotenvx.com/docs/languages/rust)
+* [Frameworks](https://dotenvx.com/docs#frameworks)
+  * [Astro](https://dotenvx.com/docs/frameworks/astro)
+  * [Express](https://dotenvx.com/docs/frameworks/express)
+  * [Next](https://dotenvx.com/docs/frameworks/next)
+  * [Remix](https://dotenvx.com/docs/frameworks/remix)
+  * [Flask](https://dotenvx.com/docs/frameworks/flask)
+  * [Sinatra](https://dotenvx.com/docs/frameworks/sinatra)
+  * [Rocket](https://dotenvx.com/docs/frameworks/rocket)
+* [Platforms](https://dotenvx.com/docs#platforms)
+  * [Digital Ocean](https://dotenvx.com/docs/platforms/digital-ocean)
+  * [Docker](https://dotenvx.com/docs/platforms/docker)
+  * [Fly](https://dotenvx.com/docs/platforms/fly)
+  * [Heroku](https://dotenvx.com/docs/platforms/heroku)
+  * [Netlify](https://dotenvx.com/docs/platforms/netlify)
+  * [Vercel](https://dotenvx.com/docs/platforms/vercel)
+  * [Railway](https://dotenvx.com/docs/platforms/railway)
+  * [Render](https://dotenvx.com/docs/platforms/render)
+* [CI/CDs](https://dotenvx.com/docs#cis)
+  * [GitHub Actions](https://dotenvx.com/docs/cis/github-actions)
+* [Background Jobs](https://dotenvx.com/docs#background-jobs)
+  * [Trigger.dev](https://dotenvx.com/docs/background-jobs/triggerdotdev)
+* [Package Managers](https://dotenvx.com/docs#package-managers)
+  * [NPM](https://dotenvx.com/docs/package-managers/npm)
+  * [PNPM](https://dotenvx.com/docs/package-managers/pnpm)
+* [Process Managers](https://dotenvx.com/docs#process-managers)
+  * [PM2](https://dotenvx.com/docs/process-managers/pm2)
+* [Monorepos](https://dotenvx.com/docs#monorepos)
+  * [Nx](https://dotenvx.com/docs/monorepos/nx)
+  * [Turborepo](https://dotenvx.com/docs/monorepos/turborepo)
+* [Concepts](https://dotenvx.com/docs#concepts)
+  * [.env](https://dotenvx.com/docs/env-file)
+  * [.env.keys](https://dotenvx.com/docs/env-keys-file)
 
 &nbsp;
 
