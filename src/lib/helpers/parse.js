@@ -60,7 +60,8 @@ class Parse {
       }
 
       // expand empty, double, or backticks
-      if (!evaled && quote !== "'" && !this.processEnv[key]) {
+      console.log('ONE', !evaled, quote !== "'", (!this.processEnv[key] || !!this.overload))
+      if (!evaled && quote !== "'" && (!this.processEnv[key] || this.overload)) {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
 
@@ -142,8 +143,11 @@ class Parse {
   }
 
   expand (value) {
+    console.log('EXPAND ME!', value)
+
     let env = { ...this.runningParsed, ...this.processEnv } // typically process.env wins
     if (this.overload) {
+      console.log('we are overloading!')
       env = { ...this.processEnv, ...this.runningParsed } // parsed wins
     }
 
