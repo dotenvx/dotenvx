@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.4...main)
+
+## [1.38.4](https://github.com/dotenvx/dotenvx/compare/v1.38.3...v1.38.4)
+
+### Changed
+
+* 🐞 Fix blank line disappearing after encrypting empty value ([#542](https://github.com/dotenvx/dotenvx/pull/542))
 
 ## [1.38.3](https://github.com/dotenvx/dotenvx/compare/v1.38.2...v1.38.3)
 
