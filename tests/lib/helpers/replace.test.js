@@ -1652,3 +1652,20 @@ t.test('#replace multiline CRLF (\\r\\n)', ct => {
 
   ct.end()
 })
+
+t.test('#replace when no quotes and newline', ct => {
+  const src = `# My blank foo
+FOO=
+
+# My Bar
+BAR=`
+
+  const newSrc = replace(src, 'FOO', 'encrypted:1234')
+  ct.same(newSrc, `# My blank foo
+FOO=encrypted:1234
+
+# My Bar
+BAR=`)
+
+  ct.end()
+})
