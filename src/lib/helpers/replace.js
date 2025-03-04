@@ -20,6 +20,15 @@ function replace (src, key, replaceValue) {
     let enforceEndOfLine = ''
     if (escapedOriginalValue === '') {
       enforceEndOfLine = '$' // EMPTY scenario
+
+      // if empty quote and consecutive newlines
+      const newlineMatch = src.match(new RegExp(`${key}\\s*=\\s*\n\n`, 'm')) // match any consecutive newline scenario for a blank value
+      if (quote === '' && newlineMatch) {
+        const newlineCount = (newlineMatch[0].match(/\n/g)).length - 1
+        for (let i = 0; i < newlineCount; i++) {
+          newPart += '\n' // re-append the extra newline to preserve user's format choice
+        }
+      }
     }
 
     const currentPart = new RegExp(
