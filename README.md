@@ -741,6 +741,8 @@ More examples
 > Become a `dotenvx` power user.
 >
 
+[Read the whitepaper](https://dotenvx.com/dotenvx.pdf)
+
 ### CLI 📟
 
 Advanced CLI commands.
