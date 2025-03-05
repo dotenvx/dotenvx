@@ -741,6 +741,10 @@ More examples
 > Become a `dotenvx` power user.
 >
 
+### CLI 📟
+
+Advanced CLI commands.
+
 * <details><summary>`run` - Variable Expansion</summary><br>
 
   Reference and expand variables already on your machine for use in your .env file.
@@ -1875,7 +1879,7 @@ More examples
 
 ### Extensions 🔌
 
-Use cli extensions.
+CLI extensions.
 
 * <details><summary>`ext genexample`</summary><br>
 
