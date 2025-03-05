@@ -1875,6 +1875,8 @@ More examples
 
 ### Extensions 🔌
 
+Use cli extensions.
+
 * <details><summary>`ext genexample`</summary><br>
 
   In one command, generate a `.env.example` file from your current `.env` file contents.
@@ -2006,7 +2008,9 @@ More examples
 
   </details>
 
-### config() 📦
+### Library 📦
+
+Use dotenvx directly in code.
 
 * <details><summary>`config()`</summary><br>
 
