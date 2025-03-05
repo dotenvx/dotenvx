@@ -27,7 +27,8 @@
     },
     "./config": "./src/lib/config.js",
     "./config.js": "./src/lib/config.js",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./cli/*": "./src/cli/*"
   },
   "bin": {
     "dotenvx": "./src/cli/dotenvx.js",
