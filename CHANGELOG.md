@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.4...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.38.5...main)
+
+## [1.38.5](https://github.com/dotenvx/dotenvx/compare/v1.38.4...v1.38.5)
+
+### Added
+
+* 🐞 Add `config.d.ts` file to fix type error when loading `dotenvx/dotenvx/config` with dynamic import ([#547](https://github.com/dotenvx/dotenvx/pull/547))
 
 ## [1.38.4](https://github.com/dotenvx/dotenvx/compare/v1.38.3...v1.38.4)
 
