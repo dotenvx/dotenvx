@@ -1157,6 +1157,29 @@ Advanced CLI commands.
   ```
 
   </details>
+* <details><summary>`get KEY --convention=flow`</summary><br>
+
+  Return a single environment variable's value using [dotenv-flow's convention](https://www.npmjs.com/package/dotenv-flow). Set `--convention` to `flow`:
+
+  ```sh
+  $ echo "HELLO=development local" > .env.development.local
+  $ echo "HELLO=development" > .env.development
+  $ echo "HELLO=local" > .env.local
+  $ echo "HELLO=env" > .env
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ NODE_ENV=development dotenvx get HELLO --convention=flow
+  development local
+  ```
+
+  Further, we recommend using `DOTENV_ENV` over `NODE_ENV`– as `dotenvx` works everywhere, not just node.
+
+  ```sh
+  $ DOTENV_ENV=development dotenvx get HELLO --convention=flow
+  development local
+  ```
+
+  </details>
 * <details><summary>`get` (json)</summary><br>
 
   Return a json response of all key/value pairs in a `.env` file.
