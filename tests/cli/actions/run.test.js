@@ -78,7 +78,6 @@ t.test('run --convention', async ct => {
   ct.end()
 })
 
-
 t.test('run - DOTENV_KEY', async ct => {
   const optsStub = sinon.stub().returns({ convention: 'nextjs' })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
