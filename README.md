@@ -604,7 +604,7 @@ More examples
   </details>
 * <details><summary>`--convention` flag</summary><br>
 
-  Load envs using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order). Set `--convention` to `nextjs`:
+  Load envs using [Next.js' convention](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order) or [dotenv-flow convention](https://www.npmjs.com/package/dotenv-flow). Set `--convention` to `nextjs` or `flow`:
 
   ```sh
   $ echo "HELLO=development local" > .env.development.local
@@ -1023,6 +1023,25 @@ Advanced CLI commands.
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run --convention=nextjs -- node index.js
+  [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.local, .env.development, .env
+  Hello development local
+  ```
+
+  (more conventions available upon request)
+
+  </details>
+* <details><summary>`run --convention=flow`</summary><br>
+
+  Load envs using [dotenv-flow's convention](https://www.npmjs.com/package/dotenv-flow). Set `--convention` to `flow`:
+
+  ```sh
+  $ echo "HELLO=development local" > .env.development.local
+  $ echo "HELLO=local" > .env.local
+  $ echo "HELLO=development" > .env.development
+  $ echo "HELLO=env" > .env
+  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
+
+  $ dotenvx run --convention=flow -- node index.js
   [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.local, .env.development, .env
   Hello development local
   ```

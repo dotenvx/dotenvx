@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Changed
 
 * Fix typos ([#550](https://github.com/dotenvx/dotenvx/pull/550))
+* add `--convention flow` flag to `dotenvx run` ([#551](https://github.com/dotenvx/dotenvx/pull/551))
 
 ## [1.38.5](https://github.com/dotenvx/dotenvx/compare/v1.38.4...v1.38.5)
 
