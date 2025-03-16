@@ -71,7 +71,7 @@ async function main () {
     await printSize(outfile)
   }
 
-  // create main patched packege.json
+  // create main patched package.json
   cleanPkgJson(pkgJson)
 
   pkgJson.scripts = {

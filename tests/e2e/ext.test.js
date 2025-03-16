@@ -18,10 +18,10 @@ function execShell (commands) {
 t.test('ext', ct => {
   const output = execShell(`${dotenvx} ext`)
 
-  t.match(output, /genexample/, 'shoud say genexample')
-  t.match(output, /gitignore/, 'shoud say gitignore')
-  t.match(output, /prebuild/, 'shoud say prebuild')
-  t.match(output, /precommit/, 'shoud say precommit')
+  t.match(output, /genexample/, 'should say genexample')
+  t.match(output, /gitignore/, 'should say gitignore')
+  t.match(output, /prebuild/, 'should say prebuild')
+  t.match(output, /precommit/, 'should say precommit')
 
   ct.end()
 })
@@ -29,7 +29,7 @@ t.test('ext', ct => {
 t.test('ext missing', ct => {
   const output = execShell(`${dotenvx} ext missing`)
 
-  t.match(output, "error: unknown command 'missing'", 'shoud say installation needed')
+  t.match(output, "error: unknown command 'missing'", 'should say installation needed')
 
   ct.end()
 })
@@ -37,8 +37,8 @@ t.test('ext missing', ct => {
 t.test('ext vault', ct => {
   const output = execShell(`${dotenvx} ext vault`)
 
-  t.match(output, /\[INSTALLATION_NEEDED\] install dotenvx-ext-vault to use \[dotenvx ext vault\] commands/, 'shoud say installation needed')
-  t.match(output, /see installation instructions/, 'shoud say see installation instructions')
+  t.match(output, /\[INSTALLATION_NEEDED\] install dotenvx-ext-vault to use \[dotenvx ext vault\] commands/, 'should say installation needed')
+  t.match(output, /see installation instructions/, 'should say see installation instructions')
 
   ct.end()
 })

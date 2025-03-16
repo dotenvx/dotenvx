@@ -211,7 +211,7 @@ t.test('config monorepo/apps/backend/.env', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env alredy set', ct => {
+t.test('config monorepo/apps/backend/.env already set', ct => {
   const processEnv = {
     HELLO: 'world'
   }
@@ -230,7 +230,7 @@ t.test('config monorepo/apps/backend/.env alredy set', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env alredy set --overload', ct => {
+t.test('config monorepo/apps/backend/.env already set --overload', ct => {
   const processEnv = {
     HELLO: 'world'
   }

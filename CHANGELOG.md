@@ -306,7 +306,7 @@ FOO=${FOO}bar
 
 ### Changed
 
-* for `--convention nextjs` ingnore `.env.local` for TEST environment ([#425](https://github.com/dotenvx/dotenvx/pull/425))
+* for `--convention nextjs` ignore `.env.local` for TEST environment ([#425](https://github.com/dotenvx/dotenvx/pull/425))
 * for `precommit` redirect missing `dotenvx` command using POSIX compliant redirection ([#424](https://github.com/dotenvx/dotenvx/pull/424))
 * make parent `dotenvx help` command less noisy by removing `[options]`. run `dotenvx COMMAND -h` to list all available options like always ([#429](https://github.com/dotenvx/dotenvx/pull/429))
 
@@ -847,7 +847,7 @@ Learn more at [https://dotenvx.com/docs/quickstart#add-encryption]
 
 ### Added
 
-* Support encryption replacemnt of multiline values ([#220](https://github.com/dotenvx/dotenvx/pull/220))
+* Support encryption replacement of multiline values ([#220](https://github.com/dotenvx/dotenvx/pull/220))
 
 ## 0.40.0
 
@@ -900,7 +900,7 @@ Further notes:
 
 * `DOTENV_PUBLIC_KEY` lives in the `.env` file. You can safely share this with whomever you wish.
 * `DOTENV_PRIVATE_KEY` lives in your `.env.keys` file. Share this only with those you trust to decrypt your secrets.
-* If using encrypted `.env` files like this it is safe to commmit them to source code. This makes reviewing PRs that contain secrets much easier.
+* If using encrypted `.env` files like this it is safe to commit them to source code. This makes reviewing PRs that contain secrets much easier.
 * Tell your contributors to contribute a secret using the command `dotenvx set HELLO world --encrypt`.
 * Set your `DOTENV_PRIVATE_KEY` on your server to decrypt these values using `dotenvx run -- yourcommand`
 * You can repeat all this per environment by modifying your set command to `dotenvx set HELLO production -f .env.production --encrypt` (for example)

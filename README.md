@@ -1508,7 +1508,7 @@ Advanced CLI commands.
   </details>
 * <details><summary>`decrypt -ek`</summary><br>
 
-  Decrypt the contents inside an encrypted `.env` file except for an exluded key.
+  Decrypt the contents inside an encrypted `.env` file except for an excluded key.
 
   ```sh
   $ echo "HELLO=World\nHOLA=Mundo" > .env
@@ -1606,7 +1606,7 @@ Advanced CLI commands.
   </details>
 * <details><summary>`keypair --format shell`</summary><br>
 
-  Print a shell formatted reponse of public/private keys.
+  Print a shell formatted response of public/private keys.
 
   ```sh
   $ echo "HELLO=World" > .env
@@ -1757,7 +1757,7 @@ Advanced CLI commands.
   </details>
 * <details><summary>`rotate -ek`</summary><br>
 
-  Rotate the encrypted contents inside an encrypted `.env` file except for an exluded key.
+  Rotate the encrypted contents inside an encrypted `.env` file except for an excluded key.
 
   ```sh
   $ echo "HELLO=World\nHOLA=Mundo" > .env
@@ -2212,7 +2212,7 @@ Use dotenvx directly in code.
   </details>
 * <details><summary>`set(KEY, value)`</summary><br>
 
-  Programatically set an environment variable. 
+  Programmatically set an environment variable. 
 
   ```js
   // index.js
@@ -2223,7 +2223,7 @@ Use dotenvx directly in code.
   </details>
 * <details><summary>`get(KEY)` - <i>Decryption at Access</i></summary><br>
 
-  Programatically get an environment variable at access/runtime.
+  Programmatically get an environment variable at access/runtime.
 
   ```js
   // index.js

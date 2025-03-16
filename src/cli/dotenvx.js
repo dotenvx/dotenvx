@@ -219,7 +219,7 @@ program.command('precommit')
     precommitAction.apply(this, args)
   })
 
-// overide helpInformation to hide DEPRECATED and 'ext' commands
+// override helpInformation to hide DEPRECATED and 'ext' commands
 program.helpInformation = function () {
   const originalHelp = Command.prototype.helpInformation.call(this)
   const lines = originalHelp.split('\n')

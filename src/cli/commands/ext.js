@@ -61,7 +61,7 @@ ext.command('scan')
   .description('scan for leaked secrets')
   .action(require('./../actions/ext/scan'))
 
-// overide helpInformation to hide dynamic commands
+// override helpInformation to hide dynamic commands
 ext.helpInformation = function () {
   const originalHelp = Command.prototype.helpInformation.call(this)
   const lines = originalHelp.split('\n')

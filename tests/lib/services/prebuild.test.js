@@ -116,7 +116,7 @@ t.test('#run (dockerignore is not ignore .env.keys file and should)', ct => {
   ct.end()
 })
 
-t.test('#run (dockerignore is not ignore .env.production file and should) AND isFileToBeCommited raises an error (should default to true on the filename)', ct => {
+t.test('#run (dockerignore is not ignore .env.production file and should) AND isFileToBeCommitted raises an error (should default to true on the filename)', ct => {
   sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
   childProcess.execSync.throws(new Error('Mock Error'))
   const readFileXStub = sinon.stub(fsx, 'readFileX')

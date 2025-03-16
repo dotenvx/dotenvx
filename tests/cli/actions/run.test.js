@@ -672,7 +672,7 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
   ct.end()
 })
 
-t.test('run - envFile (ambigious arguments, missing --)', async ct => {
+t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
   const optsStub = sinon.stub().returns({ envFile: ['.env.production'] })
   const fakeContext = { opts: optsStub, args: [], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '-f', '.env.production', 'echo', ''])
@@ -713,7 +713,7 @@ t.test('run - envFile (ambigious arguments, missing --)', async ct => {
   ct.end()
 })
 
-t.test('run - envFile (ambigious arguments, missing -- and envFile is empty)', async ct => {
+t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', async ct => {
   const optsStub = sinon.stub().returns({ envFile: [] })
   const fakeContext = { opts: optsStub, args: [], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '-f', '.env', 'echo', ''])
