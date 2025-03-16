@@ -614,6 +614,9 @@ More examples
 
   $ dotenvx run --convention=nextjs -- node index.js
   Hello development local
+
+  $ dotenvx run --convention=flow -- node index.js
+  Hello development local
   ```
 
   (more conventions available upon request)
