@@ -50,6 +50,19 @@ t.test('config with convention - calls Run.run with proper envs', ct => {
   ct.end()
 })
 
+t.test('config with convention flow - calls Run.run with proper envs', ct => {
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+  main.config({ convention: 'flow' })
+
+  t.ok(stub.called, 'new Run().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('config with Run.run errors', ct => {
   const loggerErrorStub = sinon.stub(console, 'error')
 

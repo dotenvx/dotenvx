@@ -57,6 +57,27 @@ t.test('run --convention', async ct => {
   ct.end()
 })
 
+t.test('run --convention', async ct => {
+  const optsStub = sinon.stub().returns({ convention: 'flow' })
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
+
+  ct.end()
+})
+
 t.test('run - DOTENV_KEY', async ct => {
   const optsStub = sinon.stub().returns({ convention: 'nextjs' })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }

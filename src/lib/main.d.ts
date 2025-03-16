@@ -121,7 +121,7 @@ export interface DotenvConfigOptions {
   DOTENV_KEY?: string;
 
   /**
-   * Load a .env convention (available conventions: 'nextjs')
+   * Load a .env convention (available conventions: 'nextjs, flow')
    */
   convention?: string;
 
@@ -191,7 +191,7 @@ export interface SetOptions {
   envKeysFile?: string;
 
   /**
-   * Set a .env convention (available conventions: 'nextjs')
+   * Set a .env convention (available conventions: 'nextjs, flow')
    */
   convention?: string;
 
