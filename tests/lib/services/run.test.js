@@ -768,7 +768,7 @@ options="$\{options} optA"
 configX=blah
 # config2 definitions
 options="$\{options} optB optC $\{configX:+optX}"
-# config3 defintions
+# config3 definitions
 options="$\{options} optD"`
   const envs = [
     { type: 'env', value: src }

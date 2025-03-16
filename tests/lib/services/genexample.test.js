@@ -122,14 +122,14 @@ t.test('#run (missing env files)', ct => {
   ct.end()
 })
 
-t.test('#run (non-existant .env file)', ct => {
+t.test('#run (non-existent .env file)', ct => {
   try {
-    new Genexample('tests/monorepo/apps/frontend', ['.env.nonexistant']).run()
+    new Genexample('tests/monorepo/apps/frontend', ['.env.nonexistent']).run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.equal(error.code, 'MISSING_ENV_FILE')
-    ct.equal(error.message, `[MISSING_ENV_FILE] missing .env.nonexistant file (${path.resolve('tests/monorepo/apps/frontend/.env.nonexistant')})`)
-    ct.equal(error.help, '? add it with [echo "HELLO=World" > .env.nonexistant] and then run [dotenvx genexample]')
+    ct.equal(error.message, `[MISSING_ENV_FILE] missing .env.nonexistent file (${path.resolve('tests/monorepo/apps/frontend/.env.nonexistent')})`)
+    ct.equal(error.help, '? add it with [echo "HELLO=World" > .env.nonexistent] and then run [dotenvx genexample]')
   }
 
   ct.end()

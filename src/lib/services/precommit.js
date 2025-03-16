@@ -46,7 +46,7 @@ class Precommit {
       dotenvFiles.forEach(file => {
         count += 1
 
-        // check if file is going to be commited
+        // check if file is going to be committed
         if (this._isFileToBeCommitted(file)) {
           // check if that file is being ignored
           if (ig.ignores(file)) {
