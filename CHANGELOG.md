@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.39.0...main)
 
+## [1.39.0](https://github.com/dotenvx/dotenvx/compare/v1.38.5...v1.39.0)
+
 ### Added
 
 * Add `--convention flow` option to `dotenvx run` ([#551](https://github.com/dotenvx/dotenvx/pull/551))
