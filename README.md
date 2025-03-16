@@ -1046,7 +1046,13 @@ Advanced CLI commands.
   Hello development local
   ```
 
-  (more conventions available upon request)
+  Further, we recommend using `DOTENV_ENV` over `NODE_ENV`– as `dotenvx` works everywhere, not just node.
+
+  ```sh
+  $ DOTENV_ENV=development dotenvx run --convention=flow -- node index.js 
+  [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.development, .env.local, .env
+  Hello development local
+  ```
 
   </details>
 * <details><summary>`run -fk`</summary><br>
