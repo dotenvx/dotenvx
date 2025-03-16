@@ -1036,13 +1036,13 @@ Advanced CLI commands.
 
   ```sh
   $ echo "HELLO=development local" > .env.development.local
-  $ echo "HELLO=local" > .env.local
   $ echo "HELLO=development" > .env.development
+  $ echo "HELLO=local" > .env.local
   $ echo "HELLO=env" > .env
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
-  $ dotenvx run --convention=flow -- node index.js
-  [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.local, .env.development, .env
+  $ NODE_ENV=development dotenvx run --convention=flow -- node index.js 
+  [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.development, .env.local, .env
   Hello development local
   ```
 
