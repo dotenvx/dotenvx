@@ -2407,6 +2407,8 @@ Pro CLI commands.
 
   </details>
 
+&nbsp;
+
 ## Whitepaper
 
 > **Dotenvx: Reducing Secrets Risk with Cryptographic Separation**
