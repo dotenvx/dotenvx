@@ -2287,6 +2287,126 @@ Use dotenvx directly in code.
 
   </details>
 
+### Pro 🏆
+
+Pro CLI commands.
+
+* <details><summary>`pro keypair`</summary><br>
+
+  Print fully managed public/private keys for `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ dotenvx encrypt
+
+  $ dotenvx pro push
+
+  $ dotenvx pro keypair
+  {"DOTENV_PUBLIC_KEY":"<publicKey>","DOTENV_PRIVATE_KEY":"<privateKey>"}
+  ```
+
+  </details>
+* <details><summary>`pro keypair -f`</summary><br>
+
+  Print fully managed public/private keys for `.env.production` file.
+
+  ```sh
+  $ echo "HELLO=Production" > .env.production
+  $ dotenvx encrypt -f .env.production
+
+  $ dotenvx pro push
+
+  $ dotenvx pro keypair -f .env.production
+  {"DOTENV_PUBLIC_KEY_PRODUCTION":"<publicKey>","DOTENV_PRIVATE_KEY_PRODUCTION":"<privateKey>"}
+  ```
+
+  </details>
+* <details><summary>`pro keypair DOTENV_PRIVATE_KEY`</summary><br>
+
+  Print specific fully managed keypair for `.env` file.
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ dotenvx encrypt
+
+  $ dotenvx pro push
+
+  $ dotenvx pro keypair DOTENV_PRIVATE_KEY
+  <privateKey>
+  ```
+
+  </details>
+* <details><summary>`pro settings org`</summary><br>
+
+  Print organization.
+
+  ```sh
+  $ dotenvx pro settings org
+  motdotla
+  ```
+
+  </details>
+* <details><summary>`pro settings orgpublickey`</summary><br>
+
+  Print organization public key–used for encrypting project private keys.
+
+  ```sh
+  $ dotenvx pro settings orgpublickey
+  02761eccd2a442ebbfa14ac2e72762d885a1e96b8949428deea62db305947d6408
+  ```
+
+  </details>
+* <details><summary>`pro settings orgprivatekey`</summary><br>
+
+  Print masked organization private key–used for decrypting project private keys.
+
+  ```sh
+  $ dotenvx pro settings orgprivatekey
+  322c004*********************************************************
+  ```
+
+  </details>
+* <details><summary>`pro settings orgprivatekey --unmask`</summary><br>
+
+  Print unmasked organization private key–used for decrypting project private keys.
+
+  ```sh
+  $ dotenvx pro settings orgprivatekey --unmask
+  322c004271ac6ad1b548df3f316ff4e8f08e17e0b15f459db64f3f3b48b0efb7
+  ```
+
+  </details>
+* <details><summary>`pro settings orgteam`</summary><br>
+
+  Print team status in tabular format.
+
+  ```sh
+  $ dotenvx pro settings orgteam
+  ╔═══════════╤════════╗
+  ║ username  │ synced ║
+  ╟───────────┼────────╢
+  ║ motdotla  │ ✔      ║
+  ╟───────────┼────────╢
+  ║ motdotenv │ ✔      ║
+  ╚═══════════╧════════╝
+  ```
+
+  </details>
+* <details><summary>`pro settings storetree`</summary><br>
+
+  Print encrypted store tree–backing your dotenvx pro installation.
+
+  ```sh
+  $ dotenvx pro settings storetree
+  ├─ .env
+  └─ pro.dotenvx.com
+     ├─ user-1-organization-1.json
+     ├─ user-1-private-key.json
+     └─ user-1.json
+  ```
+
+  </details>
+
 ## Whitepaper
 
 > **Dotenvx: Reducing Secrets Risk with Cryptographic Separation**
