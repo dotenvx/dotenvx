@@ -2288,6 +2288,7 @@ Use dotenvx directly in code.
   </details>
 
 ### Pro 🏆
+> The World's Best Secrets Manager-for .env Files. 🏆
 
 Pro CLI commands.
 
