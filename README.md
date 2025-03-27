@@ -2289,7 +2289,7 @@ Use dotenvx directly in code.
 
 ### Pro 🏆
 
-*The World's Best Secrets Manager-for .env Files. 🏆*
+*The World's Best Secrets Manager for .env Files. 🏆*
 
 * <details><summary>`pro keypair`</summary><br>
 
