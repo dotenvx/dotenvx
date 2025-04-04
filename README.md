@@ -2289,7 +2289,7 @@ Use dotenvx directly in code.
 
 ### Pro 🏆
 
-*Secrets Management – Done Right. 🏆*
+*Secrets Management – Done Right. Cloak your private keys and treat secrets like code.*
 
 * <details><summary>`pro keypair`</summary><br>
 
