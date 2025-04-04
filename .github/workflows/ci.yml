@@ -293,6 +293,13 @@ jobs:
     strategy:
       fail-fast: true
     steps:
+      # GITHUB_ENV operates like a .env file
+      - name: extract version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
       # https://github.com/Justintime50/homebrew-releaser
       - name: homebrew releaser
         uses: Justintime50/homebrew-releaser@v1
@@ -304,7 +311,7 @@ jobs:
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           commit_owner: motdotenv
           commit_email: mot@dotenv.org
-          version: ${{ env.CLEAN_VERSION }}
+          version: ${{ env.VERSION }}
           install: |
             bin.install "dotenvx"
             bin.install_symlink "dotenvx" => "git-dotenvx"
