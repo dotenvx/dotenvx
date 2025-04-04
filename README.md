@@ -2289,11 +2289,7 @@ Use dotenvx directly in code.
 
 ### Pro 🏆
 
-*Secrets Management – Done Right. 🏆*
-
-* Encrypt .env
-* Cloak your keys
-* Treat secrets like code
+*Secrets Management – Done Right. 🏆* Encrypt .env files, cloak your private keys, and treat secrets like code.
 
 * <details><summary>`pro keypair`</summary><br>
 
