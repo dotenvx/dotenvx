@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.39.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.39.1...main)
+
+## [1.39.1](https://github.com/dotenvx/dotenvx/compare/v1.39.0...v1.39.1)
+
+### Added
+
+* Add `version` to homebrew formula ([#564](https://github.com/dotenvx/dotenvx/pull/564))
 
 ## [1.39.0](https://github.com/dotenvx/dotenvx/compare/v1.38.5...v1.39.0)
 
