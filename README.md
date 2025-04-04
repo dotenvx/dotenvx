@@ -2289,7 +2289,7 @@ Use dotenvx directly in code.
 
 ### Pro 🏆
 
-*Secrets Management – Done Right. 🏆* [Learn more](https://dotenvx.com/pro)
+*Secrets Management – Done Right. 🏆* ([learn more](https://dotenvx.com/pro))
 
 * <details><summary>`pro keypair`</summary><br>
 
