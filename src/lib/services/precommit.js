@@ -93,11 +93,24 @@ class Precommit {
     }
   }
 
+  _isInGitRepo () {
+    try {
+      childProcess.execSync('git rev-parse --is-inside-work-tree', { stdio: 'ignore' })
+      return true
+    } catch {
+      return false
+    }
+  }
+
   _isFileToBeCommitted (filePath) {
     try {
+      if (!this._isInGitRepo()) {
+        // consider file to be committed if there is an error (not a git repo)
+        return true
+      }
+
       const output = childProcess.execSync('git diff HEAD --name-only').toString()
       const files = output.split('\n')
-
       return files.includes(filePath)
     } catch (error) {
       // consider file to be committed if there is an error (not using git)

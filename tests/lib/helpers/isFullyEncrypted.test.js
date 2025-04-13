@@ -23,6 +23,18 @@ t.test('#isFullyEncrypted - No values are encrypted', ct => {
   ct.end()
 })
 
+t.test('#isFullyEncrypted - partially encrypted and partially unencrypted', ct => {
+  const str = `
+    # .env
+    HELLO=unencrypted
+    HELLO=encrypted:1234
+  `.trim()
+
+  const result = isFullyEncrypted(str)
+  ct.same(result, false, 'Some values are unencrypted')
+  ct.end()
+})
+
 t.test('#isFullyEncrypted - Encrypted values with DOTENV_PUBLIC_KEY', ct => {
   const str = `
     #/-------------------[DOTENV_PUBLIC_KEY]--------------------/
