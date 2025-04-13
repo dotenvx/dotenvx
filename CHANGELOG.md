@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.39.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.40.0...main)
+
+## [1.40.0](https://github.com/dotenvx/dotenvx/compare/v1.39.1...v1.40.0)
+
+### Added
+
+* Smarter `ext precommit` and `ext prebuild` – catch duplicate KEYs in the same .env file where one is mistakenly left unencrypted ([#567](https://github.com/dotenvx/dotenvx/pull/567))
 
 ## [1.39.1](https://github.com/dotenvx/dotenvx/compare/v1.39.0...v1.39.1)
 
