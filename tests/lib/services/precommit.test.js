@@ -130,6 +130,31 @@ t.test('#run (gitignore is not ignore .env.keys file and should)', ct => {
 
 t.test('#run (gitignore is not ignore .env.production file and should) AND isFileToBeCommited raises an error (should default to true on the filename)', ct => {
   sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
+  sinon.stub(Precommit.prototype, '_isInGitRepo').returns(true)
+  childProcess.execSync.throws(new Error('Mock Error'))
+  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  // Stub different return values based on the file path
+  readFileXStub.callsFake((filePath) => {
+    if (filePath === '.env') {
+      return '.env'
+    } else if (filePath === '.env.production') {
+      return 'ENV_VAR=value'
+    }
+    return ''
+  })
+
+  try {
+    new Precommit().run()
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.message, `${prefix} .env.production not protected (encrypted or gitignored)`)
+  }
+
+  ct.end()
+})
+
+t.test('#run (gitignore is not ignore .env.production file and should) AND isInGitRepo raises an error (should default to true on the filename)', ct => {
+  sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
   childProcess.execSync.throws(new Error('Mock Error'))
   const readFileXStub = sinon.stub(fsx, 'readFileX')
   // Stub different return values based on the file path

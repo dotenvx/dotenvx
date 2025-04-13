@@ -1,7 +1,7 @@
 // historical dotenv.parse - https://github.com/motdotla/dotenv)
 const LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
 
-function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWindowsNewlines = false) {
+function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWindowsNewlines = false, collectAllValues = false) {
   const obj = {}
 
   // Convert buffer to string
@@ -35,8 +35,18 @@ function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWind
       value = value.replace(/\\t/g, '\t') // tabs
     }
 
-    // Add to object
-    obj[key] = value
+    if (collectAllValues) {
+      // handle scenario where user mistakenly includes plaintext duplicate in .env:
+      //
+      // # .env
+      // HELLO="World"
+      // HELLO="enrypted:1234"
+      obj[key] = obj[key] || []
+      obj[key].push(value)
+    } else {
+      // Add to object
+      obj[key] = value
+    }
   }
 
   return obj
