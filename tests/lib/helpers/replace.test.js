@@ -1743,3 +1743,16 @@ BAR=`)
 
   ct.end()
 })
+
+t.test('#replace doesn\'t replace all duplicate keys. replaces the last.', ct => {
+  const src = `# duplicate keys
+HELLO=one
+HELLO=two`
+
+  const newSrc = replace(src, 'HELLO', 'encrypted:1234')
+  ct.same(newSrc, `# duplicate keys
+HELLO=one
+HELLO=encrypted:1234`)
+
+  ct.end()
+})
