@@ -1,6 +1,7 @@
 const childProcess = require('child_process')
 
 const { logger } = require('./../../../shared/logger')
+const chomp = require('./../../../lib/helpers/chomp')
 
 function scan () {
   const options = this.opts()
@@ -17,11 +18,14 @@ function scan () {
     return
   }
 
+  let output = ''
   try {
-    const output = childProcess.execSync('gitleaks detect -v 2>&1', { stdio: 'pipe' }).toString() // gitleaks sends output as stderr for strange reason
-    logger.blank(output)
+    output = childProcess.execSync('gitleaks detect --no-banner --verbose 2>&1').toString() // gitleaks sends exit code 1 but puts data on stdout for failures, so we catch later and resurface the stdout
+    logger.blank(chomp(output))
   } catch (error) {
-    console.error(error.message)
+    if (error.stdout) {
+      console.error(chomp(error.stdout.toString()))
+    }
 
     process.exit(1)
   }
