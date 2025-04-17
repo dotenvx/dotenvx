@@ -797,6 +797,33 @@ Advanced CLI commands.
   ```
 
   </details>
+* <details><summary>`run` - Multiline</summary><br>
+
+  Dotenvx supports multiline values. This is particularly useful in conjunction with Docker - which does not support multiline values.
+
+  ```ini
+  # .env
+  MULTILINE_PEM="-----BEGIN PUBLIC KEY-----
+  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnNl1tL3QjKp3DZWM0T3u
+  LgGJQwu9WqyzHKZ6WIA5T+7zPjO1L8l3S8k8YzBrfH4mqWOD1GBI8Yjq2L1ac3Y/
+  bTdfHN8CmQr2iDJC0C6zY8YV93oZB3x0zC/LPbRYpF8f6OqX1lZj5vo2zJZy4fI/
+  kKcI5jHYc8VJq+KCuRZrvn+3V+KuL9tF9v8ZgjF2PZbU+LsCy5Yqg1M8f5Jp5f6V
+  u4QuUoobAgMBAAE=
+  -----END PUBLIC KEY-----"
+  ```
+
+  ```sh
+  $ dotenvx get MULTILINE_PEM
+  \-\-\-\-\-BEGIN PUBLIC KEY\-\-\-\-\-
+  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnNl1tL3QjKp3DZWM0T3u
+  LgGJQwu9WqyzHKZ6WIA5T+7zPjO1L8l3S8k8YzBrfH4mqWOD1GBI8Yjq2L1ac3Y/
+  bTdfHN8CmQr2iDJC0C6zY8YV93oZB3x0zC/LPbRYpF8f6OqX1lZj5vo2zJZy4fI/
+  kKcI5jHYc8VJq+KCuRZrvn+3V+KuL9tF9v8ZgjF2PZbU+LsCy5Yqg1M8f5Jp5f6V
+  u4QuUoobAgMBAAE=
+  \-\-\-\-\-END PUBLIC KEY\-\-\-\-\-
+  ```
+
+  </details>
 * <details><summary>`run` - multiple `-f` flags</summary><br>
 
   Compose multiple `.env` files for environment variables loading, as you need.
