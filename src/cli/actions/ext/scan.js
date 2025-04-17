@@ -20,7 +20,7 @@ function scan () {
 
   let output = ''
   try {
-    output = childProcess.execSync('gitleaks detect --no-banner --verbose 2>&1', { encoding: 'utf-8' }).toString() // gitleaks sends output as stderr for strange reason
+    output = childProcess.execSync('gitleaks detect --no-banner --verbose 2>&1', { encoding: 'utf-8' }).toString() // gitleaks sends exit code 1 but puts data on stdout for failures, so we catch later and resurface the stdout
     logger.blank(chomp(output))
   } catch (error) {
     if (error.stdout) {

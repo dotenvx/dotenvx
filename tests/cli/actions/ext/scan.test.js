@@ -63,7 +63,11 @@ t.test('scan - gitleaks installed and works', (ct) => {
 
 t.test('scan - gitleaks installed and raises error', (ct) => {
   childProcess.execSync.onCall(0).returns('8.18.4')
-  childProcess.execSync.throws(new Error('some error happened'))
+
+  // Simulate gitleaks error with stderr output
+  const error = new Error('Gitleaks failed')
+  error.stdout = Buffer.from('leak: API_KEY=abcd1234')
+  childProcess.execSync.onCall(1).throws(error)
 
   const processExitStub = sinon.stub(process, 'exit')
   const consoleErrorStub = sinon.stub(console, 'error')
@@ -71,7 +75,7 @@ t.test('scan - gitleaks installed and raises error', (ct) => {
   scan.call(fakeContext)
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
-  ct.ok(consoleErrorStub.calledWith('some error happened'), 'console.error logs')
+  ct.ok(consoleErrorStub.calledWith('leak: API_KEY=abcd1234'), 'console.error logs')
 
   ct.end()
 })
