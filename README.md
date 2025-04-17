@@ -829,6 +829,27 @@ Advanced CLI commands.
   ```
 
   </details>
+* <details><summary>`run` - Contextual Help</summary><br>
+
+  Unlike other dotenv libraries, dotenvx attempts to unblock you with contextual help.
+
+  For example, when missing a custom .env file:
+
+  ```sh
+  $ dotenvx run -f .env.missing -- echo $HELLO
+  [MISSING_ENV_FILE] missing .env.missing file (/Users/scottmotte/Code/dotenvx/playground/apr-16/.env.missing)
+  [MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484 and re-run [dotenvx run -- echo]
+  ```
+
+  or when missing a KEY:
+
+  ```sh
+  $ echo "HELLO=World" > .env
+  $ dotenvx get GOODBYE
+  [MISSING_KEY] missing GOODBYE key
+  ```
+
+  </details>
 * <details><summary>`run` - multiple `-f` flags</summary><br>
 
   Compose multiple `.env` files for environment variables loading, as you need.
