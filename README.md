@@ -799,7 +799,7 @@ Advanced CLI commands.
   </details>
 * <details><summary>`run` - Multiline</summary><br>
 
-  Dotenvx supports multiline values. This is particularly useful in conjunction with Docker - which does not support multiline values.
+  Dotenvx supports multiline values. This is particularly useful in conjunction with Docker - which [does not support multiline values](https://stackoverflow.com/questions/50299617/set-multiline-environment-variable-with-dockerfile/79578348#79578348).
 
   ```ini
   # .env
