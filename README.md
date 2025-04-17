@@ -812,9 +812,14 @@ Advanced CLI commands.
   -----END PUBLIC KEY-----"
   ```
 
+  ```js
+  // index.js
+  console.log('MULTILINE_PEM', process.env.MULTILINE_PEM)
+  ```
+
   ```sh
-  $ dotenvx get MULTILINE_PEM
-  -----BEGIN PUBLIC KEY-----
+  $ dotenvx run -- node index.js
+  MULTILINE_PEM -----BEGIN PUBLIC KEY-----
   MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnNl1tL3QjKp3DZWM0T3u
   LgGJQwu9WqyzHKZ6WIA5T+7zPjO1L8l3S8k8YzBrfH4mqWOD1GBI8Yjq2L1ac3Y/
   bTdfHN8CmQr2iDJC0C6zY8YV93oZB3x0zC/LPbRYpF8f6OqX1lZj5vo2zJZy4fI/
