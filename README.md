@@ -2339,6 +2339,8 @@ Use dotenvx directly in code.
 
 *Secrets Management – Done Right. Encrypted, Cloaked, Secrets as Code.*
 
+> Dotenvx Pro is a commercial extension for [dotenvx](https://github.com/dotenvx/dotenvx).
+
 * <details><summary>`pro keypair`</summary><br>
 
   Print fully managed public/private keys for `.env` file.
