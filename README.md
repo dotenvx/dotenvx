@@ -2099,20 +2099,15 @@ CLI extensions.
   </details>
 * <details><summary>`ext scan`</summary><br>
 
-  Use [gitleaks](https://gitleaks.io) under the hood to scan for possible secrets in your code.
+  Scan for leaked secrets.
 
   ```sh
   $ dotenvx ext scan
-
-      ○
-      │╲
-      │ ○
-      ○ ░
-      ░    gitleaks
-
   100 commits scanned.
   no leaks found
   ```
+
+  Uses [gitleaks](https://gitleaks.io) under the hood.
 
   </details>
 
