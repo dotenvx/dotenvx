@@ -2,6 +2,8 @@ Dotenvx Pro End-User License Agreement (EULA)
 
 Applies to: Dotenvx Pro (CLI, SDKs, and related software)
 
+Does NOT Apply to: Dotenvx (CLI, SDKs, and related software). Dotenvx is an Open Source project licensed under the BSD 3-Clause. You can find its license in `LICENSE`.
+
 ---
 
 Summary
