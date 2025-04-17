@@ -10,16 +10,12 @@ Dotenvx Pro is a commercial product. This agreement outlines your rights to use 
 
 By installing, accessing, or using Dotenvx Pro, you agree to these terms.
 
----
-
 1. License
 
 You are granted a non-exclusive, non-transferable, revocable license to use Dotenvx Pro as long as:
 - You have an active license (via paid subscription or evaluation, including time-limited free trials)
 - You do not distribute or sublicense the software
 - You do not attempt to bypass license enforcement or API restrictions
-
----
 
 2. Use
 
@@ -32,13 +28,9 @@ You may not:
 - Offer it as a hosted service, SaaS platform, or similar product
 - Use it in a way that competes with dotenvx.com
 
----
-
 3. Ownership
 
 All rights, title, and interest in Dotenvx Pro remain with Dotenvx LLC. You’re granted limited usage rights, not ownership.
-
----
 
 4. Termination
 
@@ -48,19 +40,13 @@ We may revoke your license if you:
 
 You must stop using the software immediately if your license is terminated.
 
----
-
 5. Warranty Disclaimer
 
 Dotenvx Pro is provided as-is, with no guarantees that it will work for your specific use case. You assume all risk.
 
----
-
 6. Limitation of Liability
 
 We are not liable for any indirect or consequential damages, including loss of data, downtime, or lost profits. Our total liability is limited to the amount you paid us for your license.
-
----
 
 7. Contact
 
