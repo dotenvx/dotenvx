@@ -2085,8 +2085,12 @@ CLI extensions.
   Prevent `.env` files from being committed to code inside a specified path to a directory.
 
   ```sh
+  $ echo "HELLO=World" > .env
+  $ mkdir -p apps/backend
+  $ echo "HELLO=Backend" > apps/backend/.env
+  
   $ dotenvx ext precommit apps/backend
-  [dotenvx][precommit] .env files (1) protected (encrypted or gitignored)
+  [dotenvx][precommit] apps/backend/.env not protected (encrypted or gitignored)
   ```
 
   </details>
@@ -2120,7 +2124,7 @@ CLI extensions.
   ...
 
   RUN dotenvx ext prebuild apps/backend
-  CMD ["dotenvx", "run", "--", "node", "index.js"]
+  CMD ["dotenvx", "run", "--", "node", "apps/backend/index.js"]
   ```
 
   </details>
