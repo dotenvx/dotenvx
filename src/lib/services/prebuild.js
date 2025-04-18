@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 const fsx = require('./../helpers/fsx')
+const path = require('path')
 const ignore = require('ignore')
 
 const Ls = require('../services/ls')
