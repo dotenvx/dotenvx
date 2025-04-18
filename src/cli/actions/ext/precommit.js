@@ -2,7 +2,10 @@ const { logger } = require('./../../../shared/logger')
 
 const Precommit = require('./../../../lib/services/precommit')
 
-function precommit () {
+function precommit (directory) {
+  // debug args
+  logger.debug(`directory: ${directory}`)
+
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -10,7 +13,7 @@ function precommit () {
     const {
       successMessage,
       warnings
-    } = new Precommit(options).run()
+    } = new Precommit(directory, options).run()
 
     for (const warning of warnings) {
       logger.warn(warning.message)

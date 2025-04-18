@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 const fsx = require('./../helpers/fsx')
+const path = require('path')
 const ignore = require('ignore')
 
 const Ls = require('../services/ls')
@@ -11,7 +12,10 @@ const childProcess = require('child_process')
 const MISSING_GITIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Precommit {
-  constructor (options = {}) {
+  constructor (directory = './', options = {}) {
+    // args
+    this.directory = directory
+    // options
     this.install = options.install
     this.excludeEnvFile = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
   }
@@ -41,10 +45,13 @@ class Precommit {
 
       // 2. check .env* files against .gitignore file
       const ig = ignore().add(gitignore)
-      const lsService = new Ls(process.cwd(), undefined, this.excludeEnvFile)
+
+      const lsService = new Ls(this.directory, undefined, this.excludeEnvFile)
       const dotenvFiles = lsService.run()
-      dotenvFiles.forEach(file => {
+      dotenvFiles.forEach(_file => {
         count += 1
+
+        const file = path.join(this.directory, _file) // to handle when directory argument passed
 
         // check if file is going to be committed
         if (this._isFileToBeCommitted(file)) {

@@ -53,6 +53,7 @@ ext.command('prebuild')
 ext.command('precommit')
   .description('prevent committing .env files to code')
   .addHelpText('after', examples.precommit)
+  .argument('[directory]', 'directory to list .env files from', '.')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(require('./../actions/ext/precommit'))
 
