@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.40.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.41.0...main)
+
+## [1.41.0](https://github.com/dotenvx/dotenvx/compare/v1.40.1...v1.41.0)
+
+### Added
+
+* Add [directory] argument to precommit and prebuild ([#572](https://github.com/dotenvx/dotenvx/pull/572))
 
 ## [1.40.1](https://github.com/dotenvx/dotenvx/compare/v1.40.0...v1.40.1)
 
