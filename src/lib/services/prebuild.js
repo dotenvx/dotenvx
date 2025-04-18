@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 const fsx = require('./../helpers/fsx')
+const path = require('path')
 const ignore = require('ignore')
 
 const Ls = require('../services/ls')
@@ -9,7 +10,10 @@ const packageJson = require('./../helpers/packageJson')
 const MISSING_DOCKERIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Prebuild {
-  constructor () {
+  constructor (directory = './') {
+    // args
+    this.directory = directory
+
     this.excludeEnvFile = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
   }
 
@@ -28,10 +32,12 @@ class Prebuild {
 
     // 2. check .env* files against .dockerignore file
     const ig = ignore().add(dockerignore)
-    const lsService = new Ls(process.cwd(), undefined, this.excludeEnvFile)
+    const lsService = new Ls(this.directory, undefined, this.excludeEnvFile)
     const dotenvFiles = lsService.run()
-    dotenvFiles.forEach(file => {
+    dotenvFiles.forEach(_file => {
       count += 1
+
+      const file = path.join(this.directory, _file) // to handle when directory argument passed
 
       // check if that file is being ignored
       if (ig.ignores(file)) {

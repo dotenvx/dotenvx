@@ -47,12 +47,14 @@ ext.command('gitignore')
 ext.command('prebuild')
   .description('prevent including .env files in docker builds')
   .addHelpText('after', examples.prebuild)
+  .argument('[directory]', 'directory to prevent including .env files from', '.')
   .action(require('./../actions/ext/prebuild'))
 
 // dotenvx ext precommit
 ext.command('precommit')
   .description('prevent committing .env files to code')
   .addHelpText('after', examples.precommit)
+  .argument('[directory]', 'directory to prevent committing .env files from', '.')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(require('./../actions/ext/precommit'))
 

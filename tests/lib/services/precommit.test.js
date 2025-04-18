@@ -34,7 +34,7 @@ t.test('#run', ct => {
 })
 
 t.test('#run (install: true)', ct => {
-  const precommit = new Precommit({ install: true })
+  const precommit = new Precommit(null, { install: true })
   const installPrecommitHookStub = sinon.stub(precommit, '_installPrecommitHook')
   installPrecommitHookStub.returns({ successMessage: 'success' })
 

@@ -2080,6 +2080,16 @@ CLI extensions.
   ```
 
   </details>
+* <details><summary>`ext precommit directory`</summary><br>
+
+  Prevent `.env` files from being committed to code inside a specified path to a directory.
+
+  ```sh
+  $ dotenvx ext precommit apps/backend
+  [dotenvx][precommit] .env files (1) protected (encrypted or gitignored)
+  ```
+
+  </details>
 * <details><summary>`ext prebuild`</summary><br>
 
   Prevent `.env` files from being built into your docker containers.
@@ -2093,6 +2103,23 @@ CLI extensions.
   ...
 
   RUN dotenvx ext prebuild
+  CMD ["dotenvx", "run", "--", "node", "index.js"]
+  ```
+
+  </details>
+* <details><summary>`ext prebuild directory`</summary><br>
+
+  Prevent `.env` files from being built into your docker containers inside a specified path to a directory.
+
+  Add it to your `Dockerfile`.
+
+  ```sh
+  # Dockerfile
+  RUN curl -fsS https://dotenvx.sh | sh
+
+  ...
+
+  RUN dotenvx ext prebuild apps/backend
   CMD ["dotenvx", "run", "--", "node", "index.js"]
   ```
 
