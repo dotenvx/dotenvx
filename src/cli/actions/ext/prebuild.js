@@ -2,7 +2,10 @@ const { logger } = require('./../../../shared/logger')
 
 const Prebuild = require('./../../../lib/services/prebuild')
 
-function prebuild () {
+function prebuild (directory) {
+  // debug args
+  logger.debug(`directory: ${directory}`)
+
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -10,7 +13,7 @@ function prebuild () {
     const {
       successMessage,
       warnings
-    } = new Prebuild(options).run()
+    } = new Prebuild(directory, options).run()
 
     for (const warning of warnings) {
       logger.warn(warning.message)
