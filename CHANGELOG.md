@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.41.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.42.0...main)
+
+## [1.42.0](https://github.com/dotenvx/dotenvx/compare/v1.41.0...v1.42.0)
+
+### Added
+
+* Add ability to override the `os` and `arch` via `install.sh` and `dotenvx.sh` ([3ded752](https://github.com/dotenvx/dotenvx/commit/3ded752fbe60aa4eeebe9fe90a87f35dba502a76))
 
 ## [1.41.0](https://github.com/dotenvx/dotenvx/compare/v1.40.1...v1.41.0)
 

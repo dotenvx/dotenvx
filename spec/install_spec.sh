@@ -51,6 +51,16 @@ Describe 'install.sh'
   AfterEach 'cleanup'
 
   Describe 'default values'
+    It 'checks default OS'
+      When call echo "$OS"
+      The output should equal ""
+    End
+
+    It 'checks default ARCH'
+      When call echo "$ARCH"
+      The output should equal ""
+    End
+
     It 'checks default VERSION'
       When call echo "$VERSION"
       The output should equal "0.44.2"
@@ -166,6 +176,8 @@ Describe 'install.sh'
 install dotenvx – a better dotenv
 
 Options:
+  --os              override operating system (e.g., linux, darwin)
+  --arch            override architecture (e.g., x64, arm64)
   --directory       directory to install dotenvx to (default: \"/usr/local/bin\")
   --version         version of dotenvx to install (default: \"0.44.2\")
 
