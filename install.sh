@@ -1,6 +1,8 @@
 #!/bin/sh
 
 set -e
+OS=""
+ARCH=""
 VERSION=""
 DIRECTORY="/usr/local/bin"
 REGISTRY_URL="https://registry.npmjs.org"
@@ -41,14 +43,14 @@ INSTALL_SCRIPT_URL="https://dotenvx.sh"
 #  |  ```sh                                                                                          |
 #  |  # curl examples                                                                                |
 #  |  curl -sfS "https://dotenvx.sh" | sudo sh                                                       |
-#  |  curl -sfS "https://dotenvx.sh?version=0.44.5" | sh                                             |
+#  |  curl -sfS "https://dotenvx.sh?version=1.41.0" | sh                                             |
 #  |  curl -sfS "https://dotenvx.sh?directory=." | sh                                                |
-#  |  curl -sfS "https://dotenvx.sh?directory=/custom/path&version=0.44.5" | sh                      |
+#  |  curl -sfS "https://dotenvx.sh?directory=/custom/path&version=1.41.0" | sh                      |
 #  |                                                                                                 |
 #  |  # self-executing examples                                                                      |
-#  |  ./install.sh --version=0.44.5                                                                  |
+#  |  ./install.sh --version=1.41.0                                                                  |
 #  |  ./install.sh --directory=.                                                                     |
-#  |  ./install.sh --directory=/custom/path --version=0.44.5                                         |
+#  |  ./install.sh --directory=/custom/path --version=1.41.0                                         |
 #  |  ./install.sh --help                                                                            |
 #  |  ```                                                                                            |
 #  |                                                                                                 |
@@ -76,6 +78,8 @@ usage() {
   echo "install dotenvx – a better dotenv"
   echo ""
   echo "Options:"
+  echo "  --os              override operating system (e.g., linux, darwin)"
+  echo "  --arch            override architecture (e.g., x64, arm64)"
   echo "  --directory       directory to install dotenvx to (default: \"/usr/local/bin\")"
   echo "  --version         version of dotenvx to install (default: \"$VERSION\")"
   echo ""
@@ -227,15 +231,19 @@ directory() {
 }
 
 os() {
-  echo "$(uname -s | tr '[:upper:]' '[:lower:]')"
-
-  return 0
+  if [ -n "$OS" ]; then
+    echo "$OS"
+  else
+    echo "$(uname -s | tr '[:upper:]' '[:lower:]')"
+  fi
 }
 
 arch() {
-  echo "$(uname -m | tr '[:upper:]' '[:lower:]')"
-
-  return 0
+  if [ -n "$ARCH" ]; then
+    echo "$ARCH"
+  else
+    echo "$(uname -m | tr '[:upper:]' '[:lower:]')"
+  fi
 }
 
 os_arch() {
@@ -392,6 +400,12 @@ run() {
   # parse arguments
   for arg in "$@"; do
     case $arg in
+    os=* | --os=*)
+      OS="${arg#*=}"
+      ;;
+    arch=* | --arch=*)
+      ARCH="${arg#*=}"
+      ;;
     version=* | --version=*)
       VERSION="${arg#*=}"
       ;;
