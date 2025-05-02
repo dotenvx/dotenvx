@@ -73,7 +73,7 @@ Describe 'install.sh'
 
     It 'checks default FORCE'
       When call echo "$FORCE"
-      The output should equal 0
+      The output should equal ""
     End
   End
 
