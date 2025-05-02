@@ -7,7 +7,7 @@ VERSION=""
 DIRECTORY="/usr/local/bin"
 REGISTRY_URL="https://registry.npmjs.org"
 INSTALL_SCRIPT_URL="https://dotenvx.sh"
-FORCE=0
+FORCE=""
 
 #  ./install.sh
 #  ___________________________________________________________________________________________________
@@ -189,7 +189,7 @@ is_windows() {
 }
 
 is_installed() {
-  if [ "$FORCE" = "1" ]; then
+  if [ -n "$FORCE" ]; then
     return 1  # force install even if it's already installed
   fi
 
@@ -419,7 +419,7 @@ run() {
       DIRECTORY="${arg#*=}"
       ;;
     force | --force)
-      FORCE=1
+      FORCE="1"
       ;;
     help | --help)
       usage
