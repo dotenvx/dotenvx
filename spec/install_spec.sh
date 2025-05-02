@@ -70,6 +70,11 @@ Describe 'install.sh'
       When call echo "$DIRECTORY"
       The output should equal "./spec/tmp"
     End
+
+    It 'checks default FORCE'
+      When call echo "$FORCE"
+      The output should equal 0
+    End
   End
 
   Describe 'is_piped()'
@@ -179,6 +184,7 @@ Options:
   --os              override operating system (e.g., linux, darwin)
   --arch            override architecture (e.g., x64, arm64)
   --directory       directory to install dotenvx to (default: \"/usr/local/bin\")
+  --force           force reinstallation even if already installed (default: false)
   --version         version of dotenvx to install (default: \"0.44.2\")
 
 Commands:

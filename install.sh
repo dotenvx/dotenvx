@@ -7,6 +7,7 @@ VERSION=""
 DIRECTORY="/usr/local/bin"
 REGISTRY_URL="https://registry.npmjs.org"
 INSTALL_SCRIPT_URL="https://dotenvx.sh"
+FORCE=0
 
 #  ./install.sh
 #  ___________________________________________________________________________________________________
@@ -81,6 +82,7 @@ usage() {
   echo "  --os              override operating system (e.g., linux, darwin)"
   echo "  --arch            override architecture (e.g., x64, arm64)"
   echo "  --directory       directory to install dotenvx to (default: \"/usr/local/bin\")"
+  echo "  --force           force reinstallation even if already installed (default: false)"
   echo "  --version         version of dotenvx to install (default: \"$VERSION\")"
   echo ""
   echo "Commands:"
@@ -187,6 +189,10 @@ is_windows() {
 }
 
 is_installed() {
+  if [ "$FORCE" = "1" ]; then
+    return 1  # force install even if it's already installed
+  fi
+
   local flagged_version="$1"
   local current_version=$("$(directory)/$(binary_name)" --version 2>/dev/null || echo "0")
 
@@ -411,6 +417,9 @@ run() {
       ;;
     directory=* | --directory=*)
       DIRECTORY="${arg#*=}"
+      ;;
+    force | --force)
+      FORCE=1
       ;;
     help | --help)
       usage
