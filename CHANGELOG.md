@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.42.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.42.2...main)
+
+## [1.42.2](https://github.com/dotenvx/dotenvx/compare/v1.42.1...v1.42.2)
+
+### Changed
+
+* Fix `--force` flag work with `?force=true` ([2776715](https://github.com/dotenvx/dotenvx/commit/2776715075928fa534b270cef0554b58b60bcd12))
 
 ## [1.42.1](https://github.com/dotenvx/dotenvx/compare/v1.42.0...v1.42.1)
 
