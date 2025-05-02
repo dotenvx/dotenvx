@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.42.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.42.1...main)
+
+## [1.42.1](https://github.com/dotenvx/dotenvx/compare/v1.42.0...v1.42.1)
+
+### Added
+
+* Add `--force` flag to `install.sh` ([0b8d21c](https://github.com/dotenvx/dotenvx/commit/0b8d21c612167354451213ef30e6e1299d91016d))
 
 ## [1.42.0](https://github.com/dotenvx/dotenvx/compare/v1.41.0...v1.42.0)
 
