@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.42.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.43.0...main)
+
+## [1.43.0](https://github.com/dotenvx/dotenvx/compare/v1.42.2...v1.43.0)
+
+### Removed
+
+* Remove `errorv, errornocolor, blank` from logger options ([#584](https://github.com/dotenvx/dotenvx/pull/584))
+
+### Changed
+
+* Replace instances of `console.error` with `logger.error` ([#584](https://github.com/dotenvx/dotenvx/pull/584))
 
 ## [1.42.2](https://github.com/dotenvx/dotenvx/compare/v1.42.1...v1.42.2)
 

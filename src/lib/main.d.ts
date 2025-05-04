@@ -144,10 +144,8 @@ export interface DotenvConfigOptions {
     | 'successv'
     | 'info'
     | 'help'
-    | 'http'
     | 'verbose'
-    | 'debug'
-    | 'blank';
+    | 'debug';
 }
 
 export interface DotenvConfigOutput {
