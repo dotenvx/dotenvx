@@ -29,18 +29,6 @@ t.test('throws error for missing log level', (ct) => {
   ct.end()
 })
 
-t.test('logger.blank', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.blank(message)
-  })
-
-  ct.equal(stdout, 'message1\n')
-
-  ct.end()
-})
-
 t.test('logger.debug', (ct) => {
   const message = 'message1'
 
@@ -125,47 +113,23 @@ t.test('logger.warn', (ct) => {
   ct.end()
 })
 
-t.test('logger.errorv', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.errorv(message)
-  })
-
-  ct.equal(stdout, `${bold(getColor('red')(`[dotenvx@${packageJson.version}] message1`))}\n`)
-
-  ct.end()
-})
-
 t.test('logger.error', (ct) => {
   const message = 'message1'
 
-  const stdout = capcon.interceptStdout(() => {
+  const stderr = capcon.interceptStderr(() => {
     logger.error(message)
   })
 
-  ct.equal(stdout, `${bold(getColor('red')('message1'))}\n`)
+  ct.equal(stderr, `${bold(getColor('red')('message1'))}\n`)
 
   ct.end()
 })
 
-t.test('logger.errornocolor', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.errornocolor(message)
-  })
-
-  ct.equal(stdout, 'message1\n')
-
-  ct.end()
-})
-
-t.test('logger.blank as object', (ct) => {
+t.test('logger.info as object', (ct) => {
   const message = { key: 'value' }
 
   const stdout = capcon.interceptStdout(() => {
-    logger.blank(message)
+    logger.info(message)
   })
 
   ct.equal(stdout, `${JSON.stringify({ key: 'value' })}\n`)

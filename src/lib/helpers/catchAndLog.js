@@ -1,7 +1,7 @@
 const { logger } = require('./../../shared/logger')
 
 function catchAndLog (error) {
-  console.error(error.message)
+  logger.error(error.message)
   if (error.help) {
     logger.help(error.help)
   }

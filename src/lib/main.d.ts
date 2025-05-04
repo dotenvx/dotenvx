@@ -139,17 +139,13 @@ export interface DotenvConfigOptions {
 
   logLevel?:
     | 'error'
-    | 'errorv'
-    | 'errornocolor'
     | 'warn'
     | 'success'
     | 'successv'
     | 'info'
     | 'help'
-    | 'http'
     | 'verbose'
-    | 'debug'
-    | 'blank';
+    | 'debug';
 }
 
 export interface DotenvConfigOutput {

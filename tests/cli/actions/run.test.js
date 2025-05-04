@@ -206,7 +206,7 @@ t.test('run - envFile (with errors)', async ct => {
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
@@ -214,8 +214,8 @@ t.test('run - envFile (with errors)', async ct => {
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
-  t.ok(consoleErrorStub.calledWith('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…'), 'console.error')
-  t.ok(consoleErrorStub.calledWith('[DECRYPTION_FAILED] ? encrypted data looks malformed'), 'logger.help')
+  t.ok(loggerErrorStub.calledWith('[DECRYPTION_FAILED] could not decrypt HELLO using private key d607fff…'), 'logger.error')
+  t.ok(loggerErrorStub.calledWith('[DECRYPTION_FAILED] ? encrypted data looks malformed'), 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
 
   ct.end()
@@ -438,14 +438,14 @@ t.test('run - MISSING_ENV_FILE', async ct => {
   })
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
-  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(consoleErrorStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- echo ]'), 'logger.help')
+  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(loggerErrorStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- echo ]'), 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
 
   ct.end()
@@ -475,14 +475,14 @@ t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
   })
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
-  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(consoleErrorStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'), 'logger.help')
+  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(loggerErrorStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'), 'logger.help')
   t.notOk(loggerSuccessvStub.called, 'logger.successv')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
 
@@ -512,13 +512,13 @@ t.test('run - MISSING_ENV_FILE --ignore flag', async ct => {
   })
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
-  t.ok(consoleErrorStub.notCalled, 'console.error')
+  t.ok(loggerErrorStub.notCalled, 'logger.error')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
 
   ct.end()
@@ -548,12 +548,12 @@ t.test('run - MISSING_ENV_FILE --strict flag and MISSING_ENV_FILE --ignore flag'
   })
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
   ct.ok(stub.called, 'new Run().run() called')
-  ct.ok(consoleErrorStub.notCalled, 'console.error')
+  ct.ok(loggerErrorStub.notCalled, 'logger.error')
   ct.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   ct.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
   ct.ok(processExitStub.notCalled, 'process.exit should NOT be called')
@@ -583,13 +583,13 @@ t.test('run - OTHER_ERROR', async ct => {
   })
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
-  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
+  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
 
   ct.end()
@@ -641,13 +641,13 @@ t.test('run - throws error', async ct => {
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
   const stub = sinon.stub(Run.prototype, 'run')
   stub.throws(error)
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
-  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(consoleErrorStub.calledWith('Mock Help'), 'console.error')
+  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(loggerErrorStub.calledWith('Mock Help'), 'logger.error')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()
@@ -677,7 +677,7 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const processExitStub = sinon.stub(process, 'exit')
 
   await run.call(fakeContext)
@@ -687,7 +687,7 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
   t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
-  t.ok(consoleErrorStub.calledWith('missing command after [dotenvx run --]. try [dotenvx run -- yourcommand]'), 'console.error')
+  t.ok(loggerErrorStub.calledWith('missing command after [dotenvx run --]. try [dotenvx run -- yourcommand]'), 'logger.error')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()
@@ -717,7 +717,7 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const processExitStub = sinon.stub(process, 'exit')
 
   await run.call(fakeContext)
@@ -728,7 +728,7 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
   t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
 
-  t.ok(consoleErrorStub.calledWith('ambiguous command due to missing \'--\' separator. try [dotenvx run -f .env.production -- yourcommand]'), 'console.error')
+  t.ok(loggerErrorStub.calledWith('ambiguous command due to missing \'--\' separator. try [dotenvx run -f .env.production -- yourcommand]'), 'logger.error')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()
@@ -758,7 +758,7 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
   const loggerSuccessvStub = sinon.stub(logger, 'successv')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const processExitStub = sinon.stub(process, 'exit')
 
   await run.call(fakeContext)
@@ -769,7 +769,7 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
   t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
 
-  t.ok(consoleErrorStub.calledWith('ambiguous command due to missing \'--\' separator. try [dotenvx run -f .env -- yourcommand]'), 'console.error')
+  t.ok(loggerErrorStub.calledWith('ambiguous command due to missing \'--\' separator. try [dotenvx run -f .env -- yourcommand]'), 'logger.error')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()

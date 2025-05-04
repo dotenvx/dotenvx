@@ -3,14 +3,11 @@ const { getColor, bold } = require('./colors')
 
 const levels = {
   error: 0,
-  errorv: 0,
-  errornocolor: 0,
   warn: 1,
   success: 2,
   successv: 2,
   info: 2,
   help: 2,
-  blank: 2,
   verbose: 4,
   debug: 5,
   silly: 6
@@ -26,7 +23,12 @@ const debug = getColor('plum')
 
 let currentLevel = levels.info // default log level
 
-function log (level, message) {
+function stderr (level, message) {
+  const formattedMessage = formatMessage(level, message)
+  console.error(formattedMessage)
+}
+
+function stdout (level, message) {
   if (levels[level] === undefined) {
     throw new Error(`MISSING_LOG_LEVEL: '${level}'. implement in logger.`)
   }
@@ -44,10 +46,6 @@ function formatMessage (level, message) {
     // errors
     case 'error':
       return error(formattedMessage)
-    case 'errorv':
-      return error(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
-    case 'errornocolor':
-      return formattedMessage
     // warns
     case 'warn':
       return warn(formattedMessage)
@@ -68,9 +66,6 @@ function formatMessage (level, message) {
     // debug
     case 'debug':
       return debug(formattedMessage)
-    // blank
-    case 'blank': // custom
-      return formattedMessage
   }
 }
 
@@ -79,24 +74,20 @@ const logger = {
   level: 'info',
 
   // errors
-  error: (msg) => log('error', msg),
-  errorv: (msg) => log('errorv', msg),
-  errornocolor: (msg) => log('errornocolor', msg),
+  error: (msg) => stderr('error', msg),
   // warns
-  warn: (msg) => log('warn', msg),
+  warn: (msg) => stdout('warn', msg),
   // success
-  success: (msg) => log('success', msg),
-  successv: (msg) => log('successv', msg),
+  success: (msg) => stdout('success', msg),
+  successv: (msg) => stdout('successv', msg),
   // info
-  info: (msg) => log('info', msg),
+  info: (msg) => stdout('info', msg),
   // help
-  help: (msg) => log('help', msg),
+  help: (msg) => stdout('help', msg),
   // verbose
-  verbose: (msg) => log('verbose', msg),
+  verbose: (msg) => stdout('verbose', msg),
   // debug
-  debug: (msg) => log('debug', msg),
-  // blank
-  blank: (msg) => log('blank', msg),
+  debug: (msg) => stdout('debug', msg),
   setLevel: (level) => {
     if (levels[level] !== undefined) {
       currentLevel = levels[level]

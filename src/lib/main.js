@@ -80,15 +80,15 @@ const config = function (options = {}) {
 
         if (error.code === 'MISSING_ENV_FILE') {
           if (!options.convention) { // do not output error for conventions (too noisy)
-            console.error(error.message)
+            logger.error(error.message)
             if (error.help) {
-              console.error(error.help)
+              logger.error(error.help)
             }
           }
         } else {
-          console.error(error.message)
+          logger.error(error.message)
           if (error.help) {
-            console.error(error.help)
+            logger.error(error.help)
           }
         }
       }
@@ -153,9 +153,9 @@ const parse = function (src, options = {}) {
 
   // display any errors
   for (const error of errors) {
-    console.error(error.message)
+    logger.error(error.message)
     if (error.help) {
-      console.error(error.help)
+      logger.error(error.help)
     }
   }
 
@@ -251,9 +251,9 @@ const get = function (key, options = {}) {
 
     if (options.strict) throw error // throw immediately if strict
 
-    console.error(error.message)
+    logger.error(error.message)
     if (error.help) {
-      console.error(error.help)
+      logger.error(error.help)
     }
   }
 

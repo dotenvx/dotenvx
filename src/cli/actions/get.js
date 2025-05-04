@@ -33,9 +33,9 @@ function get (key) {
         continue // ignore error
       }
 
-      console.error(error.message)
+      logger.error(error.message)
       if (error.help) {
-        console.error(error.help)
+        logger.error(error.help)
       }
     }
 
@@ -73,9 +73,9 @@ function get (key) {
       }
     }
   } catch (error) {
-    console.error(error.message)
+    logger.error(error.message)
     if (error.help) {
-      console.error(error.help)
+      logger.error(error.help)
     }
     process.exit(1)
   }

@@ -20,10 +20,10 @@ async function run () {
     const hasSeparator = process.argv.indexOf('--') !== -1
 
     if (hasSeparator) {
-      console.error('missing command after [dotenvx run --]. try [dotenvx run -- yourcommand]')
+      logger.error('missing command after [dotenvx run --]. try [dotenvx run -- yourcommand]')
     } else {
       const realExample = options.envFile[0] || '.env'
-      console.error(`ambiguous command due to missing '--' separator. try [dotenvx run -f ${realExample} -- yourcommand]`)
+      logger.error(`ambiguous command due to missing '--' separator. try [dotenvx run -f ${realExample} -- yourcommand]`)
     }
 
     process.exit(1)
@@ -71,15 +71,15 @@ async function run () {
 
         if (error.code === 'MISSING_ENV_FILE') {
           if (!options.convention) { // do not output error for conventions (too noisy)
-            console.error(error.message)
+            logger.error(error.message)
             if (error.help) {
-              console.error(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
+              logger.error(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
             }
           }
         } else {
-          console.error(error.message)
+          logger.error(error.message)
           if (error.help) {
-            console.error(error.help)
+            logger.error(error.help)
           }
         }
       }
@@ -111,9 +111,9 @@ async function run () {
 
     logger.successv(msg)
   } catch (error) {
-    console.error(error.message)
+    logger.error(error.message)
     if (error.help) {
-      console.error(error.help)
+      logger.error(error.help)
     }
     process.exit(1)
   }

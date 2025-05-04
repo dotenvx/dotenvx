@@ -86,7 +86,7 @@ t.test('decrypt - --stdout', ct => {
 t.test('decrypt - --stdout with error', ct => {
   sinon.stub(fsx, 'writeFileX')
   const processExitStub = sinon.stub(process, 'exit')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const error = new Error('Mock Error')
   error.help = 'https://github.com/dotenvx/dotenvx'
   const optsStub = sinon.stub().returns({ stdout: true })
@@ -109,8 +109,8 @@ t.test('decrypt - --stdout with error', ct => {
 
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
-  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(consoleErrorStub.calledWith('https://github.com/dotenvx/dotenvx'), 'console.error')
+  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(loggerErrorStub.calledWith('https://github.com/dotenvx/dotenvx'), 'logger.error')
 
   ct.end()
 })
@@ -169,7 +169,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   decrypt.call(fakeContext)
@@ -178,7 +178,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
+  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
   t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx decrypt]'), 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
 
@@ -207,7 +207,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
   decrypt.call(fakeContext)
@@ -216,8 +216,8 @@ t.test('decrypt - OTHER_ERROR', ct => {
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console.error')
-  t.ok(consoleErrorStub.calledWith('https://github.com/dotenvx/dotenvx'), 'console.error')
+  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
+  t.ok(loggerErrorStub.calledWith('https://github.com/dotenvx/dotenvx'), 'logger.error')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
 
@@ -238,7 +238,7 @@ t.test('decrypt - catch error', ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerDebugStub = sinon.stub(logger, 'debug')
 
@@ -247,7 +247,7 @@ t.test('decrypt - catch error', ct => {
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')
-  t.ok(consoleErrorStub.calledWith('Mock Error'), 'console error')
+  t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger error')
   t.ok(loggerHelpStub.calledWith('Mock Help'), 'logger help')
   t.ok(loggerDebugStub.calledWith('Mock Debug'), 'logger debug')
   t.ok(loggerDebugStub.calledWith('ERROR_CODE: 500'), 'logger debug')
