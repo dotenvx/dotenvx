@@ -140,7 +140,6 @@ export interface DotenvConfigOptions {
   logLevel?:
     | 'error'
     | 'errorv'
-    | 'errornocolor'
     | 'warn'
     | 'success'
     | 'successv'
