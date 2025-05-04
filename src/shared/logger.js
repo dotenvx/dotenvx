@@ -8,7 +8,6 @@ const levels = {
   successv: 2,
   info: 2,
   help: 2,
-  blank: 2,
   verbose: 4,
   debug: 5,
   silly: 6
@@ -25,14 +24,8 @@ const debug = getColor('plum')
 let currentLevel = levels.info // default log level
 
 function stderr (level, message) {
-  if (levels[level] === undefined) {
-    throw new Error(`MISSING_LOG_LEVEL: '${level}'. implement in logger.`)
-  }
-
-  if (levels[level] <= currentLevel) {
-    const formattedMessage = formatMessage(level, message)
-    console.error(formattedMessage)
-  }
+  const formattedMessage = formatMessage(level, message)
+  console.error(formattedMessage)
 }
 
 function stdout (level, message) {
@@ -73,9 +66,6 @@ function formatMessage (level, message) {
     // debug
     case 'debug':
       return debug(formattedMessage)
-    // blank
-    case 'blank': // custom
-      return formattedMessage
   }
 }
 
@@ -98,8 +88,6 @@ const logger = {
   verbose: (msg) => stdout('verbose', msg),
   // debug
   debug: (msg) => stdout('debug', msg),
-  // blank
-  blank: (msg) => stdout('blank', msg),
   setLevel: (level) => {
     if (levels[level] !== undefined) {
       currentLevel = levels[level]

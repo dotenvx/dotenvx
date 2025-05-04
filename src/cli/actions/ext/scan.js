@@ -11,7 +11,7 @@ function scan () {
     // redirect stderr to stdout to capture and ignore it
     childProcess.execSync('gitleaks version', { stdio: ['ignore', 'pipe', 'ignore'] })
   } catch (error) {
-    console.error('gitleaks: command not found')
+    logger.error('gitleaks: command not found')
     logger.help('? install gitleaks:      [brew install gitleaks]')
     logger.help('? other install options: [https://github.com/gitleaks/gitleaks]')
     process.exit(1)
@@ -21,10 +21,10 @@ function scan () {
   let output = ''
   try {
     output = childProcess.execSync('gitleaks detect --no-banner --verbose 2>&1').toString() // gitleaks sends exit code 1 but puts data on stdout for failures, so we catch later and resurface the stdout
-    logger.blank(chomp(output))
+    logger.info(chomp(output))
   } catch (error) {
     if (error.stdout) {
-      console.error(chomp(error.stdout.toString()))
+      logger.error(chomp(error.stdout.toString()))
     }
 
     process.exit(1)

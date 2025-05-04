@@ -25,7 +25,7 @@ t.test('executeCommand - exitCode 1', async ct => {
   const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 1 })
   const processExitStub = sinon.stub(process, 'exit')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
@@ -58,7 +58,7 @@ t.test('executeCommand - error with OTHER signal', async ct => {
 
   const execaStub = sinon.stub(execute, 'execa').throws(error)
   const processExitStub = sinon.stub(process, 'exit')
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
@@ -77,7 +77,7 @@ t.test('executeCommand - command failed error', async ct => {
 
   sinon.stub(execute, 'execa').throws(error)
   const processExitStub = sinon.stub(process, 'exit')
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
@@ -96,7 +96,7 @@ t.test('executeCommand - ENOENT', async ct => {
 
   sinon.stub(execute, 'execa').throws(error)
   const processExitStub = sinon.stub(process, 'exit')
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 

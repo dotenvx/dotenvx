@@ -64,7 +64,7 @@ t.test('config with convention flow - calls Run.run with proper envs', ct => {
 })
 
 t.test('config with Run.run errors', ct => {
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error('some error')
   error.help = 'some help'
@@ -75,7 +75,7 @@ t.test('config with Run.run errors', ct => {
   main.config()
 
   t.ok(stub.called, 'new Run().run() called')
-  ct.ok(loggerErrorStub.calledWith('some error'), 'console.error')
+  ct.ok(loggerErrorStub.calledWith('some error'), 'logger.error')
   ct.ok(loggerErrorStub.calledWith('some help'), 'logger.help')
 
   stub.restore()
@@ -85,7 +85,7 @@ t.test('config with Run.run errors', ct => {
 })
 
 t.test('config with Run.run errors and ignore', ct => {
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error('some error')
   error.code = 'SOME_ERROR'
@@ -97,7 +97,7 @@ t.test('config with Run.run errors and ignore', ct => {
   main.config({ ignore: ['SOME_ERROR'] })
 
   t.ok(stub.called, 'new Run().run() called')
-  ct.ok(loggerErrorStub.notCalled, 'console.error')
+  ct.ok(loggerErrorStub.notCalled, 'logger.error')
 
   stub.restore()
   loggerErrorStub.restore()
@@ -143,13 +143,13 @@ t.test('parse calls Parse.run with options.privateKey', ct => {
 })
 
 t.test('parse calls Parse.run with invalid options.privateKey', ct => {
-  const consoleErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: '12345' })
   ct.equal(parsed.HELLO, 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l')
-  ct.ok(consoleErrorStub.called, 'console error')
+  ct.ok(loggerErrorStub.called, 'logger error')
 
-  consoleErrorStub.restore()
+  loggerErrorStub.restore()
 
   ct.end()
 })
@@ -352,7 +352,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
 })
 
 t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --strict but error ALSO ignored', ct => {
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
@@ -367,7 +367,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
   main.config(options)
 
   ct.ok(stub.called, 'new Run().run() called')
-  ct.ok(loggerErrorStub.notCalled, 'console.error')
+  ct.ok(loggerErrorStub.notCalled, 'logger.error')
 
   stub.restore()
   loggerErrorStub.restore()
@@ -761,7 +761,7 @@ t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --stric
 })
 
 t.test('get with Get.run errors', ct => {
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error('some error')
   error.code = 'SOME_ERROR'
@@ -773,7 +773,7 @@ t.test('get with Get.run errors', ct => {
   main.get('KEY')
 
   t.ok(stub.called, 'new Get().run() called')
-  ct.ok(loggerErrorStub.called, 'console.error')
+  ct.ok(loggerErrorStub.called, 'logger.error')
 
   stub.restore()
   loggerErrorStub.restore()
@@ -782,7 +782,7 @@ t.test('get with Get.run errors', ct => {
 })
 
 t.test('get with Get.run undefined errors', ct => {
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: undefined })
@@ -790,7 +790,7 @@ t.test('get with Get.run undefined errors', ct => {
   main.get('KEY')
 
   t.ok(stub.called, 'new Get().run() called')
-  ct.ok(loggerErrorStub.notCalled, 'console.error')
+  ct.ok(loggerErrorStub.notCalled, 'logger.error')
 
   stub.restore()
   loggerErrorStub.restore()
@@ -799,7 +799,7 @@ t.test('get with Get.run undefined errors', ct => {
 })
 
 t.test('get with Get.run errors and ignore', ct => {
-  const loggerErrorStub = sinon.stub(console, 'error')
+  const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error('some error')
   error.code = 'SOME_ERROR'
@@ -811,7 +811,7 @@ t.test('get with Get.run errors and ignore', ct => {
   main.get('KEY', { ignore: ['SOME_ERROR'] })
 
   t.ok(stub.called, 'new Get().run() called')
-  ct.ok(loggerErrorStub.notCalled, 'console.error')
+  ct.ok(loggerErrorStub.notCalled, 'logger.error')
 
   stub.restore()
   loggerErrorStub.restore()

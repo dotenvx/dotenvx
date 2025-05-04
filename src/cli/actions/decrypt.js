@@ -22,9 +22,9 @@ function decrypt () {
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
         errorCount += 1
-        console.error(processedEnv.error.message)
+        logger.error(processedEnv.error.message)
         if (processedEnv.error.help) {
-          console.error(processedEnv.error.help)
+          logger.error(processedEnv.error.help)
         }
       } else {
         console.log(processedEnv.envSrc)
@@ -51,12 +51,12 @@ function decrypt () {
           errorCount += 1
 
           if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-            console.error(processedEnv.error.message)
+            logger.error(processedEnv.error.message)
             logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx decrypt]`)
           } else {
-            console.error(processedEnv.error.message)
+            logger.error(processedEnv.error.message)
             if (processedEnv.error.help) {
-              console.error(processedEnv.error.help)
+              logger.error(processedEnv.error.help)
             }
           }
         } else if (processedEnv.changed) {

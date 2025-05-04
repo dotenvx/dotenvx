@@ -97,9 +97,9 @@ async function executeCommand (commandArgs, env) {
     // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.
     if (!['SIGINT', 'SIGTERM'].includes(signalSent || error.signal)) {
       if (error.code === 'ENOENT') {
-        console.error(`Unknown command: ${error.command}`)
+        logger.error(`Unknown command: ${error.command}`)
       } else {
-        console.error(error.message)
+        logger.error(error.message)
       }
     }
 

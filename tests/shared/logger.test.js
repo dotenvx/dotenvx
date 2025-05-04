@@ -29,18 +29,6 @@ t.test('throws error for missing log level', (ct) => {
   ct.end()
 })
 
-t.test('logger.blank', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.blank(message)
-  })
-
-  ct.equal(stdout, 'message1\n')
-
-  ct.end()
-})
-
 t.test('logger.debug', (ct) => {
   const message = 'message1'
 
@@ -137,11 +125,11 @@ t.test('logger.error', (ct) => {
   ct.end()
 })
 
-t.test('logger.blank as object', (ct) => {
+t.test('logger.info as object', (ct) => {
   const message = { key: 'value' }
 
   const stdout = capcon.interceptStdout(() => {
-    logger.blank(message)
+    logger.info(message)
   })
 
   ct.equal(stdout, `${JSON.stringify({ key: 'value' })}\n`)
