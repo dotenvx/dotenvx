@@ -3,7 +3,6 @@ const { getColor, bold } = require('./colors')
 
 const levels = {
   error: 0,
-  errorv: 0,
   warn: 1,
   success: 2,
   successv: 2,
@@ -43,8 +42,6 @@ function formatMessage (level, message) {
     // errors
     case 'error':
       return error(formattedMessage)
-    case 'errorv':
-      return error(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
     // warns
     case 'warn':
       return warn(formattedMessage)
@@ -77,7 +74,6 @@ const logger = {
 
   // errors
   error: (msg) => log('error', msg),
-  errorv: (msg) => log('errorv', msg),
   // warns
   warn: (msg) => log('warn', msg),
   // success

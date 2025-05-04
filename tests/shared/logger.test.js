@@ -125,18 +125,6 @@ t.test('logger.warn', (ct) => {
   ct.end()
 })
 
-t.test('logger.errorv', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.errorv(message)
-  })
-
-  ct.equal(stdout, `${bold(getColor('red')(`[dotenvx@${packageJson.version}] message1`))}\n`)
-
-  ct.end()
-})
-
 t.test('logger.error', (ct) => {
   const message = 'message1'
 
