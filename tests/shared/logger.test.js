@@ -128,11 +128,11 @@ t.test('logger.warn', (ct) => {
 t.test('logger.error', (ct) => {
   const message = 'message1'
 
-  const stdout = capcon.interceptStdout(() => {
+  const stderr = capcon.interceptStderr(() => {
     logger.error(message)
   })
 
-  ct.equal(stdout, `${bold(getColor('red')('message1'))}\n`)
+  ct.equal(stderr, `${bold(getColor('red')('message1'))}\n`)
 
   ct.end()
 })

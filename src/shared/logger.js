@@ -24,7 +24,18 @@ const debug = getColor('plum')
 
 let currentLevel = levels.info // default log level
 
-function log (level, message) {
+function stderr (level, message) {
+  if (levels[level] === undefined) {
+    throw new Error(`MISSING_LOG_LEVEL: '${level}'. implement in logger.`)
+  }
+
+  if (levels[level] <= currentLevel) {
+    const formattedMessage = formatMessage(level, message)
+    console.error(formattedMessage)
+  }
+}
+
+function stdout (level, message) {
   if (levels[level] === undefined) {
     throw new Error(`MISSING_LOG_LEVEL: '${level}'. implement in logger.`)
   }
@@ -73,22 +84,22 @@ const logger = {
   level: 'info',
 
   // errors
-  error: (msg) => log('error', msg),
+  error: (msg) => stderr('error', msg),
   // warns
-  warn: (msg) => log('warn', msg),
+  warn: (msg) => stdout('warn', msg),
   // success
-  success: (msg) => log('success', msg),
-  successv: (msg) => log('successv', msg),
+  success: (msg) => stdout('success', msg),
+  successv: (msg) => stdout('successv', msg),
   // info
-  info: (msg) => log('info', msg),
+  info: (msg) => stdout('info', msg),
   // help
-  help: (msg) => log('help', msg),
+  help: (msg) => stdout('help', msg),
   // verbose
-  verbose: (msg) => log('verbose', msg),
+  verbose: (msg) => stdout('verbose', msg),
   // debug
-  debug: (msg) => log('debug', msg),
+  debug: (msg) => stdout('debug', msg),
   // blank
-  blank: (msg) => log('blank', msg),
+  blank: (msg) => stdout('blank', msg),
   setLevel: (level) => {
     if (levels[level] !== undefined) {
       currentLevel = levels[level]
