@@ -160,8 +160,9 @@ is_arch_supported() {
   amd64) arch="amd64" ;;
   arm64) arch="arm64" ;;
   aarch64) arch="aarch64" ;;
+  armv7l) arch="armv7l" ;;
   *)
-    echo "[INSTALLATION_FAILED] your architecture ${arch} is currently unsupported - must be x86_64, amd64, arm64, or aarch64"
+    echo "[INSTALLATION_FAILED] your architecture ${arch} is currently unsupported - must be x86_64, amd64, arm64, aarch64, or armv7l"
     echo "? request support by opening an issue at [https://github.com/dotenvx/dotenvx/issues]"
 
     return 1

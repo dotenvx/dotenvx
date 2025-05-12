@@ -201,6 +201,7 @@ jobs:
           ../node_modules/.bin/pkg . --public-packages "*" --public --target node20-linuxstatic-x64 --output ../bin/linux-x86_64/dotenvx
           ../node_modules/.bin/pkg . --public-packages "*" --public --target node20-linuxstatic-arm64 --output ../bin/linux-arm64/dotenvx
           ../node_modules/.bin/pkg . --public-packages "*" --public --target node20-linuxstatic-arm64 --output ../bin/linux-aarch64/dotenvx
+          ../node_modules/.bin/pkg . --public-packages "*" --public --target node20-linuxstatic-armv7 --output ../bin/linux-armv7l/dotenvx
           ../node_modules/.bin/pkg . --public-packages "*" --public --target node20-win-x64 --output ../bin/windows-amd64/dotenvx.exe
           ../node_modules/.bin/pkg . --public-packages "*" --public --target node20-win-x64 --output ../bin/windows-x86_64/dotenvx.exe
           cd ..
@@ -218,6 +219,7 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-arm64.tar.gz -C bin/linux-arm64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-linux-armv7l.tar.gz -C bin/linux-armv7l/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
           zip -j ./dist/dotenvx-${{ env.CLEAN_VERSION }}-windows-amd64.zip bin/windows-amd64/dotenvx.exe
@@ -228,7 +230,7 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-linux-amd64.tar.gz -C bin/linux-amd64/ .
           tar --gzip -cf ./dist/dotenvx-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
           tar --gzip -cf ./dist/dotenvx-linux-arm64.tar.gz -C bin/linux-arm64/ .
-          tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-armv7l.tar.gz -C bin/linux-armv7l/ .
           tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
           zip -j ./dist/dotenvx-windows-amd64.zip bin/windows-amd64/dotenvx.exe
@@ -240,6 +242,7 @@ jobs:
           tar --gzip -cf ./dist2/latest/dotenvx-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-linux-arm64.tar.gz -C bin/linux-arm64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
+          tar --gzip -cf ./dist2/latest/dotenvx-linux-armv7l.tar.gz -C bin/linux-armv7l/ .
           tar --gzip -cf ./dist2/latest/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist2/latest/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
           zip -j ./dist2/latest/dotenvx-windows-amd64.zip bin/windows-amd64/dotenvx.exe
@@ -443,6 +446,22 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+  dotenvx-linux-armv7l:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: commit binary to github
+        uses: ./.github/actions/commit-binary-to-github
+        with:
+          version: ${GITHUB_REF#refs/tags/}
+          platform: linux-armv7l
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
   dotenvx-linux-aarch64:
     needs: release
     runs-on: ubuntu-latest
@@ -552,6 +571,7 @@ jobs:
       - dotenvx-linux-amd64
       - dotenvx-linux-arm64
       - dotenvx-linux-x86_64
+      - dotenvx-linux-armv7l
       - dotenvx-windows-amd64
       - dotenvx-windows-x86_64
     steps:
