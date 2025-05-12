@@ -571,6 +571,7 @@ jobs:
       - dotenvx-linux-amd64
       - dotenvx-linux-arm64
       - dotenvx-linux-x86_64
+      - dotenvx-linux-armv7l
       - dotenvx-windows-amd64
       - dotenvx-windows-x86_64
     steps:

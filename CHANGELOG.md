@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.43.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.44.0...main)
+
+## [1.44.0](https://github.com/dotenvx/dotenvx/compare/v1.43.0...v1.44.0)
+
+### Added
+
+* Add `armv7` support ([#593](https://github.com/dotenvx/dotenvx/pull/593))
 
 ## [1.43.0](https://github.com/dotenvx/dotenvx/compare/v1.42.2...v1.43.0)
 
