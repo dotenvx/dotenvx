@@ -199,7 +199,7 @@ export interface SetOptions {
   encrypt?: boolean;
 }
 
-export type SetOutput = {
+export type SetProcessedEnv = {
   key: string;
   value: string;
   filepath: string;
@@ -212,6 +212,12 @@ export type SetOutput = {
   privateKeyAdded?: boolean;
   privateKeyName?: string;
   error?: Error;
+};
+
+export type SetOutput = {
+  processedEnvs: SetProcessedEnv[];
+  changedFilepaths: string[];
+  unchangedFilepaths: stirng[];
 };
 
 /**
