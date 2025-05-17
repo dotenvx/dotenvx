@@ -217,7 +217,7 @@ export type SetProcessedEnv = {
 export type SetOutput = {
   processedEnvs: SetProcessedEnv[];
   changedFilepaths: string[];
-  unchangedFilepaths: stirng[];
+  unchangedFilepaths: string[];
 };
 
 /**
