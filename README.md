@@ -634,7 +634,7 @@ $ dotenvx encrypt
 ✔ encrypted (.env)
 ```
 
-![encrypted .env](https://github.com/dotenvx/dotenvx/assets/3848/2a8c3dc5-cd8e-4a08-8a59-c24d0535c81a)
+![encrypted .env](https://github.com/user-attachments/assets/46dfe1a7-a027-4d80-9207-789eccc325dc)
 
 > A `DOTENV_PUBLIC_KEY` (encryption key) and a `DOTENV_PRIVATE_KEY` (decryption key) are generated using the same public-key cryptography as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1).
 
