@@ -8,6 +8,17 @@ on:
     branches: [main]
 
 jobs:
+  audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+      - run: npm install
+      - run: npm audit --omit=dev
   standard:
     runs-on: ubuntu-latest
     strategy:
@@ -51,7 +62,6 @@ jobs:
             https://api.github.com/gists/bb76445765a9731e7d824a6efdf53524 \
             -d "{\"description\":\"dotenvxTestCount\",\"files\":{\"dotenvxTestCount.json\":{\"content\":\"{ \\\"schemaVersion\\\": 1, \\\"label\\\": \\\"test suite\\\", \\\"message\\\": \\\"$TEST_COUNT_FORMATTED\\\", \\\"color\\\": \\\"green\\\" }\"}}}"
       - run: npm run testshell
-      - run: npm audit --omit=dev
   test-coverage:
     runs-on: ubuntu-latest
     strategy:
@@ -155,7 +165,10 @@ jobs:
 
   # run only on semantic version tag
   release:
-    needs: test
+    needs: 
+      - audit
+      - test
+      - test-pkg
     if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
     runs-on: ubuntu-latest
     strategy:
