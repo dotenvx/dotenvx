@@ -2189,6 +2189,10 @@ Use dotenvx directly in code.
   // index.js
   require('@dotenvx/dotenvx').config({path: ['.env.local', '.env']})
 
+  // esm
+  // import dotenvx from "@dotenvx/dotenvx";
+  // dotenvx.config({path: ['.env.local', '.env']});
+
   console.log(`Hello ${process.env.HELLO}`)
   ```
 
@@ -2217,6 +2221,10 @@ Use dotenvx directly in code.
   // index.js
   require('@dotenvx/dotenvx').config({path: ['.env.local', '.env'], overload: true})
 
+  // esm
+  // import dotenvx from "@dotenvx/dotenvx";
+  // dotenvx.config({path: ['.env.local', '.env'], overload: true});
+
   console.log(`Hello ${process.env.HELLO}`)
   ```
 
@@ -2240,6 +2248,10 @@ Use dotenvx directly in code.
   // index.js
   require('@dotenvx/dotenvx').config({path: ['.env.missing', '.env'], strict: true})
 
+  // esm
+  // import dotenvx from "@dotenvx/dotenvx";
+  // dotenvx.config({path: ['.env.missing', '.env'], strict: true});
+
   console.log(`Hello ${process.env.HELLO}`)
   ```
 
@@ -2261,6 +2273,10 @@ Use dotenvx directly in code.
   ```js
   // index.js
   require('@dotenvx/dotenvx').config({path: ['.env.missing', '.env'], ignore: ['MISSING_ENV_FILE']})
+
+  // esm
+  // import dotenvx from "@dotenvx/dotenvx";
+  // dotenvx.config({path: ['.env.missing', '.env'], ignore: ['MISSING_ENV_FILE']});
 
   console.log(`Hello ${process.env.HELLO}`)
   ```
