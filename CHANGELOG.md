@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.44.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.44.2...main)
+
+## 1.44.2
+
+### Changed
+
+* Clarify license is BSD-3.
 
 ## [1.44.1](https://github.com/dotenvx/dotenvx/compare/v1.44.0...v1.44.1)
 
