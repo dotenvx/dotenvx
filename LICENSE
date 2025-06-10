@@ -1,6 +1,6 @@
 BSD 3-Clause License
 
-Copyright (c) 2024, Dotenvx LLC
+Copyright (c) 2024, Scott Motte
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,3 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
----
-
-Dotenvx is an Open Source project licensed under the BSD 3-Clause above.
-
-Dotenvx Pro is source-available with a commercial-friendly license. You can find 
-the full commercial license in `COMMERCIAL-LICENSE.txt`. See https://dotenvx.com 
-for features and purchasing options.
