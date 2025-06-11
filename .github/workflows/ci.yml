@@ -411,6 +411,7 @@ jobs:
         run: | 
           iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
           .\wingetcreate.exe update dotenvx.dotenvx -s -v ${{ env.CLEAN_VERSION }} -u https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip -t ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
   dotenvx-darwin-amd64:
     needs: release
     runs-on: ubuntu-latest
