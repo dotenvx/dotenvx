@@ -2388,6 +2388,27 @@ Use dotenvx directly in code.
 
 *Secrets Manager for Env Files.*
 
+* <details><summary>`pro login`</summary><br>
+
+  Log in to pro.
+
+  ```sh
+  $ dotenvx pro login
+  press Enter to open [https://pro.dotenvx.com/login/device] and enter code [D9C1-03BC]... (Y/n)
+  ⠹ waiting on browser authorization
+  ✔ logged in [username] to this device and activated token [dxo_6kjPifI…]
+  ```
+
+  </details>
+* <details><summary>`pro logout`</summary><br>
+
+  Log out of pro.
+
+  ```sh
+  ✔ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
+  ```
+
+  </details>
 * <details><summary>`pro keypair`</summary><br>
 
   Print fully managed public/private keys for `.env` file.
