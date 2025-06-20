@@ -2,7 +2,7 @@
 const path = require('path')
 
 // shared
-const { setLogLevel, logger } = require('./../shared/logger')
+const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/logger')
 const { getColor, bold } = require('./../shared/colors')
 
 // services
@@ -45,7 +45,11 @@ const config = function (options = {}) {
     DOTENV_KEY = options.DOTENV_KEY
   }
 
-  if (options) setLogLevel(options)
+  if (options) {
+    setLogLevel(options)
+    setLogName(options)
+    setLogVersion(options)
+  }
 
   try {
     const envs = buildEnvs(options, DOTENV_KEY)

@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.45.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.45.1...main)
+
+## 1.45.1
+
+### Changed
+
+* Include `setLogName` and `setLogVersion` in `config` ([#613](https://github.com/dotenvx/dotenvx/pull/613))
 
 ## 1.45.0
 
