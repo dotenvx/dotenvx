@@ -23,6 +23,7 @@ const debug = getColor('plum')
 
 let currentLevel = levels.info // default log level
 let currentName = 'dotenvx' // default logger name
+let currentVersion = packageJson.version // default logger version
 
 function stderr (level, message) {
   const formattedMessage = formatMessage(level, message)
@@ -54,7 +55,7 @@ function formatMessage (level, message) {
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'
-      return successv(`[${currentName}@${packageJson.version}] ${formattedMessage}`)
+      return successv(`[${currentName}@${currentVersion}] ${formattedMessage}`)
     // info
     case 'info':
       return formattedMessage
@@ -94,6 +95,14 @@ const logger = {
       currentLevel = levels[level]
       logger.level = level
     }
+  },
+  setName: (name) => {
+    currentName = name
+    logger.name = name
+  },
+  setVersion: (version) => {
+    currentVersion = version
+    logger.version = version
   }
 }
 
@@ -114,9 +123,23 @@ function setLogLevel (options) {
   }
 }
 
+function setLogName (options) {
+  const logName = options.logName
+  if (!logName) return
+  logger.setName(logName)
+}
+
+function setLogVersion (options) {
+  const logVersion = options.logVersion
+  if (!logVersion) return
+  logger.setVersion(logVersion)
+}
+
 module.exports = {
   logger,
   getColor,
   setLogLevel,
+  setLogName,
+  setLogVersion,
   levels
 }

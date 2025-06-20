@@ -89,6 +89,35 @@ t.test('logger.successv', (ct) => {
   ct.end()
 })
 
+t.test('logger.successv change logger name', (ct) => {
+  const message = 'message1'
+
+  logger.setName('dotenvx-pro')
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.successv(message)
+  })
+
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx-pro@${packageJson.version}] message1`)}\n`)
+
+  ct.end()
+})
+
+t.test('logger.successv change logger name and logger version', (ct) => {
+  const message = 'message1'
+
+  logger.setName('dotenvx-pro')
+  logger.setVersion('0.1.1')
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.successv(message)
+  })
+
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx-pro@0.1.1] message1`)}\n`)
+
+  ct.end()
+})
+
 t.test('logger.success', (ct) => {
   const message = 'message1'
 
