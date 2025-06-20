@@ -2390,7 +2390,7 @@ Use dotenvx directly in code.
 
 * <details><summary>`pro login`</summary><br>
 
-  Log in to pro.
+  Log in to [pro](https://dotenvx.com/pro).
 
   ```sh
   $ dotenvx pro login
@@ -2402,7 +2402,7 @@ Use dotenvx directly in code.
   </details>
 * <details><summary>`pro logout`</summary><br>
 
-  Log out of pro.
+  Log out of [pro](https://dotenvx.com/pro).
 
   ```sh
   ✔ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
