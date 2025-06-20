@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* Add `logger.setName` and `logger.setVersion` for customization of logger ([#603](https://github.com/dotenvx/dotenvx/pull/603))
+* Add `logger.setName` and `logger.setVersion` for customization of logger ([#612](https://github.com/dotenvx/dotenvx/pull/612))
 
 ## 1.44.2
 
