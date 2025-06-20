@@ -5,7 +5,6 @@ const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
-const findPrivateKey = require('../../../src/lib/helpers/findPrivateKey')
 
 const Encrypt = require('../../../src/lib/services/encrypt')
 
