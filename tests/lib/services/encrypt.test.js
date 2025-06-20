@@ -2,9 +2,9 @@ const t = require('tap')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
-const findPrivateKey = require('../../../src/lib/helpers/findPrivateKey')
 
 const Encrypt = require('../../../src/lib/services/encrypt')
 
@@ -574,7 +574,13 @@ t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already
 
 t.test('#run (finds .env file only AND only the existing public key not the private key)', ct => {
   const sandbox = sinon.createSandbox()
-  sandbox.stub(findPrivateKey, 'findPrivateKey').returns(null)
+
+  const stubbedFindPrivateKey = sandbox.stub().returns(null)
+
+  // Load Encrypt with the stub injected
+  const Encrypt = proxyquire('../../../src/lib/services/encrypt', {
+    './../helpers/findPrivateKey': { findPrivateKey: stubbedFindPrivateKey }
+  })
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
