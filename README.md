@@ -2386,7 +2386,7 @@ Use dotenvx directly in code.
 
 > Dotenvx Pro is a commercial extension for [dotenvx](https://github.com/dotenvx/dotenvx).
 
-*Secrets Management – Done Right. Encrypted, Cloaked, Secrets as Code.*
+*Secrets Manager for Env Files.*
 
 * <details><summary>`pro keypair`</summary><br>
 
