@@ -22,6 +22,7 @@ const verbose = getColor('plum')
 const debug = getColor('plum')
 
 let currentLevel = levels.info // default log level
+let currentName = 'dotenvx' // default logger name
 
 function stderr (level, message) {
   const formattedMessage = formatMessage(level, message)
@@ -53,7 +54,7 @@ function formatMessage (level, message) {
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'
-      return successv(`[dotenvx@${packageJson.version}] ${formattedMessage}`)
+      return successv(`[${currentName}@${packageJson.version}] ${formattedMessage}`)
     // info
     case 'info':
       return formattedMessage
