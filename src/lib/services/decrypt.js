@@ -6,7 +6,7 @@ const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
-const findPrivateKey = require('./../helpers/findPrivateKey')
+const { findPrivateKey } = require('./../helpers/findPrivateKey')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const dotenvParse = require('./../helpers/dotenvParse')

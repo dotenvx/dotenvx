@@ -15,4 +15,4 @@ function findPrivateKey (envFilepath, envKeysFilepath = null) {
   return proKeypairs[privateKeyName] || keypairs[privateKeyName]
 }
 
-module.exports = findPrivateKey
+module.exports = { findPrivateKey }

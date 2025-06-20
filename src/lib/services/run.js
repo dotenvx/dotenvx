@@ -11,7 +11,7 @@ const Errors = require('./../helpers/errors')
 const dotenvParse = require('./../helpers/dotenvParse')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const detectEncoding = require('./../helpers/detectEncoding')
-const findPrivateKey = require('./../helpers/findPrivateKey')
+const { findPrivateKey } = require('./../helpers/findPrivateKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const determineEnvs = require('./../helpers/determineEnvs')
 
