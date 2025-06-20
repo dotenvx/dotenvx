@@ -4,6 +4,7 @@ const path = require('path')
 const sinon = require('sinon')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
+const findPrivateKey = require('../../../src/lib/helpers/findPrivateKey')
 
 const Encrypt = require('../../../src/lib/services/encrypt')
 
@@ -567,6 +568,43 @@ t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already
     envSrc
   }])
   ct.same(changedFilepaths, ['tests/monorepo/apps/app1/.env.production'])
+
+  ct.end()
+})
+
+t.test('#run (finds .env file only AND only the existing public key not the private key)', ct => {
+  const sandbox = sinon.createSandbox()
+  sandbox.stub(findPrivateKey, 'findPrivateKey').returns(null)
+
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    unchangedFilepaths
+  } = new Encrypt(envs).run()
+
+  const row = processedEnvs[0]
+  const publicKey = row.publicKey
+  const privateKey = row.privateKey
+  const privateKeyName = row.privateKeyName
+  const envSrc = row.envSrc
+
+  ct.same(processedEnvs, [{
+    keys: [],
+    type: 'envFile',
+    filepath: path.resolve('tests/monorepo/apps/encrypted/.env'),
+    envFilepath: 'tests/monorepo/apps/encrypted/.env',
+    publicKey,
+    privateKey,
+    privateKeyName,
+    envSrc
+  }])
+  ct.same(unchangedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+
+  sandbox.restore()
 
   ct.end()
 })

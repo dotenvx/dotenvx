@@ -14,7 +14,7 @@ const replace = require('./../helpers/replace')
 const append = require('./../helpers/append')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
-const findPrivateKey = require('./../helpers/findPrivateKey')
+const { findPrivateKey } = require('./../helpers/findPrivateKey')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const keypair = require('./../helpers/keypair')
 

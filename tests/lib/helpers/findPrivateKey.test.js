@@ -1,5 +1,5 @@
 const t = require('tap')
-const findPrivateKey = require('../../../src/lib/helpers/findPrivateKey')
+const { findPrivateKey } = require('../../../src/lib/helpers/findPrivateKey')
 
 t.test('#findPrivateKey', ct => {
   const envFilepath = 'tests/monorepo/apps/encrypted/.env'

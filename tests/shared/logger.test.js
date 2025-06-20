@@ -4,7 +4,12 @@ const sinon = require('sinon')
 
 const packageJson = require('../../src/lib/helpers/packageJson')
 const { getColor, bold } = require('../../src/shared/colors')
-const { logger, levels } = require('../../src/shared/logger')
+const { setLogName, setLogVersion, logger, levels } = require('../../src/shared/logger')
+
+t.beforeEach((ct) => {
+  logger.setName('dotenvx')
+  logger.setVersion(packageJson.version)
+})
 
 t.test('throws error for missing log level', (ct) => {
   // Backup the original levels
@@ -89,6 +94,35 @@ t.test('logger.successv', (ct) => {
   ct.end()
 })
 
+t.test('logger.successv change logger name', (ct) => {
+  const message = 'message1'
+
+  logger.setName('dotenvx-pro')
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.successv(message)
+  })
+
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx-pro@${packageJson.version}] message1`)}\n`)
+
+  ct.end()
+})
+
+t.test('logger.successv change logger name and logger version', (ct) => {
+  const message = 'message1'
+
+  logger.setName('dotenvx-pro')
+  logger.setVersion('0.1.1')
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.successv(message)
+  })
+
+  ct.equal(stdout, `${getColor('olive')('[dotenvx-pro@0.1.1] message1')}\n`)
+
+  ct.end()
+})
+
 t.test('logger.success', (ct) => {
   const message = 'message1'
 
@@ -133,6 +167,62 @@ t.test('logger.info as object', (ct) => {
   })
 
   ct.equal(stdout, `${JSON.stringify({ key: 'value' })}\n`)
+
+  ct.end()
+})
+
+t.test('setLogName', (ct) => {
+  setLogName({ logName: 'dude' })
+
+  const message = 'message1'
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.successv(message)
+  })
+
+  ct.equal(stdout, `${getColor('olive')(`[dude@${packageJson.version}] message1`)}\n`)
+
+  ct.end()
+})
+
+t.test('setLogName undefined does nothing', (ct) => {
+  setLogName({})
+
+  const message = 'message1'
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.successv(message)
+  })
+
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+
+  ct.end()
+})
+
+t.test('setLogVersion', (ct) => {
+  setLogVersion({ logVersion: '0.0.1' })
+
+  const message = 'message1'
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.successv(message)
+  })
+
+  ct.equal(stdout, `${getColor('olive')('[dotenvx@0.0.1] message1')}\n`)
+
+  ct.end()
+})
+
+t.test('setLogVersion undefined does nothing', (ct) => {
+  setLogVersion({})
+
+  const message = 'message1'
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.successv(message)
+  })
+
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
