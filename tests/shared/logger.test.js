@@ -113,7 +113,7 @@ t.test('logger.successv change logger name and logger version', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx-pro@0.1.1] message1`)}\n`)
+  ct.equal(stdout, `${getColor('olive')('[dotenvx-pro@0.1.1] message1')}\n`)
 
   ct.end()
 })
