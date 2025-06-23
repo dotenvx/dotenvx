@@ -2237,7 +2237,7 @@ Use dotenvx directly in code.
   </details>
 * <details><summary>`config(strict: true)` - strict</summary><br>
 
-  Use `strict` to throw if an error is encountered - like a missing .env file.
+  Exit with code `1` if any errors are encountered - like a missing .env file or decryption failure.
 
   ```ini
   # .env
