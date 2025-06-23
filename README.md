@@ -2258,6 +2258,7 @@ Use dotenvx directly in code.
   ```sh
   $ node index.js
   Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
+  Hello World
   ```
 
   </details>
