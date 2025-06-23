@@ -2235,6 +2235,32 @@ Use dotenvx directly in code.
   ```
 
   </details>
+* <details><summary>`config(quiet: true)` - quiet</summary><br>
+
+  Suppress all output (except errors).
+
+  ```ini
+  # .env
+  HELLO="World"
+  ```
+
+  ```js
+  // index.js
+  require('@dotenvx/dotenvx').config({path: ['.env.missing', '.env'], quiet: true})
+
+  // esm
+  // import dotenvx from "@dotenvx/dotenvx";
+  // dotenvx.config({path: ['.env.missing', '.env'], quiet: true});
+
+  console.log(`Hello ${process.env.HELLO}`)
+  ```
+
+  ```sh
+  $ node index.js
+  Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
+  ```
+
+  </details>
 * <details><summary>`config(strict: true)` - strict</summary><br>
 
   Exit with code `1` if any errors are encountered - like a missing .env file or decryption failure.
