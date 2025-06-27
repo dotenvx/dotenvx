@@ -898,6 +898,31 @@ Advanced CLI commands.
   Note that with `--overload` subsequent files DO override pre-existing variables defined in previous files.
 
   </details>
+* <details><summary>Environment Variable Precedence (Container/Cloud Deployments)</summary><br>
+
+  When deploying applications in containers or cloud environments, you often need to override specific environment variables at runtime without modifying committed `.env` files. By default, dotenvx follows the historic dotenv principle: **environment variables already present take precedence over `.env` files**.
+
+  ```sh
+  # .env.prod contains: MODEL_REGISTRY=registry.company.com/models/v1
+  $ echo "MODEL_REGISTRY=registry.company.com/models/v1" > .env.prod
+  $ echo "console.log('MODEL_REGISTRY:', process.env.MODEL_REGISTRY)" > app.js
+
+  # Without environment variable set - uses .env.prod value
+  $ dotenvx run -f .env.prod -- node app.js
+  MODEL_REGISTRY: registry.company.com/models/v1
+
+  # With environment variable set (e.g., via Azure Container Service) - environment variable takes precedence
+  $ MODEL_REGISTRY=registry.azure.com/models/v2 dotenvx run -f .env.prod -- node app.js
+  MODEL_REGISTRY: registry.azure.com/models/v2
+
+  # To force .env.prod to override environment variables, use --overload
+  $ MODEL_REGISTRY=registry.azure.com/models/v2 dotenvx run -f .env.prod --overload -- node app.js
+  MODEL_REGISTRY: registry.company.com/models/v1
+  ```
+
+  **For container deployments:** Set environment variables through your cloud provider's UI/configuration (Azure Container Service, AWS ECS, etc.) to override specific values from committed `.env` files without rebuilding your application.
+
+  </details>
 * <details><summary>`DOTENV_PRIVATE_KEY=key run`</summary><br>
   
   Decrypt your encrypted `.env` by setting `DOTENV_PRIVATE_KEY` before `dotenvx run`.

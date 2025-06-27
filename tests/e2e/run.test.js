@@ -297,3 +297,23 @@ t.test('#run - encrypted .env.production with no .env.keys, with DOTENV_PRIVATE_
 
   ct.end()
 })
+
+t.test('#run - env var precedence: environment variables take precedence over .env files by default', ct => {
+  execShell(`
+    echo "MODEL_REGISTRY=registry.company.com/models/v1" > .env.prod
+    echo "console.log('MODEL_REGISTRY: ' + process.env.MODEL_REGISTRY)" > index.js
+  `)
+
+  const command = `${node} index.js`
+  
+  // Test without environment variable set - .env file value should be used
+  ct.equal(execShell(`${dotenvx} run -f .env.prod --quiet -- ${command}`).stdout, 'MODEL_REGISTRY: registry.company.com/models/v1')
+  
+  // Test with environment variable set - environment variable should take precedence
+  ct.equal(execShell(`MODEL_REGISTRY=registry.azure.com/models/v2 ${dotenvx} run -f .env.prod --quiet -- ${command}`).stdout, 'MODEL_REGISTRY: registry.azure.com/models/v2')
+  
+  // Test with --overload flag - .env file should override environment variable
+  ct.equal(execShell(`MODEL_REGISTRY=registry.azure.com/models/v2 ${dotenvx} run -f .env.prod --overload --quiet -- ${command}`).stdout, 'MODEL_REGISTRY: registry.company.com/models/v1')
+
+  ct.end()
+})
