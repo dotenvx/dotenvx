@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.45.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.45.2...main)
+
+## 1.45.2
+
+## Changed
+
+* Minor README updates
 
 ## 1.45.1
 
