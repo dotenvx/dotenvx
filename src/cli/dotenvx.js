@@ -34,7 +34,6 @@ if (commanderVersion && parseInt(commanderVersion.split('.')[0], 10) >= 12) {
 // global log levels
 program
   .usage('run -- yourcommand')
-  .allowExcessArguments() // added in commander 13
   .option('-l, --log-level <level>', 'set log level', 'info')
   .option('-q, --quiet', 'sets log level to error')
   .option('-v, --verbose', 'sets log level to verbose')
@@ -94,7 +93,7 @@ program.command('get')
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('-a, --all', 'include all machine envs as well')
-  // .option('-pp, --pretty-print', 'pretty print output')
+  .option('-pp, --pretty-print', 'pretty print output')
   .option('--format <type>', 'format of the output (json, shell, eval)', 'json')
   .action(function (...args) {
     this.envs = envs
@@ -248,6 +247,6 @@ program.helpInformation = function () {
 
   return filteredLines.join('\n')
 }
-
 /* c8 ignore stop */
+
 program.parse(process.argv)
