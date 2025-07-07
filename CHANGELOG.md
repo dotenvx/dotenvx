@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.46.0...main)
 
+## 1.46.0
+
 ## Added
 
 * Add error when hoisting issue experienced around commander.js ([#623](https://github.com/dotenvx/dotenvx/pull/623))
