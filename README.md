@@ -996,7 +996,7 @@ Advanced CLI commands.
   Note that with `--overload` subsequent files DO override pre-existing variables defined in previous files.
 
   </details>
-* <details><summary>Environment Variable Precedence (Container/Cloud Deployments)</summary><br>
+* <details><summary>`run` - Environment Variable Precedence (Container/Cloud Deployments)</summary><br>
 
   When deploying applications in containers or cloud environments, you often need to override specific environment variables at runtime without modifying committed `.env` files. By default, dotenvx follows the historic dotenv principle: **environment variables already present take precedence over `.env` files**.
 
