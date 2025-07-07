@@ -828,36 +828,7 @@ Advanced CLI commands.
   ```
 
   </details>
-* <details><summary>`run` - Command Substitution</summary><br>
-
-  Add the output of a command to one of your variables in your .env file.
-
-  ```ini
-  # .env
-  DATABASE_URL="postgres://$(whoami)@localhost/my_database"
-  ```
-  ```js
-  // index.js
-  console.log('DATABASE_URL', process.env.DATABASE_URL)
-  ```
-  ```sh
-  $ dotenvx run --debug -- node index.js
-  [dotenvx@1.X.X] injecting env (1) from .env
-  DATABASE_URL postgres://yourusername@localhost/my_database
-  ```
-
-  </details>
-* <details><summary>`run` - Shell Expansion</summary><br>
-
-  Prevent your shell from expanding inline `$VARIABLES` before dotenvx has a chance to inject it. Use a subshell.
-
-  ```sh
-  $ dotenvx run --env="HELLO=World" -- sh -c 'echo Hello $HELLO'
-  Hello World
-  ```
-
-  </details>
-* <details><summary>`run` - Interpolation Syntax Summary</summary><br>
+* <details><summary>`run` - Interpolation Syntax Summary (Variable Expansion, Default/Alternate Values)</summary><br>
 
   Complete reference for variable interpolation patterns supported by dotenvx:
 
@@ -893,6 +864,35 @@ Advanced CLI commands.
   - `:+` vs `+`: The colon makes empty values not trigger the alternate  
   - Default syntax (`-`): Use variable value or fallback
   - Alternate syntax (`+`): Use alternate value or empty string
+
+  </details>
+* <details><summary>`run` - Command Substitution</summary><br>
+
+  Add the output of a command to one of your variables in your .env file.
+
+  ```ini
+  # .env
+  DATABASE_URL="postgres://$(whoami)@localhost/my_database"
+  ```
+  ```js
+  // index.js
+  console.log('DATABASE_URL', process.env.DATABASE_URL)
+  ```
+  ```sh
+  $ dotenvx run --debug -- node index.js
+  [dotenvx@1.X.X] injecting env (1) from .env
+  DATABASE_URL postgres://yourusername@localhost/my_database
+  ```
+
+  </details>
+* <details><summary>`run` - Shell Expansion</summary><br>
+
+  Prevent your shell from expanding inline `$VARIABLES` before dotenvx has a chance to inject it. Use a subshell.
+
+  ```sh
+  $ dotenvx run --env="HELLO=World" -- sh -c 'echo Hello $HELLO'
+  Hello World
+  ```
 
   </details>
 * <details><summary>`run` - Multiline</summary><br>
