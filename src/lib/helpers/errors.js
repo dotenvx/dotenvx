@@ -96,6 +96,17 @@ class Errors {
     e.help = help
     return e
   }
+
+  dangerousDependencyHoist () {
+    const code = 'DANGEROUS_DEPENDENCY_HOIST'
+    const message = `[${code}] your environment has hoisted an incompatible version of a dotenvx dependency: ${this.message}`
+    const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/622`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
 }
 
 module.exports = Errors

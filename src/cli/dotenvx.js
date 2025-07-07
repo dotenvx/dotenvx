@@ -7,6 +7,8 @@ const program = new Command()
 const { setLogLevel, logger } = require('../shared/logger')
 const examples = require('./examples')
 const packageJson = require('./../lib/helpers/packageJson')
+const Errors = require('./../lib/helpers/errors')
+const getCommanderVersion = require('./../lib/helpers/getCommanderVersion')
 const executeDynamic = require('./../lib/helpers/executeDynamic')
 const removeDynamicHelpSection = require('./../lib/helpers/removeDynamicHelpSection')
 const removeOptionsHelpParts = require('./../lib/helpers/removeOptionsHelpParts')
@@ -20,9 +22,19 @@ function collectEnvs (type) {
   }
 }
 
+// surface hoisting problems
+const commanderVersion = getCommanderVersion()
+if (commanderVersion && parseInt(commanderVersion.split('.')[0], 10) >= 12) {
+  const message = `dotenvx depends on commander@11.x.x but you are attempting to hoist commander@${commanderVersion}`
+  const error = new Errors({ message }).dangerousDependencyHoist()
+  logger.error(error.message)
+  if (error.help) logger.error(error.help)
+}
+
 // global log levels
 program
   .usage('run -- yourcommand')
+  .allowExcessArguments() // added in commander 13
   .option('-l, --log-level <level>', 'set log level', 'info')
   .option('-q, --quiet', 'sets log level to error')
   .option('-v, --verbose', 'sets log level to verbose')
@@ -57,7 +69,8 @@ program.command('run')
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
+  .option('--fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file')
+  .option('--env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
@@ -76,13 +89,13 @@ program.command('get')
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
+  .option('--env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('-a, --all', 'include all machine envs as well')
-  .option('-pp, --pretty-print', 'pretty print output')
+  // .option('-pp, --pretty-print', 'pretty print output')
   .option('--format <type>', 'format of the output (json, shell, eval)', 'json')
   .action(function (...args) {
     this.envs = envs
@@ -236,6 +249,6 @@ program.helpInformation = function () {
 
   return filteredLines.join('\n')
 }
-/* c8 ignore stop */
 
+/* c8 ignore stop */
 program.parse(process.argv)
