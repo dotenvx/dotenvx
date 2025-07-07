@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.45.2...main)
 
+## Removed
+
+* Remove `git-dotenvx` and `git dotenvx` shorthand ([#616](https://github.com/dotenvx/dotenvx/pull/616))
+
 ## 1.45.2
 
 ## Changed

@@ -30,8 +30,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "dotenvx": "./src/cli/dotenvx.js",
-    "git-dotenvx": "./src/cli/dotenvx.js"
+    "dotenvx": "./src/cli/dotenvx.js"
   },
   "scripts": {
     "standard": "standard",
