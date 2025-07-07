@@ -305,13 +305,13 @@ t.test('#run - env var precedence: environment variables take precedence over .e
   `)
 
   const command = `${node} index.js`
-  
+
   // Test without environment variable set - .env file value should be used
   ct.equal(execShell(`${dotenvx} run -f .env.prod --quiet -- ${command}`).stdout, 'MODEL_REGISTRY: registry.company.com/models/v1')
-  
+
   // Test with environment variable set - environment variable should take precedence
   ct.equal(execShell(`MODEL_REGISTRY=registry.azure.com/models/v2 ${dotenvx} run -f .env.prod --quiet -- ${command}`).stdout, 'MODEL_REGISTRY: registry.azure.com/models/v2')
-  
+
   // Test with --overload flag - .env file should override environment variable
   ct.equal(execShell(`MODEL_REGISTRY=registry.azure.com/models/v2 ${dotenvx} run -f .env.prod --overload --quiet -- ${command}`).stdout, 'MODEL_REGISTRY: registry.company.com/models/v1')
 
