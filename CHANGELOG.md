@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.45.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.46.0...main)
+
+## Added
+
+* Add error when hoisting issue experienced around commander.js ([#623](https://github.com/dotenvx/dotenvx/pull/623))
 
 ## Removed
 
