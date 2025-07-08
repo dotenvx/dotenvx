@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.1...main)
+
+## 1.47.1
+
+### Added
+
+* Add convenience log that `radar active 📡` when dotenvx-radar is installed ([#625](https://github.com/dotenvx/dotenvx/pull/625))
 
 ## 1.47.0
 
-## Added
+### Added
 
 * Add optional `dotenvx radar` command ([#624](https://github.com/dotenvx/dotenvx/pull/624))
 * Radar is an early access commercial extension for dotenvx that will auto backup your .env files.
