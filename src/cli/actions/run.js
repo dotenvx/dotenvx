@@ -6,6 +6,7 @@ const Run = require('./../../lib/services/run')
 
 const conventions = require('./../../lib/helpers/conventions')
 const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
+const logRadar = require('./../../lib/helpers/logRadar')
 
 async function run () {
   const commandArgs = this.args
@@ -39,6 +40,8 @@ async function run () {
     }
 
     new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
+
+    logRadar()
 
     const {
       processedEnvs,
