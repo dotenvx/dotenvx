@@ -41,17 +41,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 1.46.0
 
-## Added
+### Added
 
 * Add error when hoisting issue experienced around commander.js ([#623](https://github.com/dotenvx/dotenvx/pull/623))
 
-## Removed
+### Removed
 
 * Remove `git-dotenvx` and `git dotenvx` shorthand ([#621](https://github.com/dotenvx/dotenvx/pull/621))
 
 ## 1.45.2
 
-## Changed
+### Changed
 
 * Minor README updates
 
