@@ -51,7 +51,7 @@ function executeDynamic (program, command, rawArgs) {
       logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] commands 🏆`)
       logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-pro]')
     } else if (command === 'radar') {
-      const radar = `____________________________________________________________________
+      const radar = ` _______________________________________________________________________
 |                                                                       |
 |  Dotenvx Radar: Env Observability                                     |
 |                                                                       |
@@ -75,7 +75,6 @@ function executeDynamic (program, command, rawArgs) {
       console.log('')
       logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 📡`)
       logger.help('? see installation instructions [https://dotenvx.com/radar]')
-
     } else {
       logger.info(`error: unknown command '${command}'`)
     }

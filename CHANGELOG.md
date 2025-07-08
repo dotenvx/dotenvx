@@ -2,7 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.46.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.0...main)
+
+## 1.47.0
+
+## Added
+
+* Add optional `dotenvx radar` command ([#624](https://github.com/dotenvx/dotenvx/pull/624))
+* Radar is an early access commercial extension for dotenvx that will auto backup your .env files.
+
+```
+ _______________________________________________________________________
+|                                                                       |
+|  Dotenvx Radar: Env Observability                                     |
+|                                                                       |
+|  ░▒▓███████▓▒░ ░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓██████▓▒░░▒▓███████▓▒░    |
+|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
+|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
+|  ░▒▓███████▓▒░░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓███████▓▒░    |
+|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
+|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
+|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
+|                                                                       |
+|  Observe, version, and back up your environment variables at runtime. |
+|                                                                       |
+|  Purchase lifetime access at https://dotenvx.com/radar                |
+|                                                                       |
+| --------------------------------------------------------------------- |
+| - thank you for using dotenvx! - @motdotla                            |
+|_______________________________________________________________________|
+```
 
 ## 1.46.0
 
