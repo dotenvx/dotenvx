@@ -44,7 +44,7 @@ program
     setLogLevel(options)
   })
 
-// for dynamic loading of dotenvx-pro, etc
+// for dynamic loading of dotenvx-radar, etc
 program
   .argument('[command]', 'dynamic command')
   .argument('[args...]', 'dynamic command arguments')
@@ -200,7 +200,7 @@ program.command('help [command]')
 // dotenvx pro
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  pro                          🏆 pro')
+program.addHelpText('after', '  radar                        📡 radar')
 program.addHelpText('after', '  ext                          🔌 extensions')
 
 // dotenvx ext
