@@ -321,7 +321,7 @@ module.exports = {
   ls,
   keypair,
   genexample,
-  // expose for libs depending on @dotenvx/dotenvx - like dotenvx-pro
+  // expose for libs depending on @dotenvx/dotenvx - like dotenvx-radar
   setLogLevel,
   logger,
   getColor,
