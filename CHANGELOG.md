@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* Add optional `radar#observe` if [Radar](https://dotenvx.com/radar) installed ([#631](https://github.com/dotenvx/dotenvx/pull/631))
+* Send to `radar#observe` if [Radar](https://dotenvx.com/radar) installed by user ([#631](https://github.com/dotenvx/dotenvx/pull/631))
 
 ### Removed
 
