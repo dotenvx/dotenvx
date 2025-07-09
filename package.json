@@ -25,6 +25,8 @@
       "require": "./src/lib/main.js",
       "default": "./src/lib/main.js"
     },
+    "./cli": "./src/cli/dotenvx.js",
+    "./cli.js": "./src/cli/dotenvx.js",
     "./config": "./src/lib/config.js",
     "./config.js": "./src/lib/config.js",
     "./package.json": "./package.json"
