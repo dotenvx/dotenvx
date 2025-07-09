@@ -3,10 +3,10 @@ const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
+const Radar = require('./../../lib/services/radar')
 
 const conventions = require('./../../lib/helpers/conventions')
 const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
-const logRadar = require('./../../lib/helpers/logRadar')
 
 async function run () {
   const commandArgs = this.args
@@ -41,7 +41,7 @@ async function run () {
 
     new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
 
-    logRadar()
+    const radar = new Radar()
 
     const {
       processedEnvs,
@@ -49,6 +49,8 @@ async function run () {
       readableFilepaths,
       uniqueInjectedKeys
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile).run()
+
+    radar.observe(processedEnvs)
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
