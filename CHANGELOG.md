@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.2...main)
+
+## 1.47.2
+
+### Added
+
+* Export `cli` in package.json ([#629](https://github.com/dotenvx/dotenvx/pull/629))
 
 ## 1.47.1
 
