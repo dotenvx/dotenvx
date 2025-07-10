@@ -36,8 +36,8 @@ class Radar {
 
   _radarNpm () {
     const projectRoot = path.resolve(process.cwd())
-    const npmPath = require.resolve('@dotenvx/dotenvx-radar', { paths: [projectRoot] })
-    return require(npmPath)
+    const npmPath = eval('require').resolve('@dotenvx/dotenvx-radar', { paths: [projectRoot] })
+    return eval('require')(npmPath)
   }
 
   _radarCli () {
