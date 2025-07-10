@@ -17,8 +17,6 @@ class ProKeypair {
       const projectRoot = path.resolve(process.cwd())
       const dotenvxProPath = eval('require').resolve('@dotenvx/dotenvx-pro', { paths: [projectRoot] })
       const { keypair } = eval('require')(dotenvxProPath)
-      // const dotenvxProPath = require.resolve('@dotenvx/dotenvx-pro', { paths: [projectRoot] })
-      // const { keypair } = require(dotenvxProPath)
       result = keypair(this.envFilepath)
     } catch (_e) {
       try {
