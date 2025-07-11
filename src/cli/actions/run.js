@@ -50,7 +50,7 @@ async function run () {
       uniqueInjectedKeys
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile).run()
 
-    radar.observe(processedEnvs)
+    try { radar.observe({ processedEnvs }) } catch (_e) {}
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
