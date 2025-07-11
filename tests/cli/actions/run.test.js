@@ -4,6 +4,7 @@ const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
 
 const Run = require('./../../../src/lib/services/run')
+const Radar = require('./../../../src/lib/services/radar')
 const { logger } = require('../../../src/shared/logger')
 
 const run = proxyquire('../../../src/cli/actions/run', {
@@ -797,6 +798,50 @@ t.test('run - envFile - parsed, injected, and preExisted missing for some reason
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0) from .env'), 'logger.successv')
+
+  ct.end()
+})
+
+t.test('run - radar.observe throws error but run continues to work', async ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
+
+  const runStub = sinon.stub(Run.prototype, 'run')
+  runStub.returns({
+    processedEnvs: [{
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {
+        HELLO: 'World'
+      },
+      injected: {
+        HELLO: 'World'
+      },
+      preExisted: {}
+    }],
+    readableStrings: [],
+    readableFilepaths: ['.env'],
+    uniqueInjectedKeys: ['HELLO']
+  })
+
+  // Mock radar.observe to throw an error
+  const radarObserveStub = sinon.stub(Radar.prototype, 'observe')
+  radarObserveStub.throws(new Error('Radar service unavailable'))
+
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+
+  // Should not throw despite radar error
+  await run.call(fakeContext)
+
+  t.ok(runStub.called, 'new Run().run() called')
+  t.ok(radarObserveStub.called, 'radar.observe() was called')
+  t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
+  t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
+  t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
 
   ct.end()
 })
