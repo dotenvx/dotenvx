@@ -22,8 +22,6 @@ const isIgnoringDotenvKeys = require('./helpers/isIgnoringDotenvKeys')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
-  const radar = new Radar()
-
   // allow user to set processEnv to write to
   let processEnv = process.env
   if (options && options.processEnv != null) {
@@ -62,7 +60,7 @@ const config = function (options = {}) {
       uniqueInjectedKeys
     } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile).run()
 
-    try { radar.observe({ processedEnvs }) } catch (e) {}
+    try { new Radar().observe({ processedEnvs }) } catch {}
 
     let lastError
     /** @type {Record<string, string>} */

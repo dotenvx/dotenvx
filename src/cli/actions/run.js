@@ -41,8 +41,6 @@ async function run () {
 
     new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
 
-    const radar = new Radar()
-
     const {
       processedEnvs,
       readableStrings,
@@ -50,7 +48,7 @@ async function run () {
       uniqueInjectedKeys
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile).run()
 
-    try { radar.observe({ processedEnvs }) } catch (_e) {}
+    try { new Radar().observe({ processedEnvs }) } catch {}
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
