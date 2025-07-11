@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.4...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.5...main)
+
+## 1.47.5
+
+### Changed
+
+* Add resilient handling of any Radar failures ([#639](https://github.com/dotenvx/dotenvx/pull/639))
 
 ## 1.47.4
 
