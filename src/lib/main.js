@@ -62,7 +62,7 @@ const config = function (options = {}) {
       uniqueInjectedKeys
     } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile).run()
 
-    radar.observe(processedEnvs)
+    try { radar.observe({ processedEnvs }) } catch (e) {}
 
     let lastError
     /** @type {Record<string, string>} */
