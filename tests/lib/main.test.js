@@ -12,6 +12,7 @@ const Sets = require('../../src/lib/services/sets')
 const Get = require('../../src/lib/services/get')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
+const Radar = require('../../src/lib/services/radar')
 
 const fsx = require('../../src/lib/helpers/fsx')
 const { logger } = require('../../src/shared/logger')
@@ -815,6 +816,55 @@ t.test('get with Get.run errors and ignore', ct => {
 
   stub.restore()
   loggerErrorStub.restore()
+
+  ct.end()
+})
+
+t.test('config - radar.observe throws error but config continues to work', ct => {
+  const runStub = sinon.stub(Run.prototype, 'run')
+  runStub.returns({
+    processedEnvs: [{
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {
+        HELLO: 'World'
+      },
+      injected: {
+        HELLO: 'World'
+      },
+      preExisted: {}
+    }],
+    readableFilepaths: ['.env'],
+    uniqueInjectedKeys: ['HELLO']
+  })
+
+  // Mock radar.observe to throw an error
+  const radarObserveStub = sinon.stub(Radar.prototype, 'observe')
+  radarObserveStub.throws(new Error('Radar service unavailable'))
+
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+
+  // Should not throw despite radar error and return proper result
+  const result = main.config()
+
+  t.ok(runStub.called, 'new Run().run() called')
+  t.ok(radarObserveStub.called, 'radar.observe() was called')
+  t.ok(loggerVerboseStub.calledWith('loading env from .env (/home/runner/work/dotenvx/dotenvx/.env)'), 'logger.verbose')
+  t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
+  t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
+
+  // Verify that config returns the expected result structure
+  t.same(result.parsed, { HELLO: 'World' }, 'config returns parsed environment')
+  t.equal(result.error, undefined, 'no error returned despite radar failure')
+
+  runStub.restore()
+  radarObserveStub.restore()
+  loggerSuccessvStub.restore()
+  loggerVerboseStub.restore()
+  loggerDebugStub.restore()
 
   ct.end()
 })
