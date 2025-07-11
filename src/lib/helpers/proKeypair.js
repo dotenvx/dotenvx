@@ -15,8 +15,10 @@ class ProKeypair {
     try {
       // if installed as sibling module
       const projectRoot = path.resolve(process.cwd())
-      const dotenvxProPath = eval('require').resolve('@dotenvx/dotenvx-pro', { paths: [projectRoot] })
-      const { keypair } = eval('require')(dotenvxProPath)
+      // eslint-disable-next-line no-eval
+      const dotenvxProPath = eval('require').resolve('@dotenvx/dotenvx-pro', { paths: [projectRoot] }) // necessary for webpack builds
+      // eslint-disable-next-line no-eval
+      const { keypair } = eval('require')(dotenvxProPath) // necessary for webpack builds
       result = keypair(this.envFilepath)
     } catch (_e) {
       try {

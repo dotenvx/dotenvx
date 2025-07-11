@@ -36,8 +36,10 @@ class Radar {
 
   _radarNpm () {
     const projectRoot = path.resolve(process.cwd())
-    const npmPath = eval('require').resolve('@dotenvx/dotenvx-radar', { paths: [projectRoot] })
-    return eval('require')(npmPath)
+    // eslint-disable-next-line no-eval
+    const npmPath = eval('require').resolve('@dotenvx/dotenvx-radar', { paths: [projectRoot] }) // necessary for webpack builds
+    // eslint-disable-next-line no-eval
+    return eval('require')(npmPath) // necessary for webpack builds
   }
 
   _radarCli () {
