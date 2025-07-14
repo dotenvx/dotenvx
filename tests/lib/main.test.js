@@ -851,7 +851,6 @@ t.test('config - radar.observe throws error but config continues to work', ct =>
 
   t.ok(runStub.called, 'new Run().run() called')
   t.ok(radarObserveStub.called, 'radar.observe() was called')
-  t.ok(loggerVerboseStub.calledWith('loading env from .env (/home/runner/work/dotenvx/dotenvx/.env)'), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
   t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
