@@ -24,7 +24,10 @@ class Radar {
   }
 
   observe (payload) {
-    if (this.radarLib) this.radarLib.observe(payload)
+    if (this.radarLib) {
+      const encoded = this.encode(payload)
+      this.radarLib.observe(encoded)
+    }
   }
 
   encode (payload) {
@@ -35,9 +38,7 @@ class Radar {
     const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-radar')
     childProcess.execSync(`${fallbackBin} help`, { stdio: ['pipe', 'pipe', 'ignore'] })
     return {
-      observe: (payload) => {
-        const encoded = this.encode(payload)
-
+      observe: (encoded) => {
         try {
           const subprocess = childProcess.spawn(fallbackBin, ['observe', encoded], {
             stdio: 'ignore',
@@ -55,9 +56,7 @@ class Radar {
   _radarCli () {
     childProcess.execSync('dotenvx-radar help', { stdio: ['pipe', 'pipe', 'ignore'] })
     return {
-      observe: (payload) => {
-        const encoded = this.encode(payload)
-
+      observe: (encoded) => {
         try {
           const subprocess = childProcess.spawn('dotenvx-radar', ['observe', encoded], {
             stdio: 'ignore',
