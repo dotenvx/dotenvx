@@ -24,10 +24,7 @@ class Radar {
   }
 
   observe (payload) {
-    if (this.radarLib) {
-      const encoded = this.encode(payload)
-      this.radarLib.observe(encoded)
-    }
+    if (this.radarLib) this.radarLib.observe(payload)
   }
 
   encode (payload) {
@@ -35,11 +32,24 @@ class Radar {
   }
 
   _radarNpm () {
-    const projectRoot = path.resolve(process.cwd())
-    // eslint-disable-next-line no-eval
-    const npmPath = eval('require').resolve('@dotenvx/dotenvx-radar', { paths: [projectRoot] }) // necessary for webpack builds
-    // eslint-disable-next-line no-eval
-    return eval('require')(npmPath) // necessary for webpack builds
+    const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-radar')
+    childProcess.execSync(`${fallbackBin} help`, { stdio: ['pipe', 'pipe', 'ignore'] })
+    return {
+      observe: (payload) => {
+        const encoded = this.encode(payload)
+
+        try {
+          const subprocess = childProcess.spawn(fallbackBin, ['observe', encoded], {
+            stdio: 'ignore',
+            detached: true
+          })
+
+          subprocess.unref() // let it run independently
+        } catch (e) {
+          // noop
+        }
+      }
+    }
   }
 
   _radarCli () {
@@ -47,8 +57,14 @@ class Radar {
     return {
       observe: (payload) => {
         const encoded = this.encode(payload)
+
         try {
-          childProcess.execSync(`dotenvx-radar observe ${encoded}`, { stdio: 'ignore' })
+          const subprocess = childProcess.spawn('dotenvx-radar', ['observe', encoded], {
+            stdio: 'ignore',
+            detached: true
+          })
+
+          subprocess.unref() // let it run independently
         } catch (e) {
           // noop
         }
