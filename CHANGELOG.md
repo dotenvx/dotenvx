@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.7...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.48.0...main)
+
+## 1.48.0
+
+### Added
+
+* Include `beforeEnv` and `afterEnv` for user debugging ([#644](https://github.com/dotenvx/dotenvx/pull/644))
 
 ## 1.47.7
 
