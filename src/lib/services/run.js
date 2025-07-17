@@ -53,7 +53,7 @@ class Run {
       processedEnvs: this.processedEnvs,
       readableStrings: [...this.readableStrings],
       readableFilepaths: [...this.readableFilepaths],
-      uniqueInjectedKeys: [...this.uniqueInjectedKeys]
+      uniqueInjectedKeys: [...this.uniqueInjectedKeys],
       beforeEnv: this.beforeEnv,
       afterEnv: { ...this.processEnv }
     }
