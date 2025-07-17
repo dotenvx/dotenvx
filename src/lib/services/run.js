@@ -27,6 +27,7 @@ class Run {
     this.readableFilepaths = new Set()
     this.readableStrings = new Set()
     this.uniqueInjectedKeys = new Set()
+    this.beforeEnv = { ...this.processEnv }
   }
 
   run () {
@@ -53,6 +54,8 @@ class Run {
       readableStrings: [...this.readableStrings],
       readableFilepaths: [...this.readableFilepaths],
       uniqueInjectedKeys: [...this.uniqueInjectedKeys]
+      beforeEnv: this.beforeEnv,
+      afterEnv: { ...this.processEnv }
     }
   }
 
