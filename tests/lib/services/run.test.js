@@ -70,6 +70,7 @@ t.test('#run (finds .env file)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/monorepo/apps/frontend/.env',
+    src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
     parsed: {
       HELLO: 'frontend'
     },
@@ -99,6 +100,7 @@ t.test('#run (encrypted .env finds .env.keys next to itself)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/monorepo/apps/encrypted/.env',
+    src: fs.readFileSync('tests/monorepo/apps/encrypted/.env').toString(),
     parsed: {
       DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted'
@@ -136,6 +138,7 @@ t.test('#run (encrypted .env with bad private key)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/monorepo/apps/encrypted/.env',
+    src: fs.readFileSync('tests/monorepo/apps/encrypted/.env').toString(),
     parsed: {
       DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=='
@@ -170,6 +173,7 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: '.env',
+    src: fs.readFileSync('.env').toString(),
     parsed: {
       DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       HELLO: 'encrypted'
@@ -205,6 +209,7 @@ t.test('#run (finds .env file) with already falsy value', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/monorepo/apps/frontend/.env',
+    src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
     parsed: {
       HELLO: ''
     },
@@ -233,6 +238,7 @@ t.test('#run (finds .env file as array)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/monorepo/apps/frontend/.env',
+    src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
     parsed: {
       HELLO: 'frontend'
     },
@@ -264,6 +270,7 @@ t.test('#run (finds .env file but HELLO already exists)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/monorepo/apps/frontend/.env',
+    src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
     parsed: {
       HELLO: 'World'
     },
@@ -299,6 +306,7 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/monorepo/apps/frontend/.env',
+    src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
     parsed: {
       HELLO: 'frontend'
     },
@@ -328,6 +336,7 @@ t.test('#run (command substitution)', ct => {
   ct.same(processedEnvs, [{
     type: 'envFile',
     filepath: 'tests/.env.eval',
+    src: fs.readFileSync('tests/.env.eval').toString(),
     parsed: {
       HELLO: 'world'
     },
@@ -448,6 +457,7 @@ t.test('#run (mixed string and file)', ct => {
     {
       type: 'envFile',
       filepath: 'tests/monorepo/apps/frontend/.env',
+      src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
       parsed: { HELLO: 'string' },
       injected: {},
       errors: [],
