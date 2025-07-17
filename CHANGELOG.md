@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.6...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.47.7...main)
+
+## 1.47.7
+
+### Changed
+
+* `src` should be in internal `processEnv` object ([#643](https://github.com/dotenvx/dotenvx/pull/643))
 
 ## 1.47.6
 
