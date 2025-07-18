@@ -55,12 +55,14 @@ const config = function (options = {}) {
   try {
     const envs = buildEnvs(options, DOTENV_KEY)
     const {
+      beforeEnv,
+      afterEnv,
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
     } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile).run()
 
-    try { new Radar().observe({ processedEnvs }) } catch {}
+    try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
 
     let lastError
     /** @type {Record<string, string>} */
