@@ -10,12 +10,12 @@ class Radar {
     // check npm lib
     try {
       this.radarLib = this._radarNpm()
-      logger.successv(`[📡 radar] ${this.radarLib.status}`)
+      logger.successv(`📡 radar: ${this.radarLib.status}`)
     } catch (e) {
       // check binary cli
       try {
         this.radarLib = this._radarCli()
-        logger.successv(`[📡 radar] ${this.radarLib.status}`)
+        logger.successv(`📡 radar: ${this.radarLib.status}`)
       } catch (_e2) {
         // noop
       }
@@ -24,7 +24,7 @@ class Radar {
   }
 
   observe (payload) {
-    if (this.radarLib) {
+    if (this.radarLib && this.radarLib.status != 'off') {
       const encoded = this.encode(payload)
       this.radarLib.observe(encoded)
     }
