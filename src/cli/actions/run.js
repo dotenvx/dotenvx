@@ -42,13 +42,15 @@ async function run () {
     new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
 
     const {
+      beforeEnv,
+      afterEnv,
       processedEnvs,
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile).run()
 
-    try { new Radar().observe({ processedEnvs }) } catch {}
+    try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
