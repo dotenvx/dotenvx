@@ -2105,9 +2105,9 @@ X.X.X
 
 </details>
 
-# Extensions 🔌
+## Extensions 🔌
 
-I extensions.
+CLI extensions.
 
 <details><summary>`ext genexample`</summary><br>
 
