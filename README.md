@@ -2105,7 +2105,7 @@ X.X.X
 
 </details>
 
-## Extensions 🔌
+### Extensions 🔌
 
 CLI extensions.
 
