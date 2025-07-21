@@ -2562,6 +2562,8 @@ $ dotenvx run -- yourcommand
 
 That's it! Your environment variables are auto-observed and backed up.
 
+### UI
+
 ![dotenvx-radar](https://dotenvx.com/radar/ui.png)
 
 ### CLI
