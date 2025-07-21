@@ -2537,7 +2537,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ## Radar 📡
 
-> Dotenvx Radar is a commercial extension for [dotenvx](https://github.com/dotenvx/dotenvx).
+> [Dotenvx Radar](https://dotenvx.com/radar) is a commercial extension for [dotenvx](https://github.com/dotenvx/dotenvx).
 
 *Observe, version, and back up your environment variables at runtime.*
 
@@ -2560,7 +2560,7 @@ $ dotenvx run -- yourcommand
 [dotenvx@1.0.0] injecting env (1) from .env
 ```
 
-That's it! Your environment variables are auto-observed and backed up.
+That's it! Your environment variables are auto-observed and backed up by [Radar](https://dotenvx.com/radar).
 
 ### UI
 
