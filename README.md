@@ -2541,37 +2541,30 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 *Observe, version, and back up your environment variables at runtime.*
 
-### Quickstart
+### Usage
 
-Install it to your project.
+1. Install Radar
 
-```
-npm install @dotenvx/dotenvx-radar --save
-```
-
-or across your machine(s).
-
-```
-curl -sfS https://dotenvx.sh/pro | sh
-```
-
-Radar will auto-observe your environment variables when you run `dotenvx run --` or `require('@dotenvx/dotenvx').config()`.
-
-```js
-// index.js
-require('@dotenvx/dotenvx').config()
-// or import '@dotenvx/dotenvx/config' // for esm
-
-console.log(`Hello ${process.env.HELLO}`)
-```
 ```sh
-$ node index.js
-[dotenvx@1.48.2] 📡 radar: on
-[dotenvx@1.48.2] injecting env (1) from .env
-Hello World
+$ curl -sfS https://dotenvx.sh/radar | sh
 ```
 
-Cool!
+2. Log in
+
+```sh
+$ dotenvx-radar login
+✔ logged in [username]
+```
+
+3. Run dotenvx
+
+```sh
+$ dotenvx run -- yourcommand
+[dotenvx@1.0.0] 📡 radar active
+[dotenvx@1.0.0] injecting env (1) from .env
+```
+
+That's it! Your environment variables are auto-observed and backed up.
 
 ### CLI
 
@@ -2599,7 +2592,7 @@ $ dotenvx-radar logout
 </details>
 <details><summary>`dotenvx-radar status`</summary><br>
 
-Check current status of [radar](https://dotenvx.com/radar) - `on` or `off`.
+Check current status of [radar](https://dotenvx.com/radar) - `on` or `off` (logged in or out).
 
 ```sh
 $ dotenvx-radar status
@@ -2628,6 +2621,8 @@ Commands:
 ```
 
 </details>
+
+&nbsp;
 
 ## Whitepaper
 
