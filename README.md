@@ -2541,6 +2541,40 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 *Observe, version, and back up your environment variables at runtime.*
 
+### Quickstart
+
+Install it to your project.
+
+```
+npm install @dotenvx/dotenvx-radar --save
+```
+
+or across your machine(s).
+
+```
+curl -sfS https://dotenvx.sh/pro | sh
+```
+
+Radar will auto-observe your environment variables when you run `dotenvx run --` or `require('@dotenvx/dotenvx').config()`.
+
+```js
+// index.js
+require('@dotenvx/dotenvx').config()
+// or import '@dotenvx/dotenvx/config' // for esm
+
+console.log(`Hello ${process.env.HELLO}`)
+```
+```sh
+$ node index.js
+[dotenvx@1.48.2] 📡 radar: on
+[dotenvx@1.48.2] injecting env (1) from .env
+Hello World
+```
+
+Cool!
+
+### CLI
+
 <details><summary>`dotenvx-radar login`</summary><br>
 
 Log in to [radar](https://dotenvx.com/radar).
