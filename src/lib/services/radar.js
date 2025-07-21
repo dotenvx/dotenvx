@@ -10,12 +10,12 @@ class Radar {
     // check npm lib
     try {
       this.radarLib = this._radarNpm()
-      logger.successv('📡 radar active')
+      logger.successv(`📡 radar: ${this.radarLib.status}`)
     } catch (e) {
       // check binary cli
       try {
         this.radarLib = this._radarCli()
-        logger.successv('📡 radar active')
+        logger.successv(`📡 radar: ${this.radarLib.status}`)
       } catch (_e2) {
         // noop
       }
@@ -24,7 +24,7 @@ class Radar {
   }
 
   observe (payload) {
-    if (this.radarLib) {
+    if (this.radarLib && this.radarLib.status !== 'off') {
       const encoded = this.encode(payload)
       this.radarLib.observe(encoded)
     }
@@ -36,8 +36,10 @@ class Radar {
 
   _radarNpm () {
     const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-radar')
-    childProcess.execSync(`${fallbackBin} help`, { stdio: ['pipe', 'pipe', 'ignore'] })
+    const status = childProcess.execSync(`${fallbackBin} status`, { stdio: ['pipe', 'pipe', 'ignore'] })
+
     return {
+      status: status.toString().trim(),
       observe: (encoded) => {
         try {
           const subprocess = childProcess.spawn(fallbackBin, ['observe', encoded], {
@@ -54,8 +56,10 @@ class Radar {
   }
 
   _radarCli () {
-    childProcess.execSync('dotenvx-radar help', { stdio: ['pipe', 'pipe', 'ignore'] })
+    const status = childProcess.execSync('dotenvx-radar status', { stdio: ['pipe', 'pipe', 'ignore'] })
+
     return {
+      status: status.toString().trim(),
       observe: (encoded) => {
         try {
           const subprocess = childProcess.spawn('dotenvx-radar', ['observe', encoded], {
