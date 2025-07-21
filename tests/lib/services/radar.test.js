@@ -42,6 +42,28 @@ t.test('when dotenvx-radar npm', ct => {
   ct.end()
 })
 
+t.test('when dotenvx-radar npm but then observe fails somehow', ct => {
+  const subprocessStub = sinon.stub(childProcess, 'spawn')
+  subprocessStub.throws(new Error('bin/dotenvx-radar observe failed'))
+
+  const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-radar')
+  const stub = sinon.stub(childProcess, 'execSync')
+  stub.withArgs(`${fallbackBin} status`).returns('on')
+
+  let radar
+  const stdout = capcon.interceptStdout(() => {
+    radar = new Radar()
+  })
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+
+  radar.observe({})
+  t.ok(stub.called, 'Radar().run() called')
+  t.ok(radar.radarLib)
+
+  stub.restore()
+  ct.end()
+})
+
 t.test('when dotenvx-radar cli', ct => {
   const stub = sinon.stub(Radar.prototype, '_radarCli').returns({
     status: 'on',
