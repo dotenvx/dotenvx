@@ -100,6 +100,8 @@ class Run {
       const privateKeyName = guessPrivateKeyName(envFilepath)
       const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload, privateKeyName).run()
 
+      row.privateKeyName = privateKeyName
+      row.privateKey = privateKey
       row.src = src
       row.parsed = parsed
       row.errors = errors
