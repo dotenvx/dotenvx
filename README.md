@@ -112,6 +112,60 @@ see [extended quickstart guide](https://dotenvx.com/docs/quickstart)
 
 More examples
 
+<details><summary>TypeScript 📘</summary><br>
+
+```json
+// package.json
+{
+  "type": "module",
+  "dependencies": {
+    "chalk": "^5.3.0"
+  }
+}
+```
+
+```js
+// index.ts
+import chalk from 'chalk'
+console.log(chalk.blue(`Hello ${process.env.HELLO}`))
+```
+
+```sh
+$ npm install
+$ echo "HELLO=World" > .env
+
+$ dotenvx run -- npx tsx index.ts
+Hello World
+```
+
+</details>
+<details><summary>Deno 🦕</summary><br>
+
+```sh
+$ echo "HELLO=World" > .env
+$ echo "console.log('Hello ' + Deno.env.get('HELLO'))" > index.ts
+
+$ deno run --allow-env index.ts
+Hello undefined
+
+$ dotenvx run -- deno run --allow-env index.ts
+Hello World
+```
+
+> [!WARNING]
+> Some of you are attempting to use the npm module directly with `deno run`. Don't, because deno currently has incomplete support for these encryption ciphers.
+>
+> ```
+> $ deno run -A npm:@dotenvx/dotenvx encrypt
+> Unknown cipher
+> ```
+> 
+> Instead, use `dotenvx` as designed, by installing the cli as a binary - via curl, brew, etc.
+
+</details>
+
+More examples
+
 * <details><summary>TypeScript 📘</summary><br>
 
   ```json
