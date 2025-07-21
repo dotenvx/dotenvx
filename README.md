@@ -2543,22 +2543,18 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ### Usage
 
+```sh
 1. Install Radar
 
-```sh
 $ curl -sfS https://dotenvx.sh/radar | sh
-```
 
 2. Log in
 
-```sh
 $ dotenvx-radar login
 ✔ logged in [username]
-```
 
 3. Run dotenvx
 
-```sh
 $ dotenvx run -- yourcommand
 [dotenvx@1.0.0] 📡 radar active
 [dotenvx@1.0.0] injecting env (1) from .env
@@ -2568,7 +2564,7 @@ That's it! Your environment variables are auto-observed and backed up.
 
 ### CLI
 
-<details><summary>`dotenvx-radar login`</summary><br>
+<details><summary>`login`</summary><br>
 
 Log in to [radar](https://dotenvx.com/radar).
 
@@ -2580,7 +2576,7 @@ press Enter to open [https://radar.dotenvx.com/login/device] and enter code [D9C
 ```
 
 </details>
-<details><summary>`dotenvx-radar logout`</summary><br>
+<details><summary>`logout`</summary><br>
 
 Log out of [radar](https://dotenvx.com/radar).
 
@@ -2590,7 +2586,7 @@ $ dotenvx-radar logout
 ```
 
 </details>
-<details><summary>`dotenvx-radar status`</summary><br>
+<details><summary>`status`</summary><br>
 
 Check current status of [radar](https://dotenvx.com/radar) - `on` or `off` (logged in or out).
 
@@ -2600,7 +2596,7 @@ on
 ```
 
 </details>
-<details><summary>`dotenvx-radar settings`</summary><br>
+<details><summary>`settings`</summary><br>
 
 Check and configure various settings for [radar](https://dotenvx.com/radar) - `username`, `token`, and more.
 
@@ -2621,6 +2617,10 @@ Commands:
 ```
 
 </details>
+
+### UI
+
+![dotenvx-radar](https://dotenvx.com/radar/ui.png)
 
 &nbsp;
 
