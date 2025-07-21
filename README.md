@@ -2535,6 +2535,66 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
+## Radar 📡
+
+> Dotenvx Radar is a commercial extension for [dotenvx](https://github.com/dotenvx/dotenvx).
+
+*Observe, version, and back up your environment variables at runtime.*
+
+<details><summary>`dotenvx-radar login`</summary><br>
+
+Log in to [radar](https://dotenvx.com/radar).
+
+```sh
+$ dotenvx-radar login
+press Enter to open [https://radar.dotenvx.com/login/device] and enter code [D9C1-03BC]... (Y/n)
+⠹ waiting on browser authorization
+✔ logged in [username] to this device and activated token [dxo_6kjPifI…]
+```
+
+</details>
+<details><summary>`dotenvx-radar logout`</summary><br>
+
+Log out of [radar](https://dotenvx.com/radar).
+
+```sh
+$ dotenvx-radar logout
+✔ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
+```
+
+</details>
+<details><summary>`dotenvx-radar status`</summary><br>
+
+Check current status of [radar](https://dotenvx.com/radar) - `on` or `off`.
+
+```sh
+$ dotenvx-radar status
+on
+```
+
+</details>
+<details><summary>`dotenvx-radar settings`</summary><br>
+
+Check and configure various settings for [radar](https://dotenvx.com/radar) - `username`, `token`, and more.
+
+```sh
+$ dotenvx-radar settings
+Usage: dotenvx-radar settings [options] [command]
+
+⚙️  settings
+
+Options:
+  -h, --help       display help for command
+
+Commands:
+  username         print your username
+  token [options]  print your access token (--unmask)
+  hostname         print hostname
+  help [command]   display help for command
+```
+
+</details>
+
 ## Whitepaper
 
 > **Dotenvx: Reducing Secrets Risk with Cryptographic Separation**
