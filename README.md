@@ -544,7 +544,6 @@ Hello World
 
 Note that with `--overload` subsequent files DO override pre-existing variables defined in previous files.
 </details>
-
 <details><summary>`--verbose` flag</summary><br>
 
 ```sh
@@ -557,6 +556,7 @@ $ dotenvx run -f .env.production --verbose -- node index.js
 Hello production
 ```
 
+</details>
 <details><summary>`--debug` flag</summary><br>
 
 ```sh
