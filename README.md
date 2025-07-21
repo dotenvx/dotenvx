@@ -2543,18 +2543,22 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ### Usage
 
-```sh
 1. Install Radar
 
+```sh
 $ curl -sfS https://dotenvx.sh/radar | sh
+```
 
 2. Log in
 
+```sh
 $ dotenvx-radar login
 ✔ logged in [username]
+```
 
 3. Run dotenvx
 
+```sh
 $ dotenvx run -- yourcommand
 [dotenvx@1.0.0] 📡 radar active
 [dotenvx@1.0.0] injecting env (1) from .env
