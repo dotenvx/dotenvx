@@ -543,6 +543,7 @@ Hello World
 ```
 
 Note that with `--overload` subsequent files DO override pre-existing variables defined in previous files.
+</details>
 
 <details><summary>`--verbose` flag</summary><br>
 
