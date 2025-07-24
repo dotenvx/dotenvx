@@ -6,7 +6,7 @@ t.test('#removeDynamicHelpSection', ct => {
   const lines = [
     'Usage: dotenvx [options] [command] [command] [args...]',
     '',
-    'a better dotenv–from the creator of `dotenv`',
+    'a secure dotenv–from the creator of `dotenv`',
     '',
     'Arguments:',
     '  command                      dynamic command',
@@ -20,7 +20,7 @@ t.test('#removeDynamicHelpSection', ct => {
   ct.same(lines, [
     'Usage: dotenvx [options] [command] [command] [args...]',
     '',
-    'a better dotenv–from the creator of `dotenv`',
+    'a secure dotenv–from the creator of `dotenv`',
     '',
     'Options:'
   ])

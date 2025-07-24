@@ -1,6 +1,6 @@
-[![dotenvx](https://dotenvx.com/better-banner.png)](https://dotenvx.com)
+[![dotenvx](https://dotenvx.com/banner.png)](https://dotenvx.com)
 
-*a better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
+*a secure dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
 * run anywhere (cross-platform)
 * multi-environment
@@ -2036,7 +2036,7 @@ Output help for `dotenvx`.
 $ dotenvx help
 Usage: dotenvx run -- yourcommand
 
-a better dotenv–from the creator of `dotenv`
+a secure dotenv–from the creator of `dotenv`
 
 Options:
   -l, --log-level <level>      set log level (default: "info")

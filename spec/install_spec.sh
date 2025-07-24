@@ -178,7 +178,7 @@ Describe 'install.sh'
       When call usage
       The output should equal "Usage: $0 [options] [command]
 
-install dotenvx – a better dotenv
+install dotenvx – a secure dotenv
 
 Options:
   --os              override operating system (e.g., linux, darwin)

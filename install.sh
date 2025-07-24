@@ -19,7 +19,7 @@ FORCE=""
 #  |  \__,_|\___/ \__\___|_| |_|\_/  /_/\_\                                                          |
 #  |                                                                                                 |
 #  |                                                                                                 |
-#  |  *a better dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).          |
+#  |  *a secure dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).          |
 #  |                                                                                                 |
 #  |  * run anywhere (cross-platform)                                                                |
 #  |  * multi-environment                                                                            |
@@ -76,7 +76,7 @@ FORCE=""
 usage() {
   echo "Usage: $0 [options] [command]"
   echo ""
-  echo "install dotenvx – a better dotenv"
+  echo "install dotenvx – a secure dotenv"
   echo ""
   echo "Options:"
   echo "  --os              override operating system (e.g., linux, darwin)"
