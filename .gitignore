@@ -24,3 +24,4 @@ tests/tmp
 !tests/monorepo/**/.env*
 spec/tmp/*
 !spec/tmp/.gitkeep
+llms.txt
