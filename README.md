@@ -233,7 +233,7 @@ see [extended go guide](https://dotenvx.com/docs/quickstart)
 
 ```sh
 $ echo "HELLO=World" > .env
-$ echo 'fn main() {let hello = std::env::var("HELLO").unwrap_or("".to_string());println!("Hello {hello}");}' > src/main.rs
+$ echo 'fn main() {println!("Hello {}", std::env::var("HELLO").unwrap_or("".into()));}' > src/main.rs
 
 $ dotenvx run -- cargo run
 Hello World
