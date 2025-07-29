@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.48.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.48.4...main)
+
+## [1.48.4](https://github.com/motdotla/dotenv/compare/v1.48.3...v1.48.4) (2025-07-29)
+
+### Removed
+
+* Remove unnecessary use of `eval` in proKeypair helper ([#654](https://github.com/dotenvx/dotenvx/pull/654))
 
 ## 1.48.3
 
