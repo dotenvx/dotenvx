@@ -13,13 +13,9 @@ class ProKeypair {
     let result = {}
 
     try {
-      // if installed as sibling module
-      const projectRoot = path.resolve(process.cwd())
-      // eslint-disable-next-line no-eval
-      const dotenvxProPath = eval('require').resolve('@dotenvx/dotenvx-pro', { paths: [projectRoot] }) // necessary for webpack builds
-      // eslint-disable-next-line no-eval
-      const { keypair } = eval('require')(dotenvxProPath) // necessary for webpack builds
-      result = keypair(this.envFilepath)
+      const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-pro')
+      const output = childProcess.execSync(`${fallbackBin} keypair -f ${this.envFilepath}`, { stdio: ['pipe', 'pipe', 'ignore'] }).toString().trim()
+      result = JSON.parse(output)
     } catch (_e) {
       try {
         // if installed as binary cli
