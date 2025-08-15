@@ -40,7 +40,7 @@ function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWind
       //
       // # .env
       // HELLO="World"
-      // HELLO="enrypted:1234"
+      // HELLO="encrypted:1234"
       obj[key] = obj[key] || []
       obj[key].push(value)
     } else {

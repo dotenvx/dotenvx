@@ -10,7 +10,7 @@ function isFullyEncrypted (src) {
     //
     // # .env
     // HELLO="World"
-    // HELLO="enrypted:1234"
+    // HELLO="encrypted:1234"
     //
     // key => [value1, ...]
     for (const value of values) {
