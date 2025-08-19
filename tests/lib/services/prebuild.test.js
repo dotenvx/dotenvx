@@ -66,6 +66,19 @@ t.test('#run (dockerignore is ignoring .env.vault file and shouldn\'t)', ct => {
   ct.end()
 })
 
+t.test('#run (dockerignore is ignoring .env.x file and shouldn\'t)', ct => {
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('.env*')
+  sinon.stub(fsx, 'readdirSync').returns(['.env.x'])
+  sinon.stub(Ls.prototype, 'run').returns(['.env.x'])
+  childProcess.execSync.returns(Buffer.from('.env.x'))
+
+  const { warnings } = new Prebuild().run()
+  ct.same(warnings[0].message, `${prefix} .env.x (currently ignored but should not be)`)
+
+  ct.end()
+})
+
 t.test('#run (dockerignore is not ignore .env.production file and should)', ct => {
   sinon.stub(fsx, 'existsSync').returns(true)
   sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
