@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* For precommit and prebuild, ignore `.env.x` file like we do with `.env.vault` file.
+* For precommit and prebuild, ignore `.env.x` file like we do with `.env.vault` file. ([#666](https://github.com/dotenvx/dotenvx/pull/666))
 
 ## [1.48.4](https://github.com/dotenvx/dotenvx/compare/v1.48.3...v1.48.4) (2025-07-29)
 
