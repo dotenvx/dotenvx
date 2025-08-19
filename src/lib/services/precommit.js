@@ -57,7 +57,7 @@ class Precommit {
         if (this._isFileToBeCommitted(file)) {
           // check if that file is being ignored
           if (ig.ignores(file)) {
-            if (file === '.env.example' || file === '.env.vault') {
+            if (file === '.env.example' || file === '.env.vault' || file === '.env.x') {
               const warning = new Error(`[dotenvx@${packageJson.version}][precommit] ${file} (currently ignored but should not be)`)
               warning.help = `[dotenvx@${packageJson.version}][precommit] ⮕  run [dotenvx ext gitignore --pattern !${file}]`
               warnings.push(warning)
