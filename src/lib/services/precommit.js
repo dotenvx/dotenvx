@@ -63,7 +63,7 @@ class Precommit {
               warnings.push(warning)
             }
           } else {
-            if (file !== '.env.example' && file !== '.env.vault') {
+            if (file !== '.env.example' && file !== '.env.vault' && file !== '.env.x') {
               const src = fsx.readFileX(file)
               const encrypted = isFullyEncrypted(src)
 
