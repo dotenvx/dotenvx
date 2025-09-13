@@ -352,3 +352,35 @@ t.test('handles progressive updating', ct => {
 
   ct.end()
 })
+
+t.test('single quote expansion bug test cases', ct => {
+  const testPath = 'tests/.env.expand'
+  const env = dotenvx.config({ path: testPath })
+
+  // Case 1: Should work - first variable in single quotes
+  ct.equal(env.parsed.PGUSER, 'user', 'PGUSER should be user')
+  ct.equal(env.parsed.PGHOST, 'localhost', 'PGHOST should be localhost')
+  ct.equal(env.parsed.DATABASE_URL, 'postgres://user@localhost/my_database', 'DATABASE_URL should expand both variables')
+
+  // Case 2: Should work - first variable in single quotes, second in double quotes  
+  ct.equal(env.parsed.PGUSER2, 'user', 'PGUSER2 should be user')
+  ct.equal(env.parsed.PGHOST2, 'localhost', 'PGHOST2 should be localhost')
+  ct.equal(env.parsed.DATABASE_URL2, 'postgres://user@localhost/my_database', 'DATABASE_URL2 should expand both variables')
+
+  // Case 3: Should work - first variable in double quotes
+  ct.equal(env.parsed.PGUSER3, 'user', 'PGUSER3 should be user')
+  ct.equal(env.parsed.PGHOST3, 'localhost', 'PGHOST3 should be localhost')
+  ct.equal(env.parsed.DATABASE_URL3, 'postgres://user@localhost/my_database', 'DATABASE_URL3 should expand both variables')
+
+  // Case 4: Should work - both variables in single quotes
+  ct.equal(env.parsed.PGUSER4, 'user', 'PGUSER4 should be user')
+  ct.equal(env.parsed.PGHOST4, 'localhost', 'PGHOST4 should be localhost')
+  ct.equal(env.parsed.DATABASE_URL4, 'postgres://user@localhost/my_database', 'DATABASE_URL4 should expand both variables')
+
+  // Case 5: Should work - both variables in double quotes
+  ct.equal(env.parsed.PGUSER5, 'user', 'PGUSER5 should be user')
+  ct.equal(env.parsed.PGHOST5, 'localhost', 'PGHOST5 should be localhost')
+  ct.equal(env.parsed.DATABASE_URL5, 'postgres://user@localhost/my_database', 'DATABASE_URL5 should expand both variables')
+
+  ct.end()
+})
