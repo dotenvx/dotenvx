@@ -188,7 +188,8 @@ class Parse {
       }
 
       // if the result came from what was a literal value then stop expanding
-      if (this.literals[key]) {
+      // BUT only if the literal value contains expansion patterns (${...} or $VAR)
+      if (this.literals[key] && /\$\{[^}]+\}|\$[A-Za-z_][A-Za-z0-9_]*/.test(this.literals[key])) {
         break
       }
 
