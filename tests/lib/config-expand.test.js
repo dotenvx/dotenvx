@@ -362,7 +362,7 @@ t.test('single quote expansion bug test cases', ct => {
   ct.equal(env.parsed.PGHOST, 'localhost', 'PGHOST should be localhost')
   ct.equal(env.parsed.DATABASE_URL, 'postgres://user@localhost/my_database', 'DATABASE_URL should expand both variables')
 
-  // Case 2: Should work - first variable in single quotes, second in double quotes  
+  // Case 2: Should work - first variable in single quotes, second in double quotes
   ct.equal(env.parsed.PGUSER2, 'user', 'PGUSER2 should be user')
   ct.equal(env.parsed.PGHOST2, 'localhost', 'PGHOST2 should be localhost')
   ct.equal(env.parsed.DATABASE_URL2, 'postgres://user@localhost/my_database', 'DATABASE_URL2 should expand both variables')
