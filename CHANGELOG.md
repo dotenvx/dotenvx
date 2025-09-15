@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.48.4...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.49.1...main)
+
+## [1.49.1](https://github.com/dotenvx/dotenvx/compare/v1.49.0...v1.49.1) (2025-09-15)
+
+### Changed
+
+* 🐞 patch bug with variable expansion of single quoted values ([#675](https://github.com/dotenvx/dotenvx/pull/675))
 
 ## [1.49.0](https://github.com/dotenvx/dotenvx/compare/v1.48.4...v1.49.0) (2025-08-18)
 
