@@ -23,33 +23,33 @@ function executeDynamic (program, command, rawArgs) {
   const result = childProcess.spawnSync(`dotenvx-${command}`, forwardedArgs, { stdio: 'inherit', env })
   if (result.error) {
     if (command === 'pro') {
-      const pro = `_______________________________________________________________
-|                                                             |
-|  For small and medium businesses                            |
-|                                                             |
-|      | |     | |                                            |
-|    __| | ___ | |_ ___ _ ____   ____  __  _ __  _ __ ___     |
-|   / _\` |/ _ \\| __/ _ \\ '_ \\ \\ / /\\ \\/ / | '_ \\| '__/ _ \\    |
-|  | (_| | (_) | ||  __/ | | \\ V /  >  <  | |_) | | | (_) |   |
-|   \\__,_|\\___/ \\__\\___|_| |_|\\_/  /_/\\_\\ | .__/|_|  \\___/    |
-|                                         | |                 |
-|                                         |_|                 |
-| ## learn more on dotenvx 🟨                                 |
-|                                                             |
-| >> https://dotenvx.com/pricing                              |
-|                                                             |
-| ## subscribe on github to be notified 📣                    |
-|                                                             |
-| >> https://github.com/dotenvx/dotenvx/issues/259            |
-|                                                             |
-| ----------------------------------------------------------- |
-| - thank you for using dotenvx! - @motdotla                  |
-|_____________________________________________________________|`
-
-      console.log(pro)
-      console.log('')
       logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] commands 🏆`)
       logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-pro]')
+    } else if (command === 'ops') {
+      const ops = ` _______________________________________________________________________
+|                                                                       |
+|  Dotenvx Ops: Commercial Tooling for Dotenvx                          |
+|                                                                       |
+|  ░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓███████▓▒░                              |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░ ░▒▓██████▓▒░                               |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
+|  ░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░                               |
+|                                                                       |
+|  Use dotenvx across your team, infrastructure, agents, and more.      |
+|                                                                       |
+|  Learn more at https://dotenvx.com/ops                                |
+|                                                                       |
+| --------------------------------------------------------------------- |
+| - thank you for using dotenvx! - @motdotla                            |
+|_______________________________________________________________________|`
+
+      console.log(ops)
+      console.log('')
+      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 🏰`)
+      logger.help('? see installation instructions [https://dotenvx.com/ops]')
     } else if (command === 'radar') {
       const radar = ` _______________________________________________________________________
 |                                                                       |
