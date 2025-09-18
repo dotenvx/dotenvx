@@ -5,6 +5,7 @@ const proxyquire = require('proxyquire').noCallThru()
 
 const Run = require('./../../../src/lib/services/run')
 const Radar = require('./../../../src/lib/services/radar')
+const Ops = require('./../../../src/lib/services/ops')
 const { logger } = require('../../../src/shared/logger')
 
 const run = proxyquire('../../../src/cli/actions/run', {
@@ -838,6 +839,50 @@ t.test('run - radar.observe throws error but run continues to work', async ct =>
 
   t.ok(runStub.called, 'new Run().run() called')
   t.ok(radarObserveStub.called, 'radar.observe() was called')
+  t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
+  t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
+  t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
+
+  ct.end()
+})
+
+t.test('run - ops.observe throws error but run continues to work', async ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
+
+  const runStub = sinon.stub(Run.prototype, 'run')
+  runStub.returns({
+    processedEnvs: [{
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {
+        HELLO: 'World'
+      },
+      injected: {
+        HELLO: 'World'
+      },
+      preExisted: {}
+    }],
+    readableStrings: [],
+    readableFilepaths: ['.env'],
+    uniqueInjectedKeys: ['HELLO']
+  })
+
+  // Mock ops.observe to throw an error
+  const opsObserveStub = sinon.stub(Ops.prototype, 'observe')
+  opsObserveStub.throws(new Error('Ops service unavailable'))
+
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+
+  // Should not throw despite ops error
+  await run.call(fakeContext)
+
+  t.ok(runStub.called, 'new Run().run() called')
+  t.ok(opsObserveStub.called, 'ops.observe() was called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')

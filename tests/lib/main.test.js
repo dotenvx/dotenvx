@@ -13,6 +13,7 @@ const Get = require('../../src/lib/services/get')
 const Keypair = require('../../src/lib/services/keypair')
 const Genexample = require('../../src/lib/services/genexample')
 const Radar = require('../../src/lib/services/radar')
+const Ops = require('../../src/lib/services/ops')
 
 const fsx = require('../../src/lib/helpers/fsx')
 const { logger } = require('../../src/shared/logger')
@@ -861,6 +862,54 @@ t.test('config - radar.observe throws error but config continues to work', ct =>
 
   runStub.restore()
   radarObserveStub.restore()
+  loggerSuccessvStub.restore()
+  loggerVerboseStub.restore()
+  loggerDebugStub.restore()
+
+  ct.end()
+})
+
+t.test('config - ops.observe throws error but config continues to work', ct => {
+  const runStub = sinon.stub(Run.prototype, 'run')
+  runStub.returns({
+    processedEnvs: [{
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {
+        HELLO: 'World'
+      },
+      injected: {
+        HELLO: 'World'
+      },
+      preExisted: {}
+    }],
+    readableFilepaths: ['.env'],
+    uniqueInjectedKeys: ['HELLO']
+  })
+
+  // Mock ops.observe to throw an error
+  const opsObserveStub = sinon.stub(Ops.prototype, 'observe')
+  opsObserveStub.throws(new Error('Ops service unavailable'))
+
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerDebugStub = sinon.stub(logger, 'debug')
+
+  // Should not throw despite ops error and return proper result
+  const result = main.config()
+
+  t.ok(runStub.called, 'new Run().run() called')
+  t.ok(opsObserveStub.called, 'ops.observe() was called')
+  t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
+  t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env'), 'logger.successv')
+
+  // Verify that config returns the expected result structure
+  t.same(result.parsed, { HELLO: 'World' }, 'config returns parsed environment')
+  t.equal(result.error, undefined, 'no error returned despite ops failure')
+
+  runStub.restore()
+  opsObserveStub.restore()
   loggerSuccessvStub.restore()
   loggerVerboseStub.restore()
   loggerDebugStub.restore()
