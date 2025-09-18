@@ -13,6 +13,7 @@ const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
 const Radar = require('./services/radar')
+const Ops = require('./services/ops')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
@@ -63,6 +64,7 @@ const config = function (options = {}) {
     } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile).run()
 
     try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+    try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
 
     let lastError
     /** @type {Record<string, string>} */

@@ -4,6 +4,7 @@ const { logger } = require('./../../shared/logger')
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
 const Radar = require('./../../lib/services/radar')
+const Ops = require('./../../lib/services/ops')
 
 const conventions = require('./../../lib/helpers/conventions')
 const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
@@ -51,6 +52,7 @@ async function run () {
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile).run()
 
     try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+    try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {

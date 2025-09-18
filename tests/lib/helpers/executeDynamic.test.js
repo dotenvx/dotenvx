@@ -43,6 +43,25 @@ t.test('executeDynamic - pro command missing', ct => {
   ct.end()
 })
 
+t.test('executeDynamic - ops command missing', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+
+  executeDynamic(program, 'ops', ['ops'])
+
+  ct.ok(spawnSyncStub.called, 'spawnSync')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+
+  ct.end()
+})
+
 t.test('executeDynamic - radar command missing', ct => {
   const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
   const mockResult = {
