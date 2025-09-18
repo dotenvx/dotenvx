@@ -2,7 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.49.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.50.0...main)
+
+## [1.50.0](https://github.com/dotenvx/dotenvx/compare/v1.49.1...v1.50.0) (2025-09-18)
+
+### Added
+
+* Add optional `dotenvx ops` command ([#677](https://github.com/dotenvx/dotenvx/pull/677))
+* Ops is a coming rename of Radar. Radar will become a feature inside ops.
+* With `dotenvx ops` use dotenvx across your team, infrastructure, agents, and more.
+
+```
+ _______________________________________________________________________
+|                                                                       |
+|  Dotenvx Ops: Commercial Tooling for Dotenvx                          |
+|                                                                       |
+|  ░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓███████▓▒░                              |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░ ░▒▓██████▓▒░                               |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
+| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
+|  ░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░                               |
+|                                                                       |
+|  Use dotenvx across your team, infrastructure, agents, and more.      |
+|                                                                       |
+|  Learn more at https://dotenvx.com/ops                                |
+|_______________________________________________________________________|
+```
 
 ## [1.49.1](https://github.com/dotenvx/dotenvx/compare/v1.49.0...v1.49.1) (2025-09-15)
 
