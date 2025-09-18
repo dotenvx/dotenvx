@@ -32,7 +32,7 @@ t.test('when dotenvx-radar npm', ct => {
   const stdout = capcon.interceptStdout(() => {
     radar = new Radar()
   })
-  ct.equal(stdout, `${getColor('orangered')(`[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]`)}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('orangered')('[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]')}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
 
   radar.observe({})
   t.ok(stub.called, 'Radar().run() called')
@@ -54,7 +54,7 @@ t.test('when dotenvx-radar npm but then observe fails somehow', ct => {
   const stdout = capcon.interceptStdout(() => {
     radar = new Radar()
   })
-  ct.equal(stdout, `${getColor('orangered')(`[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]`)}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('orangered')('[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]')}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
 
   radar.observe({})
   t.ok(stub.called, 'Radar().run() called')
@@ -74,7 +74,7 @@ t.test('when dotenvx-radar cli', ct => {
   const stdout = capcon.interceptStdout(() => {
     radar = new Radar()
   })
-  ct.equal(stdout, `${getColor('orangered')(`[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]`)}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('orangered')('[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]')}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
 
   radar.observe({})
   t.ok(stub.called, 'Radar().run() called')
@@ -98,7 +98,7 @@ t.test('when dotenvx-radar cli stub childProcess.execSync', ct => {
   const stdout = capcon.interceptStdout(() => {
     radar = new Radar()
   })
-  ct.equal(stdout, `${getColor('orangered')(`[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]`)}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('orangered')('[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]')}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
 
   radar.observe({})
   t.ok(stub.called, 'Radar().run() called')
@@ -122,7 +122,7 @@ t.test('when dotenvx-radar cli stub childProcess.execSync', ct => {
   const stdout = capcon.interceptStdout(() => {
     radar = new Radar()
   })
-  ct.equal(stdout, `${getColor('orangered')(`[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]`)}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('orangered')('[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]')}\n${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
 
   radar.observe({})
   t.ok(stub.called, 'Radar().run() called')
