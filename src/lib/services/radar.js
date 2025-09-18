@@ -10,11 +10,13 @@ class Radar {
     // check npm lib
     try {
       this.radarLib = this._radarNpm()
+      logger.warn('[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]')
       logger.successv(`📡 radar: ${this.radarLib.status}`)
     } catch (e) {
       // check binary cli
       try {
         this.radarLib = this._radarCli()
+        logger.warn('[DEPRECATION NOTICE] dotenvx-radar is renamed dotenv-ops. [See https://dotenvx.com/docs/ops]')
         logger.successv(`📡 radar: ${this.radarLib.status}`)
       } catch (_e2) {
         // noop
