@@ -201,7 +201,7 @@ program.command('help [command]')
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
 program.addHelpText('after', '  radar                        📡 radar')
-program.addHelpText('after', '  ops                          🛰️ ops')
+program.addHelpText('after', '  ops                          🏰 ops')
 program.addHelpText('after', '  ext                          🔌 extensions')
 
 // dotenvx ext
