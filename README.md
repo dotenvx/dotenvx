@@ -2535,24 +2535,26 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
-## Radar 📡
+## Ops 🏰
 
-> [Dotenvx Radar](https://dotenvx.com/radar) is a commercial extension for [dotenvx](https://github.com/dotenvx/dotenvx).
+[![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png)](https://dotenvx.com/ops)
 
-*Observe, version, and back up your environment variables at runtime.*
+> [Dotenvx Ops](https://dotenvx.com/ops) is commercial tooling for [dotenvx](https://github.com/dotenvx/dotenvx).
+
+*Use dotenvx across your team, infrastructure, agents, and more.*
 
 ### Usage
 
-1. Install Radar
+1. Install dotenvx-ops
 
 ```sh
-$ curl -sfS https://dotenvx.sh/radar | sh
+$ curl -sfS https://dotenvx.sh/ops | sh
 ```
 
 2. Log in
 
 ```sh
-$ dotenvx-radar login
+$ dotenvx-ops login
 ✔ logged in [username]
 ```
 
@@ -2564,21 +2566,21 @@ $ dotenvx run -- yourcommand
 [dotenvx@1.0.0] injecting env (1) from .env
 ```
 
-That's it! Your environment variables are auto-observed and backed up by [Radar](https://dotenvx.com/radar).
+That's it! Your environment variables are auto-observed and backed up by [Dotenvx Ops](https://dotenvx.com/ops) radar feature.
 
 ### UI
 
-![dotenvx-radar](https://dotenvx.com/radar/ui.png)
+![dotenvx-ops](https://dotenvx.com/ops/ui.png)
 
 ### CLI
 
 <details><summary>`login`</summary><br>
 
-Log in to [radar](https://dotenvx.com/radar).
+Log in to [Ops](https://dotenvx.com/ops).
 
 ```sh
-$ dotenvx-radar login
-press Enter to open [https://radar.dotenvx.com/login/device] and enter code [D9C1-03BC]... (Y/n)
+$ dotenvx-ops login
+press Enter to open [https://ops.dotenvx.com/login/device] and enter code [D9C1-03BC]... (Y/n)
 ⠹ waiting on browser authorization
 ✔ logged in [username] to this device and activated token [dxo_6kjPifI…]
 ```
@@ -2586,31 +2588,31 @@ press Enter to open [https://radar.dotenvx.com/login/device] and enter code [D9C
 </details>
 <details><summary>`logout`</summary><br>
 
-Log out of [radar](https://dotenvx.com/radar).
+Log out of [Ops](https://dotenvx.com/ops).
 
 ```sh
-$ dotenvx-radar logout
+$ dotenvx-ops logout
 ✔ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
 ```
 
 </details>
 <details><summary>`status`</summary><br>
 
-Check current status of [radar](https://dotenvx.com/radar) - `on` or `off` (logged in or out).
+Check current status of [Ops](https://dotenvx.com/ops) - `on` or `off` (logged in or out).
 
 ```sh
-$ dotenvx-radar status
+$ dotenvx-ops status
 on
 ```
 
 </details>
 <details><summary>`settings`</summary><br>
 
-Check and configure various settings for [radar](https://dotenvx.com/radar) - `username`, `token`, and more.
+Check and configure various settings for [Ops](https://dotenvx.com/ops) - `username`, `token`, and more.
 
 ```sh
-$ dotenvx-radar settings
-Usage: dotenvx-radar settings [options] [command]
+$ dotenvx-ops settings
+Usage: dotenvx-ops settings [options] [command]
 
 ⚙️  settings
 
