@@ -16,12 +16,13 @@ const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Run {
-  constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env, envKeysFilepath = null) {
+  constructor (envs = [], overload = false, DOTENV_KEY = '', processEnv = process.env, envKeysFilepath = null, opsOn = true) {
     this.envs = determineEnvs(envs, processEnv, DOTENV_KEY)
     this.overload = overload
     this.DOTENV_KEY = DOTENV_KEY
     this.processEnv = processEnv
     this.envKeysFilepath = envKeysFilepath
+    this.opsOn = opsOn
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
@@ -96,7 +97,7 @@ class Run {
       const src = fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const privateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
+      const privateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn)
       const privateKeyName = guessPrivateKeyName(envFilepath)
       const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload, privateKeyName).run()
 

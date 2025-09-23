@@ -47,6 +47,9 @@ const config = function (options = {}) {
     DOTENV_KEY = options.DOTENV_KEY
   }
 
+  // dotenvx-ops related
+  const opsOn = options.opsOff !== true
+
   if (options) {
     setLogLevel(options)
     setLogName(options)
@@ -61,10 +64,12 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile).run()
+    } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile, opsOn).run()
 
-    try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
-    try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+    if (opsOn) {
+      try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+      try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+    }
 
     let lastError
     /** @type {Record<string, string>} */
