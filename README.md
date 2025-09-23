@@ -1248,6 +1248,15 @@ $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 ```
 
 </details>
+<details><summary>`run --ops-off`</summary><br>
+
+Turn off [Dotenvx Ops](https://dotenvx.com/ops) features.
+
+```sh
+$ dotenvx run --ops-off -- yourcommand
+```
+
+</details>
 <details><summary>`get KEY`</summary><br>
 
 Return a single environment variable's value.
@@ -2451,6 +2460,16 @@ HELLO="World"
 ```js
 // index.js
 require('@dotenvx/dotenvx').config({path: ['.env'], envKeysFile: '../../.env.keys'})
+```
+
+</details>
+<details><summary>`config(opsOff:)` - opsOff</summary><br>
+
+Turn off [Dotenvx Ops](https://dotenvx.com/ops) features.
+
+```js
+// index.js
+require('@dotenvx/dotenvx').config({opsOff: true})
 ```
 
 </details>
