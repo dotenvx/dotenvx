@@ -2463,6 +2463,38 @@ require('@dotenvx/dotenvx').config({path: ['.env'], envKeysFile: '../../.env.key
 ```
 
 </details>
+<details><summary>`config(convention:)` - convention</summary><br>
+
+Set a convention when using `dotenvx.config()`. This allows you to use the same file loading order as the CLI without needing to specify each file individually.
+
+```sh
+# Setup environment files
+$ echo "HELLO=development local" > .env.development.local
+$ echo "HELLO=local" > .env.local
+$ echo "HELLO=development" > .env.development
+$ echo "HELLO=env" > .env
+```
+
+```js
+// index.js
+require('@dotenvx/dotenvx').config({ convention: 'nextjs' })
+
+console.log(`Hello ${process.env.HELLO}`)
+```
+
+```sh
+$ NODE_ENV=development node index.js
+[dotenvx@1.28.0] injecting env (1) from .env.development.local, .env.local, .env.development, .env
+Hello development local
+```
+
+This is equivalent to using `--convention=nextjs` with the CLI:
+
+```sh
+$ dotenvx run --convention=nextjs -- node index.js
+```
+
+</details>
 <details><summary>`config(opsOff:)` - opsOff</summary><br>
 
 Turn off [Dotenvx Ops](https://dotenvx.com/ops) features.
