@@ -24,7 +24,18 @@ class Get {
 
     if (this.key) {
       const parsed = {}
-      const value = processEnv[this.key]
+      let value = processEnv[this.key]
+      
+      // If value is undefined in processEnv, check if it exists in parsed but failed decryption
+      if (value === undefined) {
+        for (const processedEnv of processedEnvs) {
+          if (processedEnv.parsed && processedEnv.parsed[this.key] !== undefined) {
+            value = processedEnv.parsed[this.key]
+            break
+          }
+        }
+      }
+      
       parsed[this.key] = value
 
       if (value === undefined) {
@@ -39,14 +50,15 @@ class Get {
       }
 
       // typical scenario - return only envs that were identified in the .env file
-      // iterate over all processedEnvs.parsed and grab from processEnv
+      // iterate over all processedEnvs.parsed and grab from processEnv or parsed if not in processEnv
       /** @type {Record<string, string>} */
       const parsed = {}
       for (const processedEnv of processedEnvs) {
         // parsed means we saw the key in a file or --env flag. this effectively filters out any preset machine envs - while still respecting complex evaluating, expansion, and overload. in other words, the value might be the machine value because the key was displayed in a .env file
         if (processedEnv.parsed) {
           for (const key of Object.keys(processedEnv.parsed)) {
-            parsed[key] = processEnv[key]
+            // Prefer value from processEnv (decrypted/evaluated), but fall back to parsed value if not injected
+            parsed[key] = processEnv[key] !== undefined ? processEnv[key] : processedEnv.parsed[key]
           }
         }
       }

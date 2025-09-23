@@ -71,7 +71,7 @@ class Run {
       row.injected = injected
       row.preExisted = preExisted
 
-      this.inject(row.parsed) // inject
+      this.inject(row.injected) // inject
 
       this.readableStrings.add(env)
 
@@ -108,7 +108,7 @@ class Run {
       row.injected = injected
       row.preExisted = preExisted
 
-      this.inject(row.parsed) // inject
+      this.inject(row.injected) // inject
 
       for (const key of Object.keys(injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
@@ -175,7 +175,7 @@ class Run {
       row.injected = injected
       row.preExisted = preExisted
 
-      this.inject(row.parsed) // inject
+      this.inject(row.injected) // inject
 
       for (const key of Object.keys(injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files

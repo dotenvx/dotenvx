@@ -1,6 +1,7 @@
 const decryptKeyValue = require('./decryptKeyValue')
 const evalKeyValue = require('./evalKeyValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
+const isEncrypted = require('./isEncrypted')
 
 class Parse {
   static LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
@@ -38,10 +39,15 @@ class Parse {
       }
 
       // decrypt
+      let decryptionFailed = false
       try {
         this.parsed[key] = this.decrypt(key, this.parsed[key])
       } catch (e) {
         this.errors.push(e)
+        // If this was an encrypted value that failed to decrypt, mark it
+        if (isEncrypted(this.parsed[key])) {
+          decryptionFailed = true
+        }
       }
 
       // eval empty, double, or backticks
@@ -68,12 +74,15 @@ class Parse {
         this.literals[key] = this.parsed[key]
       }
 
-      // for use with progressive expansion
-      this.runningParsed[key] = this.parsed[key]
+      // for use with progressive expansion (but skip if decryption failed)
+      if (!decryptionFailed) {
+        this.runningParsed[key] = this.parsed[key]
+      }
 
       if (Object.prototype.hasOwnProperty.call(this.processEnv, key) && !this.overload) {
         this.preExisted[key] = this.processEnv[key] // track preExisted
-      } else {
+      } else if (!decryptionFailed) {
+        // Only inject if decryption didn't fail
         this.injected[key] = this.parsed[key] // track injected
       }
     }

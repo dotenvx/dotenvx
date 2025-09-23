@@ -151,13 +151,12 @@ t.test('#run (encrypted .env with bad private key)', ct => {
     },
     errors: [error],
     injected: {
-      DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
-      HELLO: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=='
+      DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba'
     },
     preExisted: {}
   }])
   ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
-  ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
+  ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY'])
 
   ct.end()
 })

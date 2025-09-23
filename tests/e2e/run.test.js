@@ -229,11 +229,11 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
 
   let o = execShell(`${dotenvx} run -- ${command}`)
   ct.equal(o.stderr, '[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'\n[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464')
-  ct.equal(o.stdout, `[dotenvx@${version}] injecting env (2) from .env\nHello ${encrypted}`)
+  ct.equal(o.stdout, `[dotenvx@${version}] injecting env (1) from .env\nHello undefined`)
 
   o = execShell(`${dotenvx} run --quiet -- ${command}`)
   ct.equal(o.stderr, '[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'\n[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464')
-  ct.equal(o.stdout, `Hello ${encrypted}`) // --quiet
+  ct.equal(o.stdout, `Hello undefined`) // --quiet
 
   o = execShell(`${dotenvx} run --debug -- ${command}`)
   ct.equal(o.stderr, '[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'\n[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464')
@@ -244,12 +244,10 @@ loading env from .env (${tempDir}/.env)
 {"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"${encrypted}"}
 DOTENV_PUBLIC_KEY set
 DOTENV_PUBLIC_KEY set to ${DOTENV_PUBLIC_KEY}
-HELLO set
-HELLO set to ${encrypted}
-[dotenvx@${version}] injecting env (2) from .env
+[dotenvx@${version}] injecting env (1) from .env
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
-Hello ${encrypted}`) // --debug
+Hello undefined`) // --debug
 
   ct.end()
 })
