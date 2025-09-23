@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.50.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.0...main)
+
+## [1.51.0](https://github.com/dotenvx/dotenvx/compare/v1.50.1...v1.51.0) (2025-09-23)
+
+### Added
+
+* Add `config({opsOff: true})` options and `--ops-off` flag for turning off [Dotenvx Ops](https://dotenvx.com/ops) features. ([#680](https://github.com/dotenvx/dotenvx/pull/680))
 
 ## [1.50.1](https://github.com/dotenvx/dotenvx/compare/v1.50.0...v1.50.1) (2025-09-18)
 
