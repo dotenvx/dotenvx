@@ -73,6 +73,7 @@ program.command('run')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
+  .option('--ops-off', 'disable dotenvx-ops features', false)
   .action(function (...args) {
     this.envs = envs
     runAction.apply(this, args)

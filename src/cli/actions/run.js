@@ -18,6 +18,9 @@ async function run () {
 
   const ignore = options.ignore || []
 
+  // dotenvx-ops related
+  const opsOn = options.opsOff !== true
+
   if (commandArgs.length < 1) {
     const hasSeparator = process.argv.indexOf('--') !== -1
 
@@ -49,10 +52,12 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile).run()
+    } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile, opsOn).run()
 
-    try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
-    try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+    if (opsOn) {
+      try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+      try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+    }
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
