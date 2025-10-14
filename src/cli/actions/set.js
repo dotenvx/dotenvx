@@ -1,14 +1,68 @@
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
+const { promptForMissingVars } = require('../../shared/prompt-user')
 
 const Sets = require('./../../lib/services/sets')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
-function set (key, value) {
+async function promptForKeyValue(key, value) {
+  const missingVars = []
+  
+  if (key === undefined) {
+    missingVars.push({
+      name: 'key',
+        type: 'input',
+        message: 'Enter the environment variable KEY:',
+        validate: (input) => {
+          if (!input || input.trim() === '') {
+            return 'KEY cannot be empty'
+          }
+          if (!/^[A-Z_][A-Z0-9_]*$/i.test(input.trim())) {
+            return 'KEY must contain only letters, numbers, and underscores, and cannot start with a number'
+          }
+          return true
+        }
+    })
+  }
+  
+  if (value === undefined) {
+    missingVars.push({
+      name: 'value',
+      type: "input",
+      message: "Enter the environment variable value:",
+      validate: (input) => {
+        if (!input || input.trim() === '') {
+          return 'VALUE cannot be empty'
+        }
+        return true
+      }
+    })
+  }
+  
+  const answers = await promptForMissingVars(missingVars, {
+    helpMessage: 'Please provide KEY and value as arguments: dotenvx set <KEY> <value>'
+  })
+  
+  return {
+    key: key !== undefined ? key : answers.key,
+    value: value !== undefined ? value : answers.value
+  }
+}
+
+async function set (key, value) {
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
+
+  if (key === undefined || value === undefined) {
+    const result = await promptForKeyValue(key, value)
+    key = result.key
+    value = result.value
+  }
+
+  logger.debug(`final key: ${key}`)
+  logger.debug(`final value: ${value}`)
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
