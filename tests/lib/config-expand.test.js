@@ -280,11 +280,20 @@ t.test('handles $one$two', ct => {
   ct.end()
 })
 
-t.test('handles two dollar signs', ct => {
+t.test('handles two dollar signs followed by digit', ct => {
   const testPath = 'tests/.env.expand'
   const env = dotenvx.config({ path: testPath })
 
-  ct.equal(env.parsed.TWO_DOLLAR_SIGNS, 'abcd$$1234')
+  ct.equal(env.parsed.TWO_DOLLAR_SIGNS_FOLLOWED_BY_DIGIT, 'abcd$$1234foo')
+
+  ct.end()
+})
+
+t.test('handles two dollar signs followed by letter', ct => {
+  const testPath = 'tests/.env.expand'
+  const env = dotenvx.config({ path: testPath })
+
+  ct.equal(env.parsed.TWO_DOLLAR_SIGNS_FOLLOWED_BY_LETTER, 'pa$')
 
   ct.end()
 })
