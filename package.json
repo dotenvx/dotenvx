@@ -49,6 +49,7 @@
     "execa": "^5.1.1",
     "fdir": "^6.2.0",
     "ignore": "^5.3.0",
+    "@noble/hashes": "^1.5.0",
     "object-treeify": "1.1.33",
     "picomatch": "^4.0.2",
     "which": "^4.0.0"
