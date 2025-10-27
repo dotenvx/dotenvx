@@ -25,3 +25,7 @@ tests/tmp
 spec/tmp/*
 !spec/tmp/.gitkeep
 llms.txt
+
+# Files created by Local History plugin for VSCode
+/.history/
+
