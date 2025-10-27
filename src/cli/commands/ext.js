@@ -85,7 +85,6 @@ ext.command('scan')
   .description('scan for leaked secrets')
   .action(require('./../actions/ext/scan'))
 
-
 // dotenvx ext unlock
 ext.command('unlock')
   .description('decrypt a private key with a passphrase')

@@ -5,7 +5,7 @@ const Unlock = require('../../../lib/services/unlock')
 const catchAndLog = require('../../../lib/helpers/catchAndLog')
 
 function unlock (passphrase) {
-  logger.debug(`unlock action called`)
+  logger.debug('unlock action called')
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -16,7 +16,7 @@ function unlock (passphrase) {
     const salt = options.salt
 
     const {
-      processedEnvs,
+      processedEnvs
     } = new Unlock(envs, envKeysFilepath, passphrase, salt).run()
 
     for (const processedEnv of processedEnvs) {
@@ -32,14 +32,12 @@ function unlock (passphrase) {
             logger.help(processedEnv.error.help)
           }
         }
-      } 
+      }
     }
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.privateKeyAdded) {
         logger.success(`✔ ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName}) unlocked`)
-
-
       }
     }
   } catch (error) {

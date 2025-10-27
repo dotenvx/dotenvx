@@ -1,8 +1,8 @@
-const { symEncrypt } = require('eciesjs/utils');
+const { symEncrypt } = require('eciesjs/utils')
 
-const Errors = require('./errors');
-const { getKeyFromPasswordAndSalt } = require('./getKeyFromPasswordAndSalt');
-const { bytesToBase64 } = require('./bytesToBase64');
+const Errors = require('./errors')
+const { getKeyFromPasswordAndSalt } = require('./getKeyFromPasswordAndSalt')
+const { bytesToBase64 } = require('./bytesToBase64')
 
 const PREFIX = 'encrypted:'
 
@@ -16,7 +16,7 @@ const PREFIX = 'encrypted:'
  * @throws {Errors.invalidPassPhrase} - If the passphrase is invalid
  * @returns {string} - Encrypted private key
  */
-function encryptPrivateKeys (privateKeyName, privateKey, passPhrase , salt) {
+function encryptPrivateKeys (privateKeyName, privateKey, passPhrase, salt) {
   let encryptedPrivateKey
   let encryptionError
 
@@ -30,25 +30,24 @@ function encryptPrivateKeys (privateKeyName, privateKey, passPhrase , salt) {
   } else {
     const privateKeys = privateKey.split(',')
     for (const privKey of privateKeys) {
-      encryptedPrivateKey = privKey;
+      encryptedPrivateKey = privKey
       try {
-        const key =  getKeyFromPasswordAndSalt(passPhrase, salt);
+        const key = getKeyFromPasswordAndSalt(passPhrase, salt)
         const encryptedPrivateKeyUint8Array =
           symEncrypt(
             key,
             privKey.normalize()
-          );
-        const encryptedPrivateKeyHex = bytesToBase64(encryptedPrivateKeyUint8Array);
-        
-        encryptedPrivateKey = `${PREFIX}${encryptedPrivateKeyHex}`;
+          )
+        const encryptedPrivateKeyHex = bytesToBase64(encryptedPrivateKeyUint8Array)
+
+        encryptedPrivateKey = `${PREFIX}${encryptedPrivateKeyHex}`
         encryptionError = null // reset to null error (scenario for multiple private keys)
         break
       } catch (e) {
         if (e.message === 'Invalid private key' || e.message === 'Unsupported state or unable to authenticate data') {
           encryptionError = new Errors({ privateKeyName, privateKey }).invalidPassPhrase()
-        } 
+        }
       }
-
     }
   }
 

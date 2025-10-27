@@ -53,7 +53,6 @@ class Errors {
     return e
   }
 
-
   missingPrivateKeyForUnlock () {
     const code = 'MISSING_PRIVATE_KEY_FOR_UNLOCK'
     const message = `[${code}] could not find private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
@@ -82,7 +81,6 @@ class Errors {
     e.code = code
     return e
   }
-
 
   looksWrongPrivateKey () {
     const code = 'WRONG_PRIVATE_KEY'

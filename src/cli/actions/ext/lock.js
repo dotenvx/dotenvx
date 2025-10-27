@@ -5,7 +5,7 @@ const Lock = require('./../../../lib/services/lock')
 const catchAndLog = require('../../../lib/helpers/catchAndLog')
 
 function lock (passphrase) {
-  logger.debug(`lock action called`)
+  logger.debug('lock action called')
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -16,7 +16,7 @@ function lock (passphrase) {
     const salt = options.salt
 
     const {
-      processedEnvs,
+      processedEnvs
     } = new Lock(envs, envKeysFilepath, passphrase, salt).run()
 
     for (const processedEnv of processedEnvs) {
@@ -32,14 +32,12 @@ function lock (passphrase) {
             logger.help(processedEnv.error.help)
           }
         }
-      } 
+      }
     }
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.privateKeyAdded) {
         logger.success(`✔ ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName}) locked`)
-
-
       }
     }
   } catch (error) {
