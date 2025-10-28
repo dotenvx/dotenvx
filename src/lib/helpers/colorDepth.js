@@ -1,5 +1,11 @@
 const { WriteStream } = require('tty')
 
+/**
+ * Returns the color depth of the terminal.
+ * Wraps {@link WriteStream.prototype.getColorDepth}.
+ *
+ * @returns {number} The color depth of the terminal.
+ */
 const getColorDepth = () => {
   try {
     return WriteStream.prototype.getColorDepth()
