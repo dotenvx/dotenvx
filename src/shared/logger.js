@@ -1,14 +1,6 @@
 const packageJson = require('../lib/helpers/packageJson')
 const { getColor, bold } = require('./colors')
 
-/*
- * Defining restrictions on allowable property names is easy in typescript; in JSDoc, not so much.
- *
- * Here's what I found works with javascript/JSDoc, so far as working fully with IntelliSense in VSCode.
- * The secret sauce is:
- *
- * \@typedef {{[S in LogLevelName]: LogFunction}} LoggerObject
- */
 /**
  * Valid log level names as a string enum
  * @typedef {"error" | "warn" |  "success" |  "successv" |  "info" |  "help" |  "verbose" |  "debug" |  "silly"} LogLevelName
