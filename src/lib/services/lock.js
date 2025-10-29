@@ -104,7 +104,7 @@ class Lock {
           keysSrc = fsx.readFileX(envKeysFilepath, { encoding })
 
           const envParsed = dotenvParse(keysSrc)
-          row.originalValue = envParsed[privateKeyName] || null
+          row.originalValue = envParsed[privateKeyName]
           this.readableFilepaths.add(envFilepath)
 
           // encrypt privateKey
