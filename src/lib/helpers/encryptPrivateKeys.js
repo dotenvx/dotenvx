@@ -31,23 +31,16 @@ function encryptPrivateKeys (privateKeyName, privateKey, passPhrase, salt) {
     const privateKeys = privateKey.split(',')
     for (const privKey of privateKeys) {
       encryptedPrivateKey = privKey
-      try {
-        const key = getKeyFromPasswordAndSalt(passPhrase, salt)
-        const encryptedPrivateKeyUint8Array =
-          symEncrypt(
-            key,
-            privKey.normalize()
-          )
-        const encryptedPrivateKeyHex = bytesToBase64(encryptedPrivateKeyUint8Array)
+      const key = getKeyFromPasswordAndSalt(passPhrase, salt)
+      const encryptedPrivateKeyUint8Array =
+        symEncrypt(
+          key,
+          privKey.normalize()
+        )
+      const encryptedPrivateKeyHex = bytesToBase64(encryptedPrivateKeyUint8Array)
 
-        encryptedPrivateKey = `${PREFIX}${encryptedPrivateKeyHex}`
-        encryptionError = null // reset to null error (scenario for multiple private keys)
-        break
-      } catch (e) {
-        if (e.message === 'Invalid private key' || e.message === 'Unsupported state or unable to authenticate data') {
-          encryptionError = new Errors({ privateKeyName, privateKey }).invalidPassPhrase()
-        }
-      }
+      encryptedPrivateKey = `${PREFIX}${encryptedPrivateKeyHex}`
+      encryptionError = null // reset to null error (scenario for multiple private keys)
     }
   }
 

@@ -75,6 +75,35 @@ Try it:
   `
 }
 
+const LOCK_TRYIT_EXAMPLE_STRING = `
+Try it:
+
+  \`\`\`
+  $ echo "HELLO=Production" > .env.production
+  $ dotenvx encrypt -f .env.production
+  ✔ encrypted (.env.production)
+  ✔ key added to .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION)
+
+  $ dotenvx ext lock myPassword -f .env.production
+  ✔ .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION) locked
+  \`\`\`
+
+`
+
+const lock = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx ext lock mySecretPassphrase -f .env.production -fk .env.production.keys -s mySalt
+  $ dotenvx ext lock mySecretPassphrase
+  \`\`\`
+
+${LOCK_TRYIT_EXAMPLE_STRING}
+  \`\`\`
+  `
+}
+
 const set = function () {
   return `
 Examples:
@@ -90,10 +119,30 @@ Examples:
   `
 }
 
+const unlock = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx ext unlock mySecretPassphrase -f .env.production -fk .env.production.keys -s mySalt
+  $ dotenvx ext unlock mySecretPassphrase
+  \`\`\`
+
+${LOCK_TRYIT_EXAMPLE_STRING}
+
+  $ dotenvx ext unlock myPassword -f .env.production
+  ✔ .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION) unlocked
+  \`\`\`
+  `
+}
+
 module.exports = {
   run,
   precommit,
   prebuild,
   gitignore,
-  set
+  set,
+  lock,
+  unlock,
+  LOCK_TRYIT_EXAMPLE_STRING
 }

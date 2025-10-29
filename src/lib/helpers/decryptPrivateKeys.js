@@ -22,9 +22,6 @@ function decryptPrivateKeys (privateKeyName, privateKey, passPhrase, salt) {
   let decryptionError
 
   privateKey = privateKey || ''
-  if (!privateKey.startsWith(PREFIX)) {
-    return privateKey
-  }
 
   if (privateKey.length <= 0) {
     decryptionError = new Errors({
@@ -34,6 +31,10 @@ function decryptPrivateKeys (privateKeyName, privateKey, passPhrase, salt) {
   } else {
     const privateKeys = privateKey.split(',')
     for (const privKey of privateKeys) {
+      if (!privateKey.startsWith(PREFIX)) {
+        return privateKey
+      }
+
       decryptedPrivateKey = privKey
       try {
         const key = getKeyFromPasswordAndSalt(passPhrase, salt)

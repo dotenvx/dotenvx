@@ -73,6 +73,15 @@ class Errors {
     return e
   }
 
+  invalidArguments () {
+    const code = 'INVALID_ARGUMENTS'
+    const message = `[${code}] invalid arguments provided for action ${this.command}`
+
+    const e = new Error(message)
+    e.code = code
+    return e
+  }
+
   invalidPassPhrase () {
     const code = 'INVALID_PASS_PHRASE'
     const message = `[${code}] could not decrypt private key '${this.privateKeyName}=${truncate(this.privateKey)}' using the provided passphrase and salt`

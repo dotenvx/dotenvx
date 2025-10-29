@@ -19,6 +19,8 @@ t.test('ext', ct => {
   const output = execShell(`${dotenvx} ext`)
 
   t.match(output, /genexample/, 'should say genexample')
+  t.match(output, /lock/, 'should say lock')
+  t.match(output, /unlock/, 'should say unlock')
   t.match(output, /gitignore/, 'should say gitignore')
   t.match(output, /prebuild/, 'should say prebuild')
   t.match(output, /precommit/, 'should say precommit')

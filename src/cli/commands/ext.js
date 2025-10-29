@@ -3,15 +3,6 @@ const { Command } = require('commander')
 const examples = require('./../examples')
 const executeExtension = require('../../lib/helpers/executeExtension')
 const removeDynamicHelpSection = require('../../lib/helpers/removeDynamicHelpSection')
-// for use with lock/unlock actions
-const envs = []
-function collectEnvs (type) {
-  return function (value, previous) {
-    envs.push({ type, value })
-    return previous.concat([value])
-  }
-}
-
 const ext = new Command('ext')
 
 ext
@@ -56,14 +47,9 @@ ext.command('lock')
   .description('encrypt a private key with a passphrase')
   .argument('<passphrase>', 'passphrase to encrypt private key with')
   .option('-s, --salt <salt>', 'salt to encrypt private key with', 'dotenvx_salt')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .action(
-    function (...args) {
-      this.envs = envs
-      require('./../actions/ext/lock').apply(this, args)
-    }
-  )
+  .action(require('./../actions/ext/lock'))
 
 // dotenvx ext prebuild
 ext.command('prebuild')
@@ -90,14 +76,9 @@ ext.command('unlock')
   .description('decrypt a private key with a passphrase')
   .argument('<passphrase>', 'passphrase to decrypt private key with')
   .option('-s, --salt <salt>', 'salt to decrypt private key with', 'dotenvx_salt')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .action(
-    function (...args) {
-      this.envs = envs
-      require('./../actions/ext/unlock').apply(this, args)
-    }
-  )
+  .action(require('./../actions/ext/unlock'))
 
 // override helpInformation to hide dynamic commands
 ext.helpInformation = function () {

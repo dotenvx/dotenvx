@@ -23,13 +23,14 @@ function deriveKey (password, salt) {
 /**
  * Convert a password into a 32-byte key using eciejs.
  * @param {string} password - the password to convert
- * @param {string} salt - the salt to use for the conversion
+ * @param {string} [salt] - the salt to use for the conversion
  * @returns {Uint8Array} - the converted key
  */
 function getKeyFromPasswordAndSalt (password, salt) {
   // Convert password into 32-byte key using scrypt
   // sync, but scryptAsync is also available
-  const key = deriveKey(password.normalize(), salt.normalize())
+  const normalizedSalt = salt?.normalize() || undefined
+  const key = deriveKey(password.normalize(), normalizedSalt)
   return key
 }
 

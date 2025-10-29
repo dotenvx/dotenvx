@@ -7,14 +7,10 @@ const { logger, levels: loggerLevels } = require('../../src/shared/logger')
 /** @typedef {import('../../src/shared/logger').Logger} Logger */
 /** @typedef {import('../../src/shared/logger').LoggerObject} LoggerObject */
 /** @typedef {import('../../src/shared/logger').LogFunction} LogFunction */
-/** @typedef {import('sinon').SinonStubbedFunction<LogFunction>} SinonStubbedFunction */
-/**
- * A sinon stub for a log function
- * @typedef {SinonStubbedFunction<LogFunction>} SinonStubbedLogger
- */
+/** @typedef {import('sinon').SinonStubbedFunction<LogFunction>} SinonStubbedLogger */
 /**
  * A map of logger method names to sinon stubs
- * @typedef {{[loggerName: LogLevelName]: SinonStubbedLogger}} SinonStubbedLoggerSet
+ * @typedef {{[S in LogLevelName]: SinonStubbedLogger}} SinonStubbedLoggerSet
  */
 
 // ===== main
@@ -25,6 +21,7 @@ const allLoggerNames = Object.keys(loggerLevels)
 /**
  * Stubs logger methods with sinon stubs.
  * @param {LogLevelName[]} loggerNamesArray - array of logger method names to stub
+ * @param {boolean} [shouldSpyInsteadOfStub=false] - if true, use sinon.spy() instead of sinon.stub()
  * @returns {SinonStubbedLoggerSet}
  * @example
  * ```js
@@ -53,11 +50,16 @@ const allLoggerNames = Object.keys(loggerLevels)
  * })
  * ```
  */
-function stubLoggers (loggerNamesArray) {
+function stubLoggers (loggerNamesArray, shouldSpyInsteadOfStub = false) {
   /** @type {SinonStubbedLoggerSet} */
   const logStubs = {}
+
+  let stubFn = sinon.stub
+  if (shouldSpyInsteadOfStub) {
+    stubFn = sinon.spy
+  }
   for (const loggerName of loggerNamesArray) {
-    logStubs[loggerName] = sinon.stub(logger, loggerName)
+    logStubs[loggerName] = stubFn(logger, loggerName)
   }
   return logStubs
 }
@@ -71,13 +73,16 @@ function stubLoggers (loggerNamesArray) {
  */
 function showLoggerCalls (loggerStubsObject, testName) {
   for (const loggerName of Object.keys(loggerStubsObject)) {
+    if (loggerStubsObject[loggerName].callCount === 0) {
+      continue
+    }
     logger.debug(`| ${testName}: logger ${loggerName} was called ${loggerStubsObject[loggerName].callCount} times: `)
     let callCount = 1
     for (const call of loggerStubsObject[loggerName].getCalls()) {
       logger.debug(`| (${testName} ${loggerName} call ${callCount}) THIS:`, call.thisValue)
-      logger.debug(`| (${testName} ${loggerName} call ${callCount}) ARGS:`, call.args)
-      logger.debug(`| (${testName} ${loggerName} call ${callCount}) EXCEPTION:`, call.exception)
-      logger.debug(`| (${testName} ${loggerName} call ${callCount}) RETURNVAL:`, call.returnValue)
+      logger.debug(`| (${testName} ${loggerName} call ${callCount}) ARGS:`, (call.args))
+      call.exception && logger.debug(`| (${testName} ${loggerName} call ${callCount}) EXCEPTION:`, call.exception)
+      call.returnValue && logger.debug(`| (${testName} ${loggerName} call ${callCount}) RETURNVAL:`, call.returnValue)
       callCount++
     }
   }

@@ -15,14 +15,18 @@ function unlock (passphrase) {
     const envKeysFilepath = options.envKeysFile
     const salt = options.salt
 
+    logger.debug(`about to call new Unlock(...).run() with envs: ${JSON.stringify(envs)}, envKeysFilepath: ${envKeysFilepath}, passphrase: ${passphrase}, salt: ${salt}`)
+
     const {
       processedEnvs
     } = new Unlock(envs, envKeysFilepath, passphrase, salt).run()
 
-    for (const processedEnv of processedEnvs) {
-      logger.verbose(`setting for ${processedEnv.envFilepath}`)
+    logger.debug(`Unlock.run() completed returning processedEnvs: ${JSON.stringify(processedEnvs)}`)
 
+    for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
+        logger.verbose(`processedEnv got error: ${JSON.stringify(processedEnv.error)}`)
+
         if (processedEnv.error.code === 'MISSING_ENV_FILE') {
           logger.warn(processedEnv.error.message)
           logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx set]`)
@@ -36,7 +40,13 @@ function unlock (passphrase) {
     }
 
     for (const processedEnv of processedEnvs) {
-      if (processedEnv.privateKeyAdded) {
+      if (processedEnv.error) {
+        logger.error(processedEnv.error.message)
+        if (processedEnv.error.help) {
+          logger.help(processedEnv.error.help)
+        }
+      }
+      if (processedEnv.unlocked) {
         logger.success(`✔ ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName}) unlocked`)
       }
     }
