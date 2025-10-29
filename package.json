@@ -36,9 +36,7 @@
     "standard": "standard",
     "standard:fix": "standard --fix",
     "test": "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
-    "test-modified": "npm run test -- `git status -s tests | sed -E 's/^.+tests/tests/' | tr '\n' ' '`",
-    "test-coverage": "tap run --show-full-coverage --timeout=60000  --coverage-report=html",
-    "test-coverage-modified": "tap run --show-full-coverage --timeout=60000 `git status -s tests | sed -E 's/^.+tests/tests/' | tr '\n' ' '` --coverage-report=html",
+    "test-coverage": "tap run --show-full-coverage --timeout=60000",
     "testshell": "bash shellspec",
     "prerelease": "npm test && npm run testshell",
     "release": "standard-version"

@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "module": "CommonJS",
-    "target": "ES6"
-  },
-  "include": ["src/**/*", "tests/**/*"]
-}
