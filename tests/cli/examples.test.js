@@ -4,7 +4,10 @@ const {
   precommit,
   prebuild,
   gitignore,
-  set
+  set,
+  lock,
+  unlock,
+  LOCK_TRYIT_EXAMPLE_STRING
 } = require('../../src/cli/examples') // Adjust the path as needed
 
 tap.test('run function returns expected string', (t) => {
@@ -92,6 +95,23 @@ Try it:
   t.end()
 })
 
+tap.test('lock function returns expected string', (t) => {
+  const expected = `
+Examples:
+
+  \`\`\`
+  $ dotenvx ext lock mySecretPassphrase -f .env.production -fk .env.production.keys -s mySalt
+  $ dotenvx ext lock mySecretPassphrase
+  \`\`\`
+
+${LOCK_TRYIT_EXAMPLE_STRING}
+  \`\`\`
+  `
+
+  t.equal(lock(), expected)
+  t.end()
+})
+
 tap.test('set function returns expected string', (t) => {
   const expected = `
 Examples:
@@ -106,5 +126,25 @@ Examples:
   \`\`\`
   `
   t.equal(set(), expected)
+  t.end()
+})
+
+tap.test('unlock function returns expected string', (t) => {
+  const expected = `
+Examples:
+
+  \`\`\`
+  $ dotenvx ext unlock mySecretPassphrase -f .env.production -fk .env.production.keys -s mySalt
+  $ dotenvx ext unlock mySecretPassphrase
+  \`\`\`
+
+${LOCK_TRYIT_EXAMPLE_STRING}
+
+  $ dotenvx ext unlock myPassword -f .env.production
+  ✔ .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION) unlocked
+  \`\`\`
+  `
+
+  t.equal(unlock(), expected)
   t.end()
 })
