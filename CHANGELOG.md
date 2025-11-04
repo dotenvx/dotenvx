@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.1...main)
+
+## [1.51.1](https://github.com/dotenvx/dotenvx/compare/v1.51.0...v1.51.1) (2025-11-03)
+
+### Added
+
+* Add `opsOff` type information
 
 ## [1.51.0](https://github.com/dotenvx/dotenvx/compare/v1.50.1...v1.51.0) (2025-09-23)
 
