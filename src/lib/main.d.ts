@@ -148,7 +148,7 @@ export interface DotenvConfigOptions {
     | 'debug';
 
   /**
-   * Turn off Dotenvx Ops features to avoid running child processes.
+   * Turn off Dotenvx Ops features - https://dotenvx.com/ops
    *
    * @default false
    * @example require('@dotenvx/dotenvx').config({ opsOff: true })
