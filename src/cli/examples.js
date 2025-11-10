@@ -86,6 +86,13 @@ Try it:
 
   $ dotenvx ext lock myPassword -f .env.production
   ✔ .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION) locked
+  $ dotenvx ext unlock -f .env.production --prompt
+  enter password> ***********
+  ✔ .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION) unlocked
+  $ dotenvx ext lock --prompt -f .env.production
+  enter password> **********
+  confirm password> **********
+  ✔ .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION) locked
   \`\`\`
 
 `
@@ -97,10 +104,10 @@ Examples:
   \`\`\`
   $ dotenvx ext lock mySecretPassphrase -f .env.production -fk .env.production.keys -s mySalt
   $ dotenvx ext lock mySecretPassphrase
+  $ dotenvx ext lock --prompt
   \`\`\`
 
 ${LOCK_TRYIT_EXAMPLE_STRING}
-  \`\`\`
   `
 }
 
@@ -126,13 +133,10 @@ Examples:
   \`\`\`
   $ dotenvx ext unlock mySecretPassphrase -f .env.production -fk .env.production.keys -s mySalt
   $ dotenvx ext unlock mySecretPassphrase
+  $ dotenvx ext unlock --prompt
   \`\`\`
 
 ${LOCK_TRYIT_EXAMPLE_STRING}
-
-  $ dotenvx ext unlock myPassword -f .env.production
-  ✔ .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION) unlocked
-  \`\`\`
   `
 }
 
