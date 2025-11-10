@@ -102,10 +102,10 @@ Examples:
   \`\`\`
   $ dotenvx ext lock mySecretPassphrase -f .env.production -fk .env.production.keys -s mySalt
   $ dotenvx ext lock mySecretPassphrase
+  $ dotenvx ext lock --prompt
   \`\`\`
 
 ${LOCK_TRYIT_EXAMPLE_STRING}
-  \`\`\`
   `
 
   t.equal(lock(), expected)
@@ -136,13 +136,10 @@ Examples:
   \`\`\`
   $ dotenvx ext unlock mySecretPassphrase -f .env.production -fk .env.production.keys -s mySalt
   $ dotenvx ext unlock mySecretPassphrase
+  $ dotenvx ext unlock --prompt
   \`\`\`
 
 ${LOCK_TRYIT_EXAMPLE_STRING}
-
-  $ dotenvx ext unlock myPassword -f .env.production
-  ✔ .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION) unlocked
-  \`\`\`
   `
 
   t.equal(unlock(), expected)
