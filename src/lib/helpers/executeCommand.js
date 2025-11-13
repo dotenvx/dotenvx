@@ -73,13 +73,11 @@ async function executeCommand (commandArgs, env) {
         }
         expandNext = false
       }
-    }
 
-    // expand environment variables in command arguments
-    for (let i = 0; i < commandArgs.length; i++) {
+      // expand environment variables in command arguments
       commandArgs[i] = expandVariables(commandArgs[i], env)
+      logger.debug(`expanding variables in process command to [${commandArgs.join(' ')}]`)
     }
-    logger.debug(`expanding variables in process command to [${commandArgs.join(' ')}]`)
 
     child = execute.execa(commandArgs[0], commandArgs.slice(1), {
       stdio: 'inherit',
