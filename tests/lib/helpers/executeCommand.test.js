@@ -21,6 +21,30 @@ t.test('executeCommand - success', async ct => {
   ct.end()
 })
 
+t.test('executeCommand - expands $ variables in command args', async ct => {
+  const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 0 })
+  const processExitStub = sinon.stub(process, 'exit')
+
+  await executeCommand(['echo', '$HELLO'], { HELLO: 'World' })
+
+  ct.ok(execaStub.calledWith('echo', ['World']), 'execa called with expanded args')
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
+t.test('executeCommand - expands ${} variables in command args', async ct => {
+  const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 0 })
+  const processExitStub = sinon.stub(process, 'exit')
+
+  await executeCommand(['echo', '${HELLO'], { HELLO: 'World' })
+
+  ct.ok(execaStub.calledWith('echo', ['World']), 'execa called with expanded args')
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
 t.test('executeCommand - exitCode 1', async ct => {
   const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 1 })
   const processExitStub = sinon.stub(process, 'exit')

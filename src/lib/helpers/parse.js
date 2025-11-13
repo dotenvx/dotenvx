@@ -1,5 +1,6 @@
 const decryptKeyValue = require('./decryptKeyValue')
 const evalKeyValue = require('./evalKeyValue')
+const expandVariables = require('./expandVariables')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
 
 class Parse {
@@ -147,56 +148,7 @@ class Parse {
       env = { ...this.processEnv, ...this.runningParsed } // parsed wins
     }
 
-    const regex = /(?<!\\)\${([^{}]+)}|(?<!\\)\$([A-Za-z_][A-Za-z0-9_]*)/g
-
-    let result = value
-    let match
-
-    while ((match = regex.exec(result)) !== null) {
-      const [template, bracedExpression, unbracedExpression] = match
-      const expression = bracedExpression || unbracedExpression
-
-      // match the operators `:+`, `+`, `:-`, and `-`
-      const opRegex = /(:\+|\+|:-|-)/
-      // find first match
-      const opMatch = expression.match(opRegex)
-      const splitter = opMatch ? opMatch[0] : null
-
-      const r = expression.split(splitter)
-
-      let defaultValue
-      let value
-      const key = r.shift()
-
-      if ([':+', '+'].includes(splitter)) {
-        defaultValue = env[key] ? r.join(splitter) : ''
-        value = null
-      } else {
-        defaultValue = r.join(splitter)
-        value = env[key]
-      }
-
-      if (value) {
-        result = result.replace(template, value)
-      } else {
-        result = result.replace(template, defaultValue)
-      }
-
-      // if the result equaled what was in env then stop expanding - handle self-referential check as well
-      if (result === env[key]) {
-        break
-      }
-
-      // if the result came from what was a literal value then stop expanding
-      // BUT only if the literal value contains expansion patterns (${...} or $VAR)
-      if (this.literals[key] && /\$\{[^}]+\}|\$[A-Za-z_][A-Za-z0-9_]*/.test(this.literals[key])) {
-        break
-      }
-
-      regex.lastIndex = 0 // reset regex search position to re-evaluate after each replacement
-    }
-
-    return result
+    return expandVariables(value, env, this.literals)
   }
 
   inProcessEnv (key) {
