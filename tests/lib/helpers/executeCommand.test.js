@@ -5,6 +5,8 @@ const { logger } = require('../../../src/shared/logger')
 
 const executeCommand = require('../../../src/lib/helpers/executeCommand')
 
+/* eslint-disable no-template-curly-in-string */
+
 t.beforeEach((ct) => {
   sinon.restore()
 })
@@ -27,7 +29,21 @@ t.test('executeCommand - expands $ variables in command args', async ct => {
 
   await executeCommand(['echo', '$HELLO'], { HELLO: 'World' })
 
-  ct.ok(execaStub.calledWith('echo', ['World']), 'execa called with expanded args')
+  ct.ok(execaStub.called, 'execa called')
+  ct.same(execaStub.getCall(0).args[1], ['World'])
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
+t.test('executeCommand - does not expand escaped $ variables in command args', async ct => {
+  const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 0 })
+  const processExitStub = sinon.stub(process, 'exit')
+
+  await executeCommand(['echo', '\\$HELLO'], { HELLO: 'World' })
+
+  ct.ok(execaStub.called, 'execa called')
+  ct.same(execaStub.getCall(0).args[1], ['\\$HELLO'])
   ct.ok(processExitStub.notCalled, 'process.exit should not be called')
 
   ct.end()
@@ -37,9 +53,23 @@ t.test('executeCommand - expands ${} variables in command args', async ct => {
   const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 0 })
   const processExitStub = sinon.stub(process, 'exit')
 
-  await executeCommand(['echo', '${HELLO'], { HELLO: 'World' })
+  await executeCommand(['echo', '${HELLO}'], { HELLO: 'World' })
 
-  ct.ok(execaStub.calledWith('echo', ['World']), 'execa called with expanded args')
+  ct.ok(execaStub.called, 'execa called')
+  ct.same(execaStub.getCall(0).args[1], ['World'])
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
+t.test('executeCommand - does not expand escaped ${} variables in command args', async ct => {
+  const execaStub = sinon.stub(execute, 'execa').returns({ exitCode: 0 })
+  const processExitStub = sinon.stub(process, 'exit')
+
+  await executeCommand(['echo', '\\${HELLO}'], { HELLO: 'World' })
+
+  ct.ok(execaStub.called, 'execa called')
+  ct.same(execaStub.getCall(0).args[1], ['\\${HELLO}'])
   ct.ok(processExitStub.notCalled, 'process.exit should not be called')
 
   ct.end()
