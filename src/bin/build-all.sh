@@ -12,5 +12,5 @@ for target_pair in "${targets[@]}"; do
   target="${target_pair%%:*}"
   output="${target_pair##*:}"
   echo "Building for $target..."
-  bun build --compile --minify --sourcemap --bytecode --target="$target" ./src/bin/standalone.ts --outfile "./dist/$output"
+  bun build --compile --no-compile-autoload-dotenv --no-compile-autoload-bunfig --minify --sourcemap --bytecode --target="$target" ./src/bin/standalone.ts --outfile "./dist/$output"
 done
