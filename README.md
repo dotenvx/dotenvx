@@ -1,34 +1,34 @@
 [![dotenvx](https://dotenvx.com/banner.png)](https://dotenvx.com)
 
-*a secure dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
+_a secure dotenv_–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
-* run anywhere (cross-platform)
-* multi-environment
-* encrypted envs
+- run anywhere (cross-platform)
+- multi-environment
+- encrypted envs
 
 [Read the whitepaper](https://dotenvx.com/dotenvx.pdf?v=README)
 
 &nbsp;
 
-
-### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg)](https://www.npmjs.com/package/@dotenvx/dotenvx) [![downloads](https://img.shields.io/npm/dw/@dotenvx/dotenvx)](https://www.npmjs.com/package/@dotenvx/dotenvx) [![test suite](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/motdotenv/bb76445765a9731e7d824a6efdf53524/raw/dotenvxTestCount.json)](https://github.com/dotenvx/dotenvx/tree/main/tests) 
+### Quickstart [![npm version](https://img.shields.io/npm/v/@dotenvx/dotenvx.svg)](https://www.npmjs.com/package/@dotenvx/dotenvx) [![downloads](https://img.shields.io/npm/dw/@dotenvx/dotenvx)](https://www.npmjs.com/package/@dotenvx/dotenvx) [![test suite](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/motdotenv/bb76445765a9731e7d824a6efdf53524/raw/dotenvxTestCount.json)](https://github.com/dotenvx/dotenvx/tree/main/tests)
 
 Install and use it in code just like `dotenv`.
 
 ```sh
 npm install @dotenvx/dotenvx --save
 ```
+
 ```js
 // index.js
-require('@dotenvx/dotenvx').config()
+require("@dotenvx/dotenvx").config();
 // or import '@dotenvx/dotenvx/config' // for esm
 
-console.log(`Hello ${process.env.HELLO}`)
+console.log(`Hello ${process.env.HELLO}`);
 ```
 
 &nbsp;
 
-or install globally - *unlocks dotenv for any language, framework, or platform!*
+or install globally - _unlocks dotenv for any language, framework, or platform!_
 
 <details><summary>with curl 🌐 </summary><br>
 
@@ -82,7 +82,6 @@ tar -xzf dotenvx.tar.gz
 
 </details>
 
-
 <details><summary>or windows 🪟</summary><br>
 
 ```sh
@@ -126,8 +125,8 @@ More examples
 
 ```js
 // index.ts
-import chalk from 'chalk'
-console.log(chalk.blue(`Hello ${process.env.HELLO}`))
+import chalk from "chalk";
+console.log(chalk.blue(`Hello ${process.env.HELLO}`));
 ```
 
 ```sh
@@ -159,7 +158,7 @@ Hello World
 > $ deno run -A npm:@dotenvx/dotenvx encrypt
 > Unknown cipher
 > ```
-> 
+>
 > Instead, use `dotenvx` as designed, by installing the cli as a binary - via curl, brew, etc.
 
 </details>
@@ -356,14 +355,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - run: curl -fsS https://dotenvx.sh/install.sh | sh
-    - run: dotenvx run -- node build.js
-      env:
-        DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: curl -fsS https://dotenvx.sh/install.sh | sh
+      - run: dotenvx run -- node build.js
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
 ```
 
 see [github actions guide](https://dotenvx.com/docs/cis/github-actions)
@@ -465,10 +464,12 @@ Reference and expand variables already on your machine for use in your .env file
 USERNAME="username"
 DATABASE_URL="postgres://${USERNAME}@localhost/my_database"
 ```
+
 ```js
 // index.js
-console.log('DATABASE_URL', process.env.DATABASE_URL)
+console.log("DATABASE_URL", process.env.DATABASE_URL);
 ```
+
 ```sh
 $ dotenvx run --debug -- node index.js
 [dotenvx@0.14.1] injecting env (2) from .env
@@ -484,10 +485,12 @@ Add the output of a command to one of your variables in your .env file.
 # .env
 DATABASE_URL="postgres://$(whoami)@localhost/my_database"
 ```
+
 ```js
 // index.js
-console.log('DATABASE_URL', process.env.DATABASE_URL)
+console.log("DATABASE_URL", process.env.DATABASE_URL);
 ```
+
 ```sh
 $ dotenvx run --debug -- node index.js
 [dotenvx@0.14.1] injecting env (1) from .env
@@ -496,12 +499,12 @@ DATABASE_URL postgres://yourusername@localhost/my_database
 
 </details>
 
-
 &nbsp;
 
 ## Multiple Environments
 
 > Create a `.env.production` file and use `-f` to load it. It's straightforward, yet flexible.
+
 ```sh
 $ echo "HELLO=production" > .env.production
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
@@ -543,6 +546,7 @@ Hello World
 ```
 
 Note that with `--overload` subsequent files DO override pre-existing variables defined in previous files.
+
 </details>
 <details><summary>`--verbose` flag</summary><br>
 
@@ -733,7 +737,7 @@ $ dotenvx encrypt --stdout > .env.encrypted
 <details><summary>other curves</summary><br>
 
 > `secp256k1` is a well-known and battle tested curve, in use with Bitcoin and other cryptocurrencies, but we are open to adding support for more curves.
-> 
+>
 > If your organization's compliance department requires [NIST approved curves](https://csrc.nist.gov/projects/elliptic-curve-cryptography) or other curves like `curve25519`, please reach out at [security@dotenvx.com](mailto:security@dotenvx.com).
 
 </details>
@@ -743,7 +747,6 @@ $ dotenvx encrypt --stdout > .env.encrypted
 ## Advanced
 
 > Become a `dotenvx` power user.
->
 
 ### CLI 📟
 
@@ -758,10 +761,12 @@ Reference and expand variables already on your machine for use in your .env file
 USERNAME="username"
 DATABASE_URL="postgres://${USERNAME}@localhost/my_database"
 ```
+
 ```js
 // index.js
-console.log('DATABASE_URL', process.env.DATABASE_URL)
+console.log("DATABASE_URL", process.env.DATABASE_URL);
 ```
+
 ```sh
 $ dotenvx run --debug -- node index.js
 [dotenvx@1.X.X] injecting env (2) from .env
@@ -782,12 +787,14 @@ DATABASE_PORT=${DB_PORT:-5432}
 # Alternative syntax (no colon): use value if set, otherwise use default
 API_URL=${API_BASE_URL-https://api.example.com}
 ```
+
 ```js
 // index.js
-console.log('DATABASE_HOST', process.env.DATABASE_HOST)
-console.log('DATABASE_PORT', process.env.DATABASE_PORT)
-console.log('API_URL', process.env.API_URL)
+console.log("DATABASE_HOST", process.env.DATABASE_HOST);
+console.log("DATABASE_PORT", process.env.DATABASE_PORT);
+console.log("API_URL", process.env.API_URL);
 ```
+
 ```sh
 $ dotenvx run --debug -- node index.js
 [dotenvx@1.X.X] injecting env (3) from .env
@@ -809,16 +816,18 @@ NODE_ENV=production
 DEBUG_MODE=${NODE_ENV:+false}
 LOG_LEVEL=${NODE_ENV:+error}
 
-# Alternative syntax (no colon): use alternate if set, otherwise empty  
+# Alternative syntax (no colon): use alternate if set, otherwise empty
 CACHE_ENABLED=${NODE_ENV+true}
 ```
+
 ```js
 // index.js
-console.log('NODE_ENV', process.env.NODE_ENV)
-console.log('DEBUG_MODE', process.env.DEBUG_MODE)
-console.log('LOG_LEVEL', process.env.LOG_LEVEL)
-console.log('CACHE_ENABLED', process.env.CACHE_ENABLED)
+console.log("NODE_ENV", process.env.NODE_ENV);
+console.log("DEBUG_MODE", process.env.DEBUG_MODE);
+console.log("LOG_LEVEL", process.env.LOG_LEVEL);
+console.log("CACHE_ENABLED", process.env.CACHE_ENABLED);
 ```
+
 ```sh
 $ dotenvx run --debug -- node index.js
 [dotenvx@1.X.X] injecting env (4) from .env
@@ -841,7 +850,7 @@ EMPTY_VAR=
 
 # Default value syntax - use variable if set/non-empty, otherwise use default
 TEST1=${DEFINED_VAR:-fallback}     # Result: "hello"
-TEST2=${EMPTY_VAR:-fallback}       # Result: "fallback"  
+TEST2=${EMPTY_VAR:-fallback}       # Result: "fallback"
 TEST3=${UNDEFINED_VAR:-fallback}   # Result: "fallback"
 
 # Default value syntax (no colon) - use variable if set, otherwise use default
@@ -854,15 +863,16 @@ TEST7=${DEFINED_VAR:+alternate}    # Result: "alternate"
 TEST8=${EMPTY_VAR:+alternate}      # Result: "" (empty)
 TEST9=${UNDEFINED_VAR:+alternate}  # Result: "" (empty)
 
-# Alternate value syntax (no colon) - use alternate if variable is set, otherwise empty  
+# Alternate value syntax (no colon) - use alternate if variable is set, otherwise empty
 TEST10=${DEFINED_VAR+alternate}    # Result: "alternate"
 TEST11=${EMPTY_VAR+alternate}      # Result: "alternate" (empty but set)
 TEST12=${UNDEFINED_VAR+alternate}  # Result: "" (empty)
 ```
 
 **Key differences:**
+
 - `:-` vs `-`: The colon makes empty values trigger the fallback
-- `:+` vs `+`: The colon makes empty values not trigger the alternate  
+- `:+` vs `+`: The colon makes empty values not trigger the alternate
 - Default syntax (`-`): Use variable value or fallback
 - Alternate syntax (`+`): Use alternate value or empty string
 
@@ -875,10 +885,12 @@ Add the output of a command to one of your variables in your .env file.
 # .env
 DATABASE_URL="postgres://$(whoami)@localhost/my_database"
 ```
+
 ```js
 // index.js
-console.log('DATABASE_URL', process.env.DATABASE_URL)
+console.log("DATABASE_URL", process.env.DATABASE_URL);
 ```
+
 ```sh
 $ dotenvx run --debug -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env
@@ -913,7 +925,7 @@ u4QuUoobAgMBAAE=
 
 ```js
 // index.js
-console.log('MULTILINE_PEM', process.env.MULTILINE_PEM)
+console.log("MULTILINE_PEM", process.env.MULTILINE_PEM);
 ```
 
 ```sh
@@ -1076,7 +1088,7 @@ Note the `DOTENV_PRIVATE_KEY_CI` ends with `_CI`. This instructs dotenvx run to 
 </details>
 <details><summary>`DOTENV_PRIVATE_KEY=key DOTENV_PRIVATE_KEY_PRODUCTION=key run` - Combine Multiple</summary><br>
 
-Decrypt your encrypted `.env` and `.env.production` files by setting `DOTENV_PRIVATE_KEY` and `DOTENV_PRIVATE_KEY_PRODUCTION` before `dotenvx run`. 
+Decrypt your encrypted `.env` and `.env.production` files by setting `DOTENV_PRIVATE_KEY` and `DOTENV_PRIVATE_KEY_PRODUCTION` before `dotenvx run`.
 
 ```sh
 $ touch .env
@@ -1221,7 +1233,7 @@ $ echo "HELLO=local" > .env.local
 $ echo "HELLO=env" > .env
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
-$ NODE_ENV=development dotenvx run --convention=flow -- node index.js 
+$ NODE_ENV=development dotenvx run --convention=flow -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.development, .env.local, .env
 Hello development local
 ```
@@ -1229,7 +1241,7 @@ Hello development local
 Further, we recommend using `DOTENV_ENV` over `NODE_ENV`– as `dotenvx` works everywhere, not just node.
 
 ```sh
-$ DOTENV_ENV=development dotenvx run --convention=flow -- node index.js 
+$ DOTENV_ENV=development dotenvx run --convention=flow -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.development, .env.local, .env
 Hello development local
 ```
@@ -1426,7 +1438,7 @@ KEY="value"
 
 Note that this exports newlines and quoted strings.
 
-This can be useful for more complex .env values (spaces, escaped characters, quotes, etc) combined with `eval` on the command line.
+This can be useful for more complex .env values (spaces, escaped characters, quotes, etc) combined with `eval` on the command line. Of course you can use `-f` to choose your .env file lile `.env.test`.
 
 ```sh
 $ echo "console.log('Hello ' + process.env.KEY + ' ' + process.env.HELLO)" > index.js
@@ -2063,8 +2075,8 @@ Commands:
   decrypt            convert encrypted .env file(s) to plain .env file(s)
   keypair [KEY]      print public/private keys for .env file(s)
   ls [directory]     print all .env files in a tree structure
- 
-Advanced: 
+
+Advanced:
   pro                          🏆 pro
   ext                          🔌 extensions
 ```
@@ -2290,9 +2302,9 @@ HELLO="World"
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config()
+require("@dotenvx/dotenvx").config();
 
-console.log(`Hello ${process.env.HELLO}`)
+console.log(`Hello ${process.env.HELLO}`);
 ```
 
 ```sh
@@ -2320,13 +2332,13 @@ HELLO="World"
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({path: ['.env.local', '.env']})
+require("@dotenvx/dotenvx").config({ path: [".env.local", ".env"] });
 
 // esm
 // import dotenvx from "@dotenvx/dotenvx";
 // dotenvx.config({path: ['.env.local', '.env']});
 
-console.log(`Hello ${process.env.HELLO}`)
+console.log(`Hello ${process.env.HELLO}`);
 ```
 
 ```sh
@@ -2352,13 +2364,16 @@ HELLO="World"
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({path: ['.env.local', '.env'], overload: true})
+require("@dotenvx/dotenvx").config({
+  path: [".env.local", ".env"],
+  overload: true,
+});
 
 // esm
 // import dotenvx from "@dotenvx/dotenvx";
 // dotenvx.config({path: ['.env.local', '.env'], overload: true});
 
-console.log(`Hello ${process.env.HELLO}`)
+console.log(`Hello ${process.env.HELLO}`);
 ```
 
 ```sh
@@ -2379,13 +2394,16 @@ HELLO="World"
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({path: ['.env.missing', '.env'], quiet: true})
+require("@dotenvx/dotenvx").config({
+  path: [".env.missing", ".env"],
+  quiet: true,
+});
 
 // esm
 // import dotenvx from "@dotenvx/dotenvx";
 // dotenvx.config({path: ['.env.missing', '.env'], quiet: true});
 
-console.log(`Hello ${process.env.HELLO}`)
+console.log(`Hello ${process.env.HELLO}`);
 ```
 
 ```sh
@@ -2406,13 +2424,16 @@ HELLO="World"
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({path: ['.env.missing', '.env'], strict: true})
+require("@dotenvx/dotenvx").config({
+  path: [".env.missing", ".env"],
+  strict: true,
+});
 
 // esm
 // import dotenvx from "@dotenvx/dotenvx";
 // dotenvx.config({path: ['.env.missing', '.env'], strict: true});
 
-console.log(`Hello ${process.env.HELLO}`)
+console.log(`Hello ${process.env.HELLO}`);
 ```
 
 ```sh
@@ -2432,13 +2453,16 @@ HELLO="World"
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({path: ['.env.missing', '.env'], ignore: ['MISSING_ENV_FILE']})
+require("@dotenvx/dotenvx").config({
+  path: [".env.missing", ".env"],
+  ignore: ["MISSING_ENV_FILE"],
+});
 
 // esm
 // import dotenvx from "@dotenvx/dotenvx";
 // dotenvx.config({path: ['.env.missing', '.env'], ignore: ['MISSING_ENV_FILE']});
 
-console.log(`Hello ${process.env.HELLO}`)
+console.log(`Hello ${process.env.HELLO}`);
 ```
 
 ```sh
@@ -2459,7 +2483,10 @@ HELLO="World"
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({path: ['.env'], envKeysFile: '../../.env.keys'})
+require("@dotenvx/dotenvx").config({
+  path: [".env"],
+  envKeysFile: "../../.env.keys",
+});
 ```
 
 </details>
@@ -2477,9 +2504,9 @@ $ echo "HELLO=env" > .env
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({ convention: 'nextjs' })
+require("@dotenvx/dotenvx").config({ convention: "nextjs" });
 
-console.log(`Hello ${process.env.HELLO}`)
+console.log(`Hello ${process.env.HELLO}`);
 ```
 
 ```sh
@@ -2501,7 +2528,7 @@ Turn off [Dotenvx Ops](https://dotenvx.com/ops) features.
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({opsOff: true})
+require("@dotenvx/dotenvx").config({ opsOff: true });
 ```
 
 </details>
@@ -2511,10 +2538,10 @@ Parse a `.env` string directly in node.js code.
 
 ```js
 // index.js
-const dotenvx = require('@dotenvx/dotenvx')
-const src = 'HELLO=World'
-const parsed = dotenvx.parse(src)
-console.log(`Hello ${parsed.HELLO}`)
+const dotenvx = require("@dotenvx/dotenvx");
+const src = "HELLO=World";
+const parsed = dotenvx.parse(src);
+console.log(`Hello ${parsed.HELLO}`);
 ```
 
 ```sh
@@ -2529,10 +2556,10 @@ Sometimes, you want to run `parse` without it accessing `process.env`. (You can 
 
 ```js
 // index.js
-const dotenvx = require('@dotenvx/dotenvx')
-const src = 'USER=Me'
-const parsed = dotenvx.parse(src, { processEnv: {} })
-console.log(`Hello ${parsed.USER}`)
+const dotenvx = require("@dotenvx/dotenvx");
+const src = "USER=Me";
+const parsed = dotenvx.parse(src, { processEnv: {} });
+console.log(`Hello ${parsed.USER}`);
 ```
 
 ```sh
@@ -2547,25 +2574,30 @@ Decrypt an encrypted `.env` string with `privateKey`.
 
 ```js
 // index.js
-const dotenvx = require('@dotenvx/dotenvx')
-const src = 'HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"'
-const parsed = dotenvx.parse(src, { privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c' })
-console.log(`Hello ${parsed.HELLO}`)
+const dotenvx = require("@dotenvx/dotenvx");
+const src =
+  'HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"';
+const parsed = dotenvx.parse(src, {
+  privateKey:
+    "a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c",
+});
+console.log(`Hello ${parsed.HELLO}`);
 ```
 
 ```sh
 $ node index.js
 Hello World
 ```
+
 </details>
 <details><summary>`set(KEY, value)`</summary><br>
 
-Programmatically set an environment variable. 
+Programmatically set an environment variable.
 
 ```js
 // index.js
-const dotenvx = require('@dotenvx/dotenvx')
-dotenvx.set('HELLO', 'World', { path: '.env' })
+const dotenvx = require("@dotenvx/dotenvx");
+dotenvx.set("HELLO", "World", { path: ".env" });
 ```
 
 </details>
@@ -2575,12 +2607,12 @@ Programmatically get an environment variable at access/runtime.
 
 ```js
 // index.js
-const dotenvx = require('@dotenvx/dotenvx')
-const decryptedValue = dotenvx.get('HELLO')
-console.log(decryptedValue)
+const dotenvx = require("@dotenvx/dotenvx");
+const decryptedValue = dotenvx.get("HELLO");
+console.log(decryptedValue);
 ```
 
-This is known as *Decryption at Access* and is written about in [the whitepaper](https://dotenvx.com/dotenvx.pdf).
+This is known as _Decryption at Access_ and is written about in [the whitepaper](https://dotenvx.com/dotenvx.pdf).
 
 </details>
 
@@ -2592,7 +2624,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 > [Dotenvx Ops](https://dotenvx.com/ops) is optional commercial tooling for [dotenvx](https://github.com/dotenvx/dotenvx).
 
-*Use dotenvx across your team, infrastructure, agents, and more.*
+_Use dotenvx across your team, infrastructure, agents, and more._
 
 ### Usage
 
@@ -2696,47 +2728,46 @@ Commands:
 ## Guides
 
 > Go deeper with `dotenvx` – detailed framework and platform guides.
->
 
-* [Languages](https://dotenvx.com/docs#languages)
-  * [Node.js](https://dotenvx.com/docs/languages/nodejs)
-  * [Python](https://dotenvx.com/docs/languages/python)
-  * [Ruby](https://dotenvx.com/docs/languages/ruby)
-  * [Go](https://dotenvx.com/docs/languages/go)
-  * [PHP](https://dotenvx.com/docs/languages/php)
-  * [Rust](https://dotenvx.com/docs/languages/rust)
-* [Frameworks](https://dotenvx.com/docs#frameworks)
-  * [Astro](https://dotenvx.com/docs/frameworks/astro)
-  * [Express](https://dotenvx.com/docs/frameworks/express)
-  * [Next](https://dotenvx.com/docs/frameworks/next)
-  * [Remix](https://dotenvx.com/docs/frameworks/remix)
-  * [Flask](https://dotenvx.com/docs/frameworks/flask)
-  * [Sinatra](https://dotenvx.com/docs/frameworks/sinatra)
-  * [Rocket](https://dotenvx.com/docs/frameworks/rocket)
-* [Platforms](https://dotenvx.com/docs#platforms)
-  * [Digital Ocean](https://dotenvx.com/docs/platforms/digital-ocean)
-  * [Docker](https://dotenvx.com/docs/platforms/docker)
-  * [Fly](https://dotenvx.com/docs/platforms/fly)
-  * [Heroku](https://dotenvx.com/docs/platforms/heroku)
-  * [Netlify](https://dotenvx.com/docs/platforms/netlify)
-  * [Vercel](https://dotenvx.com/docs/platforms/vercel)
-  * [Railway](https://dotenvx.com/docs/platforms/railway)
-  * [Render](https://dotenvx.com/docs/platforms/render)
-* [CI/CDs](https://dotenvx.com/docs#cis)
-  * [GitHub Actions](https://dotenvx.com/docs/cis/github-actions)
-* [Background Jobs](https://dotenvx.com/docs#background-jobs)
-  * [Trigger.dev](https://dotenvx.com/docs/background-jobs/triggerdotdev)
-* [Package Managers](https://dotenvx.com/docs#package-managers)
-  * [NPM](https://dotenvx.com/docs/package-managers/npm)
-  * [PNPM](https://dotenvx.com/docs/package-managers/pnpm)
-* [Process Managers](https://dotenvx.com/docs#process-managers)
-  * [PM2](https://dotenvx.com/docs/process-managers/pm2)
-* [Monorepos](https://dotenvx.com/docs#monorepos)
-  * [Nx](https://dotenvx.com/docs/monorepos/nx)
-  * [Turborepo](https://dotenvx.com/docs/monorepos/turborepo)
-* [Concepts](https://dotenvx.com/docs#concepts)
-  * [.env](https://dotenvx.com/docs/env-file)
-  * [.env.keys](https://dotenvx.com/docs/env-keys-file)
+- [Languages](https://dotenvx.com/docs#languages)
+  - [Node.js](https://dotenvx.com/docs/languages/nodejs)
+  - [Python](https://dotenvx.com/docs/languages/python)
+  - [Ruby](https://dotenvx.com/docs/languages/ruby)
+  - [Go](https://dotenvx.com/docs/languages/go)
+  - [PHP](https://dotenvx.com/docs/languages/php)
+  - [Rust](https://dotenvx.com/docs/languages/rust)
+- [Frameworks](https://dotenvx.com/docs#frameworks)
+  - [Astro](https://dotenvx.com/docs/frameworks/astro)
+  - [Express](https://dotenvx.com/docs/frameworks/express)
+  - [Next](https://dotenvx.com/docs/frameworks/next)
+  - [Remix](https://dotenvx.com/docs/frameworks/remix)
+  - [Flask](https://dotenvx.com/docs/frameworks/flask)
+  - [Sinatra](https://dotenvx.com/docs/frameworks/sinatra)
+  - [Rocket](https://dotenvx.com/docs/frameworks/rocket)
+- [Platforms](https://dotenvx.com/docs#platforms)
+  - [Digital Ocean](https://dotenvx.com/docs/platforms/digital-ocean)
+  - [Docker](https://dotenvx.com/docs/platforms/docker)
+  - [Fly](https://dotenvx.com/docs/platforms/fly)
+  - [Heroku](https://dotenvx.com/docs/platforms/heroku)
+  - [Netlify](https://dotenvx.com/docs/platforms/netlify)
+  - [Vercel](https://dotenvx.com/docs/platforms/vercel)
+  - [Railway](https://dotenvx.com/docs/platforms/railway)
+  - [Render](https://dotenvx.com/docs/platforms/render)
+- [CI/CDs](https://dotenvx.com/docs#cis)
+  - [GitHub Actions](https://dotenvx.com/docs/cis/github-actions)
+- [Background Jobs](https://dotenvx.com/docs#background-jobs)
+  - [Trigger.dev](https://dotenvx.com/docs/background-jobs/triggerdotdev)
+- [Package Managers](https://dotenvx.com/docs#package-managers)
+  - [NPM](https://dotenvx.com/docs/package-managers/npm)
+  - [PNPM](https://dotenvx.com/docs/package-managers/pnpm)
+- [Process Managers](https://dotenvx.com/docs#process-managers)
+  - [PM2](https://dotenvx.com/docs/process-managers/pm2)
+- [Monorepos](https://dotenvx.com/docs#monorepos)
+  - [Nx](https://dotenvx.com/docs/monorepos/nx)
+  - [Turborepo](https://dotenvx.com/docs/monorepos/turborepo)
+- [Concepts](https://dotenvx.com/docs#concepts)
+  - [.env](https://dotenvx.com/docs/env-file)
+  - [.env.keys](https://dotenvx.com/docs/env-keys-file)
 
 &nbsp;
 
@@ -2779,10 +2810,10 @@ I've decided we should sunset it as a technological solution to this.
 
 The `.env.vault` file got us far, but it had limitations such as:
 
-* *Pull Requests* - it was difficult to tell which key had been changed
-* *Security* - there was no mechanism to give a teammate the ability to encrypt without also giving them the ability to decrypt. Sometimes you just want to let a contractor encrypt a new value, but you don't want them to know the rest of the secrets.
-* *Conceptual* - it takes more mental energy to understand the `.env.vault` format. Encrypted values inside a `.env` file is easier to quickly grasp.
-* *Combining Multiple Files* - there was simply no mechanism to do this well with the `.env.vault` file format.
+- _Pull Requests_ - it was difficult to tell which key had been changed
+- _Security_ - there was no mechanism to give a teammate the ability to encrypt without also giving them the ability to decrypt. Sometimes you just want to let a contractor encrypt a new value, but you don't want them to know the rest of the secrets.
+- _Conceptual_ - it takes more mental energy to understand the `.env.vault` format. Encrypted values inside a `.env` file is easier to quickly grasp.
+- _Combining Multiple Files_ - there was simply no mechanism to do this well with the `.env.vault` file format.
 
 That said, the `.env.vault` tooling will still stick around for at least 1 year under `dotenvx vault` parent command. I'm still using it in projects as are many thousands of other people.
 
@@ -2796,5 +2827,5 @@ Run `$ dotenvx ext vault migrate` and follow the instructions.
 
 You can fork this repo and create [pull requests](https://github.com/dotenvx/dotenvx/pulls) or if you have questions or feedback:
 
-* [github.com/dotenvx/dotenvx](https://github.com/dotenvx/dotenvx/issues) - bugs and discussions
-* [@dotenvx 𝕏](https://x.com/dotenvx) (DMs are open)
+- [github.com/dotenvx/dotenvx](https://github.com/dotenvx/dotenvx/issues) - bugs and discussions
+- [@dotenvx 𝕏](https://x.com/dotenvx) (DMs are open)
