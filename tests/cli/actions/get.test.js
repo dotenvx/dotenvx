@@ -106,6 +106,26 @@ t.test('get --format eval (multiple keys use newlines)', ct => {
   ct.end()
 })
 
+t.test('get --format eval -f .env.test', ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval' })
+  const fakeContext = {
+    opts: optsStub,
+    envs: [{ type: 'envFile', value: '.env.test' }]
+  }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { HELLO: 'World' } })
+
+  const stdout = capcon.interceptStdout(() => {
+    get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.same(stub.thisValues[0].envs, [{ type: 'envFile', value: '.env.test' }], 'envs passed to Get')
+  t.equal(stdout, 'HELLO="World"\n')
+
+  ct.end()
+})
+
 t.test('get --pretty-print', ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }

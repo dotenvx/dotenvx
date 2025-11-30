@@ -76,3 +76,13 @@ t.test('#get (json)', ct => {
 
   ct.end()
 })
+
+t.test('#get --format eval -f .env.test', ct => {
+  execShell(`
+    echo "FOO=BAR" > .env.test
+  `)
+
+  ct.equal(execShell(`${dotenvx} get --format eval -f .env.test`), 'FOO="BAR"')
+
+  ct.end()
+})
