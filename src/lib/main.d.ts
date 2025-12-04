@@ -205,6 +205,19 @@ export interface SetOptions {
    * @example require('@dotenvx/dotenvx').config(key, value, { encrypt: false } })
    */
   encrypt?: boolean;
+
+  /**
+   * Use GPG encryption instead of ECIES (YubiKey compatible)
+   * @default false
+   * @example require('@dotenvx/dotenvx').set(key, value, { gpg: true, gpgKey: 'user@example.com' })
+   */
+  gpg?: boolean;
+
+  /**
+   * GPG key ID, fingerprint, or email for encryption
+   * @example require('@dotenvx/dotenvx').set(key, value, { gpg: true, gpgKey: 'user@example.com' })
+   */
+  gpgKey?: string;
 }
 
 export type SetProcessedEnv = {
@@ -220,6 +233,10 @@ export type SetProcessedEnv = {
   privateKeyAdded?: boolean;
   privateKeyName?: string;
   error?: Error;
+  /** Crypto provider used: 'ecies' or 'gpg' */
+  cryptoProvider?: 'ecies' | 'gpg';
+  /** GPG recipient (key ID, fingerprint, or email) when using GPG encryption */
+  gpgRecipient?: string;
 };
 
 export type SetOutput = {
@@ -318,3 +335,22 @@ export function genexample(
   directory: string,
   envFile: string
 ): GenExampleOutput;
+
+export interface GpgAvailableOutput {
+  /** Whether GPG CLI is available */
+  available: boolean;
+  /** GPG version string (e.g., "2.4.0") or null if not available */
+  version: string | null;
+  /** Error message if GPG is not available */
+  error: string | null;
+  /** Binary name used (e.g., "gpg" or "gpg2") */
+  bin: string | null;
+}
+
+/**
+ * Check if GPG CLI is available for GPG/YubiKey encryption
+ *
+ * @returns an object with availability status, version, and potential error
+ * @example const { available, version } = require('@dotenvx/dotenvx').gpgAvailable()
+ */
+export function gpgAvailable(): GpgAvailableOutput;

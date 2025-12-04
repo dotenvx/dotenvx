@@ -8,6 +8,7 @@ const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
+const gpgEncryptValue = require('./../helpers/gpgEncryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const dotenvParse = require('./../helpers/dotenvParse')
 const replace = require('./../helpers/replace')
@@ -18,13 +19,19 @@ const findPublicKey = require('./../helpers/findPublicKey')
 const keypair = require('./../helpers/keypair')
 const truncate = require('./../helpers/truncate')
 const isPublicKey = require('./../helpers/isPublicKey')
+const getCryptoProvider = require('./../helpers/getCryptoProvider')
+const getGpgRecipient = require('./../helpers/getGpgRecipient')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, options = {}) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
+    this.options = options
+
+    // Determine crypto provider
+    this.cryptoProvider = getCryptoProvider(options)
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -71,121 +78,178 @@ class Encrypt {
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
-      let publicKey
-      let privateKey
-
-      const publicKeyName = guessPublicKeyName(envFilepath)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
-      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
-      const existingPublicKey = findPublicKey(envFilepath)
-
-      let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-      if (this.envKeysFilepath) {
-        envKeysFilepath = path.resolve(this.envKeysFilepath)
-      }
-      const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
-
-      if (existingPrivateKey) {
-        const kp = keypair(existingPrivateKey)
-        publicKey = kp.publicKey
-        privateKey = kp.privateKey
-
-        // if derivation doesn't match what's in the file (or preset in env)
-        if (existingPublicKey && existingPublicKey !== publicKey) {
-          const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
-          error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-          error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(existingPublicKey)})`
-          throw error
+      // GPG encryption mode
+      if (this.cryptoProvider === 'gpg') {
+        const gpgRecipient = getGpgRecipient(this.options, envFilepath)
+        if (!gpgRecipient) {
+          throw new Errors({}).missingGpgRecipient()
         }
 
-        // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
-        if (!existingPublicKey) {
+        row.gpgRecipient = gpgRecipient
+
+        // Check if DOTENV_GPG_KEY header needs to be added
+        const gpgKeyName = this._guessGpgKeyName(envFilepath)
+        const existingGpgKey = envParsed[gpgKeyName]
+
+        if (!existingGpgKey) {
           const ps = this._preserveShebang(envSrc)
           const firstLinePreserved = ps.firstLinePreserved
           envSrc = ps.envSrc
 
+          const prependGpgKey = this._prependGpgKey(gpgKeyName, gpgRecipient, filename)
+          envSrc = `${firstLinePreserved}${prependGpgKey}\n${envSrc}`
+        }
+
+        // iterate over all non-encrypted values and encrypt them with GPG
+        for (const [key, value] of Object.entries(envParsed)) {
+          // key excluded - don't encrypt it
+          if (this.exclude(key)) {
+            continue
+          }
+
+          // key effectively excluded (by not being in the list of includes) - don't encrypt it
+          if (this.keys.length > 0 && !this.include(key)) {
+            continue
+          }
+
+          const encrypted = isEncrypted(value) || this._isGpgKeyVar(key)
+          if (!encrypted) {
+            row.keys.push(key) // track key(s)
+
+            const encryptedValue = gpgEncryptValue(value, gpgRecipient)
+
+            // once newSrc is built write it out
+            envSrc = replace(envSrc, key, encryptedValue)
+
+            row.changed = true // track change
+          }
+        }
+
+        row.envSrc = envSrc
+        row.cryptoProvider = 'gpg'
+        if (row.changed) {
+          this.changedFilepaths.add(envFilepath)
+        } else {
+          this.unchangedFilepaths.add(envFilepath)
+        }
+      } else {
+        // ECIES encryption mode (existing logic)
+        let publicKey
+        let privateKey
+
+        const publicKeyName = guessPublicKeyName(envFilepath)
+        const privateKeyName = guessPrivateKeyName(envFilepath)
+        const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
+        const existingPublicKey = findPublicKey(envFilepath)
+
+        let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+        if (this.envKeysFilepath) {
+          envKeysFilepath = path.resolve(this.envKeysFilepath)
+        }
+        const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
+
+        if (existingPrivateKey) {
+          const kp = keypair(existingPrivateKey)
+          publicKey = kp.publicKey
+          privateKey = kp.privateKey
+
+          // if derivation doesn't match what's in the file (or preset in env)
+          if (existingPublicKey && existingPublicKey !== publicKey) {
+            const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
+            error.code = 'INVALID_DOTENV_PRIVATE_KEY'
+            error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(existingPublicKey)})`
+            throw error
+          }
+
+          // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
+          if (!existingPublicKey) {
+            const ps = this._preserveShebang(envSrc)
+            const firstLinePreserved = ps.firstLinePreserved
+            envSrc = ps.envSrc
+
+            const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+
+            envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
+          }
+        } else if (existingPublicKey) {
+          publicKey = existingPublicKey
+        } else {
+          // .env.keys
+          let keysSrc = ''
+
+          if (fsx.existsSync(envKeysFilepath)) {
+            keysSrc = fsx.readFileX(envKeysFilepath)
+          }
+
+          const ps = this._preserveShebang(envSrc)
+          const firstLinePreserved = ps.firstLinePreserved
+          envSrc = ps.envSrc
+
+          const kp = keypair() // generates a fresh keypair in memory
+          publicKey = kp.publicKey
+          privateKey = kp.privateKey
+
           const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
+          // privateKey
+          const firstTimeKeysSrc = [
+            '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
+            '#/ private decryption keys. DO NOT commit to source control /',
+            '#/     [how it works](https://dotenvx.com/encryption)       /',
+            '#/----------------------------------------------------------/'
+          ].join('\n')
+          const appendPrivateKey = [
+            `# ${filename}`,
+            `${privateKeyName}=${privateKey}`,
+            ''
+          ].join('\n')
+
           envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
-        }
-      } else if (existingPublicKey) {
-        publicKey = existingPublicKey
-      } else {
-        // .env.keys
-        let keysSrc = ''
+          keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
+          keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
-        if (fsx.existsSync(envKeysFilepath)) {
-          keysSrc = fsx.readFileX(envKeysFilepath)
-        }
+          // write to .env.keys
+          fsx.writeFileX(envKeysFilepath, keysSrc)
 
-        const ps = this._preserveShebang(envSrc)
-        const firstLinePreserved = ps.firstLinePreserved
-        envSrc = ps.envSrc
-
-        const kp = keypair() // generates a fresh keypair in memory
-        publicKey = kp.publicKey
-        privateKey = kp.privateKey
-
-        const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-        // privateKey
-        const firstTimeKeysSrc = [
-          '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
-          '#/ private decryption keys. DO NOT commit to source control /',
-          '#/     [how it works](https://dotenvx.com/encryption)       /',
-          '#/----------------------------------------------------------/'
-        ].join('\n')
-        const appendPrivateKey = [
-          `# ${filename}`,
-          `${privateKeyName}=${privateKey}`,
-          ''
-        ].join('\n')
-
-        envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
-        keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
-        keysSrc = `${keysSrc}\n${appendPrivateKey}`
-
-        // write to .env.keys
-        fsx.writeFileX(envKeysFilepath, keysSrc)
-
-        row.privateKeyAdded = true
-        row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
-      }
-
-      row.publicKey = publicKey
-      row.privateKey = privateKey
-      row.privateKeyName = privateKeyName
-
-      // iterate over all non-encrypted values and encrypt them
-      for (const [key, value] of Object.entries(envParsed)) {
-        // key excluded - don't encrypt it
-        if (this.exclude(key)) {
-          continue
+          row.privateKeyAdded = true
+          row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
         }
 
-        // key effectively excluded (by not being in the list of includes) - don't encrypt it
-        if (this.keys.length > 0 && !this.include(key)) {
-          continue
+        row.publicKey = publicKey
+        row.privateKey = privateKey
+        row.privateKeyName = privateKeyName
+
+        // iterate over all non-encrypted values and encrypt them
+        for (const [key, value] of Object.entries(envParsed)) {
+          // key excluded - don't encrypt it
+          if (this.exclude(key)) {
+            continue
+          }
+
+          // key effectively excluded (by not being in the list of includes) - don't encrypt it
+          if (this.keys.length > 0 && !this.include(key)) {
+            continue
+          }
+
+          const encrypted = isEncrypted(value) || isPublicKey(key, value)
+          if (!encrypted) {
+            row.keys.push(key) // track key(s)
+
+            const encryptedValue = encryptValue(value, publicKey)
+
+            // once newSrc is built write it out
+            envSrc = replace(envSrc, key, encryptedValue)
+
+            row.changed = true // track change
+          }
         }
 
-        const encrypted = isEncrypted(value) || isPublicKey(key, value)
-        if (!encrypted) {
-          row.keys.push(key) // track key(s)
-
-          const encryptedValue = encryptValue(value, publicKey)
-
-          // once newSrc is built write it out
-          envSrc = replace(envSrc, key, encryptedValue)
-
-          row.changed = true // track change
+        row.envSrc = envSrc
+        if (row.changed) {
+          this.changedFilepaths.add(envFilepath)
+        } else {
+          this.unchangedFilepaths.add(envFilepath)
         }
-      }
-
-      row.envSrc = envSrc
-      if (row.changed) {
-        this.changedFilepaths.add(envFilepath)
-      } else {
-        this.unchangedFilepaths.add(envFilepath)
       }
     } catch (e) {
       if (e.code === 'ENOENT') {
@@ -230,6 +294,34 @@ class Encrypt {
       '',
       `# ${filename}`
     ].join('\n')
+  }
+
+  _prependGpgKey (gpgKeyName, gpgRecipient, filename) {
+    return [
+      '#/-------------------[DOTENV_GPG_KEY]------------------------/',
+      '#/            GPG/YubiKey encryption for .env files          /',
+      '#/       [how it works](https://dotenvx.com/encryption)      /',
+      '#/----------------------------------------------------------/',
+      `${gpgKeyName}="${gpgRecipient}"`,
+      '',
+      `# ${filename}`
+    ].join('\n')
+  }
+
+  _guessGpgKeyName (envFilepath) {
+    // Similar to guessPublicKeyName but for GPG
+    // .env -> DOTENV_GPG_KEY
+    // .env.production -> DOTENV_GPG_KEY_PRODUCTION
+    const match = envFilepath.match(/\.env\.(.+)$/)
+    if (match) {
+      return `DOTENV_GPG_KEY_${match[1].toUpperCase()}`
+    }
+    return 'DOTENV_GPG_KEY'
+  }
+
+  _isGpgKeyVar (key) {
+    // Don't encrypt DOTENV_GPG_KEY* variables
+    return key.startsWith('DOTENV_GPG_KEY')
   }
 
   _preserveShebang (envSrc) {

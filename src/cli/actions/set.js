@@ -5,6 +5,7 @@ const Sets = require('./../../lib/services/sets')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
+const gpgAvailable = require('../../lib/helpers/gpgAvailable')
 
 function set (key, value) {
   logger.debug(`key: ${key}`)
@@ -19,6 +20,22 @@ function set (key, value) {
     encrypt = false
   }
 
+  // GPG options
+  const gpgOptions = {
+    gpg: options.gpg,
+    gpgKey: options.gpgKey
+  }
+
+  // Check GPG availability if using GPG encryption
+  if (options.gpg && encrypt) {
+    const gpg = gpgAvailable()
+    if (!gpg.available) {
+      logger.error(gpg.error)
+      process.exit(1)
+    }
+    logger.verbose(`Using GPG ${gpg.version} (${gpg.bin})`)
+  }
+
   try {
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
@@ -27,12 +44,16 @@ function set (key, value) {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
+    } = new Sets(key, value, envs, encrypt, envKeysFilepath, gpgOptions).run()
 
     let withEncryption = ''
 
     if (encrypt) {
-      withEncryption = ' with encryption'
+      if (options.gpg) {
+        withEncryption = ' with GPG encryption'
+      } else {
+        withEncryption = ' with encryption'
+      }
     }
 
     for (const processedEnv of processedEnvs) {
@@ -73,6 +94,12 @@ function set (key, value) {
         }
 
         logger.help(`⮕  next run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get ${key}] to test decryption locally`)
+      }
+
+      // GPG-specific success message
+      if (processedEnv.cryptoProvider === 'gpg' && processedEnv.changed) {
+        logger.help(`⮕  GPG recipient: ${processedEnv.gpgRecipient}`)
+        logger.help('⮕  Decryption will require the corresponding GPG private key (YubiKey PIN may be prompted)')
       }
     }
   } catch (error) {

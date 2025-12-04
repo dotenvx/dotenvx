@@ -1,10 +1,17 @@
 const { decrypt } = require('eciesjs')
 
 const Errors = require('./errors')
+const isGpgEncrypted = require('./isGpgEncrypted')
+const gpgDecryptValue = require('./gpgDecryptValue')
 
 const PREFIX = 'encrypted:'
 
 function decryptKeyValue (key, value, privateKeyName, privateKey) {
+  // Handle GPG-encrypted values first
+  if (isGpgEncrypted(value)) {
+    return gpgDecryptValue(key, value)
+  }
+
   let decryptedValue
   let decryptionError
 

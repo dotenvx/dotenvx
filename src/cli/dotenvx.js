@@ -114,6 +114,8 @@ program.command('set')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-c, --encrypt', 'encrypt value', true)
   .option('-p, --plain', 'store value as plain text', false)
+  .option('--gpg', 'use GPG encryption instead of ECIES (YubiKey compatible)')
+  .option('--gpg-key <recipient>', 'GPG key ID, fingerprint, or email for encryption')
   .action(function (...args) {
     this.envs = envs
     setAction.apply(this, args)
@@ -128,6 +130,8 @@ program.command('encrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--stdout', 'send to stdout')
+  .option('--gpg', 'use GPG encryption instead of ECIES (YubiKey compatible)')
+  .option('--gpg-key <recipient>', 'GPG key ID, fingerprint, or email for encryption')
   .action(function (...args) {
     this.envs = envs
     encryptAction.apply(this, args)
@@ -142,6 +146,7 @@ program.command('decrypt')
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
   .option('--stdout', 'send to stdout')
+  .option('--gpg', 'expect GPG-encrypted values (auto-detected, YubiKey PIN may be prompted)')
   .action(function (...args) {
     this.envs = envs
     decryptAction.apply(this, args)
