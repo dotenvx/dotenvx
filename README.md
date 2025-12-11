@@ -340,7 +340,7 @@ Or in any image:
 ```Containerfile
 FROM node:latest
 RUN echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
-RUN curl -fsS https://dotenvx.sh | sh
+RUN curl -fsS https://dotenvx.sh/install.sh | sh
 CMD ["/usr/local/bin/dotenvx", "run", "--", "echo", "Hello $HELLO"]
 ```
 
