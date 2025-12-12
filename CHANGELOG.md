@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Switch `npm publish` to use [Dotenvx Ops'](https://dotenvx.com/ops) new Rotation Tokens (ROTs) ([#715](https://github.com/dotenvx/dotenvx/pull/715))
 
-> This will allow us to start dogfooding our own solution to third-party API key rotation. Third-party API key rotation would drastically help improve security industry wide. Please [get in touch](https://dotenvx.com/support) if this is interesting to you.
+> This will allow us to start dogfooding our own solution for third-party API key rotation. Third-party API key rotation would drastically improve security industry wide. Please [get in touch](https://dotenvx.com/support) if this is interesting to you.
 
 ## [1.51.1](https://github.com/dotenvx/dotenvx/compare/v1.51.0...v1.51.1) (2025-11-03)
 
