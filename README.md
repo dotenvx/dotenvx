@@ -337,11 +337,11 @@ $ docker run -it --rm -v $(pwd):/app dotenv/dotenvx run -- node index.js
 
 Or in any image:
 
-```sh
+```Containerfile
 FROM node:latest
 RUN echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 RUN curl -fsS https://dotenvx.sh/install.sh | sh
-CMD ["dotenvx", "run", "--", "echo", "Hello $HELLO"]
+CMD ["/usr/local/bin/dotenvx", "run", "--", "echo", "Hello $HELLO"]
 ```
 
 see [docker guide](https://dotenvx.com/docs/platforms/docker)
@@ -376,7 +376,7 @@ see [github actions guide](https://dotenvx.com/docs/cis/github-actions)
 heroku buildpacks:add https://github.com/dotenvx/heroku-buildpack-dotenvx
 
 # docker
-RUN curl -fsS https://dotenvx.sh/install.sh | sh
+RUN curl -fsS https://dotenvx.sh | sh
 
 # vercel
 npm install @dotenvx/dotenvx --save
@@ -2233,14 +2233,17 @@ Prevent `.env` files from being built into your docker containers.
 
 Add it to your `Dockerfile`.
 
-```sh
-# Dockerfile
+```Containerfile
+# Install via script
 RUN curl -fsS https://dotenvx.sh | sh
 
-...
+# Or copy binary from official image
+COPY --from=dotenv/dotenvx:latest /usr/local/bin/dotenvx /bin/local/bin
+
+# ... orther container commands
 
 RUN dotenvx ext prebuild
-CMD ["dotenvx", "run", "--", "node", "index.js"]
+CMD ["/usr/local/bin/dotenvx", "run", "--", "node", "index.js"]
 ```
 
 </details>
@@ -2250,14 +2253,17 @@ Prevent `.env` files from being built into your docker containers inside a speci
 
 Add it to your `Dockerfile`.
 
-```sh
-# Dockerfile
+```Containerfile
+# Install via script
 RUN curl -fsS https://dotenvx.sh | sh
 
-...
+# Or copy binary from official image
+COPY --from=dotenv/dotenvx:latest /usr/local/bin/dotenvx /bin/local/bin
+
+# ... orther container commands
 
 RUN dotenvx ext prebuild apps/backend
-CMD ["dotenvx", "run", "--", "node", "apps/backend/index.js"]
+CMD ["/usr/local/bin/dotenvx", "run", "--", "node", "apps/backend/index.js"]
 ```
 
 </details>
