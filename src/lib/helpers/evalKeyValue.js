@@ -1,6 +1,7 @@
 const { execSync } = require('child_process')
 const chomp = require('./chomp')
 const Errors = require('./errors')
+const sanitizeCommand = require('./sanitizeCommand')
 
 function evalKeyValue (key, value, processEnv, runningParsed) {
   // Match everything between the outermost $() using a regex with non-capturing groups
@@ -10,7 +11,9 @@ function evalKeyValue (key, value, processEnv, runningParsed) {
     let result
 
     try {
-      result = execSync(command, { env: { ...processEnv, ...runningParsed } }).toString() // execute command (including runningParsed)
+      // Sanitize the command before execution to prevent command injection
+      const sanitizedCommand = sanitizeCommand(command)
+      result = execSync(sanitizedCommand, { env: { ...processEnv, ...runningParsed } }).toString() // execute command (including runningParsed)
     } catch (e) {
       throw new Errors({ key, command, message: e.message.trim() }).commandSubstitutionFailed()
     }
