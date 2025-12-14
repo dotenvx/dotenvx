@@ -5,6 +5,7 @@ const Encrypt = require('./../../lib/services/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
+const gpgAvailable = require('../../lib/helpers/gpgAvailable')
 
 function encrypt () {
   const options = this.opts()
@@ -12,11 +13,27 @@ function encrypt () {
 
   const envs = this.envs
 
+  // GPG options
+  const gpgOptions = {
+    gpg: options.gpg,
+    gpgKey: options.gpgKey
+  }
+
+  // Check GPG availability if --gpg flag used
+  if (options.gpg) {
+    const gpg = gpgAvailable()
+    if (!gpg.available) {
+      logger.error(gpg.error)
+      process.exit(1)
+    }
+    logger.verbose(`Using GPG ${gpg.version} (${gpg.bin})`)
+  }
+
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
+    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, gpgOptions).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -28,7 +45,7 @@ function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
+      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, gpgOptions).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -52,7 +69,11 @@ function encrypt () {
       }
 
       if (changedFilepaths.length > 0) {
-        logger.success(`✔ encrypted (${changedFilepaths.join(',')})`)
+        if (options.gpg) {
+          logger.success(`✔ encrypted with GPG (${changedFilepaths.join(',')})`)
+        } else {
+          logger.success(`✔ encrypted (${changedFilepaths.join(',')})`)
+        }
       } else if (unchangedFilepaths.length > 0) {
         logger.info(`no changes (${unchangedFilepaths})`)
       } else {
@@ -68,6 +89,12 @@ function encrypt () {
           }
 
           logger.help(`⮕  next run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
+        }
+
+        // GPG-specific success message
+        if (processedEnv.cryptoProvider === 'gpg' && processedEnv.changed) {
+          logger.help(`⮕  GPG recipient: ${processedEnv.gpgRecipient}`)
+          logger.help('⮕  Decryption will require the corresponding GPG private key (YubiKey PIN may be prompted)')
         }
       }
     } catch (error) {

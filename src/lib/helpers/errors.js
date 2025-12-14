@@ -107,6 +107,73 @@ class Errors {
     e.help = help
     return e
   }
+
+  // GPG-specific errors
+  missingGpgRecipient () {
+    const code = 'MISSING_GPG_RECIPIENT'
+    const message = `[${code}] GPG recipient (key ID or email) is required`
+    const help = `[${code}] Set DOTENV_GPG_KEY environment variable or use --gpg-key flag`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  gpgNotAvailable () {
+    const code = 'GPG_NOT_AVAILABLE'
+    const message = `[${code}] gpg command not found`
+    const help = `[${code}] Install GnuPG: https://gnupg.org/download/`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  gpgEncryptionFailed () {
+    const code = 'GPG_ENCRYPTION_FAILED'
+    const message = `[${code}] GPG encryption failed: ${this.message}`
+    const help = `[${code}] Check GPG key availability: gpg --list-keys`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  gpgDecryptionFailed () {
+    const code = 'GPG_DECRYPTION_FAILED'
+    const message = `[${code}] Unable to decrypt '${this.key}': ${this.message}`
+    const help = `[${code}] Ensure YubiKey is inserted and correct PIN is used`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  yubiKeyNotPresent () {
+    const code = 'YUBIKEY_NOT_PRESENT'
+    const message = `[${code}] YubiKey required for decryption of '${this.key}'`
+    const help = `[${code}] Insert your YubiKey and try again`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  gpgBadPin () {
+    const code = 'GPG_BAD_PIN'
+    const message = `[${code}] Incorrect PIN for decryption of '${this.key}'`
+    const help = `[${code}] Enter correct PIN. After 3 failed attempts, YubiKey may be locked.`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
 }
 
 module.exports = Errors

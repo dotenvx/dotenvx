@@ -20,6 +20,7 @@ const buildEnvs = require('./helpers/buildEnvs')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
 const isIgnoringDotenvKeys = require('./helpers/isIgnoringDotenvKeys')
+const gpgAvailable = require('./helpers/gpgAvailable')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -191,11 +192,17 @@ const set = function (key, value, options = {}) {
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
 
+  // GPG options
+  const gpgOptions = {
+    gpg: options.gpg,
+    gpgKey: options.gpgKey
+  }
+
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, gpgOptions).run()
 
   let withEncryption = ''
 
@@ -333,6 +340,8 @@ module.exports = {
   ls,
   keypair,
   genexample,
+  // GPG/YubiKey support
+  gpgAvailable,
   // expose for libs depending on @dotenvx/dotenvx - like dotenvx-radar
   setLogLevel,
   logger,

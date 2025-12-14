@@ -24,3 +24,27 @@ t.test('#isEncrypted passes null', ct => {
   ct.same(result, false)
   ct.end()
 })
+
+t.test('#isEncrypted GPG encrypted value', ct => {
+  const result = isEncrypted('gpg:encrypted:hQIMA...')
+  ct.same(result, true)
+  ct.end()
+})
+
+t.test('#isEncrypted GPG real world', ct => {
+  const result = isEncrypted('gpg:encrypted:hQIMA8T7l1mAU4JvARAAnxyz...')
+  ct.same(result, true)
+  ct.end()
+})
+
+t.test('#isEncrypted undefined returns false', ct => {
+  const result = isEncrypted(undefined)
+  ct.same(result, false)
+  ct.end()
+})
+
+t.test('#isEncrypted number returns false', ct => {
+  const result = isEncrypted(12345)
+  ct.same(result, false)
+  ct.end()
+})
