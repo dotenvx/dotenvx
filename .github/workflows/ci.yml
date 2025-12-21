@@ -353,9 +353,12 @@ jobs:
           scope: '@dotenvx'
       # update npm to v9 (last 16.x supported version) for npm provenance to work
       - run: npm install -g npm@9
+      - run: |
+          curl -sfS https://dotenvx.sh/ops | sh
+          echo "NODE_AUTH_TOKEN=$(dotenvx-ops get dotenvx://rot_71321cf34570a5db681b07d1e4078d93 --token '${{ secrets.DOTENVX_OPS_TOKEN }}')" >> $GITHUB_ENV
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN }}
   docker:
     needs: release
     runs-on: ubuntu-latest
