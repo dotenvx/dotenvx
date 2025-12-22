@@ -137,6 +137,7 @@ class Sets {
             '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
             '#/ private decryption keys. DO NOT commit to source control /',
             '#/     [how it works](https://dotenvx.com/encryption)       /',
+            '#/           backup with: `dotenvx ops backup`              /',
             '#/----------------------------------------------------------/'
           ].join('\n')
           const appendPrivateKey = [
