@@ -62,12 +62,13 @@ function encrypt () {
       for (const processedEnv of processedEnvs) {
         if (processedEnv.privateKeyAdded) {
           logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
+          logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
 
           if (!isIgnoringDotenvKeys()) {
-            logger.help('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
+            logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
           }
 
-          logger.help(`⮕  next run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
+          logger.help(`⮕  next run: [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
         }
       }
     } catch (error) {
