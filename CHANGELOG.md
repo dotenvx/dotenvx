@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.4...main)
+
+## [1.51.4](https://github.com/dotenvx/dotenvx/compare/v1.51.3...v1.51.4) (2025-12-29)
+
+### Changed
+
+* Change description of `dotenvx-ops` to better reflect its tooling as operational primitives on top of dotenvx for production use cases. ([#721](https://github.com/dotenvx/dotenvx/pull/723))
 
 ## [1.51.3](https://github.com/dotenvx/dotenvx/compare/v1.51.2...v1.51.3) (2025-12-29)
 
