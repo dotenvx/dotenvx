@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.3...main)
+
+## [1.51.3](https://github.com/dotenvx/dotenvx/compare/v1.51.2...v1.51.3) (2025-12-29)
+
+### Added
+
+* Add hint on `.env.keys` for `dotenvx ops backup`. Dotenvx Ops Backup lets you back up your private keys securely with just a single command. It's a convenient alterantive to manually copy/pasting them in and out of 1Password. ([#718](https://github.com/dotenvx/dotenvx/pull/718))
 
 ## [1.51.2](https://github.com/dotenvx/dotenvx/compare/v1.51.1...v1.51.2) (2025-12-12)
 
