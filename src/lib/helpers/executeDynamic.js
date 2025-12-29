@@ -29,7 +29,7 @@ function executeDynamic (program, command, rawArgs) {
     } else if (command === 'ops') {
       const ops = ` _______________________________________________________________________
 |                                                                       |
-|  Dotenvx Ops: Commercial Tooling for Dotenvx                          |
+|  dotenvx-ops: production grade dotenvx–with operational primitives    |
 |                                                                       |
 |  ░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓███████▓▒░                              |
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
@@ -38,8 +38,6 @@ function executeDynamic (program, command, rawArgs) {
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
 |  ░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░                               |
-|                                                                       |
-|  Use dotenvx across your team, infrastructure, agents, and more.      |
 |                                                                       |
 |  Learn more at https://dotenvx.com/ops                                |
 |                                                                       |
@@ -50,7 +48,8 @@ function executeDynamic (program, command, rawArgs) {
       console.log(ops)
       console.log('')
       logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 🏰`)
-      logger.help('? see installation instructions [https://dotenvx.com/ops]')
+      logger.help('⮕  next run: [curl -sfS https://dotenvx.sh/ops | sh]')
+      logger.help('⮕  see more: [https://dotenvx.com/ops]')
     } else {
       logger.info(`error: unknown command '${command}'`)
     }
