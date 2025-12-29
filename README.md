@@ -2590,7 +2590,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 [![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=2)](https://dotenvx.com/ops)
 
-> [Dotenvx Ops](https://dotenvx.com/ops) is optional commercial tooling for [dotenvx](https://github.com/dotenvx/dotenvx).
+> [Dotenvx Ops](https://dotenvx.com/ops) is production grade [dotenvx](https://github.com/dotenvx/dotenvx)–with operational primitives.
 
 *Use dotenvx across your team, infrastructure, agents, and more.*
 

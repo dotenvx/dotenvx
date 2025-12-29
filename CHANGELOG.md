@@ -47,7 +47,7 @@ All notable changes to this project will be documented in this file. See [standa
 ```
  _______________________________________________________________________
 |                                                                       |
-|  Dotenvx Ops: Commercial Tooling for Dotenvx                          |
+|  dotenvx-ops: production grade dotenvx–with operational primitives    |
 |                                                                       |
 |  ░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓███████▓▒░                              |
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
@@ -56,8 +56,6 @@ All notable changes to this project will be documented in this file. See [standa
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
 |  ░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░                               |
-|                                                                       |
-|  Use dotenvx across your team, infrastructure, agents, and more.      |
 |                                                                       |
 |  Learn more at https://dotenvx.com/ops                                |
 |_______________________________________________________________________|
