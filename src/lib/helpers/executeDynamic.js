@@ -22,10 +22,10 @@ function executeDynamic (program, command, rawArgs) {
 
   const result = childProcess.spawnSync(`dotenvx-${command}`, forwardedArgs, { stdio: 'inherit', env })
   if (result.error) {
-    if (command === 'pro') {
-      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx-${command}] commands 🏆`)
-      logger.warn('[DEPRECATION NOTICE] dotenvx-pro to be sunsetted soon (2026) and its featureset to be rolled into dotenvx-ops')
-      logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-pro]')
+    if (command === 'radar') {
+      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 📡`)
+      logger.warn('[DEPRECATION NOTICE] dotenvx-radar to be sunsetted soon (2026) and its featureset to be rolled into dotenvx-ops')
+      logger.help('? see installation instructions [https://dotenvx.com/radar]')
     } else if (command === 'ops') {
       const ops = ` _______________________________________________________________________
 |                                                                       |
@@ -51,31 +51,6 @@ function executeDynamic (program, command, rawArgs) {
       console.log('')
       logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 🏰`)
       logger.help('? see installation instructions [https://dotenvx.com/ops]')
-    } else if (command === 'radar') {
-      const radar = ` _______________________________________________________________________
-|                                                                       |
-|  Dotenvx Radar: Env Observability                                     |
-|                                                                       |
-|  ░▒▓███████▓▒░ ░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓██████▓▒░░▒▓███████▓▒░    |
-|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
-|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
-|  ░▒▓███████▓▒░░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓███████▓▒░    |
-|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
-|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
-|  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░   |
-|                                                                       |
-|  Observe, version, and back up your environment variables at runtime. |
-|                                                                       |
-|  Purchase lifetime access at https://dotenvx.com/radar                |
-|                                                                       |
-| --------------------------------------------------------------------- |
-| - thank you for using dotenvx! - @motdotla                            |
-|_______________________________________________________________________|`
-
-      console.log(radar)
-      console.log('')
-      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 📡`)
-      logger.help('? see installation instructions [https://dotenvx.com/radar]')
     } else {
       logger.info(`error: unknown command '${command}'`)
     }
