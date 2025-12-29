@@ -40,9 +40,6 @@ function executeDynamic (program, command, rawArgs) {
 |  ░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░                               |
 |                                                                       |
 |  Learn more at https://dotenvx.com/ops                                |
-|                                                                       |
-| --------------------------------------------------------------------- |
-| - thank you for using dotenvx! - @motdotla                            |
 |_______________________________________________________________________|`
 
       console.log(ops)
