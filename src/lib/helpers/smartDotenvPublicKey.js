@@ -3,13 +3,19 @@ const dotenvParse = require('./dotenvParse')
 
 const guessPublicKeyName = require('./guessPublicKeyName')
 
-function searchProcessEnv (publicKeyName) {
+// Strip surrounding quotes from a value (handles Windows env var edge case where quotes become part of value)
+function stripSurroundingQuotes(value) {
+  if (!value) return value
+  return value.replace(/^(["'`])(.*)\1$/, '$2')
+}
+
+function searchProcessEnv(publicKeyName) {
   if (process.env[publicKeyName] && process.env[publicKeyName].length > 0) {
-    return process.env[publicKeyName]
+    return stripSurroundingQuotes(process.env[publicKeyName])
   }
 }
 
-function searchEnvFile (publicKeyName, envFilepath) {
+function searchEnvFile(publicKeyName, envFilepath) {
   if (fsx.existsSync(envFilepath)) {
     const keysSrc = fsx.readFileX(envFilepath)
     const keysParsed = dotenvParse(keysSrc)
@@ -20,7 +26,7 @@ function searchEnvFile (publicKeyName, envFilepath) {
   }
 }
 
-function smartDotenvPublicKey (envFilepath) {
+function smartDotenvPublicKey(envFilepath) {
   let publicKey = null
   const publicKeyName = guessPublicKeyName(envFilepath) // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
 
