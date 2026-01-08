@@ -2590,38 +2590,18 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 [![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=2)](https://dotenvx.com/ops)
 
-> [Dotenvx Ops](https://dotenvx.com/ops) is production grade [dotenvx](https://github.com/dotenvx/dotenvx)–with operational primitives.
+> production grade [dotenvx](https://github.com/dotenvx/dotenvx)–with operational primitives
 
-*Use dotenvx across your team, infrastructure, agents, and more.*
+As dotenvx spreads inside companies, we're learning—through enterprise engagements—that dotenvx is missing an operations layer. Dotenvx Ops is our answer. It's production grade dotenvx–with operational primitives for teams, infrastructure, and agents. Private key management, access controls, and more.
 
-### Usage
+### Quickstart
 
-1. Install dotenvx-ops
-
-```sh
-$ curl -sfS https://dotenvx.sh/ops | sh
-```
-
-2. Log in
+Install it to add ops commands.
 
 ```sh
-$ dotenvx-ops login
-✔ logged in [username]
+curl -sfS https://dotenvx.sh/ops | sh
+dotenvx ops backup
 ```
-
-3. Run dotenvx
-
-```sh
-$ dotenvx run -- yourcommand
-[dotenvx@1.0.0] 📡 radar active
-[dotenvx@1.0.0] injecting env (1) from .env
-```
-
-That's it! Your environment variables are auto-observed and backed up by [Dotenvx Ops](https://dotenvx.com/ops) radar feature.
-
-### UI
-
-![dotenvx-ops](https://dotenvx.com/ops/ui.png)
 
 ### CLI
 
@@ -2642,7 +2622,7 @@ press Enter to open [https://ops.dotenvx.com/login/device] and enter code [D9C1-
 Log out of [Ops](https://dotenvx.com/ops).
 
 ```sh
-$ dotenvx-ops logout
+$ dotenvx ops logout
 ✔ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
 ```
 
@@ -2652,7 +2632,7 @@ $ dotenvx-ops logout
 Check current status of [Ops](https://dotenvx.com/ops) - `on` or `off` (logged in or out).
 
 ```sh
-$ dotenvx-ops status
+$ dotenvx ops status
 on
 ```
 
