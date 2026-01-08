@@ -235,12 +235,13 @@ const set = function (key, value, options = {}) {
   for (const processedEnv of processedEnvs) {
     if (processedEnv.privateKeyAdded) {
       logger.success(`✔ key added to ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName})`)
+      logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
 
       if (!isIgnoringDotenvKeys()) {
-        logger.help('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
+        logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
       }
 
-      logger.help(`⮕  next run [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get ${key}] to test decryption locally`)
+      logger.help(`⮕  next run: [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get ${key}] to test decryption locally`)
     }
   }
 

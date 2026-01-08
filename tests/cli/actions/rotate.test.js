@@ -162,8 +162,9 @@ t.test('rotate - .env with changes and privateKeyAdded but not ignoring .env.key
   t.ok(loggerVerboseStub.calledWith('rotated .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ rotated (.env)'), 'logger.success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
-  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'newPrivateKey\' dotenvx get] to test decryption locally'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  optional: [dotenvx ops backup] to securely backup private key'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'newPrivateKey\' dotenvx get] to test decryption locally'), 'logger help')
 
   ct.end()
 })

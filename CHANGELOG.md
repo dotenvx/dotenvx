@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.4...main)
+
+## [1.51.4](https://github.com/dotenvx/dotenvx/compare/v1.51.3...v1.51.4) (2025-12-29)
+
+### Changed
+
+* Change description of `dotenvx-ops` to better reflect its tooling as operational primitives on top of dotenvx for production use cases. ([#721](https://github.com/dotenvx/dotenvx/pull/723))
+
+## [1.51.3](https://github.com/dotenvx/dotenvx/compare/v1.51.2...v1.51.3) (2025-12-29)
+
+### Added
+
+* Add hint on `.env.keys` for `dotenvx ops backup`. Dotenvx Ops Backup lets you back up your private keys securely with just a single command. It's a convenient alterantive to manually copy/pasting them in and out of 1Password. ([#718](https://github.com/dotenvx/dotenvx/pull/718))
 
 ## [1.51.2](https://github.com/dotenvx/dotenvx/compare/v1.51.1...v1.51.2) (2025-12-12)
 
@@ -41,7 +53,7 @@ All notable changes to this project will be documented in this file. See [standa
 ```
  _______________________________________________________________________
 |                                                                       |
-|  Dotenvx Ops: Commercial Tooling for Dotenvx                          |
+|  dotenvx-ops: production grade dotenvx–with operational primitives    |
 |                                                                       |
 |  ░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓███████▓▒░                              |
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
@@ -50,8 +62,6 @@ All notable changes to this project will be documented in this file. See [standa
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
 | ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
 |  ░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░                               |
-|                                                                       |
-|  Use dotenvx across your team, infrastructure, agents, and more.      |
 |                                                                       |
 |  Learn more at https://dotenvx.com/ops                                |
 |_______________________________________________________________________|

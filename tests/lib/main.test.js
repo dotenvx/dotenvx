@@ -625,7 +625,8 @@ t.test('set calls Sets.run - privateKeyAdded', ct => {
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  optional: [dotenvx ops backup] to securely backup private key'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
 
   stub.restore()
 
@@ -665,8 +666,9 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys', ct => 
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
-  t.ok(loggerHelpStub.calledWith('⮕  next run [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  optional: [dotenvx ops backup] to securely backup private key'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
+  t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
 
   stub.restore()
 
