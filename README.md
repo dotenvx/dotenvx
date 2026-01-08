@@ -2603,8 +2603,10 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 Install it and gain `ops` commands.
 
 ```sh
-curl -sfS https://dotenvx.sh/ops | sh
-dotenvx ops backup
+$ curl -sfS https://dotenvx.sh/ops | sh
+$ dotenvx ops backup
+✔ backed up [username/project]
+⮕ next run [dotenvx-ops open] to view
 ```
 
 ### CLI
