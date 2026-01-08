@@ -2592,7 +2592,11 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 *production grade dotenvx*–with operational primitives.
 
-> As dotenvx spreads inside companies, we're learning—through enterprise engagements—that dotenvx is missing an operations layer. Dotenvx Ops is our answer. It's production grade dotenvx–with operational primitives for teams, infrastructure, and agents. Private key management, access controls, and more.
+> As dotenvx spreads inside companies, we're learning—through enterprise engagements—that dotenvx is missing an operations layer.
+>
+> Dotenvx Ops is our answer.
+>
+> It's production grade dotenvx–with operational primitives for teams, infrastructure, and agents. Private key management, access controls, and more.
 
 ### Quickstart
 
