@@ -2600,7 +2600,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ### Quickstart
 
-Install it to add ops commands.
+Install it and gain `ops` commands.
 
 ```sh
 curl -sfS https://dotenvx.sh/ops | sh
