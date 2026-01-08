@@ -2605,9 +2605,19 @@ dotenvx ops backup
 
 ### CLI
 
-<details><summary>`login`</summary><br>
+<details><summary>`ops backup`</summary><br>
 
-Log in to [Ops](https://dotenvx.com/ops).
+Back up .env.keys.
+
+```sh
+$ dotenvx-ops backup
+✔ backed up [username/project]
+```
+
+</details>
+<details><summary>`ops login`</summary><br>
+
+Log in.
 
 ```sh
 $ dotenvx-ops login
@@ -2617,23 +2627,13 @@ press Enter to open [https://ops.dotenvx.com/login/device] and enter code [D9C1-
 ```
 
 </details>
-<details><summary>`logout`</summary><br>
+<details><summary>`ops logout`</summary><br>
 
-Log out of [Ops](https://dotenvx.com/ops).
+Log out.
 
 ```sh
 $ dotenvx ops logout
 ✔ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
-```
-
-</details>
-<details><summary>`status`</summary><br>
-
-Check current status of [Ops](https://dotenvx.com/ops) - `on` or `off` (logged in or out).
-
-```sh
-$ dotenvx ops status
-on
 ```
 
 </details>
@@ -2648,13 +2648,25 @@ Usage: dotenvx-ops settings [options] [command]
 ⚙️  settings
 
 Options:
-  -h, --help       display help for command
+  -h, --help        display help for command
 
 Commands:
-  username         print your username
-  token [options]  print your access token (--unmask)
-  hostname         print hostname
-  help [command]   display help for command
+  username          print your username
+  token [options]   print your access token (--unmask)
+  device [options]  print your device pubkey (--unmask)
+  hostname          print hostname
+  path              print path to settings file
+  help [command]    display help for command
+```
+
+</details>
+<details><summary>`ops status`</summary><br>
+
+Check current status of [Ops](https://dotenvx.com/ops) - `on` or `off` (logged in or out).
+
+```sh
+$ dotenvx ops status
+on
 ```
 
 </details>
