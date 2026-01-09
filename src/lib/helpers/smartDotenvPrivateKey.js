@@ -7,13 +7,19 @@ const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 const dotenvParse = require('./dotenvParse')
 const guessPrivateKeyName = require('./guessPrivateKeyName')
 
-function searchProcessEnv (privateKeyName) {
+// Strip surrounding quotes from a value (handles Windows env var edge case where quotes become part of value)
+function stripSurroundingQuotes(value) {
+  if (!value) return value
+  return value.replace(/^(["'`])(.*)\1$/, '$2')
+}
+
+function searchProcessEnv(privateKeyName) {
   if (process.env[privateKeyName] && process.env[privateKeyName].length > 0) {
-    return process.env[privateKeyName]
+    return stripSurroundingQuotes(process.env[privateKeyName])
   }
 }
 
-function searchKeysFile (privateKeyName, envFilepath, envKeysFilepath = null) {
+function searchKeysFile(privateKeyName, envFilepath, envKeysFilepath = null) {
   let keysFilepath = path.resolve(path.dirname(envFilepath), '.env.keys') // typical scenario
   if (envKeysFilepath) { // user specified -fk flag
     keysFilepath = path.resolve(envKeysFilepath)
@@ -29,7 +35,7 @@ function searchKeysFile (privateKeyName, envFilepath, envKeysFilepath = null) {
   }
 }
 
-function invertForPrivateKeyName (envFilepath) {
+function invertForPrivateKeyName(envFilepath) {
   if (!fsx.existsSync(envFilepath)) {
     return null
   }
@@ -51,7 +57,7 @@ function invertForPrivateKeyName (envFilepath) {
   return null
 }
 
-function smartDotenvPrivateKey (envFilepath, envKeysFilepath = null) {
+function smartDotenvPrivateKey(envFilepath, envKeysFilepath = null) {
   let privateKey = null
   let privateKeyName = guessPrivateKeyName(envFilepath) // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
 
