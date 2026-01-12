@@ -1,6 +1,7 @@
 const path = require('path')
 const which = require('which')
 const execute = require('./../../lib/helpers/execute')
+const expandVariables = require('./expandVariables')
 const { logger } = require('./../../shared/logger')
 
 async function executeCommand (commandArgs, env) {
@@ -72,6 +73,10 @@ async function executeCommand (commandArgs, env) {
         }
         expandNext = false
       }
+
+      // expand environment variables in command arguments
+      commandArgs[i] = expandVariables(commandArgs[i], env)
+      logger.debug(`expanding variables in process command to [${commandArgs.join(' ')}]`)
     }
 
     child = execute.execa(commandArgs[0], commandArgs.slice(1), {

@@ -64,6 +64,8 @@ HELLO set to World
 [dotenvx@${version}] injecting env (1) from .env
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
 Hello World`) // --debug
 
   ct.end()
@@ -93,6 +95,8 @@ HELLO pre-exists as local (protip: use --overload to override)
 [dotenvx@${version}] injecting env (1) from .env.local, .env
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
 Hello local`) // --debug
 
   ct.end()
@@ -122,6 +126,8 @@ HELLO set to World
 [dotenvx@${version}] injecting env (1) from .env.local, .env
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
 Hello World`) // --debug
 
   ct.end()
@@ -177,6 +183,8 @@ HELLO pre-exists as String (protip: use --overload to override)
 [dotenvx@${version}] injecting env (1) from .env, and --env flag
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
 Hello String`) // --debug
 
   ct.end()
@@ -207,6 +215,8 @@ HELLO set to encrypted
 [dotenvx@${version}] injecting env (2) from .env
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
 Hello encrypted`) // --debug
 
   ct.end()
@@ -249,6 +259,8 @@ HELLO set to ${encrypted}
 [dotenvx@${version}] injecting env (2) from .env
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
+expanding variables in process command to [${node} index.js]
 Hello ${encrypted}`) // --debug
 
   ct.end()
