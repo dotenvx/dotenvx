@@ -2569,7 +2569,7 @@ dotenvx.set('HELLO', 'World', { path: '.env' })
 ```
 
 </details>
-<details><summary>`set(KEY, value, { plain: true })`</summary><br>
+<details><summary>`set(KEY, value, {plain:})`</summary><br>
 
 Programmatically set a plaintext environment variable.
 
