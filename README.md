@@ -2569,6 +2569,17 @@ dotenvx.set('HELLO', 'World', { path: '.env' })
 ```
 
 </details>
+<details><summary>`set(KEY, value, { plain: true })`</summary><br>
+
+Programmatically set a plaintext environment variable.
+
+```js
+// index.js
+const dotenvx = require('@dotenvx/dotenvx')
+dotenvx.set('HELLO', 'World', { plain: true })
+```
+
+</details>
 <details><summary>`get(KEY)` - <i>Decryption at Access</i></summary><br>
 
 Programmatically get an environment variable at access/runtime.
