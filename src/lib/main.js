@@ -188,6 +188,12 @@ const set = function (key, value, options = {}) {
     encrypt = false
   }
 
+  if (options) {
+    setLogLevel(options)
+    setLogName(options)
+    setLogVersion(options)
+  }
+
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
 
