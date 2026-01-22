@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.51.4...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.52.0...main)
+
+## [1.52.0](https://github.com/dotenvx/dotenvx/compare/v1.51.4...v1.52.0) (2026-01-22)
+
+### Added
+
+* Pass log level options to `main.set` ([#731](https://github.com/dotenvx/dotenvx/pull/731))
 
 ## [1.51.4](https://github.com/dotenvx/dotenvx/compare/v1.51.3...v1.51.4) (2025-12-29)
 
