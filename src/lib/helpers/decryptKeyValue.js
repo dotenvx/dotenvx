@@ -31,7 +31,7 @@ function decryptKeyValue (key, value, privateKeyName, privateKey) {
           decryptionError = new Errors({ key, privateKeyName, privateKey }).invalidPrivateKey()
         } else if (e.message === 'Unsupported state or unable to authenticate data') {
           decryptionError = new Errors({ key, privateKeyName, privateKey }).looksWrongPrivateKey()
-        } else if (e.message === 'Point of length 65 was invalid. Expected 33 compressed bytes or 65 uncompressed bytes') {
+        } else if (e.message === 'bad point: got length 65, expected compressed=33 or uncompressed=65') {
           decryptionError = new Errors({ key, privateKeyName, privateKey }).malformedEncryptedData()
         } else {
           decryptionError = new Errors({ key, privateKeyName, privateKey, message: e.message }).decryptionFailed()
