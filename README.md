@@ -1653,6 +1653,39 @@ $ dotenvx encrypt -ek "HO*"
 ```
 
 </details>
+<details><summary>`encrypt` - inline `@dotenvx-skip` directive</summary><br>
+
+Skip encryption for specific variables by adding `# @dotenvx-skip` as an inline comment. This allows you to mark variables directly in your `.env` file without needing CLI flags.
+
+```sh
+$ cat .env
+DATABASE_URL="postgres://localhost:5432/mydb"
+API_KEY="super_secret_key" # @dotenvx-skip
+DEBUG_MODE="true" # @dotenvx-skip
+STRIPE_KEY="sk_test_abcdefghijklmnop"
+
+$ dotenvx encrypt
+✔ encrypted (.env)
+```
+
+Variables with `@dotenvx-skip` remain in plaintext while others are encrypted. This works with URLs containing `#` fragments, empty values, and can be combined with `--exclude-key` CLI option.
+
+```sh
+$ cat .env
+ENCRYPT_ME=secret123
+SKIP_ME=plaintext456 # @dotenvx-skip
+WEBHOOK_URL="https://example.com/webhook#section" # @dotenvx-skip
+
+$ dotenvx encrypt
+✔ encrypted (.env)
+```
+
+**Benefits:**
+- Self-documenting - skip preferences live with the code
+- Team-friendly - committed alongside the `.env` template
+- Works alongside `--exclude-key` for maximum flexibility
+
+</details>
 <details><summary>`encrypt --stdout`</summary><br>
 
 Encrypt the contents of a `.env` file and send to stdout.

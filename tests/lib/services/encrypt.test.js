@@ -614,3 +614,172 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
 
   ct.end()
 })
+
+t.test('#run (finds .env file with @dotenvx-skip inline comment)', ct => {
+  const sandbox = sinon.createSandbox()
+  
+  const envFileContent = `ENCRYPT_ME=secret123
+SKIP_ME=plaintext456 # @dotenvx-skip
+ALSO_ENCRYPT=another_secret
+ALSO_SKIP=keep_plain # @dotenvx-skip comment with more text
+`
+  
+  const readFileXStub = sandbox.stub(fsx, 'readFileX').returns(envFileContent)
+  const existsSyncStub = sandbox.stub(fsx, 'existsSync').returns(false)
+  
+  const envFile = '.env.skiptest'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+  
+  const inst = new Encrypt(envs)
+  const detectEncodingStub = sandbox.stub(inst, '_detectEncoding').returns('utf8')
+  
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = inst.run()
+  
+  const p1 = processedEnvs[0]
+  ct.same(p1.keys, ['ENCRYPT_ME', 'ALSO_ENCRYPT'], 'only non-skipped keys should be encrypted')
+  ct.same(p1.envFilepath, '.env.skiptest')
+  ct.same(changedFilepaths, ['.env.skiptest'])
+  ct.same(unchangedFilepaths, [])
+  
+  const parsed = dotenvParse(p1.envSrc)
+  
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_SKIPTEST', 'ENCRYPT_ME', 'SKIP_ME', 'ALSO_ENCRYPT', 'ALSO_SKIP'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_SKIPTEST, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.match(parsed.ENCRYPT_ME, /^encrypted:/, 'ENCRYPT_ME should be encrypted')
+  ct.same(parsed.SKIP_ME, 'plaintext456', 'SKIP_ME should not be encrypted due to @dotenvx-skip')
+  ct.match(parsed.ALSO_ENCRYPT, /^encrypted:/, 'ALSO_ENCRYPT should be encrypted')
+  ct.same(parsed.ALSO_SKIP, 'keep_plain', 'ALSO_SKIP should not be encrypted due to @dotenvx-skip')
+  
+  sandbox.restore()
+  
+  ct.end()
+})
+
+t.test('#run (finds .env file with @dotenvx-skip combined with --exclude-key)', ct => {
+  const sandbox = sinon.createSandbox()
+  
+  const envFileContent = `ENCRYPT_ME=secret123
+SKIP_ME=plaintext456 # @dotenvx-skip
+EXCLUDE_ME=excluded789
+ALSO_ENCRYPT=another_secret
+`
+  
+  const readFileXStub = sandbox.stub(fsx, 'readFileX').returns(envFileContent)
+  const existsSyncStub = sandbox.stub(fsx, 'existsSync').returns(false)
+  
+  const envFile = '.env.combined'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+  
+  const inst = new Encrypt(envs, [], ['EXCLUDE_ME'])
+  const detectEncodingStub = sandbox.stub(inst, '_detectEncoding').returns('utf8')
+  
+  const {
+    processedEnvs,
+    changedFilepaths
+  } = inst.run()
+  
+  const p1 = processedEnvs[0]
+  ct.same(p1.keys, ['ENCRYPT_ME', 'ALSO_ENCRYPT'], 'only non-skipped and non-excluded keys should be encrypted')
+  
+  const parsed = dotenvParse(p1.envSrc)
+  
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_COMBINED, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.match(parsed.ENCRYPT_ME, /^encrypted:/, 'ENCRYPT_ME should be encrypted')
+  ct.same(parsed.SKIP_ME, 'plaintext456', 'SKIP_ME should not be encrypted due to @dotenvx-skip')
+  ct.same(parsed.EXCLUDE_ME, 'excluded789', 'EXCLUDE_ME should not be encrypted due to --exclude-key')
+  ct.match(parsed.ALSO_ENCRYPT, /^encrypted:/, 'ALSO_ENCRYPT should be encrypted')
+  
+  sandbox.restore()
+  
+  ct.end()
+})
+
+t.test('#run (finds .env file with @dotenvx-skip and URL containing # fragment)', ct => {
+  const sandbox = sinon.createSandbox()
+  
+  const envFileContent = `ENCRYPT_URL="https://example.com/page#section"
+SKIP_URL="https://api.example.com/endpoint#fragment" # @dotenvx-skip
+ENCRYPT_URL_WITH_QUERY="https://example.com?param=value#anchor"
+SKIP_COMPLEX_URL="https://user:pass@example.com:8080/path?query=1#hash" # @dotenvx-skip
+`
+  
+  const readFileXStub = sandbox.stub(fsx, 'readFileX').returns(envFileContent)
+  const existsSyncStub = sandbox.stub(fsx, 'existsSync').returns(false)
+  
+  const envFile = '.env.urls'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+  
+  const inst = new Encrypt(envs)
+  const detectEncodingStub = sandbox.stub(inst, '_detectEncoding').returns('utf8')
+  
+  const {
+    processedEnvs,
+    changedFilepaths
+  } = inst.run()
+  
+  const p1 = processedEnvs[0]
+  ct.same(p1.keys, ['ENCRYPT_URL', 'ENCRYPT_URL_WITH_QUERY'], 'only non-skipped URL keys should be encrypted')
+  
+  const parsed = dotenvParse(p1.envSrc)
+  
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_URLS, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.match(parsed.ENCRYPT_URL, /^encrypted:/, 'ENCRYPT_URL should be encrypted')
+  ct.same(parsed.SKIP_URL, 'https://api.example.com/endpoint#fragment', 'SKIP_URL should not be encrypted and preserve # in URL')
+  ct.match(parsed.ENCRYPT_URL_WITH_QUERY, /^encrypted:/, 'ENCRYPT_URL_WITH_QUERY should be encrypted')
+  ct.same(parsed.SKIP_COMPLEX_URL, 'https://user:pass@example.com:8080/path?query=1#hash', 'SKIP_COMPLEX_URL should not be encrypted and preserve # in URL')
+  
+  sandbox.restore()
+  
+  ct.end()
+})
+
+t.test('#run (finds .env file with @dotenvx-skip and empty string values)', ct => {
+  const sandbox = sinon.createSandbox()
+  
+  const envFileContent = `ENCRYPT_EMPTY=""
+SKIP_EMPTY="" # @dotenvx-skip
+ENCRYPT_VALUE="something"
+SKIP_EMPTY_UNQUOTED= # @dotenvx-skip
+`
+  
+  const readFileXStub = sandbox.stub(fsx, 'readFileX').returns(envFileContent)
+  const existsSyncStub = sandbox.stub(fsx, 'existsSync').returns(false)
+  
+  const envFile = '.env.empty'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+  
+  const inst = new Encrypt(envs)
+  const detectEncodingStub = sandbox.stub(inst, '_detectEncoding').returns('utf8')
+  
+  const {
+    processedEnvs,
+    changedFilepaths
+  } = inst.run()
+  
+  const p1 = processedEnvs[0]
+  ct.same(p1.keys, ['ENCRYPT_EMPTY', 'ENCRYPT_VALUE'], 'only non-skipped keys should be encrypted, including empty values')
+  
+  const parsed = dotenvParse(p1.envSrc)
+  
+  ct.ok(parsed.DOTENV_PUBLIC_KEY_EMPTY, 'DOTENV_PUBLIC_KEY should not be empty')
+  ct.match(parsed.ENCRYPT_EMPTY, /^encrypted:/, 'ENCRYPT_EMPTY should be encrypted even though empty')
+  ct.same(parsed.SKIP_EMPTY, '', 'SKIP_EMPTY should remain empty and not be encrypted')
+  ct.match(parsed.ENCRYPT_VALUE, /^encrypted:/, 'ENCRYPT_VALUE should be encrypted')
+  ct.same(parsed.SKIP_EMPTY_UNQUOTED, '', 'SKIP_EMPTY_UNQUOTED should remain empty and not be encrypted')
+  
+  sandbox.restore()
+  
+  ct.end()
+})

@@ -1,8 +1,9 @@
 // historical dotenv.parse - https://github.com/motdotla/dotenv)
-const LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
+const LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(#.*)?(?:$|$)/mg
 
-function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWindowsNewlines = false, collectAllValues = false) {
+function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWindowsNewlines = false, collectAllValues = false, returnMetadata = false) {
   const obj = {}
+  const metadata = {}
 
   // Convert buffer to string
   let lines = src.toString()
@@ -18,6 +19,9 @@ function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWind
 
     // Default undefined or null to empty string
     let value = (match[2] || '')
+
+    // Check for inline comment
+    const comment = match[3] || ''
 
     // Remove whitespace
     value = value.trim()
@@ -35,6 +39,12 @@ function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWind
       value = value.replace(/\\t/g, '\t') // tabs
     }
 
+    // Check for @dotenvx-skip directive in comment
+    if (returnMetadata && comment.includes('@dotenvx-skip')) {
+      metadata[key] = metadata[key] || {}
+      metadata[key].skip = true
+    }
+
     if (collectAllValues) {
       // handle scenario where user mistakenly includes plaintext duplicate in .env:
       //
@@ -47,6 +57,10 @@ function dotenvParse (src, skipExpandForDoubleQuotes = false, skipConvertingWind
       // Add to object
       obj[key] = value
     }
+  }
+
+  if (returnMetadata) {
+    return { parsed: obj, metadata }
   }
 
   return obj
