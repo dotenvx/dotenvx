@@ -1,6 +1,22 @@
 const packageJson = require('../lib/helpers/packageJson')
 const { getColor, bold } = require('./colors')
 
+/**
+ * Valid log level names as a string enum
+ * @typedef {"error" | "warn" |  "success" |  "successv" |  "info" |  "help" |  "verbose" |  "debug" |  "silly"} LogLevelName
+ */
+
+/**
+ * Valid log level numeric values
+ * @typedef {0 | 1 | 2 | 4 | 5 | 6} LogLevelNumeric
+ */
+
+/**
+ * Map of log level names to numeric values
+ * @typedef {{[S in LogLevelName]: LogLevelNumeric}} LogLevelMap
+ */
+
+/** @type {LogLevelMap} */
 const levels = {
   error: 0,
   warn: 1,
@@ -13,31 +29,53 @@ const levels = {
   silly: 6
 }
 
+/**
+ * Generic form of a logging function
+ * @typedef {function(string, ...any): void} LogFunction
+ */
+
+/**
+ * A type of object that provides log functions for each log level
+ * @typedef {{[S in LogLevelName]: LogFunction}} LoggerObject
+ */
+
+/**
+ * Generic form of a string formatting function
+ * @typedef {function(string, ...any): void} StringFormatFunction
+ */
+
+/** @type {StringFormatFunction} */
 const error = (m) => bold(getColor('red')(m))
+/** @type {StringFormatFunction} */
 const warn = getColor('orangered')
+/** @type {StringFormatFunction} */
 const success = getColor('green')
+/** @type {StringFormatFunction} */
 const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
+/** @type {StringFormatFunction} */
 const help = getColor('dodgerblue')
+/** @type {StringFormatFunction} */
 const verbose = getColor('plum')
+/** @type {StringFormatFunction} */
 const debug = getColor('plum')
 
 let currentLevel = levels.info // default log level
 let currentName = 'dotenvx' // default logger name
 let currentVersion = packageJson.version // default logger version
 
-function stderr (level, message) {
+function stderr (level, message, ...otherArgs) {
   const formattedMessage = formatMessage(level, message)
-  console.error(formattedMessage)
+  console.error(formattedMessage, ...otherArgs)
 }
 
-function stdout (level, message) {
+function stdout (level, message, ...otherArgs) {
   if (levels[level] === undefined) {
     throw new Error(`MISSING_LOG_LEVEL: '${level}'. implement in logger.`)
   }
 
   if (levels[level] <= currentLevel) {
     const formattedMessage = formatMessage(level, message)
-    console.log(formattedMessage)
+    console.log(formattedMessage, ...otherArgs)
   }
 }
 
@@ -71,25 +109,43 @@ function formatMessage (level, message) {
   }
 }
 
+/**
+ * A logger object type
+ * @typedef {Object} LoggerFunctions
+ * @property {LogLevelName} level - current log level
+ * @property {function(LogLevelName): void} setLevel - set logger level
+ * @property {function(string): void} setName - set logger name
+ * @property {function(string): void} setVersion - set logger version
+ */
+
+/**
+ * A logger object
+ * @typedef {LoggerFunctions & LoggerObject} Logger
+ */
+
+/**
+ * @type {Logger}
+ */
 const logger = {
   // track level
   level: 'info',
 
   // errors
-  error: (msg) => stderr('error', msg),
+  error: (msg, ...otherArgs) => stderr('error', msg, ...otherArgs),
   // warns
-  warn: (msg) => stdout('warn', msg),
+  warn: (msg, ...otherArgs) => stdout('warn', msg, ...otherArgs),
   // success
-  success: (msg) => stdout('success', msg),
-  successv: (msg) => stdout('successv', msg),
+  success: (msg, ...otherArgs) => stdout('success', msg, ...otherArgs),
+  successv: (msg, ...otherArgs) => stdout('successv', msg, ...otherArgs),
   // info
-  info: (msg) => stdout('info', msg),
+  info: (msg, ...otherArgs) => stdout('info', msg, ...otherArgs),
   // help
-  help: (msg) => stdout('help', msg),
+  help: (msg, ...otherArgs) => stdout('help', msg, ...otherArgs),
   // verbose
-  verbose: (msg) => stdout('verbose', msg),
+  verbose: (msg, ...otherArgs) => stdout('verbose', msg, ...otherArgs),
   // debug
-  debug: (msg) => stdout('debug', msg),
+  debug: (msg, ...otherArgs) => stdout('debug', msg, ...otherArgs),
+  silly: (msg, ...otherArgs) => stdout('silly', msg, ...otherArgs),
   setLevel: (level) => {
     if (levels[level] !== undefined) {
       currentLevel = levels[level]
@@ -106,6 +162,20 @@ const logger = {
   }
 }
 
+/**
+ * An options object specifying a log level
+ * @typedef {Object} LogLevelOptionsParameter
+ * @property {boolean} [debug]
+ * @property {boolean} [verbose]
+ * @property {boolean} [quiet]
+ * @property {LogLevelName} [logLevel]
+ */
+
+/**
+ * Sets the log level from an options object
+ * @param {LogLevelOptionsParameter} options
+ * @returns {void}
+ */
 function setLogLevel (options) {
   const logLevel = options.debug
     ? 'debug'
@@ -123,12 +193,24 @@ function setLogLevel (options) {
   }
 }
 
+/**
+ * Sets the logger name from an options object
+ * @param {Object} options
+ * @property {string} [logName] - the name to set
+ * @returns {void}
+ */
 function setLogName (options) {
   const logName = options.logName
   if (!logName) return
   logger.setName(logName)
 }
 
+/**
+ * Sets the logger version from an options object
+ * @param {Object} options
+ * @property {any} [logVersion] - the version to set
+ * @returns {void}
+ */
 function setLogVersion (options) {
   const logVersion = options.logVersion
   if (!logVersion) return

@@ -44,6 +44,24 @@ class Errors {
     return e
   }
 
+  missingPrivateKeyForLock () {
+    const code = 'MISSING_PRIVATE_KEY_FOR_LOCK'
+    const message = `[${code}] could not find private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
+
+    const e = new Error(message)
+    e.code = code
+    return e
+  }
+
+  missingPrivateKeyForUnlock () {
+    const code = 'MISSING_PRIVATE_KEY_FOR_UNLOCK'
+    const message = `[${code}] could not find private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
+
+    const e = new Error(message)
+    e.code = code
+    return e
+  }
+
   invalidPrivateKey () {
     const code = 'INVALID_PRIVATE_KEY'
     const message = `[${code}] could not decrypt ${this.key} using private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
@@ -52,6 +70,24 @@ class Errors {
     const e = new Error(message)
     e.code = code
     e.help = help
+    return e
+  }
+
+  invalidArguments () {
+    const code = 'INVALID_ARGUMENTS'
+    const message = `[${code}] invalid arguments provided for action ${this.command}`
+
+    const e = new Error(message)
+    e.code = code
+    return e
+  }
+
+  invalidPassPhrase () {
+    const code = 'INVALID_PASS_PHRASE'
+    const message = `[${code}] could not decrypt private key '${this.privateKeyName}=${truncate(this.privateKey)}' using the provided passphrase and salt`
+
+    const e = new Error(message)
+    e.code = code
     return e
   }
 
