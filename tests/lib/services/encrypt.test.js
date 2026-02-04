@@ -614,3 +614,36 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
 
   ct.end()
 })
+
+t.test('#run (finds .env file with public: prefix values)', ct => {
+  const envFile = 'tests/monorepo/apps/public/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt(envs).run()
+
+  const p1 = processedEnvs[0]
+  // Only SECRET_KEY and API_TOKEN should be encrypted (not public: prefixed values)
+  ct.same(p1.keys, ['SECRET_KEY', 'API_TOKEN'])
+  ct.same(p1.envFilepath, 'tests/monorepo/apps/public/.env')
+  ct.same(changedFilepaths, ['tests/monorepo/apps/public/.env'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenvParse(p1.envSrc)
+
+  ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'PUBLIC_URL', 'APP_NAME', 'SECRET_KEY', 'API_TOKEN'])
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
+  // public: prefixed values should NOT be encrypted
+  ct.match(parsed.PUBLIC_URL, 'public:https://example.com', 'PUBLIC_URL should not be encrypted')
+  ct.match(parsed.APP_NAME, 'public:MyApp', 'APP_NAME should not be encrypted')
+  // non-public values should be encrypted
+  ct.match(parsed.SECRET_KEY, /^encrypted:/, 'SECRET_KEY should start with "encrypted:"')
+  ct.match(parsed.API_TOKEN, /^encrypted:/, 'API_TOKEN should start with "encrypted:"')
+
+  ct.end()
+})

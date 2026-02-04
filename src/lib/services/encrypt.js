@@ -18,6 +18,7 @@ const findPublicKey = require('./../helpers/findPublicKey')
 const keypair = require('./../helpers/keypair')
 const truncate = require('./../helpers/truncate')
 const isPublicKey = require('./../helpers/isPublicKey')
+const isPublic = require('./../helpers/isPublic')
 
 class Encrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
@@ -169,7 +170,7 @@ class Encrypt {
           continue
         }
 
-        const encrypted = isEncrypted(value) || isPublicKey(key, value)
+        const encrypted = isEncrypted(value) || isPublicKey(key, value) || isPublic(value)
         if (!encrypted) {
           row.keys.push(key) // track key(s)
 
