@@ -1653,6 +1653,40 @@ $ dotenvx encrypt -ek "HO*"
 ```
 
 </details>
+<details><summary>`encrypt` with `public:` prefix</summary><br>
+
+Mark values as public (not to be encrypted) directly in your `.env` file using the `public:` prefix. This is useful when you want to keep some values unencrypted (like public URLs or app names) while encrypting secrets.
+
+```sh
+$ echo 'APP_NAME="public:MyApp"' > .env
+$ echo 'PUBLIC_URL="public:https://example.com"' >> .env
+$ echo 'SECRET_KEY=supersecret' >> .env
+
+$ dotenvx encrypt
+✔ encrypted (.env)
+```
+
+```ini
+# .env (after encryption)
+DOTENV_PUBLIC_KEY="..."
+APP_NAME="public:MyApp"              # not encrypted
+PUBLIC_URL="public:https://example.com"  # not encrypted
+SECRET_KEY="encrypted:..."           # encrypted
+```
+
+At runtime, the `public:` prefix is automatically stripped:
+
+```sh
+$ dotenvx run -- node -e "console.log(process.env.APP_NAME)"
+MyApp
+```
+
+This approach:
+- Keeps encryption intent visible in the `.env` file itself
+- Works alongside `-k`/`-ek` CLI options
+- No need to remember which keys to exclude when running `encrypt`
+
+</details>
 <details><summary>`encrypt --stdout`</summary><br>
 
 Encrypt the contents of a `.env` file and send to stdout.
