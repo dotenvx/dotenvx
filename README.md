@@ -2597,6 +2597,12 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
+## AS2 🔐
+
+[![dotenvx as2](https://dotenvx.com/assets/img/as2/9.jpg)](https://dotenvx.com/as2)
+
+> coming soon
+
 ## Ops 🏰
 
 [![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=2)](https://dotenvx.com/ops)
