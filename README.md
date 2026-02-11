@@ -2601,6 +2601,8 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 <a href="https://dotenvx.com/as2"><img src="https://dotenvx.com/assets/img/as2/9.jpg" alt="dotenvx as2" height="400"></a>
 
+*agentic secret storage*.
+
 > Secrets designed for agents. No logins. No consoles. Pure cryptography.
 
 ### Quickstart
@@ -2623,6 +2625,8 @@ Your agent can `get` secrets.
 ```
 vestauth agent curl https://as2.dotenvx.com/get?key=KEY
 ```
+
+&nbsp;
 
 ## Ops 🏰
 
