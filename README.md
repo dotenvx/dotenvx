@@ -2607,7 +2607,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ### Quickstart
 
-Install [`vestauth`](https://github.com/vestauth/vestauth) and initialize your agent. (AS2 uses [vestauth](https://vestauth.com) to cryptographically authenticate your agent.)
+Install [`vestauth`](https://github.com/vestauth/vestauth) and initialize your agent. (AS2 uses [vestauth](https://vestauth.com) to authenticate agents.)
 
 ```sh
 npm i -g vestauth
