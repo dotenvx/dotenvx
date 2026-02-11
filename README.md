@@ -2599,7 +2599,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ## AS2 🔐
 
-[![dotenvx as2](https://dotenvx.com/assets/img/as2/9.jpg)](https://dotenvx.com/as2)
+<a href="https://dotenvx.com/as2"><img src="https://dotenvx.com/assets/img/as2/9.jpg" alt="dotenvx as2" height="400"></a>
 
 > coming soon
 
