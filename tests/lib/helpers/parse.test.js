@@ -899,3 +899,49 @@ t.test('#run - self referencing dotenv-expand example', ct => {
 
   ct.end()
 })
+
+t.test('#run - strips public: prefix from values', ct => {
+  src = `# .env
+PUBLIC_URL="public:https://example.com"
+APP_NAME='public:MyApp'
+SECRET=mysecret
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    PUBLIC_URL: 'https://example.com',
+    APP_NAME: 'MyApp', // public: prefix is stripped after quotes are removed
+    SECRET: 'mysecret'
+  })
+
+  ct.end()
+})
+
+t.test('#run - strips public: prefix from unquoted values', ct => {
+  src = `# .env
+PUBLIC_URL=public:https://example.com
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    PUBLIC_URL: 'https://example.com'
+  })
+
+  ct.end()
+})
+
+t.test('#run - does not strip public: from middle of value', ct => {
+  src = `# .env
+SOME_VALUE="value with public: in the middle"
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    SOME_VALUE: 'value with public: in the middle'
+  })
+
+  ct.end()
+})
