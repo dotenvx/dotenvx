@@ -2599,7 +2599,9 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ## AS2 🔐
 
-<a href="https://dotenvx.com/as2"><img src="https://dotenvx.com/assets/img/as2/9.jpg" alt="dotenvx as2" height="400"></a>
+<a href="https://dotenvx.com/as2">
+  <img src="https://dotenvx.com/assets/img/as2/9.jpg" alt="dotenvx as2" height="400" align="right">
+</a>
 
 *agentic secret storage*.
 
