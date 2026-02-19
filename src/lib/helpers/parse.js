@@ -44,6 +44,9 @@ class Parse {
         this.errors.push(e)
       }
 
+      // strip public: prefix
+      this.parsed[key] = this.stripPublic(this.parsed[key])
+
       // eval empty, double, or backticks
       let evaled = false
       if (quote !== "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
@@ -135,6 +138,13 @@ class Parse {
 
   decrypt (key, value) {
     return decryptKeyValue(key, value, this.privateKeyName, this.privateKey)
+  }
+
+  stripPublic (value) {
+    if (value && value.startsWith('public:')) {
+      return value.slice(7) // remove 'public:' prefix (7 characters)
+    }
+    return value
   }
 
   eval (key, value) {
