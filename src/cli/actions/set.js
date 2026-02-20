@@ -1,3 +1,5 @@
+const readline = require('readline')
+
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
@@ -6,9 +8,34 @@ const Sets = require('./../../lib/services/sets')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
-function set (key, value) {
+function promptForValue (key) {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stderr
+    })
+
+    const prompt = `Enter value for ${key}: `
+    // mask value with '*'
+    rl._writeToOutput = function () {
+      process.stderr.write(`\r\x1b[K${prompt}${'*'.repeat(rl.line.length)}`)
+    }
+
+    rl.question(prompt, (answer) => {
+      process.stderr.write('\n')
+      rl.close()
+      resolve(answer)
+    })
+  })
+}
+
+async function set (key, value) {
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
+
+  if (value === undefined) {
+    value = await promptForValue(key)
+  }
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
