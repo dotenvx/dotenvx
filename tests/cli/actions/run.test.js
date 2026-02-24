@@ -11,6 +11,12 @@ const { logger } = require('../../../src/shared/logger')
 const run = proxyquire('../../../src/cli/actions/run', {
   '../../../src/lib/helpers/executeCommand': async () => true
 })
+const runWithConventionStub = function (conventionsStub) {
+  return proxyquire('../../../src/cli/actions/run', {
+    '../../../src/lib/helpers/executeCommand': async () => true,
+    '../../../src/lib/helpers/conventions': conventionsStub
+  })
+}
 
 t.beforeEach((ct) => {
   sinon.restore()
@@ -76,6 +82,54 @@ t.test('run --convention', async ct => {
 
   t.ok(stub.called, 'new Run().run() called')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
+
+  ct.end()
+})
+
+t.test('run - DOTENV_CONVENTION', async ct => {
+  const conventionsStub = sinon.stub().returns([])
+  const runAction = runWithConventionStub(conventionsStub)
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  process.env.DOTENV_CONVENTION = 'flow'
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+
+  await runAction.call(fakeContext)
+
+  t.ok(conventionsStub.calledWith('flow'), 'uses DOTENV_CONVENTION')
+  t.ok(stub.called, 'new Run().run() called')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
+
+  ct.end()
+})
+
+t.test('run --convention takes precedence over DOTENV_CONVENTION', async ct => {
+  const conventionsStub = sinon.stub().returns([])
+  const runAction = runWithConventionStub(conventionsStub)
+  const optsStub = sinon.stub().returns({ convention: 'nextjs' })
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  process.env.DOTENV_CONVENTION = 'flow'
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+
+  await runAction.call(fakeContext)
+
+  t.ok(conventionsStub.calledWith('nextjs'), 'uses --convention when both are set')
+  t.ok(stub.called, 'new Run().run() called')
 
   ct.end()
 })
@@ -449,6 +503,38 @@ t.test('run - MISSING_ENV_FILE', async ct => {
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
   t.ok(loggerErrorStub.calledWith('[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- echo ]'), 'logger.help')
   t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
+
+  ct.end()
+})
+
+t.test('run - MISSING_ENV_FILE with DOTENV_CONVENTION is silent', async ct => {
+  const error = new Error('Mock Error')
+  error.code = 'MISSING_ENV_FILE'
+  error.help = '[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env]'
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  process.env.DOTENV_CONVENTION = 'nextjs'
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [{
+      errors: [error],
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {},
+      injected: {},
+      preExisted: {}
+    }],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+  const loggerErrorStub = sinon.stub(logger, 'error')
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.notOk(loggerErrorStub.called, 'logger.error')
 
   ct.end()
 })
