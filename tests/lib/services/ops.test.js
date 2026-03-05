@@ -14,6 +14,8 @@ t.beforeEach((ct) => {
 })
 
 t.test('when no dotenvx-ops', ct => {
+  sinon.stub(Ops.prototype, '_opsNpm').throws(new Error('npm lib unavailable'))
+  sinon.stub(Ops.prototype, '_opsCli').throws(new Error('cli unavailable'))
   const ops = new Ops()
   ct.equal(ops.opsLib, null)
   ct.doesNotThrow(() => {
