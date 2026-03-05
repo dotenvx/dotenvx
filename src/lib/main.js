@@ -12,7 +12,6 @@ const Sets = require('./services/sets')
 const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
-const Radar = require('./services/radar')
 const Ops = require('./services/ops')
 
 // helpers
@@ -67,7 +66,6 @@ const config = function (options = {}) {
     } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile, opsOn).run()
 
     if (opsOn) {
-      try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
       try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
     }
 
@@ -340,7 +338,7 @@ module.exports = {
   ls,
   keypair,
   genexample,
-  // expose for libs depending on @dotenvx/dotenvx - like dotenvx-radar
+  // expose for libs depending on @dotenvx/dotenvx - like dotenvx-ops
   setLogLevel,
   logger,
   getColor,
