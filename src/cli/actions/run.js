@@ -3,7 +3,6 @@ const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
-const Radar = require('./../../lib/services/radar')
 const Ops = require('./../../lib/services/ops')
 
 const conventions = require('./../../lib/helpers/conventions')
@@ -55,7 +54,6 @@ async function run () {
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile, opsOn).run()
 
     if (opsOn) {
-      try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
       try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
     }
 
