@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.54.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.54.1...main)
+
+## [1.54.1](https://github.com/dotenvx/dotenvx/compare/v1.54.0...v1.54.1) (2026-03-06)
+
+### Changed
+
+* Fix npm publish
 
 ## [1.54.0](https://github.com/dotenvx/dotenvx/compare/v1.53.0...v1.54.0) (2026-03-06)
 
