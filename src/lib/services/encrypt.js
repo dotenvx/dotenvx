@@ -69,7 +69,7 @@ class Encrypt {
     try {
       const encoding = this._detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
-      const envParsed = dotenvParse(envSrc)
+      const { parsed: envParsed, metadata: envMetadata } = dotenvParse(envSrc, false, false, false, true)
 
       let publicKey
       let privateKey
@@ -159,6 +159,11 @@ class Encrypt {
 
       // iterate over all non-encrypted values and encrypt them
       for (const [key, value] of Object.entries(envParsed)) {
+        // key excluded by inline @dotenvx-skip directive
+        if (envMetadata[key] && envMetadata[key].skip) {
+          continue
+        }
+
         // key excluded - don't encrypt it
         if (this.exclude(key)) {
           continue
