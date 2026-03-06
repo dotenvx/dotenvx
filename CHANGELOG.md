@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.53.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.54.0...main)
+
+## [1.54.0](https://github.com/dotenvx/dotenvx/compare/v1.53.0...v1.54.0) (2026-03-06)
+
+### Removed
+
+* Remove `ops observe` (radar feature). If needed download [dotenvx-ops](https://dotenvx.com/ops) and reach out to me directly at mot@dotenvx.com. ([#745](https://github.com/dotenvx/dotenvx/pull/745))
 
 ## [1.53.0](https://github.com/dotenvx/dotenvx/compare/v1.52.0...v1.53.0) (2026-03-05)
 
