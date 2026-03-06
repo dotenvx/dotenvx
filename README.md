@@ -2654,7 +2654,7 @@ $ dotenvx ops logout
 ```
 
 </details>
-<details><summary>`settings`</summary><br>
+<details><summary>`ops settings`</summary><br>
 
 Check and configure various settings for [Ops](https://dotenvx.com/ops) - `username`, `token`, and more.
 
