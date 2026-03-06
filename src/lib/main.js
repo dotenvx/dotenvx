@@ -12,7 +12,6 @@ const Sets = require('./services/sets')
 const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
-const Ops = require('./services/ops')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
@@ -58,8 +57,6 @@ const config = function (options = {}) {
   try {
     const envs = buildEnvs(options, DOTENV_KEY)
     const {
-      beforeEnv,
-      afterEnv,
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys

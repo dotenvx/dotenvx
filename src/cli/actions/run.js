@@ -3,7 +3,6 @@ const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
-const Ops = require('./../../lib/services/ops')
 
 const conventions = require('./../../lib/helpers/conventions')
 const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
@@ -45,8 +44,6 @@ async function run () {
     new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
 
     const {
-      beforeEnv,
-      afterEnv,
       processedEnvs,
       readableStrings,
       readableFilepaths,
