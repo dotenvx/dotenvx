@@ -3,7 +3,6 @@ const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
-const Ops = require('./../../lib/services/ops')
 
 const conventions = require('./../../lib/helpers/conventions')
 const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
@@ -45,8 +44,6 @@ async function run () {
     new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
 
     const {
-      beforeEnv,
-      afterEnv,
       processedEnvs,
       readableStrings,
       readableFilepaths,
@@ -54,7 +51,8 @@ async function run () {
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile, opsOn).run()
 
     if (opsOn) {
-      try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+      // removed radar feature for now. contact me at mot@dotenvx.com if still needed for your organization.
+      // try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
     }
 
     for (const processedEnv of processedEnvs) {

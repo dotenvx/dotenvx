@@ -12,7 +12,6 @@ const Sets = require('./services/sets')
 const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
-const Ops = require('./services/ops')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
@@ -58,15 +57,14 @@ const config = function (options = {}) {
   try {
     const envs = buildEnvs(options, DOTENV_KEY)
     const {
-      beforeEnv,
-      afterEnv,
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
     } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile, opsOn).run()
 
     if (opsOn) {
-      try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+      // removed radar feature for now. contact me at mot@dotenvx.com if still needed for your organization.
+      // try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
     }
 
     let lastError
