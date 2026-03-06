@@ -66,7 +66,8 @@ const config = function (options = {}) {
     } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile, opsOn).run()
 
     if (opsOn) {
-      try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+      // removed radar feature for now. contact me at mot@dotenvx.com if still needed for your organization.
+      // try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
     }
 
     let lastError

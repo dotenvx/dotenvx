@@ -54,7 +54,8 @@ async function run () {
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile, opsOn).run()
 
     if (opsOn) {
-      try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
+      // removed radar feature for now. contact me at mot@dotenvx.com if still needed for your organization.
+      // try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
     }
 
     for (const processedEnv of processedEnvs) {
