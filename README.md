@@ -2597,39 +2597,6 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
-## AS2 🔐
-
-<a href="https://dotenvx.com/as2">
-  <img src="https://dotenvx.com/assets/img/as2/9.jpg" alt="dotenvx as2" height="400" align="right">
-</a>
-
-*agentic secret storage*.
-
-> Secrets designed for agents. No logins. No consoles. Pure cryptography.
-
-### Quickstart
-
-Install [`vestauth`](https://github.com/vestauth/vestauth) and initialize your agent. (AS2 uses [vestauth](https://vestauth.com) to authenticate agents.)
-
-```sh
-npm i -g vestauth
-vestauth agent init
-```
-
-Your agent can `set` secrets.
-
-```
-vestauth agent curl -X POST https://as2.dotenvx.com/set '{"KEY": "value"}'
-```
-
-Your agent can `get` secrets.
-
-```
-vestauth agent curl https://as2.dotenvx.com/get?key=KEY
-```
-
-&nbsp;
-
 ## Ops 🏰
 
 [![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=2)](https://dotenvx.com/ops)
