@@ -127,6 +127,8 @@ program.command('encrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
+  .option('--ops-off', 'disable dotenvx-ops features', true)
+  .option('--no-ops-off', 'enable dotenvx-ops features')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs

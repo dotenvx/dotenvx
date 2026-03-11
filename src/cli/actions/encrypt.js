@@ -11,12 +11,13 @@ function encrypt () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
+  const opsOn = options.opsOff !== true
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
+    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -28,7 +29,7 @@ function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
+      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -61,6 +62,9 @@ function encrypt () {
 
       for (const processedEnv of processedEnvs) {
         if (processedEnv.privateKeyAdded) {
+          // Ops hook point (first-time key created for this env file):
+          // gate with `options.opsOff !== true` and an Ops-installed check before calling your
+          // Ops service (for example: backup/register processedEnv.privateKey).
           logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
           logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
 
