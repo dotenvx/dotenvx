@@ -65,7 +65,7 @@ function rotate () {
       for (const processedEnv of processedEnvs) {
         if (processedEnv.privateKeyAdded) {
           logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
-          logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
+          // logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
 
           if (!isIgnoringDotenvKeys()) {
             logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')

@@ -4,7 +4,7 @@ const guessPublicKeyName = require('./guessPublicKeyName')
 // services
 const Keypair = require('./../services/keypair')
 
-function findPublicKey (envFilepath, opsOn = true) {
+function findPublicKey (envFilepath) {
   const publicKeyName = guessPublicKeyName(envFilepath)
 
   const keypairs = new Keypair(envFilepath).run()

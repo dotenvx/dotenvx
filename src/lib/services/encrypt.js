@@ -20,7 +20,7 @@ const truncate = require('./../helpers/truncate')
 const isPublicKey = require('./../helpers/isPublicKey')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = true) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
@@ -78,7 +78,7 @@ class Encrypt {
       const publicKeyName = guessPublicKeyName(envFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
       const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn)
-      const existingPublicKey = findPublicKey(envFilepath, this.opsOn)
+      const existingPublicKey = findPublicKey(envFilepath)
 
       let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
       if (this.envKeysFilepath) {
@@ -87,6 +87,7 @@ class Encrypt {
       const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
 
       if (existingPrivateKey) {
+        // throw new Error('implement for remote Ops existingPrivateKey')
         const kp = keypair(existingPrivateKey)
         publicKey = kp.publicKey
         privateKey = kp.privateKey
@@ -110,6 +111,7 @@ class Encrypt {
           envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
         }
       } else if (existingPublicKey) {
+        // throw new Error('implement for remote Ops existingPrivateKey')
         publicKey = existingPublicKey
       } else {
         // .env.keys
@@ -123,6 +125,7 @@ class Encrypt {
         const firstLinePreserved = ps.firstLinePreserved
         envSrc = ps.envSrc
 
+        // TODO: instead get this from API
         const kp = keypair() // generates a fresh keypair in memory
         publicKey = kp.publicKey
         privateKey = kp.privateKey
@@ -196,6 +199,10 @@ class Encrypt {
         this.unchangedFilepaths.add(envFilepath)
       }
     } catch (e) {
+      if (e.code === 'OPS_OFF') {
+        throw e
+      }
+
       if (e.code === 'ENOENT') {
         row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
       } else {

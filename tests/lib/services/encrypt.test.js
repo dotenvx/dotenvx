@@ -123,6 +123,23 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
+t.test('#run (finds .env file) with ops off and no existing keys throws', ct => {
+  const envFile = 'tests/monorepo/apps/frontend/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  ct.throws(() => {
+    new Encrypt(envs, [], [], null, false).run()
+  }, {
+    message: '[OPS_OFF] refusing to generate a new .env.keys while ops is off',
+    code: 'OPS_OFF',
+    help: '[OPS_OFF] re-run with [dotenvx encrypt --ops-off false]'
+  })
+
+  ct.end()
+})
+
 t.test('#run (finds .env file with multiline values - implicit and explicit newline)', ct => {
   const envFile = 'tests/monorepo/apps/multiline/.env'
   const envs = [

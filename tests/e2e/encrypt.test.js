@@ -42,7 +42,7 @@ t.test('#encrypt', ct => {
     echo "HELLO=World" > .env
   `)
 
-  const output = execShell(`${dotenvx} encrypt`)
+  const output = execShell(`${dotenvx} encrypt --ops-off false`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
@@ -63,7 +63,7 @@ t.test('#encrypt -k', ct => {
     echo "HELLO=World\nHI=thar" > .env
   `)
 
-  const output = execShell(`${dotenvx} encrypt -k HI`)
+  const output = execShell(`${dotenvx} encrypt --ops-off false -k HI`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
@@ -90,7 +90,7 @@ t.test('#run - encrypt -k --stdout', ct => {
     echo "HELLO=World\nHI=thar" > .env
   `)
 
-  const output = execShell(`${dotenvx} encrypt -k HI --stdout`)
+  const output = execShell(`${dotenvx} encrypt --ops-off false -k HI --stdout`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
