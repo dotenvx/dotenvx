@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.54.1...main)
 
+### Removed
+
+* Remove `ProKeypair` logic
+
 ## [1.54.1](https://github.com/dotenvx/dotenvx/compare/v1.54.0...v1.54.1) (2026-03-06)
 
 ### Changed
