@@ -401,16 +401,11 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
 
 t.test('#run (finds .env file only) with --encrypt', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
-  const ProKeypair = require('../../../src/lib/helpers/proKeypair')
 
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
     return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
   })
-  sandbox.stub(ProKeypair.prototype, 'run').callsFake(function () {
-    return {}
-  })
-
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -460,15 +455,10 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
 
 t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
-  const ProKeypair = require('../../../src/lib/helpers/proKeypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
     return {}
   })
-  sandbox.stub(ProKeypair.prototype, 'run').callsFake(function () {
-    return {}
-  })
-
   const readFileXStub = sinon.stub(fsx, 'readFileX').returns('')
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
@@ -523,15 +513,10 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
 
 t.test('#run (finds .env and .env.keys file but they are not quite blank) with --encrypt', ct => {
   const Keypair = require('../../../src/lib/services/keypair')
-  const ProKeypair = require('../../../src/lib/helpers/proKeypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
     return {}
   })
-  sandbox.stub(ProKeypair.prototype, 'run').callsFake(function () {
-    return {}
-  })
-
   const readFileXStub = sinon.stub(fsx, 'readFileX').returns('## hi')
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
