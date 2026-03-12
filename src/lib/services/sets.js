@@ -77,8 +77,8 @@ class Sets {
 
         const publicKeyName = guessPublicKeyName(envFilepath)
         const privateKeyName = guessPrivateKeyName(envFilepath)
-        const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
         const existingPublicKey = findPublicKey(envFilepath)
+        const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, false, existingPublicKey)
 
         let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         if (this.envKeysFilepath) {

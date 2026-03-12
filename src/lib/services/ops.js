@@ -10,12 +10,12 @@ class Ops {
     // check npm lib
     try {
       this.opsLib = this._opsNpm()
-      logger.successv(`📡 radar: ${this.opsLib.status}`)
+      logger.successv(`🏰 ops: ${this.opsLib.status}`)
     } catch (e) {
       // check binary cli
       try {
         this.opsLib = this._opsCli()
-        logger.successv(`📡 radar: ${this.opsLib.status}`)
+        logger.successv(`🏰 ops: ${this.opsLib.status}`)
       } catch (_e2) {
         // noop
       }
@@ -31,10 +31,35 @@ class Ops {
   }
 
   keypair (payload) {
-    if (this.opsLib && this.opsLib.status !== 'off' && this.opsLib.keypair) {
-      const encoded = this.encode(payload)
-      this.opsLib.keypair(encoded)
+    const args = ['keypair']
+    if (payload) {
+      args.push(payload)
     }
+
+    const options = { stdio: ['pipe', 'pipe', 'ignore'] }
+    const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
+
+    try {
+      const output = childProcess.execFileSync(fallbackBin, args, options)
+      const parsed = JSON.parse(output.toString())
+      if (parsed && parsed.private_key) {
+        return parsed.private_key
+      }
+    } catch (e) {
+      // noop
+    }
+
+    try {
+      const output = childProcess.execFileSync('dotenvx-ops', args, options)
+      const parsed = JSON.parse(output.toString())
+      if (parsed && parsed.private_key) {
+        return parsed.private_key
+      }
+    } catch (e) {
+      // noop
+    }
+
+    return null
   }
 
   encode (payload) {
@@ -58,18 +83,6 @@ class Ops {
         } catch (e) {
           // noop
         }
-      },
-      keypair: (encoded) => {
-        try {
-          const subprocess = childProcess.spawn(fallbackBin, ['keypair', encoded], {
-            stdio: 'ignore',
-            detached: true
-          })
-
-          subprocess.unref() // let it run independently
-        } catch (e) {
-          // noop
-        }
       }
     }
   }
@@ -82,18 +95,6 @@ class Ops {
       observe: (encoded) => {
         try {
           const subprocess = childProcess.spawn('dotenvx-ops', ['observe', encoded], {
-            stdio: 'ignore',
-            detached: true
-          })
-
-          subprocess.unref() // let it run independently
-        } catch (e) {
-          // noop
-        }
-      },
-      keypair: (encoded) => {
-        try {
-          const subprocess = childProcess.spawn('dotenvx-ops', ['keypair', encoded], {
             stdio: 'ignore',
             detached: true
           })

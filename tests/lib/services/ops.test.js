@@ -27,15 +27,14 @@ t.test('when no dotenvx-ops', ct => {
 t.test('when dotenvx-ops npm', ct => {
   const stub = sinon.stub(Ops.prototype, '_opsNpm').returns({
     status: 'on',
-    observe: sinon.stub(),
-    keypair: sinon.stub()
+    observe: sinon.stub()
   })
 
   let ops
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
@@ -57,7 +56,7 @@ t.test('when dotenvx-ops npm but then observe fails somehow', ct => {
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
@@ -70,15 +69,14 @@ t.test('when dotenvx-ops npm but then observe fails somehow', ct => {
 t.test('when dotenvx-ops cli', ct => {
   const stub = sinon.stub(Ops.prototype, '_opsCli').returns({
     status: 'on',
-    observe: sinon.stub(),
-    keypair: sinon.stub()
+    observe: sinon.stub()
   })
 
   let ops
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
@@ -88,34 +86,54 @@ t.test('when dotenvx-ops cli', ct => {
   ct.end()
 })
 
-t.test('keypair calls ops lib when on', ct => {
-  const keypairStub = sinon.stub()
+t.test('keypair still attempts command when off', ct => {
   sinon.stub(Ops.prototype, '_opsNpm').returns({
-    status: 'on',
-    observe: sinon.stub(),
-    keypair: keypairStub
+    status: 'off',
+    observe: sinon.stub()
   })
+  const execStub = sinon.stub(childProcess, 'execFileSync')
+  execStub.withArgs(sinon.match.string, ['keypair', 'pub'], sinon.match.object).throws(new Error('keypair unavailable'))
 
   const ops = new Ops()
-  ops.keypair({ privateKey: 'abc' })
+  const result = ops.keypair('pub')
 
-  t.ok(keypairStub.calledOnce, 'ops lib keypair called')
-  t.ok(keypairStub.calledWith(Buffer.from(JSON.stringify({ privateKey: 'abc' })).toString('base64')), 'ops keypair called with encoded payload')
+  t.equal(result, null)
+  t.ok(execStub.calledTwice, 'fallback and global keypair commands attempted')
   ct.end()
 })
 
-t.test('keypair does not call ops lib when off', ct => {
-  const keypairStub = sinon.stub()
+t.test('keypair returns private key from fallback bin output', ct => {
+  const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
   sinon.stub(Ops.prototype, '_opsNpm').returns({
-    status: 'off',
-    observe: sinon.stub(),
-    keypair: keypairStub
+    status: 'on',
+    observe: sinon.stub()
   })
+  const stub = sinon.stub(childProcess, 'execFileSync')
+  stub.withArgs(fallbackBin, ['keypair', 'pub'], sinon.match.object).returns(Buffer.from('{"private_key":"private123"}'))
 
   const ops = new Ops()
-  ops.keypair({ privateKey: 'abc' })
+  const result = ops.keypair('pub')
 
-  t.ok(keypairStub.notCalled, 'ops lib keypair not called')
+  t.equal(result, 'private123')
+  t.ok(stub.calledOnce, 'execFileSync called once with fallback bin')
+  ct.end()
+})
+
+t.test('keypair falls back to global cli when fallback bin fails', ct => {
+  const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
+  sinon.stub(Ops.prototype, '_opsNpm').returns({
+    status: 'on',
+    observe: sinon.stub()
+  })
+  const stub = sinon.stub(childProcess, 'execFileSync')
+  stub.withArgs(fallbackBin, ['keypair', 'pub'], sinon.match.object).throws(new Error('fallback unavailable'))
+  stub.withArgs('dotenvx-ops', ['keypair', 'pub'], sinon.match.object).returns(Buffer.from('{"private_key":"private456"}'))
+
+  const ops = new Ops()
+  const result = ops.keypair('pub')
+
+  t.equal(result, 'private456')
+  t.ok(stub.calledTwice, 'fallback and global cli attempted')
   ct.end()
 })
 
@@ -133,7 +151,7 @@ t.test('when dotenvx-ops cli stub childProcess.execSync', ct => {
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
@@ -157,7 +175,7 @@ t.test('when dotenvx-ops cli stub childProcess.execSync', ct => {
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 📡 radar: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')

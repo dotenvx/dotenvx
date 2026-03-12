@@ -2,7 +2,6 @@ const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
 const Encrypt = require('./../../lib/services/encrypt')
-const Ops = require('./../../lib/services/ops')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
@@ -26,7 +25,6 @@ function encrypt () {
     process.exit(0) // exit early
   } else {
     try {
-      let ops = null
       const {
         processedEnvs,
         changedFilepaths,
@@ -64,20 +62,6 @@ function encrypt () {
 
       for (const processedEnv of processedEnvs) {
         if (processedEnv.privateKeyAdded) {
-          if (opsOn) {
-            try {
-              ops = ops || new Ops()
-              ops.keypair({
-                envFilepath: processedEnv.envFilepath,
-                envKeysFilepath: processedEnv.envKeysFilepath,
-                privateKeyName: processedEnv.privateKeyName,
-                privateKey: processedEnv.privateKey
-              })
-            } catch (e) {
-              // noop
-            }
-          }
-
           // Ops hook point (first-time key created for this env file):
           // gate with `opsOn` and an Ops-installed check before calling your
           // Ops service (for example: backup/register processedEnv.privateKey).
