@@ -6,15 +6,21 @@ const proxyquire = require('proxyquire')
 
 const Encrypt = require('./../../../src/lib/services/encrypt')
 const { logger } = require('../../../src/shared/logger')
+const opsKeypairStub = sinon.stub()
+function OpsStub () {
+  this.keypair = opsKeypairStub
+}
 
 const encrypt = proxyquire('../../../src/cli/actions/encrypt', {
-  '../../../src/lib/helpers/isIgnoringDotenvKeys': () => true
+  '../../../src/lib/helpers/isIgnoringDotenvKeys': () => true,
+  '../../../src/lib/services/ops': OpsStub
 })
 
 let writeStub
 
 t.beforeEach((ct) => {
   sinon.restore()
+  opsKeypairStub.resetHistory()
   writeStub = sinon.stub(fsx, 'writeFileX')
 })
 
@@ -120,6 +126,7 @@ t.test('encrypt - .env with changes', ct => {
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
+  t.ok(opsKeypairStub.notCalled, 'ops.keypair not called')
 
   ct.end()
 })
@@ -154,8 +161,13 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
+  t.ok(opsKeypairStub.calledOnceWith({
+    envFilepath: '.env',
+    envKeysFilepath: undefined,
+    privateKeyName: 'DOTENV_PRIVATE_KEY',
+    privateKey: '1234'
+  }), 'ops.keypair called')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  optional: [dotenvx ops backup] to securely backup private key'), 'logger help')
   t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'1234\' dotenvx run -- yourcommand] to test decryption locally'), 'logger help')
 
   ct.end()
@@ -163,7 +175,8 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
 
 t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.keys', ct => {
   const encryptNotIgnoring = proxyquire('../../../src/cli/actions/encrypt', {
-    '../../../src/lib/helpers/isIgnoringDotenvKeys': () => false
+    '../../../src/lib/helpers/isIgnoringDotenvKeys': () => false,
+    '../../../src/lib/services/ops': OpsStub
   })
 
   const optsStub = sinon.stub().returns({})
@@ -195,8 +208,13 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
+  t.ok(opsKeypairStub.calledOnceWith({
+    envFilepath: '.env',
+    envKeysFilepath: undefined,
+    privateKeyName: 'DOTENV_PRIVATE_KEY',
+    privateKey: '1234'
+  }), 'ops.keypair called')
   t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  optional: [dotenvx ops backup] to securely backup private key'), 'logger help')
   t.ok(loggerHelpStub.calledWith('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
   t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'1234\' dotenvx run -- yourcommand] to test decryption locally'), 'logger help')
 

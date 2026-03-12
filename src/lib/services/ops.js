@@ -30,6 +30,13 @@ class Ops {
     }
   }
 
+  keypair (payload) {
+    if (this.opsLib && this.opsLib.status !== 'off' && this.opsLib.keypair) {
+      const encoded = this.encode(payload)
+      this.opsLib.keypair(encoded)
+    }
+  }
+
   encode (payload) {
     return Buffer.from(JSON.stringify(payload)).toString('base64')
   }
@@ -51,6 +58,18 @@ class Ops {
         } catch (e) {
           // noop
         }
+      },
+      keypair: (encoded) => {
+        try {
+          const subprocess = childProcess.spawn(fallbackBin, ['keypair', encoded], {
+            stdio: 'ignore',
+            detached: true
+          })
+
+          subprocess.unref() // let it run independently
+        } catch (e) {
+          // noop
+        }
       }
     }
   }
@@ -63,6 +82,18 @@ class Ops {
       observe: (encoded) => {
         try {
           const subprocess = childProcess.spawn('dotenvx-ops', ['observe', encoded], {
+            stdio: 'ignore',
+            detached: true
+          })
+
+          subprocess.unref() // let it run independently
+        } catch (e) {
+          // noop
+        }
+      },
+      keypair: (encoded) => {
+        try {
+          const subprocess = childProcess.spawn('dotenvx-ops', ['keypair', encoded], {
             stdio: 'ignore',
             detached: true
           })

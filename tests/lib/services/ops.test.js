@@ -27,7 +27,8 @@ t.test('when no dotenvx-ops', ct => {
 t.test('when dotenvx-ops npm', ct => {
   const stub = sinon.stub(Ops.prototype, '_opsNpm').returns({
     status: 'on',
-    observe: sinon.stub()
+    observe: sinon.stub(),
+    keypair: sinon.stub()
   })
 
   let ops
@@ -69,7 +70,8 @@ t.test('when dotenvx-ops npm but then observe fails somehow', ct => {
 t.test('when dotenvx-ops cli', ct => {
   const stub = sinon.stub(Ops.prototype, '_opsCli').returns({
     status: 'on',
-    observe: sinon.stub()
+    observe: sinon.stub(),
+    keypair: sinon.stub()
   })
 
   let ops
@@ -83,6 +85,37 @@ t.test('when dotenvx-ops cli', ct => {
   t.ok(ops.opsLib)
 
   stub.restore()
+  ct.end()
+})
+
+t.test('keypair calls ops lib when on', ct => {
+  const keypairStub = sinon.stub()
+  sinon.stub(Ops.prototype, '_opsNpm').returns({
+    status: 'on',
+    observe: sinon.stub(),
+    keypair: keypairStub
+  })
+
+  const ops = new Ops()
+  ops.keypair({ privateKey: 'abc' })
+
+  t.ok(keypairStub.calledOnce, 'ops lib keypair called')
+  t.ok(keypairStub.calledWith(Buffer.from(JSON.stringify({ privateKey: 'abc' })).toString('base64')), 'ops keypair called with encoded payload')
+  ct.end()
+})
+
+t.test('keypair does not call ops lib when off', ct => {
+  const keypairStub = sinon.stub()
+  sinon.stub(Ops.prototype, '_opsNpm').returns({
+    status: 'off',
+    observe: sinon.stub(),
+    keypair: keypairStub
+  })
+
+  const ops = new Ops()
+  ops.keypair({ privateKey: 'abc' })
+
+  t.ok(keypairStub.notCalled, 'ops lib keypair not called')
   ct.end()
 })
 
