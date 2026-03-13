@@ -255,3 +255,22 @@ t.test('decrypt - catch error', ct => {
 
   ct.end()
 })
+
+t.test('decrypt - --ops-off passes opsOn false to Decrypt service', ct => {
+  sinon.stub(process, 'exit')
+  sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({ opsOff: true })
+  const fakeContext = { opts: optsStub }
+  const runStub = sinon.stub(Decrypt.prototype, 'run').returns({
+    processedEnvs: [],
+    changedFilepaths: [],
+    unchangedFilepaths: []
+  })
+
+  decrypt.call(fakeContext)
+
+  t.ok(runStub.calledOnce, 'Decrypt().run() called')
+  t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
+
+  ct.end()
+})
