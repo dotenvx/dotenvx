@@ -22,16 +22,6 @@ function collectEnvs (type) {
   }
 }
 
-function parseBoolean (value) {
-  if (typeof value === 'boolean') return value
-
-  const normalized = String(value).trim().toLowerCase()
-  if (normalized === 'true') return true
-  if (normalized === 'false') return false
-
-  throw new Error(`invalid boolean value: ${value}. expected true or false`)
-}
-
 // surface hoisting problems
 const commanderVersion = getCommanderVersion()
 if (commanderVersion && parseInt(commanderVersion.split('.')[0], 10) >= 12) {
