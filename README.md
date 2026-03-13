@@ -2597,7 +2597,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
-## Ops 🏰
+## Ops 🛡️
 
 [![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=2)](https://dotenvx.com/ops)
 

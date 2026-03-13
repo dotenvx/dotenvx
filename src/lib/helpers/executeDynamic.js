@@ -40,7 +40,7 @@ function executeDynamic (program, command, rawArgs) {
 
       console.log(ops)
       console.log('')
-      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 🏰`)
+      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 🛡️`)
       logger.help('⮕  next run: [curl -sfS https://dotenvx.sh/ops | sh]')
       logger.help('⮕  see more: [https://dotenvx.com/ops]')
     } else {

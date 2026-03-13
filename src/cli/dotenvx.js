@@ -207,7 +207,7 @@ program.command('help [command]')
 // dotenvx pro
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  ops                          🏰 ops')
+program.addHelpText('after', '  ops                          🛡️  ops')
 program.addHelpText('after', '  ext                          🔌 extensions')
 
 // dotenvx ext

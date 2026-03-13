@@ -18,7 +18,7 @@ const dotenvx = `${node} ${path.join(originalDir, 'src/cli/dotenvx.js')}`
 function stripOpsStatus (output) {
   return output
     .split('\n')
-    .filter(line => !line.match(/^\[dotenvx@.+\] 🏰 ops: (on|off)$/))
+    .filter(line => !line.match(/^\[dotenvx@.+\] 🛡️ ops: (on|off)$/))
     .join('\n')
 }
 

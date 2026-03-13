@@ -10,12 +10,12 @@ class Ops {
     // check npm lib
     try {
       this.opsLib = this._opsNpm()
-      logger.successv(`🏰 ops: ${this.opsLib.status}`)
+      logger.successv(`🛡️ ops: ${this.opsLib.status}`)
     } catch (e) {
       // check binary cli
       try {
         this.opsLib = this._opsCli()
-        logger.successv(`🏰 ops: ${this.opsLib.status}`)
+        logger.successv(`🛡️ ops: ${this.opsLib.status}`)
       } catch (_e2) {
         // noop
       }

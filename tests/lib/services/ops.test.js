@@ -34,7 +34,7 @@ t.test('when dotenvx-ops npm', ct => {
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🛡️ ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
@@ -56,7 +56,7 @@ t.test('when dotenvx-ops npm but then observe fails somehow', ct => {
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🛡️ ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
@@ -76,7 +76,7 @@ t.test('when dotenvx-ops cli', ct => {
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🛡️ ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
@@ -151,7 +151,7 @@ t.test('when dotenvx-ops cli stub childProcess.execSync', ct => {
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🛡️ ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
@@ -175,7 +175,7 @@ t.test('when dotenvx-ops cli stub childProcess.execSync', ct => {
   const stdout = capcon.interceptStdout(() => {
     ops = new Ops()
   })
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🏰 ops: on`)}\n`)
+  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] 🛡️ ops: on`)}\n`)
 
   ops.observe({})
   t.ok(stub.called, 'Ops().run() called')
