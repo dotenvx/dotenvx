@@ -199,10 +199,6 @@ class Encrypt {
         this.unchangedFilepaths.add(envFilepath)
       }
     } catch (e) {
-      if (e.code === 'OPS_OFF') {
-        throw e
-      }
-
       if (e.code === 'ENOENT') {
         row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
       } else {

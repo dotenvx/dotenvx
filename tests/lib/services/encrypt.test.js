@@ -96,28 +96,6 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.end()
 })
 
-t.test('#run rethrows OPS_OFF errors', ct => {
-  const envFile = 'tests/monorepo/apps/frontend/.env'
-  const envs = [
-    { type: 'envFile', value: envFile }
-  ]
-
-  const inst = new Encrypt(envs)
-  const error = new Error('ops is off')
-  error.code = 'OPS_OFF'
-  const detectEncodingStub = sinon.stub(inst, '_detectEncoding').throws(error)
-
-  ct.throws(() => {
-    inst.run()
-  }, {
-    message: 'ops is off',
-    code: 'OPS_OFF'
-  })
-
-  detectEncodingStub.restore()
-  ct.end()
-})
-
 t.test('#run (finds .env file)', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const envs = [
