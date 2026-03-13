@@ -30,10 +30,10 @@ class Ops {
     }
   }
 
-  keypair (payload) {
+  keypair (publicKey) {
     const args = ['keypair']
-    if (payload) {
-      args.push(payload)
+    if (publicKey) {
+      args.push(publicKey)
     }
 
     const options = { stdio: ['pipe', 'pipe', 'ignore'] }
