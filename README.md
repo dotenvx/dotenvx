@@ -2601,13 +2601,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 [![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=2)](https://dotenvx.com/ops)
 
-*production grade dotenvx*–with operational primitives.
-
-> As dotenvx spreads inside companies, we're learning—through enterprise engagements—that dotenvx is missing an operations layer.
->
-> Dotenvx Ops is our answer.
->
-> It's production grade dotenvx–with operational primitives for teams, infrastructure, and agents. Private key management, access controls, and more.
+**KEYS OFF COMPUTER**
 
 ### Quickstart
 
@@ -2615,23 +2609,12 @@ Install it and gain `ops` commands.
 
 ```sh
 $ curl -sfS https://dotenvx.sh/ops | sh
-$ dotenvx ops backup
-✔ backed up [username/project]
-⮕ next run [dotenvx-ops open] to view
+$ dotenvx ops login
+$ dotenvx encrypt
 ```
 
 ### CLI
 
-<details><summary>`ops backup`</summary><br>
-
-Back up .env.keys.
-
-```sh
-$ dotenvx-ops backup
-✔ backed up [username/project]
-```
-
-</details>
 <details><summary>`ops login`</summary><br>
 
 Log in.
