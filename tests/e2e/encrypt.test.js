@@ -49,7 +49,6 @@ t.test('#encrypt', ct => {
 
   ct.equal(output, `✔ encrypted (.env)
 ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
-⮕  optional: [dotenvx ops backup] to securely backup private key
 ⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run: [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
 
@@ -70,7 +69,6 @@ t.test('#encrypt -k', ct => {
 
   ct.equal(output, `✔ encrypted (.env)
 ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
-⮕  optional: [dotenvx ops backup] to securely backup private key
 ⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run: [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
 
