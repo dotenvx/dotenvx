@@ -14,6 +14,7 @@ const originalDir = process.cwd()
 
 const node = path.resolve(which.sync('node')) // /opt/homebrew/node
 const dotenvx = `${node} ${path.join(originalDir, 'src/cli/dotenvx.js')}`
+const opsLine = `[dotenvx@${require('../../src/lib/helpers/packageJson').version}] 🏰 ops: on`
 
 function execShell (commands) {
   return execSync(commands, {
@@ -42,12 +43,13 @@ t.test('#encrypt', ct => {
     echo "HELLO=World" > .env
   `)
 
-  const output = execShell(`${dotenvx} encrypt --ops-off false`)
+  const output = execShell(`${dotenvx} encrypt`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
 
-  ct.equal(output, `✔ encrypted (.env)
+  ct.equal(output, `${opsLine}
+✔ encrypted (.env)
 ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
 ⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run: [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
@@ -62,23 +64,24 @@ t.test('#encrypt -k', ct => {
     echo "HELLO=World\nHI=thar" > .env
   `)
 
-  const output = execShell(`${dotenvx} encrypt --ops-off false -k HI`)
+  const output = execShell(`${dotenvx} encrypt -k HI`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
 
-  ct.equal(output, `✔ encrypted (.env)
+  ct.equal(output, `${opsLine}
+✔ encrypted (.env)
 ✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
 ⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run: [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
 
   execShell('rm .env.keys')
 
-  ct.equal(execShell(`${dotenvx} get HELLO`), 'World') // unencrypted still
-  ct.match(execShell(`${dotenvx} get HI`), /^encrypted:/, 'HI should be encrypted')
+  ct.equal(execShell(`${dotenvx} get HELLO`), `${opsLine}\nWorld`) // unencrypted still
+  ct.match(execShell(`${dotenvx} get HI`), new RegExp(`^${opsLine.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\nencrypted:`), 'HI should be encrypted')
 
   process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY
-  ct.equal(execShell(`${dotenvx} get HI`), 'thar')
+  ct.equal(execShell(`${dotenvx} get HI`), `${opsLine}\nthar`)
 
   ct.end()
 })
@@ -88,13 +91,14 @@ t.test('#run - encrypt -k --stdout', ct => {
     echo "HELLO=World\nHI=thar" > .env
   `)
 
-  const output = execShell(`${dotenvx} encrypt --ops-off false -k HI --stdout`)
+  const output = execShell(`${dotenvx} encrypt -k HI --stdout`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
   const { publicKey } = keypair(DOTENV_PRIVATE_KEY)
 
-  const expectedFixedPart1 = `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
+  const expectedFixedPart1 = `${opsLine}
+#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
 #/            public-key encryption for .env files          /
 #/       [how it works](https://dotenvx.com/encryption)     /
 #/----------------------------------------------------------/
