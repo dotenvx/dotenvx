@@ -16,6 +16,17 @@ const originalDir = process.cwd()
 const node = path.resolve(which.sync('node')) // /opt/homebrew/node
 const dotenvx = `${node} ${path.join(originalDir, 'src/cli/dotenvx.js')}`
 
+function stripOpsStatus (output) {
+  if (!output) {
+    return output
+  }
+
+  return output
+    .split('\n')
+    .filter(line => !line.match(/^\[dotenvx@.+\] 🏰 ops: (on|off)$/))
+    .join('\n')
+}
+
 function execShell (commands) {
   const result = spawnSync(commands, {
     encoding: 'utf8',
@@ -23,7 +34,7 @@ function execShell (commands) {
   })
 
   return {
-    stdout: result.stdout ? result.stdout.trim() : null,
+    stdout: result.stdout ? stripOpsStatus(result.stdout.trim()) : null,
     stderr: result.stderr ? result.stderr.trim() : null,
     exitCode: result.status // Exit code of the command
   }

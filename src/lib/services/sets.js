@@ -77,8 +77,8 @@ class Sets {
 
         const publicKeyName = guessPublicKeyName(envFilepath)
         const privateKeyName = guessPrivateKeyName(envFilepath)
-        const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
         const existingPublicKey = findPublicKey(envFilepath)
+        const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, false, existingPublicKey)
 
         let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         if (this.envKeysFilepath) {
@@ -137,7 +137,7 @@ class Sets {
             '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
             '#/ private decryption keys. DO NOT commit to source control /',
             '#/     [how it works](https://dotenvx.com/encryption)       /',
-            '#/           backup with: `dotenvx ops backup`              /',
+            // '#/           backup with: `dotenvx ops backup`              /',
             '#/----------------------------------------------------------/'
           ].join('\n')
           const appendPrivateKey = [

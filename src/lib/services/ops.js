@@ -10,12 +10,12 @@ class Ops {
     // check npm lib
     try {
       this.opsLib = this._opsNpm()
-      logger.successv(`📡 radar: ${this.opsLib.status}`)
+      logger.successv(`🏰 ops: ${this.opsLib.status}`)
     } catch (e) {
       // check binary cli
       try {
         this.opsLib = this._opsCli()
-        logger.successv(`📡 radar: ${this.opsLib.status}`)
+        logger.successv(`🏰 ops: ${this.opsLib.status}`)
       } catch (_e2) {
         // noop
       }
@@ -28,6 +28,38 @@ class Ops {
       const encoded = this.encode(payload)
       this.opsLib.observe(encoded)
     }
+  }
+
+  keypair (publicKey) {
+    const args = ['keypair']
+    if (publicKey) {
+      args.push(publicKey)
+    }
+
+    const options = { stdio: ['pipe', 'pipe', 'ignore'] }
+    const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
+
+    try {
+      const output = childProcess.execFileSync(fallbackBin, args, options)
+      const parsed = JSON.parse(output.toString())
+      if (parsed && parsed.private_key) {
+        return parsed.private_key
+      }
+    } catch (e) {
+      // noop
+    }
+
+    try {
+      const output = childProcess.execFileSync('dotenvx-ops', args, options)
+      const parsed = JSON.parse(output.toString())
+      if (parsed && parsed.private_key) {
+        return parsed.private_key
+      }
+    } catch (e) {
+      // noop
+    }
+
+    return null
   }
 
   encode (payload) {

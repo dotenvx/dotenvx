@@ -15,6 +15,7 @@ const append = require('./../helpers/append')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 const { findPrivateKey } = require('./../helpers/findPrivateKey')
+const findPublicKey = require('./../helpers/findPublicKey')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const keypair = require('./../helpers/keypair')
 
@@ -73,7 +74,8 @@ class Rotate {
 
       const publicKeyName = guessPublicKeyName(envFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
-      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
+      const existingPublicKey = findPublicKey(envFilepath)
+      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, false, existingPublicKey)
 
       let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
       if (this.envKeysFilepath) {

@@ -1,22 +1,25 @@
 // helpers
 const guessPrivateKeyName = require('./guessPrivateKeyName')
-const ProKeypair = require('./proKeypair')
+const findPublicKey = require('./findPublicKey')
 
 // services
 const Keypair = require('./../services/keypair')
+const Ops = require('./../services/ops')
 
-function findPrivateKey (envFilepath, envKeysFilepath = null, opsOn = true) {
+function findPrivateKey (envFilepath, envKeysFilepath = null, opsOn = false, publicKey = null) {
   // use path/to/.env.${environment} to generate privateKeyName
   const privateKeyName = guessPrivateKeyName(envFilepath)
 
-  let proKeypairs = {}
   if (opsOn) {
-    proKeypairs = new ProKeypair(envFilepath).run() // TODO: implement custom envKeysFilepath
+    const resolvedPublicKey = publicKey || findPublicKey(envFilepath)
+    const opsPrivateKey = new Ops().keypair(resolvedPublicKey)
+    if (opsPrivateKey) {
+      return opsPrivateKey
+    }
   }
 
   const keypairs = new Keypair(envFilepath, envKeysFilepath).run()
-
-  return proKeypairs[privateKeyName] || keypairs[privateKeyName]
+  return keypairs[privateKeyName]
 }
 
 module.exports = { findPrivateKey }

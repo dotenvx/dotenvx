@@ -123,6 +123,23 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
+t.test('#run (finds .env file) with ops off and no existing keys still generates .env.keys', ct => {
+  const envFile = 'tests/monorepo/apps/frontend/.env'
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const {
+    processedEnvs,
+    changedFilepaths
+  } = new Encrypt(envs, [], [], null, false).run()
+
+  ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
+  ct.equal(processedEnvs[0].privateKeyAdded, true)
+
+  ct.end()
+})
+
 t.test('#run (finds .env file with multiline values - implicit and explicit newline)', ct => {
   const envFile = 'tests/monorepo/apps/multiline/.env'
   const envs = [

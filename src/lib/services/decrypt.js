@@ -7,6 +7,7 @@ const TYPE_ENV_FILE = 'envFile'
 const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const { findPrivateKey } = require('./../helpers/findPrivateKey')
+const findPublicKey = require('./../helpers/findPublicKey')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const dotenvParse = require('./../helpers/dotenvParse')
@@ -15,11 +16,12 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Decrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = true) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
+    this.opsOn = opsOn
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -65,7 +67,8 @@ class Decrypt {
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
-      const privateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
+      const publicKey = findPublicKey(envFilepath)
+      const privateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
       const privateKeyName = guessPrivateKeyName(envFilepath)
 
       row.privateKey = privateKey

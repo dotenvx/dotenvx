@@ -20,11 +20,12 @@ const truncate = require('./../helpers/truncate')
 const isPublicKey = require('./../helpers/isPublicKey')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = true) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
+    this.opsOn = opsOn
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -76,8 +77,8 @@ class Encrypt {
 
       const publicKeyName = guessPublicKeyName(envFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
-      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
       const existingPublicKey = findPublicKey(envFilepath)
+      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
 
       let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
       if (this.envKeysFilepath) {
@@ -86,6 +87,7 @@ class Encrypt {
       const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
 
       if (existingPrivateKey) {
+        // throw new Error('implement for remote Ops existingPrivateKey')
         const kp = keypair(existingPrivateKey)
         publicKey = kp.publicKey
         privateKey = kp.privateKey
@@ -109,6 +111,7 @@ class Encrypt {
           envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
         }
       } else if (existingPublicKey) {
+        // throw new Error('implement for remote Ops existingPrivateKey')
         publicKey = existingPublicKey
       } else {
         // .env.keys
@@ -122,9 +125,13 @@ class Encrypt {
         const firstLinePreserved = ps.firstLinePreserved
         envSrc = ps.envSrc
 
+        // TODO: instead get this from API
         const kp = keypair() // generates a fresh keypair in memory
         publicKey = kp.publicKey
         privateKey = kp.privateKey
+        // Ops hook point (first-time key generation):
+        // if Ops is installed and opsOff is not set, send privateKey/privateKeyName/envFilepath
+        // to your Ops service before persisting or immediately after writing below.
 
         const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
@@ -133,7 +140,7 @@ class Encrypt {
           '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
           '#/ private decryption keys. DO NOT commit to source control /',
           '#/     [how it works](https://dotenvx.com/encryption)       /',
-          '#/           backup with: `dotenvx ops backup`              /',
+          // '#/           backup with: `dotenvx ops backup`              /',
           '#/----------------------------------------------------------/'
         ].join('\n')
         const appendPrivateKey = [
@@ -148,6 +155,9 @@ class Encrypt {
 
         // write to .env.keys
         fsx.writeFileX(envKeysFilepath, keysSrc)
+        // Ops hook point (after persistence):
+        // if Ops is installed and opsOff is not set, trigger backup/registration now that
+        // .env.keys has been written and row.privateKeyAdded will be true for callers.
 
         row.privateKeyAdded = true
         row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))

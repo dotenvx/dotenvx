@@ -96,6 +96,7 @@ program.command('get')
   .option('-a, --all', 'include all machine envs as well')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--format <type>', 'format of the output (json, shell, eval)', 'json')
+  .option('--ops-off', 'disable dotenvx-ops features', false)
   .action(function (...args) {
     this.envs = envs
     getAction.apply(this, args)
@@ -114,6 +115,7 @@ program.command('set')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-c, --encrypt', 'encrypt value', true)
   .option('-p, --plain', 'store value as plain text', false)
+  .option('--ops-off', 'disable dotenvx-ops features', false)
   .action(function (...args) {
     this.envs = envs
     setAction.apply(this, args)
@@ -127,6 +129,7 @@ program.command('encrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
+  .option('--ops-off', 'disable dotenvx-ops features', false)
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
@@ -141,6 +144,7 @@ program.command('decrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
+  .option('--ops-off', 'disable dotenvx-ops features', false)
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
@@ -155,6 +159,7 @@ program.command('keypair')
   .argument('[KEY]', 'environment variable key name')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
+  .option('--ops-off', 'disable dotenvx-ops features', false)
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--format <type>', 'format of the output (json, shell)', 'json')
   .action(keypairAction)
@@ -176,6 +181,7 @@ program.command('rotate')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
+  .option('--ops-off', 'disable dotenvx-ops features', false)
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
