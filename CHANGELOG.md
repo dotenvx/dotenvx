@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.55.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.55.1...main)
+
+## [1.55.1](https://github.com/dotenvx/dotenvx/compare/v1.55.0...v1.55.1) (2026-03-13)
+
+### Added
+
+* Respect `dotenvx-ops status (on|off)` ([#749](https://github.com/dotenvx/dotenvx/pull/749))
 
 ## [1.55.0](https://github.com/dotenvx/dotenvx/compare/v1.54.1...v1.55.0) (2026-03-13)
 
