@@ -86,19 +86,20 @@ t.test('when dotenvx-ops cli', ct => {
   ct.end()
 })
 
-t.test('keypair still attempts command when off', ct => {
+t.test('keypair does not attempt command when off', ct => {
+  const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
   sinon.stub(Ops.prototype, '_opsNpm').returns({
     status: 'off',
     observe: sinon.stub()
   })
   const execStub = sinon.stub(childProcess, 'execFileSync')
-  execStub.withArgs(sinon.match.string, ['keypair', 'pub'], sinon.match.object).throws(new Error('keypair unavailable'))
+  execStub.withArgs(fallbackBin, ['status'], sinon.match.object).returns(Buffer.from('off'))
 
   const ops = new Ops()
   const result = ops.keypair('pub')
 
   t.equal(result, null)
-  t.ok(execStub.calledTwice, 'fallback and global keypair commands attempted')
+  t.ok(execStub.calledOnceWithExactly(fallbackBin, ['status'], sinon.match.object), 'status checked once and keypair skipped')
   ct.end()
 })
 
@@ -109,13 +110,14 @@ t.test('keypair returns private key from fallback bin output', ct => {
     observe: sinon.stub()
   })
   const stub = sinon.stub(childProcess, 'execFileSync')
+  stub.withArgs(fallbackBin, ['status'], sinon.match.object).returns(Buffer.from('on'))
   stub.withArgs(fallbackBin, ['keypair', 'pub'], sinon.match.object).returns(Buffer.from('{"private_key":"private123"}'))
 
   const ops = new Ops()
   const result = ops.keypair('pub')
 
   t.equal(result, 'private123')
-  t.ok(stub.calledOnce, 'execFileSync called once with fallback bin')
+  t.ok(stub.calledTwice, 'status and fallback keypair attempted')
   ct.end()
 })
 
@@ -126,6 +128,7 @@ t.test('keypair falls back to global cli when fallback bin fails', ct => {
     observe: sinon.stub()
   })
   const stub = sinon.stub(childProcess, 'execFileSync')
+  stub.withArgs(fallbackBin, ['status'], sinon.match.object).returns(Buffer.from('on'))
   stub.withArgs(fallbackBin, ['keypair', 'pub'], sinon.match.object).throws(new Error('fallback unavailable'))
   stub.withArgs('dotenvx-ops', ['keypair', 'pub'], sinon.match.object).returns(Buffer.from('{"private_key":"private456"}'))
 
@@ -133,7 +136,7 @@ t.test('keypair falls back to global cli when fallback bin fails', ct => {
   const result = ops.keypair('pub')
 
   t.equal(result, 'private456')
-  t.ok(stub.calledTwice, 'fallback and global cli attempted')
+  t.ok(stub.calledThrice, 'status, fallback keypair, and global cli attempted')
   ct.end()
 })
 
