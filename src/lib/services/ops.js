@@ -31,6 +31,10 @@ class Ops {
   }
 
   keypair (publicKey) {
+    if (this._status() === 'off') {
+      return null
+    }
+
     const args = ['keypair']
     if (publicKey) {
       args.push(publicKey)
@@ -55,6 +59,27 @@ class Ops {
       if (parsed && parsed.private_key) {
         return parsed.private_key
       }
+    } catch (e) {
+      // noop
+    }
+
+    return null
+  }
+
+  _status () {
+    const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
+    const options = { stdio: ['pipe', 'pipe', 'ignore'] }
+
+    try {
+      const status = childProcess.execFileSync(fallbackBin, ['status'], options)
+      return status.toString().trim()
+    } catch (e) {
+      // noop
+    }
+
+    try {
+      const status = childProcess.execFileSync('dotenvx-ops', ['status'], options)
+      return status.toString().trim()
     } catch (e) {
       // noop
     }
