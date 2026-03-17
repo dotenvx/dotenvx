@@ -1,8 +1,6 @@
-const {
-  guessKeyNames,
-  smartDotenvPublicKey,
-  smartDotenvPrivateKey
-} = require('./../helpers/keyResolution')
+const guessKeyNames = require('./../helpers/keyResolution/guessKeyNames')
+const smartDotenvPublicKey = require('./../helpers/keyResolution/smartDotenvPublicKey')
+const smartDotenvPrivateKey = require('./../helpers/keyResolution/smartDotenvPrivateKey')
 // const Ops = require('./ops')
 
 class Keypair {
