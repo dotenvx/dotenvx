@@ -122,6 +122,22 @@ t.test('get --pretty-print', ct => {
   ct.end()
 })
 
+t.test('get --pp', ct => {
+  const optsStub = sinon.stub().returns({ pp: true })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { HELLO: 'World' } })
+
+  const stdout = capcon.interceptStdout(() => {
+    get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.equal(stdout, `${JSON.stringify({ HELLO: 'World' }, null, 2)}\n`)
+
+  ct.end()
+})
+
 t.test('get KEY --convention', ct => {
   const optsStub = sinon.stub().returns({ convention: 'nextjs' })
   const fakeContext = { opts: optsStub }

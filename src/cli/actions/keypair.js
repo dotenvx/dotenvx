@@ -9,6 +9,7 @@ function keypair (key) {
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
+  const prettyPrint = options.prettyPrint || options.pp
 
   const results = main.keypair(options.envFile, key, options.envKeysFile, options.opsOff)
 
@@ -25,7 +26,7 @@ function keypair (key) {
     // json format
     } else {
       let space = 0
-      if (options.prettyPrint) {
+      if (prettyPrint) {
         space = 2
       }
 

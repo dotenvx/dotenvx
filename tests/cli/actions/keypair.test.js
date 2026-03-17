@@ -85,6 +85,21 @@ t.test('keypair --pretty-print', ct => {
   ct.end()
 })
 
+t.test('keypair --pp', ct => {
+  const optsStub = sinon.stub().returns({ pp: true })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'keypair').returns({ DOTENV_PUBLIC_KEY: '<publicKey>' })
+
+  const stdout = capcon.interceptStdout(() => {
+    keypair.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'main.keypair() called')
+  t.equal(stdout, `${JSON.stringify({ DOTENV_PUBLIC_KEY: '<publicKey>' }, null, 2)}\n`)
+
+  ct.end()
+})
+
 t.test('keypair KEY (not found)', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
