@@ -2,7 +2,7 @@ module.exports = {
   keyValues: require('./keyValues'),
   privateKeyValue: require('./privateKeyValue'),
   publicKeyValue: require('./publicKeyValue'),
-  readProcessEnvKey: require('./readProcessEnvKey'),
+  readProcessKey: require('./readProcessKey'),
   readFileKey: require('./readFileKey'),
   keyNames: require('./keyNames'),
   publicKeyName: require('./publicKeyName'),

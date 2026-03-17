@@ -3,7 +3,7 @@ const path = require('path')
 const fsx = require('./../fsx')
 const dotenvParse = require('./../dotenvParse')
 const keyNames = require('./keyNames')
-const readProcessEnvKey = require('./readProcessEnvKey')
+const readProcessKey = require('./readProcessKey')
 const readFileKey = require('./readFileKey')
 
 function invertForPrivateKeyName (filepath) {
@@ -40,14 +40,14 @@ function keyValues (filepath, keysFilepath = null) {
   let privateKey = null
 
   // public key: process.env first, then .env*
-  publicKey = readProcessEnvKey(publicKeyName)
+  publicKey = readProcessKey(publicKeyName)
   if (!publicKey) {
     publicKey = readFileKey(publicKeyName, filepath) || null
   }
   // TODO: read from Ops
 
   // private key: process.env first, then .env.keys
-  privateKey = readProcessEnvKey(privateKeyName)
+  privateKey = readProcessKey(privateKeyName)
   if (!privateKey) {
     if (keysFilepath) { // user specified -fk flag
       keysFilepath = path.resolve(keysFilepath)
@@ -61,7 +61,7 @@ function keyValues (filepath, keysFilepath = null) {
     if (!privateKey) {
       privateKeyName = invertForPrivateKeyName(filepath)
       if (privateKeyName) {
-        privateKey = readProcessEnvKey(privateKeyName)
+        privateKey = readProcessKey(privateKeyName)
         if (!privateKey) {
           privateKey = readFileKey(privateKeyName, keysFilepath)
         }
