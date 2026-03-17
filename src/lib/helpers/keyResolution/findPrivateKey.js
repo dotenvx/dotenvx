@@ -1,6 +1,6 @@
 const guessKeyNames = require('./guessKeyNames')
 const readProcessEnvKey = require('./readProcessEnvKey')
-const smartDotenvPrivateKey = require('./smartDotenvPrivateKey')
+const smartPrivateKey = require('./smartPrivateKey')
 const findPublicKey = require('./findPublicKey')
 
 const Ops = require('./../../services/ops')
@@ -22,7 +22,7 @@ function findPrivateKey (envFilepath, envKeysFilepath = null, opsOn = false, pub
     }
   }
 
-  return smartDotenvPrivateKey(envFilepath, envKeysFilepath, opsOn)
+  return smartPrivateKey(envFilepath, envKeysFilepath, opsOn)
 }
 
 module.exports = { findPrivateKey }

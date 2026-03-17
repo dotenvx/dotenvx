@@ -1,8 +1,8 @@
 module.exports = {
   findPrivateKey: require('./findPrivateKey').findPrivateKey,
   findPublicKey: require('./findPublicKey'),
-  smartDotenvPrivateKey: require('./smartDotenvPrivateKey'),
-  smartDotenvPublicKey: require('./smartDotenvPublicKey'),
+  smartPrivateKey: require('./smartPrivateKey'),
+  smartPublicKey: require('./smartPublicKey'),
   readProcessEnvKey: require('./readProcessEnvKey'),
   readEnvFileKey: require('./readEnvFileKey'),
   guessKeyNames: require('./guessKeyNames'),

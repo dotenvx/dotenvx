@@ -2,7 +2,7 @@ const guessKeyNames = require('./guessKeyNames')
 const readProcessEnvKey = require('./readProcessEnvKey')
 const readEnvFileKey = require('./readEnvFileKey')
 
-function smartDotenvPublicKey (filepath) {
+function smartPublicKey (filepath) {
   const { publicKeyName } = guessKeyNames(filepath) // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
 
   let publicKey = null
@@ -22,4 +22,4 @@ function smartDotenvPublicKey (filepath) {
   return null
 }
 
-module.exports = smartDotenvPublicKey
+module.exports = smartPublicKey

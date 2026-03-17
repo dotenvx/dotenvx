@@ -31,7 +31,7 @@ function invertForPrivateKeyName (filepath) {
   return null
 }
 
-function smartDotenvPrivateKey (filepath, keysFilepath = null) {
+function smartPrivateKey (filepath, keysFilepath = null) {
   let { privateKeyName } = guessKeyNames(filepath) // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
 
   let privateKey = null
@@ -73,4 +73,4 @@ function smartDotenvPrivateKey (filepath, keysFilepath = null) {
   return null
 }
 
-module.exports = smartDotenvPrivateKey
+module.exports = smartPrivateKey

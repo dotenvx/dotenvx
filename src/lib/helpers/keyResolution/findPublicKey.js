@@ -1,7 +1,7 @@
-const smartDotenvPublicKey = require('./smartDotenvPublicKey')
+const smartPublicKey = require('./smartPublicKey')
 
 function findPublicKey (envFilepath) {
-  return smartDotenvPublicKey(envFilepath)
+  return smartPublicKey(envFilepath)
 }
 
 module.exports = findPublicKey
