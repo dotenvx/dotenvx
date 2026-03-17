@@ -11,9 +11,13 @@ const Errors = require('./../helpers/errors')
 const dotenvParse = require('./../helpers/dotenvParse')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const detectEncoding = require('./../helpers/detectEncoding')
-const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
-const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
-const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
+
+const {
+  privateKeyValue,
+  publicKeyValue,
+  privateKeyName
+} = require('./../helpers/keyResolution')
+
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Run {

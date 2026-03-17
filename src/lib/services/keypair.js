@@ -1,7 +1,7 @@
-const keyNames = require('./../helpers/keyResolution/keyNames')
-const keyValues = require('./../helpers/keyResolution/keyValues')
-
-// const Ops = require('./ops')
+const {
+  keyNames,
+  keyValues
+} = require('./../helpers/keyResolution')
 
 class Keypair {
   constructor (envFile = '.env', envKeysFilepath = null, opsOn = false) {
