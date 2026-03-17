@@ -13,7 +13,7 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const replace = require('./../helpers/replace')
 const append = require('./../helpers/append')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determineEnvs = require('./../helpers/determineEnvs')
+const determine = require('./../helpers/envResolution/determine')
 const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
 const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
@@ -21,7 +21,7 @@ const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 
 class Rotate {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
-    this.envs = determineEnvs(envs, process.env)
+    this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath

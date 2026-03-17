@@ -1,6 +1,6 @@
 module.exports = {
   buildEnvs: require('./../buildEnvs'),
-  determineEnvs: require('./../determineEnvs'),
+  determine: require('./determine'),
   findEnvFiles: require('./../findEnvFiles'),
   dotenvOptionPaths: require('./../dotenvOptionPaths'),
   environment: require('./environment'),

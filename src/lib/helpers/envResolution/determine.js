@@ -1,10 +1,10 @@
-const dotenvPrivateKeyNames = require('./dotenvPrivateKeyNames')
-const guessPrivateKeyFilename = require('./guessPrivateKeyFilename')
+const dotenvPrivateKeyNames = require('./../dotenvPrivateKeyNames')
+const guessPrivateKeyFilename = require('./../guessPrivateKeyFilename')
 
 const TYPE_ENV_FILE = 'envFile'
 const DEFAULT_ENVS = [{ type: TYPE_ENV_FILE, value: '.env' }]
 
-function determineEnvsFromDotenvPrivateKey (privateKeyNames) {
+function envsFromDotenvPrivateKey (privateKeyNames) {
   const envs = []
 
   for (const privateKeyName of privateKeyNames) {
@@ -15,12 +15,12 @@ function determineEnvsFromDotenvPrivateKey (privateKeyNames) {
   return envs
 }
 
-function determineEnvs (envs = [], processEnv) {
+function determine (envs = [], processEnv) {
   const privateKeyNames = dotenvPrivateKeyNames(processEnv)
   if (!envs || envs.length <= 0) {
     // if process.env.DOTENV_PRIVATE_KEY or process.env.DOTENV_PRIVATE_KEY_${environment} is set, assume inline encryption methodology
     if (privateKeyNames.length > 0) {
-      return determineEnvsFromDotenvPrivateKey(privateKeyNames)
+      return envsFromDotenvPrivateKey(privateKeyNames)
     }
 
     return DEFAULT_ENVS // default to .env file expectation
@@ -43,4 +43,4 @@ function determineEnvs (envs = [], processEnv) {
   }
 }
 
-module.exports = determineEnvs
+module.exports = determine

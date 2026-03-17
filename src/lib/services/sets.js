@@ -11,7 +11,7 @@ const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determineEnvs = require('./../helpers/determineEnvs')
+const determine = require('./../helpers/envResolution/determine')
 const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
 const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
 const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
@@ -20,7 +20,7 @@ const isEncrypted = require('./../helpers/isEncrypted')
 
 class Sets {
   constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
-    this.envs = determineEnvs(envs, process.env)
+    this.envs = determine(envs, process.env)
     this.key = key
     this.value = value
     this.encrypt = encrypt

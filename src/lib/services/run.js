@@ -14,11 +14,11 @@ const {
   privateKeyName
 } = require('./../helpers/keyResolution')
 
-const determineEnvs = require('./../helpers/determineEnvs')
+const determine = require('./../helpers/envResolution/determine')
 
 class Run {
   constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, opsOn = false) {
-    this.envs = determineEnvs(envs, processEnv)
+    this.envs = determine(envs, processEnv)
     this.overload = overload
     this.processEnv = processEnv
     this.envKeysFilepath = envKeysFilepath
