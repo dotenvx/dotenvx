@@ -1,7 +1,7 @@
 const guessKeyNames = require('./guessKeyNames')
 
-function guessPublicKeyName (filepath) {
+function publicKeyName (filepath) {
   return guessKeyNames(filepath).publicKeyName
 }
 
-module.exports = guessPublicKeyName
+module.exports = publicKeyName

@@ -6,7 +6,7 @@ const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
-const guessPublicKeyName = require('./../helpers/keyResolution/guessPublicKeyName')
+const publicKeyName = require('./../helpers/keyResolution/publicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const dotenvParse = require('./../helpers/dotenvParse')
@@ -75,7 +75,7 @@ class Encrypt {
       let publicKey
       let privateKey
 
-      const publicKeyName = guessPublicKeyName(envFilepath)
+      const resolvedPublicKeyName = publicKeyName(envFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
       const existingPublicKey = smartPublicKey(envFilepath)
       const existingPrivateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
@@ -96,7 +96,7 @@ class Encrypt {
         if (existingPublicKey && existingPublicKey !== publicKey) {
           const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
           error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-          error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(existingPublicKey)})`
+          error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${resolvedPublicKeyName}=${truncate(publicKey)} vs existing ${resolvedPublicKeyName}=${truncate(existingPublicKey)})`
           throw error
         }
 
@@ -106,7 +106,7 @@ class Encrypt {
           const firstLinePreserved = ps.firstLinePreserved
           envSrc = ps.envSrc
 
-          const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+          const prependPublicKey = this._prependPublicKey(resolvedPublicKeyName, publicKey, filename, relativeFilepath)
 
           envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
         }
@@ -133,7 +133,7 @@ class Encrypt {
         // if Ops is installed and opsOff is not set, send privateKey/privateKeyName/envFilepath
         // to your Ops service before persisting or immediately after writing below.
 
-        const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+        const prependPublicKey = this._prependPublicKey(resolvedPublicKeyName, publicKey, filename, relativeFilepath)
 
         // privateKey
         const firstTimeKeysSrc = [

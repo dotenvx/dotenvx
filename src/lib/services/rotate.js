@@ -6,7 +6,7 @@ const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
-const guessPublicKeyName = require('./../helpers/keyResolution/guessPublicKeyName')
+const publicKeyName = require('./../helpers/keyResolution/publicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const dotenvParse = require('./../helpers/dotenvParse')
@@ -73,7 +73,7 @@ class Rotate {
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
-      const publicKeyName = guessPublicKeyName(envFilepath)
+      const resolvedPublicKeyName = publicKeyName(envFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
       const existingPublicKey = smartPublicKey(envFilepath)
       const existingPrivateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
@@ -94,7 +94,7 @@ class Rotate {
       const newPrivateKey = nkp.privateKey
 
       // .env
-      envSrc = replace(envSrc, publicKeyName, newPublicKey) // replace publicKey
+      envSrc = replace(envSrc, resolvedPublicKeyName, newPublicKey) // replace publicKey
       row.changed = true // track change
       for (const [key, value] of Object.entries(envParsed)) { // re-encrypt each individual key
         // key excluded - don't re-encrypt it

@@ -5,7 +5,7 @@ const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
 const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
-const guessPublicKeyName = require('./../helpers/keyResolution/guessPublicKeyName')
+const publicKeyName = require('./../helpers/keyResolution/publicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const replace = require('./../helpers/replace')
@@ -76,7 +76,7 @@ class Sets {
         let publicKey
         let privateKey
 
-        const publicKeyName = guessPublicKeyName(envFilepath)
+        const resolvedPublicKeyName = publicKeyName(envFilepath)
         const privateKeyName = guessPrivateKeyName(envFilepath)
         const existingPublicKey = smartPublicKey(envFilepath)
         const existingPrivateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
@@ -100,7 +100,7 @@ class Sets {
           if (existingPublicKey && existingPublicKey !== publicKey) {
             const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
             error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-            error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(existingPublicKey)})`
+            error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${resolvedPublicKeyName}=${truncate(publicKey)} vs existing ${resolvedPublicKeyName}=${truncate(existingPublicKey)})`
             throw error
           }
 
@@ -110,7 +110,7 @@ class Sets {
             const firstLinePreserved = ps.firstLinePreserved
             envSrc = ps.envSrc
 
-            const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+            const prependPublicKey = this._prependPublicKey(resolvedPublicKeyName, publicKey, filename, relativeFilepath)
 
             envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
           }
@@ -131,7 +131,7 @@ class Sets {
           publicKey = kp.publicKey
           privateKey = kp.privateKey
 
-          const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+          const prependPublicKey = this._prependPublicKey(resolvedPublicKeyName, publicKey, filename, relativeFilepath)
 
           // privateKey
           const firstTimeKeysSrc = [
