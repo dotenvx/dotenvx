@@ -14,7 +14,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 const { findPrivateKey } = require('./../helpers/findPrivateKey')
 const findPublicKey = require('./../helpers/findPublicKey')
-const deriveKeypair = require('./../helpers/deriveKeypair')
+const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 const truncate = require('./../helpers/truncate')
 const isEncrypted = require('./../helpers/isEncrypted')
 

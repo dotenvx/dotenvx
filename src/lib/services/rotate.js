@@ -17,7 +17,7 @@ const determineEnvs = require('./../helpers/determineEnvs')
 const { findPrivateKey } = require('./../helpers/findPrivateKey')
 const findPublicKey = require('./../helpers/findPublicKey')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
-const deriveKeypair = require('./../helpers/deriveKeypair')
+const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 
 class Rotate {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {

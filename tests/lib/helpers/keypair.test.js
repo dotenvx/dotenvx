@@ -1,5 +1,5 @@
 const t = require('tap')
-const deriveKeypair = require('../../../src/lib/helpers/deriveKeypair')
+const deriveKeypair = require('../../../src/lib/helpers/cryptography/deriveKeypair')
 
 t.test('#keypair', ct => {
   const { publicKey, privateKey } = deriveKeypair()

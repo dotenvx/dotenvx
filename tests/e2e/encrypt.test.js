@@ -6,7 +6,7 @@ const which = require('which')
 const dotenv = require('dotenv')
 const { execSync } = require('child_process')
 
-const deriveKeypair = require('../../src/lib/helpers/deriveKeypair')
+const deriveKeypair = require('../../src/lib/helpers/cryptography/deriveKeypair')
 
 let tempDir = ''
 const osTempDir = fs.realpathSync(os.tmpdir())
