@@ -11,10 +11,15 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const {
   privateKeyValue,
   publicKeyValue,
-  privateKeyName
+  privateKeyName,
+
+  keyNames,
+  keyValues
 } = require('./../helpers/keyResolution')
 
-const determine = require('./../helpers/envResolution/determine')
+const {
+  determine
+} = require('./../helpers/envResolution')
 
 class Run {
   constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, opsOn = false) {
@@ -63,7 +68,13 @@ class Run {
     row.string = env
 
     try {
-      const { parsed, errors, injected, preExisted } = new Parse(env, null, this.processEnv, this.overload).run()
+      const {
+        parsed,
+        errors,
+        injected,
+        preExisted
+      } = new Parse(env, null, this.processEnv, this.overload).run()
+
       row.parsed = parsed
       row.errors = errors
       row.injected = injected
@@ -94,13 +105,20 @@ class Run {
       const src = fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const publicKey = publicKeyValue(envFilepath)
-      const privateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
-      const resolvedPrivateKeyName = privateKeyName(envFilepath)
-      const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload, resolvedPrivateKeyName).run()
+      // const { publicKeyValue } = keyValues(filepath, this.envKeysFilepath) // TODO: implement opsOn and publicKey
+      // const privateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
+      const { privateKeyName } = keyNames(filepath)
+      const { privateKeyValue } = keyValues(filepath, this.envKeysFilepath) // TODO: implement opsOn and publicKey
 
-      row.privateKeyName = resolvedPrivateKeyName
-      row.privateKey = privateKey
+      const {
+        parsed,
+        errors,
+        injected,
+        preExisted
+      } = new Parse(src, privateKeyValue, this.processEnv, this.overload, privateKeyName).run()
+
+      row.privateKeyName = privateKeyName
+      row.privateKey = privateKeyValue
       row.src = src
       row.parsed = parsed
       row.errors = errors

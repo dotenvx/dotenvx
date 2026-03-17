@@ -1,12 +1,18 @@
 module.exports = {
+  keyNames: require('./keyNames'),
   keyValues: require('./keyValues'),
-  privateKeyValue: require('./privateKeyValue'),
+
+  // public
+  publicKeyName: require('./publicKeyName'),
   publicKeyValue: require('./publicKeyValue'),
+
+  // private
+  privateKeyName: require('./privateKeyName'),
+  privateKeyValue: require('./privateKeyValue'),
+
+  // other
   readProcessKey: require('./readProcessKey'),
   readFileKey: require('./readFileKey'),
-  keyNames: require('./keyNames'),
-  publicKeyName: require('./publicKeyName'),
-  privateKeyName: require('./privateKeyName'),
   guessPrivateKeyFilename: require('./../guessPrivateKeyFilename'),
   dotenvPrivateKeyNames: require('./../dotenvPrivateKeyNames')
 }
