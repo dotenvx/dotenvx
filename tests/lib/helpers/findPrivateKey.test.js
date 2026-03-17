@@ -7,6 +7,10 @@ t.beforeEach(() => {
   sinon.restore()
 })
 
+t.afterEach(() => {
+  delete process.env.DOTENV_PRIVATE_KEY
+})
+
 t.test('#findPrivateKey', ct => {
   const envFilepath = 'tests/monorepo/apps/encrypted/.env'
   const privateKey = findPrivateKey(envFilepath)
@@ -42,6 +46,19 @@ t.test('#findPrivateKey uses ops lookup with provided publicKey when opsOn', ct 
 
   t.equal(privateKey, 'remote-private')
   t.ok(stub.calledOnceWith('pub'), 'Ops.keypair called with public key')
+
+  ct.end()
+})
+
+t.test('#findPrivateKey prefers process.env private key before ops lookup', ct => {
+  process.env.DOTENV_PRIVATE_KEY = 'process-env-private'
+  const stub = sinon.stub(Ops.prototype, 'keypair')
+
+  const envFilepath = 'tests/monorepo/apps/encrypted/.env'
+  const privateKey = findPrivateKey(envFilepath, null, true, 'pub')
+
+  t.equal(privateKey, 'process-env-private')
+  t.ok(stub.notCalled, 'Ops.keypair not called when process.env key present')
 
   ct.end()
 })

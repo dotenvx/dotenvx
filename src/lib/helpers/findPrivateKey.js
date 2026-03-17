@@ -10,6 +10,12 @@ function findPrivateKey (envFilepath, envKeysFilepath = null, opsOn = false, pub
   // use path/to/.env.${environment} to generate privateKeyName
   const privateKeyName = guessPrivateKeyName(envFilepath)
 
+  // prefer explicitly-set machine env key first
+  const processEnvPrivateKey = process.env[privateKeyName]
+  if (processEnvPrivateKey && processEnvPrivateKey.length > 0) {
+    return processEnvPrivateKey
+  }
+
   if (opsOn) {
     const resolvedPublicKey = publicKey || findPublicKey(envFilepath)
     const opsPrivateKey = new Ops().keypair(resolvedPublicKey)
