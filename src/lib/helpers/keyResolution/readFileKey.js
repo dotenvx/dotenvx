@@ -1,7 +1,7 @@
 const fsx = require('./../fsx')
 const dotenvParse = require('./../dotenvParse')
 
-function readEnvFileKey (keyName, filepath) {
+function readFileKey (keyName, filepath) {
   if (fsx.existsSync(filepath)) {
     const src = fsx.readFileX(filepath)
     const parsed = dotenvParse(src)
@@ -12,4 +12,4 @@ function readEnvFileKey (keyName, filepath) {
   }
 }
 
-module.exports = readEnvFileKey
+module.exports = readFileKey

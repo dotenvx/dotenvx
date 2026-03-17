@@ -4,7 +4,7 @@ const fsx = require('./../fsx')
 const dotenvParse = require('./../dotenvParse')
 const keyNames = require('./keyNames')
 const readProcessEnvKey = require('./readProcessEnvKey')
-const readEnvFileKey = require('./readEnvFileKey')
+const readFileKey = require('./readFileKey')
 
 function invertForPrivateKeyName (filepath) {
   const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
@@ -42,7 +42,7 @@ function keyValues (filepath, keysFilepath = null) {
   // public key: process.env first, then .env*
   publicKey = readProcessEnvKey(publicKeyName)
   if (!publicKey) {
-    publicKey = readEnvFileKey(publicKeyName, filepath) || null
+    publicKey = readFileKey(publicKeyName, filepath) || null
   }
   // TODO: read from Ops
 
@@ -55,7 +55,7 @@ function keyValues (filepath, keysFilepath = null) {
       keysFilepath = path.resolve(path.dirname(filepath), '.env.keys') // typical scenario
     }
 
-    privateKey = readEnvFileKey(privateKeyName, keysFilepath)
+    privateKey = readFileKey(privateKeyName, keysFilepath)
 
     // attempt inverting DOTENV_PUBLIC_KEY* name for custom filenames
     if (!privateKey) {
@@ -63,7 +63,7 @@ function keyValues (filepath, keysFilepath = null) {
       if (privateKeyName) {
         privateKey = readProcessEnvKey(privateKeyName)
         if (!privateKey) {
-          privateKey = readEnvFileKey(privateKeyName, keysFilepath)
+          privateKey = readFileKey(privateKeyName, keysFilepath)
         }
       }
     }
