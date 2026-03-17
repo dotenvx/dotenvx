@@ -2,12 +2,7 @@ const fsx = require('./../fsx')
 const dotenvParse = require('./../dotenvParse')
 
 const guessPublicKeyName = require('./guessPublicKeyName')
-
-function searchProcessEnv (publicKeyName) {
-  if (process.env[publicKeyName] && process.env[publicKeyName].length > 0) {
-    return process.env[publicKeyName]
-  }
-}
+const readProcessEnvKey = require('./readProcessEnvKey')
 
 function searchEnvFile (publicKeyName, envFilepath) {
   if (fsx.existsSync(envFilepath)) {
@@ -25,7 +20,7 @@ function smartDotenvPublicKey (envFilepath) {
   const publicKeyName = guessPublicKeyName(envFilepath) // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
 
   // 1. attempt process.env first
-  publicKey = searchProcessEnv(publicKeyName)
+  publicKey = readProcessEnvKey(publicKeyName)
   if (publicKey) {
     return publicKey
   }

@@ -6,12 +6,7 @@ const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 
 const dotenvParse = require('./../dotenvParse')
 const guessPrivateKeyName = require('./guessPrivateKeyName')
-
-function searchProcessEnv (privateKeyName) {
-  if (process.env[privateKeyName] && process.env[privateKeyName].length > 0) {
-    return process.env[privateKeyName]
-  }
-}
+const readProcessEnvKey = require('./readProcessEnvKey')
 
 function searchKeysFile (privateKeyName, envFilepath, envKeysFilepath = null) {
   let keysFilepath = path.resolve(path.dirname(envFilepath), '.env.keys') // typical scenario
@@ -56,7 +51,7 @@ function smartDotenvPrivateKey (envFilepath, envKeysFilepath = null) {
   let privateKeyName = guessPrivateKeyName(envFilepath) // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
 
   // 1. attempt process.env first
-  privateKey = searchProcessEnv(privateKeyName)
+  privateKey = readProcessEnvKey(privateKeyName)
   if (privateKey) {
     return privateKey
   }
@@ -71,7 +66,7 @@ function smartDotenvPrivateKey (envFilepath, envKeysFilepath = null) {
   privateKeyName = invertForPrivateKeyName(envFilepath)
   if (privateKeyName) {
     // 3.1 attempt process.env first
-    privateKey = searchProcessEnv(privateKeyName)
+    privateKey = readProcessEnvKey(privateKeyName)
     if (privateKey) {
       return privateKey
     }

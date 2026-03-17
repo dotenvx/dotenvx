@@ -3,6 +3,7 @@ module.exports = {
   findPublicKey: require('./../findPublicKey'),
   smartDotenvPrivateKey: require('./smartDotenvPrivateKey'),
   smartDotenvPublicKey: require('./smartDotenvPublicKey'),
+  readProcessEnvKey: require('./readProcessEnvKey'),
   guessKeyNames: require('./guessKeyNames'),
   guessPublicKeyName: require('./guessPublicKeyName'),
   guessPrivateKeyName: require('./guessPrivateKeyName'),
