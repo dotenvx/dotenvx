@@ -1,5 +1,5 @@
 module.exports = {
-  smartKeyValues: require('./smartKeyValues'),
+  keyValues: require('./keyValues'),
   smartPrivateKey: require('./smartPrivateKey'),
   smartPublicKey: require('./smartPublicKey'),
   readProcessEnvKey: require('./readProcessEnvKey'),
