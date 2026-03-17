@@ -1,6 +1,6 @@
 const guessKeyNames = require('./../helpers/keyResolution/guessKeyNames')
-const smartPublicKey = require('./../helpers/keyResolution/smartPublicKey')
-const smartPrivateKey = require('./../helpers/keyResolution/smartPrivateKey')
+const smartKeyValues = require('./../helpers/keyResolution/smartKeyValues')
+
 // const Ops = require('./ops')
 
 class Keypair {
@@ -15,19 +15,10 @@ class Keypair {
 
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
-      // keynames
       const { publicKeyName, privateKeyName } = guessKeyNames(filepath)
+      const { publicKeyValue, privateKeyValue } = smartKeyValues(filepath, this.envKeysFilepath)
 
-      // public key
-      const publicKeyValue = smartPublicKey(filepath)
       out[publicKeyName] = publicKeyValue
-
-      // private key
-      let privateKeyValue = null
-      if (!privateKeyValue) {
-        privateKeyValue = smartPrivateKey(filepath, this.envKeysFilepath, this.opsOn)
-      }
-
       out[privateKeyName] = privateKeyValue
     }
 
