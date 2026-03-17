@@ -1,6 +1,6 @@
 const path = require('path')
 
-function guessEnvironment (filepath) {
+function environment (filepath) {
   const filename = path.basename(filepath).toLowerCase()
 
   const parts = filename.split('.')
@@ -24,4 +24,4 @@ function guessEnvironment (filepath) {
   return possibleEnvironmentList.slice(0, 2).join('_')
 }
 
-module.exports = guessEnvironment
+module.exports = environment

@@ -1,5 +1,5 @@
 const path = require('path')
-const guessEnvironment = require('./../envResolution/guessEnvironment')
+const environment = require('./../envResolution/environment')
 
 function guessKeyNames (filepath) {
   const filename = path.basename(filepath).toLowerCase()
@@ -13,11 +13,11 @@ function guessKeyNames (filepath) {
   }
 
   // .env.ENVIRONMENT
-  const environment = guessEnvironment(filename).toUpperCase()
+  const resolvedEnvironment = environment(filename).toUpperCase()
 
   return {
-    publicKeyName: `DOTENV_PUBLIC_KEY_${environment}`,
-    privateKeyName: `DOTENV_PRIVATE_KEY_${environment}`
+    publicKeyName: `DOTENV_PUBLIC_KEY_${resolvedEnvironment}`,
+    privateKeyName: `DOTENV_PRIVATE_KEY_${resolvedEnvironment}`
   }
 }
 
