@@ -4,7 +4,7 @@ module.exports = {
   smartDotenvPrivateKey: require('./../smartDotenvPrivateKey'),
   smartDotenvPublicKey: require('./../smartDotenvPublicKey'),
   guessPublicKeyName: require('./guessPublicKeyName'),
-  guessPrivateKeyName: require('./../guessPrivateKeyName'),
+  guessPrivateKeyName: require('./guessPrivateKeyName'),
   guessPrivateKeyFilename: require('./../guessPrivateKeyFilename'),
   dotenvPrivateKeyNames: require('./../dotenvPrivateKeyNames')
 }

@@ -1,5 +1,5 @@
 const path = require('path')
-const guessEnvironment = require('./../guessEnvironment')
+const guessEnvironment = require('./../envResolution/guessEnvironment')
 
 function guessPublicKeyName (filepath) {
   const filename = path.basename(filepath).toLowerCase()

@@ -1,6 +1,6 @@
 const t = require('tap')
 
-const guessEnvironment = require('../../../src/lib/helpers/guessEnvironment')
+const guessEnvironment = require('../../../../src/lib/helpers/envResolution/guessEnvironment')
 
 t.test('#guessEnvironment (.env)', ct => {
   const filepath = '.env'
@@ -13,6 +13,15 @@ t.test('#guessEnvironment (.env)', ct => {
 
 t.test('#guessEnvironment (.env.production)', ct => {
   const filepath = '.env.production'
+  const environment = guessEnvironment(filepath)
+
+  ct.same(environment, 'production')
+
+  ct.end()
+})
+
+t.test('#guessEnvironment (.ENV.PRODUCTION)', ct => {
+  const filepath = '.ENV.PRODUCTION'
   const environment = guessEnvironment(filepath)
 
   ct.same(environment, 'production')

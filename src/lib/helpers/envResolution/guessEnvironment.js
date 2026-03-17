@@ -1,7 +1,7 @@
 const path = require('path')
 
 function guessEnvironment (filepath) {
-  const filename = path.basename(filepath)
+  const filename = path.basename(filepath).toLowerCase()
 
   const parts = filename.split('.')
   const possibleEnvironmentList = [...parts.slice(2)]
@@ -17,9 +17,7 @@ function guessEnvironment (filepath) {
     return possibleEnvironmentList[0]
   }
 
-  if (
-    possibleEnvironmentList.length === 2
-  ) {
+  if (possibleEnvironmentList.length === 2) {
     return possibleEnvironmentList.join('_')
   }
 

@@ -1,6 +1,6 @@
 const t = require('tap')
 
-const guessPrivateKeyName = require('../../../src/lib/helpers/guessPrivateKeyName')
+const guessPrivateKeyName = require('../../../../src/lib/helpers/keyResolution/guessPrivateKeyName')
 
 t.test('#guessPrivateKeyName (.env)', ct => {
   const filepath = '.env'

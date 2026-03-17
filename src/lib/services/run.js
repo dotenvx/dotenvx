@@ -13,7 +13,7 @@ const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFrom
 const detectEncoding = require('./../helpers/detectEncoding')
 const { findPrivateKey } = require('./../helpers/findPrivateKey')
 const findPublicKey = require('./../helpers/findPublicKey')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
+const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Run {

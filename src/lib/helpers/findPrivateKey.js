@@ -1,5 +1,5 @@
 // helpers
-const guessPrivateKeyName = require('./guessPrivateKeyName')
+const guessPrivateKeyName = require('./keyResolution/guessPrivateKeyName')
 const findPublicKey = require('./findPublicKey')
 
 // services

@@ -5,7 +5,7 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
+const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
 const guessPublicKeyName = require('./../helpers/keyResolution/guessPublicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
