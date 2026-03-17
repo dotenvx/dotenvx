@@ -1,18 +1,7 @@
-const path = require('path')
-const guessEnvironment = require('../envResolution/guessEnvironment')
+const guessKeyNames = require('./guessKeyNames')
 
 function guessPrivateKeyName (filepath) {
-  const filename = path.basename(filepath).toLowerCase()
-
-  // .env
-  if (filename === '.env') {
-    return 'DOTENV_PRIVATE_KEY'
-  }
-
-  // .env.ENVIRONMENT
-  const environment = guessEnvironment(filename)
-
-  return `DOTENV_PRIVATE_KEY_${environment.toUpperCase()}`
+  return guessKeyNames(filepath).privateKeyName
 }
 
 module.exports = guessPrivateKeyName

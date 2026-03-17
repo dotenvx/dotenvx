@@ -1,11 +1,11 @@
-const fsx = require('./fsx')
+const fsx = require('./../fsx')
 const path = require('path')
 
 const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
 const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 
-const dotenvParse = require('./dotenvParse')
-const guessPrivateKeyName = require('./keyResolution/guessPrivateKeyName')
+const dotenvParse = require('./../dotenvParse')
+const guessPrivateKeyName = require('./guessPrivateKeyName')
 
 function searchProcessEnv (privateKeyName) {
   if (process.env[privateKeyName] && process.env[privateKeyName].length > 0) {

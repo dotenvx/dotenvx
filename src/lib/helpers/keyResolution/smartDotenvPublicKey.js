@@ -1,7 +1,7 @@
-const fsx = require('./fsx')
-const dotenvParse = require('./dotenvParse')
+const fsx = require('./../fsx')
+const dotenvParse = require('./../dotenvParse')
 
-const guessPublicKeyName = require('./keyResolution/guessPublicKeyName')
+const guessPublicKeyName = require('./guessPublicKeyName')
 
 function searchProcessEnv (publicKeyName) {
   if (process.env[publicKeyName] && process.env[publicKeyName].length > 0) {

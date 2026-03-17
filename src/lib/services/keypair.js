@@ -1,8 +1,9 @@
-const guessPublicKeyName = require('./../helpers/keyResolution/guessPublicKeyName')
-const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
-const smartDotenvPublicKey = require('./../helpers/smartDotenvPublicKey')
-const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
-const Ops = require('./ops')
+const {
+  guessKeyNames,
+  smartDotenvPublicKey,
+  smartDotenvPrivateKey
+} = require('./../helpers/keyResolution')
+// const Ops = require('./ops')
 
 class Keypair {
   constructor (envFile = '.env', envKeysFilepath = null, opsOn = false) {
@@ -14,19 +15,19 @@ class Keypair {
   run () {
     const out = {}
 
-    const envFilepaths = this._envFilepaths()
-    for (const envFilepath of envFilepaths) {
+    const filepaths = this._filepaths()
+    for (const filepath of filepaths) {
+      // keynames
+      const { publicKeyName, privateKeyName } = guessKeyNames(filepath)
+
       // public key
-      const publicKeyName = guessPublicKeyName(envFilepath)
-      const publicKeyValue = smartDotenvPublicKey(envFilepath)
+      const publicKeyValue = smartDotenvPublicKey(filepath)
       out[publicKeyName] = publicKeyValue
 
       // private key
-      const privateKeyName = guessPrivateKeyName(envFilepath)
       let privateKeyValue = null
-
       if (!privateKeyValue) {
-        privateKeyValue = smartDotenvPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn)
+        privateKeyValue = smartDotenvPrivateKey(filepath, this.envKeysFilepath, this.opsOn)
       }
 
       out[privateKeyName] = privateKeyValue
@@ -35,7 +36,7 @@ class Keypair {
     return out
   }
 
-  _envFilepaths () {
+  _filepaths () {
     if (!Array.isArray(this.envFile)) {
       return [this.envFile]
     }

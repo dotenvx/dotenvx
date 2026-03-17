@@ -1,6 +1,6 @@
 const t = require('tap')
 
-const smartDotenvPrivateKey = require('../../../src/lib/helpers/smartDotenvPrivateKey')
+const smartDotenvPrivateKey = require('../../../../src/lib/helpers/keyResolution/smartDotenvPrivateKey')
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
