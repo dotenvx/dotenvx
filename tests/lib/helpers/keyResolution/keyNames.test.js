@@ -1,9 +1,9 @@
 const t = require('tap')
 
-const guessKeyNames = require('../../../../src/lib/helpers/keyResolution/guessKeyNames')
+const keyNames = require('../../../../src/lib/helpers/keyResolution/keyNames')
 
-t.test('#guessKeyNames (.env)', ct => {
-  const result = guessKeyNames('.env')
+t.test('#keyNames (.env)', ct => {
+  const result = keyNames('.env')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY',
@@ -13,8 +13,8 @@ t.test('#guessKeyNames (.env)', ct => {
   ct.end()
 })
 
-t.test('#guessKeyNames (.env.production)', ct => {
-  const result = guessKeyNames('.env.production')
+t.test('#keyNames (.env.production)', ct => {
+  const result = keyNames('.env.production')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_PRODUCTION',
@@ -24,8 +24,8 @@ t.test('#guessKeyNames (.env.production)', ct => {
   ct.end()
 })
 
-t.test('#guessKeyNames (.ENV.LOCAL)', ct => {
-  const result = guessKeyNames('.ENV.LOCAL')
+t.test('#keyNames (.ENV.LOCAL)', ct => {
+  const result = keyNames('.ENV.LOCAL')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_LOCAL',

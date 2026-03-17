@@ -1,7 +1,7 @@
 const path = require('path')
 const environment = require('./../envResolution/environment')
 
-function guessKeyNames (filepath) {
+function keyNames (filepath) {
   const filename = path.basename(filepath).toLowerCase()
 
   // .env
@@ -21,4 +21,4 @@ function guessKeyNames (filepath) {
   }
 }
 
-module.exports = guessKeyNames
+module.exports = keyNames

@@ -4,7 +4,7 @@ module.exports = {
   smartPublicKey: require('./smartPublicKey'),
   readProcessEnvKey: require('./readProcessEnvKey'),
   readEnvFileKey: require('./readEnvFileKey'),
-  guessKeyNames: require('./guessKeyNames'),
+  keyNames: require('./keyNames'),
   publicKeyName: require('./publicKeyName'),
   privateKeyName: require('./privateKeyName'),
   guessPrivateKeyFilename: require('./../guessPrivateKeyFilename'),

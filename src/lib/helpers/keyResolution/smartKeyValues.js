@@ -2,7 +2,7 @@ const path = require('path')
 
 const fsx = require('./../fsx')
 const dotenvParse = require('./../dotenvParse')
-const guessKeyNames = require('./guessKeyNames')
+const keyNames = require('./keyNames')
 const readProcessEnvKey = require('./readProcessEnvKey')
 const readEnvFileKey = require('./readEnvFileKey')
 
@@ -32,7 +32,7 @@ function invertForPrivateKeyName (filepath) {
 }
 
 function smartKeyValues (filepath, keysFilepath = null) {
-  const names = guessKeyNames(filepath)
+  const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
 
