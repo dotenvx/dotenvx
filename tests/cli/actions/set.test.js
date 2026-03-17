@@ -279,6 +279,24 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
   ct.end()
 })
 
+t.test('set - --ops-off passes opsOn false to Sets service', ct => {
+  sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({ opsOff: true })
+  const fakeContext = { opts: optsStub }
+  const runStub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [],
+    changedFilepaths: [],
+    unchangedFilepaths: []
+  })
+
+  set.call(fakeContext, 'HELLO', 'World')
+
+  t.ok(runStub.calledOnce, 'Sets().run() called')
+  t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
+
+  ct.end()
+})
+
 t.test('set - catch error', ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')

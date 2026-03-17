@@ -2,6 +2,7 @@ const t = require('tap')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const Sets = require('../../../src/lib/services/sets')
 
@@ -772,5 +773,27 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and pri
   }])
   ct.same(changedFilepaths, ['tests/monorepo/apps/app1/.env.production'])
 
+  ct.end()
+})
+
+t.test('#run passes opsOn to findPrivateKey', ct => {
+  const sandbox = sinon.createSandbox()
+  const findPrivateKeyStub = sandbox.stub().returns(null)
+
+  const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
+    './../helpers/findPrivateKey': { findPrivateKey: findPrivateKeyStub }
+  })
+
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const envs = [{ type: 'envFile', value: envFile }]
+
+  new SetsWithStub('KEY', 'value', envs).run()
+  t.equal(findPrivateKeyStub.firstCall.args[2], true, 'opsOn defaults to true')
+
+  findPrivateKeyStub.resetHistory()
+  new SetsWithStub('KEY', 'value', envs, true, null, false).run()
+  t.equal(findPrivateKeyStub.firstCall.args[2], false, 'opsOn false when provided')
+
+  sandbox.restore()
   ct.end()
 })

@@ -19,12 +19,13 @@ const truncate = require('./../helpers/truncate')
 const isEncrypted = require('./../helpers/isEncrypted')
 
 class Sets {
-  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null) {
+  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = true) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.value = value
     this.encrypt = encrypt
     this.envKeysFilepath = envKeysFilepath
+    this.opsOn = opsOn
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -78,7 +79,7 @@ class Sets {
         const publicKeyName = guessPublicKeyName(envFilepath)
         const privateKeyName = guessPrivateKeyName(envFilepath)
         const existingPublicKey = findPublicKey(envFilepath)
-        const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, false, existingPublicKey)
+        const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
 
         let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         if (this.envKeysFilepath) {

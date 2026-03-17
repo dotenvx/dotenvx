@@ -432,6 +432,20 @@ t.test('set calls Sets.run with custom envKeysFile', ct => {
   ct.end()
 })
 
+t.test('set calls Sets.run with opsOff true', ct => {
+  const stub = sinon.stub(Sets.prototype, 'run')
+  stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
+
+  main.set('KEY', 'value', { opsOff: true })
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.equal(stub.thisValues[0].opsOn, false, 'Sets was called with opsOn false')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('set calls Sets.run - no changes', ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   const processedEnvs = [{

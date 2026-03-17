@@ -205,6 +205,14 @@ export interface SetOptions {
    * @example require('@dotenvx/dotenvx').config(key, value, { encrypt: false } })
    */
   encrypt?: boolean;
+
+  /**
+   * Turn off Dotenvx Ops features - https://dotenvx.com/ops
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').set(key, value, { opsOff: true })
+   */
+  opsOff?: boolean;
 }
 
 export type SetProcessedEnv = {

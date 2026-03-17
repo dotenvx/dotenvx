@@ -22,12 +22,13 @@ function set (key, value) {
   try {
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
+    const opsOn = options.opsOff !== true
 
     const {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
+    } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).run()
 
     let withEncryption = ''
 

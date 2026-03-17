@@ -192,12 +192,13 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
+  const opsOn = options.opsOff !== true
 
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).run()
 
   let withEncryption = ''
 
