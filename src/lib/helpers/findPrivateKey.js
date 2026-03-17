@@ -10,19 +10,20 @@ function findPrivateKey (envFilepath, envKeysFilepath = null, opsOn = false, pub
   // use path/to/.env.${environment} to generate privateKeyName
   const privateKeyName = guessPrivateKeyName(envFilepath)
 
+  // Why is this needed? didn't keypair handle this for us prior?
   // prefer explicitly-set machine env key first
-  const processEnvPrivateKey = process.env[privateKeyName]
-  if (processEnvPrivateKey && processEnvPrivateKey.length > 0) {
-    return processEnvPrivateKey
-  }
+  // const processEnvPrivateKey = process.env[privateKeyName]
+  // if (processEnvPrivateKey && processEnvPrivateKey.length > 0) {
+  //   return processEnvPrivateKey
+  // }
 
-  if (opsOn) {
-    const resolvedPublicKey = publicKey || findPublicKey(envFilepath)
-    const opsPrivateKey = new Ops().keypair(resolvedPublicKey)
-    if (opsPrivateKey) {
-      return opsPrivateKey
-    }
-  }
+  // if (opsOn) {
+  //   const resolvedPublicKey = publicKey || findPublicKey(envFilepath)
+  //   const opsPrivateKey = new Ops().keypair(resolvedPublicKey)
+  //   if (opsPrivateKey) {
+  //     return opsPrivateKey
+  //   }
+  // }
 
   const keypairs = new Keypair(envFilepath, envKeysFilepath).run()
   return keypairs[privateKeyName]

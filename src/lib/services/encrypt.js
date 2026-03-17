@@ -20,7 +20,7 @@ const truncate = require('./../helpers/truncate')
 const isPublicKey = require('./../helpers/isPublicKey')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = true) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey

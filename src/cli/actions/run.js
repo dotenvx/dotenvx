@@ -50,11 +50,6 @@ async function run () {
       uniqueInjectedKeys
     } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile, opsOn).run()
 
-    if (opsOn) {
-      // removed radar feature for now. contact me at mot@dotenvx.com if still needed for your organization.
-      // try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
-    }
-
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envVaultFile') {
         logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)

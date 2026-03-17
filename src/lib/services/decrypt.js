@@ -16,7 +16,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Decrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = true) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey

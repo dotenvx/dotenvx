@@ -19,7 +19,7 @@ const truncate = require('./../helpers/truncate')
 const isEncrypted = require('./../helpers/isEncrypted')
 
 class Sets {
-  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = true) {
+  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.value = value

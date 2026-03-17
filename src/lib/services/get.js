@@ -2,7 +2,7 @@ const Run = require('./run')
 const Errors = require('./../helpers/errors')
 
 class Get {
-  constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false, envKeysFilepath = null, opsOn = true) {
+  constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false, envKeysFilepath = null, opsOn = false) {
     this.key = key
     this.envs = envs
     this.overload = overload
