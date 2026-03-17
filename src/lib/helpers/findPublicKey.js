@@ -1,5 +1,5 @@
 // helpers
-const guessPublicKeyName = require('./guessPublicKeyName')
+const guessPublicKeyName = require('./keyResolution/guessPublicKeyName')
 
 // services
 const Keypair = require('./../services/keypair')

@@ -1,4 +1,4 @@
-const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
+const guessPublicKeyName = require('./../helpers/keyResolution/guessPublicKeyName')
 const smartDotenvPublicKey = require('./../helpers/smartDotenvPublicKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
