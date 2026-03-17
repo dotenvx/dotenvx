@@ -4,7 +4,7 @@ const path = require('path')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
+const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
 const publicKeyName = require('./../helpers/keyResolution/publicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
@@ -77,7 +77,7 @@ class Sets {
         let privateKey
 
         const resolvedPublicKeyName = publicKeyName(envFilepath)
-        const privateKeyName = guessPrivateKeyName(envFilepath)
+        const resolvedPrivateKeyName = privateKeyName(envFilepath)
         const existingPublicKey = smartPublicKey(envFilepath)
         const existingPrivateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
 
@@ -93,14 +93,14 @@ class Sets {
           privateKey = kp.privateKey
 
           if (row.originalValue) {
-            row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
+            row.originalValue = decryptKeyValue(row.key, row.originalValue, resolvedPrivateKeyName, privateKey)
           }
 
           // if derivation doesn't match what's in the file (or preset in env)
           if (existingPublicKey && existingPublicKey !== publicKey) {
             const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
             error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-            error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${resolvedPublicKeyName}=${truncate(publicKey)} vs existing ${resolvedPublicKeyName}=${truncate(existingPublicKey)})`
+            error.help = `debug info: ${resolvedPrivateKeyName}=${truncate(existingPrivateKey)} (derived ${resolvedPublicKeyName}=${truncate(publicKey)} vs existing ${resolvedPublicKeyName}=${truncate(existingPublicKey)})`
             throw error
           }
 
@@ -143,7 +143,7 @@ class Sets {
           ].join('\n')
           const appendPrivateKey = [
             `# ${filename}`,
-            `${privateKeyName}=${privateKey}`,
+            `${resolvedPrivateKeyName}=${privateKey}`,
             ''
           ].join('\n')
 
@@ -161,7 +161,7 @@ class Sets {
         row.publicKey = publicKey
         row.privateKey = privateKey
         row.encryptedValue = encryptValue(this.value, publicKey)
-        row.privateKeyName = privateKeyName
+        row.privateKeyName = resolvedPrivateKeyName
       }
 
       const goingFromPlainTextToEncrypted = wasPlainText && this.encrypt

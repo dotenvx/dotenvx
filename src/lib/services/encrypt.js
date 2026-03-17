@@ -5,7 +5,7 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
+const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
 const publicKeyName = require('./../helpers/keyResolution/publicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
@@ -76,7 +76,7 @@ class Encrypt {
       let privateKey
 
       const resolvedPublicKeyName = publicKeyName(envFilepath)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
+      const resolvedPrivateKeyName = privateKeyName(envFilepath)
       const existingPublicKey = smartPublicKey(envFilepath)
       const existingPrivateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
 
@@ -96,7 +96,7 @@ class Encrypt {
         if (existingPublicKey && existingPublicKey !== publicKey) {
           const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
           error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-          error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${resolvedPublicKeyName}=${truncate(publicKey)} vs existing ${resolvedPublicKeyName}=${truncate(existingPublicKey)})`
+          error.help = `debug info: ${resolvedPrivateKeyName}=${truncate(existingPrivateKey)} (derived ${resolvedPublicKeyName}=${truncate(publicKey)} vs existing ${resolvedPublicKeyName}=${truncate(existingPublicKey)})`
           throw error
         }
 
@@ -145,7 +145,7 @@ class Encrypt {
         ].join('\n')
         const appendPrivateKey = [
           `# ${filename}`,
-          `${privateKeyName}=${privateKey}`,
+          `${resolvedPrivateKeyName}=${privateKey}`,
           ''
         ].join('\n')
 
@@ -165,7 +165,7 @@ class Encrypt {
 
       row.publicKey = publicKey
       row.privateKey = privateKey
-      row.privateKeyName = privateKeyName
+      row.privateKeyName = resolvedPrivateKeyName
 
       // iterate over all non-encrypted values and encrypt them
       for (const [key, value] of Object.entries(envParsed)) {

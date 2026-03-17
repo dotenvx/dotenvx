@@ -6,7 +6,7 @@ module.exports = {
   readEnvFileKey: require('./readEnvFileKey'),
   guessKeyNames: require('./guessKeyNames'),
   publicKeyName: require('./publicKeyName'),
-  guessPrivateKeyName: require('./guessPrivateKeyName'),
+  privateKeyName: require('./privateKeyName'),
   guessPrivateKeyFilename: require('./../guessPrivateKeyFilename'),
   dotenvPrivateKeyNames: require('./../dotenvPrivateKeyNames')
 }

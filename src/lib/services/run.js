@@ -13,7 +13,7 @@ const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFrom
 const detectEncoding = require('./../helpers/detectEncoding')
 const smartPrivateKey = require('./../helpers/keyResolution/smartPrivateKey')
 const smartPublicKey = require('./../helpers/keyResolution/smartPublicKey')
-const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
+const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
 const determineEnvs = require('./../helpers/determineEnvs')
 
 class Run {
@@ -100,10 +100,10 @@ class Run {
 
       const publicKey = smartPublicKey(envFilepath)
       const privateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
-      const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload, privateKeyName).run()
+      const resolvedPrivateKeyName = privateKeyName(envFilepath)
+      const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload, resolvedPrivateKeyName).run()
 
-      row.privateKeyName = privateKeyName
+      row.privateKeyName = resolvedPrivateKeyName
       row.privateKey = privateKey
       row.src = src
       row.parsed = parsed

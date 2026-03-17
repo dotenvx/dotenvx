@@ -5,7 +5,7 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
+const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
 const publicKeyName = require('./../helpers/keyResolution/publicKeyName')
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
@@ -74,7 +74,7 @@ class Rotate {
       const envParsed = dotenvParse(envSrc)
 
       const resolvedPublicKeyName = publicKeyName(envFilepath)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
+      const resolvedPrivateKeyName = privateKeyName(envFilepath)
       const existingPublicKey = smartPublicKey(envFilepath)
       const existingPrivateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
 
@@ -110,7 +110,7 @@ class Rotate {
         if (isEncrypted(value)) { // only re-encrypt those already encrypted
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptKeyValue(key, value, privateKeyName, existingPrivateKey) // get decrypted value
+          const decryptedValue = decryptKeyValue(key, value, resolvedPrivateKeyName, existingPrivateKey) // get decrypted value
 
           const encryptedValue = encryptValue(decryptedValue, newPublicKey) // encrypt with the new publicKey
 
@@ -121,9 +121,9 @@ class Rotate {
 
       // .env.keys - TODO: for dotenvx pro .env.keys file does not exist
       row.privateKeyAdded = true
-      row.privateKeyName = privateKeyName
+      row.privateKeyName = resolvedPrivateKeyName
       row.privateKey = newPrivateKey
-      envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
+      envKeysSrc = append(envKeysSrc, resolvedPrivateKeyName, newPrivateKey) // append privateKey
       this.envKeysSources[envKeysFilepath] = envKeysSrc
       row.envKeysSrc = envKeysSrc
 

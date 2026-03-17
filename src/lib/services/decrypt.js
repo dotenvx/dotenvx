@@ -5,7 +5,7 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/keyResolution/guessPrivateKeyName')
+const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
 const smartPublicKey = require('./../helpers/keyResolution/smartPublicKey')
 const smartPrivateKey = require('./../helpers/keyResolution/smartPrivateKey')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
@@ -69,10 +69,10 @@ class Decrypt {
 
       const publicKey = smartPublicKey(envFilepath)
       const privateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
+      const resolvedPrivateKeyName = privateKeyName(envFilepath)
 
       row.privateKey = privateKey
-      row.privateKeyName = privateKeyName
+      row.privateKeyName = resolvedPrivateKeyName
       row.changed = false // track possible changes
 
       for (const [key, value] of Object.entries(envParsed)) {
@@ -90,7 +90,7 @@ class Decrypt {
         if (encrypted) {
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKey)
+          const decryptedValue = decryptKeyValue(key, value, resolvedPrivateKeyName, privateKey)
           // once newSrc is built write it out
           envSrc = replace(envSrc, key, decryptedValue)
 
