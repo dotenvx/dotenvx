@@ -68,18 +68,6 @@ t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
   ct.end()
 })
 
-t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
-  sinon.stub(fsx, 'readFileX').returns('.env*')
-  sinon.stub(fsx, 'readdirSync').returns(['.env.vault'])
-  sinon.stub(Ls.prototype, 'run').returns(['.env.vault'])
-  childProcess.execSync.returns(Buffer.from('.env.vault'))
-
-  const { warnings } = new Precommit().run()
-  ct.same(warnings[0].message, `${prefix} .env.vault (currently ignored but should not be)`)
-
-  ct.end()
-})
-
 t.test('#run (gitignore is ignoring .env.x file and shouldn\'t)', ct => {
   sinon.stub(fsx, 'readFileX').returns('.env*')
   sinon.stub(fsx, 'readdirSync').returns(['.env.x'])

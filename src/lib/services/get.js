@@ -2,11 +2,10 @@ const Run = require('./run')
 const Errors = require('./../helpers/errors')
 
 class Get {
-  constructor (key, envs = [], overload = false, DOTENV_KEY = '', all = false, envKeysFilepath = null, opsOn = false) {
+  constructor (key, envs = [], overload = false, all = false, envKeysFilepath = null, opsOn = true) {
     this.key = key
     this.envs = envs
     this.overload = overload
-    this.DOTENV_KEY = DOTENV_KEY
     this.all = all
     this.envKeysFilepath = envKeysFilepath
     this.opsOn = opsOn
@@ -14,7 +13,7 @@ class Get {
 
   run () {
     const processEnv = { ...process.env }
-    const { processedEnvs } = new Run(this.envs, this.overload, this.DOTENV_KEY, processEnv, this.envKeysFilepath, this.opsOn).run()
+    const { processedEnvs } = new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.opsOn).run()
 
     const errors = []
     for (const processedEnv of processedEnvs) {

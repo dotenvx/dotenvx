@@ -78,69 +78,6 @@ t.test('run --convention', async ct => {
   ct.end()
 })
 
-t.test('run - DOTENV_KEY', async ct => {
-  const optsStub = sinon.stub().returns({ convention: 'nextjs' })
-  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
-  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
-  stub.returns({
-    processedEnvs: [],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
-  })
-  const loggerSuccessvStub = sinon.stub(logger, 'successv')
-  const loggerWarnStub = sinon.stub(logger, 'warn')
-  process.env.DOTENV_KEY = 'vlt_1234'
-
-  await run.call(fakeContext)
-
-  t.ok(stub.called, 'new Run().run() called')
-  t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
-  t.ok(loggerWarnStub.calledWith('[DEPRECATION NOTICE] Setting DOTENV_KEY with .env.vault is deprecated.'), 'logger.warn')
-  t.ok(loggerWarnStub.calledWith('[DEPRECATION NOTICE] Run [dotenvx ext vault migrate] for instructions on converting your .env.vault file to encrypted .env files (using public key encryption algorithm secp256k1)'), 'logger.warn')
-  t.ok(loggerWarnStub.calledWith('[DEPRECATION NOTICE] Read more at [https://github.com/dotenvx/dotenvx/blob/main/CHANGELOG.md#0380]'), 'logger.warn')
-
-  ct.end()
-})
-
-t.test('run - envVaultFile', async ct => {
-  const optsStub = sinon.stub().returns({})
-  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
-  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
-  stub.returns({
-    processedEnvs: [{
-      type: 'envVaultFile',
-      filepath: '.env.vault',
-      parsed: {
-        HELLO: 'World'
-      },
-      injected: {
-        HELLO: 'World'
-      },
-      preExisted: {}
-    }],
-    readableStrings: [],
-    readableFilepaths: ['.env.vault'],
-    uniqueInjectedKeys: ['HELLO']
-  })
-  const loggerSuccessvStub = sinon.stub(logger, 'successv')
-  const loggerVerboseStub = sinon.stub(logger, 'verbose')
-  const loggerDebugStub = sinon.stub(logger, 'debug')
-
-  await run.call(fakeContext)
-
-  t.ok(stub.called, 'new Run().run() called')
-  t.ok(loggerVerboseStub.calledWith(`loading env from encrypted .env.vault (${path.resolve('.env.vault')})`), 'logger.verbose')
-  t.ok(loggerDebugStub.calledWith(`decrypting encrypted env from .env.vault (${path.resolve('.env.vault')})`), 'logger.debug')
-  t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
-  t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
-  t.ok(loggerSuccessvStub.calledWith('injecting env (1) from .env.vault'), 'logger.successv')
-
-  ct.end()
-})
-
 t.test('run - envFile', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }

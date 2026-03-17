@@ -26,7 +26,7 @@ function get (key) {
 
   try {
     const opsOn = options.opsOff !== true
-    const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile, opsOn).run()
+    const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
 
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict

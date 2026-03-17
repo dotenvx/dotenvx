@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.55.1...main)
 
+### Removed
+
+* Remove support for `.env.vault` files
+
 ## [1.55.1](https://github.com/dotenvx/dotenvx/compare/v1.55.0...v1.55.1) (2026-03-13)
 
 ### Added

@@ -5,7 +5,6 @@ const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
 
 const conventions = require('./../../lib/helpers/conventions')
-const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
 
 async function run () {
   const commandArgs = this.args
@@ -41,21 +40,14 @@ async function run () {
       envs = this.envs
     }
 
-    new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
-
     const {
       processedEnvs,
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile, opsOn).run()
+    } = new Run(envs, options.overload, process.env, options.envKeysFile, opsOn).run()
 
     for (const processedEnv of processedEnvs) {
-      if (processedEnv.type === 'envVaultFile') {
-        logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-        logger.debug(`decrypting encrypted env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-      }
-
       if (processedEnv.type === 'envFile') {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }

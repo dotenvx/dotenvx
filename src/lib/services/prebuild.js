@@ -41,13 +41,13 @@ class Prebuild {
 
       // check if that file is being ignored
       if (ig.ignores(file)) {
-        if (file === '.env.example' || file === '.env.vault' || file === '.env.x') {
+        if (file === '.env.example' || file === '.env.x') {
           const warning = new Error(`[dotenvx@${packageJson.version}][prebuild] ${file} (currently ignored but should not be)`)
           warning.help = `[dotenvx@${packageJson.version}][prebuild] ⮕  run [dotenvx ext gitignore --pattern !${file}]`
           warnings.push(warning)
         }
       } else {
-        if (file !== '.env.example' && file !== '.env.vault' && file !== '.env.x') {
+        if (file !== '.env.example' && file !== '.env.x') {
           const src = fsx.readFileX(file)
           const encrypted = isFullyEncrypted(src)
 
