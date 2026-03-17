@@ -280,6 +280,14 @@ export interface GetOptions {
    * @example require('@dotenvx/dotenvx').get('KEY', { strict: true })
    */
   strict?: boolean;
+
+  /**
+   * Turn off Dotenvx Ops features - https://dotenvx.com/ops
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').get('KEY', { opsOff: true })
+   */
+  opsOff?: boolean;
 }
 
 /**

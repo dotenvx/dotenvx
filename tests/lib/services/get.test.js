@@ -1,10 +1,13 @@
 const t = require('tap')
+const sinon = require('sinon')
 
 const Get = require('../../../src/lib/services/get')
+const Run = require('../../../src/lib/services/run')
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
+  sinon.restore()
 })
 
 t.test('#run (missing key returns the entire processEnv as object)', ct => {
@@ -147,6 +150,19 @@ t.test('#run expansion', ct => {
   const { parsed } = new Get('BASIC_EXPAND', envs).run()
 
   ct.same(parsed.BASIC_EXPAND, 'basic')
+
+  ct.end()
+})
+
+t.test('#run passes opsOn to Run service', ct => {
+  const runStub = sinon.stub(Run.prototype, 'run').returns({ processedEnvs: [] })
+
+  new Get('KEY').run()
+  t.equal(runStub.firstCall.thisValue.opsOn, true, 'opsOn defaults to true')
+
+  runStub.resetHistory()
+  new Get('KEY', [], false, '', false, null, false).run()
+  t.equal(runStub.firstCall.thisValue.opsOn, false, 'opsOn false when provided')
 
   ct.end()
 })

@@ -258,11 +258,12 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
+  const opsOn = options.opsOff !== true
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile).run()
+  const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile, opsOn).run()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {

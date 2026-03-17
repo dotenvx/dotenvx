@@ -755,6 +755,21 @@ t.test('get calls Get.run format shell', ct => {
   ct.end()
 })
 
+t.test('get calls Get.run with opsOff true', ct => {
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+  const result = main.get('KEY', { opsOff: true })
+  t.equal(result, 'value')
+
+  t.ok(stub.called, 'new Get().run() called')
+  t.equal(stub.thisValues[0].opsOn, false, 'Get was called with opsOn false')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --strict it throws', ct => {
   const processEnv = {}
 
