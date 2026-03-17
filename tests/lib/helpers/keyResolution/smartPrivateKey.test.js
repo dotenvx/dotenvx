@@ -1,10 +1,13 @@
 const t = require('tap')
+const sinon = require('sinon')
+const Ops = require('../../../../src/lib/services/ops')
 
 const smartPrivateKey = require('../../../../src/lib/helpers/keyResolution/smartPrivateKey')
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
+  sinon.restore()
 })
 
 let filepath = '.env'
@@ -86,6 +89,43 @@ t.test('#smartPrivateKey when DOTENV_PRIVATE_KEY passed and custom filename but 
   process.env.DOTENV_PRIVATE_KEY_PRODUCTION = '<privateKeyProduction>'
   const result3 = smartPrivateKey(filepath)
   ct.same(result3, '<privateKeyCi>') // it should still find the CI one first
+
+  ct.end()
+})
+
+t.test('#smartPrivateKey uses ops lookup with provided publicKey when opsOn', ct => {
+  const stub = sinon.stub(Ops.prototype, 'keypair').returns('remote-private')
+
+  const filepath = 'tests/monorepo/apps/encrypted/.env'
+  const privateKey = smartPrivateKey(filepath, null, true, 'pub')
+
+  ct.equal(privateKey, 'remote-private')
+  ct.ok(stub.calledOnceWith('pub'), 'Ops.keypair called with public key')
+
+  ct.end()
+})
+
+t.test('#smartPrivateKey prefers process.env private key before ops lookup', ct => {
+  process.env.DOTENV_PRIVATE_KEY = 'process-env-private'
+  const stub = sinon.stub(Ops.prototype, 'keypair')
+
+  const filepath = 'tests/monorepo/apps/encrypted/.env'
+  const privateKey = smartPrivateKey(filepath, null, true, 'pub')
+
+  ct.equal(privateKey, 'process-env-private')
+  ct.ok(stub.notCalled, 'Ops.keypair not called when process.env key present')
+
+  ct.end()
+})
+
+t.test('#smartPrivateKey falls back to local when ops lookup fails', ct => {
+  const stub = sinon.stub(Ops.prototype, 'keypair').returns(null)
+
+  const filepath = 'tests/monorepo/apps/encrypted/.env'
+  const privateKey = smartPrivateKey(filepath, null, true, 'pub')
+
+  ct.equal(privateKey, 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
+  ct.ok(stub.calledOnceWith('pub'), 'Ops keypair attempted once')
 
   ct.end()
 })

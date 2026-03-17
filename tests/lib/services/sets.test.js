@@ -401,12 +401,6 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
 })
 
 t.test('#run (finds .env file only) with --encrypt', ct => {
-  const Keypair = require('../../../src/lib/services/keypair')
-
-  const sandbox = sinon.createSandbox()
-  sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
-  })
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -440,7 +434,7 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
     filepath: path.resolve('tests/monorepo/apps/encrypted/.env'),
     envFilepath: 'tests/monorepo/apps/encrypted/.env',
     changed: true,
-    originalValue: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA==',
+    originalValue: 'encrypted',
     publicKey,
     privateKey,
     encryptedValue,
@@ -448,8 +442,6 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
     envSrc
   }])
   ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
-
-  sandbox.restore()
 
   ct.end()
 })
@@ -629,12 +621,6 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
 })
 
 t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted to encrypted same value', ct => {
-  const Keypair = require('../../../src/lib/services/keypair')
-  const sandbox = sinon.createSandbox()
-  sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
-  })
-
   const envFile = 'tests/monorepo/apps/unencrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -651,6 +637,13 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
   const privateKeyName = row.privateKeyName
   const encryptedValue = row.encryptedValue
   const envSrc = [
+    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+    '#/            public-key encryption for .env files          /',
+    '#/       [how it works](https://dotenvx.com/encryption)     /',
+    '#/----------------------------------------------------------/',
+    `DOTENV_PUBLIC_KEY="${publicKey}"`,
+    '',
+    '# .env',
     `HELLO="${encryptedValue}"`
   ].join('\n') + '\n'
 
@@ -662,6 +655,8 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
     envFilepath: 'tests/monorepo/apps/unencrypted/.env',
     changed: true,
     originalValue: 'unencrypted',
+    privateKeyAdded: true,
+    envKeysFilepath: 'tests/monorepo/apps/unencrypted/.env.keys',
     publicKey,
     privateKey,
     encryptedValue,
@@ -669,8 +664,6 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
     envSrc
   }])
   ct.same(changedFilepaths, ['tests/monorepo/apps/unencrypted/.env'])
-
-  sandbox.restore()
 
   ct.end()
 })
@@ -776,23 +769,23 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and pri
   ct.end()
 })
 
-t.test('#run passes opsOn to findPrivateKey', ct => {
+t.test('#run passes opsOn to smartPrivateKey', ct => {
   const sandbox = sinon.createSandbox()
-  const findPrivateKeyStub = sandbox.stub().returns(null)
+  const smartPrivateKeyStub = sandbox.stub().returns(null)
 
   const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
-    './../helpers/findPrivateKey': { findPrivateKey: findPrivateKeyStub }
+    './../helpers/keyResolution/smartPrivateKey': smartPrivateKeyStub
   })
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [{ type: 'envFile', value: envFile }]
 
   new SetsWithStub('KEY', 'value', envs).run()
-  t.equal(findPrivateKeyStub.firstCall.args[2], false, 'opsOn defaults to false')
+  t.equal(smartPrivateKeyStub.firstCall.args[2], false, 'opsOn defaults to false')
 
-  findPrivateKeyStub.resetHistory()
+  smartPrivateKeyStub.resetHistory()
   new SetsWithStub('KEY', 'value', envs, true, null, false).run()
-  t.equal(findPrivateKeyStub.firstCall.args[2], false, 'opsOn false when provided')
+  t.equal(smartPrivateKeyStub.firstCall.args[2], false, 'opsOn false when provided')
 
   sandbox.restore()
   ct.end()

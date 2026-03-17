@@ -13,8 +13,8 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const replace = require('./../helpers/replace')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
-const { findPrivateKey } = require('./../helpers/findPrivateKey')
-const findPublicKey = require('./../helpers/findPublicKey')
+const smartPrivateKey = require('./../helpers/keyResolution/smartPrivateKey')
+const smartPublicKey = require('./../helpers/keyResolution/smartPublicKey')
 const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 const truncate = require('./../helpers/truncate')
 const isPublicKey = require('./../helpers/isPublicKey')
@@ -77,8 +77,8 @@ class Encrypt {
 
       const publicKeyName = guessPublicKeyName(envFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
-      const existingPublicKey = findPublicKey(envFilepath)
-      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
+      const existingPublicKey = smartPublicKey(envFilepath)
+      const existingPrivateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
 
       let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
       if (this.envKeysFilepath) {

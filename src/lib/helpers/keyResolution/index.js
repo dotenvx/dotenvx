@@ -1,6 +1,4 @@
 module.exports = {
-  findPrivateKey: require('./findPrivateKey').findPrivateKey,
-  findPublicKey: require('./findPublicKey'),
   smartKeyValues: require('./smartKeyValues'),
   smartPrivateKey: require('./smartPrivateKey'),
   smartPublicKey: require('./smartPublicKey'),

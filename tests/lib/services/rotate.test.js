@@ -548,23 +548,23 @@ t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
 //   ct.end()
 // })
 
-t.test('#run passes opsOn to findPrivateKey', ct => {
+t.test('#run passes opsOn to smartPrivateKey', ct => {
   const sandbox = sinon.createSandbox()
-  const findPrivateKeyStub = sandbox.stub().returns('ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
+  const smartPrivateKeyStub = sandbox.stub().returns('ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
 
   const RotateWithStub = proxyquire('../../../src/lib/services/rotate', {
-    './../helpers/findPrivateKey': { findPrivateKey: findPrivateKeyStub }
+    './../helpers/keyResolution/smartPrivateKey': smartPrivateKeyStub
   })
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [{ type: 'envFile', value: envFile }]
 
   new RotateWithStub(envs).run()
-  t.equal(findPrivateKeyStub.firstCall.args[2], false, 'opsOn defaults to false')
+  t.equal(smartPrivateKeyStub.firstCall.args[2], false, 'opsOn defaults to false')
 
-  findPrivateKeyStub.resetHistory()
+  smartPrivateKeyStub.resetHistory()
   new RotateWithStub(envs, [], [], null, false).run()
-  t.equal(findPrivateKeyStub.firstCall.args[2], false, 'opsOn false when provided')
+  t.equal(smartPrivateKeyStub.firstCall.args[2], false, 'opsOn false when provided')
 
   sandbox.restore()
   ct.end()
