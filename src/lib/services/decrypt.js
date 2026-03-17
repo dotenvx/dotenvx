@@ -6,8 +6,8 @@ const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
 const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
-const smartPublicKey = require('./../helpers/keyResolution/smartPublicKey')
-const smartPrivateKey = require('./../helpers/keyResolution/smartPrivateKey')
+const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
+const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const dotenvParse = require('./../helpers/dotenvParse')
@@ -67,8 +67,8 @@ class Decrypt {
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
-      const publicKey = smartPublicKey(envFilepath)
-      const privateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
+      const publicKey = publicKeyValue(envFilepath)
+      const privateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
       const resolvedPrivateKeyName = privateKeyName(envFilepath)
 
       row.privateKey = privateKey

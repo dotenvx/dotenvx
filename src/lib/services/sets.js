@@ -12,8 +12,8 @@ const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
-const smartPrivateKey = require('./../helpers/keyResolution/smartPrivateKey')
-const smartPublicKey = require('./../helpers/keyResolution/smartPublicKey')
+const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
+const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
 const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 const truncate = require('./../helpers/truncate')
 const isEncrypted = require('./../helpers/isEncrypted')
@@ -78,8 +78,8 @@ class Sets {
 
         const resolvedPublicKeyName = publicKeyName(envFilepath)
         const resolvedPrivateKeyName = privateKeyName(envFilepath)
-        const existingPublicKey = smartPublicKey(envFilepath)
-        const existingPrivateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
+        const existingPublicKey = publicKeyValue(envFilepath)
+        const existingPrivateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
 
         let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         if (this.envKeysFilepath) {

@@ -596,7 +596,7 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
 
   // Load Encrypt with the stub injected
   const Encrypt = proxyquire('../../../src/lib/services/encrypt', {
-    './../helpers/keyResolution/smartPrivateKey': stubbedSmartPrivateKey
+    './../helpers/keyResolution/privateKeyValue': stubbedSmartPrivateKey
   })
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'

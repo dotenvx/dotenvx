@@ -1,7 +1,7 @@
 const keyValues = require('./keyValues')
 
-function smartPublicKey (filepath) {
+function publicKeyValue (filepath) {
   return keyValues(filepath).publicKeyValue
 }
 
-module.exports = smartPublicKey
+module.exports = publicKeyValue

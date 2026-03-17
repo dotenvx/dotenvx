@@ -11,8 +11,8 @@ const Errors = require('./../helpers/errors')
 const dotenvParse = require('./../helpers/dotenvParse')
 const parseEnvironmentFromDotenvKey = require('./../helpers/parseEnvironmentFromDotenvKey')
 const detectEncoding = require('./../helpers/detectEncoding')
-const smartPrivateKey = require('./../helpers/keyResolution/smartPrivateKey')
-const smartPublicKey = require('./../helpers/keyResolution/smartPublicKey')
+const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
+const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
 const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
 const determineEnvs = require('./../helpers/determineEnvs')
 
@@ -98,8 +98,8 @@ class Run {
       const src = fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const publicKey = smartPublicKey(envFilepath)
-      const privateKey = smartPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
+      const publicKey = publicKeyValue(envFilepath)
+      const privateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
       const resolvedPrivateKeyName = privateKeyName(envFilepath)
       const { parsed, errors, injected, preExisted } = new Parse(src, privateKey, this.processEnv, this.overload, resolvedPrivateKeyName).run()
 
