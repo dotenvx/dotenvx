@@ -1,23 +1,11 @@
-const fsx = require('./../fsx')
-const dotenvParse = require('./../dotenvParse')
-
-const guessPublicKeyName = require('./guessPublicKeyName')
+const guessKeyNames = require('./guessKeyNames')
 const readProcessEnvKey = require('./readProcessEnvKey')
+const readEnvFileKey = require('./readEnvFileKey')
 
-function searchEnvFile (publicKeyName, envFilepath) {
-  if (fsx.existsSync(envFilepath)) {
-    const keysSrc = fsx.readFileX(envFilepath)
-    const keysParsed = dotenvParse(keysSrc)
+function smartDotenvPublicKey (filepath) {
+  const { publicKeyName } = guessKeyNames(filepath) // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
 
-    if (keysParsed[publicKeyName] && keysParsed[publicKeyName].length > 0) {
-      return keysParsed[publicKeyName]
-    }
-  }
-}
-
-function smartDotenvPublicKey (envFilepath) {
   let publicKey = null
-  const publicKeyName = guessPublicKeyName(envFilepath) // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
 
   // 1. attempt process.env first
   publicKey = readProcessEnvKey(publicKeyName)
@@ -25,8 +13,8 @@ function smartDotenvPublicKey (envFilepath) {
     return publicKey
   }
 
-  // 2. attempt .env.keys second (path/to/.env.keys)
-  publicKey = searchEnvFile(publicKeyName, envFilepath)
+  // 2. attempt .env* second
+  publicKey = readEnvFileKey(publicKeyName, filepath)
   if (publicKey) {
     return publicKey
   }

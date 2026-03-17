@@ -1,35 +1,20 @@
 const fsx = require('./../fsx')
 const path = require('path')
 
-const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
-const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
-
 const dotenvParse = require('./../dotenvParse')
-const guessPrivateKeyName = require('./guessPrivateKeyName')
+const guessKeyNames = require('./guessKeyNames')
 const readProcessEnvKey = require('./readProcessEnvKey')
+const readEnvFileKey = require('./readEnvFileKey')
 
-function searchKeysFile (privateKeyName, envFilepath, envKeysFilepath = null) {
-  let keysFilepath = path.resolve(path.dirname(envFilepath), '.env.keys') // typical scenario
-  if (envKeysFilepath) { // user specified -fk flag
-    keysFilepath = path.resolve(envKeysFilepath)
-  }
+function invertForPrivateKeyName (filepath) {
+  const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
+  const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 
-  if (fsx.existsSync(keysFilepath)) {
-    const keysSrc = fsx.readFileX(keysFilepath)
-    const keysParsed = dotenvParse(keysSrc)
-
-    if (keysParsed[privateKeyName] && keysParsed[privateKeyName].length > 0) {
-      return keysParsed[privateKeyName]
-    }
-  }
-}
-
-function invertForPrivateKeyName (envFilepath) {
-  if (!fsx.existsSync(envFilepath)) {
+  if (!fsx.existsSync(filepath)) {
     return null
   }
 
-  const envSrc = fsx.readFileX(envFilepath)
+  const envSrc = fsx.readFileX(filepath)
   const envParsed = dotenvParse(envSrc)
 
   let publicKeyName
@@ -46,9 +31,10 @@ function invertForPrivateKeyName (envFilepath) {
   return null
 }
 
-function smartDotenvPrivateKey (envFilepath, envKeysFilepath = null) {
+function smartDotenvPrivateKey (filepath, keysFilepath = null) {
+  let { privateKeyName } = guessKeyNames(filepath) // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
+
   let privateKey = null
-  let privateKeyName = guessPrivateKeyName(envFilepath) // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
 
   // 1. attempt process.env first
   privateKey = readProcessEnvKey(privateKeyName)
@@ -56,14 +42,20 @@ function smartDotenvPrivateKey (envFilepath, envKeysFilepath = null) {
     return privateKey
   }
 
+  if (keysFilepath) { // user specified -fk flag
+    keysFilepath = path.resolve(keysFilepath)
+  } else {
+    keysFilepath = path.resolve(path.dirname(filepath), '.env.keys') // typical scenario
+  }
+
   // 2. attempt .env.keys second (path/to/.env.keys)
-  privateKey = searchKeysFile(privateKeyName, envFilepath, envKeysFilepath)
+  privateKey = readEnvFileKey(privateKeyName, keysFilepath)
   if (privateKey) {
     return privateKey
   }
 
   // 3. attempt inverting `DOTENV_PUBLIC_KEY*` name inside file (unlocks custom filenames not matching .env.${ENVIRONMENT} pattern)
-  privateKeyName = invertForPrivateKeyName(envFilepath)
+  privateKeyName = invertForPrivateKeyName(filepath)
   if (privateKeyName) {
     // 3.1 attempt process.env first
     privateKey = readProcessEnvKey(privateKeyName)
@@ -72,7 +64,7 @@ function smartDotenvPrivateKey (envFilepath, envKeysFilepath = null) {
     }
 
     // 3.2. attempt .env.keys second (path/to/.env.keys)
-    privateKey = searchKeysFile(privateKeyName, envFilepath, envKeysFilepath)
+    privateKey = readEnvFileKey(privateKeyName, keysFilepath)
     if (privateKey) {
       return privateKey
     }
