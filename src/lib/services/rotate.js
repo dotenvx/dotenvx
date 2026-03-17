@@ -20,11 +20,12 @@ const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const keypair = require('./../helpers/keypair')
 
 class Rotate {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = true) {
     this.envs = determineEnvs(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
+    this.opsOn = opsOn
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -75,7 +76,7 @@ class Rotate {
       const publicKeyName = guessPublicKeyName(envFilepath)
       const privateKeyName = guessPrivateKeyName(envFilepath)
       const existingPublicKey = findPublicKey(envFilepath)
-      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, false, existingPublicKey)
+      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
 
       let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
       if (this.envKeysFilepath) {

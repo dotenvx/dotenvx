@@ -194,6 +194,21 @@ t.test('keypair calls Keypair.run with key specified', ct => {
   ct.end()
 })
 
+t.test('keypair calls Keypair.run with opsOff true', ct => {
+  const stub = sinon.stub(Keypair.prototype, 'run')
+  stub.returns({ KEY: 'value' })
+
+  const result = main.keypair('.env', 'KEY', null, true)
+
+  t.ok(stub.called, 'new Keypair().run() called')
+  t.equal(stub.thisValues[0].opsOn, false, 'Keypair was called with opsOn false')
+  t.equal(result, 'value')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('genexample calls Genexample.run', ct => {
   const stub = sinon.stub(Genexample.prototype, 'run')
   stub.returns({})

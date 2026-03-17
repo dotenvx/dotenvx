@@ -101,3 +101,16 @@ t.test('keypair KEY (not found)', ct => {
 
   ct.end()
 })
+
+t.test('keypair --ops-off passes opsOff to main.keypair', ct => {
+  const optsStub = sinon.stub().returns({ opsOff: true })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'keypair').returns({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' })
+
+  keypair.call(fakeContext, undefined)
+
+  t.ok(stub.calledOnce, 'main.keypair() called')
+  t.equal(stub.firstCall.args[3], true, 'opsOff true')
+
+  ct.end()
+})

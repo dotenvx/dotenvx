@@ -2,6 +2,7 @@ const t = require('tap')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
 
@@ -546,3 +547,25 @@ t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
 //
 //   ct.end()
 // })
+
+t.test('#run passes opsOn to findPrivateKey', ct => {
+  const sandbox = sinon.createSandbox()
+  const findPrivateKeyStub = sandbox.stub().returns('ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
+
+  const RotateWithStub = proxyquire('../../../src/lib/services/rotate', {
+    './../helpers/findPrivateKey': { findPrivateKey: findPrivateKeyStub }
+  })
+
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const envs = [{ type: 'envFile', value: envFile }]
+
+  new RotateWithStub(envs).run()
+  t.equal(findPrivateKeyStub.firstCall.args[2], true, 'opsOn defaults to true')
+
+  findPrivateKeyStub.resetHistory()
+  new RotateWithStub(envs, [], [], null, false).run()
+  t.equal(findPrivateKeyStub.firstCall.args[2], false, 'opsOn false when provided')
+
+  sandbox.restore()
+  ct.end()
+})

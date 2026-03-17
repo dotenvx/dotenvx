@@ -2,11 +2,13 @@ const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
 const smartDotenvPublicKey = require('./../helpers/smartDotenvPublicKey')
 const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
 const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
+const Ops = require('./ops')
 
 class Keypair {
-  constructor (envFile = '.env', envKeysFilepath = null) {
+  constructor (envFile = '.env', envKeysFilepath = null, opsOn = true) {
     this.envFile = envFile
     this.envKeysFilepath = envKeysFilepath
+    this.opsOn = opsOn
   }
 
   run () {
@@ -21,7 +23,15 @@ class Keypair {
 
       // private key
       const privateKeyName = guessPrivateKeyName(envFilepath)
-      const privateKeyValue = smartDotenvPrivateKey(envFilepath, this.envKeysFilepath)
+      let privateKeyValue = null
+
+      if (this.opsOn) {
+        privateKeyValue = new Ops().keypair(publicKeyValue)
+      }
+
+      if (!privateKeyValue) {
+        privateKeyValue = smartDotenvPrivateKey(envFilepath, this.envKeysFilepath)
+      }
 
       out[privateKeyName] = privateKeyValue
     }

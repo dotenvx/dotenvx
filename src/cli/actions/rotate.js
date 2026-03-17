@@ -11,12 +11,13 @@ function rotate () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
+  const opsOn = options.opsOff !== true
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile).run()
+    } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -30,7 +31,7 @@ function rotate () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile).run()
+      } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`rotating ${processedEnv.envFilepath} (${processedEnv.filepath})`)
