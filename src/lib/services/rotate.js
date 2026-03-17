@@ -17,7 +17,7 @@ const determineEnvs = require('./../helpers/determineEnvs')
 const { findPrivateKey } = require('./../helpers/findPrivateKey')
 const findPublicKey = require('./../helpers/findPublicKey')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
-const keypair = require('./../helpers/keypair')
+const deriveKeypair = require('./../helpers/deriveKeypair')
 
 class Rotate {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -89,7 +89,7 @@ class Rotate {
       let envKeysSrc = this.envKeysSources[envKeysFilepath]
 
       // new keypair
-      const nkp = keypair() // generates a fresh keypair in memory
+      const nkp = deriveKeypair() // generates a fresh keypair in memory
       const newPublicKey = nkp.publicKey
       const newPrivateKey = nkp.privateKey
 

@@ -788,7 +788,7 @@ t.test('#run passes opsOn to findPrivateKey', ct => {
   const envs = [{ type: 'envFile', value: envFile }]
 
   new SetsWithStub('KEY', 'value', envs).run()
-  t.equal(findPrivateKeyStub.firstCall.args[2], true, 'opsOn defaults to true')
+  t.equal(findPrivateKeyStub.firstCall.args[2], false, 'opsOn defaults to false')
 
   findPrivateKeyStub.resetHistory()
   new SetsWithStub('KEY', 'value', envs, true, null, false).run()

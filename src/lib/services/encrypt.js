@@ -15,7 +15,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const determineEnvs = require('./../helpers/determineEnvs')
 const { findPrivateKey } = require('./../helpers/findPrivateKey')
 const findPublicKey = require('./../helpers/findPublicKey')
-const keypair = require('./../helpers/keypair')
+const deriveKeypair = require('./../helpers/deriveKeypair')
 const truncate = require('./../helpers/truncate')
 const isPublicKey = require('./../helpers/isPublicKey')
 
@@ -88,7 +88,7 @@ class Encrypt {
 
       if (existingPrivateKey) {
         // throw new Error('implement for remote Ops existingPrivateKey')
-        const kp = keypair(existingPrivateKey)
+        const kp = deriveKeypair(existingPrivateKey)
         publicKey = kp.publicKey
         privateKey = kp.privateKey
 
@@ -126,7 +126,7 @@ class Encrypt {
         envSrc = ps.envSrc
 
         // TODO: instead get this from API
-        const kp = keypair() // generates a fresh keypair in memory
+        const kp = deriveKeypair() // generates a fresh keypair in memory
         publicKey = kp.publicKey
         privateKey = kp.privateKey
         // Ops hook point (first-time key generation):
