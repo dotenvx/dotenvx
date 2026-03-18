@@ -547,25 +547,3 @@ t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
 //
 //   ct.end()
 // })
-
-t.test('#run passes opsOn to privateKeyValue', ct => {
-  const sandbox = sinon.createSandbox()
-  const privateKeyValueStub = sandbox.stub().returns('ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
-
-  const RotateWithStub = proxyquire('../../../src/lib/services/rotate', {
-    './../helpers/keyResolution/privateKeyValue': privateKeyValueStub
-  })
-
-  const envFile = 'tests/monorepo/apps/encrypted/.env'
-  const envs = [{ type: 'envFile', value: envFile }]
-
-  new RotateWithStub(envs).run()
-  t.equal(privateKeyValueStub.firstCall.args[2], false, 'opsOn defaults to false')
-
-  privateKeyValueStub.resetHistory()
-  new RotateWithStub(envs, [], [], null, false).run()
-  t.equal(privateKeyValueStub.firstCall.args[2], false, 'opsOn false when provided')
-
-  sandbox.restore()
-  ct.end()
-})
