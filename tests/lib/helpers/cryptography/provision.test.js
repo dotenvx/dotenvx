@@ -19,8 +19,8 @@ t.test('provision builds env and keys for first-time setup', (ct) => {
   })
 
   const envFilepath = path.join('apps', 'backend', 'services', 'api', '.env')
-  const envKeysFilepath = path.join('apps', 'backend', '.env.keys')
-  const out = provision({ src: '#!/usr/bin/env node\nHELLO=world', envFilepath, envKeysFilepath })
+  const keysFilepath = path.join('apps', 'backend', '.env.keys')
+  const out = provision({ src: '#!/usr/bin/env node\nHELLO=world', envFilepath, keysFilepath })
 
   ct.equal(out.envSrc, '#!/usr/bin/env node\nPUBLIC_BLOCK\nHELLO=world')
   ct.match(out.keysSrc, '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/')
@@ -28,7 +28,7 @@ t.test('provision builds env and keys for first-time setup', (ct) => {
   ct.equal(out.publicKey, 'pub_123')
   ct.equal(out.privateKey, 'priv_123')
   ct.equal(out.privateKeyAdded, true)
-  ct.equal(out.envKeysFilepath, envKeysFilepath)
+  ct.equal(out.envKeysFilepath, keysFilepath)
   ct.equal(prependPublicKey.firstCall.args[3], '../../.env.keys')
   ct.equal(existsSync.callCount, 1)
   ct.equal(readFileX.callCount, 0)
@@ -51,8 +51,8 @@ t.test('provision appends to existing keys file', (ct) => {
     }
   })
 
-  const envKeysFilepath = path.join('apps', '.env.keys')
-  const out = provision({ src: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), envKeysFilepath })
+  const keysFilepath = path.join('apps', '.env.keys')
+  const out = provision({ src: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), keysFilepath })
 
   ct.match(out.keysSrc, /^EXISTING_KEYS\n# .env\nDOTENV_PRIVATE_KEY=priv_abc/m)
   ct.equal(readFileX.callCount, 1)

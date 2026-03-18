@@ -106,19 +106,9 @@ class Sets {
           const firstTime = provision({
             src: envSrc,
             envFilepath,
-            envKeysFilepath: this.envKeysFilepath
+            keysFilepath: this.envKeysFilepath
           })
           fsx.writeFileX(firstTime.envKeysFilepath, firstTime.keysSrc)
-
-          // const firstTime = this._handleFirstTime({
-          //   envSrc,
-          //   envFilepath,
-          //   envKeysFilepath,
-          //   filename,
-          //   relativeFilepath,
-          //   publicKeyName,
-          //   privateKeyName
-          // })
 
           envSrc = firstTime.envSrc
           publicKey = firstTime.publicKey
@@ -184,50 +174,6 @@ class Sets {
     }
 
     this.processedEnvs.push(row)
-  }
-
-  _handleFirstTime ({ envSrc, envFilepath, envKeysFilepath, filename, relativeFilepath, publicKeyName, privateKeyName }) {
-    let keysSrc = ''
-    if (fsx.existsSync(envKeysFilepath)) {
-      keysSrc = fsx.readFileX(envKeysFilepath)
-    }
-
-    const ps = preserveShebang(envSrc)
-    const firstLinePreserved = ps.firstLinePreserved
-    envSrc = ps.envSrc
-
-    const kp = deriveKeypair() // generates a fresh keypair in memory
-    const publicKey = kp.publicKey
-    const privateKey = kp.privateKey
-
-    const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-    const firstTimeKeysSrc = [
-      '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
-      '#/ private decryption keys. DO NOT commit to source control /',
-      '#/     [how it works](https://dotenvx.com/encryption)       /',
-      // '#/           backup with: `dotenvx ops backup`              /',
-      '#/----------------------------------------------------------/'
-    ].join('\n')
-    const appendPrivateKey = [
-      `# ${filename}`,
-      `${privateKeyName}=${privateKey}`,
-      ''
-    ].join('\n')
-
-    envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
-    keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
-    keysSrc = `${keysSrc}\n${appendPrivateKey}`
-
-    fsx.writeFileX(envKeysFilepath, keysSrc)
-
-    return {
-      envSrc,
-      publicKey,
-      privateKey,
-      privateKeyAdded: true,
-      envKeysFilepath: this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
-    }
   }
 
   _detectEncoding (filepath) {

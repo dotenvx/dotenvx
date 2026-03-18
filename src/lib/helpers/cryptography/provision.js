@@ -6,17 +6,16 @@ const prependPublicKey = require('./../prependPublicKey')
 const deriveKeypair = require('./deriveKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provision ({ src, envFilepath, envKeysFilepath }) {
+function provision ({ src, envFilepath, keysFilepath }) {
   const filename = path.basename(envFilepath)
   const filepath = path.resolve(envFilepath)
 
-  // keysFilepath
-  let keysFilepath = path.join(path.dirname(filepath), '.env.keys')
-  if (envKeysFilepath) {
-    keysFilepath = path.resolve(envKeysFilepath)
+  let resolvedKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+  if (keysFilepath) {
+    resolvedKeysFilepath = path.resolve(keysFilepath)
   }
 
-  const relativeFilepath = path.relative(path.dirname(filepath), keysFilepath)
+  const relativeFilepath = path.relative(path.dirname(filepath), resolvedKeysFilepath)
 
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
@@ -41,8 +40,8 @@ function provision ({ src, envFilepath, envKeysFilepath }) {
     ''
   ].join('\n')
   let keysSrc = ''
-  if (fsx.existsSync(keysFilepath)) {
-    keysSrc = fsx.readFileX(keysFilepath)
+  if (fsx.existsSync(resolvedKeysFilepath)) {
+    keysSrc = fsx.readFileX(resolvedKeysFilepath)
   }
   keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`
@@ -53,7 +52,7 @@ function provision ({ src, envFilepath, envKeysFilepath }) {
     publicKey,
     privateKey,
     privateKeyAdded: true,
-    envKeysFilepath: envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(keysFilepath))
+    envKeysFilepath: keysFilepath || path.join(path.dirname(envFilepath), path.basename(resolvedKeysFilepath))
   }
 }
 
