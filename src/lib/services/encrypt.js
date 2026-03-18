@@ -19,7 +19,8 @@ const {
   deriveKeypair,
   encryptValue,
   isEncrypted,
-  isPublicKey
+  isPublicKey,
+  provision
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
@@ -88,54 +89,20 @@ class Encrypt {
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
       const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
-      let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-      if (this.envKeysFilepath) {
-        envKeysFilepath = path.resolve(this.envKeysFilepath)
-      }
-      const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
-
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
-        // .env.keys
-        let keysSrc = ''
+        // creates .env.keys file (or ops)
+        const firstTime = provision({
+          envSrc,
+          envFilepath,
+          keysFilepath: this.envKeysFilepath
+        })
 
-        if (fsx.existsSync(envKeysFilepath)) {
-          keysSrc = fsx.readFileX(envKeysFilepath)
-        }
-
-        const ps = preserveShebang(envSrc)
-        const firstLinePreserved = ps.firstLinePreserved
-        envSrc = ps.envSrc
-
-        // TODO: instead get this from API
-        const kp = deriveKeypair() // generates a fresh keypair in memory
-        publicKey = kp.publicKey
-        privateKey = kp.privateKey
-
-        const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-        // privateKey
-        const firstTimeKeysSrc = [
-          '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
-          '#/ private decryption keys. DO NOT commit to source control /',
-          '#/     [how it works](https://dotenvx.com/encryption)       /',
-          // '#/           backup with: `dotenvx ops backup`              /',
-          '#/----------------------------------------------------------/'
-        ].join('\n')
-        const appendPrivateKey = [
-          `# ${filename}`,
-          `${privateKeyName}=${privateKey}`,
-          ''
-        ].join('\n')
-
-        envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
-        keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
-        keysSrc = `${keysSrc}\n${appendPrivateKey}`
-
-        // write to .env.keys
-        fsx.writeFileX(envKeysFilepath, keysSrc)
-        row.privateKeyAdded = true
-        row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
+        envSrc = firstTime.envSrc
+        publicKey = firstTime.publicKey
+        privateKey = firstTime.privateKey
+        row.privateKeyAdded = firstTime.privateKeyAdded
+        row.envKeysFilepath = firstTime.envKeysFilepath
       } else if (privateKeyValue) {
         const kp = deriveKeypair(privateKeyValue)
         publicKey = kp.publicKey
@@ -145,13 +112,16 @@ class Encrypt {
 
         // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
         if (!publicKeyValue) {
+          let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+          if (this.envKeysFilepath) {
+            envKeysFilepath = path.resolve(this.envKeysFilepath)
+          }
+          const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
+
+          // build new envSrc
           const ps = preserveShebang(envSrc)
-          const firstLinePreserved = ps.firstLinePreserved
-          envSrc = ps.envSrc
-
           const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-          envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
+          envSrc = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
         }
       } else if (publicKeyValue) {
         publicKey = publicKeyValue

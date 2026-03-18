@@ -393,7 +393,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
     filepath: path.resolve('tests/monorepo/apps/encrypted/.env'),
     envFilepath: 'tests/monorepo/apps/encrypted/.env',
     changed: false,
-    originalValue: 'encrypted',
+    originalValue: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA==',
     error
   }])
 

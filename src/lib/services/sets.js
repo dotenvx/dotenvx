@@ -109,10 +109,6 @@ class Sets {
           publicKey = kp.publicKey
           privateKey = kp.privateKey
 
-          if (row.originalValue) {
-            row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
-          }
-
           this.validatePairedPrivateKey({ publicKeyValue, publicKey })
 
           // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
@@ -129,6 +125,10 @@ class Sets {
             const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
             envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
+          }
+
+          if (row.originalValue) {
+            row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
           }
         } else if (publicKeyValue) {
           // handle existing publicKeyValue - good enough for sets since only need public key
