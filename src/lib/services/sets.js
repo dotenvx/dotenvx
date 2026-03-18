@@ -6,6 +6,10 @@ const TYPE_ENV_FILE = 'envFile'
 const Errors = require('./../helpers/errors')
 
 const {
+  determine
+} = require('./../helpers/envResolution')
+
+const {
   keyNames,
   keyValues
 } = require('./../helpers/keyResolution')
@@ -13,18 +17,14 @@ const {
 const {
   deriveKeypair,
   encryptValue,
+  decryptKeyValue,
   isEncrypted
 } = require('./../helpers/cryptography')
-
-const {
-  determine
-} = require('./../helpers/envResolution')
 
 const replace = require('./../helpers/replace')
 const truncate = require('./../helpers/truncate')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const decryptKeyValue = require('./../helpers/decryptKeyValue')
 
 class Sets {
   constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {

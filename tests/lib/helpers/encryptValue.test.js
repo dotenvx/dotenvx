@@ -4,7 +4,7 @@ const publicKey = '02b106c30579baf896ae1fddf077cbcb4fef5e7d457932974878dcb51f42b
 const privateKey = '1fc1cafa954a7a2bf0a6fbff46189c9e03e3a66b4d1133108ab9fcdb9e154b70'
 
 const encryptValue = require('../../../src/lib/helpers/cryptography/encryptValue')
-const decryptKeyValue = require('../../../src/lib/helpers/decryptKeyValue')
+const decryptKeyValue = require('../../../src/lib/helpers/cryptography/decryptKeyValue')
 
 t.test('#encryptValue', ct => {
   const result = encryptValue('hello', publicKey)

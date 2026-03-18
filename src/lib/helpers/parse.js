@@ -1,4 +1,4 @@
-const decryptKeyValue = require('./decryptKeyValue')
+const decryptKeyValue = require('./cryptography/decryptKeyValue')
 const evalKeyValue = require('./evalKeyValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
 

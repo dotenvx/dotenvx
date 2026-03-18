@@ -16,7 +16,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const determine = require('./../helpers/envResolution/determine')
 const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
 const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
-const decryptKeyValue = require('./../helpers/decryptKeyValue')
+const decryptKeyValue = require('./../helpers/cryptography/decryptKeyValue')
 const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 
 class Rotate {

@@ -6,5 +6,5 @@ module.exports = {
 
   // other
   isFullyEncrypted: require('./../isFullyEncrypted'),
-  decryptKeyValue: require('./../decryptKeyValue')
+  decryptKeyValue: require('./decryptKeyValue')
 }

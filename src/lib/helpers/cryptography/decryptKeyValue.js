@@ -1,6 +1,6 @@
 const { decrypt } = require('eciesjs')
 
-const Errors = require('./errors')
+const Errors = require('./../errors')
 
 const PREFIX = 'encrypted:'
 

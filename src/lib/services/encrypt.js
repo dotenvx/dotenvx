@@ -16,9 +16,9 @@ const {
 } = require('./../helpers/keyResolution')
 
 const {
+  deriveKeypair,
   encryptValue,
   isEncrypted,
-  deriveKeypair,
   isPublicKey
 } = require('./../helpers/cryptography')
 
