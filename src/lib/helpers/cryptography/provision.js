@@ -6,22 +6,26 @@ const prependPublicKey = require('./../prependPublicKey')
 const deriveKeypair = require('./deriveKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provision ({ envSrc, envFilepath, keysFilepath }) {
+function provision ({ src, envFilepath, envKeysFilepath }) {
   const filename = path.basename(envFilepath)
   const filepath = path.resolve(envFilepath)
-  const resolvedKeysFilepath = keysFilepath
-    ? path.resolve(keysFilepath)
-    : path.join(path.dirname(filepath), '.env.keys')
-  const relativeFilepath = path.relative(path.dirname(filepath), resolvedKeysFilepath)
+
+  // keysFilepath
+  let keysFilepath = path.join(path.dirname(filepath), '.env.keys')
+  if (envKeysFilepath) {
+    keysFilepath = path.resolve(envKeysFilepath)
+  }
+
+  const relativeFilepath = path.relative(path.dirname(filepath), keysFilepath)
 
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
   const { publicKey, privateKey } = deriveKeypair()
 
-  // build new envSrc
-  const ps = preserveShebang(envSrc)
+  // build new src
+  const ps = preserveShebang(src)
   const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-  envSrc = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
+  src = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
 
   // build keys src
   const firstTimeKeysSrc = [
@@ -37,19 +41,19 @@ function provision ({ envSrc, envFilepath, keysFilepath }) {
     ''
   ].join('\n')
   let keysSrc = ''
-  if (fsx.existsSync(resolvedKeysFilepath)) {
-    keysSrc = fsx.readFileX(resolvedKeysFilepath)
+  if (fsx.existsSync(keysFilepath)) {
+    keysSrc = fsx.readFileX(keysFilepath)
   }
   keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
   return {
-    envSrc,
+    envSrc: src,
     keysSrc,
     publicKey,
     privateKey,
     privateKeyAdded: true,
-    envKeysFilepath: keysFilepath || path.join(path.dirname(envFilepath), path.basename(resolvedKeysFilepath))
+    envKeysFilepath: envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(keysFilepath))
   }
 }
 
