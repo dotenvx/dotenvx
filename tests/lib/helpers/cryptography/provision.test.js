@@ -4,14 +4,15 @@ const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
 t.test('provision builds env and keys for first-time setup', (ct) => {
-  const existsSync = sinon.stub().returns(false)
-  const readFileX = sinon.stub().returns('')
-  const writeFileX = sinon.stub()
-  const mutateSrc = sinon.stub().returns('#!/usr/bin/env node\nPUBLIC_BLOCK\nHELLO=world')
+  const mutateSrc = sinon.stub().returns({ envSrc: '#!/usr/bin/env node\nPUBLIC_BLOCK\nHELLO=world' })
+  const mutateKeysSrc = sinon.stub().returns({
+    keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_123\n',
+    envKeysFilepath: path.join('apps', 'backend', '.env.keys')
+  })
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
-    './../fsx': { existsSync, readFileX, writeFileX },
     './mutateSrc': mutateSrc,
+    './mutateKeysSrc': mutateKeysSrc,
     './deriveKeypair': () => ({ publicKey: 'pub_123', privateKey: 'priv_123' }),
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
@@ -33,25 +34,26 @@ t.test('provision builds env and keys for first-time setup', (ct) => {
   ct.equal(mutateSrc.firstCall.args[0].keysFilepath, keysFilepath)
   ct.equal(mutateSrc.firstCall.args[0].publicKeyName, 'DOTENV_PUBLIC_KEY')
   ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'pub_123')
-  ct.equal(existsSync.callCount, 1)
-  ct.equal(readFileX.callCount, 0)
-  ct.equal(writeFileX.callCount, 1)
-  ct.equal(writeFileX.firstCall.args[0], path.resolve(keysFilepath))
-  ct.equal(writeFileX.firstCall.args[1], out.keysSrc)
+  ct.equal(mutateKeysSrc.callCount, 1)
+  ct.equal(mutateKeysSrc.firstCall.args[0].envFilepath, envFilepath)
+  ct.equal(mutateKeysSrc.firstCall.args[0].keysFilepath, keysFilepath)
+  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
+  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_123')
 
   ct.end()
 })
 
 t.test('provision appends to existing keys file', (ct) => {
-  const existing = 'EXISTING_KEYS'
-  const existsSync = sinon.stub().returns(true)
-  const readFileX = sinon.stub().returns(existing)
-  const writeFileX = sinon.stub()
-  const mutateSrc = sinon.stub().returns('PUBLIC_BLOCK\nHELLO=world')
+  const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
+  const keysSrc = 'EXISTING_KEYS\n# .env\nDOTENV_PRIVATE_KEY=priv_abc\n'
+  const mutateKeysSrc = sinon.stub().returns({
+    keysSrc,
+    envKeysFilepath: path.join('apps', '.env.keys')
+  })
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
-    './../fsx': { existsSync, readFileX, writeFileX },
     './mutateSrc': mutateSrc,
+    './mutateKeysSrc': mutateKeysSrc,
     './deriveKeypair': () => ({ publicKey: 'pub_abc', privateKey: 'priv_abc' }),
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
@@ -61,23 +63,25 @@ t.test('provision appends to existing keys file', (ct) => {
   const keysFilepath = path.join('apps', '.env.keys')
   const out = provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), keysFilepath })
 
-  ct.match(out.keysSrc, /^EXISTING_KEYS\n# .env\nDOTENV_PRIVATE_KEY=priv_abc/m)
+  ct.equal(out.keysSrc, keysSrc)
   ct.equal(mutateSrc.callCount, 1)
-  ct.equal(readFileX.callCount, 1)
-  ct.equal(writeFileX.callCount, 1)
-  ct.equal(writeFileX.firstCall.args[0], path.resolve(keysFilepath))
-  ct.equal(writeFileX.firstCall.args[1], out.keysSrc)
+  ct.equal(mutateKeysSrc.callCount, 1)
+  ct.equal(mutateKeysSrc.firstCall.args[0].keysFilepath, keysFilepath)
+  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
+  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_abc')
   ct.end()
 })
 
 t.test('provision defaults keys filepath when omitted', (ct) => {
-  const existsSync = sinon.stub().returns(false)
-  const writeFileX = sinon.stub()
-  const mutateSrc = sinon.stub().returns('PUBLIC_BLOCK\nHELLO=world')
+  const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
+  const mutateKeysSrc = sinon.stub().returns({
+    keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_x\n',
+    envKeysFilepath: path.join('apps', 'api', '.env.keys')
+  })
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
-    './../fsx': { existsSync, readFileX: () => '', writeFileX },
     './mutateSrc': mutateSrc,
+    './mutateKeysSrc': mutateKeysSrc,
     './deriveKeypair': () => ({ publicKey: 'pub_x', privateKey: 'priv_x' }),
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
@@ -90,8 +94,9 @@ t.test('provision defaults keys filepath when omitted', (ct) => {
   ct.equal(out.envKeysFilepath, path.join('apps', 'api', '.env.keys'))
   ct.equal(mutateSrc.callCount, 1)
   ct.equal(mutateSrc.firstCall.args[0].keysFilepath, undefined)
-  ct.equal(writeFileX.callCount, 1)
-  ct.equal(writeFileX.firstCall.args[0], path.resolve(path.join('apps', 'api', '.env.keys')))
-  ct.equal(writeFileX.firstCall.args[1], out.keysSrc)
+  ct.equal(mutateKeysSrc.callCount, 1)
+  ct.equal(mutateKeysSrc.firstCall.args[0].keysFilepath, undefined)
+  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
+  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_x')
   ct.end()
 })
