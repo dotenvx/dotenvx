@@ -101,8 +101,6 @@ class Run {
       const src = fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      // const { publicKeyValue } = keyValues(filepath, this.envKeysFilepath) // TODO: implement opsOn and publicKey
-      // const privateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
       const { privateKeyName } = keyNames(filepath)
       const { privateKeyValue } = keyValues(filepath, this.envKeysFilepath) // TODO: implement opsOn and publicKey
 
