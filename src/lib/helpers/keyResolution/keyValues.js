@@ -68,9 +68,9 @@ function keyValues (filepath, opts = {}) {
       }
     }
   }
-  if (!privateKey && opsOn) { // && !!publicKey
-    throw new Error('opsOn: implement lookup of keypair to ops. call ops.keypair(publicKey)')
-  }
+  // if (!privateKey && opsOn && publicKey && publicKey.length > 0) { // && !!publicKey
+  //   // throw new Error('opsOn: implement lookup of keypair to ops. call ops.keypair(publicKey)')
+  // }
 
   return {
     publicKeyValue: publicKey || null, // important to make sure name is rendered

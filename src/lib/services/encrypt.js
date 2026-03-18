@@ -26,6 +26,8 @@ const replace = require('./../helpers/replace')
 const truncate = require('./../helpers/truncate')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
+const preserveShebang = require('./../helpers/preserveShebang')
+const prependPublicKey = require('./../helpers/prependPublicKey')
 
 class Encrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -107,13 +109,13 @@ class Encrypt {
 
         // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
         if (!publicKeyValue) {
-          const ps = this._preserveShebang(envSrc)
+          const ps = preserveShebang(envSrc)
           const firstLinePreserved = ps.firstLinePreserved
           envSrc = ps.envSrc
 
-          const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+          const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
-          envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
+          envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
         }
       } else if (publicKeyValue) {
         publicKey = publicKeyValue
@@ -125,7 +127,7 @@ class Encrypt {
           keysSrc = fsx.readFileX(envKeysFilepath)
         }
 
-        const ps = this._preserveShebang(envSrc)
+        const ps = preserveShebang(envSrc)
         const firstLinePreserved = ps.firstLinePreserved
         envSrc = ps.envSrc
 
@@ -134,7 +136,7 @@ class Encrypt {
         publicKey = kp.publicKey
         privateKey = kp.privateKey
 
-        const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+        const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
         // privateKey
         const firstTimeKeysSrc = [
@@ -150,7 +152,7 @@ class Encrypt {
           ''
         ].join('\n')
 
-        envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
+        envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
         keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
         keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
@@ -226,35 +228,6 @@ class Encrypt {
     return detectEncoding(filepath)
   }
 
-  _prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath = '') {
-    const comment = relativeFilepath === '.env.keys' ? '' : ` # ${relativeFilepath}`
-
-    return [
-      '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
-      '#/            public-key encryption for .env files          /',
-      '#/       [how it works](https://dotenvx.com/encryption)     /',
-      '#/----------------------------------------------------------/',
-      `${publicKeyName}="${publicKey}"${comment}`,
-      '',
-      `# ${filename}`
-    ].join('\n')
-  }
-
-  _preserveShebang (envSrc) {
-    // preserve shebang
-    const [firstLine, ...remainingLines] = envSrc.split('\n')
-    let firstLinePreserved = ''
-
-    if (firstLine.startsWith('#!')) {
-      firstLinePreserved = firstLine + '\n'
-      envSrc = remainingLines.join('\n')
-    }
-
-    return {
-      firstLinePreserved,
-      envSrc
-    }
-  }
 }
 
 module.exports = Encrypt

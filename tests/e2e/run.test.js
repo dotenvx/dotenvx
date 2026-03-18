@@ -67,7 +67,7 @@ t.test('#run', ct => {
   ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello World') // --quiet
   ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
-options: {"env":[],"envFile":[],"strict":false,"opsOff":false}
+options: {"env":[],"envFile":[],"strict":false,"opsOff":true}
 loading env from .env (${tempDir}/.env)
 {"HELLO":"World"}
 HELLO set
@@ -92,7 +92,7 @@ t.test('#run - multiple .env files', ct => {
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --quiet -- ${command}`).stdout, 'Hello local') // --quiet
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
-options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"opsOff":false}
+options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"opsOff":true}
 loading env from .env.local (${tempDir}/.env.local)
 {"HELLO":"local"}
 HELLO set
@@ -121,7 +121,7 @@ t.test('#run - multiple .env files --overload', ct => {
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --quiet -- ${command}`).stdout, 'Hello World') // --quiet
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
-options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"opsOff":false,"overload":true}
+options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"opsOff":true,"overload":true}
 loading env from .env.local (${tempDir}/.env.local)
 {"HELLO":"local"}
 HELLO set
@@ -176,7 +176,7 @@ t.test('#run - --env', ct => {
   ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --quiet -- ${command}`).stdout, 'Hello String') // --quiet
   ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
-options: {"env":["HELLO=String"],"envFile":[".env"],"strict":false,"opsOff":false}
+options: {"env":["HELLO=String"],"envFile":[".env"],"strict":false,"opsOff":true}
 loading env from string (HELLO=String)
 {"HELLO":"String"}
 HELLO set
@@ -208,7 +208,7 @@ t.test('#run - encrypted .env', ct => {
   ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello encrypted') // --quiet
   ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, `Setting log level to debug
 process command [${node} index.js]
-options: {"env":[],"envFile":[],"strict":false,"opsOff":false}
+options: {"env":[],"envFile":[],"strict":false,"opsOff":true}
 loading env from .env (${tempDir}/.env)
 {"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"encrypted"}
 DOTENV_PUBLIC_KEY set
@@ -250,7 +250,7 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   ct.equal(o.stderr, '[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'\n[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464')
   ct.equal(o.stdout, `Setting log level to debug
 process command [${node} index.js]
-options: {"env":[],"envFile":[],"strict":false,"opsOff":false}
+options: {"env":[],"envFile":[],"strict":false,"opsOff":true}
 loading env from .env (${tempDir}/.env)
 {"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"${encrypted}"}
 DOTENV_PUBLIC_KEY set

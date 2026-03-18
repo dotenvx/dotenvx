@@ -25,6 +25,8 @@ const replace = require('./../helpers/replace')
 const truncate = require('./../helpers/truncate')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
+const preserveShebang = require('./../helpers/preserveShebang')
+const prependPublicKey = require('./../helpers/prependPublicKey')
 
 class Sets {
   constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
@@ -87,13 +89,36 @@ class Sets {
         const { publicKeyName, privateKeyName } = keyNames(envFilepath)
         const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
+        // first pass - values will be null
+        // throw new Error(`implement: ${publicKeyName}=${publicKeyValue} ${privateKeyName}=${privateKeyValue}`)
+
+        // custom envKeysFilepath
         let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         if (this.envKeysFilepath) {
           envKeysFilepath = path.resolve(this.envKeysFilepath)
         }
+
+        // relativeFilepath
         const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
 
-        if (privateKeyValue) {
+        if (!privateKeyValue && !publicKeyValue) {
+          const firstTime = this._handleFirstTime({
+            envSrc,
+            envFilepath,
+            envKeysFilepath,
+            filename,
+            relativeFilepath,
+            publicKeyName,
+            privateKeyName
+          })
+
+          envSrc = firstTime.envSrc
+          publicKey = firstTime.publicKey
+          privateKey = firstTime.privateKey
+          row.privateKeyAdded = firstTime.privateKeyAdded
+          row.envKeysFilepath = firstTime.envKeysFilepath
+        } else if (privateKeyValue) {
+          // handle existing privateKeyValue
           const kp = deriveKeypair(privateKeyValue)
           publicKey = kp.publicKey
           privateKey = kp.privateKey
@@ -112,56 +137,17 @@ class Sets {
 
           // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
           if (!publicKeyValue) {
-            const ps = this._preserveShebang(envSrc)
+            const ps = preserveShebang(envSrc)
             const firstLinePreserved = ps.firstLinePreserved
             envSrc = ps.envSrc
 
-            const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+            const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
-            envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
+            envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
           }
         } else if (publicKeyValue) {
+          // handle existing publicKeyValue - good enough for sets since only need public key
           publicKey = publicKeyValue
-        } else {
-          // .env.keys
-          let keysSrc = ''
-          if (fsx.existsSync(envKeysFilepath)) {
-            keysSrc = fsx.readFileX(envKeysFilepath)
-          }
-
-          const ps = this._preserveShebang(envSrc)
-          const firstLinePreserved = ps.firstLinePreserved
-          envSrc = ps.envSrc
-
-          const kp = deriveKeypair() // generates a fresh keypair in memory
-          publicKey = kp.publicKey
-          privateKey = kp.privateKey
-
-          const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-          // privateKey
-          const firstTimeKeysSrc = [
-            '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
-            '#/ private decryption keys. DO NOT commit to source control /',
-            '#/     [how it works](https://dotenvx.com/encryption)       /',
-            // '#/           backup with: `dotenvx ops backup`              /',
-            '#/----------------------------------------------------------/'
-          ].join('\n')
-          const appendPrivateKey = [
-            `# ${filename}`,
-            `${privateKeyName}=${privateKey}`,
-            ''
-          ].join('\n')
-
-          envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
-          keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
-          keysSrc = `${keysSrc}\n${appendPrivateKey}`
-
-          // write to .env.keys
-          fsx.writeFileX(envKeysFilepath, keysSrc)
-
-          row.privateKeyAdded = true
-          row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
         }
 
         row.publicKey = publicKey
@@ -192,39 +178,54 @@ class Sets {
     this.processedEnvs.push(row)
   }
 
+  _handleFirstTime ({ envSrc, envFilepath, envKeysFilepath, filename, relativeFilepath, publicKeyName, privateKeyName }) {
+    let keysSrc = ''
+    if (fsx.existsSync(envKeysFilepath)) {
+      keysSrc = fsx.readFileX(envKeysFilepath)
+    }
+
+    const ps = preserveShebang(envSrc)
+    const firstLinePreserved = ps.firstLinePreserved
+    envSrc = ps.envSrc
+
+    const kp = deriveKeypair() // generates a fresh keypair in memory
+    const publicKey = kp.publicKey
+    const privateKey = kp.privateKey
+
+    const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+
+    const firstTimeKeysSrc = [
+      '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
+      '#/ private decryption keys. DO NOT commit to source control /',
+      '#/     [how it works](https://dotenvx.com/encryption)       /',
+      // '#/           backup with: `dotenvx ops backup`              /',
+      '#/----------------------------------------------------------/'
+    ].join('\n')
+    const appendPrivateKey = [
+      `# ${filename}`,
+      `${privateKeyName}=${privateKey}`,
+      ''
+    ].join('\n')
+
+    envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
+    keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
+    keysSrc = `${keysSrc}\n${appendPrivateKey}`
+
+    fsx.writeFileX(envKeysFilepath, keysSrc)
+
+    return {
+      envSrc,
+      publicKey,
+      privateKey,
+      privateKeyAdded: true,
+      envKeysFilepath: this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
+    }
+  }
+
   _detectEncoding (filepath) {
     return detectEncoding(filepath)
   }
 
-  _prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath = '.env.keys') {
-    const comment = relativeFilepath === '.env.keys' ? '' : ` # -fk ${relativeFilepath}`
-
-    return [
-      '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
-      '#/            public-key encryption for .env files          /',
-      '#/       [how it works](https://dotenvx.com/encryption)     /',
-      '#/----------------------------------------------------------/',
-      `${publicKeyName}="${publicKey}"${comment}`,
-      '',
-      `# ${filename}`
-    ].join('\n')
-  }
-
-  _preserveShebang (envSrc) {
-    // preserve shebang
-    const [firstLine, ...remainingLines] = envSrc.split('\n')
-    let firstLinePreserved = ''
-
-    if (firstLine.startsWith('#!')) {
-      firstLinePreserved = firstLine + '\n'
-      envSrc = remainingLines.join('\n')
-    }
-
-    return {
-      firstLinePreserved,
-      envSrc
-    }
-  }
 }
 
 module.exports = Sets
