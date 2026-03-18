@@ -7,7 +7,6 @@ module.exports = {
   publicKeyValue: require('./publicKeyValue'),
 
   // private
-  privateKeyName: require('./privateKeyName'),
   privateKeyValue: require('./privateKeyValue'),
 
   // other

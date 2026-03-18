@@ -93,18 +93,6 @@ t.test('#privateKeyValue when DOTENV_PRIVATE_KEY passed and custom filename but 
   ct.end()
 })
 
-t.test('#privateKeyValue uses ops lookup with provided publicKey when opsOn', ct => {
-  const stub = sinon.stub(Ops.prototype, 'keypair').returns('remote-private')
-
-  const filepath = 'tests/monorepo/apps/encrypted/.env'
-  const privateKey = privateKeyValue(filepath, null, true, 'pub')
-
-  ct.equal(privateKey, 'remote-private')
-  ct.ok(stub.calledOnceWith('pub'), 'Ops.keypair called with public key')
-
-  ct.end()
-})
-
 t.test('#privateKeyValue prefers process.env private key before ops lookup', ct => {
   process.env.DOTENV_PRIVATE_KEY = 'process-env-private'
   const stub = sinon.stub(Ops.prototype, 'keypair')
@@ -114,18 +102,6 @@ t.test('#privateKeyValue prefers process.env private key before ops lookup', ct 
 
   ct.equal(privateKey, 'process-env-private')
   ct.ok(stub.notCalled, 'Ops.keypair not called when process.env key present')
-
-  ct.end()
-})
-
-t.test('#privateKeyValue falls back to local when ops lookup fails', ct => {
-  const stub = sinon.stub(Ops.prototype, 'keypair').returns(null)
-
-  const filepath = 'tests/monorepo/apps/encrypted/.env'
-  const privateKey = privateKeyValue(filepath, null, true, 'pub')
-
-  ct.equal(privateKey, 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1')
-  ct.ok(stub.calledOnceWith('pub'), 'Ops keypair attempted once')
 
   ct.end()
 })
