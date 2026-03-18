@@ -1,6 +1,6 @@
 const t = require('tap')
 
-const encryptValue = require('../../../src/lib/helpers/encryptValue')
+const encryptValue = require('../../../src/lib/helpers/cryptography/encryptValue')
 const decryptKeyValue = require('../../../src/lib/helpers/decryptKeyValue')
 
 const publicKey = '02b106c30579baf896ae1fddf077cbcb4fef5e7d457932974878dcb51f42b45498'

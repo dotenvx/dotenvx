@@ -1,10 +1,10 @@
 module.exports = {
   deriveKeypair: require('./deriveKeypair'),
-  encrypt: require('./../encrypt'),
-  decrypt: require('./../decrypt'),
-  encryptValue: require('./../encryptValue'),
-  decryptKeyValue: require('./../decryptKeyValue'),
-  isEncrypted: require('./../isEncrypted'),
+  encryptValue: require('./encryptValue'),
+  isEncrypted: require('./isEncrypted'),
+  isPublicKey: require('./isPublicKey'),
+
+  // other
   isFullyEncrypted: require('./../isFullyEncrypted'),
-  isPublicKey: require('./isPublicKey')
+  decryptKeyValue: require('./../decryptKeyValue')
 }

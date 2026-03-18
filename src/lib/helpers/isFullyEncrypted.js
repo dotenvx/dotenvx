@@ -1,5 +1,5 @@
 const dotenvParse = require('./dotenvParse')
-const isEncrypted = require('./isEncrypted')
+const isEncrypted = require('./cryptography/isEncrypted')
 const isPublicKey = require('./cryptography/isPublicKey')
 
 function isFullyEncrypted (src) {
