@@ -6,7 +6,7 @@ module.exports = {
   publicKeyValue: require('./publicKeyValue'),
 
   // private
-  privateKeyValue: require('./privateKeyValue'),
+  // private keys are resolved via keyValues()
 
   // other
   readProcessKey: require('./readProcessKey'),
