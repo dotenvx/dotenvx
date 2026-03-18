@@ -19,7 +19,8 @@ const {
   encryptValue,
   decryptKeyValue,
   isEncrypted,
-  provision
+  provision,
+  mutateSrc
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
@@ -93,17 +94,13 @@ class Sets {
         // first pass - provision
         if (!privateKeyValue && !publicKeyValue) {
           // creates .env.keys file (or ops)
-          const firstTime = provision({
-            envSrc,
-            envFilepath,
-            keysFilepath: this.envKeysFilepath
-          })
+          const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath })
 
-          envSrc = firstTime.envSrc
-          publicKey = firstTime.publicKey
-          privateKey = firstTime.privateKey
-          row.privateKeyAdded = firstTime.privateKeyAdded
-          row.envKeysFilepath = firstTime.envKeysFilepath
+          envSrc = prov.envSrc
+          publicKey = prov.publicKey
+          privateKey = prov.privateKey
+          row.privateKeyAdded = prov.privateKeyAdded
+          row.envKeysFilepath = prov.envKeysFilepath
         } else if (privateKeyValue) {
           const kp = deriveKeypair(privateKeyValue)
           publicKey = kp.publicKey
@@ -111,20 +108,9 @@ class Sets {
 
           this.validatePairedPrivateKey({ publicKeyValue, publicKey })
 
-          // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
+          // scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
           if (!publicKeyValue) {
-            const ps = preserveShebang(envSrc)
-            const firstLinePreserved = ps.firstLinePreserved
-            envSrc = ps.envSrc
-
-            let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-            if (this.envKeysFilepath) {
-              envKeysFilepath = path.resolve(this.envKeysFilepath)
-            }
-            const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
-            const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-            envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
+            envSrc = mutateSrc({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, publicKeyName, publicKeyValue: publicKey })
           }
 
           if (row.originalValue) {

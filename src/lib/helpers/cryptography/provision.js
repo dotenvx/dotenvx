@@ -1,7 +1,6 @@
 const path = require('path')
 const fsx = require('./../fsx')
-const preserveShebang = require('./../preserveShebang')
-const prependPublicKey = require('./../prependPublicKey')
+const mutateSrc = require('./mutateSrc')
 const deriveKeypair = require('./deriveKeypair')
 const { keyNames } = require('../keyResolution')
 
@@ -17,10 +16,7 @@ function provision ({ envSrc, envFilepath, keysFilepath }) {
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
   const { publicKey, privateKey } = deriveKeypair()
 
-  // build new envSrc
-  const ps = preserveShebang(envSrc)
-  const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-  envSrc = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
+  envSrc = mutateSrc({ envSrc, envFilepath, keysFilepath, publicKeyName, publicKeyValue: publicKey })
 
   // build keys src
   const firstTimeKeysSrc = [

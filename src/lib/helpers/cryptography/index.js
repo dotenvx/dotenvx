@@ -5,6 +5,7 @@ module.exports = {
   isEncrypted: require('./isEncrypted'),
   isPublicKey: require('./isPublicKey'),
   provision: require('./provision'),
+  mutateSrc: require('./mutateSrc'),
 
   // other
   isFullyEncrypted: require('./../isFullyEncrypted')
