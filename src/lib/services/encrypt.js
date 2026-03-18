@@ -11,15 +11,18 @@ const {
   keyValues
 } = require('./../helpers/keyResolution')
 
+const {
+  deriveKeypair,
+  isPublicKey
+} = require('./../helpers/cryptography')
+
 const encryptValue = require('./../helpers/encryptValue')
 const isEncrypted = require('./../helpers/isEncrypted')
 const dotenvParse = require('./../helpers/dotenvParse')
 const replace = require('./../helpers/replace')
 const detectEncoding = require('./../helpers/detectEncoding')
 const determine = require('./../helpers/envResolution/determine')
-const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 const truncate = require('./../helpers/truncate')
-const isPublicKey = require('./../helpers/cryptography/isPublicKey')
 
 class Encrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
