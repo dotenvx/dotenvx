@@ -4,19 +4,29 @@ const path = require('path')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
-const publicKeyName = require('./../helpers/keyResolution/publicKeyName')
-const encryptValue = require('./../helpers/cryptography/encryptValue')
-const decryptKeyValue = require('./../helpers/decryptKeyValue')
+
+const {
+  privateKeyName,
+  publicKeyName,
+  privateKeyValue,
+  publicKeyValue
+} = require('./../helpers/keyResolution')
+
+const {
+  deriveKeypair,
+  encryptValue,
+  isEncrypted
+} = require('./../helpers/cryptography')
+
+const {
+  determine
+} = require('./../helpers/envResolution')
+
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determine = require('./../helpers/envResolution/determine')
-const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
-const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
-const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
+const decryptKeyValue = require('./../helpers/decryptKeyValue')
 const truncate = require('./../helpers/truncate')
-const isEncrypted = require('./../helpers/cryptography/isEncrypted')
 
 class Sets {
   constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
