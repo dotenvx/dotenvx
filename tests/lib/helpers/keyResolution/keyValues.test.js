@@ -59,7 +59,7 @@ t.test('#keyValues inverts public key name for custom file and reads keys file p
   const keysFilepath = path.join(tmpDir, '.env.keys')
   fs.writeFileSync(keysFilepath, 'DOTENV_PRIVATE_KEY_CI="from-file-ci"\n')
 
-  const result = keyValues(filepath, keysFilepath)
+  const result = keyValues(filepath, { keysFilepath })
 
   ct.equal(result.privateKeyValue, 'from-file-ci')
 

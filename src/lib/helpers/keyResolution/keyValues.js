@@ -31,7 +31,8 @@ function invertForPrivateKeyName (filepath) {
   return null
 }
 
-function keyValues (filepath, keysFilepath = null) {
+function keyValues (filepath, opts = {}) {
+  let keysFilepath = opts.keysFilepath || null
   const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
