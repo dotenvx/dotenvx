@@ -7,7 +7,7 @@ const childProcess = require('child_process')
 const packageJson = require('../../../src/lib/helpers/packageJson')
 const { getColor } = require('../../../src/shared/colors')
 
-const Ops = require('../../../src/lib/services/ops')
+const Ops = require('../../../src/lib/extensions/ops')
 
 t.beforeEach((ct) => {
   sinon.restore()
@@ -26,7 +26,7 @@ t.test('when no dotenvx-ops', ct => {
 
 t.test('when dotenvx-ops npm', ct => {
   const stub = sinon.stub(Ops.prototype, '_opsNpm').returns({
-    status: 'on',
+    status: () => 'on',
     observe: sinon.stub()
   })
 
@@ -68,7 +68,7 @@ t.test('when dotenvx-ops npm but then observe fails somehow', ct => {
 
 t.test('when dotenvx-ops cli', ct => {
   const stub = sinon.stub(Ops.prototype, '_opsCli').returns({
-    status: 'on',
+    status: () => 'on',
     observe: sinon.stub()
   })
 
@@ -89,7 +89,7 @@ t.test('when dotenvx-ops cli', ct => {
 t.test('keypair does not attempt command when off', ct => {
   const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
   sinon.stub(Ops.prototype, '_opsNpm').returns({
-    status: 'off',
+    status: () => 'off',
     observe: sinon.stub()
   })
   const execStub = sinon.stub(childProcess, 'execFileSync')
@@ -106,7 +106,7 @@ t.test('keypair does not attempt command when off', ct => {
 t.test('keypair returns private key from fallback bin output', ct => {
   const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
   sinon.stub(Ops.prototype, '_opsNpm').returns({
-    status: 'on',
+    status: () => 'on',
     observe: sinon.stub()
   })
   const stub = sinon.stub(childProcess, 'execFileSync')
@@ -124,7 +124,7 @@ t.test('keypair returns private key from fallback bin output', ct => {
 t.test('keypair falls back to global cli when fallback bin fails', ct => {
   const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
   sinon.stub(Ops.prototype, '_opsNpm').returns({
-    status: 'on',
+    status: () => 'on',
     observe: sinon.stub()
   })
   const stub = sinon.stub(childProcess, 'execFileSync')
@@ -167,7 +167,7 @@ t.test('when dotenvx-ops cli stub childProcess.execSync', ct => {
 t.test('keypair returns null when both keypair commands fail', ct => {
   const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
   sinon.stub(Ops.prototype, '_opsNpm').returns({
-    status: 'on',
+    status: () => 'on',
     observe: sinon.stub()
   })
 
@@ -186,7 +186,7 @@ t.test('keypair returns null when both keypair commands fail', ct => {
 t.test('_status returns null when fallback and global status both fail', ct => {
   const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
   sinon.stub(Ops.prototype, '_opsNpm').returns({
-    status: 'on',
+    status: () => 'on',
     observe: sinon.stub()
   })
 

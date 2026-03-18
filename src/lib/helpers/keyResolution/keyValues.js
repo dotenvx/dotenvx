@@ -46,11 +46,8 @@ function keyValues (filepath, opts = {}) {
   if (!publicKey) {
     publicKey = readFileKey(publicKeyName, filepath) || null
   }
-  if (opsOn) {
-    // TODO: read from Ops
-  }
 
-  // private key: process.env first, then .env.keys
+  // private key: process.env first, then .env.keys, then invert public key
   privateKey = readProcessKey(privateKeyName)
   if (!privateKey) {
     if (keysFilepath) { // user specified -fk flag
@@ -60,20 +57,19 @@ function keyValues (filepath, opts = {}) {
     }
 
     privateKey = readFileKey(privateKeyName, keysFilepath)
-
-    // attempt inverting DOTENV_PUBLIC_KEY* name for custom filenames
-    if (!privateKey) {
-      privateKeyName = invertForPrivateKeyName(filepath)
-      if (privateKeyName) {
-        privateKey = readProcessKey(privateKeyName)
-        if (!privateKey) {
-          privateKey = readFileKey(privateKeyName, keysFilepath)
-        }
+  }
+  // invert
+  if (!privateKey) {
+    privateKeyName = invertForPrivateKeyName(filepath)
+    if (privateKeyName) {
+      privateKey = readProcessKey(privateKeyName)
+      if (!privateKey) {
+        privateKey = readFileKey(privateKeyName, keysFilepath)
       }
     }
   }
-  if (opsOn) {
-    // TODO: read from Ops
+  if (!privateKey && opsOn) {
+    throw new Error('opsOn: implement')
   }
 
   return {

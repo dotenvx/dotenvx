@@ -84,7 +84,7 @@ class Encrypt {
       let privateKey
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn }) // TODO: implement opsOn and publicKey
+      const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
       if (this.envKeysFilepath) {
@@ -116,7 +116,6 @@ class Encrypt {
           envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
         }
       } else if (publicKeyValue) {
-        // throw new Error('implement for remote Ops privateKeyValue')
         publicKey = publicKeyValue
       } else {
         // .env.keys
@@ -134,9 +133,6 @@ class Encrypt {
         const kp = deriveKeypair() // generates a fresh keypair in memory
         publicKey = kp.publicKey
         privateKey = kp.privateKey
-        // Ops hook point (first-time key generation):
-        // if Ops is installed and opsOff is not set, send privateKey/privateKeyName/envFilepath
-        // to your Ops service before persisting or immediately after writing below.
 
         const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
@@ -160,10 +156,6 @@ class Encrypt {
 
         // write to .env.keys
         fsx.writeFileX(envKeysFilepath, keysSrc)
-        // Ops hook point (after persistence):
-        // if Ops is installed and opsOff is not set, trigger backup/registration now that
-        // .env.keys has been written and row.privateKeyAdded will be true for callers.
-
         row.privateKeyAdded = true
         row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
       }
