@@ -76,7 +76,7 @@ class Encrypt {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = this._detectEncoding(filepath)
+      const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
@@ -184,9 +184,6 @@ class Encrypt {
     }
   }
 
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
-  }
 }
 
 module.exports = Encrypt

@@ -77,7 +77,7 @@ class Rotate {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = this._detectEncoding(filepath)
+      const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
@@ -88,7 +88,7 @@ class Rotate {
       if (this.envKeysFilepath) {
         envKeysFilepath = path.resolve(this.envKeysFilepath)
       }
-      const keysEncoding = this._detectEncoding(envKeysFilepath)
+      const keysEncoding = detectEncoding(envKeysFilepath)
 
       row.envKeysFilepath = envKeysFilepath
       this.envKeysSources[envKeysFilepath] ||= fsx.readFileX(envKeysFilepath, { encoding: keysEncoding })
@@ -160,9 +160,6 @@ class Rotate {
     return this.excludeKey
   }
 
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
-  }
 }
 
 module.exports = Rotate

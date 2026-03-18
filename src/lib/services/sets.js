@@ -73,7 +73,7 @@ class Sets {
     row.changed = false
 
     try {
-      const encoding = this._detectEncoding(filepath)
+      const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
       row.originalValue = envParsed[row.key] || null
@@ -152,9 +152,6 @@ class Sets {
     }
   }
 
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
-  }
 }
 
 module.exports = Sets

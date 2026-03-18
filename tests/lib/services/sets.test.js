@@ -1,4 +1,5 @@
 const t = require('tap')
+const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
@@ -69,9 +70,9 @@ t.test('#run (no env file)', ct => {
 
 t.test('#run (no arguments and some other error)', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
+  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
   const inst = new Sets()
-  const detectEncodingStub = sinon.stub(inst, '_detectEncoding').returns('utf8')
 
   const {
     processedEnvs,
@@ -92,7 +93,7 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(changedFilepaths, [])
 
   readFileXStub.restore()
-  detectEncodingStub.restore()
+  readFileSyncStub.restore()
 
   ct.end()
 })

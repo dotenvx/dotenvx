@@ -72,7 +72,7 @@ class Decrypt {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = this._detectEncoding(filepath)
+      const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
@@ -139,9 +139,6 @@ class Decrypt {
     return this.excludeKey
   }
 
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
-  }
 }
 
 module.exports = Decrypt
