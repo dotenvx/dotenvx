@@ -382,9 +382,9 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
     processedEnvs
   } = new Sets('HELLO', 'new value', envs).run()
 
-  const error = new Error('derived public key (03eaf21…) does not match the existing public key (12345…)')
-  error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-  error.help = 'debug info: DOTENV_PRIVATE_KEY=ec9e800… (derived DOTENV_PUBLIC_KEY=03eaf21… vs existing DOTENV_PUBLIC_KEY=12345…)'
+  const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
+  error.code = 'MISPAIRED_PRIVATE_KEY'
+  error.help = '[MISPAIRED_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/752'
 
   ct.same(processedEnvs, [{
     key: 'HELLO',

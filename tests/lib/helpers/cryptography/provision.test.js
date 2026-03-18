@@ -6,10 +6,11 @@ const proxyquire = require('proxyquire')
 t.test('provision builds env and keys for first-time setup', (ct) => {
   const existsSync = sinon.stub().returns(false)
   const readFileX = sinon.stub().returns('')
+  const writeFileX = sinon.stub()
   const prependPublicKey = sinon.stub().returns('PUBLIC_BLOCK')
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
-    './../fsx': { existsSync, readFileX },
+    './../fsx': { existsSync, readFileX, writeFileX },
     './../preserveShebang': () => ({ firstLinePreserved: '#!/usr/bin/env node\n', envSrc: 'HELLO=world' }),
     './../prependPublicKey': prependPublicKey,
     './deriveKeypair': () => ({ publicKey: 'pub_123', privateKey: 'priv_123' }),
@@ -20,7 +21,7 @@ t.test('provision builds env and keys for first-time setup', (ct) => {
 
   const envFilepath = path.join('apps', 'backend', 'services', 'api', '.env')
   const keysFilepath = path.join('apps', 'backend', '.env.keys')
-  const out = provision({ src: '#!/usr/bin/env node\nHELLO=world', envFilepath, keysFilepath })
+  const out = provision({ envSrc: '#!/usr/bin/env node\nHELLO=world', envFilepath, keysFilepath })
 
   ct.equal(out.envSrc, '#!/usr/bin/env node\nPUBLIC_BLOCK\nHELLO=world')
   ct.match(out.keysSrc, '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/')
@@ -32,6 +33,9 @@ t.test('provision builds env and keys for first-time setup', (ct) => {
   ct.equal(prependPublicKey.firstCall.args[3], '../../.env.keys')
   ct.equal(existsSync.callCount, 1)
   ct.equal(readFileX.callCount, 0)
+  ct.equal(writeFileX.callCount, 1)
+  ct.equal(writeFileX.firstCall.args[0], path.resolve(keysFilepath))
+  ct.equal(writeFileX.firstCall.args[1], out.keysSrc)
 
   ct.end()
 })
@@ -40,9 +44,10 @@ t.test('provision appends to existing keys file', (ct) => {
   const existing = 'EXISTING_KEYS'
   const existsSync = sinon.stub().returns(true)
   const readFileX = sinon.stub().returns(existing)
+  const writeFileX = sinon.stub()
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
-    './../fsx': { existsSync, readFileX },
+    './../fsx': { existsSync, readFileX, writeFileX },
     './../preserveShebang': () => ({ firstLinePreserved: '', envSrc: 'HELLO=world' }),
     './../prependPublicKey': () => 'PUBLIC_BLOCK',
     './deriveKeypair': () => ({ publicKey: 'pub_abc', privateKey: 'priv_abc' }),
@@ -52,18 +57,22 @@ t.test('provision appends to existing keys file', (ct) => {
   })
 
   const keysFilepath = path.join('apps', '.env.keys')
-  const out = provision({ src: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), keysFilepath })
+  const out = provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), keysFilepath })
 
   ct.match(out.keysSrc, /^EXISTING_KEYS\n# .env\nDOTENV_PRIVATE_KEY=priv_abc/m)
   ct.equal(readFileX.callCount, 1)
+  ct.equal(writeFileX.callCount, 1)
+  ct.equal(writeFileX.firstCall.args[0], path.resolve(keysFilepath))
+  ct.equal(writeFileX.firstCall.args[1], out.keysSrc)
   ct.end()
 })
 
 t.test('provision defaults keys filepath when omitted', (ct) => {
   const existsSync = sinon.stub().returns(false)
+  const writeFileX = sinon.stub()
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
-    './../fsx': { existsSync, readFileX: () => '' },
+    './../fsx': { existsSync, readFileX: () => '', writeFileX },
     './../preserveShebang': () => ({ firstLinePreserved: '', envSrc: 'HELLO=world' }),
     './../prependPublicKey': () => 'PUBLIC_BLOCK',
     './deriveKeypair': () => ({ publicKey: 'pub_x', privateKey: 'priv_x' }),
@@ -73,8 +82,11 @@ t.test('provision defaults keys filepath when omitted', (ct) => {
   })
 
   const envFilepath = path.join('apps', 'api', '.env')
-  const out = provision({ src: 'HELLO=world', envFilepath })
+  const out = provision({ envSrc: 'HELLO=world', envFilepath })
 
   ct.equal(out.envKeysFilepath, path.join('apps', 'api', '.env.keys'))
+  ct.equal(writeFileX.callCount, 1)
+  ct.equal(writeFileX.firstCall.args[0], path.resolve(path.join('apps', 'api', '.env.keys')))
+  ct.equal(writeFileX.firstCall.args[1], out.keysSrc)
   ct.end()
 })

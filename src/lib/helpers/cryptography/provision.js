@@ -1,12 +1,11 @@
 const path = require('path')
-
 const fsx = require('./../fsx')
 const preserveShebang = require('./../preserveShebang')
 const prependPublicKey = require('./../prependPublicKey')
 const deriveKeypair = require('./deriveKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provision ({ src, envFilepath, keysFilepath }) {
+function provision ({ envSrc, envFilepath, keysFilepath }) {
   const filename = path.basename(envFilepath)
   const filepath = path.resolve(envFilepath)
   let resolvedKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
@@ -18,10 +17,10 @@ function provision ({ src, envFilepath, keysFilepath }) {
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
   const { publicKey, privateKey } = deriveKeypair()
 
-  // build new src
-  const ps = preserveShebang(src)
+  // build new envSrc
+  const ps = preserveShebang(envSrc)
   const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-  src = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
+  envSrc = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
 
   // build keys src
   const firstTimeKeysSrc = [
@@ -43,8 +42,10 @@ function provision ({ src, envFilepath, keysFilepath }) {
   keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
+  fsx.writeFileX(resolvedKeysFilepath, keysSrc)
+
   return {
-    envSrc: src,
+    envSrc,
     keysSrc,
     publicKey,
     privateKey,

@@ -94,32 +94,8 @@ class Encrypt {
       }
       const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
 
-      if (privateKeyValue) {
-        const kp = deriveKeypair(privateKeyValue)
-        publicKey = kp.publicKey
-        privateKey = kp.privateKey
-
-        // if derivation doesn't match what's in the file (or preset in env)
-        if (publicKeyValue && publicKeyValue !== publicKey) {
-          const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(publicKeyValue)})`)
-          error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-          error.help = `debug info: ${privateKeyName}=${truncate(privateKeyValue)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(publicKeyValue)})`
-          throw error
-        }
-
-        // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
-        if (!publicKeyValue) {
-          const ps = preserveShebang(envSrc)
-          const firstLinePreserved = ps.firstLinePreserved
-          envSrc = ps.envSrc
-
-          const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-          envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
-        }
-      } else if (publicKeyValue) {
-        publicKey = publicKeyValue
-      } else {
+      // first pass - provision
+      if (!privateKeyValue && !publicKeyValue) {
         // .env.keys
         let keysSrc = ''
 
@@ -160,6 +136,25 @@ class Encrypt {
         fsx.writeFileX(envKeysFilepath, keysSrc)
         row.privateKeyAdded = true
         row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
+      } else if (privateKeyValue) {
+        const kp = deriveKeypair(privateKeyValue)
+        publicKey = kp.publicKey
+        privateKey = kp.privateKey
+
+        this.validatePairedPrivateKey({ publicKeyValue, publicKey })
+
+        // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
+        if (!publicKeyValue) {
+          const ps = preserveShebang(envSrc)
+          const firstLinePreserved = ps.firstLinePreserved
+          envSrc = ps.envSrc
+
+          const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
+
+          envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
+        }
+      } else if (publicKeyValue) {
+        publicKey = publicKeyValue
       }
 
       row.publicKey = publicKey
@@ -222,6 +217,13 @@ class Encrypt {
     }
 
     return this.excludeKey
+  }
+
+  validatePairedPrivateKey ({ publicKeyValue, publicKey }) {
+    // if derivation doesn't match what's in the file (or preset in env)
+    if (publicKeyValue && publicKeyValue !== publicKey) {
+      throw new Errors({ publicKey, publicKeyExisting: publicKeyValue }).mispairedPrivateKey()
+    }
   }
 
   _detectEncoding (filepath) {

@@ -87,19 +87,17 @@ class Sets {
         let publicKey
         let privateKey
 
-        const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-        const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+        const { publicKeyName, privateKeyName } = keyNames(filepath)
+        const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
-        // first pass - values will be null
-        // throw new Error(`implement: ${publicKeyName}=${publicKeyValue} ${privateKeyName}=${privateKeyValue}`)
-
+        // first pass - provision
         if (!privateKeyValue && !publicKeyValue) {
+          // creates .env.keys file (or ops)
           const firstTime = provision({
-            src: envSrc,
+            envSrc,
             envFilepath,
             keysFilepath: this.envKeysFilepath
           })
-          fsx.writeFileX(firstTime.envKeysFilepath, firstTime.keysSrc)
 
           envSrc = firstTime.envSrc
           publicKey = firstTime.publicKey
@@ -107,7 +105,6 @@ class Sets {
           row.privateKeyAdded = firstTime.privateKeyAdded
           row.envKeysFilepath = firstTime.envKeysFilepath
         } else if (privateKeyValue) {
-          // handle existing privateKeyValue
           const kp = deriveKeypair(privateKeyValue)
           publicKey = kp.publicKey
           privateKey = kp.privateKey
@@ -116,13 +113,7 @@ class Sets {
             row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
           }
 
-          // if derivation doesn't match what's in the file (or preset in env)
-          if (publicKeyValue && publicKeyValue !== publicKey) {
-            const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(publicKeyValue)})`)
-            error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-            error.help = `debug info: ${privateKeyName}=${truncate(privateKeyValue)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(publicKeyValue)})`
-            throw error
-          }
+          this.validatePairedPrivateKey({ publicKeyValue, publicKey })
 
           // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
           if (!publicKeyValue) {
@@ -170,6 +161,13 @@ class Sets {
     }
 
     this.processedEnvs.push(row)
+  }
+
+  validatePairedPrivateKey ({ publicKeyValue, publicKey }) {
+    // if derivation doesn't match what's in the file (or preset in env)
+    if (publicKeyValue && publicKeyValue !== publicKey) {
+      throw new Errors({ publicKey, publicKeyExisting: publicKeyValue }).mispairedPrivateKey()
+    }
   }
 
   _detectEncoding (filepath) {
