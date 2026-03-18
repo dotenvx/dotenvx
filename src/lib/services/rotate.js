@@ -5,19 +5,27 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
-const publicKeyName = require('./../helpers/keyResolution/publicKeyName')
-const encryptValue = require('./../helpers/cryptography/encryptValue')
-const isEncrypted = require('./../helpers/cryptography/isEncrypted')
-const dotenvParse = require('./../helpers/dotenvParse')
-const replace = require('./../helpers/replace')
+
+const {
+  determine
+} = require('./../helpers/envResolution')
+
+const {
+  keyNames,
+  keyValues
+} = require('./../helpers/keyResolution')
+
+const {
+  deriveKeypair,
+  encryptValue,
+  decryptKeyValue,
+  isEncrypted
+} = require('./../helpers/cryptography')
+
 const append = require('./../helpers/append')
+const replace = require('./../helpers/replace')
+const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determine = require('./../helpers/envResolution/determine')
-const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
-const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
-const decryptKeyValue = require('./../helpers/cryptography/decryptKeyValue')
-const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 
 class Rotate {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -73,10 +81,8 @@ class Rotate {
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
-      const resolvedPublicKeyName = publicKeyName(envFilepath)
-      const resolvedPrivateKeyName = privateKeyName(envFilepath)
-      const existingPublicKey = publicKeyValue(envFilepath)
-      const existingPrivateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
+      const { publicKeyName, privateKeyName } = keyNames(envFilepath)
+      const { privateKeyValue } = keyValues(envFilepath, this.envKeysFilepath) // TODO: implement opsOn and publicKey
 
       let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
       if (this.envKeysFilepath) {
@@ -94,7 +100,7 @@ class Rotate {
       const newPrivateKey = nkp.privateKey
 
       // .env
-      envSrc = replace(envSrc, resolvedPublicKeyName, newPublicKey) // replace publicKey
+      envSrc = replace(envSrc, publicKeyName, newPublicKey) // replace publicKey
       row.changed = true // track change
       for (const [key, value] of Object.entries(envParsed)) { // re-encrypt each individual key
         // key excluded - don't re-encrypt it
@@ -110,8 +116,7 @@ class Rotate {
         if (isEncrypted(value)) { // only re-encrypt those already encrypted
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptKeyValue(key, value, resolvedPrivateKeyName, existingPrivateKey) // get decrypted value
-
+          const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKeyValue) // get decrypted value
           const encryptedValue = encryptValue(decryptedValue, newPublicKey) // encrypt with the new publicKey
 
           envSrc = replace(envSrc, key, encryptedValue)
@@ -121,9 +126,9 @@ class Rotate {
 
       // .env.keys - TODO: for dotenvx pro .env.keys file does not exist
       row.privateKeyAdded = true
-      row.privateKeyName = resolvedPrivateKeyName
+      row.privateKeyName = privateKeyName
       row.privateKey = newPrivateKey
-      envKeysSrc = append(envKeysSrc, resolvedPrivateKeyName, newPrivateKey) // append privateKey
+      envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
       this.envKeysSources[envKeysFilepath] = envKeysSrc
       row.envKeysSrc = envKeysSrc
 
