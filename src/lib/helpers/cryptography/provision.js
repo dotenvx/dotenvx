@@ -9,16 +9,13 @@ const { keyNames } = require('../keyResolution')
 function provision ({ src, envFilepath, keysFilepath }) {
   const filename = path.basename(envFilepath)
   const filepath = path.resolve(envFilepath)
-
   let resolvedKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
   if (keysFilepath) {
     resolvedKeysFilepath = path.resolve(keysFilepath)
   }
-
   const relativeFilepath = path.relative(path.dirname(filepath), resolvedKeysFilepath)
 
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-
   const { publicKey, privateKey } = deriveKeypair()
 
   // build new src

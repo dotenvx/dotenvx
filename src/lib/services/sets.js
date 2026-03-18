@@ -93,15 +93,6 @@ class Sets {
         // first pass - values will be null
         // throw new Error(`implement: ${publicKeyName}=${publicKeyValue} ${privateKeyName}=${privateKeyValue}`)
 
-        // custom envKeysFilepath
-        let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-        if (this.envKeysFilepath) {
-          envKeysFilepath = path.resolve(this.envKeysFilepath)
-        }
-
-        // relativeFilepath
-        const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
-
         if (!privateKeyValue && !publicKeyValue) {
           const firstTime = provision({
             src: envSrc,
@@ -139,6 +130,11 @@ class Sets {
             const firstLinePreserved = ps.firstLinePreserved
             envSrc = ps.envSrc
 
+            let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+            if (this.envKeysFilepath) {
+              envKeysFilepath = path.resolve(this.envKeysFilepath)
+            }
+            const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
             const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
             envSrc = `${firstLinePreserved}${prependedPublicKey}\n${envSrc}`
