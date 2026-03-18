@@ -9,10 +9,6 @@ const Errors = require('./../helpers/errors')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 const {
-  privateKeyValue,
-  publicKeyValue,
-  privateKeyName,
-
   keyNames,
   keyValues
 } = require('./../helpers/keyResolution')
