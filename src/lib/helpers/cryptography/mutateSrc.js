@@ -14,7 +14,11 @@ function mutateSrc ({ envSrc, envFilepath, keysFilepath, publicKeyName, publicKe
   const ps = preserveShebang(envSrc)
   const prependedPublicKey = prependPublicKey(publicKeyName, publicKeyValue, filename, relativeFilepath)
 
-  return `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
+  envSrc = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
+
+  return {
+    envSrc
+  }
 }
 
 module.exports = mutateSrc

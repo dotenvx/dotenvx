@@ -14,7 +14,8 @@ function provisionWithPrivateKey ({ envSrc, envFilepath, keysFilepath, privateKe
 
   // scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
   if (!publicKeyValue) {
-    envSrc = mutateSrc({ envSrc, envFilepath, keysFilepath, publicKeyName, publicKeyValue: publicKey })
+    const mutated = mutateSrc({ envSrc, envFilepath, keysFilepath, publicKeyName, publicKeyValue: publicKey })
+    envSrc = mutated.envSrc
   }
 
   return {
