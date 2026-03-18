@@ -95,6 +95,7 @@ class Rotate {
       let envKeysSrc = this.envKeysSources[envKeysFilepath]
 
       // new keypair
+      // TODO: handle Ops keys
       const nkp = deriveKeypair() // generates a fresh keypair in memory
       const newPublicKey = nkp.publicKey
       const newPrivateKey = nkp.privateKey
