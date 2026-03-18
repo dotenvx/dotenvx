@@ -164,6 +164,43 @@ t.test('when dotenvx-ops cli stub childProcess.execSync', ct => {
   ct.end()
 })
 
+t.test('keypair returns null when both keypair commands fail', ct => {
+  const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
+  sinon.stub(Ops.prototype, '_opsNpm').returns({
+    status: 'on',
+    observe: sinon.stub()
+  })
+
+  const stub = sinon.stub(childProcess, 'execFileSync')
+  stub.withArgs(fallbackBin, ['status'], sinon.match.object).returns(Buffer.from('on'))
+  stub.withArgs(fallbackBin, ['keypair', 'pub'], sinon.match.object).throws(new Error('fallback failed'))
+  stub.withArgs('dotenvx-ops', ['keypair', 'pub'], sinon.match.object).throws(new Error('global failed'))
+
+  const ops = new Ops()
+  const result = ops.keypair('pub')
+
+  ct.equal(result, null)
+  ct.end()
+})
+
+t.test('_status returns null when fallback and global status both fail', ct => {
+  const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
+  sinon.stub(Ops.prototype, '_opsNpm').returns({
+    status: 'on',
+    observe: sinon.stub()
+  })
+
+  const stub = sinon.stub(childProcess, 'execFileSync')
+  stub.withArgs(fallbackBin, ['status'], sinon.match.object).throws(new Error('fallback status failed'))
+  stub.withArgs('dotenvx-ops', ['status'], sinon.match.object).throws(new Error('global status failed'))
+
+  const ops = new Ops()
+  const status = ops._status()
+
+  ct.equal(status, null)
+  ct.end()
+})
+
 t.test('when dotenvx-ops cli stub childProcess.execSync', ct => {
   const fallbackBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
   const stub = sinon.stub(childProcess, 'execSync')

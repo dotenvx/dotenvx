@@ -2,6 +2,7 @@ const t = require('tap')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire').noCallThru()
 
 const Sets = require('../../../src/lib/services/sets')
 
@@ -765,5 +766,35 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and pri
   }])
   ct.same(changedFilepaths, ['tests/monorepo/apps/app1/.env.production'])
 
+  ct.end()
+})
+
+t.test('#run (finds .env file) with --encrypt and existing public key only', ct => {
+  const sandbox = sinon.createSandbox()
+  const keyValuesStub = sandbox.stub().returns({
+    publicKeyValue: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
+    privateKeyValue: null
+  })
+  const keyNames = require('../../../src/lib/helpers/keyResolution/keyNames')
+
+  const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
+    './../helpers/keyResolution': {
+      keyNames,
+      keyValues: keyValuesStub
+    }
+  })
+
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const envs = [{ type: 'envFile', value: envFile }]
+
+  const { processedEnvs, changedFilepaths } = new SetsWithStub('KEY', 'value', envs, true).run()
+
+  ct.equal(processedEnvs[0].publicKey, '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba')
+  ct.equal(processedEnvs[0].privateKey, undefined)
+  ct.equal(processedEnvs[0].changed, true)
+  ct.match(processedEnvs[0].encryptedValue, /^encrypted:/)
+  ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+
+  sandbox.restore()
   ct.end()
 })

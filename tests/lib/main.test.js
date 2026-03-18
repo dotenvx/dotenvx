@@ -118,6 +118,25 @@ t.test('config with Run.run processedEnv with undefined processedEnv.errors', ct
   ct.end()
 })
 
+t.test('config catches thrown error and returns parsed/error', ct => {
+  const loggerErrorStub = sinon.stub(logger, 'error')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+  const thrown = new Error('boom')
+  thrown.help = 'boom help'
+
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.throws(thrown)
+
+  const result = main.config()
+
+  ct.same(result.parsed, {})
+  ct.equal(result.error, thrown)
+  ct.ok(loggerErrorStub.calledWith('boom'))
+  ct.ok(loggerHelpStub.calledWith('boom help'))
+
+  ct.end()
+})
+
 t.test('parse calls Parse.run', ct => {
   const parsed = main.parse('HELLO=World')
 

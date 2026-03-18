@@ -592,11 +592,18 @@ t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already
 t.test('#run (finds .env file only AND only the existing public key not the private key)', ct => {
   const sandbox = sinon.createSandbox()
 
-  const keyValuesStub = sandbox.stub().returns({ publicKeyValue: null, privateKeyValue: null })
+  const keyValuesStub = sandbox.stub().returns({
+    publicKeyValue: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
+    privateKeyValue: null
+  })
+  const keyNames = require('../../../src/lib/helpers/keyResolution/keyNames')
 
   // Load Encrypt with the stub injected
   const Encrypt = proxyquire('../../../src/lib/services/encrypt', {
-    './../helpers/keyResolution/keyValues': keyValuesStub
+    './../helpers/keyResolution': {
+      keyNames,
+      keyValues: keyValuesStub
+    }
   })
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
