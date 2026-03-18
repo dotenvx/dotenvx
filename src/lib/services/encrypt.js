@@ -20,15 +20,13 @@ const {
   encryptValue,
   isEncrypted,
   isPublicKey,
-  provision
+  provision,
+  mutateSrc
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
-const truncate = require('./../helpers/truncate')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const preserveShebang = require('./../helpers/preserveShebang')
-const prependPublicKey = require('./../helpers/prependPublicKey')
 
 class Encrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -73,7 +71,6 @@ class Encrypt {
     row.keys = []
     row.type = TYPE_ENV_FILE
 
-    const filename = path.basename(envFilepath)
     const filepath = path.resolve(envFilepath)
     row.filepath = filepath
     row.envFilepath = envFilepath
@@ -110,18 +107,9 @@ class Encrypt {
 
         this.validatePairedPrivateKey({ publicKeyValue, publicKey })
 
-        // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
+        // scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
         if (!publicKeyValue) {
-          let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-          if (this.envKeysFilepath) {
-            envKeysFilepath = path.resolve(this.envKeysFilepath)
-          }
-          const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
-
-          // build new envSrc
-          const ps = preserveShebang(envSrc)
-          const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-          envSrc = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
+          envSrc = mutateSrc({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, publicKeyName, publicKeyValue: publicKey })
         }
       } else if (publicKeyValue) {
         publicKey = publicKeyValue

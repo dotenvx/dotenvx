@@ -11,7 +11,6 @@ function provision ({ envSrc, envFilepath, keysFilepath }) {
   if (keysFilepath) {
     resolvedKeysFilepath = path.resolve(keysFilepath)
   }
-  const relativeFilepath = path.relative(path.dirname(filepath), resolvedKeysFilepath)
 
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
   const { publicKey, privateKey } = deriveKeypair()

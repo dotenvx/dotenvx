@@ -24,11 +24,8 @@ const {
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
-const truncate = require('./../helpers/truncate')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const preserveShebang = require('./../helpers/preserveShebang')
-const prependPublicKey = require('./../helpers/prependPublicKey')
 
 class Sets {
   constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
@@ -70,7 +67,6 @@ class Sets {
     row.value = this.value || null
     row.type = TYPE_ENV_FILE
 
-    const filename = path.basename(envFilepath)
     const filepath = path.resolve(envFilepath)
     row.filepath = filepath
     row.envFilepath = envFilepath
