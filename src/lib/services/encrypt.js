@@ -93,7 +93,6 @@ class Encrypt {
       const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
 
       if (privateKeyValue) {
-        // throw new Error('implement for remote Ops privateKeyValue')
         const kp = deriveKeypair(privateKeyValue)
         publicKey = kp.publicKey
         privateKey = kp.privateKey

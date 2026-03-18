@@ -6,10 +6,8 @@ const TYPE_ENV_FILE = 'envFile'
 const Errors = require('./../helpers/errors')
 
 const {
-  privateKeyName,
-  publicKeyName,
-  privateKeyValue,
-  publicKeyValue
+  keyNames,
+  keyValues
 } = require('./../helpers/keyResolution')
 
 const {
@@ -23,10 +21,10 @@ const {
 } = require('./../helpers/envResolution')
 
 const replace = require('./../helpers/replace')
+const truncate = require('./../helpers/truncate')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 const decryptKeyValue = require('./../helpers/decryptKeyValue')
-const truncate = require('./../helpers/truncate')
 
 class Sets {
   constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
@@ -86,10 +84,8 @@ class Sets {
         let publicKey
         let privateKey
 
-        const resolvedPublicKeyName = publicKeyName(envFilepath)
-        const resolvedPrivateKeyName = privateKeyName(envFilepath)
-        const existingPublicKey = publicKeyValue(envFilepath)
-        const existingPrivateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
+        const { publicKeyName, privateKeyName } = keyNames(envFilepath)
+        const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, this.envKeysFilepath) // TODO: implement opsOn and publicKey
 
         let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
         if (this.envKeysFilepath) {
@@ -97,35 +93,35 @@ class Sets {
         }
         const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
 
-        if (existingPrivateKey) {
-          const kp = deriveKeypair(existingPrivateKey)
+        if (privateKeyValue) {
+          const kp = deriveKeypair(privateKeyValue)
           publicKey = kp.publicKey
           privateKey = kp.privateKey
 
           if (row.originalValue) {
-            row.originalValue = decryptKeyValue(row.key, row.originalValue, resolvedPrivateKeyName, privateKey)
+            row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
           }
 
           // if derivation doesn't match what's in the file (or preset in env)
-          if (existingPublicKey && existingPublicKey !== publicKey) {
-            const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
+          if (publicKeyValue && publicKeyValue !== publicKey) {
+            const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(publicKeyValue)})`)
             error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-            error.help = `debug info: ${resolvedPrivateKeyName}=${truncate(existingPrivateKey)} (derived ${resolvedPublicKeyName}=${truncate(publicKey)} vs existing ${resolvedPublicKeyName}=${truncate(existingPublicKey)})`
+            error.help = `debug info: ${privateKeyName}=${truncate(privateKeyValue)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(publicKeyValue)})`
             throw error
           }
 
           // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
-          if (!existingPublicKey) {
+          if (!publicKeyValue) {
             const ps = this._preserveShebang(envSrc)
             const firstLinePreserved = ps.firstLinePreserved
             envSrc = ps.envSrc
 
-            const prependPublicKey = this._prependPublicKey(resolvedPublicKeyName, publicKey, filename, relativeFilepath)
+            const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
             envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
           }
-        } else if (existingPublicKey) {
-          publicKey = existingPublicKey
+        } else if (publicKeyValue) {
+          publicKey = publicKeyValue
         } else {
           // .env.keys
           let keysSrc = ''
@@ -141,7 +137,7 @@ class Sets {
           publicKey = kp.publicKey
           privateKey = kp.privateKey
 
-          const prependPublicKey = this._prependPublicKey(resolvedPublicKeyName, publicKey, filename, relativeFilepath)
+          const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
 
           // privateKey
           const firstTimeKeysSrc = [
@@ -153,7 +149,7 @@ class Sets {
           ].join('\n')
           const appendPrivateKey = [
             `# ${filename}`,
-            `${resolvedPrivateKeyName}=${privateKey}`,
+            `${privateKeyName}=${privateKey}`,
             ''
           ].join('\n')
 
@@ -171,7 +167,7 @@ class Sets {
         row.publicKey = publicKey
         row.privateKey = privateKey
         row.encryptedValue = encryptValue(this.value, publicKey)
-        row.privateKeyName = resolvedPrivateKeyName
+        row.privateKeyName = privateKeyName
       }
 
       const goingFromPlainTextToEncrypted = wasPlainText && this.encrypt
