@@ -1,7 +1,7 @@
 const path = require('path')
 const childProcess = require('child_process')
 
-const { logger } = require('./../../shared/logger')
+// const { logger } = require('./../../shared/logger')
 
 class Ops {
   constructor () {
