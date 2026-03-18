@@ -138,7 +138,6 @@ class Decrypt {
 
     return this.excludeKey
   }
-
 }
 
 module.exports = Decrypt

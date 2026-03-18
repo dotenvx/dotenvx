@@ -159,7 +159,6 @@ class Rotate {
 
     return this.excludeKey
   }
-
 }
 
 module.exports = Rotate

@@ -15,13 +15,11 @@ const {
 } = require('./../helpers/keyResolution')
 
 const {
-  deriveKeypair,
   encryptValue,
   decryptKeyValue,
   isEncrypted,
   provision,
-  provisionWithPrivateKey,
-  mutateSrc
+  provisionWithPrivateKey
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
@@ -91,7 +89,6 @@ class Sets {
         // first pass - provision
         if (!privateKeyValue && !publicKeyValue) {
           const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath })
-
           envSrc = prov.envSrc
           publicKey = prov.publicKey
           privateKey = prov.privateKey
@@ -102,15 +99,6 @@ class Sets {
           publicKey = prov.publicKey
           privateKey = prov.privateKey
           envSrc = prov.envSrc
-
-          // const kp = deriveKeypair(privateKeyValue)
-          // publicKey = kp.publicKey
-          // privateKey = kp.privateKey
-          // this.validatePairedPrivateKey({ publicKeyValue, publicKey })
-          // scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
-          // if (!publicKeyValue) {
-          //   envSrc = mutateSrc({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, publicKeyName, publicKeyValue: publicKey })
-          // }
 
           if (row.originalValue) {
             row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
@@ -146,14 +134,6 @@ class Sets {
 
     this.processedEnvs.push(row)
   }
-
-  validatePairedPrivateKey ({ publicKeyValue, publicKey }) {
-    // if derivation doesn't match what's in the file (or preset in env)
-    if (publicKeyValue && publicKeyValue !== publicKey) {
-      throw new Errors({ publicKey, publicKeyExisting: publicKeyValue }).mispairedPrivateKey()
-    }
-  }
-
 }
 
 module.exports = Sets
