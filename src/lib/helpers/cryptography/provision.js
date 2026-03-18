@@ -6,17 +6,22 @@ const prependPublicKey = require('./../prependPublicKey')
 const deriveKeypair = require('./deriveKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provision ({ src, filepath, keysFilepath }) {
-  const filename = path.basename(filepath)
-  const relativeFilepath = path.relative(path.dirname(filepath), keysFilepath)
-  const { publicKeyName, privateKeyName } = keyNames(filepath)
+function provision ({ envSrc, envFilepath, keysFilepath }) {
+  const filename = path.basename(envFilepath)
+  const filepath = path.resolve(envFilepath)
+  const resolvedKeysFilepath = keysFilepath
+    ? path.resolve(keysFilepath)
+    : path.join(path.dirname(filepath), '.env.keys')
+  const relativeFilepath = path.relative(path.dirname(filepath), resolvedKeysFilepath)
+
+  const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
   const { publicKey, privateKey } = deriveKeypair()
 
-  // build new src (envSrc)
-  const ps = preserveShebang(src)
+  // build new envSrc
+  const ps = preserveShebang(envSrc)
   const prependedPublicKey = prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-  src = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
+  envSrc = `${ps.firstLinePreserved}${prependedPublicKey}\n${ps.envSrc}`
 
   // build keys src
   const firstTimeKeysSrc = [
@@ -32,19 +37,19 @@ function provision ({ src, filepath, keysFilepath }) {
     ''
   ].join('\n')
   let keysSrc = ''
-  if (fsx.existsSync(keysFilepath)) {
-    keysSrc = fsx.readFileX(keysFilepath)
+  if (fsx.existsSync(resolvedKeysFilepath)) {
+    keysSrc = fsx.readFileX(resolvedKeysFilepath)
   }
   keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
   return {
-    envSrc: src,
+    envSrc,
     keysSrc,
     publicKey,
     privateKey,
     privateKeyAdded: true,
-    envKeysFilepath: (keysFilepath || path.join(path.dirname(filepath), path.basename(keysFilepath)))
+    envKeysFilepath: keysFilepath || path.join(path.dirname(envFilepath), path.basename(resolvedKeysFilepath))
   }
 }
 

@@ -18,7 +18,8 @@ const {
   deriveKeypair,
   encryptValue,
   decryptKeyValue,
-  isEncrypted
+  isEncrypted,
+  provision
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
@@ -102,6 +103,13 @@ class Sets {
         const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
 
         if (!privateKeyValue && !publicKeyValue) {
+          // const firstTime = this.provision({
+          //   src: envSrc,
+          //   envFilepath,
+          //   keysFilepath: envKeysFilepath
+          // })
+          // fsx.writeFileX(firstTime.envKeysFilepath, firstTime.keysSrc)
+
           const firstTime = this._handleFirstTime({
             envSrc,
             envFilepath,
@@ -179,6 +187,13 @@ class Sets {
   }
 
   _handleFirstTime ({ envSrc, envFilepath, envKeysFilepath, filename, relativeFilepath, publicKeyName, privateKeyName }) {
+    // const firstTime = this.provision({
+    //   src: envSrc,
+    //   envFilepath,
+    //   keysFilepath: envKeysFilepath
+    // })
+    // fsx.writeFileX(firstTime.envKeysFilepath, firstTime.keysSrc)
+
     let keysSrc = ''
     if (fsx.existsSync(envKeysFilepath)) {
       keysSrc = fsx.readFileX(envKeysFilepath)
