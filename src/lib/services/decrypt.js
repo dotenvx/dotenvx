@@ -5,15 +5,24 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const privateKeyName = require('./../helpers/keyResolution/privateKeyName')
-const publicKeyValue = require('./../helpers/keyResolution/publicKeyValue')
-const privateKeyValue = require('./../helpers/keyResolution/privateKeyValue')
-const decryptKeyValue = require('./../helpers/cryptography/decryptKeyValue')
-const isEncrypted = require('./../helpers/cryptography/isEncrypted')
-const dotenvParse = require('./../helpers/dotenvParse')
+
+const {
+  determine
+} = require('./../helpers/envResolution')
+
+const {
+  keyNames,
+  keyValues
+} = require('./../helpers/keyResolution')
+
+const {
+  decryptKeyValue,
+  isEncrypted
+} = require('./../helpers/cryptography')
+
 const replace = require('./../helpers/replace')
+const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determine = require('./../helpers/envResolution/determine')
 
 class Decrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -67,12 +76,11 @@ class Decrypt {
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
-      const publicKey = publicKeyValue(envFilepath)
-      const privateKey = privateKeyValue(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
-      const resolvedPrivateKeyName = privateKeyName(envFilepath)
+      const { privateKeyName } = keyNames(envFilepath)
+      const { privateKeyValue } = keyValues(envFilepath, this.envKeysFilepath) // TODO: implement opsOn and publicKey
 
-      row.privateKey = privateKey
-      row.privateKeyName = resolvedPrivateKeyName
+      row.privateKey = privateKeyValue
+      row.privateKeyName = privateKeyName
       row.changed = false // track possible changes
 
       for (const [key, value] of Object.entries(envParsed)) {
@@ -90,7 +98,7 @@ class Decrypt {
         if (encrypted) {
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptKeyValue(key, value, resolvedPrivateKeyName, privateKey)
+          const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKeyValue)
           // once newSrc is built write it out
           envSrc = replace(envSrc, key, decryptedValue)
 
