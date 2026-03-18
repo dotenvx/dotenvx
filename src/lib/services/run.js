@@ -102,7 +102,7 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)
-      const { privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn }) // TODO: implement opsOn and publicKey
+      const { privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       const {
         parsed,

@@ -68,8 +68,8 @@ function keyValues (filepath, opts = {}) {
       }
     }
   }
-  if (!privateKey && opsOn) {
-    throw new Error('opsOn: implement')
+  if (!privateKey && opsOn) { // && !!publicKey
+    throw new Error('opsOn: implement lookup of keypair to ops. call ops.keypair(publicKey)')
   }
 
   return {

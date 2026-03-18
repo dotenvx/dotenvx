@@ -82,7 +82,7 @@ class Rotate {
       const envParsed = dotenvParse(envSrc)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn }) // TODO: implement opsOn and publicKey
+      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
       if (this.envKeysFilepath) {

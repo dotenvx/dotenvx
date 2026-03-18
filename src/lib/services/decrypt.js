@@ -77,7 +77,7 @@ class Decrypt {
       const envParsed = dotenvParse(envSrc)
 
       const { privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn }) // TODO: implement opsOn and publicKey
+      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       row.privateKey = privateKeyValue
       row.privateKeyName = privateKeyName
