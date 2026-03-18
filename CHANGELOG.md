@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.55.1...main)
 
+### Changed
+
+- `--pp` alias — added as shorthand for `--pretty-print`; toward sunsetting `-pp` ([#750](https://github.com/dotenvx/dotenvx/pull/750))
+- `ops off` flag — now respected by `get`, `keypair`, `rotate`, and `encrypt` ([#750](https://github.com/dotenvx/dotenvx/pull/750))
+
 ### Removed
 
-* Remove support for `.env.vault` files
+* Remove support for `.env.vault` files ([#750](https://github.com/dotenvx/dotenvx/pull/750))
 
 ## [1.55.1](https://github.com/dotenvx/dotenvx/compare/v1.55.0...v1.55.1) (2026-03-13)
 

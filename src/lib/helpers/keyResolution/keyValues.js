@@ -33,6 +33,7 @@ function invertForPrivateKeyName (filepath) {
 
 function keyValues (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
+  const opsOn = opts.opsOn === true
   const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
@@ -45,7 +46,9 @@ function keyValues (filepath, opts = {}) {
   if (!publicKey) {
     publicKey = readFileKey(publicKeyName, filepath) || null
   }
-  // TODO: read from Ops
+  if (opsOn) {
+    // TODO: read from Ops
+  }
 
   // private key: process.env first, then .env.keys
   privateKey = readProcessKey(privateKeyName)
@@ -69,7 +72,9 @@ function keyValues (filepath, opts = {}) {
       }
     }
   }
-  // TODO: read from Ops
+  if (opsOn) {
+    // TODO: read from Ops
+  }
 
   return {
     publicKeyValue: publicKey || null, // important to make sure name is rendered

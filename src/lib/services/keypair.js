@@ -16,7 +16,7 @@ class Keypair {
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
       const { publicKeyName, privateKeyName } = keyNames(filepath)
-      const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath })
+      const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       out[publicKeyName] = publicKeyValue
       out[privateKeyName] = privateKeyValue
