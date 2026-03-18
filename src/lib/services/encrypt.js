@@ -88,18 +88,12 @@ class Encrypt {
 
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
-        // creates .env.keys file (or ops)
-        const firstTime = provision({
-          envSrc,
-          envFilepath,
-          keysFilepath: this.envKeysFilepath
-        })
-
-        envSrc = firstTime.envSrc
-        publicKey = firstTime.publicKey
-        privateKey = firstTime.privateKey
-        row.privateKeyAdded = firstTime.privateKeyAdded
-        row.envKeysFilepath = firstTime.envKeysFilepath
+        const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath })
+        envSrc = prov.envSrc
+        publicKey = prov.publicKey
+        privateKey = prov.privateKey
+        row.privateKeyAdded = prov.privateKeyAdded
+        row.envKeysFilepath = prov.envKeysFilepath
       } else if (privateKeyValue) {
         const kp = deriveKeypair(privateKeyValue)
         publicKey = kp.publicKey

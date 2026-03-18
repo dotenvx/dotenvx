@@ -20,6 +20,7 @@ const {
   decryptKeyValue,
   isEncrypted,
   provision,
+  provisionWithPrivateKey,
   mutateSrc
 } = require('./../helpers/cryptography')
 
@@ -89,7 +90,6 @@ class Sets {
 
         // first pass - provision
         if (!privateKeyValue && !publicKeyValue) {
-          // creates .env.keys file (or ops)
           const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath })
 
           envSrc = prov.envSrc
@@ -98,22 +98,24 @@ class Sets {
           row.privateKeyAdded = prov.privateKeyAdded
           row.envKeysFilepath = prov.envKeysFilepath
         } else if (privateKeyValue) {
-          const kp = deriveKeypair(privateKeyValue)
-          publicKey = kp.publicKey
-          privateKey = kp.privateKey
+          const prov = provisionWithPrivateKey({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
+          publicKey = prov.publicKey
+          privateKey = prov.privateKey
+          envSrc = prov.envSrc
 
-          this.validatePairedPrivateKey({ publicKeyValue, publicKey })
-
+          // const kp = deriveKeypair(privateKeyValue)
+          // publicKey = kp.publicKey
+          // privateKey = kp.privateKey
+          // this.validatePairedPrivateKey({ publicKeyValue, publicKey })
           // scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
-          if (!publicKeyValue) {
-            envSrc = mutateSrc({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, publicKeyName, publicKeyValue: publicKey })
-          }
+          // if (!publicKeyValue) {
+          //   envSrc = mutateSrc({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, publicKeyName, publicKeyValue: publicKey })
+          // }
 
           if (row.originalValue) {
             row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
           }
         } else if (publicKeyValue) {
-          // handle existing publicKeyValue - good enough for sets since only need public key
           publicKey = publicKeyValue
         }
 
