@@ -2,7 +2,6 @@ const t = require('tap')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
-const proxyquire = require('proxyquire')
 
 const Sets = require('../../../src/lib/services/sets')
 
