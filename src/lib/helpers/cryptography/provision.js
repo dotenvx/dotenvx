@@ -9,7 +9,7 @@ const { keyNames } = require('../keyResolution')
 function provision ({ src, filepath, keysFilepath }) {
   const filename = path.basename(filepath)
   const relativeFilepath = path.relative(path.dirname(filepath), keysFilepath)
-  const { publicKeyName, privateKeyName } = keyNames(envFilepath)
+  const { publicKeyName, privateKeyName } = keyNames(filepath)
 
   const { publicKey, privateKey } = deriveKeypair()
 
@@ -40,6 +40,7 @@ function provision ({ src, filepath, keysFilepath }) {
 
   return {
     envSrc: src,
+    keysSrc,
     publicKey,
     privateKey,
     privateKeyAdded: true,

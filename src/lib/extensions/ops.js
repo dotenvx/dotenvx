@@ -7,6 +7,10 @@ class Ops {
   constructor () {
     this.opsLib = null
 
+    if (this._isForcedOff()) {
+      return
+    }
+
     // check npm lib
     try { this.opsLib = this._opsNpm() } catch (_e) {}
 
@@ -21,7 +25,7 @@ class Ops {
   }
 
   status () {
-    if (!this.opsLib) {
+    if (this._isForcedOff() || !this.opsLib) {
       return 'off'
     }
 
@@ -29,7 +33,7 @@ class Ops {
   }
 
   keypair (publicKey) {
-    if (!this.opsLib) {
+    if (this._isForcedOff() || !this.opsLib) {
       return {}
     }
 
@@ -37,7 +41,7 @@ class Ops {
   }
 
   observe (payload) {
-    if (this.opsLib && this.opsLib.status() !== 'off') {
+    if (!this._isForcedOff() && this.opsLib && this.opsLib.status() !== 'off') {
       const encoded = Buffer.from(JSON.stringify(payload)).toString('base64')
       this.opsLib.observe(encoded)
     }
@@ -84,6 +88,10 @@ class Ops {
         }
       }
     }
+  }
+
+  _isForcedOff () {
+    return process.env.DOTENVX_OPS_OFF === 'true'
   }
 }
 

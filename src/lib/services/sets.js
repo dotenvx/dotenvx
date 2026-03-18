@@ -225,7 +225,6 @@ class Sets {
   _detectEncoding (filepath) {
     return detectEncoding(filepath)
   }
-
 }
 
 module.exports = Sets

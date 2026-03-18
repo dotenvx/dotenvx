@@ -227,7 +227,6 @@ class Encrypt {
   _detectEncoding (filepath) {
     return detectEncoding(filepath)
   }
-
 }
 
 module.exports = Encrypt
