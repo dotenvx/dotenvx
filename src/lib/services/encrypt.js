@@ -19,7 +19,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const determine = require('./../helpers/envResolution/determine')
 const deriveKeypair = require('./../helpers/cryptography/deriveKeypair')
 const truncate = require('./../helpers/truncate')
-const isPublicKey = require('./../helpers/isPublicKey')
+const isPublicKey = require('./../helpers/cryptography/isPublicKey')
 
 class Encrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -179,7 +179,7 @@ class Encrypt {
           continue
         }
 
-        const encrypted = isEncrypted(value) || isPublicKey(key, value)
+        const encrypted = isEncrypted(value) || isPublicKey(key)
         if (!encrypted) {
           row.keys.push(key) // track key(s)
 

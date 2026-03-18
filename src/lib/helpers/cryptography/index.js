@@ -6,5 +6,5 @@ module.exports = {
   decryptKeyValue: require('./../decryptKeyValue'),
   isEncrypted: require('./../isEncrypted'),
   isFullyEncrypted: require('./../isFullyEncrypted'),
-  isPublicKey: require('./../isPublicKey')
+  isPublicKey: require('./isPublicKey')
 }
