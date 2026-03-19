@@ -2,12 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.55.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.56.0...main)
+
+## [1.56.0](https://github.com/dotenvx/dotenvx/compare/v1.55.1...v1.56.0) (2026-03-19)
 
 ### Changed
 
-- `--pp` alias — added as shorthand for `--pretty-print`; toward sunsetting `-pp` ([#750](https://github.com/dotenvx/dotenvx/pull/750))
 - `ops off` flag — now respected by `get`, `keypair`, `rotate`, and `encrypt` ([#750](https://github.com/dotenvx/dotenvx/pull/750))
+- `--pp` alias — added as shorthand for `--pretty-print`; toward sunsetting `-pp` ([#750](https://github.com/dotenvx/dotenvx/pull/750))
 
 ### Removed
 
