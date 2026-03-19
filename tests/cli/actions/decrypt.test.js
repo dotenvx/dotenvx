@@ -46,11 +46,11 @@ t.test('decrypt - .env but no changes', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerNeutralStub = sinon.stub(logger, 'neutral')
 
   decrypt.call(fakeContext)
 
-  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger.info')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.neutral')
 
   ct.end()
 })
@@ -142,7 +142,7 @@ t.test('decrypt - .env with changes', ct => {
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="World"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('decrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('✔ decrypted (.env)'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('◇ decrypted (.env)'), 'logger.success')
 
   ct.end()
 })

@@ -51,12 +51,12 @@ t.test('encrypt - .env but no changes', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerNeutralStub = sinon.stub(logger, 'neutral')
 
   encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
-  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger.info')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.neutral')
 
   ct.end()
 })
@@ -119,7 +119,7 @@ t.test('encrypt - .env with changes', ct => {
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env)'), 'logger.success')
 
   ct.end()
 })
@@ -153,9 +153,8 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
-  t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'1234\' dotenvx run -- yourcommand] to test decryption locally'), 'logger help')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
 })
@@ -193,10 +192,8 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('✔ encrypted (.env)'), 'logger.success')
-  t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
-  t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'1234\' dotenvx run -- yourcommand] to test decryption locally'), 'logger help')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
 })

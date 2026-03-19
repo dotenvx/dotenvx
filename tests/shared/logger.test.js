@@ -130,7 +130,19 @@ t.test('logger.success', (ct) => {
     logger.success(message)
   })
 
-  ct.equal(stdout, `${getColor('green')('message1')}\n`)
+  ct.equal(stdout, `${getColor('amber')('message1')}\n`)
+
+  ct.end()
+})
+
+t.test('logger.neutral', (ct) => {
+  const message = 'message1'
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.neutral(message)
+  })
+
+  ct.equal(stdout, `${getColor('gray')('message1')}\n`)
 
   ct.end()
 })

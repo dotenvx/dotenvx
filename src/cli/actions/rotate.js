@@ -62,7 +62,7 @@ function rotate () {
       if (changedFilepaths.length > 0) {
         logger.success(`✔ rotated (${changedFilepaths.join(',')})`)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`no changes (${unchangedFilepaths})`)
+        logger.neutral(`○ no changes (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
       }

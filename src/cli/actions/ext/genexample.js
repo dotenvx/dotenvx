@@ -23,7 +23,7 @@ function genexample (directory) {
     if (addedKeys.length > 0) {
       logger.success(`updated .env.example (${addedKeys.length})`)
     } else {
-      logger.info('no changes (.env.example)')
+      logger.neutral('○ no changes (.env.example)')
     }
   } catch (error) {
     logger.error(error.message)

@@ -51,12 +51,12 @@ t.test('rotate - .env but no changes', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerNeutralStub = sinon.stub(logger, 'neutral')
 
   rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
-  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger.info')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.neutral')
 
   ct.end()
 })

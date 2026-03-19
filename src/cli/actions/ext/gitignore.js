@@ -36,7 +36,7 @@ class Generic {
     if (changedPatterns.length > 0) {
       logger.success(`✔ ignored ${this.patterns} (${this.filename})`)
     } else {
-      logger.info(`no changes (${this.filename})`)
+      logger.neutral(`○ no changes (${this.filename})`)
     }
   }
 }

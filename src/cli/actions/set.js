@@ -4,7 +4,6 @@ const { logger } = require('./../../shared/logger')
 const Sets = require('./../../lib/services/sets')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
-const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
 function set (key, value) {
   logger.debug(`key: ${key}`)
@@ -58,25 +57,21 @@ function set (key, value) {
     }
 
     if (changedFilepaths.length > 0) {
-      logger.success(`✔ set ${key}${withEncryption} (${changedFilepaths.join(',')})`)
+      const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+      const keyAddedSuffix = keyAddedEnv ? ` + key (${keyAddedEnv.envKeysFilepath || '.env.keys'})` : ''
+
+      if (encrypt) {
+        logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
+      } else {
+        logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
+      }
     } else if (unchangedFilepaths.length > 0) {
-      logger.info(`no changes (${unchangedFilepaths})`)
+      logger.neutral(`○ no changes (${unchangedFilepaths})`)
     } else {
       // do nothing
     }
 
-    for (const processedEnv of processedEnvs) {
-      if (processedEnv.privateKeyAdded) { // TODO: change to localPrivateKeyAdded
-        logger.success(`✔ key added to ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName})`)
-        // logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
-
-        if (!isIgnoringDotenvKeys()) {
-          logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
-        }
-
-        logger.help(`⮕  next run: [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get ${key}] to test decryption locally`)
-      }
-    }
+    // intentionally quiet: success line communicates key creation
   } catch (error) {
     catchAndLog(error)
     process.exit(1)
