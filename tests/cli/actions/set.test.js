@@ -276,6 +276,39 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
   ct.end()
 })
 
+t.test('set - privateKeyAdded with unchanged file still reports key addition', ct => {
+  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'dude',
+      filepath: '.env',
+      envFilepath: '.env',
+      envKeysFilepath: '.env.keys',
+      envSrc: 'HELLO=dude',
+      privateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+
+  set.call(fakeContext, 'HELLO', 'dude')
+
+  t.ok(stub.called, 'Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerNeutralStub.notCalled, 'logger neutral')
+
+  ct.end()
+})
+
 t.test('set - --ops-off passes opsOn false to Sets service', ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ opsOff: true })

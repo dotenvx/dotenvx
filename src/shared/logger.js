@@ -17,7 +17,7 @@ const levels = {
 const error = (m) => bold(getColor('red')(m))
 const warn = getColor('orangered')
 const success = getColor('amber')
-const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
+const successv = getColor('amber')
 const neutral = getColor('gray')
 const help = getColor('dodgerblue')
 const verbose = getColor('plum')

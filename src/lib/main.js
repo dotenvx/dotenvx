@@ -18,6 +18,14 @@ const buildEnvs = require('./helpers/buildEnvs')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
 
+function localDisplayPath (filepath) {
+  if (!filepath) return '.env.keys'
+  if (!path.isAbsolute(filepath)) return filepath
+
+  const relative = path.relative(process.cwd(), filepath)
+  return relative || path.basename(filepath)
+}
+
 /** @type {import('./main').config} */
 const config = function (options = {}) {
   // allow user to set processEnv to write to
@@ -215,15 +223,18 @@ const set = function (key, value, options = {}) {
     }
   }
 
-  if (changedFilepaths.length > 0) {
-    const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
-    const keyAddedSuffix = keyAddedEnv ? ` + key (${keyAddedEnv.envKeysFilepath || '.env.keys'})` : ''
+  const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+  const keyAddedSuffix = keyAddedEnv ? ` + key (${localDisplayPath(keyAddedEnv.envKeysFilepath)})` : ''
 
+  if (changedFilepaths.length > 0) {
     if (encrypt) {
       logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
     } else {
       logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
     }
+  } else if (encrypt && keyAddedEnv) {
+    const keyAddedEnvFilepath = keyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
+    logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
   } else if (unchangedFilepaths.length > 0) {
     logger.neutral(`○ no changes (${unchangedFilepaths})`)
   } else {

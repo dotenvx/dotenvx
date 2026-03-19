@@ -121,12 +121,12 @@ t.test('rotate - .env with changes', ct => {
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('rotated .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('✔ rotated (.env)'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + key (.env.keys)'), 'logger.success')
 
   ct.end()
 })
 
-t.test('rotate - .env with changes and privateKeyAdded but not ignoring .env.keys', ct => {
+t.test('rotate - .env with changes and privateKeyAdded', ct => {
   const rotateNotIgnoring = proxyquire('../../../src/cli/actions/rotate', {
     '../../../src/lib/helpers/isIgnoringDotenvKeys': () => false
   })
@@ -151,7 +151,6 @@ t.test('rotate - .env with changes and privateKeyAdded but not ignoring .env.key
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   rotateNotIgnoring.call(fakeContext)
 
@@ -160,10 +159,7 @@ t.test('rotate - .env with changes and privateKeyAdded but not ignoring .env.key
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('rotated .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('✔ rotated (.env)'), 'logger.success')
-  t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
-  t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'newPrivateKey\' dotenvx get] to test decryption locally'), 'logger help')
+  t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + key (.env.keys)'), 'logger.success')
 
   ct.end()
 })

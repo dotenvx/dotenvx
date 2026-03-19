@@ -108,7 +108,7 @@ program.command('get')
 const setAction = require('./actions/set')
 program.command('set')
   .usage('<KEY> <value> [options]')
-  .description('set a single environment variable')
+  .description('encrypt a single environment variable')
   .addHelpText('after', examples.set)
   .allowUnknownOption()
   .argument('KEY', 'KEY')
@@ -153,6 +153,21 @@ program.command('decrypt')
     decryptAction.apply(this, args)
   })
 
+// dotenvx rotate
+const rotateAction = require('./actions/rotate')
+program.command('rotate')
+  .description('rotate keypair(s) and re-encrypt .env file(s)')
+  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
+  .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
+  .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
+  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
+  .option('--stdout', 'send to stdout')
+  .action(function (...args) {
+    this.envs = envs
+    rotateAction.apply(this, args)
+  })
+
 // dotenvx keypair
 const keypairAction = require('./actions/keypair')
 program.command('keypair')
@@ -175,21 +190,6 @@ program.command('ls')
   .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
   .action(lsAction)
-
-// dotenvx rotate
-const rotateAction = require('./actions/rotate')
-program.command('rotate')
-  .description('rotate keypair(s) and re-encrypt .env file(s)')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
-  .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
-  .option('--stdout', 'send to stdout')
-  .action(function (...args) {
-    this.envs = envs
-    rotateAction.apply(this, args)
-  })
 
 // dotenvx help
 program.command('help [command]')

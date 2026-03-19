@@ -716,6 +716,39 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys', ct => 
   ct.end()
 })
 
+t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports key addition', ct => {
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'dude',
+      filepath: '.env',
+      envFilepath: '.env',
+      envKeysFilepath: '.env.keys',
+      envSrc: 'HELLO=dude',
+      privateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+
+  main.set('HELLO', 'dude')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerNeutralStub.notCalled, 'logger neutral')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('get calls Get.run', ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: [] })

@@ -1,9 +1,18 @@
 const fsx = require('./../../lib/helpers/fsx')
+const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const Encrypt = require('./../../lib/services/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+
+function localDisplayPath (filepath) {
+  if (!filepath) return '.env.keys'
+  if (!path.isAbsolute(filepath)) return filepath
+
+  const relative = path.relative(process.cwd(), filepath)
+  return relative || path.basename(filepath)
+}
 
 function encrypt () {
   const options = this.opts()
@@ -55,7 +64,7 @@ function encrypt () {
         const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
         let msg = `◈ encrypted (${changedFilepaths.join(',')})`
         if (keyAddedEnv) {
-          const envKeysFilepath = keyAddedEnv.envKeysFilepath || '.env.keys'
+          const envKeysFilepath = localDisplayPath(keyAddedEnv.envKeysFilepath)
           msg += ` + key (${envKeysFilepath})`
         }
         logger.success(msg)

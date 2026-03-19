@@ -89,7 +89,7 @@ t.test('logger.successv', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -103,7 +103,7 @@ t.test('logger.successv change logger name', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx-pro@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dotenvx-pro@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -118,7 +118,7 @@ t.test('logger.successv change logger name and logger version', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')('[dotenvx-pro@0.1.1] message1')}\n`)
+  ct.equal(stdout, `${getColor('amber')('[dotenvx-pro@0.1.1] message1')}\n`)
 
   ct.end()
 })
@@ -192,7 +192,7 @@ t.test('setLogName', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dude@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dude@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -206,7 +206,7 @@ t.test('setLogName undefined does nothing', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -220,7 +220,7 @@ t.test('setLogVersion', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')('[dotenvx@0.0.1] message1')}\n`)
+  ct.equal(stdout, `${getColor('amber')('[dotenvx@0.0.1] message1')}\n`)
 
   ct.end()
 })
@@ -234,7 +234,7 @@ t.test('setLogVersion undefined does nothing', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })

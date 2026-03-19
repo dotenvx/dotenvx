@@ -1,9 +1,18 @@
 const fsx = require('./../../lib/helpers/fsx')
+const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const Sets = require('./../../lib/services/sets')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+
+function localDisplayPath (filepath) {
+  if (!filepath) return '.env.keys'
+  if (!path.isAbsolute(filepath)) return filepath
+
+  const relative = path.relative(process.cwd(), filepath)
+  return relative || path.basename(filepath)
+}
 
 function set (key, value) {
   logger.debug(`key: ${key}`)
@@ -56,15 +65,18 @@ function set (key, value) {
       }
     }
 
-    if (changedFilepaths.length > 0) {
-      const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
-      const keyAddedSuffix = keyAddedEnv ? ` + key (${keyAddedEnv.envKeysFilepath || '.env.keys'})` : ''
+    const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+    const keyAddedSuffix = keyAddedEnv ? ` + key (${localDisplayPath(keyAddedEnv.envKeysFilepath)})` : ''
 
+    if (changedFilepaths.length > 0) {
       if (encrypt) {
         logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
       } else {
         logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
       }
+    } else if (encrypt && keyAddedEnv) {
+      const keyAddedEnvFilepath = keyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
+      logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
     } else if (unchangedFilepaths.length > 0) {
       logger.neutral(`○ no changes (${unchangedFilepaths})`)
     } else {
