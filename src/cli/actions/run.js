@@ -13,6 +13,7 @@ async function run () {
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
+  const convention = options.convention || process.env.DOTENV_CONVENTION
 
   const ignore = options.ignore || []
 
@@ -35,8 +36,8 @@ async function run () {
   try {
     let envs = []
     // handle shorthand conventions - like --convention=nextjs
-    if (options.convention) {
-      envs = conventions(options.convention).concat(this.envs)
+    if (convention) {
+      envs = conventions(convention).concat(this.envs)
     } else {
       envs = this.envs
     }
@@ -78,7 +79,7 @@ async function run () {
         if (options.strict) throw error // throw if strict and not ignored
 
         if (error.code === 'MISSING_ENV_FILE') {
-          if (!options.convention) { // do not output error for conventions (too noisy)
+          if (!convention) { // do not output error for conventions (too noisy)
             logger.error(error.message)
             if (error.help) {
               logger.error(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
