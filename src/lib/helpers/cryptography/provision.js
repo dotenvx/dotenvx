@@ -19,7 +19,7 @@ function provision ({ envSrc, envFilepath, keysFilepath, opsOn }) {
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {
-    const kp = localKeypair() // TODO: handle derivation from Ops
+    const kp = localKeypair()
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   }

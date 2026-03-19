@@ -21,8 +21,10 @@ function rotate () {
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
-      console.log('')
-      console.log(processedEnv.envKeysSrc)
+      if (processedEnv.privateKeyAdded) {
+        console.log('')
+        console.log(processedEnv.envKeysSrc)
+      }
     }
     process.exit(0) // exit early
   } else {
@@ -47,7 +49,9 @@ function rotate () {
           }
         } else if (processedEnv.changed) {
           fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
-          fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+          if (processedEnv.privateKeyAdded) {
+            fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+          }
 
           logger.verbose(`rotated ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
