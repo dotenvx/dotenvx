@@ -3,9 +3,24 @@ const mutateKeysSrc = require('./mutateKeysSrc')
 const deriveKeypair = require('./deriveKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provision ({ envSrc, envFilepath, keysFilepath }) {
+const Ops = require('../../extensions/ops')
+
+function provision ({ envSrc, envFilepath, keysFilepath, opsOn }) {
+  opsOn = opsOn === true
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-  const { publicKey, privateKey } = deriveKeypair() // TODO: handle derivation from Ops
+
+  let publicKey
+  let privateKey
+
+  if (opsOn) {
+    const kp = new Ops().keypair()
+    publicKey = kp['public_key']
+    privateKey = kp['private_key']
+  } else {
+    const kp = deriveKeypair() // TODO: handle derivation from Ops
+    publicKey = kp.publicKey
+    privateKey = kp.privateKey
+  }
 
   const mutated = mutateSrc({ envSrc, envFilepath, keysFilepath, publicKeyName, publicKeyValue: publicKey })
   envSrc = mutated.envSrc

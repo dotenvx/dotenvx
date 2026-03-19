@@ -3,9 +3,7 @@ const mutateSrc = require('./mutateSrc')
 const deriveKeypair = require('./deriveKeypair')
 
 function provisionWithPrivateKey ({ envSrc, envFilepath, keysFilepath, privateKeyValue, publicKeyValue, publicKeyName }) {
-  const kp = deriveKeypair(privateKeyValue)
-  const publicKey = kp.publicKey
-  const privateKey = kp.privateKey
+  const { publicKey, privateKey } = deriveKeypair(privateKeyValue)
 
   // if derivation doesn't match what's in the file (or preset in env)
   if (publicKeyValue && publicKeyValue !== publicKey) {

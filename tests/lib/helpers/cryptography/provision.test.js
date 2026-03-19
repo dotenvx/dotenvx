@@ -100,3 +100,36 @@ t.test('provision defaults keys filepath when omitted', (ct) => {
   ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_x')
   ct.end()
 })
+
+t.test('provision uses Ops keypair when opsOn is true', (ct) => {
+  const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
+  const mutateKeysSrc = sinon.stub().returns({
+    keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=ops_priv\n',
+    envKeysFilepath: path.join('apps', 'api', '.env.keys')
+  })
+  const opsKeypair = sinon.stub().returns({ public_key: 'ops_pub', private_key: 'ops_priv' })
+
+  function OpsMock () {
+    this.keypair = opsKeypair
+  }
+
+  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+    './mutateSrc': mutateSrc,
+    './mutateKeysSrc': mutateKeysSrc,
+    './deriveKeypair': () => { throw new Error('deriveKeypair should not be called when opsOn=true') },
+    './../../extensions/ops': OpsMock,
+    '../keyResolution': {
+      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+    }
+  })
+
+  const envFilepath = path.join('apps', 'api', '.env')
+  const out = provision({ envSrc: 'HELLO=world', envFilepath, opsOn: true })
+
+  ct.equal(out.publicKey, 'ops_pub')
+  ct.equal(out.privateKey, 'ops_priv')
+  ct.equal(opsKeypair.callCount, 1)
+  ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'ops_pub')
+  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'ops_priv')
+  ct.end()
+})
