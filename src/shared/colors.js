@@ -1,5 +1,13 @@
 const depth = require('../lib/helpers/colorDepth')
 
+/**
+ * Color name
+ * @typedef {'blue' | 'gray' | 'green' | 'olive' | 'orangered' | 'plum' | 'red' | 'electricblue' | 'dodgerblue'} ColorName
+ */
+
+/**
+ * @type {Map<ColorName, number>}
+ */
 const colors16 = new Map([
   ['blue', 34],
   ['gray', 37],
@@ -12,6 +20,9 @@ const colors16 = new Map([
   ['dodgerblue', 36]
 ])
 
+/**
+ * @type {Map<ColorName, number>}
+ */
 const colors256 = new Map([
   ['blue', 21],
   ['gray', 244],
@@ -24,6 +35,11 @@ const colors256 = new Map([
   ['dodgerblue', 33]
 ])
 
+/**
+ * Returns a function that wraps a message string with the specified terminal color codes
+ * @param {ColorName} color
+ * @returns {function(string): string}
+ */
 function getColor (color) {
   const colorDepth = depth.getColorDepth()
   if (!colors256.has(color)) {
@@ -40,6 +56,11 @@ function getColor (color) {
   return (message) => message
 }
 
+/**
+ * Wraps a message string with the bold terminal color code
+ * @param {string} message
+ * @returns {string} The message with the bold terminal color code
+ */
 function bold (message) {
   if (depth.getColorDepth() >= 4) {
     return `\x1b[1m${message}\x1b[22m`

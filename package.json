@@ -43,6 +43,7 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
+    "@noble/hashes": "^1.5.0",
     "commander": "^11.1.0",
     "dotenv": "^17.2.1",
     "eciesjs": "^0.4.10",
@@ -51,9 +52,11 @@
     "ignore": "^5.3.0",
     "object-treeify": "1.1.33",
     "picomatch": "^4.0.2",
+    "read": "^5.0.1",
     "which": "^4.0.0"
   },
   "devDependencies": {
+    "@types/sinon": "^17.0.4",
     "@yao-pkg/pkg": "^5.14.2",
     "capture-console": "^1.0.2",
     "esbuild": "^0.25.8",
