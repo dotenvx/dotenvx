@@ -2,6 +2,8 @@ const t = require('tap')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
+const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const keyValues = require('../../../../src/lib/helpers/keyResolution/keyValues')
 
@@ -64,5 +66,21 @@ t.test('#keyValues inverts public key name for custom file and reads keys file p
   ct.equal(result.privateKeyValue, 'from-file-ci')
 
   fs.rmSync(tmpDir, { recursive: true, force: true })
+  ct.end()
+})
+
+t.test('#keyValues loads private key from ops when opsOn and only public key exists', ct => {
+  const opsKeypair = sinon.stub().returns({ privateKey: 'from-ops' })
+  const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
+    '../cryptography/opsKeypair': opsKeypair
+  })
+
+  process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
+
+  const result = keyValuesWithOpsStub('.env', { opsOn: true })
+
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
+  ct.equal(opsKeypair.callCount, 1)
+  ct.equal(opsKeypair.firstCall.args[0], '<publicKey>')
   ct.end()
 })
