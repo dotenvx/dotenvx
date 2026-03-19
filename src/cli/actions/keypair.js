@@ -9,8 +9,9 @@ function keypair (key) {
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
+  const prettyPrint = options.prettyPrint || options.pp
 
-  const results = main.keypair(options.envFile, key, options.envKeysFile)
+  const results = main.keypair(options.envFile, key, options.envKeysFile, options.opsOff)
 
   if (typeof results === 'object' && results !== null) {
     // inline shell format - env $(dotenvx keypair --format=shell) your-command
@@ -25,7 +26,7 @@ function keypair (key) {
     // json format
     } else {
       let space = 0
-      if (options.prettyPrint) {
+      if (prettyPrint) {
         space = 2
       }
 

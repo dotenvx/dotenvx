@@ -5,19 +5,28 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
-const { findPrivateKey } = require('./../helpers/findPrivateKey')
-const findPublicKey = require('./../helpers/findPublicKey')
-const decryptKeyValue = require('./../helpers/decryptKeyValue')
-const isEncrypted = require('./../helpers/isEncrypted')
-const dotenvParse = require('./../helpers/dotenvParse')
+
+const {
+  determine
+} = require('./../helpers/envResolution')
+
+const {
+  keyNames,
+  keyValues
+} = require('./../helpers/keyResolution')
+
+const {
+  decryptKeyValue,
+  isEncrypted
+} = require('./../helpers/cryptography')
+
 const replace = require('./../helpers/replace')
+const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determineEnvs = require('./../helpers/determineEnvs')
 
 class Decrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = true) {
-    this.envs = determineEnvs(envs, process.env)
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
+    this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
@@ -63,15 +72,14 @@ class Decrypt {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = this._detectEncoding(filepath)
+      const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
-      const publicKey = findPublicKey(envFilepath)
-      const privateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, publicKey)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
+      const { privateKeyName } = keyNames(envFilepath)
+      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
-      row.privateKey = privateKey
+      row.privateKey = privateKeyValue
       row.privateKeyName = privateKeyName
       row.changed = false // track possible changes
 
@@ -90,7 +98,7 @@ class Decrypt {
         if (encrypted) {
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKey)
+          const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKeyValue)
           // once newSrc is built write it out
           envSrc = replace(envSrc, key, decryptedValue)
 
@@ -129,10 +137,6 @@ class Decrypt {
     }
 
     return this.excludeKey
-  }
-
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
   }
 }
 

@@ -13,6 +13,9 @@ const executeDynamic = require('./../lib/helpers/executeDynamic')
 const removeDynamicHelpSection = require('./../lib/helpers/removeDynamicHelpSection')
 const removeOptionsHelpParts = require('./../lib/helpers/removeOptionsHelpParts')
 
+const Session = require('./../db/session')
+const sesh = new Session()
+
 // for use with run
 const envs = []
 function collectEnvs (type) {
@@ -68,12 +71,11 @@ program.command('run')
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables (by default, existing env vars take precedence over .env files)')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
-  .option('--ops-off', 'disable dotenvx-ops features', false)
+  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .action(function (...args) {
     this.envs = envs
     runAction.apply(this, args)
@@ -88,15 +90,15 @@ program.command('get')
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('-fv, --env-vault-file <paths...>', 'path(s) to your .env.vault file(s)', collectEnvs('envVaultFile'), [])
   .option('-o, --overload', 'override existing env variables (by default, existing env vars take precedence over .env files)')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('-a, --all', 'include all machine envs as well')
   .option('-pp, --pretty-print', 'pretty print output')
+  .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, eval)', 'json')
-  .option('--ops-off', 'disable dotenvx-ops features', false)
+  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .action(function (...args) {
     this.envs = envs
     getAction.apply(this, args)
@@ -115,7 +117,7 @@ program.command('set')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-c, --encrypt', 'encrypt value', true)
   .option('-p, --plain', 'store value as plain text', false)
-  .option('--ops-off', 'disable dotenvx-ops features', false)
+  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .action(function (...args) {
     this.envs = envs
     setAction.apply(this, args)
@@ -129,7 +131,7 @@ program.command('encrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
-  .option('--ops-off', 'disable dotenvx-ops features', false)
+  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
@@ -144,7 +146,7 @@ program.command('decrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
-  .option('--ops-off', 'disable dotenvx-ops features', false)
+  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
@@ -159,8 +161,9 @@ program.command('keypair')
   .argument('[KEY]', 'environment variable key name')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('--ops-off', 'disable dotenvx-ops features', false)
+  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .option('-pp, --pretty-print', 'pretty print output')
+  .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell)', 'json')
   .action(keypairAction)
 
@@ -181,7 +184,7 @@ program.command('rotate')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
-  .option('--ops-off', 'disable dotenvx-ops features', false)
+  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs

@@ -12,6 +12,7 @@ function get (key) {
 
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
+  const prettyPrint = options.prettyPrint || options.pp
 
   const ignore = options.ignore || []
 
@@ -24,7 +25,8 @@ function get (key) {
   }
 
   try {
-    const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile).run()
+    const opsOn = options.opsOff !== true
+    const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
 
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict
@@ -65,7 +67,7 @@ function get (key) {
         console.log(inline)
       } else {
         let space = 0
-        if (options.prettyPrint) {
+        if (prettyPrint) {
           space = 2
         }
 

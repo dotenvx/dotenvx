@@ -39,12 +39,6 @@ const config = function (options = {}) {
   // envKeysFile
   const envKeysFile = options.envKeysFile
 
-  // DOTENV_KEY (DEPRECATED)
-  let DOTENV_KEY = process.env.DOTENV_KEY
-  if (options && options.DOTENV_KEY) {
-    DOTENV_KEY = options.DOTENV_KEY
-  }
-
   // dotenvx-ops related
   const opsOn = options.opsOff !== true
 
@@ -55,12 +49,12 @@ const config = function (options = {}) {
   }
 
   try {
-    const envs = buildEnvs(options, DOTENV_KEY)
+    const envs = buildEnvs(options)
     const {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile, opsOn).run()
+    } = new Run(envs, overload, processEnv, envKeysFile, opsOn).run()
 
     if (opsOn) {
       // removed radar feature for now. contact me at mot@dotenvx.com if still needed for your organization.
@@ -71,11 +65,6 @@ const config = function (options = {}) {
     /** @type {Record<string, string>} */
     const parsedAll = {}
     for (const processedEnv of processedEnvs) {
-      if (processedEnv.type === 'envVaultFile') {
-        logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-        logger.debug(`decrypting encrypted env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-      }
-
       if (processedEnv.type === 'envFile') {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
@@ -192,12 +181,13 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
+  const opsOn = options.opsOff !== true
 
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).run()
 
   let withEncryption = ''
 
@@ -257,11 +247,12 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
+  const opsOn = options.opsOff !== true
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile).run()
+  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
@@ -317,8 +308,9 @@ const genexample = function (directory, envFile) {
 }
 
 /** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null) {
-  const keypairs = new Keypair(envFile, envKeysFile).run()
+const keypair = function (envFile, key, envKeysFile = null, opsOff = false) {
+  const opsOn = opsOff !== true
+  const keypairs = new Keypair(envFile, envKeysFile, opsOn).run()
   if (key) {
     return keypairs[key]
   } else {

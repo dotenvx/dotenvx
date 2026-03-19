@@ -85,6 +85,21 @@ t.test('keypair --pretty-print', ct => {
   ct.end()
 })
 
+t.test('keypair --pp', ct => {
+  const optsStub = sinon.stub().returns({ pp: true })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'keypair').returns({ DOTENV_PUBLIC_KEY: '<publicKey>' })
+
+  const stdout = capcon.interceptStdout(() => {
+    keypair.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'main.keypair() called')
+  t.equal(stdout, `${JSON.stringify({ DOTENV_PUBLIC_KEY: '<publicKey>' }, null, 2)}\n`)
+
+  ct.end()
+})
+
 t.test('keypair KEY (not found)', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -98,6 +113,19 @@ t.test('keypair KEY (not found)', ct => {
   t.ok(stub.called, 'main.keypair() called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
   t.equal(stdout, '\n') // send empty string if key's value undefined
+
+  ct.end()
+})
+
+t.test('keypair --ops-off passes opsOff to main.keypair', ct => {
+  const optsStub = sinon.stub().returns({ opsOff: true })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(main, 'keypair').returns({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' })
+
+  keypair.call(fakeContext, undefined)
+
+  t.ok(stub.calledOnce, 'main.keypair() called')
+  t.equal(stub.firstCall.args[3], true, 'opsOff true')
 
   ct.end()
 })

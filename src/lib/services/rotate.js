@@ -5,26 +5,36 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
-const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
-const encryptValue = require('./../helpers/encryptValue')
-const isEncrypted = require('./../helpers/isEncrypted')
-const dotenvParse = require('./../helpers/dotenvParse')
-const replace = require('./../helpers/replace')
+
+const {
+  determine
+} = require('./../helpers/envResolution')
+
+const {
+  keyNames,
+  keyValues
+} = require('./../helpers/keyResolution')
+
+const {
+  opsKeypair,
+  localKeypair,
+  encryptValue,
+  decryptKeyValue,
+  isEncrypted
+} = require('./../helpers/cryptography')
+
 const append = require('./../helpers/append')
+const replace = require('./../helpers/replace')
+const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determineEnvs = require('./../helpers/determineEnvs')
-const { findPrivateKey } = require('./../helpers/findPrivateKey')
-const findPublicKey = require('./../helpers/findPublicKey')
-const decryptKeyValue = require('./../helpers/decryptKeyValue')
-const keypair = require('./../helpers/keypair')
 
 class Rotate {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
-    this.envs = determineEnvs(envs, process.env)
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
+    this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
+    this.opsOn = opsOn
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -68,33 +78,44 @@ class Rotate {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = this._detectEncoding(filepath)
+      const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
-      const publicKeyName = guessPublicKeyName(envFilepath)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
-      const existingPublicKey = findPublicKey(envFilepath)
-      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, false, existingPublicKey)
+      const { publicKeyName, privateKeyName } = keyNames(envFilepath)
+      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
-      let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-      if (this.envKeysFilepath) {
-        envKeysFilepath = path.resolve(this.envKeysFilepath)
+      let newPublicKey
+      let newPrivateKey
+      let envKeysFilepath
+      let envKeysSrc
+
+      if (this.opsOn) {
+        const kp = opsKeypair()
+        newPublicKey = kp.publicKey
+        newPrivateKey = kp.privateKey
+
+        row.privateKeyAdded = false // TODO: change to localPrivateKeyAdded
+      } else {
+        envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
+        if (this.envKeysFilepath) {
+          envKeysFilepath = path.resolve(this.envKeysFilepath)
+        }
+        row.envKeysFilepath = envKeysFilepath
+        this.envKeysSources[envKeysFilepath] ||= fsx.readFileX(envKeysFilepath, { encoding: detectEncoding(envKeysFilepath) })
+        envKeysSrc = this.envKeysSources[envKeysFilepath]
+
+        const kp = localKeypair()
+        newPublicKey = kp.publicKey
+        newPrivateKey = kp.privateKey
+
+        row.privateKeyAdded = true
       }
-      const keysEncoding = this._detectEncoding(envKeysFilepath)
-
-      row.envKeysFilepath = envKeysFilepath
-      this.envKeysSources[envKeysFilepath] ||= fsx.readFileX(envKeysFilepath, { encoding: keysEncoding })
-      let envKeysSrc = this.envKeysSources[envKeysFilepath]
-
-      // new keypair
-      const nkp = keypair() // generates a fresh keypair in memory
-      const newPublicKey = nkp.publicKey
-      const newPrivateKey = nkp.privateKey
 
       // .env
       envSrc = replace(envSrc, publicKeyName, newPublicKey) // replace publicKey
       row.changed = true // track change
+
       for (const [key, value] of Object.entries(envParsed)) { // re-encrypt each individual key
         // key excluded - don't re-encrypt it
         if (this.exclude(key)) {
@@ -109,22 +130,22 @@ class Rotate {
         if (isEncrypted(value)) { // only re-encrypt those already encrypted
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptKeyValue(key, value, privateKeyName, existingPrivateKey) // get decrypted value
-
+          const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKeyValue) // get decrypted value
           const encryptedValue = encryptValue(decryptedValue, newPublicKey) // encrypt with the new publicKey
 
           envSrc = replace(envSrc, key, encryptedValue)
         }
       }
       row.envSrc = envSrc
-
-      // .env.keys - TODO: for dotenvx pro .env.keys file does not exist
-      row.privateKeyAdded = true
       row.privateKeyName = privateKeyName
       row.privateKey = newPrivateKey
-      envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
-      this.envKeysSources[envKeysFilepath] = envKeysSrc
-      row.envKeysSrc = envKeysSrc
+
+      if (!this.opsOn) {
+        // keys src only for ops
+        envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
+        this.envKeysSources[envKeysFilepath] = envKeysSrc
+        row.envKeysSrc = envKeysSrc
+      }
 
       this.changedFilepaths.add(envFilepath)
     } catch (e) {
@@ -152,10 +173,6 @@ class Rotate {
     }
 
     return this.excludeKey
-  }
-
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
   }
 }
 

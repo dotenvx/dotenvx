@@ -1,7 +1,9 @@
 const t = require('tap')
+const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
 
@@ -69,9 +71,9 @@ t.test('#run (no env file)', ct => {
 
 t.test('#run (no arguments and some other error)', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
+  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
   const inst = new Rotate()
-  const detectEncodingStub = sinon.stub(inst, '_detectEncoding').returns('utf8')
 
   const {
     processedEnvs,
@@ -90,7 +92,7 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(changedFilepaths, [])
 
   readFileXStub.restore()
-  detectEncodingStub.restore()
+  readFileSyncStub.restore()
 
   ct.end()
 })
@@ -510,6 +512,34 @@ t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
   ct.not(parsed.DOTENV_PUBLIC_KEY, originalParsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should differ after rotation')
   ct.not(parsedKeys.DOTENV_PRIVATE_KEY, originalKeysParsed.DOTENV_PRIVATE_KEY, 'DOTENV_PRIVATE_KEY should differ after rotation')
 
+  ct.end()
+})
+
+t.test('#run (finds .env file) with opsOn uses ops keypair and does not append local keys file', ct => {
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const cryptography = require('../../../src/lib/helpers/cryptography')
+  const opsKeypair = sinon.stub().returns({
+    publicKey: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
+    privateKey: 'new-private-key-from-ops'
+  })
+
+  const RotateWithOpsStub = proxyquire('../../../src/lib/services/rotate', {
+    './../helpers/cryptography': { ...cryptography, opsKeypair }
+  })
+
+  const envs = [
+    { type: 'envFile', value: envFile }
+  ]
+
+  const { processedEnvs } = new RotateWithOpsStub(envs, [], [], null, true).run()
+
+  const p1 = processedEnvs[0]
+  ct.equal(opsKeypair.callCount, 1)
+  ct.equal(p1.privateKeyAdded, false)
+  ct.notOk(p1.envKeysSrc)
+  ct.notOk(p1.envKeysFilepath)
+  ct.equal(p1.privateKey, 'new-private-key-from-ops')
+  ct.match(p1.envSrc, /DOTENV_PUBLIC_KEY=/)
   ct.end()
 })
 

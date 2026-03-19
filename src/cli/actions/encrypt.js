@@ -62,9 +62,6 @@ function encrypt () {
 
       for (const processedEnv of processedEnvs) {
         if (processedEnv.privateKeyAdded) {
-          // Ops hook point (first-time key created for this env file):
-          // gate with `opsOn` and an Ops-installed check before calling your
-          // Ops service (for example: backup/register processedEnv.privateKey).
           logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
           // logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
 

@@ -1,6 +1,6 @@
 const fsx = require('./fsx')
 
-const RESERVED_ENV_FILES = ['.env.vault', '.env.project', '.env.keys', '.env.me', '.env.x', '.env.example']
+const RESERVED_ENV_FILES = ['.env.project', '.env.keys', '.env.me', '.env.x', '.env.example']
 
 function findEnvFiles (directory) {
   try {

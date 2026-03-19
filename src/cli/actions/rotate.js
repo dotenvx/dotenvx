@@ -11,17 +11,20 @@ function rotate () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
+  const opsOn = options.opsOff !== true
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile).run()
+    } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
-      console.log('')
-      console.log(processedEnv.envKeysSrc)
+      if (processedEnv.privateKeyAdded) {
+        console.log('')
+        console.log(processedEnv.envKeysSrc)
+      }
     }
     process.exit(0) // exit early
   } else {
@@ -30,7 +33,7 @@ function rotate () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile).run()
+      } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`rotating ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -46,7 +49,9 @@ function rotate () {
           }
         } else if (processedEnv.changed) {
           fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
-          fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+          if (processedEnv.privateKeyAdded) {
+            fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+          }
 
           logger.verbose(`rotated ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {

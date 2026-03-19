@@ -113,10 +113,10 @@ export interface DotenvConfigOptions {
   envKeysFile?: string;
 
   /**
-   * Pass the DOTENV_KEY directly to config options. Defaults to looking for process.env.DOTENV_KEY environment variable. Note this only applies to decrypting .env.vault files. If passed as null or undefined, or not passed at all, dotenv falls back to its traditional job of parsing a .env file.
+   * Legacy option retained for compatibility.
    *
    * @default undefined
-   * @example require('@dotenvx/dotenvx').config({ DOTENV_KEY: 'dotenv://:key_1234…@dotenvx.com/vault/.env.vault?environment=production' })
+   * @example require('@dotenvx/dotenvx').config({ DOTENV_KEY: 'dotenv://:key_1234…' })
    */
   DOTENV_KEY?: string;
 
@@ -166,7 +166,7 @@ export interface DotenvPopulateInput {
 }
 
 /**
- * Loads `.env` file contents into process.env by default. If `DOTENV_KEY` is present, it smartly attempts to load encrypted `.env.vault` file contents into process.env.
+ * Loads `.env` file contents into process.env by default.
  *
  * @see https://dotenvx.com/docs
  *
@@ -205,6 +205,14 @@ export interface SetOptions {
    * @example require('@dotenvx/dotenvx').config(key, value, { encrypt: false } })
    */
   encrypt?: boolean;
+
+  /**
+   * Turn off Dotenvx Ops features - https://dotenvx.com/ops
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').set(key, value, { opsOff: true })
+   */
+  opsOff?: boolean;
 }
 
 export type SetProcessedEnv = {
@@ -272,6 +280,14 @@ export interface GetOptions {
    * @example require('@dotenvx/dotenvx').get('KEY', { strict: true })
    */
   strict?: boolean;
+
+  /**
+   * Turn off Dotenvx Ops features - https://dotenvx.com/ops
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').get('KEY', { opsOff: true })
+   */
+  opsOff?: boolean;
 }
 
 /**

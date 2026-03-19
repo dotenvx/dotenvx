@@ -22,12 +22,13 @@ function set (key, value) {
   try {
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
+    const opsOn = options.opsOff !== true
 
     const {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
+    } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).run()
 
     let withEncryption = ''
 
@@ -65,7 +66,7 @@ function set (key, value) {
     }
 
     for (const processedEnv of processedEnvs) {
-      if (processedEnv.privateKeyAdded) {
+      if (processedEnv.privateKeyAdded) { // TODO: change to localPrivateKeyAdded
         logger.success(`✔ key added to ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName})`)
         // logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
 

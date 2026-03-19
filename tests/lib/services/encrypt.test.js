@@ -1,4 +1,5 @@
 const t = require('tap')
+const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
@@ -70,9 +71,9 @@ t.test('#run (no env file)', ct => {
 
 t.test('#run (no arguments and some other error)', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
+  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
   const inst = new Encrypt()
-  const detectEncodingStub = sinon.stub(inst, '_detectEncoding').returns('utf8')
 
   const {
     processedEnvs,
@@ -91,7 +92,7 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(changedFilepaths, [])
 
   readFileXStub.restore()
-  detectEncodingStub.restore()
+  readFileSyncStub.restore()
 
   ct.end()
 })
@@ -463,9 +464,9 @@ t.test('#run (finds .env and .env.keys file) but derived public key does not mat
     processedEnvs
   } = new Encrypt(envs).run()
 
-  const error = new Error('derived public key (03eaf21…) does not match the existing public key (12345…)')
-  error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-  error.help = 'debug info: DOTENV_PRIVATE_KEY=ec9e800… (derived DOTENV_PUBLIC_KEY=03eaf21… vs existing DOTENV_PUBLIC_KEY=12345…)'
+  const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
+  error.code = 'MISPAIRED_PRIVATE_KEY'
+  error.help = '[MISPAIRED_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/752'
 
   ct.same(processedEnvs, [{
     keys: [],
@@ -592,11 +593,18 @@ t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already
 t.test('#run (finds .env file only AND only the existing public key not the private key)', ct => {
   const sandbox = sinon.createSandbox()
 
-  const stubbedFindPrivateKey = sandbox.stub().returns(null)
+  const keyValuesStub = sandbox.stub().returns({
+    publicKeyValue: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
+    privateKeyValue: null
+  })
+  const keyNames = require('../../../src/lib/helpers/keyResolution/keyNames')
 
   // Load Encrypt with the stub injected
   const Encrypt = proxyquire('../../../src/lib/services/encrypt', {
-    './../helpers/findPrivateKey': { findPrivateKey: stubbedFindPrivateKey }
+    './../helpers/keyResolution': {
+      keyNames,
+      keyValues: keyValuesStub
+    }
   })
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'

@@ -1,7 +1,9 @@
 const t = require('tap')
+const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
 const path = require('path')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire').noCallThru()
 
 const Sets = require('../../../src/lib/services/sets')
 
@@ -68,9 +70,9 @@ t.test('#run (no env file)', ct => {
 
 t.test('#run (no arguments and some other error)', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
+  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
   const inst = new Sets()
-  const detectEncodingStub = sinon.stub(inst, '_detectEncoding').returns('utf8')
 
   const {
     processedEnvs,
@@ -91,7 +93,7 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(changedFilepaths, [])
 
   readFileXStub.restore()
-  detectEncodingStub.restore()
+  readFileSyncStub.restore()
 
   ct.end()
 })
@@ -381,9 +383,9 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
     processedEnvs
   } = new Sets('HELLO', 'new value', envs).run()
 
-  const error = new Error('derived public key (03eaf21…) does not match the existing public key (12345…)')
-  error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-  error.help = 'debug info: DOTENV_PRIVATE_KEY=ec9e800… (derived DOTENV_PUBLIC_KEY=03eaf21… vs existing DOTENV_PUBLIC_KEY=12345…)'
+  const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
+  error.code = 'MISPAIRED_PRIVATE_KEY'
+  error.help = '[MISPAIRED_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/752'
 
   ct.same(processedEnvs, [{
     key: 'HELLO',
@@ -392,7 +394,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
     filepath: path.resolve('tests/monorepo/apps/encrypted/.env'),
     envFilepath: 'tests/monorepo/apps/encrypted/.env',
     changed: false,
-    originalValue: 'encrypted',
+    originalValue: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA==',
     error
   }])
 
@@ -400,12 +402,6 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
 })
 
 t.test('#run (finds .env file only) with --encrypt', ct => {
-  const Keypair = require('../../../src/lib/services/keypair')
-
-  const sandbox = sinon.createSandbox()
-  sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
-  })
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -439,7 +435,7 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
     filepath: path.resolve('tests/monorepo/apps/encrypted/.env'),
     envFilepath: 'tests/monorepo/apps/encrypted/.env',
     changed: true,
-    originalValue: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA==',
+    originalValue: 'encrypted',
     publicKey,
     privateKey,
     encryptedValue,
@@ -447,8 +443,6 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
     envSrc
   }])
   ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
-
-  sandbox.restore()
 
   ct.end()
 })
@@ -628,12 +622,6 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
 })
 
 t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted to encrypted same value', ct => {
-  const Keypair = require('../../../src/lib/services/keypair')
-  const sandbox = sinon.createSandbox()
-  sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
-    return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
-  })
-
   const envFile = 'tests/monorepo/apps/unencrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -650,6 +638,13 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
   const privateKeyName = row.privateKeyName
   const encryptedValue = row.encryptedValue
   const envSrc = [
+    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
+    '#/            public-key encryption for .env files          /',
+    '#/       [how it works](https://dotenvx.com/encryption)     /',
+    '#/----------------------------------------------------------/',
+    `DOTENV_PUBLIC_KEY="${publicKey}"`,
+    '',
+    '# .env',
     `HELLO="${encryptedValue}"`
   ].join('\n') + '\n'
 
@@ -661,6 +656,8 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
     envFilepath: 'tests/monorepo/apps/unencrypted/.env',
     changed: true,
     originalValue: 'unencrypted',
+    privateKeyAdded: true,
+    envKeysFilepath: 'tests/monorepo/apps/unencrypted/.env.keys',
     publicKey,
     privateKey,
     encryptedValue,
@@ -668,8 +665,6 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
     envSrc
   }])
   ct.same(changedFilepaths, ['tests/monorepo/apps/unencrypted/.env'])
-
-  sandbox.restore()
 
   ct.end()
 })
@@ -772,5 +767,35 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and pri
   }])
   ct.same(changedFilepaths, ['tests/monorepo/apps/app1/.env.production'])
 
+  ct.end()
+})
+
+t.test('#run (finds .env file) with --encrypt and existing public key only', ct => {
+  const sandbox = sinon.createSandbox()
+  const keyValuesStub = sandbox.stub().returns({
+    publicKeyValue: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
+    privateKeyValue: null
+  })
+  const keyNames = require('../../../src/lib/helpers/keyResolution/keyNames')
+
+  const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
+    './../helpers/keyResolution': {
+      keyNames,
+      keyValues: keyValuesStub
+    }
+  })
+
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const envs = [{ type: 'envFile', value: envFile }]
+
+  const { processedEnvs, changedFilepaths } = new SetsWithStub('KEY', 'value', envs, true).run()
+
+  ct.equal(processedEnvs[0].publicKey, '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba')
+  ct.equal(processedEnvs[0].privateKey, undefined)
+  ct.equal(processedEnvs[0].changed, true)
+  ct.match(processedEnvs[0].encryptedValue, /^encrypted:/)
+  ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+
+  sandbox.restore()
   ct.end()
 })

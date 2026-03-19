@@ -8,6 +8,8 @@ class Errors {
     this.key = options.key
     this.privateKey = options.privateKey
     this.privateKeyName = options.privateKeyName
+    this.publicKey = options.publicKey
+    this.publicKeyExisting = options.publicKeyExisting
     this.command = options.command
 
     this.message = options.message
@@ -48,6 +50,17 @@ class Errors {
     const code = 'INVALID_PRIVATE_KEY'
     const message = `[${code}] could not decrypt ${this.key} using private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
     const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/465`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    return e
+  }
+
+  mispairedPrivateKey () {
+    const code = 'MISPAIRED_PRIVATE_KEY'
+    const message = `[${code}] private key's derived public key (${truncate(this.publicKey)}) does not match the existing public key (${truncate(this.publicKeyExisting)})`
+    const help = `[${code}] https://github.com/dotenvx/dotenvx/issues/752`
 
     const e = new Error(message)
     e.code = code

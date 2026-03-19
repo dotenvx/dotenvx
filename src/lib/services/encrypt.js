@@ -5,23 +5,31 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
-const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
-const encryptValue = require('./../helpers/encryptValue')
-const isEncrypted = require('./../helpers/isEncrypted')
-const dotenvParse = require('./../helpers/dotenvParse')
+
+const {
+  determine
+} = require('./../helpers/envResolution')
+
+const {
+  keyNames,
+  keyValues
+} = require('./../helpers/keyResolution')
+
+const {
+  encryptValue,
+  isEncrypted,
+  isPublicKey,
+  provision,
+  provisionWithPrivateKey
+} = require('./../helpers/cryptography')
+
 const replace = require('./../helpers/replace')
+const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determineEnvs = require('./../helpers/determineEnvs')
-const { findPrivateKey } = require('./../helpers/findPrivateKey')
-const findPublicKey = require('./../helpers/findPublicKey')
-const keypair = require('./../helpers/keypair')
-const truncate = require('./../helpers/truncate')
-const isPublicKey = require('./../helpers/isPublicKey')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = true) {
-    this.envs = determineEnvs(envs, process.env)
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
+    this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
@@ -62,105 +70,36 @@ class Encrypt {
     row.keys = []
     row.type = TYPE_ENV_FILE
 
-    const filename = path.basename(envFilepath)
     const filepath = path.resolve(envFilepath)
     row.filepath = filepath
     row.envFilepath = envFilepath
 
     try {
-      const encoding = this._detectEncoding(filepath)
+      const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
       let publicKey
       let privateKey
 
-      const publicKeyName = guessPublicKeyName(envFilepath)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
-      const existingPublicKey = findPublicKey(envFilepath)
-      const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, this.opsOn, existingPublicKey)
+      const { publicKeyName, privateKeyName } = keyNames(envFilepath)
+      const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
-      let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-      if (this.envKeysFilepath) {
-        envKeysFilepath = path.resolve(this.envKeysFilepath)
-      }
-      const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
-
-      if (existingPrivateKey) {
-        // throw new Error('implement for remote Ops existingPrivateKey')
-        const kp = keypair(existingPrivateKey)
-        publicKey = kp.publicKey
-        privateKey = kp.privateKey
-
-        // if derivation doesn't match what's in the file (or preset in env)
-        if (existingPublicKey && existingPublicKey !== publicKey) {
-          const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
-          error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-          error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(existingPublicKey)})`
-          throw error
-        }
-
-        // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
-        if (!existingPublicKey) {
-          const ps = this._preserveShebang(envSrc)
-          const firstLinePreserved = ps.firstLinePreserved
-          envSrc = ps.envSrc
-
-          const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-          envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
-        }
-      } else if (existingPublicKey) {
-        // throw new Error('implement for remote Ops existingPrivateKey')
-        publicKey = existingPublicKey
-      } else {
-        // .env.keys
-        let keysSrc = ''
-
-        if (fsx.existsSync(envKeysFilepath)) {
-          keysSrc = fsx.readFileX(envKeysFilepath)
-        }
-
-        const ps = this._preserveShebang(envSrc)
-        const firstLinePreserved = ps.firstLinePreserved
-        envSrc = ps.envSrc
-
-        // TODO: instead get this from API
-        const kp = keypair() // generates a fresh keypair in memory
-        publicKey = kp.publicKey
-        privateKey = kp.privateKey
-        // Ops hook point (first-time key generation):
-        // if Ops is installed and opsOff is not set, send privateKey/privateKeyName/envFilepath
-        // to your Ops service before persisting or immediately after writing below.
-
-        const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-        // privateKey
-        const firstTimeKeysSrc = [
-          '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
-          '#/ private decryption keys. DO NOT commit to source control /',
-          '#/     [how it works](https://dotenvx.com/encryption)       /',
-          // '#/           backup with: `dotenvx ops backup`              /',
-          '#/----------------------------------------------------------/'
-        ].join('\n')
-        const appendPrivateKey = [
-          `# ${filename}`,
-          `${privateKeyName}=${privateKey}`,
-          ''
-        ].join('\n')
-
-        envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
-        keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
-        keysSrc = `${keysSrc}\n${appendPrivateKey}`
-
-        // write to .env.keys
-        fsx.writeFileX(envKeysFilepath, keysSrc)
-        // Ops hook point (after persistence):
-        // if Ops is installed and opsOff is not set, trigger backup/registration now that
-        // .env.keys has been written and row.privateKeyAdded will be true for callers.
-
-        row.privateKeyAdded = true
-        row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
+      // first pass - provision
+      if (!privateKeyValue && !publicKeyValue) {
+        const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+        envSrc = prov.envSrc
+        publicKey = prov.publicKey
+        privateKey = prov.privateKey
+        row.privateKeyAdded = prov.privateKeyAdded
+        row.envKeysFilepath = prov.envKeysFilepath
+      } else if (privateKeyValue) {
+        const prov = provisionWithPrivateKey({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
+        publicKey = prov.publicKey
+        privateKey = prov.privateKey
+        envSrc = prov.envSrc
+      } else if (publicKeyValue) {
+        publicKey = publicKeyValue
       }
 
       row.publicKey = publicKey
@@ -179,7 +118,7 @@ class Encrypt {
           continue
         }
 
-        const encrypted = isEncrypted(value) || isPublicKey(key, value)
+        const encrypted = isEncrypted(value) || isPublicKey(key)
         if (!encrypted) {
           row.keys.push(key) // track key(s)
 
@@ -223,40 +162,6 @@ class Encrypt {
     }
 
     return this.excludeKey
-  }
-
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
-  }
-
-  _prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath = '') {
-    const comment = relativeFilepath === '.env.keys' ? '' : ` # ${relativeFilepath}`
-
-    return [
-      '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
-      '#/            public-key encryption for .env files          /',
-      '#/       [how it works](https://dotenvx.com/encryption)     /',
-      '#/----------------------------------------------------------/',
-      `${publicKeyName}="${publicKey}"${comment}`,
-      '',
-      `# ${filename}`
-    ].join('\n')
-  }
-
-  _preserveShebang (envSrc) {
-    // preserve shebang
-    const [firstLine, ...remainingLines] = envSrc.split('\n')
-    let firstLinePreserved = ''
-
-    if (firstLine.startsWith('#!')) {
-      firstLinePreserved = firstLine + '\n'
-      envSrc = remainingLines.join('\n')
-    }
-
-    return {
-      firstLinePreserved,
-      envSrc
-    }
   }
 }
 

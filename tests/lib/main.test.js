@@ -118,6 +118,25 @@ t.test('config with Run.run processedEnv with undefined processedEnv.errors', ct
   ct.end()
 })
 
+t.test('config catches thrown error and returns parsed/error', ct => {
+  const loggerErrorStub = sinon.stub(logger, 'error')
+  const loggerHelpStub = sinon.stub(logger, 'help')
+  const thrown = new Error('boom')
+  thrown.help = 'boom help'
+
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.throws(thrown)
+
+  const result = main.config()
+
+  ct.same(result.parsed, {})
+  ct.equal(result.error, thrown)
+  ct.ok(loggerErrorStub.calledWith('boom'))
+  ct.ok(loggerHelpStub.calledWith('boom help'))
+
+  ct.end()
+})
+
 t.test('parse calls Parse.run', ct => {
   const parsed = main.parse('HELLO=World')
 
@@ -187,6 +206,21 @@ t.test('keypair calls Keypair.run with key specified', ct => {
   const result = main.keypair('.env', 'KEY')
 
   t.ok(stub.called, 'new Keypair().run() called')
+  t.equal(result, 'value')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('keypair calls Keypair.run with opsOff true', ct => {
+  const stub = sinon.stub(Keypair.prototype, 'run')
+  stub.returns({ KEY: 'value' })
+
+  const result = main.keypair('.env', 'KEY', null, true)
+
+  t.ok(stub.called, 'new Keypair().run() called')
+  t.equal(stub.thisValues[0].opsOn, false, 'Keypair was called with opsOn false')
   t.equal(result, 'value')
 
   stub.restore()
@@ -426,6 +460,20 @@ t.test('set calls Sets.run with custom envKeysFile', ct => {
   t.ok(stub.called, 'new Sets().run() called')
 
   t.equal(stub.thisValues[0].envKeysFilepath, 'path/to/.env.keys', 'Sets was called with custom .env.keys path')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run with opsOff true', ct => {
+  const stub = sinon.stub(Sets.prototype, 'run')
+  stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
+
+  main.set('KEY', 'value', { opsOff: true })
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.equal(stub.thisValues[0].opsOn, false, 'Sets was called with opsOn false')
 
   stub.restore()
 
@@ -735,6 +783,21 @@ t.test('get calls Get.run format shell', ct => {
   t.equal(result, 'KEY=value')
 
   t.ok(stub.called, 'new Get().run() called')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('get calls Get.run with opsOff true', ct => {
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+  const result = main.get('KEY', { opsOff: true })
+  t.equal(result, 'value')
+
+  t.ok(stub.called, 'new Get().run() called')
+  t.equal(stub.thisValues[0].opsOn, false, 'Get was called with opsOn false')
 
   stub.restore()
 

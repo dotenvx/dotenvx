@@ -4,27 +4,36 @@ const path = require('path')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
-const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
-const encryptValue = require('./../helpers/encryptValue')
-const decryptKeyValue = require('./../helpers/decryptKeyValue')
+
+const {
+  determine
+} = require('./../helpers/envResolution')
+
+const {
+  keyNames,
+  keyValues
+} = require('./../helpers/keyResolution')
+
+const {
+  encryptValue,
+  decryptKeyValue,
+  isEncrypted,
+  provision,
+  provisionWithPrivateKey
+} = require('./../helpers/cryptography')
+
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determineEnvs = require('./../helpers/determineEnvs')
-const { findPrivateKey } = require('./../helpers/findPrivateKey')
-const findPublicKey = require('./../helpers/findPublicKey')
-const keypair = require('./../helpers/keypair')
-const truncate = require('./../helpers/truncate')
-const isEncrypted = require('./../helpers/isEncrypted')
 
 class Sets {
-  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null) {
-    this.envs = determineEnvs(envs, process.env)
+  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
+    this.envs = determine(envs, process.env)
     this.key = key
     this.value = value
     this.encrypt = encrypt
     this.envKeysFilepath = envKeysFilepath
+    this.opsOn = opsOn
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -57,14 +66,13 @@ class Sets {
     row.value = this.value || null
     row.type = TYPE_ENV_FILE
 
-    const filename = path.basename(envFilepath)
     const filepath = path.resolve(envFilepath)
     row.filepath = filepath
     row.envFilepath = envFilepath
     row.changed = false
 
     try {
-      const encoding = this._detectEncoding(filepath)
+      const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
       row.originalValue = envParsed[row.key] || null
@@ -75,86 +83,28 @@ class Sets {
         let publicKey
         let privateKey
 
-        const publicKeyName = guessPublicKeyName(envFilepath)
-        const privateKeyName = guessPrivateKeyName(envFilepath)
-        const existingPublicKey = findPublicKey(envFilepath)
-        const existingPrivateKey = findPrivateKey(envFilepath, this.envKeysFilepath, false, existingPublicKey)
+        const { publicKeyName, privateKeyName } = keyNames(filepath)
+        const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
-        let envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-        if (this.envKeysFilepath) {
-          envKeysFilepath = path.resolve(this.envKeysFilepath)
-        }
-        const relativeFilepath = path.relative(path.dirname(filepath), envKeysFilepath)
-
-        if (existingPrivateKey) {
-          const kp = keypair(existingPrivateKey)
-          publicKey = kp.publicKey
-          privateKey = kp.privateKey
+        // first pass - provision
+        if (!privateKeyValue && !publicKeyValue) {
+          const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+          envSrc = prov.envSrc
+          publicKey = prov.publicKey
+          privateKey = prov.privateKey
+          row.privateKeyAdded = prov.privateKeyAdded
+          row.envKeysFilepath = prov.envKeysFilepath
+        } else if (privateKeyValue) {
+          const prov = provisionWithPrivateKey({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
+          publicKey = prov.publicKey
+          privateKey = prov.privateKey
+          envSrc = prov.envSrc
 
           if (row.originalValue) {
             row.originalValue = decryptKeyValue(row.key, row.originalValue, privateKeyName, privateKey)
           }
-
-          // if derivation doesn't match what's in the file (or preset in env)
-          if (existingPublicKey && existingPublicKey !== publicKey) {
-            const error = new Error(`derived public key (${truncate(publicKey)}) does not match the existing public key (${truncate(existingPublicKey)})`)
-            error.code = 'INVALID_DOTENV_PRIVATE_KEY'
-            error.help = `debug info: ${privateKeyName}=${truncate(existingPrivateKey)} (derived ${publicKeyName}=${truncate(publicKey)} vs existing ${publicKeyName}=${truncate(existingPublicKey)})`
-            throw error
-          }
-
-          // typical scenario when encrypting a monorepo second .env file from a prior generated -fk .env.keys file
-          if (!existingPublicKey) {
-            const ps = this._preserveShebang(envSrc)
-            const firstLinePreserved = ps.firstLinePreserved
-            envSrc = ps.envSrc
-
-            const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-            envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
-          }
-        } else if (existingPublicKey) {
-          publicKey = existingPublicKey
-        } else {
-          // .env.keys
-          let keysSrc = ''
-          if (fsx.existsSync(envKeysFilepath)) {
-            keysSrc = fsx.readFileX(envKeysFilepath)
-          }
-
-          const ps = this._preserveShebang(envSrc)
-          const firstLinePreserved = ps.firstLinePreserved
-          envSrc = ps.envSrc
-
-          const kp = keypair() // generates a fresh keypair in memory
-          publicKey = kp.publicKey
-          privateKey = kp.privateKey
-
-          const prependPublicKey = this._prependPublicKey(publicKeyName, publicKey, filename, relativeFilepath)
-
-          // privateKey
-          const firstTimeKeysSrc = [
-            '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
-            '#/ private decryption keys. DO NOT commit to source control /',
-            '#/     [how it works](https://dotenvx.com/encryption)       /',
-            // '#/           backup with: `dotenvx ops backup`              /',
-            '#/----------------------------------------------------------/'
-          ].join('\n')
-          const appendPrivateKey = [
-            `# ${filename}`,
-            `${privateKeyName}=${privateKey}`,
-            ''
-          ].join('\n')
-
-          envSrc = `${firstLinePreserved}${prependPublicKey}\n${envSrc}`
-          keysSrc = keysSrc.length > 1 ? keysSrc : `${firstTimeKeysSrc}\n`
-          keysSrc = `${keysSrc}\n${appendPrivateKey}`
-
-          // write to .env.keys
-          fsx.writeFileX(envKeysFilepath, keysSrc)
-
-          row.privateKeyAdded = true
-          row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), path.basename(envKeysFilepath))
+        } else if (publicKeyValue) {
+          publicKey = publicKeyValue
         }
 
         row.publicKey = publicKey
@@ -183,40 +133,6 @@ class Sets {
     }
 
     this.processedEnvs.push(row)
-  }
-
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
-  }
-
-  _prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath = '.env.keys') {
-    const comment = relativeFilepath === '.env.keys' ? '' : ` # -fk ${relativeFilepath}`
-
-    return [
-      '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
-      '#/            public-key encryption for .env files          /',
-      '#/       [how it works](https://dotenvx.com/encryption)     /',
-      '#/----------------------------------------------------------/',
-      `${publicKeyName}="${publicKey}"${comment}`,
-      '',
-      `# ${filename}`
-    ].join('\n')
-  }
-
-  _preserveShebang (envSrc) {
-    // preserve shebang
-    const [firstLine, ...remainingLines] = envSrc.split('\n')
-    let firstLinePreserved = ''
-
-    if (firstLine.startsWith('#!')) {
-      firstLinePreserved = firstLine + '\n'
-      envSrc = remainingLines.join('\n')
-    }
-
-    return {
-      firstLinePreserved,
-      envSrc
-    }
   }
 }
 
