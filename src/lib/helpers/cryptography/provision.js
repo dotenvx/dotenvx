@@ -1,6 +1,6 @@
 const mutateSrc = require('./mutateSrc')
 const mutateKeysSrc = require('./mutateKeysSrc')
-const deriveKeypair = require('./deriveKeypair')
+const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
 const Ops = require('../../extensions/ops')
@@ -17,7 +17,7 @@ function provision ({ envSrc, envFilepath, keysFilepath, opsOn }) {
     publicKey = kp['public_key']
     privateKey = kp['private_key']
   } else {
-    const kp = deriveKeypair() // TODO: handle derivation from Ops
+    const kp = localKeypair() // TODO: handle derivation from Ops
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   }

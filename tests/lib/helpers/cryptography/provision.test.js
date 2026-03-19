@@ -13,7 +13,7 @@ t.test('provision builds env and keys for first-time setup', (ct) => {
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
-    './deriveKeypair': () => ({ publicKey: 'pub_123', privateKey: 'priv_123' }),
+    './localKeypair': () => ({ publicKey: 'pub_123', privateKey: 'priv_123' }),
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -54,7 +54,7 @@ t.test('provision appends to existing keys file', (ct) => {
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
-    './deriveKeypair': () => ({ publicKey: 'pub_abc', privateKey: 'priv_abc' }),
+    './localKeypair': () => ({ publicKey: 'pub_abc', privateKey: 'priv_abc' }),
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -82,7 +82,7 @@ t.test('provision defaults keys filepath when omitted', (ct) => {
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
-    './deriveKeypair': () => ({ publicKey: 'pub_x', privateKey: 'priv_x' }),
+    './localKeypair': () => ({ publicKey: 'pub_x', privateKey: 'priv_x' }),
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -116,7 +116,7 @@ t.test('provision uses Ops keypair when opsOn is true', (ct) => {
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
-    './deriveKeypair': () => { throw new Error('deriveKeypair should not be called when opsOn=true') },
+    './localKeypair': () => { throw new Error('localKeypair should not be called when opsOn=true') },
     './../../extensions/ops': OpsMock,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })

@@ -6,7 +6,7 @@ const which = require('which')
 const dotenv = require('dotenv')
 const { execSync } = require('child_process')
 
-const deriveKeypair = require('../../src/lib/helpers/cryptography/deriveKeypair')
+const localKeypair = require('../../src/lib/helpers/cryptography/localKeypair')
 
 let tempDir = ''
 const osTempDir = fs.realpathSync(os.tmpdir())
@@ -101,7 +101,7 @@ t.test('#run - encrypt -k --stdout', ct => {
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
-  const { publicKey } = deriveKeypair(DOTENV_PRIVATE_KEY)
+  const { publicKey } = localKeypair(DOTENV_PRIVATE_KEY)
 
   const expectedFixedPart1 = `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
 #/            public-key encryption for .env files          /

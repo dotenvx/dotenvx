@@ -1,6 +1,6 @@
 const { PrivateKey } = require('eciesjs')
 
-function deriveKeypair (existingPrivateKey) {
+function localKeypair (existingPrivateKey) {
   let kp
 
   if (existingPrivateKey) {
@@ -18,4 +18,4 @@ function deriveKeypair (existingPrivateKey) {
   }
 }
 
-module.exports = deriveKeypair
+module.exports = localKeypair

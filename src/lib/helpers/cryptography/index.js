@@ -1,5 +1,5 @@
 module.exports = {
-  deriveKeypair: require('./deriveKeypair'),
+  localKeypair: require('./localKeypair'),
   encryptValue: require('./encryptValue'),
   decryptKeyValue: require('./decryptKeyValue'),
   isEncrypted: require('./isEncrypted'),
