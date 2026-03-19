@@ -1,4 +1,5 @@
 module.exports = {
+  opsKeypair: require('./opsKeypair'),
   localKeypair: require('./localKeypair'),
   encryptValue: require('./encryptValue'),
   decryptKeyValue: require('./decryptKeyValue'),

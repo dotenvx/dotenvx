@@ -5,6 +5,7 @@ const dotenvParse = require('./../dotenvParse')
 const keyNames = require('./keyNames')
 const readProcessKey = require('./readProcessKey')
 const readFileKey = require('./readFileKey')
+const opsKeypair = require('../cryptography/opsKeypair')
 
 function invertForPrivateKeyName (filepath) {
   const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
@@ -68,9 +69,11 @@ function keyValues (filepath, opts = {}) {
       }
     }
   }
-  if (!privateKey && opsOn && publicKey && publicKey.length > 0) { // && !!publicKey
-    // implement
-    // throw new Error('opsOn: implement lookup of keypair to ops. call ops.keypair(publicKey)')
+
+  // ops
+  if (opsOn && !privateKey && publicKey && publicKey.length > 0) {
+    const kp = opsKeypair(publicKey)
+    privateKey = kp.privateKey
   }
 
   return {
