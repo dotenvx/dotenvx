@@ -17,7 +17,10 @@ class Precommit {
     this.directory = directory
     // options
     this.install = options.install
-    this.excludeEnvFile = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
+
+    const defaultExclusions = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
+    const userExclusions = options.exclude || []
+    this.excludeEnvFile = defaultExclusions.concat(userExclusions)
   }
 
   run () {

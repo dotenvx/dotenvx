@@ -209,3 +209,31 @@ t.test('_installPrecommitHook calls InstallPrecommitHook.run', ct => {
 
   ct.end()
 })
+
+t.test('#constructor sets default exclusions', ct => {
+  const precommit = new Precommit()
+
+  ct.same(precommit.excludeEnvFile, ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**'])
+
+  ct.end()
+})
+
+t.test('#constructor merges user exclusions with defaults', ct => {
+  const precommit = new Precommit('./', { exclude: ['.env.*.config', '.env.public'] })
+
+  ct.same(precommit.excludeEnvFile, ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**', '.env.*.config', '.env.public'])
+
+  ct.end()
+})
+
+t.test('#run passes exclusions to Ls service', ct => {
+  const lsRunStub = sinon.stub(Ls.prototype, 'run').returns([])
+
+  const precommit = new Precommit('./', { exclude: ['.env.custom'] })
+  precommit.run()
+
+  ct.ok(lsRunStub.called, 'Ls.run should be called')
+  ct.same(precommit.excludeEnvFile, ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**', '.env.custom'])
+
+  ct.end()
+})

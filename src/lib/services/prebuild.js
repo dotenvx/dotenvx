@@ -10,11 +10,13 @@ const packageJson = require('./../helpers/packageJson')
 const MISSING_DOCKERIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Prebuild {
-  constructor (directory = './') {
+  constructor (directory = './', options = {}) {
     // args
     this.directory = directory
 
-    this.excludeEnvFile = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
+    const defaultExclusions = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
+    const userExclusions = options.exclude || []
+    this.excludeEnvFile = defaultExclusions.concat(userExclusions)
   }
 
   run () {
