@@ -1,4 +1,5 @@
 const fsx = require('./../../../lib/helpers/fsx')
+const path = require('path')
 const main = require('./../../../lib/main')
 const { logger } = require('./../../../shared/logger')
 
@@ -21,7 +22,7 @@ function genexample (directory) {
     fsx.writeFileX(exampleFilepath, envExampleFile)
 
     if (addedKeys.length > 0) {
-      logger.success(`updated .env.example (${addedKeys.length})`)
+      logger.success(`▣ generated (${path.basename(exampleFilepath)})`)
     } else {
       logger.neutral('○ no changes (.env.example)')
     }

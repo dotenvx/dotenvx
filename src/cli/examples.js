@@ -66,11 +66,11 @@ Examples:
   $ dotenvx ext gitignore --pattern .env.keys
   \`\`\`
 
-Try it:
+  Try it:
 
   \`\`\`
   $ dotenvx ext gitignore
-  ✔ ignored .env* (.gitignore)
+  ▣ ignored .env* (.gitignore)
   \`\`\`
   `
 }

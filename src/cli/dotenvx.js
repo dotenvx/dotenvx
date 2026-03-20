@@ -252,7 +252,8 @@ program.helpInformation = function () {
   const filteredLines = lines.filter(line =>
     !line.includes('DEPRECATED') &&
     !line.includes('help [command]') &&
-    !line.includes('🔌 extensions')
+    !line.includes('🔌 extensions') &&
+    !/^\s*ls\b/.test(line)
   )
 
   return filteredLines.join('\n')
