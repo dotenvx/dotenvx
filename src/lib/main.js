@@ -229,7 +229,7 @@ const set = function (key, value, options = {}) {
     const keyAddedEnvFilepath = keyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
     logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
   } else if (unchangedFilepaths.length > 0) {
-    logger.neutral(`○ no changes (${unchangedFilepaths})`)
+    logger.info(`○ no changes (${unchangedFilepaths})`)
   } else {
     // do nothing
   }

@@ -77,7 +77,7 @@ t.test('logger.info', (ct) => {
     logger.info(message)
   })
 
-  ct.equal(stdout, 'message1\n')
+  ct.equal(stdout, `${getColor('gray')('message1')}\n`)
 
   ct.end()
 })
@@ -135,18 +135,6 @@ t.test('logger.success', (ct) => {
   ct.end()
 })
 
-t.test('logger.neutral', (ct) => {
-  const message = 'message1'
-
-  const stdout = capcon.interceptStdout(() => {
-    logger.neutral(message)
-  })
-
-  ct.equal(stdout, `${getColor('gray')('message1')}\n`)
-
-  ct.end()
-})
-
 t.test('logger.warn', (ct) => {
   const message = 'message1'
 
@@ -178,7 +166,7 @@ t.test('logger.info as object', (ct) => {
     logger.info(message)
   })
 
-  ct.equal(stdout, `${JSON.stringify({ key: 'value' })}\n`)
+  ct.equal(stdout, `${getColor('gray')(JSON.stringify({ key: 'value' }))}\n`)
 
   ct.end()
 })

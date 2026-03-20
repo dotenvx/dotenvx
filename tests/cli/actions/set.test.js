@@ -33,13 +33,13 @@ t.test('set - no changes', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
 
   set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
 
   ct.end()
 })
@@ -118,7 +118,7 @@ t.test('set - MISSING_ENV_FILE', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
@@ -126,7 +126,7 @@ t.test('set - MISSING_ENV_FILE', ct => {
 
   t.ok(stub.called, 'Sets().main() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
   t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx set]'), 'logger help')
 
@@ -156,7 +156,7 @@ t.test('set - OTHER_ERROR', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
@@ -164,7 +164,7 @@ t.test('set - OTHER_ERROR', ct => {
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
   t.ok(loggerHelpStub.calledWith('some help'), 'logger.help')
 
@@ -297,14 +297,14 @@ t.test('set - privateKeyAdded with unchanged file still reports key addition', c
     unchangedFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
 
   set.call(fakeContext, 'HELLO', 'dude')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
-  t.ok(loggerNeutralStub.notCalled, 'logger neutral')
+  t.ok(loggerNeutralStub.notCalled, 'logger info')
 
   ct.end()
 })

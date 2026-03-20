@@ -51,12 +51,12 @@ t.test('encrypt - .env but no changes', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
 
   encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.info')
 
   ct.end()
 })

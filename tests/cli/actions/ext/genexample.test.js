@@ -46,7 +46,7 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
   })
 
   const fsStub = sinon.stub(fsx, 'writeFileX')
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = {
@@ -58,7 +58,7 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
 
   t.ok(stub.called, 'main.genexample() called')
   t.ok(fsStub.called, 'fsx.writeFileX() called')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env.example)'), 'logger.neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env.example)'), 'logger.info')
   stub.restore()
   fsStub.restore()
   loggerNeutralStub.restore()

@@ -6,7 +6,6 @@ const levels = {
   warn: 1,
   success: 2,
   successv: 2,
-  neutral: 2,
   info: 2,
   help: 2,
   verbose: 4,
@@ -18,7 +17,7 @@ const error = (m) => bold(getColor('red')(m))
 const warn = getColor('orangered')
 const success = getColor('amber')
 const successv = getColor('amber')
-const neutral = getColor('gray')
+const info = getColor('gray')
 const help = getColor('dodgerblue')
 const verbose = getColor('plum')
 const debug = getColor('plum')
@@ -58,11 +57,9 @@ function formatMessage (level, message) {
       return success(formattedMessage)
     case 'successv': // success with 'version'
       return successv(`[${currentName}@${currentVersion}] ${formattedMessage}`)
-    case 'neutral':
-      return neutral(formattedMessage)
     // info
     case 'info':
-      return formattedMessage
+      return info(formattedMessage)
     // help
     case 'help':
       return help(formattedMessage)
@@ -86,7 +83,6 @@ const logger = {
   // success
   success: (msg) => stdout('success', msg),
   successv: (msg) => stdout('successv', msg),
-  neutral: (msg) => stdout('neutral', msg),
   // info
   info: (msg) => stdout('info', msg),
   // help

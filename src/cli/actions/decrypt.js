@@ -72,7 +72,7 @@ function decrypt () {
       if (changedFilepaths.length > 0) {
         logger.success(`◇ decrypted (${changedFilepaths.join(',')})`)
       } else if (unchangedFilepaths.length > 0) {
-        logger.neutral(`○ no changes (${unchangedFilepaths})`)
+        logger.info(`○ no changes (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
       }

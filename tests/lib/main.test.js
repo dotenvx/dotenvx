@@ -507,7 +507,7 @@ t.test('set calls Sets.run - no changes', ct => {
 })
 
 t.test('set calls Sets.run - no changes', ct => {
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
   const stub = sinon.stub(Sets.prototype, 'run').returns({
     processedEnvs: [{
       key: 'HELLO',
@@ -528,7 +528,7 @@ t.test('set calls Sets.run - no changes', ct => {
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
 
   stub.restore()
 
@@ -568,7 +568,7 @@ t.test('set calls Sets.run - changes', ct => {
 })
 
 t.test('set calls Sets.run - MISSING_ENV_FILE', ct => {
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
@@ -595,7 +595,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE', ct => {
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
   t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx set]'), 'logger help')
 
@@ -605,7 +605,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE', ct => {
 })
 
 t.test('set calls Sets.run - OTHER_ERROR', ct => {
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
@@ -633,7 +633,7 @@ t.test('set calls Sets.run - OTHER_ERROR', ct => {
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
   t.ok(loggerHelpStub.calledWith('some help'), 'logger help')
 
@@ -718,7 +718,7 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys', ct => 
 
 t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports key addition', ct => {
   const loggerSuccessStub = sinon.stub(logger, 'success')
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
 
   const stub = sinon.stub(Sets.prototype, 'run').returns({
     processedEnvs: [{
@@ -742,7 +742,7 @@ t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports k
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
-  t.ok(loggerNeutralStub.notCalled, 'logger neutral')
+  t.ok(loggerNeutralStub.notCalled, 'logger info')
 
   stub.restore()
 

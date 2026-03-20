@@ -46,11 +46,11 @@ t.test('decrypt - .env but no changes', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerNeutralStub = sinon.stub(logger, 'neutral')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
 
   decrypt.call(fakeContext)
 
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.neutral')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.info')
 
   ct.end()
 })
