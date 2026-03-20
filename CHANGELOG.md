@@ -2,7 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.57.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.57.1...main)
+
+## [1.57.1](https://github.com/dotenvx/dotenvx/compare/v1.57.0...v1.57.1) (2026-03-20)
+
+### Changes
+
+* improved error logs and compacted most to a single line ([#755](https://github.com/dotenvx/dotenvx/pull/755))
+* introduced leading log glyphs as a visual status language:
+
+  * `◈` success action (encrypted, logged in/out, synced)
+  * `◇` success action (set plain value, decrypted)
+  * `⟳` success action (rotated)
+  * `○` informational no-op (no changes)
+  * `▣` success action for generated/updated support files
+  * `?` contextual help or suggested fix
+  * `⚠` warning
+  * `☠` error
+  * `⮕` next-step help pointer
 
 ## [1.57.0](https://github.com/dotenvx/dotenvx/compare/v1.56.0...v1.57.0) (2026-03-19)
 
@@ -1783,4 +1800,3 @@ prevent committing a `.env*` file to code. append to `.gitignore`, `.dockerignor
 ## 0.3.9 and prior
 
 Please see commit history.
-

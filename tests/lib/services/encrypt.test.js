@@ -28,9 +28,10 @@ t.test('#run (no arguments)', ct => {
     unchangedFilepaths
   } = new Encrypt().run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [{
     keys: [],
@@ -52,9 +53,10 @@ t.test('#run (no env file)', ct => {
     unchangedFilepaths
   } = new Encrypt().run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [{
     keys: [],
@@ -466,7 +468,8 @@ t.test('#run (finds .env and .env.keys file) but derived public key does not mat
 
   const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
   error.code = 'MISPAIRED_PRIVATE_KEY'
-  error.help = '[MISPAIRED_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/752'
+  error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/752]'
+  error.messageWithHelp = '[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…). fix: [https://github.com/dotenvx/dotenvx/issues/752]'
 
   ct.same(processedEnvs, [{
     keys: [],
@@ -637,5 +640,31 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
 
   sandbox.restore()
 
+  ct.end()
+})
+
+t.test('#run wraps invalid public key encryption errors', ct => {
+  const sandbox = sinon.createSandbox()
+  const cryptography = require('../../../src/lib/helpers/cryptography')
+  const EncryptWithStub = proxyquire('../../../src/lib/services/encrypt', {
+    './../helpers/cryptography': {
+      ...cryptography,
+      encryptValue: () => {
+        throw new Error('padded hex string expected, got unpadded hex of length 67')
+      }
+    }
+  })
+
+  const envFile = 'tests/monorepo/apps/frontend/.env'
+  const envs = [{ type: 'envFile', value: envFile }]
+
+  const { processedEnvs, changedFilepaths } = new EncryptWithStub(envs).run()
+
+  ct.equal(processedEnvs[0].error.code, 'INVALID_PUBLIC_KEY')
+  ct.match(processedEnvs[0].error.message, /^\[INVALID_PUBLIC_KEY\] could not encrypt using public key 'DOTENV_PUBLIC_KEY=/)
+  ct.equal(processedEnvs[0].error.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/756]')
+  ct.same(changedFilepaths, [])
+
+  sandbox.restore()
   ct.end()
 })

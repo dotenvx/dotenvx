@@ -7,7 +7,7 @@ t.test('#errors', ct => {
 
   t.equal(result.code, 'DANGEROUS_DEPENDENCY_HOIST')
   t.equal(result.message, '[DANGEROUS_DEPENDENCY_HOIST] your environment has hoisted an incompatible version of a dotenvx dependency: hi')
-  t.equal(result.help, '[DANGEROUS_DEPENDENCY_HOIST] https://github.com/dotenvx/dotenvx/issues/622')
+  t.equal(result.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/622]')
 
   ct.end()
 })

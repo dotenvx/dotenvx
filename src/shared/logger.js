@@ -1,4 +1,5 @@
 const packageJson = require('../lib/helpers/packageJson')
+const Errors = require('../lib/helpers/errors')
 const { getColor, bold } = require('./colors')
 
 const levels = {
@@ -13,8 +14,9 @@ const levels = {
   silly: 6
 }
 
-const error = (m) => bold(getColor('red')(m))
-const warn = getColor('orangered')
+const error = (m) => bold(getColor('red')(`☠ ${m}`))
+const withWarnGlyph = (m = '') => (m.startsWith('⚠ ') ? m : `⚠ ${m}`)
+const warn = (m) => getColor('orangered')(withWarnGlyph(m))
 const success = getColor('amber')
 const successv = getColor('amber')
 const info = getColor('gray')
@@ -33,7 +35,7 @@ function stderr (level, message) {
 
 function stdout (level, message) {
   if (levels[level] === undefined) {
-    throw new Error(`MISSING_LOG_LEVEL: '${level}'. implement in logger.`)
+    throw new Errors({ level }).missingLogLevel()
   }
 
   if (levels[level] <= currentLevel) {

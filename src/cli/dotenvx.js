@@ -30,8 +30,7 @@ const commanderVersion = getCommanderVersion()
 if (commanderVersion && parseInt(commanderVersion.split('.')[0], 10) >= 12) {
   const message = `dotenvx depends on commander@11.x.x but you are attempting to hoist commander@${commanderVersion}`
   const error = new Errors({ message }).dangerousDependencyHoist()
-  logger.error(error.message)
-  if (error.help) logger.error(error.help)
+  logger.error(error.messageWithHelp)
 }
 
 // global log levels

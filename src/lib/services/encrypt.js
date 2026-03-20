@@ -122,7 +122,12 @@ class Encrypt {
         if (!encrypted) {
           row.keys.push(key) // track key(s)
 
-          const encryptedValue = encryptValue(value, publicKey)
+          let encryptedValue
+          try {
+            encryptedValue = encryptValue(value, publicKey)
+          } catch {
+            throw new Errors({ publicKeyName, publicKey }).invalidPublicKey()
+          }
 
           // once newSrc is built write it out
           envSrc = replace(envSrc, key, encryptedValue)

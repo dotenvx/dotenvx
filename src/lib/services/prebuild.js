@@ -4,6 +4,7 @@ const path = require('path')
 const ignore = require('ignore')
 
 const Ls = require('../services/ls')
+const Errors = require('../helpers/errors')
 
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
 const packageJson = require('./../helpers/packageJson')
@@ -24,7 +25,10 @@ class Prebuild {
 
     // 1. check for .dockerignore file
     if (!fsx.existsSync('.dockerignore')) {
-      const warning = new Error(`[dotenvx@${packageJson.version}][prebuild] .dockerignore missing`)
+        const warning = new Errors({
+          message: `[dotenvx@${packageJson.version}][prebuild] .dockerignore missing`,
+          help: 'fix: [touch .dockerignore]'
+        }).custom()
       warnings.push(warning)
     } else {
       dockerignore = fsx.readFileX('.dockerignore')
@@ -42,8 +46,10 @@ class Prebuild {
       // check if that file is being ignored
       if (ig.ignores(file)) {
         if (file === '.env.example' || file === '.env.x') {
-          const warning = new Error(`[dotenvx@${packageJson.version}][prebuild] ${file} (currently ignored but should not be)`)
-          warning.help = `[dotenvx@${packageJson.version}][prebuild] ⮕  run [dotenvx ext gitignore --pattern !${file}]`
+          const warning = new Errors({
+            message: `[dotenvx@${packageJson.version}][prebuild] ${file} (currently ignored but should not be)`,
+            help: `fix: [dotenvx ext gitignore --pattern !${file}]`
+          }).custom()
           warnings.push(warning)
         }
       } else {
@@ -54,15 +60,13 @@ class Prebuild {
           // if contents are encrypted don't raise an error
           if (!encrypted) {
             let errorMsg = `[dotenvx@${packageJson.version}][prebuild] ${file} not protected (encrypted or dockerignored)`
-            let errorHelp = `[dotenvx@${packageJson.version}][prebuild] ⮕  run [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
+            let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
             if (file.includes('.env.keys')) {
               errorMsg = `[dotenvx@${packageJson.version}][prebuild] ${file} not protected (dockerignored)`
-              errorHelp = `[dotenvx@${packageJson.version}][prebuild] ⮕  run [dotenvx ext gitignore --pattern ${file}]`
+              errorHelp = `fix: [dotenvx ext gitignore --pattern ${file}]`
             }
 
-            const error = new Error(errorMsg)
-            error.help = errorHelp
-            throw error
+            throw new Errors({ message: errorMsg, help: errorHelp }).custom()
           }
         }
       }

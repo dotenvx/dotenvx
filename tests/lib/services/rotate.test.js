@@ -28,9 +28,10 @@ t.test('#run (no arguments)', ct => {
     unchangedFilepaths
   } = new Rotate().run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [{
     keys: [],
@@ -52,9 +53,10 @@ t.test('#run (no env file)', ct => {
     unchangedFilepaths
   } = new Rotate().run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [{
     keys: [],
@@ -540,6 +542,30 @@ t.test('#run (finds .env file) with opsOn uses ops keypair and does not append l
   ct.notOk(p1.envKeysFilepath)
   ct.equal(p1.privateKey, 'new-private-key-from-ops')
   ct.match(p1.envSrc, /DOTENV_PUBLIC_KEY=/)
+  ct.end()
+})
+
+t.test('#run wraps invalid public key re-encryption errors', ct => {
+  const cryptography = require('../../../src/lib/helpers/cryptography')
+  const RotateWithStub = proxyquire('../../../src/lib/services/rotate', {
+    './../helpers/cryptography': {
+      ...cryptography,
+      encryptValue: () => {
+        throw new Error('padded hex string expected, got unpadded hex of length 67')
+      }
+    }
+  })
+
+  const envFile = 'tests/monorepo/apps/encrypted/.env'
+  const envs = [{ type: 'envFile', value: envFile }]
+
+  const { processedEnvs, changedFilepaths } = new RotateWithStub(envs).run()
+
+  ct.equal(processedEnvs[0].error.code, 'INVALID_PUBLIC_KEY')
+  ct.match(processedEnvs[0].error.message, /^\[INVALID_PUBLIC_KEY\] could not encrypt using public key 'DOTENV_PUBLIC_KEY=/)
+  ct.equal(processedEnvs[0].error.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/756]')
+  ct.same(changedFilepaths, [])
+
   ct.end()
 })
 

@@ -84,7 +84,7 @@ t.test('#run (fs throws an error) logs error', ct => {
     installPrecommitHook.run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, 'failed to modify pre-commit hook: Mock Error')
+    ct.same(error.message, '[PRECOMMIT_HOOK_MODIFY_FAILED] failed to modify pre-commit hook: Mock Error')
   }
 
   // restore stubs

@@ -64,18 +64,10 @@ async function run () {
 
         if (options.strict) throw error // throw if strict and not ignored
 
-        if (error.code === 'MISSING_ENV_FILE') {
-          if (!options.convention) { // do not output error for conventions (too noisy)
-            logger.error(error.message)
-            if (error.help) {
-              logger.error(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
-            }
-          }
+        if (error.code === 'MISSING_ENV_FILE' && options.convention) { // do not output error for conventions (too noisy)
+          // intentionally quiet
         } else {
-          logger.error(error.message)
-          if (error.help) {
-            logger.error(error.help)
-          }
+          logger.error(error.messageWithHelp)
         }
       }
 
@@ -106,10 +98,7 @@ async function run () {
 
     logger.successv(msg)
   } catch (error) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    logger.error(error.messageWithHelp)
     process.exit(1)
   }
 

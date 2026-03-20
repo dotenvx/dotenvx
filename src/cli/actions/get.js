@@ -35,10 +35,7 @@ function get (key) {
         continue // ignore error
       }
 
-      logger.error(error.message)
-      if (error.help) {
-        logger.error(error.help)
-      }
+      logger.error(error.messageWithHelp)
     }
 
     if (key) {
@@ -75,10 +72,7 @@ function get (key) {
       }
     }
   } catch (error) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    logger.error(error.messageWithHelp)
     process.exit(1)
   }
 }

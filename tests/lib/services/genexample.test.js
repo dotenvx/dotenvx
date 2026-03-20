@@ -103,7 +103,7 @@ t.test('#run (cant find directory)', ct => {
 
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.equal(error.message, 'missing directory (tests/monorepo/apps/frontendzzzz)')
+    ct.equal(error.message, '[MISSING_DIRECTORY] missing directory (tests/monorepo/apps/frontendzzzz)')
   }
 
   ct.end()
@@ -115,8 +115,8 @@ t.test('#run (missing env files)', ct => {
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.equal(error.code, 'MISSING_ENV_FILES')
-    ct.equal(error.message, 'no .env* files found')
-    ct.equal(error.help, '? add one with [echo "HELLO=World" > .env] and then run [dotenvx genexample]')
+    ct.equal(error.message, '[MISSING_ENV_FILES] no .env* files found')
+    ct.equal(error.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/760]')
   }
 
   ct.end()
@@ -128,7 +128,7 @@ t.test('#run (non-existent .env file)', ct => {
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.equal(error.code, 'MISSING_ENV_FILE')
-    ct.equal(error.message, `[MISSING_ENV_FILE] missing .env.nonexistent file (${path.resolve('tests/monorepo/apps/frontend/.env.nonexistent')})`)
+    ct.equal(error.message, '[MISSING_ENV_FILE] missing file (.env.nonexistent)')
     ct.equal(error.help, '? add it with [echo "HELLO=World" > .env.nonexistent] and then run [dotenvx genexample]')
   }
 

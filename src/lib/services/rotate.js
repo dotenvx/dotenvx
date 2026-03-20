@@ -131,7 +131,12 @@ class Rotate {
           row.keys.push(key) // track key(s)
 
           const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKeyValue) // get decrypted value
-          const encryptedValue = encryptValue(decryptedValue, newPublicKey) // encrypt with the new publicKey
+          let encryptedValue
+          try {
+            encryptedValue = encryptValue(decryptedValue, newPublicKey) // encrypt with the new publicKey
+          } catch {
+            throw new Errors({ publicKeyName, publicKey: newPublicKey }).invalidPublicKey()
+          }
 
           envSrc = replace(envSrc, key, encryptedValue)
         }

@@ -26,9 +26,10 @@ t.test('#run (no arguments)', ct => {
     unchangedFilepaths
   } = new Decrypt().run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [{
     keys: [],
@@ -50,9 +51,10 @@ t.test('#run (no env file)', ct => {
     unchangedFilepaths
   } = new Decrypt().run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [{
     keys: [],

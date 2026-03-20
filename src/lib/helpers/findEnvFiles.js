@@ -1,4 +1,5 @@
 const fsx = require('./fsx')
+const Errors = require('./errors')
 
 const RESERVED_ENV_FILES = ['.env.project', '.env.keys', '.env.me', '.env.x', '.env.example']
 
@@ -14,10 +15,7 @@ function findEnvFiles (directory) {
     return envFiles
   } catch (e) {
     if (e.code === 'ENOENT') {
-      const error = new Error(`missing directory (${directory})`)
-      error.code = 'MISSING_DIRECTORY'
-
-      throw error
+      throw new Errors({ directory }).missingDirectory()
     } else {
       throw e
     }
