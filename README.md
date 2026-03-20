@@ -632,7 +632,7 @@ Hello development local
 
 ```sh
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 ```
 
 [![encrypted .env](https://github.com/user-attachments/assets/46dfe1a7-a027-4d80-9207-789eccc325dc)](https://dotenvx.com)
@@ -1562,8 +1562,7 @@ Encrypt the contents of a `.env` file to an encrypted `.env` file.
 $ echo "HELLO=World" > .env
 
 $ dotenvx encrypt
-✔ encrypted (.env)
-✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
+◈ encrypted (.env) + key (.env.keys)
 ⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='122...0b8' dotenvx run -- yourcommand] to test decryption locally
 ```
@@ -1578,8 +1577,7 @@ $ echo "HELLO=World" > .env
 $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
-✔ encrypted (.env.production)
-✔ key added to .env.keys (DOTENV_PRIVATE_KEY_PRODUCTION)
+◈ encrypted (.env.production) + key (.env.keys)
 ⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='bff...bc4' dotenvx run -- yourcommand] to test decryption locally
 ```
@@ -1594,7 +1592,7 @@ $ mkdir -p apps/app1
 $ echo "HELLO=World" > apps/app1/.env
 
 $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
-✔ encrypted (apps/app1/.env)
+◈ encrypted (apps/app1/.env)
 ```
 
 Put it to use.
@@ -1619,7 +1617,7 @@ Specify the key(s) to encrypt by passing `--key`.
 $ echo "HELLO=World\nHELLO2=Universe" > .env
 
 $ dotenvx encrypt -k HELLO2
-✔ encrypted (.env)
+◈ encrypted (.env)
 ```
 
 Even specify a glob pattern.
@@ -1628,7 +1626,7 @@ Even specify a glob pattern.
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 
 $ dotenvx encrypt -k "HE*"
-✔ encrypted (.env)
+◈ encrypted (.env)
 ```
 
 </details>
@@ -1640,7 +1638,7 @@ Specify the key(s) to NOT encrypt by passing `--exclude-key`.
 $ echo "HELLO=World\nHELLO2=Universe" > .env
 
 $ dotenvx encrypt -ek HELLO
-✔ encrypted (.env)
+◈ encrypted (.env)
 ```
 
 Even specify a glob pattern.
@@ -1649,7 +1647,7 @@ Even specify a glob pattern.
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 
 $ dotenvx encrypt -ek "HO*"
-✔ encrypted (.env)
+◈ encrypted (.env)
 ```
 
 </details>
@@ -1684,9 +1682,9 @@ Decrypt the contents of an encrypted `.env` file to an unencrypted `.env` file.
 ```sh
 $ echo "HELLO=World" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx decrypt
-✔ decrypted (.env)
+◇ decrypted (.env)
 ```
 
 </details>
@@ -1699,9 +1697,9 @@ $ echo "HELLO=World" > .env
 $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
-✔ encrypted (.env.production)
+◈ encrypted (.env.production)
 $ dotenvx decrypt -f .env.production
-✔ decrypted (.env.production)
+◇ decrypted (.env.production)
 ```
 
 </details>
@@ -1714,9 +1712,9 @@ $ mkdir -p apps/app1
 $ echo "HELLO=World" > apps/app1/.env
 
 $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
-✔ encrypted (apps/app1/.env)
+◈ encrypted (apps/app1/.env)
 $ dotenvx decrypt -fk .env.keys -f apps/app1/.env
-✔ decrypted (apps/app1/.env)
+◇ decrypted (apps/app1/.env)
 ```
 
 </details>
@@ -1727,9 +1725,9 @@ Decrypt the contents of a specified key inside an encrypted `.env` file.
 ```sh
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx decrypt -k HELLO
-✔ decrypted (.env)
+◇ decrypted (.env)
 ```
 
 Even specify a glob pattern.
@@ -1737,9 +1735,9 @@ Even specify a glob pattern.
 ```sh
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx decrypt -k "HE*"
-✔ encrypted (.env)
+◇ decrypted (.env)
 ```
 
 </details>
@@ -1750,9 +1748,9 @@ Decrypt the contents inside an encrypted `.env` file except for an excluded key.
 ```sh
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx decrypt -ek HOLA
-✔ decrypted (.env)
+◇ decrypted (.env)
 ```
 
 Even specify a glob pattern.
@@ -1760,9 +1758,9 @@ Even specify a glob pattern.
 ```sh
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx decrypt -ek "HO*"
-✔ encrypted (.env)
+◇ decrypted (.env)
 ```
 
 </details>
@@ -1933,9 +1931,9 @@ Rotate public/private keys for `.env` file and re-encrypt all encrypted values.
 ```sh
 $ echo "HELLO=World" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx rotate
-✔ rotated (.env)
+⟳ rotated (.env)
 ```
 
 </details>
@@ -1948,9 +1946,9 @@ $ echo "HELLO=World" > .env
 $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
-✔ encrypted (.env.production)
+◈ encrypted (.env.production)
 $ dotenvx rotate -f .env.production
-✔ rotated (.env.production)
+⟳ rotated (.env.production)
 ```
 
 </details>
@@ -1963,9 +1961,9 @@ $ mkdir -p apps/app1
 $ echo "HELLO=World" > apps/app1/.env
 
 $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
-✔ encrypted (apps/app1/.env)
+◈ encrypted (apps/app1/.env)
 $ dotenvx rotate -fk .env.keys -f apps/app1/.env
-✔ rotated (apps/app1/.env)
+⟳ rotated (apps/app1/.env)
 ```
 
 </details>
@@ -1976,9 +1974,9 @@ Rotate the contents of a specified key inside an encrypted `.env` file.
 ```sh
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx rotate -k HELLO
-✔ rotated (.env)
+⟳ rotated (.env)
 ```
 
 Even specify a glob pattern.
@@ -1986,9 +1984,9 @@ Even specify a glob pattern.
 ```sh
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx rotate -k "HE*"
-✔ rotated (.env)
+⟳ rotated (.env)
 ```
 
 </details>
@@ -1999,9 +1997,9 @@ Rotate the encrypted contents inside an encrypted `.env` file except for an excl
 ```sh
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx rotate -ek HOLA
-✔ rotated (.env)
+⟳ rotated (.env)
 ```
 
 Even specify a glob pattern.
@@ -2009,9 +2007,9 @@ Even specify a glob pattern.
 ```sh
 $ echo "HELLO=World\nHOLA=Mundo" > .env
 $ dotenvx encrypt
-✔ encrypted (.env)
+◈ encrypted (.env)
 $ dotenvx rotate -ek "HO*"
-✔ rotated (.env)
+⟳ rotated (.env)
 ```
 
 </details>
@@ -2126,7 +2124,7 @@ In one command, generate a `.env.example` file from your current `.env` file con
 $ echo "HELLO=World" > .env
 
 $ dotenvx ext genexample
-✔ updated .env.example (1)
+▣ generated (.env.example)
 ```
 
 ```ini
@@ -2144,7 +2142,7 @@ $ echo "HELLO=World" > .env
 $ echo "DB_HOST=example.com" > .env.production
 
 $ dotenvx ext genexample -f .env -f .env.production
-✔ updated .env.example (2)
+▣ generated (.env.example)
 ```
 
 ```ini
@@ -2164,7 +2162,7 @@ $ mkdir -p apps/backend
 $ echo "HELLO=Backend" > apps/backend/.env
 
 $ dotenvx ext genexample apps/backend
-✔ updated .env.example (1)
+▣ generated (.env.example)
 ```
 
 ```ini
@@ -2179,7 +2177,7 @@ Gitignore your `.env` files.
 
 ```sh
 $ dotenvx ext gitignore
-✔ ignored .env* (.gitignore)
+▣ ignored .env* (.gitignore)
 ```
 
 </details>
@@ -2189,7 +2187,7 @@ Gitignore specific pattern(s) of `.env` files.
 
 ```sh
 $ dotenvx ext gitignore --pattern .env.keys
-✔ ignored .env.keys (.gitignore)
+▣ ignored .env.keys (.gitignore)
 ```
 
 </details>
@@ -2623,7 +2621,7 @@ Log in.
 $ dotenvx-ops login
 press Enter to open [https://ops.dotenvx.com/login/device] and enter code [D9C1-03BC]... (Y/n)
 ⠹ waiting on browser authorization
-✔ logged in [username] to this device and activated token [dxo_6kjPifI…]
+◈ logged in [username] to this device and activated token [dxo_6kjPifI…]
 ```
 
 </details>
@@ -2633,7 +2631,7 @@ Log out.
 
 ```sh
 $ dotenvx ops logout
-✔ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
+◈ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
 ```
 
 </details>
