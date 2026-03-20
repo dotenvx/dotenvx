@@ -17,14 +17,7 @@ const Genexample = require('./services/genexample')
 const buildEnvs = require('./helpers/buildEnvs')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
-
-function localDisplayPath (filepath) {
-  if (!filepath) return '.env.keys'
-  if (!path.isAbsolute(filepath)) return filepath
-
-  const relative = path.relative(process.cwd(), filepath)
-  return relative || path.basename(filepath)
-}
+const localDisplayPath = require('./helpers/localDisplayPath')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {

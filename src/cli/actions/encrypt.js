@@ -1,18 +1,10 @@
 const fsx = require('./../../lib/helpers/fsx')
-const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const Encrypt = require('./../../lib/services/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
-
-function localDisplayPath (filepath) {
-  if (!filepath) return '.env.keys'
-  if (!path.isAbsolute(filepath)) return filepath
-
-  const relative = path.relative(process.cwd(), filepath)
-  return relative || path.basename(filepath)
-}
+const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 
 function encrypt () {
   const options = this.opts()
