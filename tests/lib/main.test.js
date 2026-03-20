@@ -567,6 +567,38 @@ t.test('set calls Sets.run - changes', ct => {
   ct.end()
 })
 
+t.test('set calls Sets.run - changes plain', ct => {
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: false,
+      privateKeyName: null,
+      privateKey: null,
+      error: null
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+
+  main.set('HELLO', 'World', { plain: true })
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(loggerInfoStub.notCalled, 'logger info')
+  t.ok(loggerSuccessStub.calledWith('◇ set HELLO (.env)'), 'logger success')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('set calls Sets.run - MISSING_ENV_FILE', ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
@@ -743,6 +775,39 @@ t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports k
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
   t.ok(loggerNeutralStub.notCalled, 'logger info')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .env', ct => {
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerInfoStub = sinon.stub(logger, 'info')
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'dude',
+      filepath: '.env',
+      envFilepath: undefined,
+      envKeysFilepath: '.env.keys',
+      envSrc: 'HELLO=dude',
+      privateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: []
+  })
+
+  main.set('HELLO', 'dude')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerInfoStub.notCalled, 'logger info')
 
   stub.restore()
 

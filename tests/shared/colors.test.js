@@ -13,6 +13,15 @@ t.test('getColor with ansi256 color support', (ct) => {
   ct.end()
 })
 
+t.test('getColor with truecolor support', (ct) => {
+  const stub = sinon.stub(depth, 'getColorDepth').returns(24)
+
+  ct.equal(getColor('amber')('hello'), '\x1b[38;2;236;213;63mhello\x1b[39m')
+
+  stub.restore()
+  ct.end()
+})
+
 t.test('getColor with ansi16 color support', (ct) => {
   const stub = sinon.stub(depth, 'getColorDepth').returns(4)
 
