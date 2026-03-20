@@ -4,7 +4,7 @@ const { logger } = require('./../../shared/logger')
 const Rotate = require('./../../lib/services/rotate')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
-const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
+const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 
 function rotate () {
   const options = this.opts()
@@ -60,24 +60,17 @@ function rotate () {
       }
 
       if (changedFilepaths.length > 0) {
-        logger.success(`✔ rotated (${changedFilepaths.join(',')})`)
+        const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+        let msg = `⟳ rotated (${changedFilepaths.join(',')})`
+        if (keyAddedEnv) {
+          const envKeysFilepath = localDisplayPath(keyAddedEnv.envKeysFilepath)
+          msg += ` + key (${envKeysFilepath})`
+        }
+        logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`no changes (${unchangedFilepaths})`)
+        logger.info(`○ no changes (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
-      }
-
-      for (const processedEnv of processedEnvs) {
-        if (processedEnv.privateKeyAdded) {
-          logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
-          // logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
-
-          if (!isIgnoringDotenvKeys()) {
-            logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
-          }
-
-          logger.help(`⮕  next run: [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get] to test decryption locally`)
-        }
       }
     } catch (error) {
       catchAndLog(error)

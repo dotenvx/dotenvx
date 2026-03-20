@@ -77,7 +77,7 @@ t.test('logger.info', (ct) => {
     logger.info(message)
   })
 
-  ct.equal(stdout, 'message1\n')
+  ct.equal(stdout, `${getColor('gray')('message1')}\n`)
 
   ct.end()
 })
@@ -89,7 +89,7 @@ t.test('logger.successv', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -103,7 +103,7 @@ t.test('logger.successv change logger name', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx-pro@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dotenvx-pro@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -118,7 +118,7 @@ t.test('logger.successv change logger name and logger version', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')('[dotenvx-pro@0.1.1] message1')}\n`)
+  ct.equal(stdout, `${getColor('amber')('[dotenvx-pro@0.1.1] message1')}\n`)
 
   ct.end()
 })
@@ -130,7 +130,7 @@ t.test('logger.success', (ct) => {
     logger.success(message)
   })
 
-  ct.equal(stdout, `${getColor('green')('message1')}\n`)
+  ct.equal(stdout, `${getColor('amber')('message1')}\n`)
 
   ct.end()
 })
@@ -166,7 +166,7 @@ t.test('logger.info as object', (ct) => {
     logger.info(message)
   })
 
-  ct.equal(stdout, `${JSON.stringify({ key: 'value' })}\n`)
+  ct.equal(stdout, `${getColor('gray')(JSON.stringify({ key: 'value' }))}\n`)
 
   ct.end()
 })
@@ -180,7 +180,7 @@ t.test('setLogName', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dude@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dude@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -194,7 +194,7 @@ t.test('setLogName undefined does nothing', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })
@@ -208,7 +208,7 @@ t.test('setLogVersion', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')('[dotenvx@0.0.1] message1')}\n`)
+  ct.equal(stdout, `${getColor('amber')('[dotenvx@0.0.1] message1')}\n`)
 
   ct.end()
 })
@@ -222,7 +222,7 @@ t.test('setLogVersion undefined does nothing', (ct) => {
     logger.successv(message)
   })
 
-  ct.equal(stdout, `${getColor('olive')(`[dotenvx@${packageJson.version}] message1`)}\n`)
+  ct.equal(stdout, `${getColor('amber')(`[dotenvx@${packageJson.version}] message1`)}\n`)
 
   ct.end()
 })

@@ -1,6 +1,7 @@
 const depth = require('../lib/helpers/colorDepth')
 
 const colors16 = new Map([
+  ['amber', 33],
   ['blue', 34],
   ['gray', 37],
   ['green', 32],
@@ -13,6 +14,7 @@ const colors16 = new Map([
 ])
 
 const colors256 = new Map([
+  ['amber', 136],
   ['blue', 21],
   ['gray', 244],
   ['green', 34],
@@ -24,10 +26,18 @@ const colors256 = new Map([
   ['dodgerblue', 33]
 ])
 
+const colorsTrueColor = new Map([
+  ['amber', [236, 213, 63]]
+])
+
 function getColor (color) {
   const colorDepth = depth.getColorDepth()
   if (!colors256.has(color)) {
     throw new Error(`Invalid color ${color}`)
+  }
+  if (colorDepth >= 24 && colorsTrueColor.has(color)) {
+    const [r, g, b] = colorsTrueColor.get(color)
+    return (message) => `\x1b[38;2;${r};${g};${b}m${message}\x1b[39m`
   }
   if (colorDepth >= 8) {
     const code = colors256.get(color)

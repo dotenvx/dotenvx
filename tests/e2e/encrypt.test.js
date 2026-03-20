@@ -53,13 +53,7 @@ t.test('#encrypt', ct => {
 
   const output = execShell(`${dotenvx} encrypt`)
 
-  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
-  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
-
-  ct.equal(output, `✔ encrypted (.env)
-✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
-⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
-⮕  next run: [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
+  ct.equal(output, '◈ encrypted (.env) + key (.env.keys)')
 
   ct.end()
 })
@@ -76,10 +70,7 @@ t.test('#encrypt -k', ct => {
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
 
-  ct.equal(output, `✔ encrypted (.env)
-✔ key added to .env.keys (DOTENV_PRIVATE_KEY)
-⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
-⮕  next run: [DOTENV_PRIVATE_KEY='${DOTENV_PRIVATE_KEY}' dotenvx run -- yourcommand] to test decryption locally`)
+  ct.equal(output, '◈ encrypted (.env) + key (.env.keys)')
 
   execShell('rm .env.keys')
 

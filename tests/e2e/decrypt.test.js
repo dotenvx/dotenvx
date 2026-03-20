@@ -43,7 +43,7 @@ t.test('#decrypt', ct => {
   const DOTENV_PUBLIC_KEY = execShell(`${dotenvx} get DOTENV_PUBLIC_KEY`)
 
   const output = execShell(`${dotenvx} decrypt`)
-  ct.equal(output, '✔ decrypted (.env)')
+  ct.equal(output, '◇ decrypted (.env)')
 
   execShell('rm .env.keys')
 

@@ -33,13 +33,13 @@ t.test('set - no changes', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
 
   set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
-  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
 
   ct.end()
 })
@@ -71,7 +71,7 @@ t.test('set - changes', ct => {
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
-  t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env)'), 'logger success')
 
   ct.end()
 })
@@ -118,7 +118,7 @@ t.test('set - MISSING_ENV_FILE', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
@@ -126,7 +126,7 @@ t.test('set - MISSING_ENV_FILE', ct => {
 
   t.ok(stub.called, 'Sets().main() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
   t.ok(loggerHelpStub.calledWith('? add one with [echo "HELLO=World" > .env] and re-run [dotenvx set]'), 'logger help')
 
@@ -156,7 +156,7 @@ t.test('set - OTHER_ERROR', ct => {
     changedFilepaths: [],
     unchangedFilepaths: ['.env']
   })
-  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
@@ -164,7 +164,7 @@ t.test('set - OTHER_ERROR', ct => {
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
-  t.ok(loggerInfoStub.calledWith('no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
   t.ok(loggerHelpStub.calledWith('some help'), 'logger.help')
 
@@ -198,7 +198,7 @@ t.test('set - changes --plain', ct => {
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
-  t.ok(loggerSuccessStub.calledWith('✔ set HELLO (.env)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◇ set HELLO (.env)'), 'logger success')
 
   ct.end()
 })
@@ -232,9 +232,8 @@ t.test('set - privateKeyAdded', ct => {
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
-  t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
-  t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
 })
@@ -271,10 +270,74 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
-  t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
-  t.ok(loggerSuccessStub.calledWith('✔ key added to .env.keys (DOTENV_PRIVATE_KEY)'), 'logger success')
-  t.ok(loggerHelpStub.calledWith('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys'), 'logger help')
-  t.ok(loggerHelpStub.calledWith('⮕  next run: [DOTENV_PRIVATE_KEY=\'1234\' dotenvx get HELLO] to test decryption locally'), 'logger help')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerHelpStub.notCalled, 'logger help')
+
+  ct.end()
+})
+
+t.test('set - privateKeyAdded with unchanged file still reports key addition', ct => {
+  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'dude',
+      filepath: '.env',
+      envFilepath: '.env',
+      envKeysFilepath: '.env.keys',
+      envSrc: 'HELLO=dude',
+      privateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
+
+  set.call(fakeContext, 'HELLO', 'dude')
+
+  t.ok(stub.called, 'Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerNeutralStub.notCalled, 'logger info')
+
+  ct.end()
+})
+
+t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls back to .env', ct => {
+  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'dude',
+      filepath: '.env',
+      envFilepath: undefined,
+      envKeysFilepath: '.env.keys',
+      envSrc: 'HELLO=dude',
+      privateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: []
+  })
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerInfoStub = sinon.stub(logger, 'info')
+
+  set.call(fakeContext, 'HELLO', 'dude')
+
+  t.ok(stub.called, 'Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerInfoStub.notCalled, 'logger info')
 
   ct.end()
 })

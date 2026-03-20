@@ -17,7 +17,7 @@ const Genexample = require('./services/genexample')
 const buildEnvs = require('./helpers/buildEnvs')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
-const isIgnoringDotenvKeys = require('./helpers/isIgnoringDotenvKeys')
+const localDisplayPath = require('./helpers/localDisplayPath')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -216,26 +216,25 @@ const set = function (key, value, options = {}) {
     }
   }
 
+  const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+  const keyAddedSuffix = keyAddedEnv ? ` + key (${localDisplayPath(keyAddedEnv.envKeysFilepath)})` : ''
+
   if (changedFilepaths.length > 0) {
-    logger.success(`✔ set ${key}${withEncryption} (${changedFilepaths.join(',')})`)
+    if (encrypt) {
+      logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
+    } else {
+      logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
+    }
+  } else if (encrypt && keyAddedEnv) {
+    const keyAddedEnvFilepath = keyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
+    logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
   } else if (unchangedFilepaths.length > 0) {
-    logger.info(`no changes (${unchangedFilepaths})`)
+    logger.info(`○ no changes (${unchangedFilepaths})`)
   } else {
     // do nothing
   }
 
-  for (const processedEnv of processedEnvs) {
-    if (processedEnv.privateKeyAdded) {
-      logger.success(`✔ key added to ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName})`)
-      // logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
-
-      if (!isIgnoringDotenvKeys()) {
-        logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
-      }
-
-      logger.help(`⮕  next run: [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get ${key}] to test decryption locally`)
-    }
-  }
+  // intentionally quiet: success line communicates key creation
 
   return {
     processedEnvs,
