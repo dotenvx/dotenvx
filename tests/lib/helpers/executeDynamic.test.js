@@ -114,6 +114,180 @@ t.test('executeDynamic - ops command missing with npm user agent', ct => {
   ct.end()
 })
 
+t.test('executeDynamic - ops command missing with pnpm user agent', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+  const originalUserAgent = process.env.npm_config_user_agent
+  process.env.npm_config_user_agent = 'pnpm/9.0.0 npm/? node/v20.11.0 darwin arm64'
+
+  executeDynamic(program, 'ops', ['ops'])
+
+  ct.ok(spawnSyncStub.called, 'spawnSync')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /Install now: \[pnpm add -g @dotenvx\/dotenvx-ops\]/, 'uses pnpm global install command')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  process.env.npm_config_user_agent = originalUserAgent
+
+  ct.end()
+})
+
+t.test('executeDynamic - ops command missing with yarn user agent', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+  const originalUserAgent = process.env.npm_config_user_agent
+  process.env.npm_config_user_agent = 'yarn/1.22.22 npm/? node/v20.11.0 darwin arm64'
+
+  executeDynamic(program, 'ops', ['ops'])
+
+  ct.ok(spawnSyncStub.called, 'spawnSync')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /Install now: \[yarn global add @dotenvx\/dotenvx-ops\]/, 'uses yarn global install command')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  process.env.npm_config_user_agent = originalUserAgent
+
+  ct.end()
+})
+
+t.test('executeDynamic - ops command missing with pnpm lockfile', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+  const originalUserAgent = process.env.npm_config_user_agent
+  const originalCwd = process.cwd()
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-execdynamic-pnpm-lock-'))
+  fs.writeFileSync(path.join(tempDir, 'pnpm-lock.yaml'), 'lockfileVersion: "9.0"')
+  process.env.npm_config_user_agent = ''
+  process.chdir(tempDir)
+
+  executeDynamic(program, 'ops', ['ops'])
+
+  ct.ok(spawnSyncStub.called, 'spawnSync')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /Install now: \[pnpm add -g @dotenvx\/dotenvx-ops\]/, 'uses pnpm command from lockfile')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  process.env.npm_config_user_agent = originalUserAgent
+  process.chdir(originalCwd)
+  fs.rmSync(tempDir, { recursive: true, force: true })
+
+  ct.end()
+})
+
+t.test('executeDynamic - ops command missing with yarn lockfile', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+  const originalUserAgent = process.env.npm_config_user_agent
+  const originalCwd = process.cwd()
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-execdynamic-yarn-lock-'))
+  fs.writeFileSync(path.join(tempDir, 'yarn.lock'), '# yarn lockfile v1')
+  process.env.npm_config_user_agent = ''
+  process.chdir(tempDir)
+
+  executeDynamic(program, 'ops', ['ops'])
+
+  ct.ok(spawnSyncStub.called, 'spawnSync')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /Install now: \[yarn global add @dotenvx\/dotenvx-ops\]/, 'uses yarn command from lockfile')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  process.env.npm_config_user_agent = originalUserAgent
+  process.chdir(originalCwd)
+  fs.rmSync(tempDir, { recursive: true, force: true })
+
+  ct.end()
+})
+
+t.test('executeDynamic - ops command missing with package-lock lockfile', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+  const originalUserAgent = process.env.npm_config_user_agent
+  const originalCwd = process.cwd()
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-execdynamic-npm-lock-'))
+  fs.writeFileSync(path.join(tempDir, 'package-lock.json'), '{}')
+  process.env.npm_config_user_agent = ''
+  process.chdir(tempDir)
+
+  executeDynamic(program, 'ops', ['ops'])
+
+  ct.ok(spawnSyncStub.called, 'spawnSync')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /Install now: \[npm i -g @dotenvx\/dotenvx-ops\]/, 'uses npm command from package-lock')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  process.env.npm_config_user_agent = originalUserAgent
+  process.chdir(originalCwd)
+  fs.rmSync(tempDir, { recursive: true, force: true })
+
+  ct.end()
+})
+
+t.test('executeDynamic - ops command missing with package.json only', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+  const originalUserAgent = process.env.npm_config_user_agent
+  const originalCwd = process.cwd()
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-execdynamic-packagejson-'))
+  fs.writeFileSync(path.join(tempDir, 'package.json'), '{}')
+  process.env.npm_config_user_agent = ''
+  process.chdir(tempDir)
+
+  executeDynamic(program, 'ops', ['ops'])
+
+  ct.ok(spawnSyncStub.called, 'spawnSync')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /Install now: \[npm i -g @dotenvx\/dotenvx-ops\]/, 'uses npm command from package.json heuristic')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  process.env.npm_config_user_agent = originalUserAgent
+  process.chdir(originalCwd)
+  fs.rmSync(tempDir, { recursive: true, force: true })
+
+  ct.end()
+})
+
 t.test('executeDynamic - other command missing', ct => {
   const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
   const mockResult = {
