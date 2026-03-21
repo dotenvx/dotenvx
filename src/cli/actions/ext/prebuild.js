@@ -1,6 +1,7 @@
 const { logger } = require('./../../../shared/logger')
 
 const Prebuild = require('./../../../lib/services/prebuild')
+const catchAndLog = require('./../../../lib/helpers/catchAndLog')
 
 function prebuild (directory) {
   // debug args
@@ -21,8 +22,7 @@ function prebuild (directory) {
 
     logger.success(successMessage)
   } catch (error) {
-    logger.error(error.messageWithHelp)
-
+    catchAndLog(error)
     process.exit(1)
   }
 }

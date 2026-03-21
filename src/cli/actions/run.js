@@ -3,6 +3,7 @@ const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
+const catchAndLog = require('./../../lib/helpers/catchAndLog')
 
 const conventions = require('./../../lib/helpers/conventions')
 
@@ -98,7 +99,7 @@ async function run () {
 
     logger.successv(msg)
   } catch (error) {
-    logger.error(error.messageWithHelp)
+    catchAndLog(error)
     process.exit(1)
   }
 

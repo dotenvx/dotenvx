@@ -1,6 +1,7 @@
 const { logger } = require('./../../../shared/logger')
 
 const Precommit = require('./../../../lib/services/precommit')
+const catchAndLog = require('./../../../lib/helpers/catchAndLog')
 
 function precommit (directory) {
   // debug args
@@ -21,8 +22,7 @@ function precommit (directory) {
 
     logger.success(successMessage)
   } catch (error) {
-    logger.error(error.messageWithHelp)
-
+    catchAndLog(error)
     process.exit(1)
   }
 }
