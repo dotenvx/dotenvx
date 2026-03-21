@@ -147,14 +147,14 @@ t.test('logger.warn', (ct) => {
   ct.end()
 })
 
-t.test('logger.warn (already prefixed)', (ct) => {
+t.test('logger.warn (always prefixes)', (ct) => {
   const message = '⚠ message1'
 
   const stdout = capcon.interceptStdout(() => {
     logger.warn(message)
   })
 
-  ct.equal(stdout, `${getColor('orangered')('⚠ message1')}\n`)
+  ct.equal(stdout, `${getColor('orangered')('⚠ ⚠ message1')}\n`)
 
   ct.end()
 })

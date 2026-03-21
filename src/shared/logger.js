@@ -15,8 +15,7 @@ const levels = {
 }
 
 const error = (m) => bold(getColor('red')(`☠ ${m}`))
-const withWarnGlyph = (m = '') => (m.startsWith('⚠ ') ? m : `⚠ ${m}`)
-const warn = (m) => getColor('orangered')(withWarnGlyph(m))
+const warn = (m) => getColor('orangered')(`⚠ ${m}`)
 const success = getColor('amber')
 const successv = getColor('amber')
 const info = getColor('gray')

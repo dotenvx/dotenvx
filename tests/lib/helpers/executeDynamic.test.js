@@ -1,5 +1,8 @@
 const t = require('tap')
 const sinon = require('sinon')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const childProcess = require('child_process')
 
 const { logger } = require('../../../src/shared/logger')
@@ -8,6 +11,19 @@ const executeDynamic = require('../../../src/lib/helpers/executeDynamic')
 
 const program = {
   outputHelp: sinon.stub()
+}
+
+function hasValidBoxShape (output) {
+  const lines = output.split('\n')
+  if (lines.length < 3) return false
+
+  const top = lines[0]
+  const bottom = lines[lines.length - 1]
+  if (!/^ _+$/.test(top)) return false
+  if (!/^\|_+\|$/.test(bottom)) return false
+
+  const body = lines.slice(1, -1)
+  return body.every((line) => line.startsWith('|') && line.endsWith('|'))
 }
 
 t.beforeEach((ct) => {
@@ -52,12 +68,48 @@ t.test('executeDynamic - ops command missing', ct => {
   spawnSyncStub.returns(mockResult)
   const processExitStub = sinon.stub(process, 'exit')
   const consoleLogStub = sinon.stub(console, 'log')
+  const originalUserAgent = process.env.npm_config_user_agent
+  const originalCwd = process.cwd()
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-execdynamic-'))
+  process.env.npm_config_user_agent = ''
+  process.chdir(tempDir)
 
   executeDynamic(program, 'ops', ['ops'])
 
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /Install now: \[curl -sfS https:\/\/dotenvx\.sh\/ops \| sh\]/, 'uses curl fallback install command')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  process.env.npm_config_user_agent = originalUserAgent
+  process.chdir(originalCwd)
+  fs.rmSync(tempDir, { recursive: true, force: true })
+
+  ct.end()
+})
+
+t.test('executeDynamic - ops command missing with npm user agent', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+  const originalUserAgent = process.env.npm_config_user_agent
+  process.env.npm_config_user_agent = 'npm/10.9.0 node/v20.11.0 darwin arm64'
+
+  executeDynamic(program, 'ops', ['ops'])
+
+  ct.ok(spawnSyncStub.called, 'spawnSync')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /Install now: \[npm i -g @dotenvx\/dotenvx-ops\]/, 'uses npm global install command')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  process.env.npm_config_user_agent = originalUserAgent
 
   ct.end()
 })

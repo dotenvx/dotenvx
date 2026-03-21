@@ -19,7 +19,6 @@ All notable changes to this project will be documented in this file. See [standa
   * `?` contextual help or suggested fix
   * `⚠` warning
   * `☠` error
-  * `⮕` next-step help pointer
 
 ## [1.57.0](https://github.com/dotenvx/dotenvx/compare/v1.56.0...v1.57.0) (2026-03-19)
 
