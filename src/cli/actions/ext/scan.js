@@ -12,8 +12,8 @@ function scan () {
     childProcess.execSync('gitleaks version', { stdio: ['ignore', 'pipe', 'ignore'] })
   } catch (error) {
     logger.error('gitleaks: command not found')
-    logger.help('? install gitleaks:      [brew install gitleaks]')
-    logger.help('? other install options: [https://github.com/gitleaks/gitleaks]')
+    logger.help('fix: install gitleaks:      [brew install gitleaks]')
+    logger.help('fix: other install options: [https://github.com/gitleaks/gitleaks]')
     process.exit(1)
     return
   }

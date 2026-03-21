@@ -11,12 +11,11 @@ All notable changes to this project will be documented in this file. See [standa
 * improved error logs and compacted most to a single line ([#755](https://github.com/dotenvx/dotenvx/pull/755))
 * introduced leading log glyphs as a visual status language:
 
-  * `◈` success action (encrypted, logged in/out, synced)
+  * `◈` success action (encrypted)
   * `◇` success action (set plain value, decrypted)
   * `⟳` success action (rotated)
   * `○` informational no-op (no changes)
   * `▣` success action for generated/updated support files
-  * `?` contextual help or suggested fix
   * `⚠` warning
   * `☠` error
 
