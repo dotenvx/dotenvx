@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.57.1...main)
 
-## [1.57.1](https://github.com/dotenvx/dotenvx/compare/v1.57.0...v1.57.1) (2026-03-20)
+## [1.57.1](https://github.com/dotenvx/dotenvx/compare/v1.57.0...v1.57.1) (2026-03-21)
 
 ### Changes
 
