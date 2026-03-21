@@ -25,10 +25,10 @@ class Prebuild {
 
     // 1. check for .dockerignore file
     if (!fsx.existsSync('.dockerignore')) {
-        const warning = new Errors({
-          message: `[dotenvx@${packageJson.version}][prebuild] .dockerignore missing`,
-          help: 'fix: [touch .dockerignore]'
-        }).custom()
+      const warning = new Errors({
+        message: `[dotenvx@${packageJson.version}][prebuild] .dockerignore missing`,
+        help: 'fix: [touch .dockerignore]'
+      }).custom()
       warnings.push(warning)
     } else {
       dockerignore = fsx.readFileX('.dockerignore')

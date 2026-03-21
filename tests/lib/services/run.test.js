@@ -1,6 +1,5 @@
 const t = require('tap')
 const fs = require('fs')
-const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
 

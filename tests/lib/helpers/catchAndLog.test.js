@@ -97,7 +97,7 @@ t.test('catchAndLog keeps trailing periods', (ct) => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  const wrongPrivateKey = new Error("[WRONG_PRIVATE_KEY] could not decrypt")
+  const wrongPrivateKey = new Error('[WRONG_PRIVATE_KEY] could not decrypt')
   setCode(wrongPrivateKey, 'WRONG_PRIVATE_KEY')
   catchAndLog(wrongPrivateKey)
 
