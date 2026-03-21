@@ -926,6 +926,69 @@ t.test('set calls Sets.run - OTHER_ERROR', ct => {
   ct.end()
 })
 
+t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent with help', ct => {
+  const loggerWarnStub = sinon.stub(logger, 'warn')
+
+  const error = new Error('Mock Error')
+  error.help = 'some help'
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: false,
+      privateKeyName: null,
+      privateKey: null,
+      error
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+
+  main.set('HELLO', 'World')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(loggerWarnStub.calledWith('Mock Error. some help'), 'logger.warn fallback includes help')
+
+  stub.restore()
+
+  ct.end()
+})
+
+t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent without help', ct => {
+  const loggerWarnStub = sinon.stub(logger, 'warn')
+
+  const error = new Error('Mock Error')
+
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      privateKeyAdded: false,
+      privateKeyName: null,
+      privateKey: null,
+      error
+    }],
+    changedFilepaths: [],
+    unchangedFilepaths: ['.env']
+  })
+
+  main.set('HELLO', 'World')
+
+  t.ok(stub.called, 'new Sets().run() called')
+  t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger.warn fallback uses base message')
+
+  stub.restore()
+
+  ct.end()
+})
+
 t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY', ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')

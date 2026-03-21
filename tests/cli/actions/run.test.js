@@ -436,6 +436,39 @@ t.test('run - MISSING_ENV_FILE fallback filepath', async ct => {
   ct.end()
 })
 
+t.test('run - MISSING_ENV_FILE with --convention stays quiet', async ct => {
+  const error = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  setCode(error, 'MISSING_ENV_FILE')
+  error.help = 'fix: [echo "HELLO=World" > .env]'
+  const optsStub = sinon.stub().returns({ convention: 'nextjs' })
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--convention=nextjs', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [{
+      errors: [error],
+      type: 'envFile',
+      filepath: '.env',
+      parsed: {},
+      injected: {},
+      preExisted: {}
+    }],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+  const loggerErrorStub = sinon.stub(logger, 'error')
+  const loggerSuccessvStub = sinon.stub(logger, 'successv')
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.notOk(loggerErrorStub.called, 'logger.error stays quiet for convention missing env file')
+  t.ok(loggerSuccessvStub.calledWith('injecting env (0)'), 'logger.successv')
+
+  ct.end()
+})
+
 t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const error = new Error('[MISSING_ENV_FILE] missing file (.env)')
