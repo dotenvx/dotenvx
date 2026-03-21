@@ -2,7 +2,6 @@ const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
 const Decrypt = require('./../../lib/services/decrypt')
-
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 
 function decrypt () {
@@ -23,10 +22,7 @@ function decrypt () {
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
         errorCount += 1
-        logger.error(processedEnv.error.message)
-        if (processedEnv.error.help) {
-          logger.error(processedEnv.error.help)
-        }
+        logger.error(processedEnv.error.messageWithHelp)
       } else {
         console.log(processedEnv.envSrc)
       }
@@ -50,16 +46,7 @@ function decrypt () {
 
         if (processedEnv.error) {
           errorCount += 1
-
-          if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-            logger.error(processedEnv.error.message)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx decrypt]`)
-          } else {
-            logger.error(processedEnv.error.message)
-            if (processedEnv.error.help) {
-              logger.error(processedEnv.error.help)
-            }
-          }
+          logger.error(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
           fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 

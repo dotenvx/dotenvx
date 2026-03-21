@@ -2,6 +2,7 @@ const fsx = require('./../../../lib/helpers/fsx')
 const path = require('path')
 const main = require('./../../../lib/main')
 const { logger } = require('./../../../shared/logger')
+const catchAndLog = require('./../../../lib/helpers/catchAndLog')
 
 function genexample (directory) {
   logger.debug(`directory: ${directory}`)
@@ -27,13 +28,7 @@ function genexample (directory) {
       logger.info('○ no changes (.env.example)')
     }
   } catch (error) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.help(error.help)
-    }
-    if (error.code) {
-      logger.debug(`ERROR_CODE: ${error.code}`)
-    }
+    catchAndLog(error)
     process.exit(1)
   }
 }

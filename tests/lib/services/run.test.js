@@ -1,7 +1,7 @@
 const t = require('tap')
 const fs = require('fs')
-const path = require('path')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire').noCallThru()
 
 const Run = require('../../../src/lib/services/run')
 
@@ -17,9 +17,10 @@ t.test('#run (no arguments)', ct => {
     uniqueInjectedKeys
   } = new Run().run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -52,6 +53,35 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.same(uniqueInjectedKeys, [])
 
   readFileSyncStub.restore()
+
+  ct.end()
+})
+
+t.test('#run (no arguments and fsx readFileX throws)', ct => {
+  const RunWithReadError = proxyquire('../../../src/lib/services/run', {
+    './../helpers/detectEncoding': () => 'utf8',
+    './../helpers/fsx': {
+      readFileX: () => {
+        throw new Error('Mock Error')
+      }
+    }
+  })
+
+  const {
+    processedEnvs,
+    readableFilepaths,
+    uniqueInjectedKeys
+  } = new RunWithReadError().run()
+
+  const exampleError = new Error('Mock Error')
+
+  ct.same(processedEnvs, [{
+    type: 'envFile',
+    filepath: '.env',
+    errors: [exampleError]
+  }])
+  ct.same(readableFilepaths, [])
+  ct.same(uniqueInjectedKeys, [])
 
   ct.end()
 })
@@ -137,7 +167,8 @@ t.test('#run (encrypted .env with bad private key)', ct => {
 
   const error = new Error('[INVALID_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=bad-pri…\'')
   error.code = 'INVALID_PRIVATE_KEY'
-  error.help = '[INVALID_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/465'
+  error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/465]'
+  error.messageWithHelp = '[INVALID_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=bad-pri…\'. fix: [https://github.com/dotenvx/dotenvx/issues/465]'
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -313,9 +344,10 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
     uniqueInjectedKeys
   } = new Run(envs, true).run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -382,9 +414,10 @@ t.test('#run (with envs as string)', ct => {
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   ct.same(processedEnvs, [
     {
       type: 'envFile',
@@ -397,10 +430,10 @@ t.test('#run (with envs as string)', ct => {
       parsed: {
         HELLO: 'string'
       },
+      errors: [],
       injected: {
         HELLO: 'string'
       },
-      errors: [],
       preExisted: {}
     }
   ])
@@ -415,9 +448,10 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
     { type: 'env', value: 'HELLO=string' }
   ]
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   const run = new Run(envs)
   const mockError = new Error('Mock Error')
   const injectStub = sinon.stub(run, 'inject').throws(mockError)
@@ -435,10 +469,10 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
     {
       type: 'env',
       string: 'HELLO=string',
-      errors: [mockError],
       parsed: {
         HELLO: 'string'
       },
+      errors: [mockError],
       injected: {
         HELLO: 'string'
       },
@@ -511,9 +545,10 @@ options="$\{options} optD"`
     uniqueInjectedKeys
   } = new Run(envs).run()
 
-  const exampleError = new Error(`[MISSING_ENV_FILE] missing .env file (${path.resolve('.env')})`)
-  exampleError.help = '[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484'
+  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
   exampleError.code = 'MISSING_ENV_FILE'
+  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
 
   ct.same(processedEnvs, [
     {

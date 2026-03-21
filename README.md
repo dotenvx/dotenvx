@@ -30,7 +30,20 @@ console.log(`Hello ${process.env.HELLO}`)
 
 or install globally - *unlocks dotenv for any language, framework, or platform!*
 
-<details><summary>with curl 🌐 </summary><br>
+<details><summary>with npm 🌍</summary><br>
+
+```sh
+npm i -g @dotenvx/dotenvx
+dotenvx help
+```
+
+[![npm installs](https://img.shields.io/npm/dt/@dotenvx/dotenvx)](https://npmjs.com/@dotenvx/dotenvx)
+
+&nbsp;
+
+</details>
+
+<details><summary>with curl 🌐</summary><br>
 
 ```sh
 curl -sfS https://dotenvx.sh | sh
@@ -936,8 +949,7 @@ For example, when missing a custom .env file:
 
 ```sh
 $ dotenvx run -f .env.missing -- echo $HELLO
-[MISSING_ENV_FILE] missing .env.missing file (/Users/scottmotte/Code/dotenvx/playground/apr-16/.env.missing)
-[MISSING_ENV_FILE] https://github.com/dotenvx/dotenvx/issues/484 and re-run [dotenvx run -- echo]
+[MISSING_ENV_FILE] missing file (/Users/scottmotte/Code/dotenvx/playground/apr-16/.env.missing). fix: [echo "HELLO=World" > .env.missing]
 ```
 
 or when missing a KEY:
@@ -945,7 +957,7 @@ or when missing a KEY:
 ```sh
 $ echo "HELLO=World" > .env
 $ dotenvx get GOODBYE
-[MISSING_KEY] missing GOODBYE key
+[MISSING_KEY] missing key (GOODBYE)
 ```
 
 </details>
@@ -1172,8 +1184,7 @@ Exit with code `1` if any errors are encountered - like a missing .env file or d
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run -f .env.missing --strict -- node index.js
-[MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
-[MISSING_ENV_FILE] ? add one with [echo "HELLO=World" > .env.missing]
+[MISSING_ENV_FILE] missing file (/path/to/.env.missing). fix: [echo "HELLO=World" > .env.missing]
 ```
 
 This can be useful in `ci` scripts where you want to fail the ci if your `.env` file could not be decrypted at runtime.
@@ -1326,7 +1337,7 @@ Exit with code `1` if any errors are encountered - like a missing key, missing .
 
 ```sh
 $ dotenvx get DOES_NOT_EXIST --strict
-[MISSING_KEY] missing DOES_NOT_EXIST key
+[MISSING_KEY] missing key (DOES_NOT_EXIST)
 ```
 
 </details>

@@ -34,15 +34,7 @@ function encrypt () {
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         if (processedEnv.error) {
-          if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-            logger.warn(processedEnv.error.message)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx encrypt]`)
-          } else {
-            logger.warn(processedEnv.error.message)
-            if (processedEnv.error.help) {
-              logger.help(processedEnv.error.help)
-            }
-          }
+          logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
           fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 

@@ -3,7 +3,27 @@ const sinon = require('sinon')
 const capcon = require('capture-console')
 
 const Get = require('./../../../src/lib/services/get')
+const Errors = require('./../../../src/lib/helpers/errors')
 const get = require('./../../../src/cli/actions/get')
+
+function setCode (error, code) {
+  error.code = code
+  const issueUrl = Errors.ISSUE_BY_CODE[code]
+  if (issueUrl) {
+    error.fix = `fix: [${issueUrl}]`
+    error.help = `fix: [${issueUrl}]`
+  }
+  if (!Object.getOwnPropertyDescriptor(error, 'messageWithHelp')) {
+    Object.defineProperty(error, 'messageWithHelp', {
+      configurable: true,
+      enumerable: true,
+      get () {
+        if (this.help && this.help.startsWith('fix:') && this.message) return `${this.message}. ${this.help}`
+        return this.message
+      }
+    })
+  }
+}
 
 t.beforeEach((ct) => {
   sinon.restore()
@@ -175,9 +195,8 @@ t.test('get KEY (not found)', ct => {
   const fakeContext = { opts: optsStub }
 
   const stub = sinon.stub(Get.prototype, 'run')
-  const error = new Error('MISSING_KEY')
-  error.code = 'MISSING_KEY'
-  error.help = 'some help'
+  const error = new Error('[MISSING_KEY] missing key (NOTFOUND)')
+  setCode(error, 'MISSING_KEY')
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
 
   const processExitStub = sinon.stub(process, 'exit')
@@ -189,8 +208,7 @@ t.test('get KEY (not found)', ct => {
   t.ok(stub.called, 'Get().run() called')
   t.notOk(processExitStub.called)
   t.equal(stdout, '\n') // send empty string if key's value undefined
-  t.ok(stderr.includes('MISSING_KEY'), 'stderr contains MISSING_KEY')
-  t.ok(stderr.includes('some help'), 'stderr contains some help')
+  t.ok(stderr.includes('[MISSING_KEY] missing key (NOTFOUND). fix: [https://github.com/dotenvx/dotenvx/issues/759]'), 'stderr contains formatted MISSING_KEY')
 
   ct.end()
 })
@@ -200,9 +218,8 @@ t.test('get KEY (not found) --strict', ct => {
   const fakeContext = { opts: optsStub }
 
   const stub = sinon.stub(Get.prototype, 'run')
-  const error = new Error('MISSING_KEY')
-  error.code = 'MISSING_KEY'
-  error.help = 'some help'
+  const error = new Error('[MISSING_KEY] missing key (NOTFOUND)')
+  setCode(error, 'MISSING_KEY')
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
 
   const processExitStub = sinon.stub(process, 'exit')
@@ -214,8 +231,8 @@ t.test('get KEY (not found) --strict', ct => {
   t.ok(stub.called, 'Get().run() called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
   t.equal(stdout, '') // send empty string if key's value undefined
-  t.ok(stderr.includes('MISSING_KEY'), 'stderr contains MISSING_KEY')
-  t.ok(stderr.includes('some help'), 'stderr contains some help')
+  t.ok(stderr.includes('[MISSING_KEY] missing key (NOTFOUND)'), 'stderr contains formatted MISSING_KEY')
+  t.ok(!stderr.includes('some help'), 'stderr omits custom help in strict catch path')
 
   ct.end()
 })
@@ -226,8 +243,7 @@ t.test('get KEY (not found) --ignore', ct => {
 
   const stub = sinon.stub(Get.prototype, 'run')
   const error = new Error('MISSING_KEY')
-  error.code = 'MISSING_KEY'
-  error.help = 'some help'
+  setCode(error, 'MISSING_KEY')
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
 
   const processExitStub = sinon.stub(process, 'exit')
@@ -242,5 +258,246 @@ t.test('get KEY (not found) --ignore', ct => {
   console.log('stderr', stderr)
   t.ok(!stderr.includes('MISSING_KEY'), 'stderr does not contain MISSING_KEY')
 
+  ct.end()
+})
+
+t.test('get KEY (missing env file) logs one-line fix', ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  setCode(error, 'MISSING_ENV_FILE')
+  error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'NOTFOUND')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.notOk(processExitStub.called)
+  t.equal(stdout, '\n')
+  t.ok(stderr.includes('[MISSING_ENV_FILE] missing file (.env)'), 'stderr contains one-line missing-env-file text')
+  t.ok(stderr.includes('fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'stderr contains fix url')
+
+  ct.end()
+})
+
+t.test('get KEY (missing env file fallback path) logs one-line fix', ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('[MISSING_ENV_FILE] missing file')
+  setCode(error, 'MISSING_ENV_FILE')
+  error.filepath = undefined
+  error.envFilepath = undefined
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'NOTFOUND')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.notOk(processExitStub.called)
+  t.equal(stdout, '\n')
+  t.ok(stderr.includes('[MISSING_ENV_FILE] missing file. fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'stderr contains one-line fallback message')
+
+  ct.end()
+})
+
+t.test('get KEY (missing env file) --strict logs one-line fix', ct => {
+  const optsStub = sinon.stub().returns({ strict: true })
+  const fakeContext = { opts: optsStub }
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('[MISSING_ENV_FILE] missing file (.env)')
+  setCode(error, 'MISSING_ENV_FILE')
+  error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'NOTFOUND')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  t.equal(stdout, '')
+  t.ok(stderr.includes('[MISSING_ENV_FILE] missing file (.env)'), 'stderr contains one-line missing-env-file text')
+  t.ok(stderr.includes('fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'stderr contains fix url')
+
+  ct.end()
+})
+
+t.test('get KEY (wrong private key) logs one-line fix', ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
+  setCode(error, 'WRONG_PRIVATE_KEY')
+  error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'HELLO')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.notOk(processExitStub.called)
+  t.equal(stdout, 'World\n')
+  t.ok(stderr.includes("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'stderr contains one-line wrong private key')
+  t.ok(!stderr.includes('[WRONG_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/466'), 'stderr does not contain separate help line')
+
+  ct.end()
+})
+
+t.test('get KEY (wrong private key punctuated) keeps one-line fix', ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('[WRONG_PRIVATE_KEY] punctuated')
+  setCode(error, 'WRONG_PRIVATE_KEY')
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+  const { stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'HELLO')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.ok(stderr.includes('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
+  ct.end()
+})
+
+t.test('get KEY (wrong private key punctuated) --strict keeps one line', ct => {
+  const optsStub = sinon.stub().returns({ strict: true })
+  const fakeContext = { opts: optsStub }
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('[WRONG_PRIVATE_KEY] punctuated')
+  setCode(error, 'WRONG_PRIVATE_KEY')
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'HELLO')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  t.equal(stdout, '')
+  t.ok(stderr.includes('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'), 'stderr contains punctuated one-line wrong private key')
+
+  ct.end()
+})
+
+t.test('get KEY (missing private key) logs one-line fix', ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
+  setCode(error, 'MISSING_PRIVATE_KEY')
+  error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'HELLO')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.notOk(processExitStub.called)
+  t.equal(stdout, 'World\n')
+  t.ok(stderr.includes("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'stderr contains one-line missing private key')
+  t.ok(!stderr.includes('[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464'), 'stderr does not contain separate help line')
+
+  ct.end()
+})
+
+t.test('get KEY (missing private key punctuated) keeps one-line fix', ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('[MISSING_PRIVATE_KEY] punctuated')
+  setCode(error, 'MISSING_PRIVATE_KEY')
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+  const { stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'HELLO')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.ok(stderr.includes('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
+  ct.end()
+})
+
+t.test('get KEY (missing private key) --strict logs one-line fix', ct => {
+  const optsStub = sinon.stub().returns({ strict: true })
+  const fakeContext = { opts: optsStub }
+
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
+  setCode(error, 'MISSING_PRIVATE_KEY')
+  error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'HELLO')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  t.equal(stdout, '')
+  t.ok(stderr.includes("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'stderr contains one-line missing private key')
+  t.ok(!stderr.includes('[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464'), 'stderr does not contain separate help line')
+
+  ct.end()
+})
+
+t.test('get KEY (wrong private key non-punctuated) --strict appends period', ct => {
+  const optsStub = sinon.stub().returns({ strict: true })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('[WRONG_PRIVATE_KEY] no period')
+  setCode(error, 'WRONG_PRIVATE_KEY')
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+  const processExitStub = sinon.stub(process, 'exit')
+  const { stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'HELLO')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  t.ok(stderr.includes('[WRONG_PRIVATE_KEY] no period. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
+  ct.end()
+})
+
+t.test('get KEY (missing private key punctuated) --strict keeps period', ct => {
+  const optsStub = sinon.stub().returns({ strict: true })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  const error = new Error('[MISSING_PRIVATE_KEY] punctuated')
+  setCode(error, 'MISSING_PRIVATE_KEY')
+  stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
+  const processExitStub = sinon.stub(process, 'exit')
+  const { stderr } = capcon.interceptStdio(() => {
+    get.call(fakeContext, 'HELLO')
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  t.ok(stderr.includes('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
   ct.end()
 })

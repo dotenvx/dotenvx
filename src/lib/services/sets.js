@@ -109,7 +109,11 @@ class Sets {
 
         row.publicKey = publicKey
         row.privateKey = privateKey
-        row.encryptedValue = encryptValue(this.value, publicKey)
+        try {
+          row.encryptedValue = encryptValue(this.value, publicKey)
+        } catch {
+          throw new Errors({ publicKeyName, publicKey }).invalidPublicKey()
+        }
         row.privateKeyName = privateKeyName
       }
 

@@ -23,7 +23,7 @@ t.test('#decryptKeyValue - privateKey null', ct => {
   } catch (error) {
     ct.same(error.code, 'MISSING_PRIVATE_KEY')
     ct.same(error.message, '[MISSING_PRIVATE_KEY] could not decrypt KEY using private key \'DOTENV_PRIVATE_KEY_PRODUCTION=\'')
-    ct.same(error.help, '[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464')
+    ct.same(error.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/464]')
   }
 
   ct.end()
@@ -42,7 +42,7 @@ t.test('#decryptKeyValue invalid short encrypted value raises error', ct => {
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
-    ct.same(error.message, 'second arg must be public key')
+    ct.same(error.message, '[DECRYPTION_FAILED] second arg must be public key')
   }
 
   ct.end()
@@ -66,7 +66,7 @@ t.test('#decryptKeyValue invalid empty encrypted value raises error', ct => {
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.same(error.code, 'DECRYPTION_FAILED')
-    ct.same(error.message, 'second arg must be public key')
+    ct.same(error.message, '[DECRYPTION_FAILED] second arg must be public key')
   }
 
   ct.end()
@@ -95,7 +95,7 @@ t.test('#decryptKeyValue empty privateKey', ct => {
   } catch (error) {
     ct.same(error.code, 'MISSING_PRIVATE_KEY')
     ct.same(error.message, '[MISSING_PRIVATE_KEY] could not decrypt KEY using private key \'DOTENV_PRIVATE_KEY=\'')
-    ct.same(error.help, '[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464')
+    ct.same(error.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/464]')
   }
 
   ct.end()

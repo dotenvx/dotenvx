@@ -1,5 +1,6 @@
 const fsx = require('./fsx')
 const path = require('path')
+const Errors = require('./errors')
 
 const HOOK_SCRIPT = `#!/bin/sh
 
@@ -45,8 +46,7 @@ class InstallPrecommitHook {
         successMessage
       }
     } catch (err) {
-      const error = new Error(`failed to modify pre-commit hook: ${err.message}`)
-      throw error
+      throw new Errors({ error: err }).precommitHookModifyFailed()
     }
   }
 

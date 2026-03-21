@@ -2,6 +2,7 @@ const path = require('path')
 const which = require('which')
 const execute = require('./../../lib/helpers/execute')
 const { logger } = require('./../../shared/logger')
+const Errors = require('./errors')
 
 async function executeCommand (commandArgs, env) {
   const signals = [
@@ -91,7 +92,7 @@ async function executeCommand (commandArgs, env) {
 
     if (exitCode !== 0) {
       logger.debug(`received exitCode ${exitCode}`)
-      throw new Error(`Command exited with exit code ${exitCode}`)
+      throw new Errors({ exitCode }).commandExitedWithCode()
     }
   } catch (error) {
     // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.

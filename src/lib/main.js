@@ -81,16 +81,10 @@ const config = function (options = {}) {
 
         if (error.code === 'MISSING_ENV_FILE') {
           if (!options.convention) { // do not output error for conventions (too noisy)
-            logger.error(error.message)
-            if (error.help) {
-              logger.error(error.help)
-            }
+            logger.error(error.messageWithHelp)
           }
         } else {
-          logger.error(error.message)
-          if (error.help) {
-            logger.error(error.help)
-          }
+          logger.error(error.messageWithHelp)
         }
       }
 
@@ -127,10 +121,7 @@ const config = function (options = {}) {
   } catch (error) {
     if (strict) throw error // throw immediately if strict
 
-    logger.error(error.message)
-    if (error.help) {
-      logger.help(error.help)
-    }
+    logger.error(error.messageWithHelp)
 
     return { parsed: {}, error }
   }
@@ -154,10 +145,7 @@ const parse = function (src, options = {}) {
 
   // display any errors
   for (const error of errors) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    logger.error(error.messageWithHelp)
   }
 
   return parsed
@@ -199,15 +187,9 @@ const set = function (key, value, options = {}) {
     logger.verbose(`setting for ${processedEnv.envFilepath}`)
 
     if (processedEnv.error) {
-      if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-        logger.warn(processedEnv.error.message)
-        logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx set]`)
-      } else {
-        logger.warn(processedEnv.error.message)
-        if (processedEnv.error.help) {
-          logger.help(processedEnv.error.help)
-        }
-      }
+      const error = processedEnv.error
+      const message = error.messageWithHelp || (error.help ? `${error.message}. ${error.help}` : error.message)
+      logger.warn(message)
     } else {
       fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
@@ -260,10 +242,7 @@ const get = function (key, options = {}) {
 
     if (options.strict) throw error // throw immediately if strict
 
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    logger.error(error.messageWithHelp)
   }
 
   if (key) {

@@ -40,9 +40,9 @@ t.test('#conventions (invalid)', ct => {
 
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    const exampleError = new Error('INVALID_CONVENTION: \'invalid\'. permitted conventions: [\'nextjs\', \'flow\']')
-
-    ct.same(error, exampleError)
+    ct.equal(error.message, '[INVALID_CONVENTION] invalid convention (invalid)')
+    ct.equal(error.code, 'INVALID_CONVENTION')
+    ct.equal(error.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/761]')
   }
 
   ct.end()

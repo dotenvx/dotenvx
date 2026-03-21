@@ -2,6 +2,7 @@ const { logger } = require('./../../shared/logger')
 
 const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
+const catchAndLog = require('./../../lib/helpers/catchAndLog')
 
 const Get = require('./../../lib/services/get')
 
@@ -35,10 +36,7 @@ function get (key) {
         continue // ignore error
       }
 
-      logger.error(error.message)
-      if (error.help) {
-        logger.error(error.help)
-      }
+      logger.error(error.messageWithHelp)
     }
 
     if (key) {
@@ -75,10 +73,7 @@ function get (key) {
       }
     }
   } catch (error) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    catchAndLog(error)
     process.exit(1)
   }
 }

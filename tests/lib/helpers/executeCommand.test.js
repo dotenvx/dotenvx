@@ -32,7 +32,7 @@ t.test('executeCommand - exitCode 1', async ct => {
   ct.ok(processExitStub.called, 'process.exit called')
   ct.ok(execaStub.called, 'execa called')
   ct.ok(loggerDebugStub.calledWith('received exitCode 1'), 'logger debug')
-  ct.ok(loggerErrorStub.calledWith('Command exited with exit code 1'), 'logger error')
+  ct.ok(loggerErrorStub.calledWith('[COMMAND_EXITED_WITH_CODE] Command exited with exit code 1'), 'logger error')
 
   ct.end()
 })

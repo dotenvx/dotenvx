@@ -7,7 +7,7 @@ const depth = require('../../src/lib/helpers/colorDepth')
 t.test('getColor with ansi256 color support', (ct) => {
   const stub = sinon.stub(depth, 'getColorDepth').returns(8)
 
-  ct.equal(getColor('orangered')('hello'), '\x1b[38;5;202mhello\x1b[39m')
+  ct.equal(getColor('orangered')('hello'), '\x1b[38;5;130mhello\x1b[39m')
 
   stub.restore()
   ct.end()
@@ -25,7 +25,7 @@ t.test('getColor with truecolor support', (ct) => {
 t.test('getColor with ansi16 color support', (ct) => {
   const stub = sinon.stub(depth, 'getColorDepth').returns(4)
 
-  ct.equal(getColor('orangered')('hello'), '\x1b[31mhello\x1b[39m')
+  ct.equal(getColor('orangered')('hello'), '\x1b[33mhello\x1b[39m')
 
   stub.restore()
   ct.end()
@@ -47,7 +47,7 @@ t.test('getColor invalid color', (ct) => {
     ct.fail('getColor should throw error')
   } catch (error) {
     ct.pass(' threw an error')
-    ct.equal(error.message, 'Invalid color invalid')
+    ct.equal(error.message, '[INVALID_COLOR] Invalid color invalid')
   }
 
   ct.end()

@@ -142,7 +142,19 @@ t.test('logger.warn', (ct) => {
     logger.warn(message)
   })
 
-  ct.equal(stdout, `${getColor('orangered')('message1')}\n`)
+  ct.equal(stdout, `${getColor('orangered')('⚠ message1')}\n`)
+
+  ct.end()
+})
+
+t.test('logger.warn (already prefixed)', (ct) => {
+  const message = '⚠ message1'
+
+  const stdout = capcon.interceptStdout(() => {
+    logger.warn(message)
+  })
+
+  ct.equal(stdout, `${getColor('orangered')('⚠ message1')}\n`)
 
   ct.end()
 })
@@ -154,7 +166,7 @@ t.test('logger.error', (ct) => {
     logger.error(message)
   })
 
-  ct.equal(stderr, `${bold(getColor('red')('message1'))}\n`)
+  ct.equal(stderr, `${bold(getColor('red')('☠ message1'))}\n`)
 
   ct.end()
 })

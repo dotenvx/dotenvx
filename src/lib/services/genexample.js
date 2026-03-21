@@ -17,14 +17,7 @@ class Genexample {
 
   run () {
     if (this.envFile.length < 1) {
-      const code = 'MISSING_ENV_FILES'
-      const message = 'no .env* files found'
-      const help = '? add one with [echo "HELLO=World" > .env] and then run [dotenvx genexample]'
-
-      const error = new Error(message)
-      error.code = code
-      error.help = help
-      throw error
+      throw new Errors().missingEnvFiles()
     }
 
     const keys = new Set()
