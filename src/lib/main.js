@@ -83,8 +83,6 @@ const config = function (options = {}) {
           if (!options.convention) { // do not output error for conventions (too noisy)
             logger.error(error.messageWithHelp)
           }
-        } else if (error.code === 'WRONG_PRIVATE_KEY' || error.code === 'MISSING_PRIVATE_KEY') {
-          logger.error(error.messageWithHelp)
         } else {
           logger.error(error.messageWithHelp)
         }
