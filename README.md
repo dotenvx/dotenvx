@@ -42,7 +42,6 @@ dotenvx help
 &nbsp;
 
 </details>
-
 <details><summary>with curl 🌐</summary><br>
 
 ```sh
