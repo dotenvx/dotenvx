@@ -1,25 +1,9 @@
 const path = require('path')
-const fs = require('fs')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
 
 function installCommandForOps () {
-  const userAgent = process.env.npm_config_user_agent || ''
-  if (userAgent.startsWith('pnpm/')) return 'pnpm add -g @dotenvx/dotenvx-ops'
-  if (userAgent.startsWith('yarn/')) return 'yarn global add @dotenvx/dotenvx-ops'
-  if (userAgent.startsWith('npm/')) return 'npm i -g @dotenvx/dotenvx-ops'
-
-  const cwd = process.cwd()
-  if (fs.existsSync(path.join(cwd, 'pnpm-lock.yaml'))) return 'pnpm add -g @dotenvx/dotenvx-ops'
-  if (fs.existsSync(path.join(cwd, 'yarn.lock'))) return 'yarn global add @dotenvx/dotenvx-ops'
-  if (
-    fs.existsSync(path.join(cwd, 'package-lock.json')) ||
-    fs.existsSync(path.join(cwd, 'npm-shrinkwrap.json'))
-  ) return 'npm i -g @dotenvx/dotenvx-ops'
-
-  if (fs.existsSync(path.join(cwd, 'package.json'))) return 'npm i -g @dotenvx/dotenvx-ops'
-
-  return 'curl -sfS https://dotenvx.sh/ops | sh'
+  return 'npm i -g @dotenvx/dotenvx-ops'
 }
 
 function opsBanner (installCommand) {
