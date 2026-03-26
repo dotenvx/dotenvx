@@ -435,8 +435,8 @@ Commands:
     It 'installs it'
       When call install_dotenvx
       The status should equal 0
-      The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)
-now type: dotenvx help"
+      The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
+⮕ next run [dotenvx encrypt]"
     End
 
     Describe 'when a different path'
@@ -447,8 +447,8 @@ now type: dotenvx help"
       It 'installs it but warns'
         When call install_dotenvx
         The status should equal 0
-        The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)
-now type: dotenvx help"
+        The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
+⮕ next run [dotenvx encrypt]"
         The stderr should equal "[DOTENVX_CONFLICT] conflicting dotenvx found at /different/path
 ? we recommend updating your path to include ./spec/tmp"
       End
@@ -463,8 +463,8 @@ now type: dotenvx help"
     It 'installs dotenvx'
       When call run
       The status should equal 0
-      The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)
-now type: dotenvx help"
+      The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
+⮕ next run [dotenvx encrypt]"
     End
 
     Describe 'when a different path'
@@ -475,8 +475,8 @@ now type: dotenvx help"
       It 'installs it but warns'
         When call run
         The status should equal 0
-        The output should equal "[dotenvx@0.44.2] installed successfully (./spec/tmp/dotenvx)
-now type: dotenvx help"
+        The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
+⮕ next run [dotenvx encrypt]"
         The stderr should equal "[DOTENVX_CONFLICT] conflicting dotenvx found at /different/path
 ? we recommend updating your path to include ./spec/tmp"
       End
