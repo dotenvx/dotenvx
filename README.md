@@ -2609,7 +2609,7 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 [![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=3)](https://dotenvx.com/ops)
 
-> KEYS OFF COMPUTER
+> ⛨  ARMORED KEYS: Harden your private keys.
 
 ### Quickstart
 

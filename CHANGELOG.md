@@ -58,7 +58,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* Add 'KEYS OFF COMPUTER' security feature when [dotenvx-ops](https://dotenvx.com/ops) installed ([#746](https://github.com/dotenvx/dotenvx/pull/746))
+* Add '⛨  ARMORED KEYS: Harden your private keys.' security feature when [dotenvx-ops](https://dotenvx.com/ops) installed ([#746](https://github.com/dotenvx/dotenvx/pull/746))
 
 ### Removed
 
