@@ -20,7 +20,7 @@ class Ops {
     }
 
     if (this.opsLib) {
-      // logger.successv(`🛡️ ops: ${this.opsLib.status()}`)
+      // logger.successv(`⛨ ops: ${this.opsLib.status()}`)
     }
   }
 
