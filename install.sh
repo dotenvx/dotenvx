@@ -397,8 +397,9 @@ install_dotenvx() {
   warn_of_any_conflict
 
   # let user know
-  echo "[dotenvx@$VERSION] installed successfully ($(directory)/$(binary_name))"
-  echo "now type: dotenvx help"
+  echo "◈ installed ($VERSION–$(directory)/$(binary_name))"
+  echo ""
+  echo "⮕ next run [dotenvx encrypt]"
 
   return 0
 }
