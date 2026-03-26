@@ -3,7 +3,7 @@ const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
 
 function installCommandForOps () {
-  return 'npm i -g @dotenvx/dotenvx-ops'
+  return 'curl -sfS https://dotenvx.sh/ops | sh'
 }
 
 function opsBanner (installCommand) {
@@ -12,13 +12,13 @@ function opsBanner (installCommand) {
     '   ██████╗ ██████╗ ███████╗',
     '  ██╔═══██╗██╔══██╗██╔════╝',
     '  ██║   ██║██████╔╝███████╗',
-    '  ██║   ██║██╔═══╝ ╚════██║',
+    '  ██║   ██║██╔═══╝ ╚════██║  [www.dotenvx.com/ops]',
     '  ╚██████╔╝██║     ███████║',
     '   ╚═════╝ ╚═╝     ╚══════╝',
     '',
-    '  KEYS OFF COMPUTER: Add hardened key protection with dotenvx-ops.',
-    `  Install now: [${installCommand}]`,
-    '  Learn more: [https://dotenvx.com/ops]'
+    '  ⛨  ARMORED KEYS: Harden your private keys.',
+    `  ⮕  install [${installCommand}]`,
+    '  ⮕  and then run [dotenvx-ops login]'
   ]
 
   const innerWidth = Math.max(67, ...lines.map((line) => line.length))
