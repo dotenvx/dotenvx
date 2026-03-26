@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.57.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.57.3...main)
+
+## [1.57.3](https://github.com/dotenvx/dotenvx/compare/v1.57.2...v1.57.3) (2026-03-26)
+
+### Changes
+
+* Simplify installed success message ([#766](https://github.com/dotenvx/dotenvx/pull/766))
 
 ## [1.57.2](https://github.com/dotenvx/dotenvx/compare/v1.57.1...v1.57.2) (2026-03-22)
 
