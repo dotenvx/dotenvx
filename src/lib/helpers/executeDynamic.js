@@ -3,7 +3,7 @@ const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
 
 function installCommandForOps () {
-  return 'npm i -g @dotenvx/dotenvx-ops'
+  return 'curl -sfS https://dotenvx.sh/ops | sh'
 }
 
 function opsBanner (installCommand) {
