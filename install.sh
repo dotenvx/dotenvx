@@ -398,7 +398,7 @@ install_dotenvx() {
 
   # let user know
   local installed_version="${VERSION:-latest}"
-  echo "◈ installed ($VERSION–$(directory)/$(binary_name))"
+  echo "◈ installed (${installed_version}:$(directory)/$(binary_name))"
   echo "⮕ next run [dotenvx encrypt]"
 
   return 0
