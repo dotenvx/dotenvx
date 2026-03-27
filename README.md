@@ -26,6 +26,8 @@ require('@dotenvx/dotenvx').config()
 console.log(`Hello ${process.env.HELLO}`)
 ```
 
+see [extended quickstart guide](https://dotenvx.com/docs/quickstart)
+
 &nbsp;
 
 or install globally - *unlocks dotenv for any language, framework, or platform!*
@@ -119,8 +121,6 @@ $ dotenvx run -- node index.js
 Hello World # with dotenvx
 > :-D
 ```
-
-see [extended quickstart guide](https://dotenvx.com/docs/quickstart)
 
 More examples
 
