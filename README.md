@@ -34,7 +34,7 @@ or install globally - *unlocks dotenv for any language, framework, or platform!*
 
 ```sh
 npm i -g @dotenvx/dotenvx
-dotenvx help
+dotenvx encrypt
 ```
 
 [![npm installs](https://img.shields.io/npm/dt/@dotenvx/dotenvx)](https://npmjs.com/@dotenvx/dotenvx)
@@ -46,7 +46,7 @@ dotenvx help
 
 ```sh
 curl -sfS https://dotenvx.sh | sh
-dotenvx help
+dotenvx encrypt
 ```
 
 [![curl installs](https://img.shields.io/endpoint?url=https://dotenvx.sh/stats/curl&label=curl%20installs)](https://github.com/dotenvx/dotenvx.sh/blob/main/install.sh)
@@ -59,7 +59,7 @@ dotenvx help
 
 ```sh
 brew install dotenvx/brew/dotenvx
-dotenvx help
+dotenvx encrypt
 ```
 
 [![brew installs](https://img.shields.io/github/downloads/dotenvx/dotenvx/total?label=brew%20installs)](https://github.com/dotenvx/homebrew-brew/blob/main/Formula/dotenvx.rb)
@@ -71,7 +71,7 @@ dotenvx help
 <details><summary>with docker 🐳</summary><br>
 
 ```sh
-docker run -it --rm -v $(pwd):/app dotenv/dotenvx help
+docker run -it --rm -v $(pwd):/app dotenv/dotenvx encrypt
 ```
 
 [![docker pulls](https://img.shields.io/docker/pulls/dotenv/dotenvx)](https://hub.docker.com/r/dotenv/dotenvx)
@@ -85,7 +85,7 @@ docker run -it --rm -v $(pwd):/app dotenv/dotenvx help
 ```sh
 curl -L -o dotenvx.tar.gz "https://github.com/dotenvx/dotenvx/releases/latest/download/dotenvx-$(uname -s)-$(uname -m).tar.gz"
 tar -xzf dotenvx.tar.gz
-./dotenvx help
+./dotenvx encrypt
 ```
 
 [![github releases](https://img.shields.io/github/downloads/dotenvx/dotenvx/total)](https://github.com/dotenvx/dotenvx/releases)
@@ -99,7 +99,7 @@ tar -xzf dotenvx.tar.gz
 
 ```sh
 winget install dotenvx
-dotenvx help
+dotenvx encrypt
 ```
 
 </details>
