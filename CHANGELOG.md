@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.57.5...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.58.0...main)
+
+## [1.58.0](https://github.com/dotenvx/dotenvx/compare/v1.57.5...v1.58.0) (2026-03-27)
+
+### Changed
+
+* Changed runtime injection message to format `⟐ injecting env (N) from FILE · dotenvx@VERSION` ([#770](https://github.com/dotenvx/dotenvx/pull/770))
 
 ## [1.57.5](https://github.com/dotenvx/dotenvx/compare/v1.57.4...v1.57.5) (2026-03-26)
 
@@ -35,6 +41,7 @@ All notable changes to this project will be documented in this file. See [standa
 * improved error logs and compacted most to a single line ([#755](https://github.com/dotenvx/dotenvx/pull/755))
 * introduced leading log glyphs as a visual status language:
 
+  * `⟐` success action (injected)
   * `◈` success action (encrypted)
   * `◇` success action (set plain value, decrypted)
   * `⟳` success action (rotated)
