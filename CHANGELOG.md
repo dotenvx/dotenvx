@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.57.4...main)
 
+### Changes
+
+* Improve already installed message ([#768](https://github.com/dotenvx/dotenvx/pull/768))
+
 ## [1.57.4](https://github.com/dotenvx/dotenvx/compare/v1.57.3...v1.57.4) (2026-03-26)
 
 ### Changes
 
-* Use `curl` example for install [dotenvx.com/ops](https://dotenvx.com/ops) ([#767](https://github.com/dotenvx/dotenvx/pull/766))
+* Use `curl` example for install [dotenvx.com/ops](https://dotenvx.com/ops) ([#767](https://github.com/dotenvx/dotenvx/pull/767))
 
 ## [1.57.3](https://github.com/dotenvx/dotenvx/compare/v1.57.2...v1.57.3) (2026-03-26)
 
