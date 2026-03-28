@@ -23,7 +23,7 @@ function set (key, value) {
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
     const opsOn = options.opsOff !== true
-    const noCreate = options.noCreate !== true
+    const noCreate = options.create === false
 
     const {
       processedEnvs,

@@ -44,6 +44,38 @@ t.test('set - no changes', ct => {
   ct.end()
 })
 
+t.test('set - --no-create passes through to service', ct => {
+  let constructorArgs
+
+  class SetsMock {
+    constructor (...args) {
+      constructorArgs = args
+    }
+
+    run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const setWithMock = proxyquire('../../../src/cli/actions/set', {
+    './../../lib/services/sets': SetsMock,
+    '../../../src/lib/helpers/isIgnoringDotenvKeys': () => true
+  })
+
+  const optsStub = sinon.stub().returns({ create: false })
+  const fakeContext = { opts: optsStub, envs: [] }
+
+  setWithMock.call(fakeContext, 'HELLO', 'World')
+
+  t.equal(constructorArgs[6], true, 'noCreate=true when --no-create is set')
+
+  ct.end()
+})
+
 t.test('set - changes', ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
