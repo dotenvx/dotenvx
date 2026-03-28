@@ -27,13 +27,14 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Sets {
-  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
+  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false, noCreate = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.value = value
     this.encrypt = encrypt
     this.envKeysFilepath = envKeysFilepath
     this.opsOn = opsOn
+    this.noCreate = noCreate
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -72,10 +73,30 @@ class Sets {
     row.changed = false
 
     try {
+      let seededWithInitialKey = false
+
+      if (!fsx.existsSync(filepath)) {
+        if (this.noCreate) {
+          detectEncoding(filepath) // throws ENOENT
+        } else {
+          fsx.writeFileX(filepath, '')
+        }
+      }
+
       const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
+
+      // blank files seeded by `set` should contain only the key being set
+      if (row.key && envSrc.trim().length === 0) {
+        envSrc = `${row.key}="${this.value}"\n`
+        seededWithInitialKey = true
+      }
+
       const envParsed = dotenvParse(envSrc)
       row.originalValue = envParsed[row.key] || null
+      if (seededWithInitialKey) {
+        row.originalValue = null
+      }
       const wasPlainText = !isEncrypted(row.originalValue)
       this.readableFilepaths.add(envFilepath)
 
@@ -119,7 +140,13 @@ class Sets {
 
       const goingFromPlainTextToEncrypted = wasPlainText && this.encrypt
       const valueChanged = this.value !== row.originalValue
-      if (goingFromPlainTextToEncrypted || valueChanged) {
+      const shouldPersistSeededPlainValue = seededWithInitialKey && !this.encrypt
+
+      if (shouldPersistSeededPlainValue) {
+        row.envSrc = envSrc
+        this.changedFilepaths.add(envFilepath)
+        row.changed = true
+      } else if (goingFromPlainTextToEncrypted || valueChanged) {
         row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
         this.changedFilepaths.add(envFilepath)
         row.changed = true

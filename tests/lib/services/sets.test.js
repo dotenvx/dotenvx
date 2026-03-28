@@ -1,6 +1,7 @@
 const t = require('tap')
 const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
+const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
@@ -8,19 +9,37 @@ const proxyquire = require('proxyquire').noCallThru()
 const Sets = require('../../../src/lib/services/sets')
 
 let writeFileXStub
+const ROOT_DIR = path.resolve(__dirname, '../../..')
+const ROOT_ENV_FILE = path.join(ROOT_DIR, '.env')
+const ROOT_ENV_KEYS_FILE = path.join(ROOT_DIR, '.env.keys')
+
+function cleanupRootEnvFiles () {
+  if (fs.existsSync(ROOT_ENV_FILE)) {
+    fs.unlinkSync(ROOT_ENV_FILE)
+  }
+  if (fs.existsSync(ROOT_ENV_KEYS_FILE)) {
+    fs.unlinkSync(ROOT_ENV_KEYS_FILE)
+  }
+}
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
+  cleanupRootEnvFiles()
 
   writeFileXStub = sinon.stub(fsx, 'writeFileX')
 })
 
 t.afterEach((ct) => {
   writeFileXStub.restore()
+  cleanupRootEnvFiles()
 })
 
 t.test('#run (no arguments)', ct => {
+  const cwd = process.cwd()
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-cwd-'))
+  process.chdir(tmpdir)
+
   const {
     processedEnvs,
     changedFilepaths
@@ -41,11 +60,81 @@ t.test('#run (no arguments)', ct => {
     error: exampleError
   }])
   ct.same(changedFilepaths, [])
+
+  process.chdir(cwd)
+  ct.end()
+})
+
+t.test('#run (encrypt off) creates missing .env with only the set key/value', ct => {
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
+  const envFile = path.join(tmpdir, '.env')
+  const envs = [{ type: 'envFile', value: envFile }]
+  writeFileXStub.callsFake((filepath, str) => fs.writeFileSync(filepath, str, 'utf8'))
+
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Sets('HELLO', 'world', envs, false, null, false, false).run()
+
+  ct.equal(processedEnvs.length, 1)
+  ct.notOk(processedEnvs[0].error)
+  ct.equal(processedEnvs[0].changed, true)
+  ct.equal(processedEnvs[0].envSrc, 'HELLO="world"\n')
+  ct.same(changedFilepaths, [envFile])
+  ct.same(unchangedFilepaths, [])
+
+  ct.end()
+})
+
+t.test('#run (encrypt on) creates missing .env and encrypts the set key/value', ct => {
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
+  const envFile = path.join(tmpdir, '.env')
+  const envs = [{ type: 'envFile', value: envFile }]
+  writeFileXStub.callsFake((filepath, str) => fs.writeFileSync(filepath, str, 'utf8'))
+
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Sets('HELLO', 'world', envs, true, null, false, false).run()
+
+  ct.equal(processedEnvs.length, 1)
+  ct.notOk(processedEnvs[0].error)
+  ct.equal(processedEnvs[0].changed, true)
+  ct.ok(processedEnvs[0].privateKeyAdded)
+  ct.match(processedEnvs[0].envSrc, /^#\/-------------------\[DOTENV_PUBLIC_KEY\]--------------------\//)
+  ct.match(processedEnvs[0].envSrc, /HELLO="encrypted:/)
+  ct.same(changedFilepaths, [envFile])
+  ct.same(unchangedFilepaths, [])
+
+  ct.end()
+})
+
+t.test('#run (encrypt off) with --no-create on missing .env returns missing file error', ct => {
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
+  const envFile = path.join(tmpdir, '.env')
+  const envs = [{ type: 'envFile', value: envFile }]
+
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Sets('HELLO', 'world', envs, false, null, false, true).run()
+
+  ct.equal(processedEnvs.length, 1)
+  ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, [])
 
   ct.end()
 })
 
 t.test('#run (no env file)', ct => {
+  const cwd = process.cwd()
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-cwd-'))
+  process.chdir(tmpdir)
+
   const {
     processedEnvs,
     changedFilepaths
@@ -67,6 +156,7 @@ t.test('#run (no env file)', ct => {
   }])
   ct.same(changedFilepaths, [])
 
+  process.chdir(cwd)
   ct.end()
 })
 

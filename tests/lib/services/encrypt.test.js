@@ -1,6 +1,7 @@
 const t = require('tap')
 const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
+const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
@@ -10,64 +11,108 @@ const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
 const Encrypt = require('../../../src/lib/services/encrypt')
 
 let writeFileXStub
+const ROOT_DIR = path.resolve(__dirname, '../../..')
+const ROOT_ENV_FILE = path.join(ROOT_DIR, '.env')
+const ROOT_ENV_KEYS_FILE = path.join(ROOT_DIR, '.env.keys')
+
+function cleanupRootEnvFiles () {
+  if (fs.existsSync(ROOT_ENV_FILE)) {
+    fs.unlinkSync(ROOT_ENV_FILE)
+  }
+  if (fs.existsSync(ROOT_ENV_KEYS_FILE)) {
+    fs.unlinkSync(ROOT_ENV_KEYS_FILE)
+  }
+}
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
+  cleanupRootEnvFiles()
   writeFileXStub = sinon.stub(fsx, 'writeFileX')
 })
 
 t.afterEach((ct) => {
   writeFileXStub.restore()
+  cleanupRootEnvFiles()
 })
 
 t.test('#run (no arguments)', ct => {
+  const cwd = process.cwd()
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+  process.chdir(tmpdir)
+
+  // allow real writes in this isolated temp dir
+  writeFileXStub.callsFake((filepath, str) => fs.writeFileSync(filepath, str, 'utf8'))
+
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt().run()
 
-  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
-  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-  exampleError.code = 'MISSING_ENV_FILE'
-  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-
-  ct.same(processedEnvs, [{
-    keys: [],
-    type: 'envFile',
-    filepath: path.resolve('.env'),
-    envFilepath: '.env',
-    error: exampleError
-  }])
-  ct.same(changedFilepaths, [])
+  ct.equal(processedEnvs.length, 1)
+  ct.equal(processedEnvs[0].envFilepath, '.env')
+  ct.notOk(processedEnvs[0].error)
+  ct.same(changedFilepaths, ['.env'])
   ct.same(unchangedFilepaths, [])
 
+  const parsed = dotenvParse(processedEnvs[0].envSrc)
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'provisions public key on first encrypt')
+  ct.match(parsed.OPENAI_API_KEY, /^encrypted:/, 'encrypts sample kit values on first encrypt')
+  ct.ok(fs.existsSync(path.join(tmpdir, '.env.keys')), 'creates .env.keys on first encrypt (ops off)')
+
+  process.chdir(cwd)
   ct.end()
 })
 
-t.test('#run (no env file)', ct => {
+t.test('#run (no env file) with --no-create', ct => {
+  const cwd = process.cwd()
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+  process.chdir(tmpdir)
+
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt([], [], [], null, false, true).run()
+
+  ct.equal(processedEnvs.length, 1)
+  ct.equal(processedEnvs[0].envFilepath, '.env')
+  ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
+  ct.notOk(writeFileXStub.called, 'does not create missing .env file')
+  ct.same(changedFilepaths, [])
+  ct.same(unchangedFilepaths, [])
+
+  process.chdir(cwd)
+  ct.end()
+})
+
+t.test('#run (blank existing .env file) seeds sample kit before encrypting', ct => {
+  const cwd = process.cwd()
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+  process.chdir(tmpdir)
+
+  const envPath = path.join(tmpdir, '.env')
+  fs.writeFileSync(envPath, '', 'utf8')
+
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt().run()
 
-  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
-  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-  exampleError.code = 'MISSING_ENV_FILE'
-  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-
-  ct.same(processedEnvs, [{
-    keys: [],
-    type: 'envFile',
-    filepath: path.resolve('.env'),
-    envFilepath: '.env',
-    error: exampleError
-  }])
-  ct.same(changedFilepaths, [])
+  ct.equal(processedEnvs.length, 1)
+  ct.equal(processedEnvs[0].envFilepath, '.env')
+  ct.equal(processedEnvs[0].kitCreated, 'sample')
+  ct.notOk(processedEnvs[0].error)
+  ct.same(changedFilepaths, ['.env'])
   ct.same(unchangedFilepaths, [])
 
+  const parsed = dotenvParse(processedEnvs[0].envSrc)
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'provisions public key on encrypt')
+  ct.match(parsed.OPENAI_API_KEY, /^encrypted:/, 'encrypts seeded sample value')
+
+  process.chdir(cwd)
   ct.end()
 })
 
