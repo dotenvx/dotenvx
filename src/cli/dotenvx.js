@@ -116,6 +116,7 @@ program.command('set')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-c, --encrypt', 'encrypt value', true)
   .option('-p, --plain', 'store value as plain text', false)
+  .option('--no-create', 'do not create .env file(s) when missing')
   .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .action(function (...args) {
     this.envs = envs
@@ -130,6 +131,7 @@ program.command('encrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
+  .option('--no-create', 'do not create .env file(s) when missing')
   .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {

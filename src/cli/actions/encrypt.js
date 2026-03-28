@@ -12,12 +12,13 @@ function encrypt () {
 
   const envs = this.envs
   const opsOn = options.opsOff !== true
+  const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
+    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -29,7 +30,7 @@ function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
+      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

@@ -27,13 +27,14 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Sets {
-  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false) {
+  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false, noCreate = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.value = value
     this.encrypt = encrypt
     this.envKeysFilepath = envKeysFilepath
     this.opsOn = opsOn
+    this.noCreate = noCreate
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -72,6 +73,7 @@ class Sets {
     row.changed = false
 
     try {
+      // TODO: here handle noCreate logic in exact or similar fashion to encrypt service
       const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)

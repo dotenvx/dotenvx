@@ -1,6 +1,7 @@
 const t = require('tap')
 const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
+const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
@@ -22,52 +23,52 @@ t.afterEach((ct) => {
 })
 
 t.test('#run (no arguments)', ct => {
+  const cwd = process.cwd()
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+  process.chdir(tmpdir)
+
+  // allow real writes in this isolated temp dir
+  writeFileXStub.callsFake((filepath, str) => fs.writeFileSync(filepath, str, 'utf8'))
+
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
   } = new Encrypt().run()
 
-  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
-  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-  exampleError.code = 'MISSING_ENV_FILE'
-  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-
-  ct.same(processedEnvs, [{
-    keys: [],
-    type: 'envFile',
-    filepath: path.resolve('.env'),
-    envFilepath: '.env',
-    error: exampleError
-  }])
-  ct.same(changedFilepaths, [])
+  ct.equal(processedEnvs.length, 1)
+  ct.equal(processedEnvs[0].envFilepath, '.env')
+  ct.notOk(processedEnvs[0].error)
+  ct.same(changedFilepaths, ['.env'])
   ct.same(unchangedFilepaths, [])
 
+  const parsed = dotenvParse(processedEnvs[0].envSrc)
+  ct.ok(parsed.OPENAI_API_KEY, 'writes starter template on first encrypt')
+  ct.notOk(fs.existsSync(path.join(tmpdir, '.env.keys')), 'does not create .env.keys for starter template')
+
+  process.chdir(cwd)
   ct.end()
 })
 
-t.test('#run (no env file)', ct => {
+t.test('#run (no env file) with --no-create', ct => {
+  const cwd = process.cwd()
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+  process.chdir(tmpdir)
+
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt().run()
+  } = new Encrypt([], [], [], null, false, true).run()
 
-  const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
-  exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-  exampleError.code = 'MISSING_ENV_FILE'
-  exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-
-  ct.same(processedEnvs, [{
-    keys: [],
-    type: 'envFile',
-    filepath: path.resolve('.env'),
-    envFilepath: '.env',
-    error: exampleError
-  }])
+  ct.equal(processedEnvs.length, 1)
+  ct.equal(processedEnvs[0].envFilepath, '.env')
+  ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
+  ct.notOk(writeFileXStub.called, 'does not create missing .env file')
   ct.same(changedFilepaths, [])
   ct.same(unchangedFilepaths, [])
 
+  process.chdir(cwd)
   ct.end()
 })
 

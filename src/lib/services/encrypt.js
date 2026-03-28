@@ -26,14 +26,16 @@ const {
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
+const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false, noCreate = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
     this.opsOn = opsOn
+    this.noCreate = noCreate
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -75,8 +77,23 @@ class Encrypt {
     row.envFilepath = envFilepath
 
     try {
+      // if noCreate is on then detectEncoding will throw and we'll halt the calls
+      // but if noCreate is false then create the file if it doesn't exist
+      if (!fsx.existsSync(filepath) && !this.noCreate) {
+        fsx.writeFileX(filepath, '')
+      }
       const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
+      if (envSrc.trim().length === 0) {
+        fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
+        envSrc = SAMPLE_ENV_KIT
+        row.envSrc = envSrc
+        row.changed = true
+        row.kitCreated = 'sample'
+        this.changedFilepaths.add(envFilepath)
+        this.processedEnvs.push(row)
+        return
+      }
       const envParsed = dotenvParse(envSrc)
 
       let publicKey

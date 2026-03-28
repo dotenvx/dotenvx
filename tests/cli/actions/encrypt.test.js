@@ -34,6 +34,38 @@ t.test('encrypt - nothing', ct => {
   ct.end()
 })
 
+t.test('encrypt - --no-create passes through to service', ct => {
+  let constructorArgs
+
+  class EncryptMock {
+    constructor (...args) {
+      constructorArgs = args
+    }
+
+    run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
+    './../../lib/services/encrypt': EncryptMock,
+    '../../../src/lib/helpers/isIgnoringDotenvKeys': () => true
+  })
+
+  const optsStub = sinon.stub().returns({ create: false })
+  const fakeContext = { opts: optsStub, envs: [] }
+
+  encryptWithMock.call(fakeContext)
+
+  t.equal(constructorArgs[5], true, 'noCreate=true when --no-create is set')
+
+  ct.end()
+})
+
 t.test('encrypt - .env but no changes', ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
