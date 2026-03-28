@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.59.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.59.1...main)
+
+## [1.59.1](https://github.com/dotenvx/dotenvx/compare/v1.59.0...v1.59.1) (2026-03-28)
+
+### Added
+
+* add `HELLO` key to the kit sample to match most of our examples in the README
 
 ## [1.59.0](https://github.com/dotenvx/dotenvx/compare/v1.58.0...v1.59.0) (2026-03-28)
 

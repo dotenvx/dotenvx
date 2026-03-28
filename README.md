@@ -109,14 +109,14 @@ dotenvx encrypt
 ## Run Anywhere
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ node index.js
 Hello undefined # without dotenvx
 
 $ dotenvx run -- node index.js
-Hello World # with dotenvx
+Hello Dotenvx # with dotenvx
 > :-D
 ```
 
@@ -144,24 +144,24 @@ console.log(chalk.blue(`Hello ${process.env.HELLO}`))
 
 ```sh
 $ npm install
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx run -- npx tsx index.ts
-Hello World
+Hello Dotenvx
 ```
 
 </details>
 <details><summary>Deno 🦕</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "console.log('Hello ' + Deno.env.get('HELLO'))" > index.ts
 
 $ deno run --allow-env index.ts
 Hello undefined
 
 $ dotenvx run -- deno run --allow-env index.ts
-Hello World
+Hello Dotenvx
 ```
 
 > [!WARNING]
@@ -192,11 +192,11 @@ Hello Test
 <details><summary>Python 🐍</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo 'import os;print("Hello " + os.getenv("HELLO", ""))' > index.py
 
 $ dotenvx run -- python3 index.py
-Hello World
+Hello Dotenvx
 ```
 
 see [extended python guide](https://dotenvx.com/docs/quickstart)
@@ -205,11 +205,11 @@ see [extended python guide](https://dotenvx.com/docs/quickstart)
 <details><summary>PHP 🐘</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo '<?php echo "Hello {$_SERVER["HELLO"]}\n";' > index.php
 
 $ dotenvx run -- php index.php
-Hello World
+Hello Dotenvx
 ```
 
 see [extended php guide](https://dotenvx.com/docs/quickstart)
@@ -218,11 +218,11 @@ see [extended php guide](https://dotenvx.com/docs/quickstart)
 <details><summary>Ruby 💎</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo 'puts "Hello #{ENV["HELLO"]}"' > index.rb
 
 $ dotenvx run -- ruby index.rb
-Hello World
+Hello Dotenvx
 ```
 
 see [extended ruby guide](https://dotenvx.com/docs/quickstart)
@@ -231,11 +231,11 @@ see [extended ruby guide](https://dotenvx.com/docs/quickstart)
 <details><summary>Go 🐹</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo 'package main; import ("fmt"; "os"); func main() { fmt.Printf("Hello %s\n", os.Getenv("HELLO")) }' > main.go
 
 $ dotenvx run -- go run main.go
-Hello World
+Hello Dotenvx
 ```
 
 see [extended go guide](https://dotenvx.com/docs/quickstart)
@@ -244,11 +244,11 @@ see [extended go guide](https://dotenvx.com/docs/quickstart)
 <details><summary>Rust 🦀</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo 'fn main() {let hello = std::env::var("HELLO").unwrap_or("".to_string());println!("Hello {hello}");}' > src/main.rs
 
 $ dotenvx run -- cargo run
-Hello World
+Hello Dotenvx
 ```
 
 see [extended rust guide](https://dotenvx.com/docs/quickstart)
@@ -257,34 +257,34 @@ see [extended rust guide](https://dotenvx.com/docs/quickstart)
 <details><summary>Java ☕️</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo 'public class Index { public static void main(String[] args) { System.out.println("Hello " + System.getenv("HELLO")); } }' > index.java
 
 $ dotenvx run -- java index.java
-Hello World
+Hello Dotenvx
 ```
 
 </details>
 <details><summary>Clojure 🌿</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo '(println "Hello" (System/getenv "HELLO"))' > index.clj
 
 $ dotenvx run -- clojure -M index.clj
-Hello World
+Hello Dotenvx
 ```
 
 </details>
 <details><summary>Kotlin 📐</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo 'fun main() { val hello = System.getenv("HELLO") ?: ""; println("Hello $hello") }' > index.kt
 $ kotlinc index.kt -include-runtime -d index.jar
 
 $ dotenvx run -- java -jar index.jar
-Hello World
+Hello Dotenvx
 ```
 
 </details>
@@ -293,31 +293,31 @@ Hello World
 ```sh
 $ dotnet new console -n HelloWorld -o HelloWorld
 $ cd HelloWorld
-$ echo "HELLO=World" | Out-File -FilePath .env -Encoding utf8
+$ echo "HELLO=Dotenvx" | Out-File -FilePath .env -Encoding utf8
 $ echo 'Console.WriteLine($"Hello {Environment.GetEnvironmentVariable("HELLO")}");' > Program.cs
 
 $ dotenvx run -- dotnet run
-Hello World
+Hello Dotenvx
 ```
 
 </details>
 <details><summary>Bash 🖥️</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx run --quiet -- sh -c 'echo Hello $HELLO'
-Hello World
+Hello Dotenvx
 ```
 
 </details>
 <details><summary>Fish 🐠</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx run --quiet -- sh -c 'echo Hello $HELLO'
-Hello World
+Hello Dotenvx
 ```
 
 </details>
@@ -351,7 +351,7 @@ Or in any image:
 
 ```sh
 FROM node:latest
-RUN echo "HELLO=World" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
+RUN echo "HELLO=Dotenvx" > .env && echo "console.log('Hello ' + process.env.HELLO)" > index.js
 RUN curl -fsS https://dotenvx.sh/install.sh | sh
 CMD ["dotenvx", "run", "--", "echo", "Hello $HELLO"]
 ```
@@ -443,7 +443,7 @@ $ npm run start
 > ./node_modules/.bin/dotenvx run -- node index.js
 
 [dotenvx@1.X.X] injecting env (1) from .env.production
-Hello World
+Hello Dotenvx
 ```
 
 </details>
@@ -531,7 +531,7 @@ More examples
 ```sh
 $ echo "HELLO=local" > .env.local
 
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx run -f .env.local -f .env -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.local,.env
@@ -547,11 +547,11 @@ Note subsequent files do NOT override pre-existing variables defined in previous
 ```sh
 $ echo "HELLO=local" > .env.local
 
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx run -f .env.local -f .env --overload -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.local,.env
-Hello World
+Hello Dotenvx
 ```
 
 Note that with `--overload` subsequent files DO override pre-existing variables defined in previous files.
@@ -656,13 +656,13 @@ More examples
 <details><summary>`.env`</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx encrypt
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run -- node index.js
 [dotenvx@1.X.X] injecting env (2) from .env
-Hello World
+Hello Dotenvx
 ```
 
 </details>
@@ -699,13 +699,13 @@ Note the `DOTENV_PRIVATE_KEY_CI` ends with `_CI`. This instructs `dotenvx run` t
 <details><summary>combine multiple encrypted .env files</summary><br>
 
 ```sh
-$ dotenvx set HELLO World -f .env
+$ dotenvx set HELLO Dotenvx -f .env
 $ dotenvx set HELLO Production -f .env.production
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ DOTENV_PRIVATE_KEY="<.env private key>" DOTENV_PRIVATE_KEY_PRODUCTION="<.env.production private key>" dotenvx run -- node index.js
 [dotenvx@1.X.X] injecting env (3) from .env, .env.production
-Hello World
+Hello Dotenvx
 ```
 
 Note the `DOTENV_PRIVATE_KEY` instructs `dotenvx run` to load the `.env` file and the `DOTENV_PRIVATE_KEY_PRODUCTION` instructs it to load the `.env.production` file. See the pattern?
@@ -735,7 +735,7 @@ Note the `DOTENV_PRIVATE_KEY_CI` (and any `DOTENV_PRIVATE_KEY*`) can take multip
 <details><summary>`--stdout`</summary><br>
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx encrypt --stdout
 $ dotenvx encrypt --stdout > .env.encrypted
 ```
@@ -903,8 +903,8 @@ DATABASE_URL postgres://yourusername@localhost/my_database
 Prevent your shell from expanding inline `$VARIABLES` before dotenvx has a chance to inject it. Use a subshell.
 
 ```sh
-$ dotenvx run --env="HELLO=World" -- sh -c 'echo Hello $HELLO'
-Hello World
+$ dotenvx run --env="HELLO=Dotenvx" -- sh -c 'echo Hello $HELLO'
+Hello Dotenvx
 ```
 
 </details>
@@ -948,13 +948,13 @@ For example, when missing a custom .env file:
 
 ```sh
 $ dotenvx run -f .env.missing -- echo $HELLO
-[MISSING_ENV_FILE] missing file (/Users/scottmotte/Code/dotenvx/playground/apr-16/.env.missing). fix: [echo "HELLO=World" > .env.missing]
+[MISSING_ENV_FILE] missing file (/Users/scottmotte/Code/dotenvx/playground/apr-16/.env.missing). fix: [echo "HELLO=Dotenvx" > .env.missing]
 ```
 
 or when missing a KEY:
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx get GOODBYE
 [MISSING_KEY] missing key (GOODBYE)
 ```
@@ -966,7 +966,7 @@ Compose multiple `.env` files for environment variables loading, as you need.
 
 ```sh
 $ echo "HELLO=local" > .env.local
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run -f .env.local -f .env -- node index.js
@@ -982,7 +982,7 @@ Note subsequent files do NOT override pre-existing variables defined in previous
 Set environment variables as a simple `KEY=value` string pair.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run --env HELLO=String -f .env -- node index.js
@@ -997,12 +997,12 @@ Override existing env variables. These can be variables already on your machine 
 
 ```sh
 $ echo "HELLO=local" > .env.local
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run -f .env.local -f .env --overload -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.local, .env
-Hello World
+Hello Dotenvx
 ```
 
 Note that with `--overload` subsequent files DO override pre-existing variables defined in previous files.
@@ -1183,7 +1183,7 @@ Exit with code `1` if any errors are encountered - like a missing .env file or d
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run -f .env.missing --strict -- node index.js
-[MISSING_ENV_FILE] missing file (/path/to/.env.missing). fix: [echo "HELLO=World" > .env.missing]
+[MISSING_ENV_FILE] missing file (/path/to/.env.missing). fix: [echo "HELLO=Dotenvx" > .env.missing]
 ```
 
 This can be useful in `ci` scripts where you want to fail the ci if your `.env` file could not be decrypted at runtime.
@@ -1252,7 +1252,7 @@ Specify path to `.env.keys`. This is useful with monorepos.
 ```sh
 $ mkdir -p apps/app1
 $ touch apps/app1/.env
-$ dotenvx set HELLO world -fk .env.keys -f apps/app1/.env
+$ dotenvx set HELLO Dotenvx -fk .env.keys -f apps/app1/.env
 
 $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 ```
@@ -1272,7 +1272,7 @@ $ dotenvx run --ops-off -- yourcommand
 Return a single environment variable's value.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx get HELLO
 World
@@ -1284,7 +1284,7 @@ World
 Return a single environment variable's value from a specific `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "HELLO=production" > .env.production
 
 $ dotenvx get HELLO -f .env.production
@@ -1299,7 +1299,7 @@ Specify path to `.env.keys`. This is useful with monorepos.
 ```sh
 $ mkdir -p apps/app1
 $ touch apps/app1/.env
-$ dotenvx set HELLO world -fk .env.keys -f apps/app1/.env
+$ dotenvx set HELLO Dotenvx -fk .env.keys -f apps/app1/.env
 
 $ dotenvx get HELLO -fk .env.keys -f apps/app1/.env
 world
@@ -1322,7 +1322,7 @@ String
 Return a single environment variable's value where each found value is overloaded.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "HELLO=production" > .env.production
 
 $ dotenvx get HELLO -f .env.production --env HELLO=String -f .env --overload
@@ -1384,10 +1384,10 @@ development local
 Return a json response of all key/value pairs in a `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx get
-{"HELLO":"World"}
+{"HELLO":"Dotenvx"}
 ```
 
 </details>
@@ -1396,11 +1396,11 @@ $ dotenvx get
 Return a shell formatted response of all key/value pairs in a `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "KEY=value" >> .env
 
 $ dotenvx get --format shell
-HELLO=World KEY=value
+HELLO=Dotenvx KEY=value
 ```
 
 This can be useful when combined with `env` on the command line.
@@ -1426,11 +1426,11 @@ Hello value World
 Return an `eval`-ready shell formatted response of all key/value pairs in a `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "KEY=value" >> .env
 
 $ dotenvx get --format eval
-HELLO="World"
+HELLO="Dotenvx"
 KEY="value"
 ```
 
@@ -1453,10 +1453,10 @@ Be careful with `eval` as it allows for arbitrary execution of commands. Prefer 
 Return preset machine envs as well.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx get --all
-{"PWD":"/some/file/path","USER":"username","LIBRARY_PATH":"/usr/local/lib", ..., "HELLO":"World"}
+{"PWD":"/some/file/path","USER":"username","LIBRARY_PATH":"/usr/local/lib", ..., "HELLO":"Dotenvx"}
 ```
 
 </details>
@@ -1465,7 +1465,7 @@ $ dotenvx get --all
 Make the output more readable - pretty print it.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx get --all --pretty-print
 {
@@ -1473,7 +1473,7 @@ $ dotenvx get --all --pretty-print
   "USER": "username",
   "LIBRARY_PATH": "/usr/local/lib",
   ...,
-  "HELLO": "World"
+  "HELLO": "Dotenvx"
 }
 ```
 
@@ -1485,7 +1485,7 @@ Set an encrypted key/value (on by default).
 ```sh
 $ touch .env
 
-$ dotenvx set HELLO World
+$ dotenvx set HELLO Dotenvx
 set HELLO with encryption (.env)
 ```
 
@@ -1510,7 +1510,7 @@ Specify path to `.env.keys`. This is useful with monorepos.
 $ mkdir -p apps/app1
 $ touch apps/app1/.env
 
-$ dotenvx set HELLO world -fk .env.keys -f apps/app1/.env
+$ dotenvx set HELLO Dotenvx -fk .env.keys -f apps/app1/.env
 set HELLO with encryption (.env)
 ```
 
@@ -1559,7 +1559,7 @@ Set a plaintext key/value.
 ```sh
 $ touch .env
 
-$ dotenvx set HELLO World --plain
+$ dotenvx set HELLO Dotenvx --plain
 set HELLO (.env)
 ```
 
@@ -1569,7 +1569,7 @@ set HELLO (.env)
 Encrypt the contents of a `.env` file to an encrypted `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx encrypt
 ◈ encrypted (.env) + key (.env.keys)
@@ -1583,7 +1583,7 @@ $ dotenvx encrypt
 Encrypt the contents of a specified `.env` file to an encrypted `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
@@ -1599,7 +1599,7 @@ Specify path to `.env.keys`. This is useful with monorepos.
 
 ```sh
 $ mkdir -p apps/app1
-$ echo "HELLO=World" > apps/app1/.env
+$ echo "HELLO=Dotenvx" > apps/app1/.env
 
 $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
 ◈ encrypted (apps/app1/.env)
@@ -1624,7 +1624,7 @@ $ dotenvx run -fk ../../.env.keys -f .env
 Specify the key(s) to encrypt by passing `--key`.
 
 ```sh
-$ echo "HELLO=World\nHELLO2=Universe" > .env
+$ echo "HELLO=Dotenvx\nHELLO2=Universe" > .env
 
 $ dotenvx encrypt -k HELLO2
 ◈ encrypted (.env)
@@ -1633,7 +1633,7 @@ $ dotenvx encrypt -k HELLO2
 Even specify a glob pattern.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 
 $ dotenvx encrypt -k "HE*"
 ◈ encrypted (.env)
@@ -1645,7 +1645,7 @@ $ dotenvx encrypt -k "HE*"
 Specify the key(s) to NOT encrypt by passing `--exclude-key`.
 
 ```sh
-$ echo "HELLO=World\nHELLO2=Universe" > .env
+$ echo "HELLO=Dotenvx\nHELLO2=Universe" > .env
 
 $ dotenvx encrypt -ek HELLO
 ◈ encrypted (.env)
@@ -1654,7 +1654,7 @@ $ dotenvx encrypt -ek HELLO
 Even specify a glob pattern.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 
 $ dotenvx encrypt -ek "HO*"
 ◈ encrypted (.env)
@@ -1666,7 +1666,7 @@ $ dotenvx encrypt -ek "HO*"
 Encrypt the contents of a `.env` file and send to stdout.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx encrypt --stdout
 #/-------------------[DOTENV_PUBLIC_KEY]--------------------/
 #/            public-key encryption for .env files          /
@@ -1680,7 +1680,7 @@ HELLO="encrypted:BDqDBibm4wsYqMpCjTQ6BsDHmMadg9K3dAt+Z9HPMfLEIRVz50hmLXPXRuDBXaJ
 or send to a file:
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx encrypt --stdout > somefile.txt
 ```
 
@@ -1690,7 +1690,7 @@ $ dotenvx encrypt --stdout > somefile.txt
 Decrypt the contents of an encrypted `.env` file to an unencrypted `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx decrypt
@@ -1703,7 +1703,7 @@ $ dotenvx decrypt
 Decrypt the contents of a specified encrypted `.env` file to an unencrypted `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
@@ -1719,7 +1719,7 @@ Specify path to `.env.keys`. This is useful with monorepos.
 
 ```sh
 $ mkdir -p apps/app1
-$ echo "HELLO=World" > apps/app1/.env
+$ echo "HELLO=Dotenvx" > apps/app1/.env
 
 $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
 ◈ encrypted (apps/app1/.env)
@@ -1733,7 +1733,7 @@ $ dotenvx decrypt -fk .env.keys -f apps/app1/.env
 Decrypt the contents of a specified key inside an encrypted `.env` file.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx decrypt -k HELLO
@@ -1743,7 +1743,7 @@ $ dotenvx decrypt -k HELLO
 Even specify a glob pattern.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx decrypt -k "HE*"
@@ -1756,7 +1756,7 @@ $ dotenvx decrypt -k "HE*"
 Decrypt the contents inside an encrypted `.env` file except for an excluded key.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx decrypt -ek HOLA
@@ -1766,7 +1766,7 @@ $ dotenvx decrypt -ek HOLA
 Even specify a glob pattern.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx decrypt -ek "HO*"
@@ -1786,7 +1786,7 @@ $ dotenvx decrypt --stdout
 #/----------------------------------------------------------/
 DOTENV_PUBLIC_KEY="034af93e93708b994c10f236c96ef88e47291066946cce2e8d98c9e02c741ced45"
 # .env
-HELLO="World"
+HELLO="Dotenvx"
 ```
 
 or send to a file:
@@ -1801,7 +1801,7 @@ $ dotenvx decrypt --stdout > somefile.txt
 Print public/private keys for `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx encrypt
 
 $ dotenvx keypair
@@ -1828,7 +1828,7 @@ Specify path to `.env.keys`. This is useful for printing public/private keys for
 
 ```sh
 $ mkdir -p apps/app1
-$ echo "HELLO=World" > apps/app1/.env
+$ echo "HELLO=Dotenvx" > apps/app1/.env
 $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
 
 $ dotenvx keypair -fk .env.keys -f apps/app1/.env
@@ -1841,7 +1841,7 @@ $ dotenvx keypair -fk .env.keys -f apps/app1/.env
 Print specific keypair for `.env` file.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx encrypt
 
 $ dotenvx keypair DOTENV_PRIVATE_KEY
@@ -1854,7 +1854,7 @@ $ dotenvx keypair DOTENV_PRIVATE_KEY
 Print a shell formatted response of public/private keys.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenx encrypt
 
 $ dotenvx keypair --format shell
@@ -1939,7 +1939,7 @@ $ dotenvx ls -ef '**/.env.prod*'
 Rotate public/private keys for `.env` file and re-encrypt all encrypted values.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx rotate
@@ -1952,7 +1952,7 @@ $ dotenvx rotate
 Rotate public/private keys for a specified encrypted `.env` file and re-encrypt all encrypted values.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
@@ -1968,7 +1968,7 @@ Specify path to `.env.keys`. This is useful with monorepos.
 
 ```sh
 $ mkdir -p apps/app1
-$ echo "HELLO=World" > apps/app1/.env
+$ echo "HELLO=Dotenvx" > apps/app1/.env
 
 $ dotenvx encrypt -fk .env.keys -f apps/app1/.env
 ◈ encrypted (apps/app1/.env)
@@ -1982,7 +1982,7 @@ $ dotenvx rotate -fk .env.keys -f apps/app1/.env
 Rotate the contents of a specified key inside an encrypted `.env` file.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx rotate -k HELLO
@@ -1992,7 +1992,7 @@ $ dotenvx rotate -k HELLO
 Even specify a glob pattern.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx rotate -k "HE*"
@@ -2005,7 +2005,7 @@ $ dotenvx rotate -k "HE*"
 Rotate the encrypted contents inside an encrypted `.env` file except for an excluded key.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx rotate -ek HOLA
@@ -2015,7 +2015,7 @@ $ dotenvx rotate -ek HOLA
 Even specify a glob pattern.
 
 ```sh
-$ echo "HELLO=World\nHOLA=Mundo" > .env
+$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt
 ◈ encrypted (.env)
 $ dotenvx rotate -ek "HO*"
@@ -2086,7 +2086,7 @@ Usage: @dotenvx/dotenvx run [options]
 inject env at runtime [dotenvx run -- yourcommand]
 
 Options:
-  -e, --env <strings...>            environment variable(s) set as string (example: "HELLO=World") (default: [])
+  -e, --env <strings...>            environment variable(s) set as string (example: "HELLO=Dotenvx") (default: [])
   -f, --env-file <paths...>         path(s) to your env file(s) (default: [])
   -fv, --env-vault-file <paths...>  path(s) to your .env.vault file(s) (default: [])
   -o, --overload                    override existing env variables
@@ -2102,12 +2102,12 @@ Examples:
 
 Try it:
 
-  $ echo "HELLO=World" > .env
+  $ echo "HELLO=Dotenvx" > .env
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -- node index.js
   [dotenvx@1.X.X] injecting env (1) from .env
-  Hello World
+  Hello Dotenvx
 ```
 
 </details>
@@ -2131,7 +2131,7 @@ CLI extensions.
 In one command, generate a `.env.example` file from your current `.env` file contents.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx ext genexample
 ▣ generated (.env.example)
@@ -2148,7 +2148,7 @@ HELLO=""
 Pass multiple `.env` files to generate your `.env.example` file from the combination of their contents.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ echo "DB_HOST=example.com" > .env.production
 
 $ dotenvx ext genexample -f .env -f .env.production
@@ -2167,7 +2167,7 @@ DB_HOST=""
 Generate a `.env.example` file inside the specified directory. Useful for monorepos.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ mkdir -p apps/backend
 $ echo "HELLO=Backend" > apps/backend/.env
 
@@ -2226,7 +2226,7 @@ $ dotenvx ext precommit --install
 Prevent `.env` files from being committed to code inside a specified path to a directory.
 
 ```sh
-$ echo "HELLO=World" > .env
+$ echo "HELLO=Dotenvx" > .env
 $ mkdir -p apps/backend
 $ echo "HELLO=Backend" > apps/backend/.env
 
@@ -2293,7 +2293,7 @@ Use directly in node.js code.
 
 ```ini
 # .env
-HELLO="World"
+HELLO="Dotenvx"
 ```
 
 ```js
@@ -2306,7 +2306,7 @@ console.log(`Hello ${process.env.HELLO}`)
 ```sh
 $ node index.js
 [dotenvx@1.X.X] injecting env (1) from .env
-Hello World
+Hello Dotenvx
 ```
 
 It defaults to looking for a `.env` file.
@@ -2323,7 +2323,7 @@ HELLO="Me"
 
 ```ini
 # .env
-HELLO="World"
+HELLO="Dotenvx"
 ```
 
 ```js
@@ -2355,7 +2355,7 @@ HELLO="Me"
 
 ```ini
 # .env
-HELLO="World"
+HELLO="Dotenvx"
 ```
 
 ```js
@@ -2372,7 +2372,7 @@ console.log(`Hello ${process.env.HELLO}`)
 ```sh
 $ node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.local, .env
-Hello World
+Hello Dotenvx
 ```
 
 </details>
@@ -2382,7 +2382,7 @@ Suppress all output (except errors).
 
 ```ini
 # .env
-HELLO="World"
+HELLO="Dotenvx"
 ```
 
 ```js
@@ -2399,7 +2399,7 @@ console.log(`Hello ${process.env.HELLO}`)
 ```sh
 $ node index.js
 Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
-Hello World
+Hello Dotenvx
 ```
 
 </details>
@@ -2409,7 +2409,7 @@ Exit with code `1` if any errors are encountered - like a missing .env file or d
 
 ```ini
 # .env
-HELLO="World"
+HELLO="Dotenvx"
 ```
 
 ```js
@@ -2435,7 +2435,7 @@ Use `ignore` to suppress specific errors like `MISSING_ENV_FILE`.
 
 ```ini
 # .env
-HELLO="World"
+HELLO="Dotenvx"
 ```
 
 ```js
@@ -2452,7 +2452,7 @@ console.log(`Hello ${process.env.HELLO}`)
 ```sh
 $ node index.js
 [dotenvx@1.X.X] injecting env (1) from .env
-Hello World
+Hello Dotenvx
 ```
 
 </details>
@@ -2462,7 +2462,7 @@ Use `envKeysFile` to customize the path to your `.env.keys` file. This is useful
 
 ```ini
 # .env
-HELLO="World"
+HELLO="Dotenvx"
 ```
 
 ```js
@@ -2520,14 +2520,14 @@ Parse a `.env` string directly in node.js code.
 ```js
 // index.js
 const dotenvx = require('@dotenvx/dotenvx')
-const src = 'HELLO=World'
+const src = 'HELLO=Dotenvx'
 const parsed = dotenvx.parse(src)
 console.log(`Hello ${parsed.HELLO}`)
 ```
 
 ```sh
 $ node index.js
-Hello World
+Hello Dotenvx
 ```
 
 </details>
@@ -2563,7 +2563,7 @@ console.log(`Hello ${parsed.HELLO}`)
 
 ```sh
 $ node index.js
-Hello World
+Hello Dotenvx
 ```
 </details>
 <details><summary>`set(KEY, value)`</summary><br>
@@ -2573,7 +2573,7 @@ Programmatically set an environment variable.
 ```js
 // index.js
 const dotenvx = require('@dotenvx/dotenvx')
-dotenvx.set('HELLO', 'World', { path: '.env' })
+dotenvx.set('HELLO', 'Dotenvx', { path: '.env' })
 ```
 
 </details>
@@ -2584,7 +2584,7 @@ Programmatically set a plaintext environment variable.
 ```js
 // index.js
 const dotenvx = require('@dotenvx/dotenvx')
-dotenvx.set('HELLO', 'World', { plain: true })
+dotenvx.set('HELLO', 'Dotenvx', { plain: true })
 ```
 
 </details>
