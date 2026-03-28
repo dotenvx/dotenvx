@@ -9,16 +9,30 @@ const proxyquire = require('proxyquire').noCallThru()
 const Sets = require('../../../src/lib/services/sets')
 
 let writeFileXStub
+const ROOT_DIR = path.resolve(__dirname, '../../..')
+const ROOT_ENV_FILE = path.join(ROOT_DIR, '.env')
+const ROOT_ENV_KEYS_FILE = path.join(ROOT_DIR, '.env.keys')
+
+function cleanupRootEnvFiles () {
+  if (fs.existsSync(ROOT_ENV_FILE)) {
+    fs.unlinkSync(ROOT_ENV_FILE)
+  }
+  if (fs.existsSync(ROOT_ENV_KEYS_FILE)) {
+    fs.unlinkSync(ROOT_ENV_KEYS_FILE)
+  }
+}
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
+  cleanupRootEnvFiles()
 
   writeFileXStub = sinon.stub(fsx, 'writeFileX')
 })
 
 t.afterEach((ct) => {
   writeFileXStub.restore()
+  cleanupRootEnvFiles()
 })
 
 t.test('#run (no arguments)', ct => {
