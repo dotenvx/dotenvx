@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.58.0...main)
 
+### Changed
+
+* `encrypt` and `set` now create a `.env` file if one does not exist ([#771](https://github.com/dotenvx/dotenvx/pull/771))
+* pass `--no-create` to prevent file creation
+
 ## [1.58.0](https://github.com/dotenvx/dotenvx/compare/v1.57.5...v1.58.0) (2026-03-27)
 
 ### Changed
