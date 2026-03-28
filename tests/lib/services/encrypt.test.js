@@ -87,6 +87,35 @@ t.test('#run (no env file) with --no-create', ct => {
   ct.end()
 })
 
+t.test('#run (blank existing .env file) seeds sample kit before encrypting', ct => {
+  const cwd = process.cwd()
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+  process.chdir(tmpdir)
+
+  const envPath = path.join(tmpdir, '.env')
+  fs.writeFileSync(envPath, '', 'utf8')
+
+  const {
+    processedEnvs,
+    changedFilepaths,
+    unchangedFilepaths
+  } = new Encrypt().run()
+
+  ct.equal(processedEnvs.length, 1)
+  ct.equal(processedEnvs[0].envFilepath, '.env')
+  ct.equal(processedEnvs[0].kitCreated, 'sample')
+  ct.notOk(processedEnvs[0].error)
+  ct.same(changedFilepaths, ['.env'])
+  ct.same(unchangedFilepaths, [])
+
+  const parsed = dotenvParse(processedEnvs[0].envSrc)
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'provisions public key on encrypt')
+  ct.match(parsed.OPENAI_API_KEY, /^encrypted:/, 'encrypts seeded sample value')
+
+  process.chdir(cwd)
+  ct.end()
+})
+
 t.test('#run (no arguments and some other error)', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
