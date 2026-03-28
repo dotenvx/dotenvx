@@ -43,8 +43,9 @@ t.test('#run (no arguments)', ct => {
   ct.same(unchangedFilepaths, [])
 
   const parsed = dotenvParse(processedEnvs[0].envSrc)
-  ct.ok(parsed.OPENAI_API_KEY, 'writes starter template on first encrypt')
-  ct.notOk(fs.existsSync(path.join(tmpdir, '.env.keys')), 'does not create .env.keys for starter template')
+  ct.ok(parsed.DOTENV_PUBLIC_KEY, 'provisions public key on first encrypt')
+  ct.match(parsed.OPENAI_API_KEY, /^encrypted:/, 'encrypts sample kit values on first encrypt')
+  ct.ok(fs.existsSync(path.join(tmpdir, '.env.keys')), 'creates .env.keys on first encrypt (ops off)')
 
   process.chdir(cwd)
   ct.end()
