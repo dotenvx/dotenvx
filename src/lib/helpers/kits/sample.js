@@ -3,8 +3,8 @@ const SAMPLE_ENV_KIT = `
 DATABASE_URL="postgresql://postgres:pass@db.ref.supabase.co:5432/postgres"
 
 # ── Auth ─────────────────────────────────────────
-AUTH0_CLIENT_ID="q8fij2iug0CmgPLfTfG1tZGdTQyGaTUA"
-AUTH0_CLIENT_SECRET="Q5O9hXhVY0aW2sFJ8pL1nD7cR4tG6mK3zP0uE5bS2vN9"
+AUTH0_CLIENT_ID="xxxx"
+AUTH0_CLIENT_SECRET="xxxx"
 
 # ── AI / LLM ────────────────────────────────────
 OPENAI_API_KEY="sk-xxxx"
@@ -14,8 +14,8 @@ ANTHROPIC_API_KEY="sk-ant-xxxx"
 RESEND_API_KEY="re_xxxx"
 
 # ── Cloud Storage ────────────────────────────────
-AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
-AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+AWS_ACCESS_KEY_ID="xxxx"
+AWS_SECRET_ACCESS_KEY="xxxx"
 
 # ── Analytics / Monitoring ───────────────────────
 SENTRY_DSN="https://hex@o1234.ingest.us.sentry.io/1234567"
@@ -27,7 +27,7 @@ STRIPE_API_KEY="sk_test_xxxx"
 FLAGSMITH_ENV_ID="xxxx"
 
 # ── CI/CD / Deployment ──────────────────────────
-VERCEL_TOKEN="vcp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+VERCEL_TOKEN="vcp_xxxx"
 `.trimStart()
 
 module.exports = SAMPLE_ENV_KIT
