@@ -1,4 +1,6 @@
 const SAMPLE_ENV_KIT = `
+HELLO="Dotenvx"
+
 # ── Database ─────────────────────────────────────
 DATABASE_URL="postgresql://postgres:pass@db.ref.supabase.co:5432/postgres"
 
