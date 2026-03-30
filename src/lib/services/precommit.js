@@ -89,10 +89,7 @@ class Precommit {
         }
       })
 
-      let successMessage = `[dotenvx@${packageJson.version}][precommit] .env files (${count}) protected (encrypted or gitignored)`
-      if (count === 0) {
-        successMessage = `[dotenvx@${packageJson.version}][precommit] zero .env files`
-      }
+      let successMessage = count === 0 ? `▣ no .env files` : `▣ encrypted/gitignored (${count})`
       if (warnings.length > 0) {
         successMessage += ` with warnings (${warnings.length})`
       }
