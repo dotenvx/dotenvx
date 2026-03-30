@@ -72,11 +72,7 @@ class Prebuild {
       }
     })
 
-    let successMessage = `[dotenvx@${packageJson.version}][prebuild] .env files (${count}) protected (encrypted or dockerignored)`
-
-    if (count === 0) {
-      successMessage = `[dotenvx@${packageJson.version}][prebuild] zero .env files`
-    }
+    let successMessage = count === 0 ? `▣ no .env files` : `▣ encrypted/dockerignored (${count})`
     if (warnings.length > 0) {
       successMessage += ` with warnings (${warnings.length})`
     }
