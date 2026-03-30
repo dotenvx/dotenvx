@@ -6,7 +6,6 @@ const ignore = require('ignore')
 const Ls = require('../services/ls')
 
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
-const packageJson = require('./../helpers/packageJson')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 const Errors = require('./../helpers/errors')
 const childProcess = require('child_process')
@@ -39,7 +38,7 @@ class Precommit {
       // 1. check for .gitignore file
       if (!fsx.existsSync('.gitignore')) {
         const warning = new Errors({
-          message: `.gitignore missing`,
+          message: '.gitignore missing',
           help: 'fix: [touch .gitignore]'
         }).custom()
         warnings.push(warning)
@@ -89,7 +88,7 @@ class Precommit {
         }
       })
 
-      let successMessage = count === 0 ? `▣ no .env files` : `▣ encrypted/gitignored (${count})`
+      let successMessage = count === 0 ? '▣ no .env files' : `▣ encrypted/gitignored (${count})`
       if (warnings.length > 0) {
         successMessage += ` with warnings (${warnings.length})`
       }

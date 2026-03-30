@@ -7,7 +7,6 @@ const Ls = require('../services/ls')
 const Errors = require('../helpers/errors')
 
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
-const packageJson = require('./../helpers/packageJson')
 const MISSING_DOCKERIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Prebuild {
@@ -26,7 +25,7 @@ class Prebuild {
     // 1. check for .dockerignore file
     if (!fsx.existsSync('.dockerignore')) {
       const warning = new Errors({
-        message: `.dockerignore missing`,
+        message: '.dockerignore missing',
         help: 'fix: [touch .dockerignore]'
       }).custom()
       warnings.push(warning)
@@ -72,7 +71,7 @@ class Prebuild {
       }
     })
 
-    let successMessage = count === 0 ? `▣ no .env files` : `▣ encrypted/dockerignored (${count})`
+    let successMessage = count === 0 ? '▣ no .env files' : `▣ encrypted/dockerignored (${count})`
     if (warnings.length > 0) {
       successMessage += ` with warnings (${warnings.length})`
     }
