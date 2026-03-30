@@ -39,7 +39,7 @@ class Precommit {
       // 1. check for .gitignore file
       if (!fsx.existsSync('.gitignore')) {
         const warning = new Errors({
-          message: `[dotenvx@${packageJson.version}][precommit] .gitignore missing`,
+          message: `.gitignore missing`,
           help: 'fix: [touch .gitignore]'
         }).custom()
         warnings.push(warning)
@@ -63,7 +63,7 @@ class Precommit {
           if (ig.ignores(file)) {
             if (file === '.env.example' || file === '.env.x') {
               const warning = new Errors({
-                message: `[dotenvx@${packageJson.version}][precommit] ${file} (currently ignored but should not be)`,
+                message: `${file} ignored (should not be)`,
                 help: `fix: [dotenvx ext gitignore --pattern !${file}]`
               }).custom()
               warnings.push(warning)
@@ -75,10 +75,10 @@ class Precommit {
 
               // if contents are encrypted don't raise an error
               if (!encrypted) {
-                let errorMsg = `[dotenvx@${packageJson.version}][precommit] ${file} not protected (encrypted or gitignored)`
+                let errorMsg = `${file} not encrypted/gitignored`
                 let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
                 if (file.includes('.env.keys')) {
-                  errorMsg = `[dotenvx@${packageJson.version}][precommit] ${file} not protected (gitignored)`
+                  errorMsg = `${file} not gitignored`
                   errorHelp = `fix: [dotenvx ext gitignore --pattern ${file}]`
                 }
 

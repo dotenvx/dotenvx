@@ -26,7 +26,7 @@ class Prebuild {
     // 1. check for .dockerignore file
     if (!fsx.existsSync('.dockerignore')) {
       const warning = new Errors({
-        message: `[dotenvx@${packageJson.version}][prebuild] .dockerignore missing`,
+        message: `.dockerignore missing`,
         help: 'fix: [touch .dockerignore]'
       }).custom()
       warnings.push(warning)
@@ -47,7 +47,7 @@ class Prebuild {
       if (ig.ignores(file)) {
         if (file === '.env.example' || file === '.env.x') {
           const warning = new Errors({
-            message: `[dotenvx@${packageJson.version}][prebuild] ${file} (currently ignored but should not be)`,
+            message: `${file} ignored (should not be)`,
             help: `fix: [dotenvx ext gitignore --pattern !${file}]`
           }).custom()
           warnings.push(warning)
@@ -59,10 +59,10 @@ class Prebuild {
 
           // if contents are encrypted don't raise an error
           if (!encrypted) {
-            let errorMsg = `[dotenvx@${packageJson.version}][prebuild] ${file} not protected (encrypted or dockerignored)`
+            let errorMsg = `${file} not encrypted/dockerignored`
             let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
             if (file.includes('.env.keys')) {
-              errorMsg = `[dotenvx@${packageJson.version}][prebuild] ${file} not protected (dockerignored)`
+              errorMsg = `${file} not dockerignored`
               errorHelp = `fix: [dotenvx ext gitignore --pattern ${file}]`
             }
 
