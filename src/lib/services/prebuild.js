@@ -7,7 +7,6 @@ const Ls = require('../services/ls')
 const Errors = require('../helpers/errors')
 
 const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
-const packageJson = require('./../helpers/packageJson')
 const MISSING_DOCKERIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Prebuild {
@@ -26,7 +25,7 @@ class Prebuild {
     // 1. check for .dockerignore file
     if (!fsx.existsSync('.dockerignore')) {
       const warning = new Errors({
-        message: `[dotenvx@${packageJson.version}][prebuild] .dockerignore missing`,
+        message: '.dockerignore missing',
         help: 'fix: [touch .dockerignore]'
       }).custom()
       warnings.push(warning)
@@ -47,7 +46,7 @@ class Prebuild {
       if (ig.ignores(file)) {
         if (file === '.env.example' || file === '.env.x') {
           const warning = new Errors({
-            message: `[dotenvx@${packageJson.version}][prebuild] ${file} (currently ignored but should not be)`,
+            message: `${file} ignored (should not be)`,
             help: `fix: [dotenvx ext gitignore --pattern !${file}]`
           }).custom()
           warnings.push(warning)
@@ -59,10 +58,10 @@ class Prebuild {
 
           // if contents are encrypted don't raise an error
           if (!encrypted) {
-            let errorMsg = `[dotenvx@${packageJson.version}][prebuild] ${file} not protected (encrypted or dockerignored)`
+            let errorMsg = `${file} not encrypted/dockerignored`
             let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
             if (file.includes('.env.keys')) {
-              errorMsg = `[dotenvx@${packageJson.version}][prebuild] ${file} not protected (dockerignored)`
+              errorMsg = `${file} not dockerignored`
               errorHelp = `fix: [dotenvx ext gitignore --pattern ${file}]`
             }
 
@@ -72,11 +71,7 @@ class Prebuild {
       }
     })
 
-    let successMessage = `[dotenvx@${packageJson.version}][prebuild] .env files (${count}) protected (encrypted or dockerignored)`
-
-    if (count === 0) {
-      successMessage = `[dotenvx@${packageJson.version}][prebuild] zero .env files`
-    }
+    let successMessage = count === 0 ? '▣ no .env files' : `▣ encrypted/dockerignored (${count})`
     if (warnings.length > 0) {
       successMessage += ` with warnings (${warnings.length})`
     }
