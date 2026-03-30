@@ -56,11 +56,6 @@ const config = function (options = {}) {
       uniqueInjectedKeys
     } = new Run(envs, overload, processEnv, envKeysFile, opsOn).run()
 
-    if (opsOn) {
-      // removed radar feature for now. contact me at mot@dotenvx.com if still needed for your organization.
-      // try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
-    }
-
     let lastError
     /** @type {Record<string, string>} */
     const parsedAll = {}
