@@ -5,12 +5,9 @@ const childProcess = require('child_process')
 
 const Precommit = require('../../../src/lib/services/precommit')
 const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitHook')
-const packageJson = require('../../../src/lib/helpers/packageJson')
 const Ls = require('../../../src/lib/services/ls')
 
 const originalExecSync = childProcess.execSync
-
-const prefix = `[dotenvx@${packageJson.version}][precommit]`
 
 t.beforeEach((ct) => {
   sinon.restore()
@@ -50,7 +47,7 @@ t.test('#run (no gitignore file)', ct => {
   sinon.stub(Ls.prototype, 'run').returns([])
 
   const { warnings } = new Precommit().run()
-  ct.same(warnings[0].message, `${prefix} .gitignore missing`)
+  ct.same(warnings[0].message, '.gitignore missing')
 
   ct.end()
 })
@@ -63,7 +60,7 @@ t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
 
   const { warnings } = new Precommit().run()
 
-  ct.same(warnings[0].message, `${prefix} .env.example (currently ignored but should not be)`)
+  ct.same(warnings[0].message, '.env.example ignored (should not be)')
 
   ct.end()
 })
@@ -75,7 +72,7 @@ t.test('#run (gitignore is ignoring .env.x file and shouldn\'t)', ct => {
   childProcess.execSync.returns(Buffer.from('.env.x'))
 
   const { warnings } = new Precommit().run()
-  ct.same(warnings[0].message, `${prefix} .env.x (currently ignored but should not be)`)
+  ct.same(warnings[0].message, '.env.x ignored (should not be)')
 
   ct.end()
 })
@@ -98,7 +95,7 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.production not protected (encrypted or gitignored)`)
+    ct.same(error.message, '.env.production not encrypted/gitignored')
   }
 
   ct.end()
@@ -122,7 +119,7 @@ t.test('#run (gitignore is not ignore .env.keys file and should)', ct => {
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.keys not protected (gitignored)`)
+    ct.same(error.message, '.env.keys not gitignored')
   }
 
   ct.end()
@@ -147,7 +144,7 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isFil
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.production not protected (encrypted or gitignored)`)
+    ct.same(error.message, '.env.production not encrypted/gitignored')
   }
 
   ct.end()
@@ -171,7 +168,7 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isInG
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.production not protected (encrypted or gitignored)`)
+    ct.same(error.message, '.env.production not encrypted/gitignored')
   }
 
   ct.end()
@@ -193,7 +190,7 @@ t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
     new Precommit().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} packages/app/.env.production not protected (encrypted or gitignored)`)
+    ct.same(error.message, 'packages/app/.env.production not encrypted/gitignored')
   }
 
   ct.end()

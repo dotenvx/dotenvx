@@ -4,12 +4,9 @@ const sinon = require('sinon')
 const childProcess = require('child_process')
 
 const Prebuild = require('../../../src/lib/services/prebuild')
-const packageJson = require('../../../src/lib/helpers/packageJson')
 const Ls = require('../../../src/lib/services/ls')
 
 const originalExecSync = childProcess.execSync
-
-const prefix = `[dotenvx@${packageJson.version}][prebuild]`
 
 t.beforeEach((ct) => {
   sinon.restore()
@@ -34,7 +31,7 @@ t.test('#run (no dockerignore file)', ct => {
   sinon.stub(Ls.prototype, 'run').returns([])
 
   const { warnings } = new Prebuild().run()
-  ct.same(warnings[0].message, `${prefix} .dockerignore missing`)
+  ct.same(warnings[0].message, '.dockerignore missing')
 
   ct.end()
 })
@@ -48,7 +45,7 @@ t.test('#run (dockerignore is ignoring .env.example file and shouldn\'t)', ct =>
 
   const { warnings } = new Prebuild().run()
 
-  ct.same(warnings[0].message, `${prefix} .env.example (currently ignored but should not be)`)
+  ct.same(warnings[0].message, '.env.example ignored (should not be)')
 
   ct.end()
 })
@@ -61,7 +58,7 @@ t.test('#run (dockerignore is ignoring .env.x file and shouldn\'t)', ct => {
   childProcess.execSync.returns(Buffer.from('.env.x'))
 
   const { warnings } = new Prebuild().run()
-  ct.same(warnings[0].message, `${prefix} .env.x (currently ignored but should not be)`)
+  ct.same(warnings[0].message, '.env.x ignored (should not be)')
 
   ct.end()
 })
@@ -85,7 +82,7 @@ t.test('#run (dockerignore is not ignore .env.production file and should)', ct =
     new Prebuild().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.production not protected (encrypted or dockerignored)`)
+    ct.same(error.message, '.env.production not encrypted/dockerignored')
   }
 
   ct.end()
@@ -110,7 +107,7 @@ t.test('#run (dockerignore is not ignore .env.keys file and should)', ct => {
     new Prebuild().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.keys not protected (dockerignored)`)
+    ct.same(error.message, '.env.keys not dockerignored')
   }
 
   ct.end()
@@ -134,7 +131,7 @@ t.test('#run (dockerignore is not ignore .env.production file and should) AND is
     new Prebuild().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} .env.production not protected (encrypted or dockerignored)`)
+    ct.same(error.message, '.env.production not encrypted/dockerignored')
   }
 
   ct.end()
@@ -156,7 +153,7 @@ t.test('#run (.env files in subfolders throw error in prebuild hook)', ct => {
     new Prebuild().run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, `${prefix} packages/app/.env.production not protected (encrypted or dockerignored)`)
+    ct.same(error.message, 'packages/app/.env.production not encrypted/dockerignored')
   }
 
   ct.end()
