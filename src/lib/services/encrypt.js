@@ -71,6 +71,7 @@ class Encrypt {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
+    let fileCreated = false
 
     const filepath = path.resolve(envFilepath)
     row.filepath = filepath
@@ -81,12 +82,14 @@ class Encrypt {
       // but if noCreate is false then create the file if it doesn't exist
       if (!fsx.existsSync(filepath) && !this.noCreate) {
         fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
+        fileCreated = true
       }
       const encoding = detectEncoding(filepath)
       let envSrc = fsx.readFileX(filepath, { encoding })
       if (envSrc.trim().length === 0) {
         envSrc = SAMPLE_ENV_KIT
         row.kitCreated = 'sample'
+        row.changed = true
       }
       const envParsed = dotenvParse(envSrc)
 
@@ -148,6 +151,9 @@ class Encrypt {
       }
 
       row.envSrc = envSrc
+      if (fileCreated) {
+        row.changed = true
+      }
       if (row.changed) {
         this.changedFilepaths.add(envFilepath)
       } else {
