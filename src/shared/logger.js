@@ -20,8 +20,8 @@ const success = getColor('amber')
 const successv = (m) => getColor('amber')(`⟐ ${m}`)
 const info = getColor('gray')
 const help = getColor('dodgerblue')
-const verbose = getColor('plum')
-const debug = getColor('plum')
+const verbose = (m) => getColor('plum')(`┆ ${m}`)
+const debug = (m) => getColor('plum')(`┆ ${m}`)
 
 let currentLevel = levels.info // default log level
 let currentName = 'dotenvx' // default logger name
@@ -121,7 +121,7 @@ function setLogLevel (options) {
   logger.setLevel(logLevel)
   // Only log which level it's setting if it's not set to quiet mode
   if (!options.quiet || (options.quiet && logLevel !== 'error')) {
-    logger.debug(`Setting log level to ${logLevel}`)
+    logger.debug(`setting log level to: ${logLevel}`)
   }
 }
 

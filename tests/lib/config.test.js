@@ -218,7 +218,7 @@ t.test('logs when in debug mode', ct => {
   dotenvx.config({ debug: true })
 
   ct.equal(logger.level, 'debug')
-  ct.ok(logStub.calledWith('Setting log level to debug'))
+  ct.ok(logStub.calledWith('setting log level to: debug'))
 
   logStub.restore()
 })
@@ -239,7 +239,7 @@ t.test('logs in verbose mode', ct => {
   dotenvx.config({ verbose: true })
 
   ct.equal(logger.level, 'verbose')
-  ct.ok(logStub.calledWith('Setting log level to verbose'))
+  ct.ok(logStub.calledWith('setting log level to: verbose'))
 
   logStub.restore()
 })
@@ -252,7 +252,7 @@ t.test('sets specific log level and logs it', ct => {
   dotenvx.config({ logLevel: 'warn' })
 
   ct.equal(logger.level, 'warn')
-  ct.ok(logStub.calledWith('Setting log level to warn'))
+  ct.ok(logStub.calledWith('setting log level to: warn'))
 
   logStub.restore()
 })
@@ -265,7 +265,7 @@ t.test('verbose mode overrides quiet mode', ct => {
   dotenvx.config({ quiet: true, verbose: true })
 
   ct.equal(logger.level, 'verbose')
-  ct.ok(logStub.calledWith('Setting log level to verbose'))
+  ct.ok(logStub.calledWith('setting log level to: verbose'))
 
   logStub.restore()
 })
