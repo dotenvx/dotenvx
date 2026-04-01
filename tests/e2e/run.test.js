@@ -27,6 +27,12 @@ function stripOpsStatus (output) {
     .join('\n')
 }
 
+function modernizeDebugOutput (output) {
+  return output
+    .replace(/^Setting log level to debug$/m, '┆ setting log level to: debug')
+    .replace(/^(process command .*|options: .*|loading env from .*|\{.*\}|HELLO .*|DOTENV_PUBLIC_KEY .*|executing process command .*|expanding process command .*)$/gm, '┆ $1')
+}
+
 function execShell (commands) {
   const result = spawnSync(commands, {
     encoding: 'utf8',
@@ -65,7 +71,7 @@ t.test('#run', ct => {
   ct.equal(execShell(`${node} index.js`).stdout, 'Hello undefined')
   ct.equal(execShell(`${dotenvx} run -- ${command}`).stdout, `⟐ injecting env (1) from .env · dotenvx@${version}\nHello World`)
   ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello World') // --quiet
-  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"strict":false,"opsOff":true}
 loading env from .env (${tempDir}/.env)
@@ -75,7 +81,7 @@ HELLO set to World
 ⟐ injecting env (1) from .env · dotenvx@${version}
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
-Hello World`) // --debug
+Hello World`)) // --debug
 
   ct.end()
 })
@@ -90,7 +96,7 @@ t.test('#run - multiple .env files', ct => {
   const command = `${node} index.js`
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env -- ${command}`).stdout, `⟐ injecting env (1) from .env.local, .env · dotenvx@${version}\nHello local`)
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --quiet -- ${command}`).stdout, 'Hello local') // --quiet
-  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --debug -- ${command}`).stdout, `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"opsOff":true}
 loading env from .env.local (${tempDir}/.env.local)
@@ -104,7 +110,7 @@ HELLO pre-exists as local (protip: use --overload to override)
 ⟐ injecting env (1) from .env.local, .env · dotenvx@${version}
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
-Hello local`) // --debug
+Hello local`)) // --debug
 
   ct.end()
 })
@@ -119,7 +125,7 @@ t.test('#run - multiple .env files --overload', ct => {
   const command = `${node} index.js`
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload -- ${command}`).stdout, `⟐ injecting env (1) from .env.local, .env · dotenvx@${version}\nHello World`)
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --quiet -- ${command}`).stdout, 'Hello World') // --quiet
-  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --debug -- ${command}`).stdout, `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"opsOff":true,"overload":true}
 loading env from .env.local (${tempDir}/.env.local)
@@ -133,7 +139,7 @@ HELLO set to World
 ⟐ injecting env (1) from .env.local, .env · dotenvx@${version}
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
-Hello World`) // --debug
+Hello World`)) // --debug
 
   ct.end()
 })
@@ -174,7 +180,7 @@ t.test('#run - --env', ct => {
   const command = `${node} index.js`
   ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env -- ${command}`).stdout, `⟐ injecting env (1) from .env, and --env flag · dotenvx@${version}\nHello String`)
   ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --quiet -- ${command}`).stdout, 'Hello String') // --quiet
-  ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --debug -- ${command}`).stdout, `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
 process command [${node} index.js]
 options: {"env":["HELLO=String"],"envFile":[".env"],"strict":false,"opsOff":true}
 loading env from string (HELLO=String)
@@ -188,7 +194,7 @@ HELLO pre-exists as String (protip: use --overload to override)
 ⟐ injecting env (1) from .env, and --env flag · dotenvx@${version}
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
-Hello String`) // --debug
+Hello String`)) // --debug
 
   ct.end()
 })
@@ -206,7 +212,7 @@ t.test('#run - encrypted .env', ct => {
   const command = `${node} index.js`
   ct.equal(execShell(`${dotenvx} run -- ${command}`).stdout, `⟐ injecting env (2) from .env · dotenvx@${version}\nHello encrypted`)
   ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello encrypted') // --quiet
-  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, `Setting log level to debug
+  ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"strict":false,"opsOff":true}
 loading env from .env (${tempDir}/.env)
@@ -218,7 +224,7 @@ HELLO set to encrypted
 ⟐ injecting env (2) from .env · dotenvx@${version}
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
-Hello encrypted`) // --debug
+Hello encrypted`)) // --debug
 
   ct.end()
 })
@@ -248,7 +254,7 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
 
   o = execShell(`${dotenvx} run --debug -- ${command}`)
   ct.equal(o.stderr, '☠ [MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]')
-  ct.equal(o.stdout, `Setting log level to debug
+  ct.equal(o.stdout, modernizeDebugOutput(`Setting log level to debug
 process command [${node} index.js]
 options: {"env":[],"envFile":[],"strict":false,"opsOff":true}
 loading env from .env (${tempDir}/.env)
@@ -260,7 +266,7 @@ HELLO set to ${encrypted}
 ⟐ injecting env (2) from .env · dotenvx@${version}
 executing process command [${node} index.js]
 expanding process command to [${node} index.js]
-Hello ${encrypted}`) // --debug
+Hello ${encrypted}`)) // --debug
 
   ct.end()
 })
