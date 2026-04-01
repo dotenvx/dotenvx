@@ -1,21 +1,23 @@
 const SAMPLE_ENV_KIT = `
+HELLO="Dotenvx"
+
 # ── Hosting ──────────────────────────────────────
-AWS_ACCESS_KEY_ID="encrypted:BD3Z3cTcT19q…"
-AWS_SECRET_ACCESS_KEY="encrypted:BGB3QpSQ…"
-DATABASE_URL="encrypted:BHyLV2zLhmFa+oEUT…"
-VERCEL_TOKEN="encrypted:BLJ/dDf4ZVDAQO5gw…"
+AWS_ACCESS_KEY_ID="xxxx"
+AWS_SECRET_ACCESS_KEY="xxxx"
+DATABASE_URL="postgresql://postgres:pass@db.ref.supabase.co:5432/postgres"
+VERCEL_TOKEN="vcp_xxxx"
 
 # ── AI ───────────────────────────────────────────
-OPENAI_API_KEY="encrypted:BFdXru0RVFG/8FZ…"
-ANTHROPIC_API_KEY="encrypted:BAMVb8lFZUOr…"
+OPENAI_API_KEY="sk-xxxx"
+ANTHROPIC_API_KEY="sk-ant-xxxx"
 
 # ── Infrastructure ───────────────────────────────
-AUTH0_CLIENT_ID="encrypted:BAY+o7pHeQW1EZ…"
-AUTH0_CLIENT_SECRET="encrypted:BKldLhYQ0d…"
-RESEND_API_KEY="encrypted:BLr2WEgUnWKjBCL…"
-STRIPE_API_KEY="encrypted:BDhqoczaGxtEJ97…"
-FLAGSMITH_ENV_ID="encrypted:BHOzl93DYQJ8P…"
-SENTRY_DSN="encrypted:BI59ZeVgm3ikKjcgJNa…"
+AUTH0_CLIENT_ID="xxxx"
+AUTH0_CLIENT_SECRET="xxxx"
+RESEND_API_KEY="re_xxxx"
+STRIPE_API_KEY="sk_test_xxxx"
+FLAGSMITH_ENV_ID="xxxx"
+SENTRY_DSN="https://hex@o1234.ingest.us.sentry.io/1234567"
 `.trimStart()
 
 module.exports = SAMPLE_ENV_KIT
