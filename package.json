@@ -51,7 +51,8 @@
     "ignore": "^5.3.0",
     "object-treeify": "1.1.33",
     "picomatch": "^4.0.2",
-    "which": "^4.0.0"
+    "which": "^4.0.0",
+    "yocto-spinner": "^1.1.0"
   },
   "devDependencies": {
     "@yao-pkg/pkg": "^5.14.2",

@@ -5,12 +5,13 @@ const Encrypt = require('./../../lib/services/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
-const createPrefixLoader = require('../../lib/helpers/createPrefixLoader')
-const sleep = require('../../lib/helpers/sleep')
+const createSpinner = require('../../lib/helpers/createSpinner')
 
 async function encrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
+
+  const spinner = await createSpinner(options)
 
   const envs = this.envs
   const opsOn = options.opsOff !== true
@@ -20,24 +21,22 @@ async function encrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
     }
     process.exit(0) // exit early
   } else {
-    const loader = createPrefixLoader('encrypting', { ...options })
-    loader.start()
 
     try {
       const {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
 
-      loader.stop()
+      if (spinner) spinner.stop()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -72,7 +71,7 @@ async function encrypt () {
         }
       }
     } catch (error) {
-      loader.stop()
+      if (spinner) spinner.stop()
       catchAndLog(error)
       process.exit(1)
     }

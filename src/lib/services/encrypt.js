@@ -28,6 +28,8 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
+const YIELD_EVERY_KEYS = 50
+
 class Encrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false, noCreate = false) {
     this.envs = determine(envs, process.env)
@@ -42,7 +44,7 @@ class Encrypt {
     this.unchangedFilepaths = new Set()
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -56,7 +58,7 @@ class Encrypt {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._encryptEnvFile(env.value)
+        await this._encryptEnvFile(env.value)
       }
     }
 
@@ -67,7 +69,7 @@ class Encrypt {
     }
   }
 
-  _encryptEnvFile (envFilepath) {
+  async _encryptEnvFile (envFilepath) {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
@@ -121,7 +123,13 @@ class Encrypt {
       row.privateKeyName = privateKeyName
 
       // iterate over all non-encrypted values and encrypt them
+      let keyCount = 0
       for (const [key, value] of Object.entries(envParsed)) {
+        keyCount += 1
+        if (keyCount % YIELD_EVERY_KEYS === 0) {
+          await new Promise(resolve => setImmediate(resolve))
+        }
+
         // key excluded - don't encrypt it
         if (this.exclude(key)) {
           continue
