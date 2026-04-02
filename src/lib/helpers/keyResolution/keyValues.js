@@ -32,7 +32,7 @@ function invertForPrivateKeyName (filepath) {
   return null
 }
 
-async function keyValues (filepath, opts = {}) {
+function keyValues (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
   const opsOn = opts.opsOn === true
   const names = keyNames(filepath)
@@ -72,7 +72,7 @@ async function keyValues (filepath, opts = {}) {
 
   // ops
   if (opsOn && !privateKey && publicKey && publicKey.length > 0) {
-    const kp = await opsKeypair(publicKey)
+    const kp = opsKeypair(publicKey)
     privateKey = kp.privateKey
   }
 

@@ -1,25 +1,13 @@
 const path = require('path')
 const childProcess = require('child_process')
-const util = require('util')
-const execFile = util.promisify(childProcess.execFile)
-
-// const { logger } = require('./../../shared/logger')
 
 class Ops {
-  constructor () {
-    this.opsLib = null
-    this.opsLibPromise = null
-
+  status () {
     if (this._isForcedOff()) {
-      return
+      return 'off'
     }
 
-    // begin lazy async resolution in the background
-    this.opsLibPromise = this._resolveOpsLib()
-  }
-
-  async status () {
-    const opsLib = await this._getOpsLib()
+    const opsLib = this._opsLib()
     if (!opsLib) {
       return 'off'
     }
@@ -27,8 +15,12 @@ class Ops {
     return opsLib.status()
   }
 
-  async keypair (publicKey) {
-    const opsLib = await this._getOpsLib()
+  keypair (publicKey) {
+    if (this._isForcedOff()) {
+      return {}
+    }
+
+    const opsLib = this._opsLib()
     if (!opsLib) {
       return {}
     }
@@ -37,46 +29,44 @@ class Ops {
   }
 
   observe (payload) {
-    ;(async () => {
-      if (this._isForcedOff()) return
+    if (this._isForcedOff()) return
 
-      const opsLib = await this._getOpsLib()
-      if (!opsLib) return
+    const opsLib = this._opsLib()
+    if (!opsLib) return
 
-      const status = await opsLib.status()
-      if (status === 'off') return
+    const status = opsLib.status()
+    if (status === 'off') return
 
-      const encoded = Buffer.from(JSON.stringify(payload)).toString('base64')
-      opsLib.observe(encoded)
-    })().catch(() => {})
+    const encoded = Buffer.from(JSON.stringify(payload)).toString('base64')
+    opsLib.observe(encoded)
   }
 
   //
   // private
   //
-  async _opsNpm () {
+  _opsNpm () {
     const npmBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
-    return this._opsLib(npmBin)
+    return this._opsLibForBinary(npmBin)
   }
 
-  async _opsCli () {
-    return this._opsLib('dotenvx-ops')
+  _opsCli () {
+    return this._opsLibForBinary('dotenvx-ops')
   }
 
-  async _opsLib (binary) {
-    await execFile(binary, ['--version'])
+  _opsLibForBinary (binary) {
+    childProcess.execFileSync(binary, ['--version'])
 
     return {
-      status: async () => {
-        const { stdout } = await execFile(binary, ['status'])
+      status: () => {
+        const stdout = childProcess.execFileSync(binary, ['status'])
         return stdout.toString().trim()
       },
-      keypair: async (publicKey) => {
+      keypair: (publicKey) => {
         const args = ['keypair']
         if (publicKey) {
           args.push(publicKey)
         }
-        const { stdout } = await execFile(binary, args)
+        const stdout = childProcess.execFileSync(binary, args)
         const parsed = JSON.parse(stdout.toString().trim())
         return parsed
       },
@@ -86,52 +76,28 @@ class Ops {
             stdio: 'ignore',
             detached: true
           })
-
-          subprocess.unref() // let it run independently
-        } catch (e) {
+          subprocess.unref()
+        } catch (_e) {
           // noop
         }
       }
     }
   }
 
-  async _resolveOpsLib () {
+  _opsLib () {
     if (this._isForcedOff()) {
       return null
     }
 
-    // check npm lib first
     try {
-      const lib = await this._opsNpm()
-      this.opsLib = lib
-      return lib
+      return this._opsNpm()
     } catch (_e) {}
 
-    // fallback to global binary
     try {
-      const lib = await this._opsCli()
-      this.opsLib = lib
-      return lib
+      return this._opsCli()
     } catch (_e) {}
 
-    this.opsLib = null
     return null
-  }
-
-  async _getOpsLib () {
-    if (this._isForcedOff()) {
-      return null
-    }
-
-    if (this.opsLib) {
-      return this.opsLib
-    }
-
-    if (!this.opsLibPromise) {
-      this.opsLibPromise = this._resolveOpsLib()
-    }
-
-    return this.opsLibPromise
   }
 
   _isForcedOff () {

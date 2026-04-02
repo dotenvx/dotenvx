@@ -32,7 +32,7 @@ class Run {
     this.beforeEnv = { ...this.processEnv }
   }
 
-  async run () {
+  run () {
     // example
     // envs [
     //   { type: 'env', value: 'HELLO=one' },
@@ -42,7 +42,7 @@ class Run {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        await this._injectEnvFile(env.value)
+        this._injectEnvFile(env.value)
       } else if (env.type === TYPE_ENV) {
         this._injectEnv(env.value)
       }
@@ -90,7 +90,7 @@ class Run {
     this.processedEnvs.push(row)
   }
 
-  async _injectEnvFile (envFilepath) {
+  _injectEnvFile (envFilepath) {
     const row = {}
     row.type = TYPE_ENV_FILE
     row.filepath = envFilepath
@@ -102,7 +102,7 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)
-      const { privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       const {
         parsed,

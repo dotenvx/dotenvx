@@ -11,9 +11,9 @@ class Get {
     this.opsOn = opsOn
   }
 
-  async run () {
+  run () {
     const processEnv = { ...process.env }
-    const { processedEnvs } = await new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.opsOn).run()
+    const { processedEnvs } = new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.opsOn).run()
 
     const errors = []
     for (const processedEnv of processedEnvs) {
