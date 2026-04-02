@@ -11,6 +11,24 @@ const rotate = proxyquire('../../../src/cli/actions/rotate', {
   '../../../src/lib/helpers/isIgnoringDotenvKeys': () => true
 })
 
+async function captureStdout (fn) {
+  let stdout = ''
+  const stdoutWrite = process.stdout.write
+  process.stdout.write = function (chunk, encoding, callback) {
+    stdout += Buffer.isBuffer(chunk) ? chunk.toString() : chunk
+    if (typeof callback === 'function') callback()
+    return true
+  }
+
+  try {
+    await fn()
+  } finally {
+    process.stdout.write = stdoutWrite
+  }
+
+  return stdout
+}
+
 let writeStub
 
 t.beforeEach((ct) => {
@@ -18,7 +36,7 @@ t.beforeEach((ct) => {
   writeStub = sinon.stub(fsx, 'writeFileX')
 })
 
-t.test('rotate - nothing', ct => {
+t.test('rotate - nothing', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Rotate.prototype, 'run').returns({
@@ -27,14 +45,14 @@ t.test('rotate - nothing', ct => {
     unchangedFilepaths: []
   })
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
 
   ct.end()
 })
 
-t.test('rotate - .env but no changes', ct => {
+t.test('rotate - .env but no changes', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Rotate.prototype, 'run').returns({
@@ -53,7 +71,7 @@ t.test('rotate - .env but no changes', ct => {
   })
   const loggerNeutralStub = sinon.stub(logger, 'info')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.info')
@@ -61,7 +79,7 @@ t.test('rotate - .env but no changes', ct => {
   ct.end()
 })
 
-t.test('rotate - --stdout', ct => {
+t.test('rotate - --stdout', async ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
@@ -81,8 +99,8 @@ t.test('rotate - --stdout', ct => {
     unchangedFilepaths: []
   })
 
-  const stdout = capcon.interceptStdout(() => {
-    rotate.call(fakeContext)
+  const stdout = await captureStdout(async () => {
+    await rotate.call(fakeContext)
   })
 
   t.ok(stub.called, 'Rotate().run() called')
@@ -92,7 +110,7 @@ t.test('rotate - --stdout', ct => {
   ct.end()
 })
 
-t.test('rotate - .env with changes', ct => {
+t.test('rotate - .env with changes', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Rotate.prototype, 'run').returns({
@@ -114,7 +132,7 @@ t.test('rotate - .env with changes', ct => {
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -126,7 +144,7 @@ t.test('rotate - .env with changes', ct => {
   ct.end()
 })
 
-t.test('rotate - .env with changes and privateKeyAdded', ct => {
+t.test('rotate - .env with changes and privateKeyAdded', async ct => {
   const rotateNotIgnoring = proxyquire('../../../src/cli/actions/rotate', {
     '../../../src/lib/helpers/isIgnoringDotenvKeys': () => false
   })
@@ -152,7 +170,7 @@ t.test('rotate - .env with changes and privateKeyAdded', ct => {
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
-  rotateNotIgnoring.call(fakeContext)
+  await rotateNotIgnoring.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -164,7 +182,7 @@ t.test('rotate - .env with changes and privateKeyAdded', ct => {
   ct.end()
 })
 
-t.test('rotate - MISSING_ENV_FILE', ct => {
+t.test('rotate - MISSING_ENV_FILE', async ct => {
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'
   error.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -190,7 +208,7 @@ t.test('rotate - MISSING_ENV_FILE', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -203,7 +221,7 @@ t.test('rotate - MISSING_ENV_FILE', ct => {
   ct.end()
 })
 
-t.test('rotate - MISSING_ENV_FILE fallback filepath', ct => {
+t.test('rotate - MISSING_ENV_FILE fallback filepath', async ct => {
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'
   error.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -222,13 +240,13 @@ t.test('rotate - MISSING_ENV_FILE fallback filepath', ct => {
     unchangedFilepaths: []
   })
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger.warn fallback .env path')
   ct.end()
 })
 
-t.test('rotate - OTHER_ERROR', ct => {
+t.test('rotate - OTHER_ERROR', async ct => {
   const error = new Error('Mock Error')
   error.code = 'OTHER_ERROR'
   error.help = 'some help'
@@ -255,7 +273,7 @@ t.test('rotate - OTHER_ERROR', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -268,7 +286,7 @@ t.test('rotate - OTHER_ERROR', ct => {
   ct.end()
 })
 
-t.test('rotate - MISPAIRED_PRIVATE_KEY', ct => {
+t.test('rotate - MISPAIRED_PRIVATE_KEY', async ct => {
   const error = new Error("[MISPAIRED_PRIVATE_KEY] private key's derived public key (03a8ed4…) does not match the existing public key (10248e9…)")
   error.code = 'MISPAIRED_PRIVATE_KEY'
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/752]'
@@ -295,7 +313,7 @@ t.test('rotate - MISPAIRED_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -308,7 +326,7 @@ t.test('rotate - MISPAIRED_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('rotate - WRONG_PRIVATE_KEY', ct => {
+t.test('rotate - WRONG_PRIVATE_KEY', async ct => {
   const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
   error.code = 'WRONG_PRIVATE_KEY'
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
@@ -335,7 +353,7 @@ t.test('rotate - WRONG_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -348,7 +366,7 @@ t.test('rotate - WRONG_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('rotate - MISSING_PRIVATE_KEY', ct => {
+t.test('rotate - MISSING_PRIVATE_KEY', async ct => {
   const error = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
   error.code = 'MISSING_PRIVATE_KEY'
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
@@ -372,7 +390,7 @@ t.test('rotate - MISSING_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -382,7 +400,7 @@ t.test('rotate - MISSING_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('rotate - INVALID_PUBLIC_KEY', ct => {
+t.test('rotate - INVALID_PUBLIC_KEY', async ct => {
   const error = new Error("[INVALID_PUBLIC_KEY] could not encrypt using public key 'DOTENV_PUBLIC_KEY=10248e9…'")
   error.code = 'INVALID_PUBLIC_KEY'
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/756]'
@@ -409,7 +427,7 @@ t.test('rotate - INVALID_PUBLIC_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -422,7 +440,7 @@ t.test('rotate - INVALID_PUBLIC_KEY', ct => {
   ct.end()
 })
 
-t.test('rotate - preserves already punctuated error messages', ct => {
+t.test('rotate - preserves already punctuated error messages', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const loggerWarnStub = sinon.stub(logger, 'warn')
@@ -456,7 +474,7 @@ t.test('rotate - preserves already punctuated error messages', ct => {
     unchangedFilepaths: []
   })
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(loggerWarnStub.calledWith('[WRONG_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
   t.ok(loggerWarnStub.calledWith('[MISSING_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
@@ -465,7 +483,7 @@ t.test('rotate - preserves already punctuated error messages', ct => {
   ct.end()
 })
 
-t.test('rotate - catch error', ct => {
+t.test('rotate - catch error', async ct => {
   const error = new Error('Mock Error')
   error.help = 'Mock Help'
   error.messageWithHelp = 'Mock Error. Mock Help'
@@ -483,7 +501,7 @@ t.test('rotate - catch error', ct => {
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerDebugStub = sinon.stub(logger, 'debug')
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -498,7 +516,7 @@ t.test('rotate - catch error', ct => {
   ct.end()
 })
 
-t.test('rotate - --no-ops passes opsOn false to Rotate service', ct => {
+t.test('rotate - --no-ops passes opsOn false to Rotate service', async ct => {
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Rotate.prototype, 'run').returns({
@@ -507,7 +525,7 @@ t.test('rotate - --no-ops passes opsOn false to Rotate service', ct => {
     unchangedFilepaths: []
   })
 
-  rotate.call(fakeContext)
+  await rotate.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Rotate().run() called')
   t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')

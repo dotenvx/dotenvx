@@ -14,7 +14,7 @@ t.beforeEach((ct) => {
   sinon.restore()
 })
 
-t.test('set - no changes', ct => {
+t.test('set - no changes', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -35,7 +35,7 @@ t.test('set - no changes', ct => {
   })
   const loggerNeutralStub = sinon.stub(logger, 'info')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -44,7 +44,7 @@ t.test('set - no changes', ct => {
   ct.end()
 })
 
-t.test('set - --no-create passes through to service', ct => {
+t.test('set - --no-create passes through to service', async ct => {
   let constructorArgs
 
   class SetsMock {
@@ -69,14 +69,14 @@ t.test('set - --no-create passes through to service', ct => {
   const optsStub = sinon.stub().returns({ create: false })
   const fakeContext = { opts: optsStub, envs: [] }
 
-  setWithMock.call(fakeContext, 'HELLO', 'World')
+  await setWithMock.call(fakeContext, 'HELLO', 'World')
 
   t.equal(constructorArgs[6], true, 'noCreate=true when --no-create is set')
 
   ct.end()
 })
 
-t.test('set - changes', ct => {
+t.test('set - changes', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -98,7 +98,7 @@ t.test('set - changes', ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -108,7 +108,7 @@ t.test('set - changes', ct => {
   ct.end()
 })
 
-t.test('set - no changes and no unchanged', ct => {
+t.test('set - no changes and no unchanged', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -119,7 +119,7 @@ t.test('set - no changes and no unchanged', ct => {
   })
   const loggerInfoStub = sinon.stub(logger, 'info')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -128,7 +128,7 @@ t.test('set - no changes and no unchanged', ct => {
   ct.end()
 })
 
-t.test('set - MISSING_ENV_FILE', ct => {
+t.test('set - MISSING_ENV_FILE', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -155,7 +155,7 @@ t.test('set - MISSING_ENV_FILE', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().main() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -166,7 +166,7 @@ t.test('set - MISSING_ENV_FILE', ct => {
   ct.end()
 })
 
-t.test('set - MISSING_ENV_FILE fallback filepath', ct => {
+t.test('set - MISSING_ENV_FILE fallback filepath', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const error = new Error('Mock Error')
@@ -189,13 +189,13 @@ t.test('set - MISSING_ENV_FILE fallback filepath', ct => {
     unchangedFilepaths: []
   })
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger warn fallback .env path')
   ct.end()
 })
 
-t.test('set - OTHER_ERROR', ct => {
+t.test('set - OTHER_ERROR', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -223,7 +223,7 @@ t.test('set - OTHER_ERROR', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -234,7 +234,7 @@ t.test('set - OTHER_ERROR', ct => {
   ct.end()
 })
 
-t.test('set - MISPAIRED_PRIVATE_KEY', ct => {
+t.test('set - MISPAIRED_PRIVATE_KEY', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -262,7 +262,7 @@ t.test('set - MISPAIRED_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -273,7 +273,7 @@ t.test('set - MISPAIRED_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('set - WRONG_PRIVATE_KEY', ct => {
+t.test('set - WRONG_PRIVATE_KEY', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -301,7 +301,7 @@ t.test('set - WRONG_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -312,7 +312,7 @@ t.test('set - WRONG_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('set - MISSING_PRIVATE_KEY', ct => {
+t.test('set - MISSING_PRIVATE_KEY', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -340,7 +340,7 @@ t.test('set - MISSING_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -351,7 +351,7 @@ t.test('set - MISSING_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('set - INVALID_PUBLIC_KEY', ct => {
+t.test('set - INVALID_PUBLIC_KEY', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -379,7 +379,7 @@ t.test('set - INVALID_PUBLIC_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -390,7 +390,7 @@ t.test('set - INVALID_PUBLIC_KEY', ct => {
   ct.end()
 })
 
-t.test('set - preserves already punctuated error messages', ct => {
+t.test('set - preserves already punctuated error messages', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const loggerWarnStub = sinon.stub(logger, 'warn')
@@ -432,7 +432,7 @@ t.test('set - preserves already punctuated error messages', ct => {
     unchangedFilepaths: []
   })
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(loggerWarnStub.calledWith('[WRONG_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
   t.ok(loggerWarnStub.calledWith('[MISSING_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
@@ -441,7 +441,7 @@ t.test('set - preserves already punctuated error messages', ct => {
   ct.end()
 })
 
-t.test('set - changes --plain', ct => {
+t.test('set - changes --plain', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ plain: true })
   const fakeContext = { opts: optsStub }
@@ -463,7 +463,7 @@ t.test('set - changes --plain', ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -473,7 +473,7 @@ t.test('set - changes --plain', ct => {
   ct.end()
 })
 
-t.test('set - privateKeyAdded', ct => {
+t.test('set - privateKeyAdded', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -497,7 +497,7 @@ t.test('set - privateKeyAdded', ct => {
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -508,7 +508,7 @@ t.test('set - privateKeyAdded', ct => {
   ct.end()
 })
 
-t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
+t.test('set - privateKeyAdded and not ignoring .env.keys', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const setNotIgnoring = proxyquire('../../../src/cli/actions/set', {
     '../../../src/lib/helpers/isIgnoringDotenvKeys': () => false
@@ -535,7 +535,7 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  setNotIgnoring.call(fakeContext, 'HELLO', 'World')
+  await setNotIgnoring.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -546,7 +546,7 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', ct => {
   ct.end()
 })
 
-t.test('set - privateKeyAdded with unchanged file still reports key addition', ct => {
+t.test('set - privateKeyAdded with unchanged file still reports key addition', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -569,7 +569,7 @@ t.test('set - privateKeyAdded with unchanged file still reports key addition', c
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerNeutralStub = sinon.stub(logger, 'info')
 
-  set.call(fakeContext, 'HELLO', 'dude')
+  await set.call(fakeContext, 'HELLO', 'dude')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
@@ -579,7 +579,7 @@ t.test('set - privateKeyAdded with unchanged file still reports key addition', c
   ct.end()
 })
 
-t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls back to .env', ct => {
+t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls back to .env', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -602,7 +602,7 @@ t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls 
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerInfoStub = sinon.stub(logger, 'info')
 
-  set.call(fakeContext, 'HELLO', 'dude')
+  await set.call(fakeContext, 'HELLO', 'dude')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
@@ -612,7 +612,7 @@ t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls 
   ct.end()
 })
 
-t.test('set - --no-ops passes opsOn false to Sets service', ct => {
+t.test('set - --no-ops passes opsOn false to Sets service', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
@@ -622,7 +622,7 @@ t.test('set - --no-ops passes opsOn false to Sets service', ct => {
     unchangedFilepaths: []
   })
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(runStub.calledOnce, 'Sets().run() called')
   t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
@@ -630,7 +630,7 @@ t.test('set - --no-ops passes opsOn false to Sets service', ct => {
   ct.end()
 })
 
-t.test('set - catch error', ct => {
+t.test('set - catch error', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
   error.help = 'Mock Help'
@@ -649,7 +649,7 @@ t.test('set - catch error', ct => {
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerDebugStub = sinon.stub(logger, 'debug')
 
-  set.call(fakeContext, 'HELLO', 'World')
+  await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
