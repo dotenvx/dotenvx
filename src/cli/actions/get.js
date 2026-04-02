@@ -5,8 +5,9 @@ const escape = require('./../../lib/helpers/escape')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 
 const Get = require('./../../lib/services/get')
+const Session = require('../../db/session')
 
-function get (key) {
+async function get (key) {
   if (key) {
     logger.debug(`key: ${key}`)
   }
@@ -26,7 +27,9 @@ function get (key) {
   }
 
   try {
-    const opsOn = options.ops !== false
+    const sesh = new Session()
+    const noOps = options.ops === false || !(await sesh.opsOn())
+    const opsOn = !noOps
     const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
 
     for (const error of errors || []) {

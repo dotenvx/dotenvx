@@ -9,23 +9,20 @@ const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 
 async function encrypt () {
-  const sesh = new Session()
-
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const spinner = await createSpinner(options)
-
+  const sesh = new Session()
   const envs = this.envs
-  const opsOn = options.ops !== false
-  // --no-ops flag
+  const noOps = options.ops === false || !(await sesh.opsOn())
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, !noOps, noCreate).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -38,7 +35,7 @@ async function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, !noOps, noCreate).run()
 
       if (spinner) spinner.stop()
 

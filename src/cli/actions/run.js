@@ -4,6 +4,7 @@ const { logger } = require('./../../shared/logger')
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
+const Session = require('../../db/session')
 
 const conventions = require('./../../lib/helpers/conventions')
 
@@ -16,8 +17,9 @@ async function run () {
 
   const ignore = options.ignore || []
 
-  // dotenvx-ops related
-  const opsOn = options.ops !== false
+  const sesh = new Session()
+  const noOps = options.ops === false || !(await sesh.opsOn())
+  const opsOn = !noOps
 
   if (commandArgs.length < 1) {
     const hasSeparator = process.argv.indexOf('--') !== -1

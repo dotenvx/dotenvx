@@ -5,8 +5,9 @@ const Sets = require('./../../lib/services/sets')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
+const Session = require('../../db/session')
 
-function set (key, value) {
+async function set (key, value) {
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
 
@@ -22,7 +23,9 @@ function set (key, value) {
   try {
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const opsOn = options.ops !== false
+    const sesh = new Session()
+    const noOps = options.ops === false || !(await sesh.opsOn())
+    const opsOn = !noOps
     const noCreate = options.create === false
 
     const {

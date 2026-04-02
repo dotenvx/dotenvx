@@ -3,13 +3,16 @@ const { logger } = require('./../../shared/logger')
 
 const Decrypt = require('./../../lib/services/decrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+const Session = require('../../db/session')
 
-function decrypt () {
+async function decrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
-  const opsOn = options.ops !== false
+  const sesh = new Session()
+  const noOps = options.ops === false || !(await sesh.opsOn())
+  const opsOn = !noOps
 
   let errorCount = 0
 

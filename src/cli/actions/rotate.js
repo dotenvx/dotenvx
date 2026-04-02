@@ -5,13 +5,16 @@ const Rotate = require('./../../lib/services/rotate')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
+const Session = require('../../db/session')
 
-function rotate () {
+async function rotate () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
-  const opsOn = options.ops !== false
+  const sesh = new Session()
+  const noOps = options.ops === false || !(await sesh.opsOn())
+  const opsOn = !noOps
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
