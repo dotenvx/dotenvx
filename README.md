@@ -1593,6 +1593,16 @@ $ dotenvx encrypt -f .env.production
 ```
 
 </details>
+<details><summary>`encrypt --no-ops`</summary><br>
+
+Turn off [Dotenvx Ops](https://dotenvx.com/ops) features for encrypt.
+
+```sh
+$ dotenvx encrypt --no-ops
+◈ encrypted (.env)
+```
+
+</details>
 <details><summary>`encrypt -fk`</summary><br>
 
 Specify path to `.env.keys`. This is useful with monorepos.

@@ -132,7 +132,7 @@ program.command('encrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--no-create', 'do not create .env file(s) when missing')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
+  .option('--no-ops', 'disable dotenvx-ops features', sesh.opsOff())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
