@@ -20,7 +20,7 @@ async function decrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
+    } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
@@ -42,7 +42,7 @@ async function decrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
+      } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

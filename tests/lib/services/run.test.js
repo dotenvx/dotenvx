@@ -10,12 +10,13 @@ t.beforeEach((ct) => {
   process.env = {}
 })
 
-t.test('#run (no arguments)', ct => {
+t.test('#run (no arguments)',
+async ct => {
   const {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run().run()
+  } = await new Run().run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -33,14 +34,15 @@ t.test('#run (no arguments)', ct => {
   ct.end()
 })
 
-t.test('#run (no arguments and some other error)', ct => {
+t.test('#run (no arguments and some other error)',
+async ct => {
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').throws(new Error('Mock Error'))
 
   const {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run().run()
+  } = await new Run().run()
 
   const exampleError = new Error('Mock Error')
 
@@ -57,7 +59,8 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.end()
 })
 
-t.test('#run (no arguments and fsx readFileX throws)', ct => {
+t.test('#run (no arguments and fsx readFileX throws)',
+async ct => {
   const RunWithReadError = proxyquire('../../../src/lib/services/run', {
     './../helpers/detectEncoding': () => 'utf8',
     './../helpers/fsx': {
@@ -71,7 +74,7 @@ t.test('#run (no arguments and fsx readFileX throws)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new RunWithReadError().run()
+  } = await new RunWithReadError().run()
 
   const exampleError = new Error('Mock Error')
 
@@ -86,7 +89,8 @@ t.test('#run (no arguments and fsx readFileX throws)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file)', ct => {
+t.test('#run (finds .env file)',
+async ct => {
   const envs = [
     { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
   ]
@@ -95,7 +99,7 @@ t.test('#run (finds .env file)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -118,7 +122,8 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
-t.test('#run (encrypted .env finds .env.keys next to itself)', ct => {
+t.test('#run (encrypted .env finds .env.keys next to itself)',
+async ct => {
   const envs = [
     { type: 'envFile', value: 'tests/monorepo/apps/encrypted/.env' }
   ]
@@ -127,7 +132,7 @@ t.test('#run (encrypted .env finds .env.keys next to itself)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -152,7 +157,8 @@ t.test('#run (encrypted .env finds .env.keys next to itself)', ct => {
   ct.end()
 })
 
-t.test('#run (encrypted .env with bad private key)', ct => {
+t.test('#run (encrypted .env with bad private key)',
+async ct => {
   process.env.DOTENV_PRIVATE_KEY = 'bad-private-key'
 
   const envs = [
@@ -163,7 +169,7 @@ t.test('#run (encrypted .env with bad private key)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   const error = new Error('[INVALID_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=bad-pri…\'')
   error.code = 'INVALID_PRIVATE_KEY'
@@ -193,7 +199,8 @@ t.test('#run (encrypted .env with bad private key)', ct => {
   ct.end()
 })
 
-t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set', ct => {
+t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set',
+async ct => {
   const originalDirectory = process.cwd()
 
   process.env.DOTENV_PRIVATE_KEY = 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1'
@@ -205,7 +212,7 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run().run()
+  } = await new Run().run()
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -232,7 +239,8 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file) with already falsy value', ct => {
+t.test('#run (finds .env file) with already falsy value',
+async ct => {
   process.env.HELLO = '' // falsy value
 
   const envs = [
@@ -243,7 +251,7 @@ t.test('#run (finds .env file) with already falsy value', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -266,7 +274,8 @@ t.test('#run (finds .env file) with already falsy value', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file as array)', ct => {
+t.test('#run (finds .env file as array)',
+async ct => {
   const envs = [
     { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
   ]
@@ -274,7 +283,7 @@ t.test('#run (finds .env file as array)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -297,7 +306,8 @@ t.test('#run (finds .env file as array)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file but HELLO already exists)', ct => {
+t.test('#run (finds .env file but HELLO already exists)',
+async ct => {
   process.env.HELLO = 'World'
 
   const envs = [
@@ -308,7 +318,7 @@ t.test('#run (finds .env file but HELLO already exists)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -331,7 +341,8 @@ t.test('#run (finds .env file but HELLO already exists)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file but HELLO already exists but overload is on)', ct => {
+t.test('#run (finds .env file but HELLO already exists but overload is on)',
+async ct => {
   process.env.HELLO = 'World'
 
   const envs = [
@@ -342,7 +353,7 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs, true).run()
+  } = await new Run(envs, true).run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -370,7 +381,8 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)', ct 
   ct.end()
 })
 
-t.test('#run (command substitution)', ct => {
+t.test('#run (command substitution)',
+async ct => {
   const envs = [
     { type: 'envFile', value: 'tests/.env.eval' }
   ]
@@ -379,7 +391,7 @@ t.test('#run (command substitution)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   ct.same(processedEnvs, [{
     type: 'envFile',
@@ -402,7 +414,8 @@ t.test('#run (command substitution)', ct => {
   ct.end()
 })
 
-t.test('#run (with envs as string)', ct => {
+t.test('#run (with envs as string)',
+async ct => {
   const envs = [
     { type: 'env', value: 'HELLO=string' }
   ]
@@ -412,7 +425,7 @@ t.test('#run (with envs as string)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -443,7 +456,8 @@ t.test('#run (with envs as string)', ct => {
   ct.end()
 })
 
-t.test('#run (with envs as string and errors somehow from inject)', ct => {
+t.test('#run (with envs as string and errors somehow from inject)',
+async ct => {
   const envs = [
     { type: 'env', value: 'HELLO=string' }
   ]
@@ -458,7 +472,7 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
 
   const {
     processedEnvs
-  } = run.run()
+  } = await run.run()
 
   ct.same(processedEnvs, [
     {
@@ -485,7 +499,8 @@ t.test('#run (with envs as string and errors somehow from inject)', ct => {
   ct.end()
 })
 
-t.test('#run (mixed string and file)', ct => {
+t.test('#run (mixed string and file)',
+async ct => {
   const envs = [
     { type: 'env', value: 'HELLO=string' },
     { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
@@ -495,7 +510,7 @@ t.test('#run (mixed string and file)', ct => {
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   ct.same(processedEnvs, [
     {
@@ -526,7 +541,8 @@ t.test('#run (mixed string and file)', ct => {
 })
 
 // https://github.com/dotenvx/dotenvx/issues/441
-t.test('#run (kanaka scenario)', ct => {
+t.test('#run (kanaka scenario)',
+async ct => {
   const src = `# combined
 # config1 definitions
 options="$\{options} optA"
@@ -543,7 +559,7 @@ options="$\{options} optD"`
     processedEnvs,
     readableFilepaths,
     uniqueInjectedKeys
-  } = new Run(envs).run()
+  } = await new Run(envs).run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'

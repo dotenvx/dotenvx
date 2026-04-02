@@ -99,11 +99,11 @@ class Encrypt {
       let privateKey
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
-        const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+        const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
         envSrc = prov.envSrc
         publicKey = prov.publicKey
         privateKey = prov.privateKey

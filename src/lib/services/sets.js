@@ -42,7 +42,7 @@ class Sets {
     this.readableFilepaths = new Set()
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -50,7 +50,7 @@ class Sets {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._setEnvFile(env.value)
+        await this._setEnvFile(env.value)
       }
     }
 
@@ -61,7 +61,7 @@ class Sets {
     }
   }
 
-  _setEnvFile (envFilepath) {
+  async _setEnvFile (envFilepath) {
     const row = {}
     row.key = this.key || null
     row.value = this.value || null
@@ -105,11 +105,11 @@ class Sets {
         let privateKey
 
         const { publicKeyName, privateKeyName } = keyNames(filepath)
-        const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+        const { publicKeyValue, privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
         // first pass - provision
         if (!privateKeyValue && !publicKeyValue) {
-          const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+          const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
           envSrc = prov.envSrc
           publicKey = prov.publicKey
           privateKey = prov.privateKey

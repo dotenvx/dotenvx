@@ -12,29 +12,29 @@ t.beforeEach((ct) => {
   process.env = {}
 })
 
-t.test('#keyValues', ct => {
-  const result = keyValues('.env')
+t.test('#keyValues', async ct => {
+  const result = await keyValues('.env')
 
   ct.same(result, { publicKeyValue: null, privateKeyValue: null })
 
   ct.end()
 })
 
-t.test('#keyValues reads from process.env', ct => {
+t.test('#keyValues reads from process.env', async ct => {
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
   process.env.DOTENV_PRIVATE_KEY = '<privateKey>'
 
-  const result = keyValues('.env')
+  const result = await keyValues('.env')
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: '<privateKey>' })
 
   ct.end()
 })
 
-t.test('#keyValues reads from files', ct => {
+t.test('#keyValues reads from files', async ct => {
   const filepath = 'tests/monorepo/apps/encrypted/.env'
 
-  const result = keyValues(filepath)
+  const result = await keyValues(filepath)
 
   ct.same(result, {
     publicKeyValue: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
@@ -44,24 +44,24 @@ t.test('#keyValues reads from files', ct => {
   ct.end()
 })
 
-t.test('#keyValues inverts public key name for custom file and reads process env private key', ct => {
+t.test('#keyValues inverts public key name for custom file and reads process env private key', async ct => {
   const filepath = 'tests/monorepo/apps/encrypted/secrets.ci.txt'
   process.env.DOTENV_PRIVATE_KEY_CI = '<privateKeyCi>'
 
-  const result = keyValues(filepath)
+  const result = await keyValues(filepath)
 
   ct.equal(result.privateKeyValue, '<privateKeyCi>')
 
   ct.end()
 })
 
-t.test('#keyValues inverts public key name for custom file and reads keys file private key', ct => {
+t.test('#keyValues inverts public key name for custom file and reads keys file private key', async ct => {
   const filepath = 'tests/monorepo/apps/encrypted/secrets.ci.txt'
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-keyvalues-'))
   const keysFilepath = path.join(tmpDir, '.env.keys')
   fs.writeFileSync(keysFilepath, 'DOTENV_PRIVATE_KEY_CI="from-file-ci"\n')
 
-  const result = keyValues(filepath, { keysFilepath })
+  const result = await keyValues(filepath, { keysFilepath })
 
   ct.equal(result.privateKeyValue, 'from-file-ci')
 
@@ -69,7 +69,7 @@ t.test('#keyValues inverts public key name for custom file and reads keys file p
   ct.end()
 })
 
-t.test('#keyValues loads private key from ops when opsOn and only public key exists', ct => {
+t.test('#keyValues loads private key from ops when opsOn and only public key exists', async ct => {
   const opsKeypair = sinon.stub().returns({ privateKey: 'from-ops' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
     '../cryptography/opsKeypair': opsKeypair
@@ -77,7 +77,7 @@ t.test('#keyValues loads private key from ops when opsOn and only public key exi
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = keyValuesWithOpsStub('.env', { opsOn: true })
+  const result = await keyValuesWithOpsStub('.env', { opsOn: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
   ct.equal(opsKeypair.callCount, 1)

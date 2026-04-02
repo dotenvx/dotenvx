@@ -44,11 +44,12 @@ t.beforeEach((ct) => {
   process.env = {}
 })
 
-t.test('config calls Run.run', ct => {
+t.test('config calls Run.run',
+async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config()
+  await main.config()
 
   t.ok(stub.called, 'new Run().run() called')
 
@@ -57,11 +58,12 @@ t.test('config calls Run.run', ct => {
   ct.end()
 })
 
-t.test('config with convention - calls Run.run with proper envs', ct => {
+t.test('config with convention - calls Run.run with proper envs',
+async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config({ convention: 'nextjs' })
+  await main.config({ convention: 'nextjs' })
 
   t.ok(stub.called, 'new Run().run() called')
 
@@ -70,11 +72,12 @@ t.test('config with convention - calls Run.run with proper envs', ct => {
   ct.end()
 })
 
-t.test('config with convention flow - calls Run.run with proper envs', ct => {
+t.test('config with convention flow - calls Run.run with proper envs',
+async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config({ convention: 'flow' })
+  await main.config({ convention: 'flow' })
 
   t.ok(stub.called, 'new Run().run() called')
 
@@ -83,7 +86,8 @@ t.test('config with convention flow - calls Run.run with proper envs', ct => {
   ct.end()
 })
 
-t.test('config with Run.run errors', ct => {
+t.test('config with Run.run errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error('some error')
@@ -93,7 +97,7 @@ t.test('config with Run.run errors', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config()
+  await main.config()
 
   t.ok(stub.called, 'new Run().run() called')
   ct.ok(loggerErrorStub.calledWith('some error'), 'logger.error')
@@ -105,7 +109,8 @@ t.test('config with Run.run errors', ct => {
   ct.end()
 })
 
-t.test('config with Run.run WRONG_PRIVATE_KEY errors', ct => {
+t.test('config with Run.run WRONG_PRIVATE_KEY errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
@@ -115,7 +120,7 @@ t.test('config with Run.run WRONG_PRIVATE_KEY errors', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config()
+  await main.config()
 
   t.ok(stub.called, 'new Run().run() called')
   ct.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.error one-line')
@@ -127,7 +132,8 @@ t.test('config with Run.run WRONG_PRIVATE_KEY errors', ct => {
   ct.end()
 })
 
-t.test('config with Run.run MISSING_PRIVATE_KEY errors', ct => {
+t.test('config with Run.run MISSING_PRIVATE_KEY errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
@@ -137,7 +143,7 @@ t.test('config with Run.run MISSING_PRIVATE_KEY errors', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config()
+  await main.config()
 
   t.ok(stub.called, 'new Run().run() called')
   ct.ok(loggerErrorStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.error one-line')
@@ -149,7 +155,8 @@ t.test('config with Run.run MISSING_PRIVATE_KEY errors', ct => {
   ct.end()
 })
 
-t.test('config with Run.run punctuated private-key errors', ct => {
+t.test('config with Run.run punctuated private-key errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const wrong = new Error('[WRONG_PRIVATE_KEY] punctuated')
   setCode(wrong, 'WRONG_PRIVATE_KEY')
@@ -158,7 +165,7 @@ t.test('config with Run.run punctuated private-key errors', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [{ errors: [wrong, missing] }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config()
+  await main.config()
 
   t.ok(stub.called, 'new Run().run() called')
   ct.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
@@ -170,7 +177,8 @@ t.test('config with Run.run punctuated private-key errors', ct => {
   ct.end()
 })
 
-t.test('config with Run.run errors and ignore', ct => {
+t.test('config with Run.run errors and ignore',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error('some error')
@@ -180,7 +188,7 @@ t.test('config with Run.run errors and ignore', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config({ ignore: ['SOME_ERROR'] })
+  await main.config({ ignore: ['SOME_ERROR'] })
 
   t.ok(stub.called, 'new Run().run() called')
   ct.ok(loggerErrorStub.notCalled, 'logger.error')
@@ -191,11 +199,12 @@ t.test('config with Run.run errors and ignore', ct => {
   ct.end()
 })
 
-t.test('config with Run.run processedEnv with undefined processedEnv.errors', ct => {
+t.test('config with Run.run processedEnv with undefined processedEnv.errors',
+async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [{}], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-  main.config()
+  await main.config()
 
   t.ok(stub.called, 'new Run().run() called')
 
@@ -204,7 +213,8 @@ t.test('config with Run.run processedEnv with undefined processedEnv.errors', ct
   ct.end()
 })
 
-t.test('config catches thrown error and returns parsed/error', ct => {
+t.test('config catches thrown error and returns parsed/error',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
   const thrown = new Error('boom')
@@ -214,7 +224,7 @@ t.test('config catches thrown error and returns parsed/error', ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.throws(thrown)
 
-  const result = main.config()
+  const result = await main.config()
 
   ct.same(result.parsed, {})
   ct.equal(result.error, thrown)
@@ -224,7 +234,8 @@ t.test('config catches thrown error and returns parsed/error', ct => {
   ct.end()
 })
 
-t.test('config catches thrown WRONG_PRIVATE_KEY and returns parsed/error', ct => {
+t.test('config catches thrown WRONG_PRIVATE_KEY and returns parsed/error',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
   const thrown = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
@@ -233,7 +244,7 @@ t.test('config catches thrown WRONG_PRIVATE_KEY and returns parsed/error', ct =>
   const stub = sinon.stub(Run.prototype, 'run')
   stub.throws(thrown)
 
-  const result = main.config()
+  const result = await main.config()
 
   ct.same(result.parsed, {})
   ct.equal(result.error, thrown)
@@ -243,7 +254,8 @@ t.test('config catches thrown WRONG_PRIVATE_KEY and returns parsed/error', ct =>
   ct.end()
 })
 
-t.test('config catches thrown MISSING_PRIVATE_KEY and returns parsed/error', ct => {
+t.test('config catches thrown MISSING_PRIVATE_KEY and returns parsed/error',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
   const thrown = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
@@ -252,7 +264,7 @@ t.test('config catches thrown MISSING_PRIVATE_KEY and returns parsed/error', ct 
   const stub = sinon.stub(Run.prototype, 'run')
   stub.throws(thrown)
 
-  const result = main.config()
+  const result = await main.config()
 
   ct.same(result.parsed, {})
   ct.equal(result.error, thrown)
@@ -262,26 +274,28 @@ t.test('config catches thrown MISSING_PRIVATE_KEY and returns parsed/error', ct 
   ct.end()
 })
 
-t.test('config catches thrown punctuated private-key errors', ct => {
+t.test('config catches thrown punctuated private-key errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const wrong = new Error('[WRONG_PRIVATE_KEY] punctuated')
   setCode(wrong, 'WRONG_PRIVATE_KEY')
   sinon.stub(Run.prototype, 'run').throws(wrong)
-  main.config()
+  await main.config()
   ct.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
 
   Run.prototype.run.restore()
   const missing = new Error('[MISSING_PRIVATE_KEY] punctuated')
   setCode(missing, 'MISSING_PRIVATE_KEY')
   sinon.stub(Run.prototype, 'run').throws(missing)
-  main.config()
+  await main.config()
   ct.ok(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
 
   ct.end()
 })
 
-t.test('parse calls Parse.run', ct => {
+t.test('parse calls Parse.run',
+async ct => {
   const parsed = main.parse('HELLO=World')
 
   ct.equal(parsed.HELLO, 'World')
@@ -289,7 +303,8 @@ t.test('parse calls Parse.run', ct => {
   ct.end()
 })
 
-t.test('parse calls Parse.run with options.processEnv', ct => {
+t.test('parse calls Parse.run with options.processEnv',
+async ct => {
   const parsed = main.parse('HELLO=World', { processEnv: {} })
 
   ct.equal(parsed.HELLO, 'World')
@@ -297,7 +312,8 @@ t.test('parse calls Parse.run with options.processEnv', ct => {
   ct.end()
 })
 
-t.test('parse calls Parse.run with options.privateKey', ct => {
+t.test('parse calls Parse.run with options.privateKey',
+async ct => {
   const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c' })
 
   ct.equal(parsed.HELLO, 'World')
@@ -305,7 +321,8 @@ t.test('parse calls Parse.run with options.privateKey', ct => {
   ct.end()
 })
 
-t.test('parse calls Parse.run with invalid options.privateKey', ct => {
+t.test('parse calls Parse.run with invalid options.privateKey',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: '12345' })
@@ -317,7 +334,8 @@ t.test('parse calls Parse.run with invalid options.privateKey', ct => {
   ct.end()
 })
 
-t.test('parse logs WRONG_PRIVATE_KEY in one line', ct => {
+t.test('parse logs WRONG_PRIVATE_KEY in one line',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
   setCode(error, 'WRONG_PRIVATE_KEY')
@@ -339,7 +357,8 @@ t.test('parse logs WRONG_PRIVATE_KEY in one line', ct => {
   ct.end()
 })
 
-t.test('parse logs MISSING_PRIVATE_KEY in one line', ct => {
+t.test('parse logs MISSING_PRIVATE_KEY in one line',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const parsed = main.parse('HELLO="encrypted:abc123"')
 
@@ -351,7 +370,8 @@ t.test('parse logs MISSING_PRIVATE_KEY in one line', ct => {
   ct.end()
 })
 
-t.test('parse keeps punctuated private-key messages', ct => {
+t.test('parse keeps punctuated private-key messages',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const wrong = { message: '[WRONG_PRIVATE_KEY] punctuated' }
   setCode(wrong, 'WRONG_PRIVATE_KEY')
@@ -373,7 +393,8 @@ t.test('parse keeps punctuated private-key messages', ct => {
   ct.end()
 })
 
-t.test('parse logs one line for non-fix text', ct => {
+t.test('parse logs one line for non-fix text',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const other = {
     code: 'OTHER_ERROR',
@@ -397,7 +418,8 @@ t.test('parse logs one line for non-fix text', ct => {
   ct.end()
 })
 
-t.test('ls calls Ls.run', ct => {
+t.test('ls calls Ls.run',
+async ct => {
   const stub = sinon.stub(Ls.prototype, 'run')
   stub.returns({})
 
@@ -410,11 +432,12 @@ t.test('ls calls Ls.run', ct => {
   ct.end()
 })
 
-t.test('keypair calls Keypair.run', ct => {
+t.test('keypair calls Keypair.run',
+async ct => {
   const stub = sinon.stub(Keypair.prototype, 'run')
   stub.returns({})
 
-  main.keypair()
+  await main.keypair()
 
   t.ok(stub.called, 'new Keypair().run() called')
 
@@ -423,11 +446,12 @@ t.test('keypair calls Keypair.run', ct => {
   ct.end()
 })
 
-t.test('keypair calls Keypair.run with key specified', ct => {
+t.test('keypair calls Keypair.run with key specified',
+async ct => {
   const stub = sinon.stub(Keypair.prototype, 'run')
   stub.returns({ KEY: 'value' })
 
-  const result = main.keypair('.env', 'KEY')
+  const result = await main.keypair('.env', 'KEY')
 
   t.ok(stub.called, 'new Keypair().run() called')
   t.equal(result, 'value')
@@ -437,11 +461,12 @@ t.test('keypair calls Keypair.run with key specified', ct => {
   ct.end()
 })
 
-t.test('keypair calls Keypair.run with noOps true', ct => {
+t.test('keypair calls Keypair.run with noOps true',
+async ct => {
   const stub = sinon.stub(Keypair.prototype, 'run')
   stub.returns({ KEY: 'value' })
 
-  const result = main.keypair('.env', 'KEY', null, true)
+  const result = await main.keypair('.env', 'KEY', null, true)
 
   t.ok(stub.called, 'new Keypair().run() called')
   t.equal(stub.thisValues[0].opsOn, false, 'Keypair was called with opsOn false')
@@ -452,7 +477,8 @@ t.test('keypair calls Keypair.run with noOps true', ct => {
   ct.end()
 })
 
-t.test('genexample calls Genexample.run', ct => {
+t.test('genexample calls Genexample.run',
+async ct => {
   const stub = sinon.stub(Genexample.prototype, 'run')
   stub.returns({})
 
@@ -465,7 +491,8 @@ t.test('genexample calls Genexample.run', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env', ct => {
+t.test('config monorepo/apps/backend/.env',
+async ct => {
   const processEnv = {}
 
   const options = {
@@ -473,7 +500,7 @@ t.test('config monorepo/apps/backend/.env', ct => {
     path: ['tests/monorepo/apps/backend/.env']
   }
 
-  const { parsed, error } = main.config(options)
+  const { parsed, error } = await main.config(options)
 
   t.equal(processEnv.HELLO, 'backend')
   t.equal(parsed.HELLO, 'backend')
@@ -482,7 +509,8 @@ t.test('config monorepo/apps/backend/.env', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env already set', ct => {
+t.test('config monorepo/apps/backend/.env already set',
+async ct => {
   const processEnv = {
     HELLO: 'world'
   }
@@ -492,7 +520,7 @@ t.test('config monorepo/apps/backend/.env already set', ct => {
     path: ['tests/monorepo/apps/backend/.env']
   }
 
-  const { parsed, error } = main.config(options)
+  const { parsed, error } = await main.config(options)
 
   t.equal(processEnv.HELLO, 'world')
   t.equal(parsed.HELLO, 'world')
@@ -501,7 +529,8 @@ t.test('config monorepo/apps/backend/.env already set', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env already set --overload', ct => {
+t.test('config monorepo/apps/backend/.env already set --overload',
+async ct => {
   const processEnv = {
     HELLO: 'world'
   }
@@ -512,7 +541,7 @@ t.test('config monorepo/apps/backend/.env already set --overload', ct => {
     overload: true
   }
 
-  const { parsed, error } = main.config(options)
+  const { parsed, error } = await main.config(options)
 
   t.equal(processEnv.HELLO, 'backend')
   t.equal(parsed.HELLO, 'backend')
@@ -521,7 +550,8 @@ t.test('config monorepo/apps/backend/.env already set --overload', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env AND frontend/.env', ct => {
+t.test('config monorepo/apps/backend/.env AND frontend/.env',
+async ct => {
   const processEnv = {}
 
   const options = {
@@ -529,7 +559,7 @@ t.test('config monorepo/apps/backend/.env AND frontend/.env', ct => {
     path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend/.env']
   }
 
-  const { parsed, error } = main.config(options)
+  const { parsed, error } = await main.config(options)
 
   t.equal(processEnv.HELLO, 'backend')
   t.equal(parsed.HELLO, 'backend')
@@ -538,7 +568,8 @@ t.test('config monorepo/apps/backend/.env AND frontend/.env', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env AND frontend/.env --overload', ct => {
+t.test('config monorepo/apps/backend/.env AND frontend/.env --overload',
+async ct => {
   const processEnv = {}
 
   const options = {
@@ -547,7 +578,7 @@ t.test('config monorepo/apps/backend/.env AND frontend/.env --overload', ct => {
     overload: true
   }
 
-  const { parsed, error } = main.config(options)
+  const { parsed, error } = await main.config(options)
 
   t.equal(processEnv.HELLO, 'frontend')
   t.equal(parsed.HELLO, 'frontend')
@@ -556,7 +587,8 @@ t.test('config monorepo/apps/backend/.env AND frontend/.env --overload', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env AND frontend/missing', ct => {
+t.test('config monorepo/apps/backend/.env AND frontend/missing',
+async ct => {
   const processEnv = {}
 
   const options = {
@@ -564,7 +596,7 @@ t.test('config monorepo/apps/backend/.env AND frontend/missing', ct => {
     path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend/missing']
   }
 
-  const { parsed, error } = main.config(options)
+  const { parsed, error } = await main.config(options)
 
   t.equal(processEnv.HELLO, 'backend')
   t.equal(parsed.HELLO, 'backend')
@@ -573,7 +605,8 @@ t.test('config monorepo/apps/backend/.env AND frontend/missing', ct => {
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env AND attempt on directory frontend', ct => {
+t.test('config monorepo/apps/backend/.env AND attempt on directory frontend',
+async ct => {
   const processEnv = {}
 
   const options = {
@@ -581,7 +614,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend', ct
     path: ['tests/monorepo/apps/backend/.env', 'tests/monorepo/apps/frontend']
   }
 
-  const { parsed, error } = main.config(options)
+  const { parsed, error } = await main.config(options)
 
   t.equal(processEnv.HELLO, 'backend')
   t.equal(parsed.HELLO, 'backend')
@@ -590,7 +623,8 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend', ct
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --strict it throws', ct => {
+t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --strict it throws',
+async ct => {
   const processEnv = {}
 
   const options = {
@@ -600,7 +634,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
   }
 
   try {
-    main.config(options)
+    await main.config(options)
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.equal(error.code, 'MISSING_ENV_FILE')
@@ -609,7 +643,8 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
   ct.end()
 })
 
-t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --strict but error ALSO ignored', ct => {
+t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --strict but error ALSO ignored',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
@@ -622,7 +657,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
     ignore: ['MISSING_ENV_FILE']
   }
 
-  main.config(options)
+  await main.config(options)
 
   ct.ok(stub.called, 'new Run().run() called')
   ct.ok(loggerErrorStub.notCalled, 'logger.error')
@@ -633,11 +668,12 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
   ct.end()
 })
 
-t.test('set calls Sets.run', ct => {
+t.test('set calls Sets.run',
+async ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
-  main.set('KEY', 'value')
+  await main.set('KEY', 'value')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.equal(stub.thisValues[0].encrypt, true, 'Sets was called with encrypt true')
@@ -647,11 +683,12 @@ t.test('set calls Sets.run', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run with encrypt false', ct => {
+t.test('set calls Sets.run with encrypt false',
+async ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
-  main.set('KEY', 'value', { encrypt: false })
+  await main.set('KEY', 'value', { encrypt: false })
 
   t.ok(stub.called, 'new Sets().run() called')
   t.equal(stub.thisValues[0].encrypt, false, 'Sets was called with encrypt false')
@@ -661,11 +698,12 @@ t.test('set calls Sets.run with encrypt false', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run with plain true', ct => {
+t.test('set calls Sets.run with plain true',
+async ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
-  main.set('KEY', 'value', { plain: true })
+  await main.set('KEY', 'value', { plain: true })
 
   t.ok(stub.called, 'new Sets().run() called')
   t.equal(stub.thisValues[0].encrypt, false, 'Sets was called with encrypt false')
@@ -675,11 +713,12 @@ t.test('set calls Sets.run with plain true', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run with custom envKeysFile', ct => {
+t.test('set calls Sets.run with custom envKeysFile',
+async ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
-  main.set('KEY', 'value', { envKeysFile: 'path/to/.env.keys' })
+  await main.set('KEY', 'value', { envKeysFile: 'path/to/.env.keys' })
 
   t.ok(stub.called, 'new Sets().run() called')
 
@@ -690,11 +729,12 @@ t.test('set calls Sets.run with custom envKeysFile', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run with noOps true', ct => {
+t.test('set calls Sets.run with noOps true',
+async ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
-  main.set('KEY', 'value', { noOps: true })
+  await main.set('KEY', 'value', { noOps: true })
 
   t.ok(stub.called, 'new Sets().run() called')
   t.equal(stub.thisValues[0].opsOn, false, 'Sets was called with opsOn false')
@@ -704,7 +744,8 @@ t.test('set calls Sets.run with noOps true', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - no changes', ct => {
+t.test('set calls Sets.run - no changes',
+async ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   const processedEnvs = [{
     key: 'HELLO',
@@ -719,7 +760,7 @@ t.test('set calls Sets.run - no changes', ct => {
   }]
   stub.returns({ processedEnvs, changedFilepaths: [], unchangedFilepaths: [] })
 
-  main.set('KEY', 'value')
+  await main.set('KEY', 'value')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.equal(stub.thisValues[0].encrypt, true, 'Sets was called with encrypt true')
@@ -730,7 +771,8 @@ t.test('set calls Sets.run - no changes', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - no changes', ct => {
+t.test('set calls Sets.run - no changes',
+async ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const stub = sinon.stub(Sets.prototype, 'run').returns({
     processedEnvs: [{
@@ -748,7 +790,7 @@ t.test('set calls Sets.run - no changes', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -759,7 +801,8 @@ t.test('set calls Sets.run - no changes', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - changes', ct => {
+t.test('set calls Sets.run - changes',
+async ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
@@ -779,7 +822,7 @@ t.test('set calls Sets.run - changes', ct => {
     unchangedFilepaths: []
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -791,7 +834,8 @@ t.test('set calls Sets.run - changes', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - changes plain', ct => {
+t.test('set calls Sets.run - changes plain',
+async ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
@@ -811,7 +855,7 @@ t.test('set calls Sets.run - changes plain', ct => {
     unchangedFilepaths: []
   })
 
-  main.set('HELLO', 'World', { plain: true })
+  await main.set('HELLO', 'World', { plain: true })
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -823,7 +867,8 @@ t.test('set calls Sets.run - changes plain', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - MISSING_ENV_FILE', ct => {
+t.test('set calls Sets.run - MISSING_ENV_FILE',
+async ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
@@ -846,7 +891,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -859,7 +904,8 @@ t.test('set calls Sets.run - MISSING_ENV_FILE', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - MISSING_ENV_FILE fallback filepath', ct => {
+t.test('set calls Sets.run - MISSING_ENV_FILE fallback filepath',
+async ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const error = new Errors({ envFilepath: '.env' }).missingEnvFile()
 
@@ -879,7 +925,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE fallback filepath', ct => {
     unchangedFilepaths: []
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger warn fallback .env path')
@@ -888,7 +934,8 @@ t.test('set calls Sets.run - MISSING_ENV_FILE fallback filepath', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - OTHER_ERROR', ct => {
+t.test('set calls Sets.run - OTHER_ERROR',
+async ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
@@ -913,7 +960,7 @@ t.test('set calls Sets.run - OTHER_ERROR', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -926,7 +973,8 @@ t.test('set calls Sets.run - OTHER_ERROR', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent with help', ct => {
+t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent with help',
+async ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
 
   const error = new Error('Mock Error')
@@ -948,7 +996,7 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent with he
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(loggerWarnStub.calledWith('Mock Error. some help'), 'logger.warn fallback includes help')
@@ -958,7 +1006,8 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent with he
   ct.end()
 })
 
-t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent without help', ct => {
+t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent without help',
+async ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
 
   const error = new Error('Mock Error')
@@ -979,7 +1028,7 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent without
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger.warn fallback uses base message')
@@ -989,7 +1038,8 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent without
   ct.end()
 })
 
-t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY', ct => {
+t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY',
+async ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
@@ -1014,7 +1064,7 @@ t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -1027,7 +1077,8 @@ t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - WRONG_PRIVATE_KEY', ct => {
+t.test('set calls Sets.run - WRONG_PRIVATE_KEY',
+async ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
@@ -1052,7 +1103,7 @@ t.test('set calls Sets.run - WRONG_PRIVATE_KEY', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -1065,7 +1116,8 @@ t.test('set calls Sets.run - WRONG_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - MISSING_PRIVATE_KEY', ct => {
+t.test('set calls Sets.run - MISSING_PRIVATE_KEY',
+async ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
@@ -1090,7 +1142,7 @@ t.test('set calls Sets.run - MISSING_PRIVATE_KEY', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -1103,7 +1155,8 @@ t.test('set calls Sets.run - MISSING_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - INVALID_PUBLIC_KEY', ct => {
+t.test('set calls Sets.run - INVALID_PUBLIC_KEY',
+async ct => {
   const loggerNeutralStub = sinon.stub(logger, 'info')
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
@@ -1128,7 +1181,7 @@ t.test('set calls Sets.run - INVALID_PUBLIC_KEY', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -1141,7 +1194,8 @@ t.test('set calls Sets.run - INVALID_PUBLIC_KEY', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - preserves punctuated key errors', ct => {
+t.test('set calls Sets.run - preserves punctuated key errors',
+async ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const stub = sinon.stub(Sets.prototype, 'run').returns({
     processedEnvs: [{
@@ -1197,7 +1251,7 @@ t.test('set calls Sets.run - preserves punctuated key errors', ct => {
     unchangedFilepaths: []
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(loggerWarnStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
@@ -1209,7 +1263,8 @@ t.test('set calls Sets.run - preserves punctuated key errors', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - privateKeyAdded', ct => {
+t.test('set calls Sets.run - privateKeyAdded',
+async ct => {
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerHelpStub = sinon.stub(logger, 'help')
@@ -1231,7 +1286,7 @@ t.test('set calls Sets.run - privateKeyAdded', ct => {
     unchangedFilepaths: []
   })
 
-  main.set('HELLO', 'World')
+  await main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -1244,7 +1299,8 @@ t.test('set calls Sets.run - privateKeyAdded', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys', ct => {
+t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys',
+async ct => {
   const mainNotIgnoring = proxyquire('../../src/lib/main', {
     '../../src/lib/helpers/isIgnoringDotenvKeys': () => false
   })
@@ -1270,7 +1326,7 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys', ct => 
     unchangedFilepaths: []
   })
 
-  mainNotIgnoring.set('HELLO', 'World')
+  await mainNotIgnoring.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
@@ -1283,7 +1339,8 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys', ct => 
   ct.end()
 })
 
-t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports key addition', ct => {
+t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports key addition',
+async ct => {
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerNeutralStub = sinon.stub(logger, 'info')
 
@@ -1304,7 +1361,7 @@ t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports k
     unchangedFilepaths: ['.env']
   })
 
-  main.set('HELLO', 'dude')
+  await main.set('HELLO', 'dude')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
@@ -1316,7 +1373,8 @@ t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports k
   ct.end()
 })
 
-t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .env', ct => {
+t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .env',
+async ct => {
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerInfoStub = sinon.stub(logger, 'info')
 
@@ -1337,7 +1395,7 @@ t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .
     unchangedFilepaths: []
   })
 
-  main.set('HELLO', 'dude')
+  await main.set('HELLO', 'dude')
 
   t.ok(stub.called, 'new Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
@@ -1349,11 +1407,12 @@ t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .
   ct.end()
 })
 
-t.test('get calls Get.run', ct => {
+t.test('get calls Get.run',
+async ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
-  const result = main.get('KEY')
+  const result = await main.get('KEY')
   t.equal(result, 'value')
 
   t.ok(stub.called, 'new Get().run() called')
@@ -1363,11 +1422,12 @@ t.test('get calls Get.run', ct => {
   ct.end()
 })
 
-t.test('get calls Get.run undefined', ct => {
+t.test('get calls Get.run undefined',
+async ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: undefined }, errors: [] })
 
-  const result = main.get('KEY')
+  const result = await main.get('KEY')
   t.equal(result, undefined)
 
   t.ok(stub.called, 'new Get().run() called')
@@ -1377,11 +1437,12 @@ t.test('get calls Get.run undefined', ct => {
   ct.end()
 })
 
-t.test('get calls Get.run with no key', ct => {
+t.test('get calls Get.run with no key',
+async ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
-  const result = main.get(null)
+  const result = await main.get(null)
   t.equal(result.KEY, 'value')
 
   t.ok(stub.called, 'new Get().run() called')
@@ -1391,11 +1452,12 @@ t.test('get calls Get.run with no key', ct => {
   ct.end()
 })
 
-t.test('get calls Get.run format eval', ct => {
+t.test('get calls Get.run format eval',
+async ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
-  const result = main.get(null, { format: 'eval' })
+  const result = await main.get(null, { format: 'eval' })
   t.equal(result, 'KEY=value')
 
   t.ok(stub.called, 'new Get().run() called')
@@ -1405,11 +1467,12 @@ t.test('get calls Get.run format eval', ct => {
   ct.end()
 })
 
-t.test('get calls Get.run format shell', ct => {
+t.test('get calls Get.run format shell',
+async ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
-  const result = main.get(null, { format: 'shell' })
+  const result = await main.get(null, { format: 'shell' })
   t.equal(result, 'KEY=value')
 
   t.ok(stub.called, 'new Get().run() called')
@@ -1419,11 +1482,12 @@ t.test('get calls Get.run format shell', ct => {
   ct.end()
 })
 
-t.test('get calls Get.run with noOps true', ct => {
+t.test('get calls Get.run with noOps true',
+async ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
-  const result = main.get('KEY', { noOps: true })
+  const result = await main.get('KEY', { noOps: true })
   t.equal(result, 'value')
 
   t.ok(stub.called, 'new Get().run() called')
@@ -1434,7 +1498,8 @@ t.test('get calls Get.run with noOps true', ct => {
   ct.end()
 })
 
-t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --strict it throws', ct => {
+t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --strict it throws',
+async ct => {
   const processEnv = {}
 
   const options = {
@@ -1444,7 +1509,7 @@ t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --stric
   }
 
   try {
-    main.get('HELLO', options)
+    await main.get('HELLO', options)
     ct.fail('should have raised an error but did not')
   } catch (error) {
     ct.equal(error.code, 'MISSING_ENV_FILE')
@@ -1453,7 +1518,8 @@ t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --stric
   ct.end()
 })
 
-t.test('get with Get.run errors', ct => {
+t.test('get with Get.run errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error('some error')
@@ -1463,7 +1529,7 @@ t.test('get with Get.run errors', ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors })
 
-  main.get('KEY')
+  await main.get('KEY')
 
   t.ok(stub.called, 'new Get().run() called')
   ct.ok(loggerErrorStub.called, 'logger.error')
@@ -1474,7 +1540,8 @@ t.test('get with Get.run errors', ct => {
   ct.end()
 })
 
-t.test('get with Get.run WRONG_PRIVATE_KEY errors', ct => {
+t.test('get with Get.run WRONG_PRIVATE_KEY errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
@@ -1484,7 +1551,7 @@ t.test('get with Get.run WRONG_PRIVATE_KEY errors', ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors })
 
-  main.get('KEY')
+  await main.get('KEY')
 
   t.ok(stub.called, 'new Get().run() called')
   ct.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.error one-line')
@@ -1496,7 +1563,8 @@ t.test('get with Get.run WRONG_PRIVATE_KEY errors', ct => {
   ct.end()
 })
 
-t.test('get with Get.run MISSING_PRIVATE_KEY errors', ct => {
+t.test('get with Get.run MISSING_PRIVATE_KEY errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
@@ -1506,7 +1574,7 @@ t.test('get with Get.run MISSING_PRIVATE_KEY errors', ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors })
 
-  main.get('KEY')
+  await main.get('KEY')
 
   t.ok(stub.called, 'new Get().run() called')
   ct.ok(loggerErrorStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.error one-line')
@@ -1518,7 +1586,8 @@ t.test('get with Get.run MISSING_PRIVATE_KEY errors', ct => {
   ct.end()
 })
 
-t.test('get with Get.run punctuated private key errors', ct => {
+t.test('get with Get.run punctuated private key errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const errors = [
     (() => {
@@ -1535,7 +1604,7 @@ t.test('get with Get.run punctuated private key errors', ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors })
 
-  main.get('KEY')
+  await main.get('KEY')
 
   t.ok(stub.called, 'new Get().run() called')
   ct.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
@@ -1547,13 +1616,14 @@ t.test('get with Get.run punctuated private key errors', ct => {
   ct.end()
 })
 
-t.test('get with Get.run undefined errors', ct => {
+t.test('get with Get.run undefined errors',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: undefined })
 
-  main.get('KEY')
+  await main.get('KEY')
 
   t.ok(stub.called, 'new Get().run() called')
   ct.ok(loggerErrorStub.notCalled, 'logger.error')
@@ -1564,7 +1634,8 @@ t.test('get with Get.run undefined errors', ct => {
   ct.end()
 })
 
-t.test('get with Get.run errors and ignore', ct => {
+t.test('get with Get.run errors and ignore',
+async ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   const error = new Error('some error')
@@ -1574,7 +1645,7 @@ t.test('get with Get.run errors and ignore', ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors })
 
-  main.get('KEY', { ignore: ['SOME_ERROR'] })
+  await main.get('KEY', { ignore: ['SOME_ERROR'] })
 
   t.ok(stub.called, 'new Get().run() called')
   ct.ok(loggerErrorStub.notCalled, 'logger.error')

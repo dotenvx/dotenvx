@@ -36,7 +36,8 @@ t.afterEach((ct) => {
   cleanupRootEnvFiles()
 })
 
-t.test('#run (no arguments)', ct => {
+t.test('#run (no arguments)',
+async ct => {
   const cwd = process.cwd()
   const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
   process.chdir(tmpdir)
@@ -48,7 +49,7 @@ t.test('#run (no arguments)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt().run()
+  } = await new Encrypt().run()
 
   ct.equal(processedEnvs.length, 1)
   ct.equal(processedEnvs[0].envFilepath, '.env')
@@ -65,7 +66,8 @@ t.test('#run (no arguments)', ct => {
   ct.end()
 })
 
-t.test('#run (no env file) with --no-create', ct => {
+t.test('#run (no env file) with --no-create',
+async ct => {
   const cwd = process.cwd()
   const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
   process.chdir(tmpdir)
@@ -74,7 +76,7 @@ t.test('#run (no env file) with --no-create', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt([], [], [], null, false, true).run()
+  } = await new Encrypt([], [], [], null, false, true).run()
 
   ct.equal(processedEnvs.length, 1)
   ct.equal(processedEnvs[0].envFilepath, '.env')
@@ -87,7 +89,8 @@ t.test('#run (no env file) with --no-create', ct => {
   ct.end()
 })
 
-t.test('#run (blank existing .env file) seeds sample kit before encrypting', ct => {
+t.test('#run (blank existing .env file) seeds sample kit before encrypting',
+async ct => {
   const cwd = process.cwd()
   const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
   process.chdir(tmpdir)
@@ -99,7 +102,7 @@ t.test('#run (blank existing .env file) seeds sample kit before encrypting', ct 
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt().run()
+  } = await new Encrypt().run()
 
   ct.equal(processedEnvs.length, 1)
   ct.equal(processedEnvs[0].envFilepath, '.env')
@@ -116,7 +119,8 @@ t.test('#run (blank existing .env file) seeds sample kit before encrypting', ct 
   ct.end()
 })
 
-t.test('#run (no arguments and some other error)', ct => {
+t.test('#run (no arguments and some other error)',
+async ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
@@ -125,7 +129,7 @@ t.test('#run (no arguments and some other error)', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = inst.run()
+  } = await inst.run()
 
   const exampleError = new Error('Mock Error')
 
@@ -144,7 +148,8 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file)', ct => {
+t.test('#run (finds .env file)',
+async ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -154,7 +159,7 @@ t.test('#run (finds .env file)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs).run()
+  } = await new Encrypt(envs).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
@@ -171,7 +176,8 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file) with ops off and no existing keys still generates .env.keys', ct => {
+t.test('#run (finds .env file) with ops off and no existing keys still generates .env.keys',
+async ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -180,7 +186,7 @@ t.test('#run (finds .env file) with ops off and no existing keys still generates
   const {
     processedEnvs,
     changedFilepaths
-  } = new Encrypt(envs, [], [], null, false).run()
+  } = await new Encrypt(envs, [], [], null, false).run()
 
   ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
   ct.equal(processedEnvs[0].privateKeyAdded, true)
@@ -188,7 +194,8 @@ t.test('#run (finds .env file) with ops off and no existing keys still generates
   ct.end()
 })
 
-t.test('#run (finds .env file with multiline values - implicit and explicit newline)', ct => {
+t.test('#run (finds .env file with multiline values - implicit and explicit newline)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiline/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -198,7 +205,7 @@ t.test('#run (finds .env file with multiline values - implicit and explicit newl
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs).run()
+  } = await new Encrypt(envs).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'ALOHA'])
@@ -228,7 +235,8 @@ ALOHA="${parsed.ALOHA}"
   ct.end()
 })
 
-t.test('#run (finds .env file with CRLF multiline values - implicit and explicit CRLF newline)', ct => {
+t.test('#run (finds .env file with CRLF multiline values - implicit and explicit CRLF newline)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiline/.env.crlf'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -238,7 +246,7 @@ t.test('#run (finds .env file with CRLF multiline values - implicit and explicit
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs).run()
+  } = await new Encrypt(envs).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'ALOHA'])
@@ -268,7 +276,8 @@ ALOHA="${parsed.ALOHA}"\r
   ct.end()
 })
 
-t.test('#run (finds .env file already encrypted)', ct => {
+t.test('#run (finds .env file already encrypted)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -278,7 +287,7 @@ t.test('#run (finds .env file already encrypted)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs).run()
+  } = await new Encrypt(envs).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, [])
@@ -289,7 +298,8 @@ t.test('#run (finds .env file already encrypted)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with specified key)', ct => {
+t.test('#run (finds .env file with specified key)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -299,7 +309,7 @@ t.test('#run (finds .env file with specified key)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs, ['HELLO2']).run()
+  } = await new Encrypt(envs, ['HELLO2']).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO2'])
@@ -317,7 +327,8 @@ t.test('#run (finds .env file with specified key)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with specified key as string)', ct => {
+t.test('#run (finds .env file with specified key as string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -327,7 +338,7 @@ t.test('#run (finds .env file with specified key as string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs, 'HELLO2').run()
+  } = await new Encrypt(envs, 'HELLO2').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO2'])
@@ -345,7 +356,8 @@ t.test('#run (finds .env file with specified key as string)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with specified glob string)', ct => {
+t.test('#run (finds .env file with specified glob string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -355,7 +367,7 @@ t.test('#run (finds .env file with specified glob string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs, 'H*').run()
+  } = await new Encrypt(envs, 'H*').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO2', 'HELLO3'])
@@ -374,7 +386,8 @@ t.test('#run (finds .env file with specified glob string)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file excluding specified key)', ct => {
+t.test('#run (finds .env file excluding specified key)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -384,7 +397,7 @@ t.test('#run (finds .env file excluding specified key)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs, [], ['HELLO2']).run()
+  } = await new Encrypt(envs, [], ['HELLO2']).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO3'])
@@ -403,7 +416,8 @@ t.test('#run (finds .env file excluding specified key)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file excluding specified key as string)', ct => {
+t.test('#run (finds .env file excluding specified key as string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -413,7 +427,7 @@ t.test('#run (finds .env file excluding specified key as string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs, [], 'HELLO3').run()
+  } = await new Encrypt(envs, [], 'HELLO3').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO2'])
@@ -432,7 +446,8 @@ t.test('#run (finds .env file excluding specified key as string)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file excluding specified key globbed)', ct => {
+t.test('#run (finds .env file excluding specified key globbed)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -442,7 +457,7 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs, [], 'HE*').run()
+  } = await new Encrypt(envs, [], 'HE*').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, [])
@@ -460,7 +475,8 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env.export file with exported key)', ct => {
+t.test('#run (finds .env.export file with exported key)',
+async ct => {
   const envFile = 'tests/.env.export'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -470,7 +486,7 @@ t.test('#run (finds .env.export file with exported key)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Encrypt(envs).run()
+  } = await new Encrypt(envs).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['KEY'])
@@ -499,7 +515,8 @@ export KEY=${parsed.KEY}
   ct.end()
 })
 
-t.test('#run (finds .env and .env.keys file) but derived public key does not match configured public key', ct => {
+t.test('#run (finds .env and .env.keys file) but derived public key does not match configured public key',
+async ct => {
   process.env.DOTENV_PUBLIC_KEY = '12345'
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
@@ -509,7 +526,7 @@ t.test('#run (finds .env and .env.keys file) but derived public key does not mat
 
   const {
     processedEnvs
-  } = new Encrypt(envs).run()
+  } = await new Encrypt(envs).run()
 
   const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
   error.code = 'MISPAIRED_PRIVATE_KEY'
@@ -527,7 +544,8 @@ t.test('#run (finds .env and .env.keys file) but derived public key does not mat
   ct.end()
 })
 
-t.test('#run (finds .env file only)', ct => {
+t.test('#run (finds .env file only)',
+async ct => {
   const Keypair = require('../../../src/lib/services/keypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
@@ -542,7 +560,7 @@ t.test('#run (finds .env file only)', ct => {
   const {
     processedEnvs,
     unchangedFilepaths
-  } = new Encrypt(envs).run()
+  } = await new Encrypt(envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -567,7 +585,8 @@ t.test('#run (finds .env file only)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
+t.test('#run (finds .env file) and custom envKeysFilepath',
+async ct => {
   const envKeysFilepath = 'tests/monorepo/.env.keys'
   const envFile = 'tests/monorepo/apps/app1/.env'
   const envs = [
@@ -577,7 +596,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Encrypt(envs, [], [], envKeysFilepath).run()
+  } = await new Encrypt(envs, [], [], envKeysFilepath).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -604,7 +623,8 @@ t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already exists', ct => {
+t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already exists',
+async ct => {
   const envKeysFilepath = 'tests/monorepo/.env.keys'
   const envFile = 'tests/monorepo/apps/app1/.env.production'
   const envs = [
@@ -614,7 +634,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already
   const {
     processedEnvs,
     changedFilepaths
-  } = new Encrypt(envs, [], [], envKeysFilepath).run()
+  } = await new Encrypt(envs, [], [], envKeysFilepath).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -638,7 +658,8 @@ t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already
   ct.end()
 })
 
-t.test('#run (finds .env file only AND only the existing public key not the private key)', ct => {
+t.test('#run (finds .env file only AND only the existing public key not the private key)',
+async ct => {
   const sandbox = sinon.createSandbox()
 
   const keyValuesStub = sandbox.stub().returns({
@@ -663,7 +684,7 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
   const {
     processedEnvs,
     unchangedFilepaths
-  } = new Encrypt(envs).run()
+  } = await new Encrypt(envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -688,7 +709,8 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
   ct.end()
 })
 
-t.test('#run wraps invalid public key encryption errors', ct => {
+t.test('#run wraps invalid public key encryption errors',
+async ct => {
   const sandbox = sinon.createSandbox()
   const cryptography = require('../../../src/lib/helpers/cryptography')
   const EncryptWithStub = proxyquire('../../../src/lib/services/encrypt', {
@@ -703,7 +725,7 @@ t.test('#run wraps invalid public key encryption errors', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const envs = [{ type: 'envFile', value: envFile }]
 
-  const { processedEnvs, changedFilepaths } = new EncryptWithStub(envs).run()
+  const { processedEnvs, changedFilepaths } = await new EncryptWithStub(envs).run()
 
   ct.equal(processedEnvs[0].error.code, 'INVALID_PUBLIC_KEY')
   ct.match(processedEnvs[0].error.message, /^\[INVALID_PUBLIC_KEY\] could not encrypt using public key 'DOTENV_PUBLIC_KEY=/)

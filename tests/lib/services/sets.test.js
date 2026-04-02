@@ -35,7 +35,8 @@ t.afterEach((ct) => {
   cleanupRootEnvFiles()
 })
 
-t.test('#run (no arguments)', ct => {
+t.test('#run (no arguments)',
+async ct => {
   const cwd = process.cwd()
   const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-cwd-'))
   process.chdir(tmpdir)
@@ -43,7 +44,7 @@ t.test('#run (no arguments)', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets().run()
+  } = await new Sets().run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -65,7 +66,8 @@ t.test('#run (no arguments)', ct => {
   ct.end()
 })
 
-t.test('#run (encrypt off) creates missing .env with only the set key/value', ct => {
+t.test('#run (encrypt off) creates missing .env with only the set key/value',
+async ct => {
   const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
   const envFile = path.join(tmpdir, '.env')
   const envs = [{ type: 'envFile', value: envFile }]
@@ -75,7 +77,7 @@ t.test('#run (encrypt off) creates missing .env with only the set key/value', ct
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets('HELLO', 'world', envs, false, null, false, false).run()
+  } = await new Sets('HELLO', 'world', envs, false, null, false, false).run()
 
   ct.equal(processedEnvs.length, 1)
   ct.notOk(processedEnvs[0].error)
@@ -87,7 +89,8 @@ t.test('#run (encrypt off) creates missing .env with only the set key/value', ct
   ct.end()
 })
 
-t.test('#run (encrypt on) creates missing .env and encrypts the set key/value', ct => {
+t.test('#run (encrypt on) creates missing .env and encrypts the set key/value',
+async ct => {
   const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
   const envFile = path.join(tmpdir, '.env')
   const envs = [{ type: 'envFile', value: envFile }]
@@ -97,7 +100,7 @@ t.test('#run (encrypt on) creates missing .env and encrypts the set key/value', 
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets('HELLO', 'world', envs, true, null, false, false).run()
+  } = await new Sets('HELLO', 'world', envs, true, null, false, false).run()
 
   ct.equal(processedEnvs.length, 1)
   ct.notOk(processedEnvs[0].error)
@@ -111,7 +114,8 @@ t.test('#run (encrypt on) creates missing .env and encrypts the set key/value', 
   ct.end()
 })
 
-t.test('#run (encrypt off) with --no-create on missing .env returns missing file error', ct => {
+t.test('#run (encrypt off) with --no-create on missing .env returns missing file error',
+async ct => {
   const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
   const envFile = path.join(tmpdir, '.env')
   const envs = [{ type: 'envFile', value: envFile }]
@@ -120,7 +124,7 @@ t.test('#run (encrypt off) with --no-create on missing .env returns missing file
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets('HELLO', 'world', envs, false, null, false, true).run()
+  } = await new Sets('HELLO', 'world', envs, false, null, false, true).run()
 
   ct.equal(processedEnvs.length, 1)
   ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
@@ -130,7 +134,8 @@ t.test('#run (encrypt off) with --no-create on missing .env returns missing file
   ct.end()
 })
 
-t.test('#run (no env file)', ct => {
+t.test('#run (no env file)',
+async ct => {
   const cwd = process.cwd()
   const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-cwd-'))
   process.chdir(tmpdir)
@@ -138,7 +143,7 @@ t.test('#run (no env file)', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets().run()
+  } = await new Sets().run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -160,7 +165,8 @@ t.test('#run (no env file)', ct => {
   ct.end()
 })
 
-t.test('#run (no arguments and some other error)', ct => {
+t.test('#run (no arguments and some other error)',
+async ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
@@ -169,7 +175,7 @@ t.test('#run (no arguments and some other error)', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = inst.run()
+  } = await inst.run()
 
   const exampleError = new Error('Mock Error')
 
@@ -190,7 +196,8 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.end()
 })
 
-t.test('#run (encrypt off) (finds .env file)', ct => {
+t.test('#run (encrypt off) (finds .env file)',
+async ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="frontend" # this is a comment',
@@ -205,7 +212,7 @@ t.test('#run (encrypt off) (finds .env file)', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('KEY', 'value', envs, false).run()
+  } = await new Sets('KEY', 'value', envs, false).run()
 
   ct.same(processedEnvs, [{
     key: 'KEY',
@@ -222,7 +229,8 @@ t.test('#run (encrypt off) (finds .env file)', ct => {
   ct.end()
 })
 
-t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)', ct => {
+t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)',
+async ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="new value" # this is a comment'
@@ -236,7 +244,7 @@ t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)',
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('HELLO', 'new value', envs, false).run()
+  } = await new Sets('HELLO', 'new value', envs, false).run()
 
   ct.same(processedEnvs, [{
     key: 'HELLO',
@@ -253,7 +261,8 @@ t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)',
   ct.end()
 })
 
-t.test('#run (encrypt off) (finds .env file and attempts overwrite with same key/value)', ct => {
+t.test('#run (encrypt off) (finds .env file and attempts overwrite with same key/value)',
+async ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="frontend" # this is a comment'
@@ -268,7 +277,7 @@ t.test('#run (encrypt off) (finds .env file and attempts overwrite with same key
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets('HELLO', 'frontend', envs, false).run()
+  } = await new Sets('HELLO', 'frontend', envs, false).run()
 
   ct.same(processedEnvs, [{
     key: 'HELLO',
@@ -286,7 +295,8 @@ t.test('#run (encrypt off) (finds .env file and attempts overwrite with same key
   ct.end()
 })
 
-t.test('#run (encrypt off) (finds .env file as array)', ct => {
+t.test('#run (encrypt off) (finds .env file as array)',
+async ct => {
   const envSrc = [
     '# for testing purposes only',
     'HELLO="frontend" # this is a comment',
@@ -301,7 +311,7 @@ t.test('#run (encrypt off) (finds .env file as array)', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('KEY', 'value', envs, false).run()
+  } = await new Sets('KEY', 'value', envs, false).run()
 
   ct.same(processedEnvs, [{
     key: 'KEY',
@@ -318,7 +328,8 @@ t.test('#run (encrypt off) (finds .env file as array)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file) with --encrypt', ct => {
+t.test('#run (finds .env file) with --encrypt',
+async ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -327,7 +338,7 @@ t.test('#run (finds .env file) with --encrypt', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('KEY', 'value', envs).run()
+  } = await new Sets('KEY', 'value', envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -370,7 +381,8 @@ t.test('#run (finds .env file) with --encrypt', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env and .env.keys file) with --encrypt', ct => {
+t.test('#run (finds .env and .env.keys file) with --encrypt',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -379,7 +391,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('KEY', 'value', envs).run()
+  } = await new Sets('KEY', 'value', envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -417,7 +429,8 @@ t.test('#run (finds .env and .env.keys file) with --encrypt', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env and .env.keys file) with --encrypt and changes original value', ct => {
+t.test('#run (finds .env and .env.keys file) with --encrypt and changes original value',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -426,7 +439,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt and changes original
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('HELLO', 'new value', envs).run()
+  } = await new Sets('HELLO', 'new value', envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -463,7 +476,8 @@ t.test('#run (finds .env and .env.keys file) with --encrypt and changes original
   ct.end()
 })
 
-t.test('#run (finds .env and .env.keys file) with --encrypt but derived public key does not match configured public key', ct => {
+t.test('#run (finds .env and .env.keys file) with --encrypt but derived public key does not match configured public key',
+async ct => {
   process.env.DOTENV_PUBLIC_KEY = '12345'
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
@@ -473,7 +487,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
 
   const {
     processedEnvs
-  } = new Sets('HELLO', 'new value', envs).run()
+  } = await new Sets('HELLO', 'new value', envs).run()
 
   const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
   error.code = 'MISPAIRED_PRIVATE_KEY'
@@ -494,7 +508,8 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
   ct.end()
 })
 
-t.test('#run (finds .env file only) with --encrypt', ct => {
+t.test('#run (finds .env file only) with --encrypt',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -503,7 +518,7 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('HELLO', 'new value', envs).run()
+  } = await new Sets('HELLO', 'new value', envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -540,7 +555,8 @@ t.test('#run (finds .env file only) with --encrypt', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt', ct => {
+t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
+async ct => {
   const Keypair = require('../../../src/lib/services/keypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
@@ -556,7 +572,7 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('HELLO', 'new value', envs).run()
+  } = await new Sets('HELLO', 'new value', envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -598,7 +614,8 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
   ct.end()
 })
 
-t.test('#run (finds .env and .env.keys file but they are not quite blank) with --encrypt', ct => {
+t.test('#run (finds .env and .env.keys file but they are not quite blank) with --encrypt',
+async ct => {
   const Keypair = require('../../../src/lib/services/keypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
@@ -614,7 +631,7 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('HELLO', 'new value', envs).run()
+  } = await new Sets('HELLO', 'new value', envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -657,7 +674,8 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
   ct.end()
 })
 
-t.test('#run (finds .env with a shebang) with --encrypt', ct => {
+t.test('#run (finds .env with a shebang) with --encrypt',
+async ct => {
   const Keypair = require('../../../src/lib/services/keypair')
   const sandbox = sinon.createSandbox()
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
@@ -672,7 +690,7 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('HELLO', 'new value', envs).run()
+  } = await new Sets('HELLO', 'new value', envs).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -714,7 +732,8 @@ t.test('#run (finds .env with a shebang) with --encrypt', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted to encrypted same value', ct => {
+t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted to encrypted same value',
+async ct => {
   const envFile = 'tests/monorepo/apps/unencrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -723,7 +742,7 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('HELLO', 'unencrypted', envs).run() // this value should be the same value as currently in the file
+  } = await new Sets('HELLO', 'unencrypted', envs).run() // this value should be the same value as currently in the file
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -762,7 +781,8 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
   ct.end()
 })
 
-t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath', ct => {
+t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath',
+async ct => {
   const envKeysFilepath = 'tests/monorepo/.env.keys'
   const envFile = 'tests/monorepo/apps/app1/.env'
   const envs = [
@@ -772,7 +792,7 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath', ct =>
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('KEY', 'value', envs, true, envKeysFilepath).run()
+  } = await new Sets('KEY', 'value', envs, true, envKeysFilepath).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -814,7 +834,8 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath', ct =>
   ct.end()
 })
 
-t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and privateKey already exists', ct => {
+t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and privateKey already exists',
+async ct => {
   const envKeysFilepath = 'tests/monorepo/.env.keys'
   const envFile = 'tests/monorepo/apps/app1/.env.production'
   const envs = [
@@ -824,7 +845,7 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and pri
   const {
     processedEnvs,
     changedFilepaths
-  } = new Sets('KEY', 'value', envs, true, envKeysFilepath).run()
+  } = await new Sets('KEY', 'value', envs, true, envKeysFilepath).run()
 
   const row = processedEnvs[0]
   const publicKey = row.publicKey
@@ -863,7 +884,8 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and pri
   ct.end()
 })
 
-t.test('#run (finds .env file) with --encrypt and existing public key only', ct => {
+t.test('#run (finds .env file) with --encrypt and existing public key only',
+async ct => {
   const sandbox = sinon.createSandbox()
   const keyValuesStub = sandbox.stub().returns({
     publicKeyValue: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
@@ -881,7 +903,7 @@ t.test('#run (finds .env file) with --encrypt and existing public key only', ct 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [{ type: 'envFile', value: envFile }]
 
-  const { processedEnvs, changedFilepaths } = new SetsWithStub('KEY', 'value', envs, true).run()
+  const { processedEnvs, changedFilepaths } = await new SetsWithStub('KEY', 'value', envs, true).run()
 
   ct.equal(processedEnvs[0].publicKey, '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba')
   ct.equal(processedEnvs[0].privateKey, undefined)
@@ -893,7 +915,8 @@ t.test('#run (finds .env file) with --encrypt and existing public key only', ct 
   ct.end()
 })
 
-t.test('#run wraps invalid public key encryption errors', ct => {
+t.test('#run wraps invalid public key encryption errors',
+async ct => {
   const cryptography = require('../../../src/lib/helpers/cryptography')
   const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
     './../helpers/cryptography': {
@@ -907,7 +930,7 @@ t.test('#run wraps invalid public key encryption errors', ct => {
   const envFile = 'tests/monorepo/apps/frontend/.env'
   const envs = [{ type: 'envFile', value: envFile }]
 
-  const { processedEnvs, changedFilepaths } = new SetsWithStub('KEY', 'value', envs, true).run()
+  const { processedEnvs, changedFilepaths } = await new SetsWithStub('KEY', 'value', envs, true).run()
 
   ct.equal(processedEnvs[0].error.code, 'INVALID_PUBLIC_KEY')
   ct.match(processedEnvs[0].error.message, /^\[INVALID_PUBLIC_KEY\] could not encrypt using public key 'DOTENV_PUBLIC_KEY=/)

@@ -20,7 +20,7 @@ const fsx = require('./helpers/fsx')
 const localDisplayPath = require('./helpers/localDisplayPath')
 
 /** @type {import('./main').config} */
-const config = function (options = {}) {
+const config = async function (options = {}) {
   // allow user to set processEnv to write to
   let processEnv = process.env
   if (options && options.processEnv != null) {
@@ -54,7 +54,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, opsOn).run()
+    } = await new Run(envs, overload, processEnv, envKeysFile, opsOn).run()
 
     let lastError
     /** @type {Record<string, string>} */
@@ -147,7 +147,7 @@ const parse = function (src, options = {}) {
 }
 
 /* @type {import('./main').set} */
-const set = function (key, value, options = {}) {
+const set = async function (key, value, options = {}) {
   // encrypt
   let encrypt = true
   if (options.plain) {
@@ -170,7 +170,7 @@ const set = function (key, value, options = {}) {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).run()
+  } = await new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).run()
 
   let withEncryption = ''
 
@@ -221,14 +221,14 @@ const set = function (key, value, options = {}) {
 }
 
 /* @type {import('./main').get} */
-const get = function (key, options = {}) {
+const get = async function (key, options = {}) {
   const envs = buildEnvs(options)
   const opsOn = options.noOps !== true
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
+  const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
@@ -281,9 +281,9 @@ const genexample = function (directory, envFile) {
 }
 
 /** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
+const keypair = async function (envFile, key, envKeysFile = null, noOps = false) {
   const opsOn = noOps !== true
-  const keypairs = new Keypair(envFile, envKeysFile, opsOn).run()
+  const keypairs = await new Keypair(envFile, envKeysFile, opsOn).run()
   if (key) {
     return keypairs[key]
   } else {

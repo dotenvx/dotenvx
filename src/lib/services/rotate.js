@@ -43,7 +43,7 @@ class Rotate {
     this.envKeysSources = {}
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -57,7 +57,7 @@ class Rotate {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._rotateEnvFile(env.value)
+        await this._rotateEnvFile(env.value)
       }
     }
 
@@ -68,7 +68,7 @@ class Rotate {
     }
   }
 
-  _rotateEnvFile (envFilepath) {
+  async _rotateEnvFile (envFilepath) {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
@@ -83,7 +83,7 @@ class Rotate {
       const envParsed = dotenvParse(envSrc)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       let newPublicKey
       let newPrivateKey
@@ -91,7 +91,7 @@ class Rotate {
       let envKeysSrc
 
       if (this.opsOn) {
-        const kp = opsKeypair()
+        const kp = await opsKeypair()
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 

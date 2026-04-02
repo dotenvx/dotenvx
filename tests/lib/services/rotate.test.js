@@ -21,12 +21,13 @@ t.afterEach((ct) => {
   writeFileXStub.restore()
 })
 
-t.test('#run (no arguments)', ct => {
+t.test('#run (no arguments)',
+async ct => {
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate().run()
+  } = await new Rotate().run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -46,12 +47,13 @@ t.test('#run (no arguments)', ct => {
   ct.end()
 })
 
-t.test('#run (no env file)', ct => {
+t.test('#run (no env file)',
+async ct => {
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate().run()
+  } = await new Rotate().run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -71,7 +73,8 @@ t.test('#run (no env file)', ct => {
   ct.end()
 })
 
-t.test('#run (no arguments and some other error)', ct => {
+t.test('#run (no arguments and some other error)',
+async ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
@@ -80,7 +83,7 @@ t.test('#run (no arguments and some other error)', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = inst.run()
+  } = await inst.run()
 
   const exampleError = new Error('Mock Error')
 
@@ -99,7 +102,8 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file)', ct => {
+t.test('#run (finds .env file)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -114,7 +118,7 @@ t.test('#run (finds .env file)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate(envs).run()
+  } = await new Rotate(envs).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
@@ -138,7 +142,8 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with specified key)', ct => {
+t.test('#run (finds .env file with specified key)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -153,7 +158,7 @@ t.test('#run (finds .env file with specified key)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate(envs, ['HELLO']).run()
+  } = await new Rotate(envs, ['HELLO']).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
@@ -177,7 +182,8 @@ t.test('#run (finds .env file with specified key)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with specified key as string)', ct => {
+t.test('#run (finds .env file with specified key as string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -192,7 +198,7 @@ t.test('#run (finds .env file with specified key as string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate(envs, 'HELLO').run()
+  } = await new Rotate(envs, 'HELLO').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
@@ -216,7 +222,8 @@ t.test('#run (finds .env file with specified key as string)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with specified glob string)', ct => {
+t.test('#run (finds .env file with specified glob string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -231,7 +238,7 @@ t.test('#run (finds .env file with specified glob string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate(envs, 'H*').run()
+  } = await new Rotate(envs, 'H*').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
@@ -255,7 +262,8 @@ t.test('#run (finds .env file with specified glob string)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file excluding specified key)', ct => {
+t.test('#run (finds .env file excluding specified key)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -270,7 +278,7 @@ t.test('#run (finds .env file excluding specified key)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate(envs, [], ['HELLO']).run()
+  } = await new Rotate(envs, [], ['HELLO']).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, [])
@@ -294,7 +302,8 @@ t.test('#run (finds .env file excluding specified key)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file excluding specified key as string)', ct => {
+t.test('#run (finds .env file excluding specified key as string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -309,7 +318,7 @@ t.test('#run (finds .env file excluding specified key as string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate(envs, [], 'HELLO').run()
+  } = await new Rotate(envs, [], 'HELLO').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, [])
@@ -333,7 +342,8 @@ t.test('#run (finds .env file excluding specified key as string)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file excluding specified key globbed)', ct => {
+t.test('#run (finds .env file excluding specified key globbed)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -348,7 +358,7 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate(envs, [], 'HE*').run()
+  } = await new Rotate(envs, [], 'HE*').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, [])
@@ -372,7 +382,8 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
   ct.end()
 })
 
-// t.test('#run (finds .env.export file with exported key)', ct => {
+// t.test('#run (finds .env.export file with exported key)',
+// async ct => {
 //   const envFile = 'tests/.env.export'
 //   const envs = [
 //     { type: 'envFile', value: envFile }
@@ -382,7 +393,7 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
 //     processedEnvs,
 //     changedFilepaths,
 //     unchangedFilepaths
-//   } = new Rotate(envs).run()
+//   } = await new Rotate(envs).run()
 //
 //   const p1 = processedEnvs[0]
 //   ct.same(p1.keys, ['KEY'])
@@ -411,7 +422,8 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
 //   ct.end()
 // })
 //
-// t.test('#run (finds .env and .env.keys file) but derived public key does not match configured public key', ct => {
+// t.test('#run (finds .env and .env.keys file) but derived public key does not match configured public key',
+// async ct => {
 //   process.env.DOTENV_PUBLIC_KEY = '12345'
 //
 //   const envFile = 'tests/monorepo/apps/encrypted/.env'
@@ -421,7 +433,7 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
 //
 //   const {
 //     processedEnvs
-//   } = new Rotate(envs).run()
+//   } = await new Rotate(envs).run()
 //
 //   const error = new Error('derived public key (03eaf21…) does not match the existing public key (12345…)')
 //   error.code = 'INVALID_DOTENV_PRIVATE_KEY'
@@ -438,7 +450,8 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
 //   ct.end()
 // })
 //
-// t.test('#run (finds .env file only)', ct => {
+// t.test('#run (finds .env file only)',
+// async ct => {
 //   const Keypair = require('../../../src/lib/services/keypair')
 //   const sandbox = sinon.createSandbox()
 //   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
@@ -453,7 +466,7 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
 //   const {
 //     processedEnvs,
 //     unchangedFilepaths
-//   } = new Rotate(envs).run()
+//   } = await new Rotate(envs).run()
 //
 //   const row = processedEnvs[0]
 //   const publicKey = row.publicKey
@@ -478,7 +491,8 @@ t.test('#run (finds .env file excluding specified key globbed)', ct => {
 //   ct.end()
 // })
 //
-t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
+t.test('#run (finds .env file) and custom envKeysFilepath',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
@@ -493,7 +507,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Rotate(envs, [], [], envKeysFile).run()
+  } = await new Rotate(envs, [], [], envKeysFile).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
@@ -517,7 +531,8 @@ t.test('#run (finds .env file) and custom envKeysFilepath', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file) with opsOn uses ops keypair and does not append local keys file', ct => {
+t.test('#run (finds .env file) with opsOn uses ops keypair and does not append local keys file',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const cryptography = require('../../../src/lib/helpers/cryptography')
   const opsKeypair = sinon.stub().returns({
@@ -533,7 +548,7 @@ t.test('#run (finds .env file) with opsOn uses ops keypair and does not append l
     { type: 'envFile', value: envFile }
   ]
 
-  const { processedEnvs } = new RotateWithOpsStub(envs, [], [], null, true).run()
+  const { processedEnvs } = await new RotateWithOpsStub(envs, [], [], null, true).run()
 
   const p1 = processedEnvs[0]
   ct.equal(opsKeypair.callCount, 1)
@@ -545,7 +560,8 @@ t.test('#run (finds .env file) with opsOn uses ops keypair and does not append l
   ct.end()
 })
 
-t.test('#run wraps invalid public key re-encryption errors', ct => {
+t.test('#run wraps invalid public key re-encryption errors',
+async ct => {
   const cryptography = require('../../../src/lib/helpers/cryptography')
   const RotateWithStub = proxyquire('../../../src/lib/services/rotate', {
     './../helpers/cryptography': {
@@ -559,7 +575,7 @@ t.test('#run wraps invalid public key re-encryption errors', ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [{ type: 'envFile', value: envFile }]
 
-  const { processedEnvs, changedFilepaths } = new RotateWithStub(envs).run()
+  const { processedEnvs, changedFilepaths } = await new RotateWithStub(envs).run()
 
   ct.equal(processedEnvs[0].error.code, 'INVALID_PUBLIC_KEY')
   ct.match(processedEnvs[0].error.message, /^\[INVALID_PUBLIC_KEY\] could not encrypt using public key 'DOTENV_PUBLIC_KEY=/)
@@ -569,7 +585,8 @@ t.test('#run wraps invalid public key re-encryption errors', ct => {
   ct.end()
 })
 
-// t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already exists', ct => {
+// t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already exists',
+// async ct => {
 //   const envKeysFilepath = 'tests/monorepo/.env.keys'
 //   const envFile = 'tests/monorepo/apps/app1/.env.production'
 //   const envs = [
@@ -579,7 +596,7 @@ t.test('#run wraps invalid public key re-encryption errors', ct => {
 //   const {
 //     processedEnvs,
 //     changedFilepaths
-//   } = new Rotate(envs, [], [], envKeysFilepath).run()
+//   } = await new Rotate(envs, [], [], envKeysFilepath).run()
 //
 //   const row = processedEnvs[0]
 //   const publicKey = row.publicKey

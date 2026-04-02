@@ -14,7 +14,7 @@ async function keypair (key) {
 
   const sesh = new Session()
   const noOps = options.ops === false || !(await sesh.opsOn())
-  const results = main.keypair(options.envFile, key, options.envKeysFile, noOps)
+  const results = await main.keypair(options.envFile, key, options.envKeysFile, noOps)
 
   if (typeof results === 'object' && results !== null) {
     // inline shell format - env $(dotenvx keypair --format=shell) your-command

@@ -37,7 +37,7 @@ class Decrypt {
     this.unchangedFilepaths = new Set()
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -51,7 +51,7 @@ class Decrypt {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._decryptEnvFile(env.value)
+        await this._decryptEnvFile(env.value)
       }
     }
 
@@ -62,7 +62,7 @@ class Decrypt {
     }
   }
 
-  _decryptEnvFile (envFilepath) {
+  async _decryptEnvFile (envFilepath) {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
@@ -77,7 +77,7 @@ class Decrypt {
       const envParsed = dotenvParse(envSrc)
 
       const { privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       row.privateKey = privateKeyValue
       row.privateKeyName = privateKeyName

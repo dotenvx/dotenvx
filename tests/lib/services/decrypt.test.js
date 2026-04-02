@@ -19,12 +19,13 @@ t.afterEach((ct) => {
   writeFileXStub.restore()
 })
 
-t.test('#run (no arguments)', ct => {
+t.test('#run (no arguments)',
+async ct => {
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt().run()
+  } = await new Decrypt().run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -44,12 +45,13 @@ t.test('#run (no arguments)', ct => {
   ct.end()
 })
 
-t.test('#run (no env file)', ct => {
+t.test('#run (no env file)',
+async ct => {
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt().run()
+  } = await new Decrypt().run()
 
   const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
   exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -69,7 +71,8 @@ t.test('#run (no env file)', ct => {
   ct.end()
 })
 
-t.test('#run (no arguments and some other error)', ct => {
+t.test('#run (no arguments and some other error)',
+async ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
@@ -78,7 +81,7 @@ t.test('#run (no arguments and some other error)', ct => {
   const {
     processedEnvs,
     changedFilepaths
-  } = inst.run()
+  } = await inst.run()
 
   const exampleError = new Error('Mock Error')
 
@@ -97,7 +100,8 @@ t.test('#run (no arguments and some other error)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file)', ct => {
+t.test('#run (finds .env file)',
+async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -106,7 +110,7 @@ t.test('#run (finds .env file)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt(envs).run()
+  } = await new Decrypt(envs).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO'])
@@ -123,7 +127,8 @@ t.test('#run (finds .env file)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with multiline value)', ct => {
+t.test('#run (finds .env file with multiline value)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiline/.env'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -132,7 +137,7 @@ t.test('#run (finds .env file with multiline value)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt(envs).run()
+  } = await new Decrypt(envs).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, [])
@@ -161,7 +166,8 @@ ALOHA="-----BEGIN RSA PRIVATE KEY-----\\nABCD\\nEFGH\\nIJKL\\n-----END RSA PRIVA
   ct.end()
 })
 
-t.test('#run (finds .env file with specified key)', ct => {
+t.test('#run (finds .env file with specified key)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -170,7 +176,7 @@ t.test('#run (finds .env file with specified key)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt(envs, ['HELLO2']).run()
+  } = await new Decrypt(envs, ['HELLO2']).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO2'])
@@ -189,7 +195,8 @@ t.test('#run (finds .env file with specified key)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with specified key as string)', ct => {
+t.test('#run (finds .env file with specified key as string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -198,7 +205,7 @@ t.test('#run (finds .env file with specified key as string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt(envs, 'HELLO2').run()
+  } = await new Decrypt(envs, 'HELLO2').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO2'])
@@ -217,7 +224,8 @@ t.test('#run (finds .env file with specified key as string)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with specified key as glob pattern)', ct => {
+t.test('#run (finds .env file with specified key as glob pattern)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -226,7 +234,7 @@ t.test('#run (finds .env file with specified key as glob pattern)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt(envs, 'HE*').run()
+  } = await new Decrypt(envs, 'HE*').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO2', 'HELLO3'])
@@ -245,7 +253,8 @@ t.test('#run (finds .env file with specified key as glob pattern)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with excluded key)', ct => {
+t.test('#run (finds .env file with excluded key)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -254,7 +263,7 @@ t.test('#run (finds .env file with excluded key)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt(envs, [], ['HELLO2']).run()
+  } = await new Decrypt(envs, [], ['HELLO2']).run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO3'])
@@ -273,7 +282,8 @@ t.test('#run (finds .env file with excluded key)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with excluded key as string)', ct => {
+t.test('#run (finds .env file with excluded key as string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -282,7 +292,7 @@ t.test('#run (finds .env file with excluded key as string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt(envs, [], 'HELLO2').run()
+  } = await new Decrypt(envs, [], 'HELLO2').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, ['HELLO', 'HELLO3'])
@@ -301,7 +311,8 @@ t.test('#run (finds .env file with excluded key as string)', ct => {
   ct.end()
 })
 
-t.test('#run (finds .env file with excluded key glob string)', ct => {
+t.test('#run (finds .env file with excluded key glob string)',
+async ct => {
   const envFile = 'tests/monorepo/apps/multiple/.env.production'
   const envs = [
     { type: 'envFile', value: envFile }
@@ -310,7 +321,7 @@ t.test('#run (finds .env file with excluded key glob string)', ct => {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Decrypt(envs, [], 'HEL*').run()
+  } = await new Decrypt(envs, [], 'HEL*').run()
 
   const p1 = processedEnvs[0]
   ct.same(p1.keys, [])

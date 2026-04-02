@@ -10,13 +10,13 @@ class Keypair {
     this.opsOn = opsOn
   }
 
-  run () {
+  async run () {
     const out = {}
 
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
       const { publicKeyName, privateKeyName } = keyNames(filepath)
-      const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { publicKeyValue, privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       out[publicKeyName] = publicKeyValue
       out[privateKeyName] = privateKeyValue

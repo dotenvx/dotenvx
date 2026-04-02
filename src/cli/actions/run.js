@@ -48,7 +48,7 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, options.overload, process.env, options.envKeysFile, opsOn).run()
+    } = await new Run(envs, options.overload, process.env, options.envKeysFile, opsOn).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envFile') {
