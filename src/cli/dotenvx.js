@@ -136,7 +136,7 @@ program.command('encrypt')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
-    encryptAction.apply(this, args)
+    return encryptAction.apply(this, args)
   })
 
 // dotenvx decrypt

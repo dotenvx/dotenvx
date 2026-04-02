@@ -5,8 +5,10 @@ const Encrypt = require('./../../lib/services/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
+const createPrefixLoader = require('../../lib/helpers/createPrefixLoader')
+const sleep = require('../../lib/helpers/sleep')
 
-function encrypt () {
+async function encrypt () {
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -25,12 +27,17 @@ function encrypt () {
     }
     process.exit(0) // exit early
   } else {
+    const loader = createPrefixLoader('encrypting', { ...options })
+    loader.start()
+
     try {
       const {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
       } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn, noCreate).run()
+
+      loader.stop()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -65,6 +72,7 @@ function encrypt () {
         }
       }
     } catch (error) {
+      loader.stop()
       catchAndLog(error)
       process.exit(1)
     }
