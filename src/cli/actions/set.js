@@ -22,7 +22,7 @@ function set (key, value) {
   try {
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const opsOn = options.opsOff !== true
+    const opsOn = options.ops !== false
     const noCreate = options.create === false
 
     const {

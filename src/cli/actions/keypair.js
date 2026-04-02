@@ -11,7 +11,7 @@ function keypair (key) {
   logger.debug(`options: ${JSON.stringify(options)}`)
   const prettyPrint = options.prettyPrint || options.pp
 
-  const results = main.keypair(options.envFile, key, options.envKeysFile, options.opsOff)
+  const results = main.keypair(options.envFile, key, options.envKeysFile, options.ops === false)
 
   if (typeof results === 'object' && results !== null) {
     // inline shell format - env $(dotenvx keypair --format=shell) your-command

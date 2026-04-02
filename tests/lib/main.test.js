@@ -437,7 +437,7 @@ t.test('keypair calls Keypair.run with key specified', ct => {
   ct.end()
 })
 
-t.test('keypair calls Keypair.run with opsOff true', ct => {
+t.test('keypair calls Keypair.run with noOps true', ct => {
   const stub = sinon.stub(Keypair.prototype, 'run')
   stub.returns({ KEY: 'value' })
 
@@ -690,11 +690,11 @@ t.test('set calls Sets.run with custom envKeysFile', ct => {
   ct.end()
 })
 
-t.test('set calls Sets.run with opsOff true', ct => {
+t.test('set calls Sets.run with noOps true', ct => {
   const stub = sinon.stub(Sets.prototype, 'run')
   stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
-  main.set('KEY', 'value', { opsOff: true })
+  main.set('KEY', 'value', { noOps: true })
 
   t.ok(stub.called, 'new Sets().run() called')
   t.equal(stub.thisValues[0].opsOn, false, 'Sets was called with opsOn false')
@@ -1419,11 +1419,11 @@ t.test('get calls Get.run format shell', ct => {
   ct.end()
 })
 
-t.test('get calls Get.run with opsOff true', ct => {
+t.test('get calls Get.run with noOps true', ct => {
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
-  const result = main.get('KEY', { opsOff: true })
+  const result = main.get('KEY', { noOps: true })
   t.equal(result, 'value')
 
   t.ok(stub.called, 'new Get().run() called')

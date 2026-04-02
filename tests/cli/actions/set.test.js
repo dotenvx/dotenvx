@@ -612,9 +612,9 @@ t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls 
   ct.end()
 })
 
-t.test('set - --ops-off passes opsOn false to Sets service', ct => {
+t.test('set - --no-ops passes opsOn false to Sets service', ct => {
   sinon.stub(fsx, 'writeFileX')
-  const optsStub = sinon.stub().returns({ opsOff: true })
+  const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Sets.prototype, 'run').returns({
     processedEnvs: [],

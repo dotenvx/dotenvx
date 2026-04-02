@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.59.1...main)
 
+### Changed
+
+* BREAKING: remove `--ops-off` CLI flag; use `--no-ops`
+* BREAKING: remove `opsOff` JS options; use `noOps` (`config`, `set`, `get`)
+
 ## [1.59.1](https://github.com/dotenvx/dotenvx/compare/v1.59.0...v1.59.1) (2026-03-28)
 
 ### Added

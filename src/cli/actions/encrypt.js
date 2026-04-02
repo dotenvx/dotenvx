@@ -6,15 +6,19 @@ const Encrypt = require('./../../lib/services/encrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const createSpinner = require('../../lib/helpers/createSpinner')
+const Session = require('../../db/session')
 
 async function encrypt () {
+  const sesh = new Session()
+
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const spinner = await createSpinner(options)
 
   const envs = this.envs
-  const opsOn = options.opsOff !== true
+  const opsOn = options.ops !== false
+  // --no-ops flag
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout

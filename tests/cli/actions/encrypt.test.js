@@ -565,7 +565,7 @@ t.test('encrypt - catch error', ct => {
 })
 
 t.test('encrypt - --no-ops passes opsOn false to Encrypt service', ct => {
-  const optsStub = sinon.stub().returns({ opsOff: true })
+  const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Encrypt.prototype, 'run').returns({
     processedEnvs: [],

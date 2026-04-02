@@ -422,10 +422,10 @@ t.test('decrypt - catch error', ct => {
   ct.end()
 })
 
-t.test('decrypt - --ops-off passes opsOn false to Decrypt service', ct => {
+t.test('decrypt - --no-ops passes opsOn false to Decrypt service', ct => {
   sinon.stub(process, 'exit')
   sinon.stub(fsx, 'writeFileX')
-  const optsStub = sinon.stub().returns({ opsOff: true })
+  const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvs: [],

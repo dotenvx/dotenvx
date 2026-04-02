@@ -26,7 +26,7 @@ function get (key) {
   }
 
   try {
-    const opsOn = options.opsOff !== true
+    const opsOn = options.ops !== false
     const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
 
     for (const error of errors || []) {

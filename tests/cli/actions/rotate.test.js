@@ -498,8 +498,8 @@ t.test('rotate - catch error', ct => {
   ct.end()
 })
 
-t.test('rotate - --ops-off passes opsOn false to Rotate service', ct => {
-  const optsStub = sinon.stub().returns({ opsOff: true })
+t.test('rotate - --no-ops passes opsOn false to Rotate service', ct => {
+  const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Rotate.prototype, 'run').returns({
     processedEnvs: [],

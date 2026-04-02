@@ -7,14 +7,10 @@ class Session {
   }
 
   //
-  // opsOff/On
+  // ops status helpers
   //
   opsOn () {
     return this.opsStatus === 'on'
-  }
-
-  opsOff () {
-    return !this.opsOn()
   }
 }
 

@@ -11,7 +11,7 @@ function rotate () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
-  const opsOn = options.opsOff !== true
+  const opsOn = options.ops !== false
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {

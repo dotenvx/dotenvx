@@ -174,8 +174,8 @@ t.test('get KEY --convention', ct => {
   ct.end()
 })
 
-t.test('get --ops-off passes opsOn false to Get service', ct => {
-  const optsStub = sinon.stub().returns({ opsOff: true })
+t.test('get --no-ops passes opsOn false to Get service', ct => {
+  const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run').returns({ parsed: { HELLO: 'World' }, errors: [] })
 

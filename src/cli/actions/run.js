@@ -17,7 +17,7 @@ async function run () {
   const ignore = options.ignore || []
 
   // dotenvx-ops related
-  const opsOn = options.opsOff !== true
+  const opsOn = options.ops !== false
 
   if (commandArgs.length < 1) {
     const hasSeparator = process.argv.indexOf('--') !== -1

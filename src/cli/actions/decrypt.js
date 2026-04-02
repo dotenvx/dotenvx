@@ -9,7 +9,7 @@ function decrypt () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
-  const opsOn = options.opsOff !== true
+  const opsOn = options.ops !== false
 
   let errorCount = 0
 

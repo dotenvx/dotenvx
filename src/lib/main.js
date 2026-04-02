@@ -40,7 +40,7 @@ const config = function (options = {}) {
   const envKeysFile = options.envKeysFile
 
   // dotenvx-ops related
-  const opsOn = options.opsOff !== true
+  const opsOn = options.noOps !== true
 
   if (options) {
     setLogLevel(options)
@@ -164,7 +164,7 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
-  const opsOn = options.opsOff !== true
+  const opsOn = options.noOps !== true
 
   const {
     processedEnvs,
@@ -223,7 +223,7 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
-  const opsOn = options.opsOff !== true
+  const opsOn = options.noOps !== true
 
   // ignore
   const ignore = options.ignore || []
@@ -281,8 +281,8 @@ const genexample = function (directory, envFile) {
 }
 
 /** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null, opsOff = false) {
-  const opsOn = opsOff !== true
+const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
+  const opsOn = noOps !== true
   const keypairs = new Keypair(envFile, envKeysFile, opsOn).run()
   if (key) {
     return keypairs[key]

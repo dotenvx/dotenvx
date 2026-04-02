@@ -1258,12 +1258,12 @@ $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 ```
 
 </details>
-<details><summary>`run --ops-off`</summary><br>
+<details><summary>`run --no-ops`</summary><br>
 
 Turn off [Dotenvx Ops](https://dotenvx.com/ops) features.
 
 ```sh
-$ dotenvx run --ops-off -- yourcommand
+$ dotenvx run --no-ops -- yourcommand
 ```
 
 </details>
@@ -2513,13 +2513,13 @@ $ dotenvx run --convention=nextjs -- node index.js
 ```
 
 </details>
-<details><summary>`config(opsOff:)` - opsOff</summary><br>
+<details><summary>`config(noOps:)` - noOps</summary><br>
 
 Turn off [Dotenvx Ops](https://dotenvx.com/ops) features.
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({opsOff: true})
+require('@dotenvx/dotenvx').config({noOps: true})
 ```
 
 </details>
