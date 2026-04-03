@@ -80,7 +80,7 @@ class Encrypt {
     row.envFilepath = envFilepath
 
     try {
-      // if noCreate is on then detectEncodingSync will throw and we'll halt the calls
+      // if noCreate is on then detectEncoding will throw and we'll halt the calls
       // but if noCreate is false then create the file if it doesn't exist
       if (!(await fsx.exists(filepath)) && !this.noCreate) {
         await fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
