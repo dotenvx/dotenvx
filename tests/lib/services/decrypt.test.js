@@ -1,6 +1,7 @@
 const t = require('tap')
 const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
+const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const dotenv = require('dotenv')
@@ -21,6 +22,10 @@ t.afterEach((ct) => {
 
 t.test('#run (no arguments)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-decrypt-'))
+    process.chdir(tmpdir)
+
     const {
       processedEnvs,
       changedFilepaths,
@@ -42,11 +47,16 @@ t.test('#run (no arguments)',
     ct.same(changedFilepaths, [])
     ct.same(unchangedFilepaths, [])
 
+    process.chdir(cwd)
     ct.end()
   })
 
 t.test('#run (no env file)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-decrypt-'))
+    process.chdir(tmpdir)
+
     const {
       processedEnvs,
       changedFilepaths,
@@ -68,13 +78,18 @@ t.test('#run (no env file)',
     ct.same(changedFilepaths, [])
     ct.same(unchangedFilepaths, [])
 
+    process.chdir(cwd)
     ct.end()
   })
 
 t.test('#run (no arguments and some other error)',
   async ct => {
-    const readFileXStub = sinon.stub(fsx, 'readFileXSync').throws(new Error('Mock Error'))
-    const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-decrypt-'))
+    process.chdir(tmpdir)
+    fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
+
+    const readFileXStub = sinon.stub(fsx, 'readFileX').rejects(new Error('Mock Error'))
 
     const inst = new Decrypt()
 
@@ -95,8 +110,7 @@ t.test('#run (no arguments and some other error)',
     ct.same(changedFilepaths, [])
 
     readFileXStub.restore()
-    readFileSyncStub.restore()
-
+    process.chdir(cwd)
     ct.end()
   })
 

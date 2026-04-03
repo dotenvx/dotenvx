@@ -28,7 +28,7 @@ t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
   cleanupRootEnvFiles()
-  writeFileXStub = sinon.stub(fsx, 'writeFileXSync')
+  writeFileXStub = sinon.stub(fsx, 'writeFileX')
 })
 
 t.afterEach((ct) => {
@@ -43,7 +43,7 @@ t.test('#run (no arguments)',
     process.chdir(tmpdir)
 
     // allow real writes in this isolated temp dir
-    writeFileXStub.callsFake((filepath, str) => fs.writeFileSync(filepath, str, 'utf8'))
+    writeFileXStub.callsFake(async (filepath, str) => fs.writeFileSync(filepath, str, 'utf8'))
 
     const {
       processedEnvs,
@@ -121,8 +121,11 @@ t.test('#run (blank existing .env file) seeds sample kit before encrypting',
 
 t.test('#run (no arguments and some other error)',
   async ct => {
-    const readFileXStub = sinon.stub(fsx, 'readFileXSync').throws(new Error('Mock Error'))
-    const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+    process.chdir(tmpdir)
+    fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
+    const readFileXStub = sinon.stub(fsx, 'readFileX').rejects(new Error('Mock Error'))
 
     const inst = new Encrypt()
 
@@ -143,7 +146,7 @@ t.test('#run (no arguments and some other error)',
     ct.same(changedFilepaths, [])
 
     readFileXStub.restore()
-    readFileSyncStub.restore()
+    process.chdir(cwd)
 
     ct.end()
   })

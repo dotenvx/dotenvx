@@ -1,6 +1,7 @@
 const t = require('tap')
 const fs = require('fs')
 const fsx = require('../../../src/lib/helpers/fsx')
+const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
@@ -23,6 +24,10 @@ t.afterEach((ct) => {
 
 t.test('#run (no arguments)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-rotate-'))
+    process.chdir(tmpdir)
+
     const {
       processedEnvs,
       changedFilepaths,
@@ -44,11 +49,16 @@ t.test('#run (no arguments)',
     ct.same(changedFilepaths, [])
     ct.same(unchangedFilepaths, [])
 
+    process.chdir(cwd)
     ct.end()
   })
 
 t.test('#run (no env file)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-rotate-'))
+    process.chdir(tmpdir)
+
     const {
       processedEnvs,
       changedFilepaths,
@@ -70,13 +80,18 @@ t.test('#run (no env file)',
     ct.same(changedFilepaths, [])
     ct.same(unchangedFilepaths, [])
 
+    process.chdir(cwd)
     ct.end()
   })
 
 t.test('#run (no arguments and some other error)',
   async ct => {
-    const readFileXStub = sinon.stub(fsx, 'readFileXSync').throws(new Error('Mock Error'))
-    const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-rotate-'))
+    process.chdir(tmpdir)
+    fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
+
+    const readFileXStub = sinon.stub(fsx, 'readFileX').rejects(new Error('Mock Error'))
 
     const inst = new Rotate()
 
@@ -97,8 +112,7 @@ t.test('#run (no arguments and some other error)',
     ct.same(changedFilepaths, [])
 
     readFileXStub.restore()
-    readFileSyncStub.restore()
-
+    process.chdir(cwd)
     ct.end()
   })
 
@@ -535,13 +549,13 @@ t.test('#run (finds .env file) with opsOn uses ops keypair and does not append l
   async ct => {
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const cryptography = require('../../../src/lib/helpers/cryptography')
-    const opsKeypairSync = sinon.stub().returns({
+    const opsKeypair = sinon.stub().returns({
       publicKey: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       privateKey: 'new-private-key-from-ops'
     })
 
     const RotateWithOpsStub = proxyquire('../../../src/lib/services/rotate', {
-      './../helpers/cryptography': { ...cryptography, opsKeypairSync }
+      './../helpers/cryptography': { ...cryptography, opsKeypair }
     })
 
     const envs = [
@@ -551,7 +565,7 @@ t.test('#run (finds .env file) with opsOn uses ops keypair and does not append l
     const { processedEnvs } = await new RotateWithOpsStub(envs, [], [], null, true).run()
 
     const p1 = processedEnvs[0]
-    ct.equal(opsKeypairSync.callCount, 1)
+    ct.equal(opsKeypair.callCount, 1)
     ct.equal(p1.privateKeyAdded, false)
     ct.notOk(p1.envKeysSrc)
     ct.notOk(p1.envKeysFilepath)

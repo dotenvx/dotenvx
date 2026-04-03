@@ -1,5 +1,7 @@
 const t = require('tap')
 const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
 
@@ -12,6 +14,10 @@ t.beforeEach((ct) => {
 
 t.test('#run (no arguments)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
+    process.chdir(tmpdir)
+
     const {
       processedEnvs,
       readableFilepaths,
@@ -31,11 +37,17 @@ t.test('#run (no arguments)',
     ct.same(readableFilepaths, [])
     ct.same(uniqueInjectedKeys, [])
 
+    process.chdir(cwd)
     ct.end()
   })
 
 t.test('#run (no arguments and some other error)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
+    process.chdir(tmpdir)
+    fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
+
     const readFileSyncStub = sinon.stub(fs, 'readFileSync').throws(new Error('Mock Error'))
 
     const {
@@ -55,12 +67,17 @@ t.test('#run (no arguments and some other error)',
     ct.same(uniqueInjectedKeys, [])
 
     readFileSyncStub.restore()
-
+    process.chdir(cwd)
     ct.end()
   })
 
 t.test('#run (no arguments and fsx readFileXSync throws)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
+    process.chdir(tmpdir)
+    fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
+
     const RunWithReadError = proxyquire('../../../src/lib/services/run', {
       './../helpers/detectEncodingSync': () => 'utf8',
       './../helpers/fsx': {
@@ -86,6 +103,7 @@ t.test('#run (no arguments and fsx readFileXSync throws)',
     ct.same(readableFilepaths, [])
     ct.same(uniqueInjectedKeys, [])
 
+    process.chdir(cwd)
     ct.end()
   })
 
@@ -416,6 +434,10 @@ t.test('#run (command substitution)',
 
 t.test('#run (with envs as string)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
+    process.chdir(tmpdir)
+
     const envs = [
       { type: 'env', value: 'HELLO=string' }
     ]
@@ -453,11 +475,16 @@ t.test('#run (with envs as string)',
     ct.same(readableFilepaths, [])
     ct.same(uniqueInjectedKeys, ['HELLO'])
 
+    process.chdir(cwd)
     ct.end()
   })
 
 t.test('#run (with envs as string and errors somehow from inject)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
+    process.chdir(tmpdir)
+
     const envs = [
       { type: 'env', value: 'HELLO=string' }
     ]
@@ -495,6 +522,7 @@ t.test('#run (with envs as string and errors somehow from inject)',
     ])
 
     injectStub.restore()
+    process.chdir(cwd)
 
     ct.end()
   })
@@ -543,6 +571,10 @@ t.test('#run (mixed string and file)',
 // https://github.com/dotenvx/dotenvx/issues/441
 t.test('#run (kanaka scenario)',
   async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
+    process.chdir(tmpdir)
+
     const src = `# combined
 # config1 definitions
 options="$\{options} optA"
@@ -584,5 +616,6 @@ options="$\{options} optD"`
     ct.same(readableFilepaths, [])
     ct.same(uniqueInjectedKeys, ['options', 'configX'])
 
+    process.chdir(cwd)
     ct.end()
   })
