@@ -16,7 +16,7 @@ const {
 } = require('./../helpers/keyResolution')
 
 const {
-  opsKeypair,
+  opsKeypairSync,
   localKeypair,
   encryptValue,
   decryptKeyValue,
@@ -91,7 +91,7 @@ class Rotate {
       let envKeysSrc
 
       if (this.opsOn) {
-        const kp = opsKeypair()
+        const kp = opsKeypairSync()
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 

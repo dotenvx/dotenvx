@@ -70,9 +70,9 @@ t.test('#keyValues inverts public key name for custom file and reads keys file p
 })
 
 t.test('#keyValues loads private key from ops when opsOn and only public key exists', async ct => {
-  const opsKeypair = sinon.stub().returns({ privateKey: 'from-ops' })
+  const opsKeypairSync = sinon.stub().returns({ privateKey: 'from-ops' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
-    '../cryptography/opsKeypair': opsKeypair
+    '../cryptography/opsKeypairSync': opsKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
@@ -80,7 +80,7 @@ t.test('#keyValues loads private key from ops when opsOn and only public key exi
   const result = await keyValuesWithOpsStub('.env', { opsOn: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
-  ct.equal(opsKeypair.callCount, 1)
-  ct.equal(opsKeypair.firstCall.args[0], '<publicKey>')
+  ct.equal(opsKeypairSync.callCount, 1)
+  ct.equal(opsKeypairSync.firstCall.args[0], '<publicKey>')
   ct.end()
 })

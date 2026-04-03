@@ -1,6 +1,6 @@
 const mutateSrc = require('./mutateSrc')
 const mutateKeysSrc = require('./mutateKeysSrc')
-const opsKeypair = require('./opsKeypair')
+const opsKeypairSync = require('./opsKeypairSync')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
@@ -15,7 +15,7 @@ function provision ({ envSrc, envFilepath, keysFilepath, opsOn }) {
   let privateKeyAdded = false
 
   if (opsOn) {
-    const kp = opsKeypair()
+    const kp = opsKeypairSync()
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {

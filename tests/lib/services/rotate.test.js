@@ -535,13 +535,13 @@ t.test('#run (finds .env file) with opsOn uses ops keypair and does not append l
 async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const cryptography = require('../../../src/lib/helpers/cryptography')
-  const opsKeypair = sinon.stub().returns({
+  const opsKeypairSync = sinon.stub().returns({
     publicKey: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
     privateKey: 'new-private-key-from-ops'
   })
 
   const RotateWithOpsStub = proxyquire('../../../src/lib/services/rotate', {
-    './../helpers/cryptography': { ...cryptography, opsKeypair }
+    './../helpers/cryptography': { ...cryptography, opsKeypairSync }
   })
 
   const envs = [
@@ -551,7 +551,7 @@ async ct => {
   const { processedEnvs } = await new RotateWithOpsStub(envs, [], [], null, true).run()
 
   const p1 = processedEnvs[0]
-  ct.equal(opsKeypair.callCount, 1)
+  ct.equal(opsKeypairSync.callCount, 1)
   ct.equal(p1.privateKeyAdded, false)
   ct.notOk(p1.envKeysSrc)
   ct.notOk(p1.envKeysFilepath)
