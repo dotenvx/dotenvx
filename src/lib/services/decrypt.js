@@ -73,7 +73,7 @@ class Decrypt {
 
     try {
       const encoding = detectEncodingSync(filepath)
-      let envSrc = fsx.readFileXSync(filepath, { encoding })
+      let envSrc = await fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
       const { privateKeyName } = keyNames(envFilepath)
