@@ -1,7 +1,6 @@
 const t = require('tap')
 const fsx = require('./../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
-const capcon = require('capture-console')
 const proxyquire = require('proxyquire')
 
 const Rotate = require('./../../../src/lib/services/rotate')

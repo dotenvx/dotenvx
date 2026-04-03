@@ -1,6 +1,5 @@
 const t = require('tap')
 const sinon = require('sinon')
-const capcon = require('capture-console')
 
 const main = require('./../../../src/lib/main')
 

@@ -1,6 +1,5 @@
 const t = require('tap')
 const sinon = require('sinon')
-const capcon = require('capture-console')
 
 const Get = require('./../../../src/lib/services/get')
 const Errors = require('./../../../src/lib/helpers/errors')
@@ -22,24 +21,6 @@ async function captureStdout (fn) {
   }
 
   return stdout
-}
-
-async function captureStderr (fn) {
-  let stderr = ''
-  const stderrWrite = process.stderr.write
-  process.stderr.write = function (chunk, encoding, callback) {
-    stderr += Buffer.isBuffer(chunk) ? chunk.toString() : chunk
-    if (typeof callback === 'function') callback()
-    return true
-  }
-
-  try {
-    await fn()
-  } finally {
-    process.stderr.write = stderrWrite
-  }
-
-  return stderr
 }
 
 async function captureStdio (fn) {

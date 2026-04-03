@@ -28,8 +28,6 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
-const YIELD_EVERY_KEYS = 50
-
 class Encrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false, noCreate = false) {
     this.envs = determine(envs, process.env)
