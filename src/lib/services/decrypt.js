@@ -12,7 +12,7 @@ const {
 
 const {
   keyNames,
-  keyValues
+  keyValuesSync
 } = require('./../helpers/keyResolution')
 
 const {
@@ -77,7 +77,7 @@ class Decrypt {
       const envParsed = dotenvParse(envSrc)
 
       const { privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = keyValuesSync(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       row.privateKey = privateKeyValue
       row.privateKeyName = privateKeyName

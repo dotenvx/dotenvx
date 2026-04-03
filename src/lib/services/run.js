@@ -10,7 +10,7 @@ const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 const {
   keyNames,
-  keyValues
+  keyValuesSync
 } = require('./../helpers/keyResolution')
 
 const {
@@ -102,7 +102,7 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)
-      const { privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       const {
         parsed,

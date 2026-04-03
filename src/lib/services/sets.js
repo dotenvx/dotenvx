@@ -11,7 +11,7 @@ const {
 
 const {
   keyNames,
-  keyValues
+  keyValuesSync
 } = require('./../helpers/keyResolution')
 
 const {
@@ -105,7 +105,7 @@ class Sets {
         let privateKey
 
         const { publicKeyName, privateKeyName } = keyNames(filepath)
-        const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+        const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
         // first pass - provision
         if (!privateKeyValue && !publicKeyValue) {

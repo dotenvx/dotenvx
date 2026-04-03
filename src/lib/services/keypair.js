@@ -1,6 +1,6 @@
 const {
   keyNames,
-  keyValues
+  keyValuesSync
 } = require('./../helpers/keyResolution')
 
 class Keypair {
@@ -16,7 +16,7 @@ class Keypair {
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
       const { publicKeyName, privateKeyName } = keyNames(filepath)
-      const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       out[publicKeyName] = publicKeyValue
       out[privateKeyName] = privateKeyValue

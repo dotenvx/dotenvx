@@ -32,7 +32,7 @@ function invertForPrivateKeyName (filepath) {
   return null
 }
 
-function keyValues (filepath, opts = {}) {
+function keyValuesSync (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
   const opsOn = opts.opsOn === true
   const names = keyNames(filepath)
@@ -82,4 +82,4 @@ function keyValues (filepath, opts = {}) {
   }
 }
 
-module.exports = keyValues
+module.exports = keyValuesSync

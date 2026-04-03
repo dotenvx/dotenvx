@@ -12,7 +12,7 @@ const {
 
 const {
   keyNames,
-  keyValues
+  keyValuesSync
 } = require('./../helpers/keyResolution')
 
 const {
@@ -83,7 +83,7 @@ class Encrypt {
       // if noCreate is on then detectEncodingSync will throw and we'll halt the calls
       // but if noCreate is false then create the file if it doesn't exist
       if (!(await fsx.exists(filepath)) && !this.noCreate) {
-        fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
+        await fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
         fileCreated = true
       }
       const encoding = await detectEncoding(filepath)
@@ -99,7 +99,7 @@ class Encrypt {
       let privateKey
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { publicKeyValue, privateKeyValue } = await keyValuesSync(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {

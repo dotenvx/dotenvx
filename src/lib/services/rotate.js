@@ -12,7 +12,7 @@ const {
 
 const {
   keyNames,
-  keyValues
+  keyValuesSync
 } = require('./../helpers/keyResolution')
 
 const {
@@ -83,7 +83,7 @@ class Rotate {
       const envParsed = dotenvParse(envSrc)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = keyValuesSync(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       let newPublicKey
       let newPrivateKey
