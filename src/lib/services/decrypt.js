@@ -22,7 +22,7 @@ const {
 
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
-const detectEncoding = require('./../helpers/detectEncoding')
+const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 class Decrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -72,7 +72,7 @@ class Decrypt {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = detectEncoding(filepath)
+      const encoding = detectEncodingSync(filepath)
       let envSrc = fsx.readFileXSync(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 

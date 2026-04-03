@@ -62,7 +62,7 @@ async ct => {
 t.test('#run (no arguments and fsx readFileXSync throws)',
 async ct => {
   const RunWithReadError = proxyquire('../../../src/lib/services/run', {
-    './../helpers/detectEncoding': () => 'utf8',
+    './../helpers/detectEncodingSync': () => 'utf8',
     './../helpers/fsx': {
       readFileXSync: () => {
         throw new Error('Mock Error')

@@ -28,6 +28,7 @@ async function writeFileX (filepath, str) {
 
 const fsx = {
   chmodSync: fs.chmodSync,
+  exists: fs.exists,
   existsSync: fs.existsSync,
   readdirSync: fs.readdirSync,
   readFileSync: fs.readFileSync,
@@ -36,8 +37,8 @@ const fsx = {
 
   // fsx special commands
   readFileX,
-  writeFileX,
   readFileXSync,
+  writeFileX,
   writeFileXSync
 }
 

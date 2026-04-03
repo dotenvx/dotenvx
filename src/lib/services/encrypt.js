@@ -25,7 +25,7 @@ const {
 
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
-const detectEncoding = require('./../helpers/detectEncoding')
+const detectEncodingSync = require('./../helpers/detectEncodingSync')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
 const YIELD_EVERY_KEYS = 50
@@ -80,14 +80,14 @@ class Encrypt {
     row.envFilepath = envFilepath
 
     try {
-      // if noCreate is on then detectEncoding will throw and we'll halt the calls
+      // if noCreate is on then detectEncodingSync will throw and we'll halt the calls
       // but if noCreate is false then create the file if it doesn't exist
-      if (!fsx.existsSync(filepath) && !this.noCreate) {
-        fsx.writeFileXSync(filepath, SAMPLE_ENV_KIT)
+      if (!(await fsx.exists(filepath)) && !this.noCreate) {
+        fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
         fileCreated = true
       }
-      const encoding = detectEncoding(filepath)
-      let envSrc = fsx.readFileXSync(filepath, { encoding })
+      const encoding = detectEncodingSync(filepath)
+      let envSrc = await fsx.readFileX(filepath, { encoding })
       if (envSrc.trim().length === 0) {
         envSrc = SAMPLE_ENV_KIT
         row.kitCreated = 'sample'

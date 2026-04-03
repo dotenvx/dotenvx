@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-function detectEncoding (filepath) {
+function detectEncodingSync (filepath) {
   const buffer = fs.readFileSync(filepath)
 
   // check for UTF-16LE BOM (Byte Order Mark)
@@ -19,4 +19,4 @@ function detectEncoding (filepath) {
   return 'utf8'
 }
 
-module.exports = detectEncoding
+module.exports = detectEncodingSync

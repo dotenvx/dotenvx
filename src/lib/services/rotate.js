@@ -26,7 +26,7 @@ const {
 const append = require('./../helpers/append')
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
-const detectEncoding = require('./../helpers/detectEncoding')
+const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 class Rotate {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -78,7 +78,7 @@ class Rotate {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = detectEncoding(filepath)
+      const encoding = detectEncodingSync(filepath)
       let envSrc = fsx.readFileXSync(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
@@ -102,7 +102,7 @@ class Rotate {
           envKeysFilepath = path.resolve(this.envKeysFilepath)
         }
         row.envKeysFilepath = envKeysFilepath
-        this.envKeysSources[envKeysFilepath] ||= fsx.readFileXSync(envKeysFilepath, { encoding: detectEncoding(envKeysFilepath) })
+        this.envKeysSources[envKeysFilepath] ||= fsx.readFileXSync(envKeysFilepath, { encoding: detectEncodingSync(envKeysFilepath) })
         envKeysSrc = this.envKeysSources[envKeysFilepath]
 
         const kp = localKeypair()

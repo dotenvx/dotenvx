@@ -24,7 +24,7 @@ const {
 
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
-const detectEncoding = require('./../helpers/detectEncoding')
+const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 class Sets {
   constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, opsOn = false, noCreate = false) {
@@ -77,13 +77,13 @@ class Sets {
 
       if (!fsx.existsSync(filepath)) {
         if (this.noCreate) {
-          detectEncoding(filepath) // throws ENOENT
+          detectEncodingSync(filepath) // throws ENOENT
         } else {
           fsx.writeFileXSync(filepath, '')
         }
       }
 
-      const encoding = detectEncoding(filepath)
+      const encoding = detectEncodingSync(filepath)
       let envSrc = fsx.readFileXSync(filepath, { encoding })
 
       // blank files seeded by `set` should contain only the key being set

@@ -6,7 +6,7 @@ const TYPE_ENV_FILE = 'envFile'
 
 const Parse = require('./../helpers/parse')
 const Errors = require('./../helpers/errors')
-const detectEncoding = require('./../helpers/detectEncoding')
+const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 const {
   keyNames,
@@ -97,7 +97,7 @@ class Run {
 
     const filepath = path.resolve(envFilepath)
     try {
-      const encoding = detectEncoding(filepath)
+      const encoding = detectEncodingSync(filepath)
       const src = fsx.readFileXSync(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
