@@ -18,9 +18,6 @@ async function rotate () {
   const sesh = new Session()
   const noOps = options.ops === false || !(await sesh.opsOn())
 
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-  await sleep(5000)
-
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
