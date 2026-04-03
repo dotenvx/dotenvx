@@ -1,102 +1,141 @@
 const path = require('path')
 const childProcess = require('child_process')
+const util = require('util')
+
+const execFile = util.promisify(childProcess.execFile)
 
 class Ops {
-  status () {
-    if (this._isForcedOff()) {
+  async status () {
+    if (this._isForcedOff()) return 'off'
+
+    const binary = await this._resolveBinary()
+    if (!binary) return 'off'
+
+    try {
+      return await this._exec(binary, ['status'])
+    } catch (_e) {
       return 'off'
     }
-
-    const opsLib = this._opsLib()
-    if (!opsLib) {
-      return 'off'
-    }
-
-    return opsLib.status()
   }
 
-  keypair (publicKey) {
-    if (this._isForcedOff()) {
+  statusSync () {
+    if (this._isForcedOff()) return 'off'
+
+    const binary = this._resolveBinarySync()
+    if (!binary) return 'off'
+
+    try {
+      return this._execSync(binary, ['status'])
+    } catch (_e) {
+      return 'off'
+    }
+  }
+
+  async keypair (publicKey) {
+    if (this._isForcedOff()) return {}
+
+    const binary = await this._resolveBinary()
+    if (!binary) return {}
+
+    const args = ['keypair']
+    if (publicKey) args.push(publicKey)
+
+    try {
+      return JSON.parse(await this._exec(binary, args))
+    } catch (_e) {
       return {}
     }
+  }
 
-    const opsLib = this._opsLib()
-    if (!opsLib) {
+  keypairSync (publicKey) {
+    if (this._isForcedOff()) return {}
+
+    const binary = this._resolveBinarySync()
+    if (!binary) return {}
+
+    const args = ['keypair']
+    if (publicKey) args.push(publicKey)
+
+    try {
+      return JSON.parse(this._execSync(binary, args))
+    } catch (_e) {
       return {}
     }
-
-    return opsLib.keypair(publicKey)
   }
 
   observe (payload) {
     if (this._isForcedOff()) return
 
-    const opsLib = this._opsLib()
-    if (!opsLib) return
+    const binary = this._resolveBinarySync()
+    if (!binary) return
 
-    const status = opsLib.status()
+    let status = 'off'
+    try {
+      status = this._execSync(binary, ['status'])
+    } catch (_e) {
+      return
+    }
     if (status === 'off') return
 
     const encoded = Buffer.from(JSON.stringify(payload)).toString('base64')
-    opsLib.observe(encoded)
-  }
-
-  //
-  // private
-  //
-  _opsNpm () {
-    const npmBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
-    return this._opsLibForBinary(npmBin)
-  }
-
-  _opsCli () {
-    return this._opsLibForBinary('dotenvx-ops')
-  }
-
-  _opsLibForBinary (binary) {
-    childProcess.execFileSync(binary, ['--version'])
-
-    return {
-      status: () => {
-        const stdout = childProcess.execFileSync(binary, ['status'])
-        return stdout.toString().trim()
-      },
-      keypair: (publicKey) => {
-        const args = ['keypair']
-        if (publicKey) {
-          args.push(publicKey)
-        }
-        const stdout = childProcess.execFileSync(binary, args)
-        const parsed = JSON.parse(stdout.toString().trim())
-        return parsed
-      },
-      observe: (encoded) => {
-        try {
-          const subprocess = childProcess.spawn(binary, ['observe', encoded], {
-            stdio: 'ignore',
-            detached: true
-          })
-          subprocess.unref()
-        } catch (_e) {
-          // noop
-        }
-      }
+    try {
+      const subprocess = childProcess.spawn(binary, ['observe', encoded], {
+        stdio: 'ignore',
+        detached: true
+      })
+      subprocess.unref()
+    } catch (_e) {
+      // noop
     }
   }
 
-  _opsLib () {
-    if (this._isForcedOff()) {
+  async _exec (binary, args) {
+    const { stdout } = await execFile(binary, args)
+    return stdout.toString().trim()
+  }
+
+  _execSync (binary, args) {
+    return childProcess.execFileSync(binary, args).toString().trim()
+  }
+
+  async _resolveBinary () {
+    if (this._binaryPromise) return this._binaryPromise
+
+    this._binaryPromise = (async () => {
+      const npmBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
+      try {
+        await this._exec(npmBin, ['--version'])
+        return npmBin
+      } catch (_e) {}
+
+      try {
+        await this._exec('dotenvx-ops', ['--version'])
+        return 'dotenvx-ops'
+      } catch (_e) {}
+
       return null
-    }
+    })()
 
+    return this._binaryPromise
+  }
+
+  _resolveBinarySync () {
+    if (this._binarySync !== undefined) return this._binarySync
+
+    const npmBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
     try {
-      return this._opsNpm()
+      this._execSync(npmBin, ['--version'])
+      this._binarySync = npmBin
+      return this._binarySync
     } catch (_e) {}
 
     try {
-      return this._opsCli()
+      this._execSync('dotenvx-ops', ['--version'])
+      this._binarySync = 'dotenvx-ops'
+      return this._binarySync
     } catch (_e) {}
 
+    this._binarySync = null
     return null
   }
 

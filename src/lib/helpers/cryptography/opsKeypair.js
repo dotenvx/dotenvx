@@ -1,7 +1,7 @@
 const Ops = require('../../extensions/ops')
 
-function opsKeypairSync (existingPublicKey) {
-  const kp = new Ops().keypairSync(existingPublicKey)
+async function opsKeypair (existingPublicKey) {
+  const kp = await new Ops().keypair(existingPublicKey)
   const publicKey = kp.public_key
   const privateKey = kp.private_key
 
@@ -11,4 +11,4 @@ function opsKeypairSync (existingPublicKey) {
   }
 }
 
-module.exports = opsKeypairSync
+module.exports = opsKeypair
