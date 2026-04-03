@@ -123,13 +123,7 @@ class Encrypt {
       row.privateKeyName = privateKeyName
 
       // iterate over all non-encrypted values and encrypt them
-      let keyCount = 0
       for (const [key, value] of Object.entries(envParsed)) {
-        keyCount += 1
-        if (keyCount % YIELD_EVERY_KEYS === 0) {
-          await new Promise(resolve => setImmediate(resolve))
-        }
-
         // key excluded - don't encrypt it
         if (this.exclude(key)) {
           continue
