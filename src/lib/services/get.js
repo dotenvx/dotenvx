@@ -13,7 +13,7 @@ class Get {
 
   runSync () {
     const processEnv = { ...process.env }
-    const { processedEnvs } = new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.opsOn).run()
+    const { processedEnvs } = new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.opsOn).runSync()
 
     const errors = []
     for (const processedEnv of processedEnvs) {

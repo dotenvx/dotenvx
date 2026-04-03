@@ -4,16 +4,18 @@ const { logger } = require('./../../shared/logger')
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
+const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 
 const conventions = require('./../../lib/helpers/conventions')
 
 async function run () {
-  const commandArgs = this.args
-  logger.debug(`process command [${commandArgs.join(' ')}]`)
-
   const options = this.opts()
+  const commandArgs = this.args
+  const spinner = await createSpinner({ ...options, text: 'injecting' })
+
   logger.debug(`options: ${JSON.stringify(options)}`)
+  logger.debug(`process command [${commandArgs.join(' ')}]`)
 
   const ignore = options.ignore || []
 
@@ -22,6 +24,8 @@ async function run () {
   const opsOn = !noOps
 
   if (commandArgs.length < 1) {
+    if (spinner) spinner.stop()
+
     const hasSeparator = process.argv.indexOf('--') !== -1
 
     if (hasSeparator) {
@@ -90,7 +94,7 @@ async function run () {
       }
     }
 
-    let msg = `injecting env (${uniqueInjectedKeys.length})`
+    let msg = `injected env (${uniqueInjectedKeys.length})`
     if (readableFilepaths.length > 0 && readableStrings.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}, and --env flag${readableStrings.length > 1 ? 's' : ''}`
     } else if (readableFilepaths.length > 0) {
@@ -99,8 +103,10 @@ async function run () {
       msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
     }
 
+    if (spinner) spinner.stop()
     logger.successv(msg)
   } catch (error) {
+    if (spinner) spinner.stop()
     catchAndLog(error)
     process.exit(1)
   }

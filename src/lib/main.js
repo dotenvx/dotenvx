@@ -54,7 +54,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, opsOn).run()
+    } = new Run(envs, overload, processEnv, envKeysFile, opsOn).runSync()
 
     let lastError
     /** @type {Record<string, string>} */

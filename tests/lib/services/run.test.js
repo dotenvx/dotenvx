@@ -48,7 +48,7 @@ t.test('#run (no arguments and some other error)',
     process.chdir(tmpdir)
     fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
 
-    const readFileSyncStub = sinon.stub(fs, 'readFileSync').throws(new Error('Mock Error'))
+    const readFileStub = sinon.stub(fs.promises, 'readFile').rejects(new Error('Mock Error'))
 
     const {
       processedEnvs,
@@ -66,12 +66,12 @@ t.test('#run (no arguments and some other error)',
     ct.same(readableFilepaths, [])
     ct.same(uniqueInjectedKeys, [])
 
-    readFileSyncStub.restore()
+    readFileStub.restore()
     process.chdir(cwd)
     ct.end()
   })
 
-t.test('#run (no arguments and fsx readFileXSync throws)',
+t.test('#run (no arguments and fsx readFileX throws)',
   async ct => {
     const cwd = process.cwd()
     const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
@@ -79,9 +79,9 @@ t.test('#run (no arguments and fsx readFileXSync throws)',
     fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
 
     const RunWithReadError = proxyquire('../../../src/lib/services/run', {
-      './../helpers/detectEncodingSync': () => 'utf8',
+      './../helpers/detectEncoding': async () => 'utf8',
       './../helpers/fsx': {
-        readFileXSync: () => {
+        readFileX: async () => {
           throw new Error('Mock Error')
         }
       }

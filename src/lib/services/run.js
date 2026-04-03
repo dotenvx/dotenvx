@@ -6,10 +6,12 @@ const TYPE_ENV_FILE = 'envFile'
 
 const Parse = require('./../helpers/parse')
 const Errors = require('./../helpers/errors')
+const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 const {
   keyNames,
+  keyValues,
   keyValuesSync
 } = require('./../helpers/keyResolution')
 
@@ -32,7 +34,7 @@ class Run {
     this.beforeEnv = { ...this.processEnv }
   }
 
-  run () {
+  runSync () {
     // example
     // envs [
     //   { type: 'env', value: 'HELLO=one' },
@@ -42,7 +44,33 @@ class Run {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._injectEnvFile(env.value)
+        this._injectEnvFileSync(env.value)
+      } else if (env.type === TYPE_ENV) {
+        this._injectEnv(env.value)
+      }
+    }
+
+    return {
+      processedEnvs: this.processedEnvs,
+      readableStrings: [...this.readableStrings],
+      readableFilepaths: [...this.readableFilepaths],
+      uniqueInjectedKeys: [...this.uniqueInjectedKeys],
+      beforeEnv: this.beforeEnv,
+      afterEnv: { ...this.processEnv }
+    }
+  }
+
+  async run () {
+    // example
+    // envs [
+    //   { type: 'env', value: 'HELLO=one' },
+    //   { type: 'envFile', value: '.env' },
+    //   { type: 'env', value: 'HELLO=three' }
+    // ]
+
+    for (const env of this.envs) {
+      if (env.type === TYPE_ENV_FILE) {
+        await this._injectEnvFile(env.value)
       } else if (env.type === TYPE_ENV) {
         this._injectEnv(env.value)
       }
@@ -90,7 +118,7 @@ class Run {
     this.processedEnvs.push(row)
   }
 
-  _injectEnvFile (envFilepath) {
+  _injectEnvFileSync (envFilepath) {
     const row = {}
     row.type = TYPE_ENV_FILE
     row.filepath = envFilepath
@@ -103,6 +131,51 @@ class Run {
 
       const { privateKeyName } = keyNames(filepath)
       const { privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+
+      const {
+        parsed,
+        errors,
+        injected,
+        preExisted
+      } = new Parse(src, privateKeyValue, this.processEnv, this.overload, privateKeyName).run()
+
+      row.privateKeyName = privateKeyName
+      row.privateKey = privateKeyValue
+      row.src = src
+      row.parsed = parsed
+      row.errors = errors
+      row.injected = injected
+      row.preExisted = preExisted
+
+      this.inject(row.parsed) // inject
+
+      for (const key of Object.keys(injected)) {
+        this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
+      }
+    } catch (e) {
+      if (e.code === 'ENOENT' || e.code === 'EISDIR') {
+        row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]
+      } else {
+        row.errors = [e]
+      }
+    }
+
+    this.processedEnvs.push(row)
+  }
+
+  async _injectEnvFile (envFilepath) {
+    const row = {}
+    row.type = TYPE_ENV_FILE
+    row.filepath = envFilepath
+
+    const filepath = path.resolve(envFilepath)
+    try {
+      const encoding = await detectEncoding(filepath)
+      const src = await fsx.readFileX(filepath, { encoding })
+      this.readableFilepaths.add(envFilepath)
+
+      const { privateKeyName } = keyNames(filepath)
+      const { privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       const {
         parsed,

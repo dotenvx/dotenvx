@@ -74,7 +74,7 @@ program.command('run')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    runAction.apply(this, args)
+    return runAction.apply(this, args)
   })
 
 // dotenvx get

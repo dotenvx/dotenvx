@@ -46,12 +46,12 @@ t.beforeEach((ct) => {
 
 t.test('config calls Run.run',
   ct => {
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config()
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
 
     stub.restore()
 
@@ -60,12 +60,12 @@ t.test('config calls Run.run',
 
 t.test('config with convention - calls Run.run with proper envs',
   ct => {
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config({ convention: 'nextjs' })
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
 
     stub.restore()
 
@@ -74,12 +74,12 @@ t.test('config with convention - calls Run.run with proper envs',
 
 t.test('config with convention flow - calls Run.run with proper envs',
   ct => {
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config({ convention: 'flow' })
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
 
     stub.restore()
 
@@ -94,12 +94,12 @@ t.test('config with Run.run errors',
     error.help = 'some help'
     error.messageWithHelp = 'some error'
     const errors = [error]
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config()
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
     ct.ok(loggerErrorStub.calledWith('some error'), 'logger.error')
     ct.notOk(loggerErrorStub.calledWith('some help'), 'logger.help')
 
@@ -117,12 +117,12 @@ t.test('config with Run.run WRONG_PRIVATE_KEY errors',
     setCode(error, 'WRONG_PRIVATE_KEY')
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
     const errors = [error]
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config()
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
     ct.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.error one-line')
     ct.notOk(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/466'), 'no separate help line')
 
@@ -140,12 +140,12 @@ t.test('config with Run.run MISSING_PRIVATE_KEY errors',
     setCode(error, 'MISSING_PRIVATE_KEY')
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
     const errors = [error]
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config()
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
     ct.ok(loggerErrorStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.error one-line')
     ct.notOk(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464'), 'no separate help line')
 
@@ -162,12 +162,12 @@ t.test('config with Run.run punctuated private-key errors',
     setCode(wrong, 'WRONG_PRIVATE_KEY')
     const missing = new Error('[MISSING_PRIVATE_KEY] punctuated')
     setCode(missing, 'MISSING_PRIVATE_KEY')
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [{ errors: [wrong, missing] }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config()
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
     ct.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
     ct.ok(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
 
@@ -185,12 +185,12 @@ t.test('config with Run.run errors and ignore',
     setCode(error, 'SOME_ERROR')
     error.help = 'some help'
     const errors = [error]
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config({ ignore: ['SOME_ERROR'] })
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
     ct.ok(loggerErrorStub.notCalled, 'logger.error')
 
     stub.restore()
@@ -201,12 +201,12 @@ t.test('config with Run.run errors and ignore',
 
 t.test('config with Run.run processedEnv with undefined processedEnv.errors',
   ct => {
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [{}], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config()
 
-    t.ok(stub.called, 'new Run().run() called')
+    t.ok(stub.called, 'new Run().runSync() called')
 
     stub.restore()
 
@@ -221,7 +221,7 @@ t.test('config catches thrown error and returns parsed/error',
     thrown.help = 'boom help'
     thrown.messageWithHelp = 'boom'
 
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.throws(thrown)
 
     const result = main.config()
@@ -241,7 +241,7 @@ t.test('config catches thrown WRONG_PRIVATE_KEY and returns parsed/error',
     const thrown = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
     setCode(thrown, 'WRONG_PRIVATE_KEY')
 
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.throws(thrown)
 
     const result = main.config()
@@ -261,7 +261,7 @@ t.test('config catches thrown MISSING_PRIVATE_KEY and returns parsed/error',
     const thrown = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
     setCode(thrown, 'MISSING_PRIVATE_KEY')
 
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.throws(thrown)
 
     const result = main.config()
@@ -280,14 +280,14 @@ t.test('config catches thrown punctuated private-key errors',
 
     const wrong = new Error('[WRONG_PRIVATE_KEY] punctuated')
     setCode(wrong, 'WRONG_PRIVATE_KEY')
-    sinon.stub(Run.prototype, 'run').throws(wrong)
+    sinon.stub(Run.prototype, 'runSync').throws(wrong)
     main.config()
     ct.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
 
-    Run.prototype.run.restore()
+    Run.prototype.runSync.restore()
     const missing = new Error('[MISSING_PRIVATE_KEY] punctuated')
     setCode(missing, 'MISSING_PRIVATE_KEY')
-    sinon.stub(Run.prototype, 'run').throws(missing)
+    sinon.stub(Run.prototype, 'runSync').throws(missing)
     main.config()
     ct.ok(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
 
@@ -646,7 +646,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
 t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --strict but error ALSO ignored',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
-    const stub = sinon.stub(Run.prototype, 'run')
+    const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     const processEnv = {}
@@ -659,7 +659,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
 
     main.config(options)
 
-    ct.ok(stub.called, 'new Run().run() called')
+    ct.ok(stub.called, 'new Run().runSync() called')
     ct.ok(loggerErrorStub.notCalled, 'logger.error')
 
     stub.restore()
