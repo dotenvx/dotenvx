@@ -10,7 +10,7 @@ const Session = require('../../db/session')
 
 async function encrypt () {
   const options = this.opts()
-  const spinner = await createSpinner(options)
+  const spinner = await createSpinner({ ...options, text: 'encrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
@@ -24,21 +24,18 @@ async function encrypt () {
     const {
       processedEnvs
     } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, !noOps, noCreate).run()
-
+    if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
     }
     process.exit(0) // exit early
   } else {
-
     try {
       const {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
       } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, !noOps, noCreate).run()
-
-      if (spinner) spinner.stop()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -53,6 +50,7 @@ async function encrypt () {
         }
       }
 
+      if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
         const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
         let msg = `◈ encrypted (${changedFilepaths.join(',')})`
