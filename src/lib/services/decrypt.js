@@ -12,7 +12,7 @@ const {
 
 const {
   keyNames,
-  keyValuesSync
+  keyValues
 } = require('./../helpers/keyResolution')
 
 const {
@@ -22,7 +22,7 @@ const {
 
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
-const detectEncodingSync = require('./../helpers/detectEncodingSync')
+const detectEncoding = require('./../helpers/detectEncoding')
 
 class Decrypt {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -37,7 +37,7 @@ class Decrypt {
     this.unchangedFilepaths = new Set()
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -51,7 +51,7 @@ class Decrypt {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._decryptEnvFile(env.value)
+        await this._decryptEnvFile(env.value)
       }
     }
 
@@ -62,7 +62,7 @@ class Decrypt {
     }
   }
 
-  _decryptEnvFile (envFilepath) {
+  async _decryptEnvFile (envFilepath) {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
@@ -72,12 +72,12 @@ class Decrypt {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = detectEncodingSync(filepath)
+      const encoding = await detectEncoding(filepath)
       let envSrc = await fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
       const { privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValuesSync(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       row.privateKey = privateKeyValue
       row.privateKeyName = privateKeyName
