@@ -5,25 +5,26 @@ const Sets = require('./../../lib/services/sets')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
+const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 
 async function set (key, value) {
+  const options = this.opts()
+  const spinner = await createSpinner(options)
+
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
-
-  const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  // encrypt
   let encrypt = true
   if (options.plain) {
     encrypt = false
   }
 
   try {
+    const sesh = new Session()
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const sesh = new Session()
     const noOps = options.ops === false || !(await sesh.opsOn())
     const opsOn = !noOps
     const noCreate = options.create === false

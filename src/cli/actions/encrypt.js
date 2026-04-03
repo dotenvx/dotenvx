@@ -10,9 +10,10 @@ const Session = require('../../db/session')
 
 async function encrypt () {
   const options = this.opts()
+  const spinner = await createSpinner(options)
+
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const spinner = await createSpinner(options)
   const sesh = new Session()
   const envs = this.envs
   const noOps = options.ops === false || !(await sesh.opsOn())
