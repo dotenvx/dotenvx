@@ -1,5 +1,6 @@
 module.exports = {
   keyNames: require('./keyNames'),
+  keyValues: require('./keyValues'),
   keyValuesSync: require('./keyValuesSync'),
 
   // private
