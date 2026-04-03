@@ -2,7 +2,7 @@ const Errors = require('./../errors')
 const mutateSrc = require('./mutateSrc')
 const localKeypair = require('./localKeypair')
 
-function provisionWithPrivateKeySync ({ envSrc, envFilepath, keysFilepath, privateKeyValue, publicKeyValue, publicKeyName }) {
+function provisionWithPrivateKey ({ envSrc, envFilepath, keysFilepath, privateKeyValue, publicKeyValue, publicKeyName }) {
   const { publicKey, privateKey } = localKeypair(privateKeyValue) // opsOn doesn't matter here since privateKeyValue was already discovered prior (via ops and local) and passed as privateKeyValue
 
   // if derivation doesn't match what's in the file (or preset in env)
@@ -23,4 +23,4 @@ function provisionWithPrivateKeySync ({ envSrc, envFilepath, keysFilepath, priva
   }
 }
 
-module.exports = provisionWithPrivateKeySync
+module.exports = provisionWithPrivateKey

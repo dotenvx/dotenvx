@@ -19,8 +19,8 @@ const {
   encryptValue,
   isEncrypted,
   isPublicKey,
-  provisionSync,
-  provisionWithPrivateKeySync
+  provision,
+  provisionWithPrivateKey
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
@@ -101,16 +101,16 @@ class Encrypt {
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
       const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
-      // first pass - provisionSync
+      // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
-        const prov = await provisionSync({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+        const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
         envSrc = prov.envSrc
         publicKey = prov.publicKey
         privateKey = prov.privateKey
         row.privateKeyAdded = prov.privateKeyAdded
         row.envKeysFilepath = prov.envKeysFilepath
       } else if (privateKeyValue) {
-        const prov = provisionWithPrivateKeySync({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
+        const prov = provisionWithPrivateKey({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
         publicKey = prov.publicKey
         privateKey = prov.privateKey
         envSrc = prov.envSrc

@@ -10,7 +10,7 @@ module.exports = {
   mutateKeysSrcSync: require('./mutateKeysSrcSync'),
   provision: require('./provision'),
   provisionSync: require('./provisionSync'),
-  provisionWithPrivateKeySync: require('./provisionWithPrivateKeySync'),
+  provisionWithPrivateKey: require('./provisionWithPrivateKey'),
   mutateSrc: require('./mutateSrc'),
 
   // other
