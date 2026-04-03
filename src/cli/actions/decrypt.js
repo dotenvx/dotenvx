@@ -53,7 +53,7 @@ async function decrypt () {
           errorCount += 1
           logger.error(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+          fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
 
           logger.verbose(`decrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {

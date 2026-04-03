@@ -27,7 +27,7 @@ t.beforeEach((ct) => {
   process.env = {}
   cleanupRootEnvFiles()
 
-  writeFileXStub = sinon.stub(fsx, 'writeFileX')
+  writeFileXStub = sinon.stub(fsx, 'writeFileXSync')
 })
 
 t.afterEach((ct) => {

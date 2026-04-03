@@ -79,7 +79,7 @@ class Sets {
         if (this.noCreate) {
           detectEncoding(filepath) // throws ENOENT
         } else {
-          fsx.writeFileX(filepath, '')
+          fsx.writeFileXSync(filepath, '')
         }
       }
 

@@ -83,7 +83,7 @@ class Encrypt {
       // if noCreate is on then detectEncoding will throw and we'll halt the calls
       // but if noCreate is false then create the file if it doesn't exist
       if (!fsx.existsSync(filepath) && !this.noCreate) {
-        fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
+        fsx.writeFileXSync(filepath, SAMPLE_ENV_KIT)
         fileCreated = true
       }
       const encoding = detectEncoding(filepath)

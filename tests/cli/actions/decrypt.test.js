@@ -50,7 +50,7 @@ t.beforeEach((ct) => {
 
 t.test('decrypt - nothing', async ct => {
   sinon.stub(process, 'exit')
-  sinon.stub(fsx, 'writeFileX')
+  sinon.stub(fsx, 'writeFileXSync')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
@@ -67,7 +67,7 @@ t.test('decrypt - nothing', async ct => {
 })
 
 t.test('decrypt - .env but no changes', async ct => {
-  sinon.stub(fsx, 'writeFileX')
+  sinon.stub(fsx, 'writeFileXSync')
   sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -92,7 +92,7 @@ t.test('decrypt - .env but no changes', async ct => {
 })
 
 t.test('decrypt - --stdout', async ct => {
-  sinon.stub(fsx, 'writeFileX')
+  sinon.stub(fsx, 'writeFileXSync')
   const processExitStub = sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
@@ -120,7 +120,7 @@ t.test('decrypt - --stdout', async ct => {
 })
 
 t.test('decrypt - --stdout with error', async ct => {
-  sinon.stub(fsx, 'writeFileX')
+  sinon.stub(fsx, 'writeFileXSync')
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
   const error = new Error('Mock Error')
@@ -154,7 +154,7 @@ t.test('decrypt - --stdout with error', async ct => {
 
 t.test('decrypt - .env with changes', async ct => {
   sinon.stub(process, 'exit')
-  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const writeStub = sinon.stub(fsx, 'writeFileXSync')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Decrypt.prototype, 'run').returns({
@@ -177,7 +177,7 @@ t.test('decrypt - .env with changes', async ct => {
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="World"'), 'fsx.writeFileX')
+  t.ok(writeStub.calledWith('.env', 'HELLO="World"'), 'fsx.writeFileXSync')
   t.ok(loggerVerboseStub.calledWith('decrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('◇ decrypted (.env)'), 'logger.success')
 
@@ -186,7 +186,7 @@ t.test('decrypt - .env with changes', async ct => {
 
 t.test('decrypt - MISSING_ENV_FILE', async ct => {
   sinon.stub(process, 'exit')
-  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const writeStub = sinon.stub(fsx, 'writeFileXSync')
   const error = new Error('Mock Error')
   error.help = 'https://github.com/dotenvx/dotenvx'
   error.code = 'MISSING_ENV_FILE'
@@ -215,7 +215,7 @@ t.test('decrypt - MISSING_ENV_FILE', async ct => {
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerErrorStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger.error')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -251,7 +251,7 @@ t.test('decrypt - MISSING_ENV_FILE fallback filepath', async ct => {
 
 t.test('decrypt - OTHER_ERROR', async ct => {
   sinon.stub(process, 'exit')
-  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const writeStub = sinon.stub(fsx, 'writeFileXSync')
   const error = new Error('Mock Error')
   error.help = 'https://github.com/dotenvx/dotenvx'
   error.code = 'OTHER_ERROR'
@@ -280,7 +280,7 @@ t.test('decrypt - OTHER_ERROR', async ct => {
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('decrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
   t.notOk(loggerErrorStub.calledWith('https://github.com/dotenvx/dotenvx'), 'no separate help line')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
@@ -291,7 +291,7 @@ t.test('decrypt - OTHER_ERROR', async ct => {
 
 t.test('decrypt - WRONG_PRIVATE_KEY', async ct => {
   sinon.stub(process, 'exit')
-  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const writeStub = sinon.stub(fsx, 'writeFileXSync')
   const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
   error.code = 'WRONG_PRIVATE_KEY'
@@ -314,7 +314,7 @@ t.test('decrypt - WRONG_PRIVATE_KEY', async ct => {
   await decrypt.call(fakeContext)
 
   t.ok(stub.called, 'Decrypt().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.error')
   t.notOk(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/466'), 'logger.error does not print separate help line')
 
@@ -323,7 +323,7 @@ t.test('decrypt - WRONG_PRIVATE_KEY', async ct => {
 
 t.test('decrypt - MISSING_PRIVATE_KEY', async ct => {
   sinon.stub(process, 'exit')
-  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const writeStub = sinon.stub(fsx, 'writeFileXSync')
   const error = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
   error.code = 'MISSING_PRIVATE_KEY'
@@ -346,7 +346,7 @@ t.test('decrypt - MISSING_PRIVATE_KEY', async ct => {
   await decrypt.call(fakeContext)
 
   t.ok(stub.called, 'Decrypt().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerErrorStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.error')
   t.notOk(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464'), 'logger.error does not print separate help line')
 
@@ -392,7 +392,7 @@ t.test('decrypt - MISSING_PRIVATE_KEY/WRONG_PRIVATE_KEY fallback base messages',
 })
 
 t.test('decrypt - --stdout with WRONG_PRIVATE_KEY', async ct => {
-  sinon.stub(fsx, 'writeFileX')
+  sinon.stub(fsx, 'writeFileXSync')
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
   const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
@@ -426,7 +426,7 @@ t.test('decrypt - --stdout with WRONG_PRIVATE_KEY', async ct => {
 })
 
 t.test('decrypt - catch error', async ct => {
-  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const writeStub = sinon.stub(fsx, 'writeFileXSync')
   const error = new Error('Mock Error')
   error.help = 'Mock Help'
   error.debug = 'Mock Debug'
@@ -446,7 +446,7 @@ t.test('decrypt - catch error', async ct => {
 
   await decrypt.call(fakeContext)
 
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger error')
@@ -460,7 +460,7 @@ t.test('decrypt - catch error', async ct => {
 
 t.test('decrypt - --no-ops passes opsOn false to Decrypt service', async ct => {
   sinon.stub(process, 'exit')
-  sinon.stub(fsx, 'writeFileX')
+  sinon.stub(fsx, 'writeFileXSync')
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Decrypt.prototype, 'run').returns({

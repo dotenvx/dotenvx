@@ -40,7 +40,7 @@ function setCode (error, code) {
 
 t.beforeEach((ct) => {
   sinon.restore()
-  writeStub = sinon.stub(fsx, 'writeFileX')
+  writeStub = sinon.stub(fsx, 'writeFileXSync')
   process.env = {}
 })
 
@@ -764,7 +764,7 @@ ct => {
 
   t.ok(stub.called, 'new Sets().run() called')
   t.equal(stub.thisValues[0].encrypt, true, 'Sets was called with encrypt true')
-  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
 
   stub.restore()
 
@@ -793,7 +793,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
 
   stub.restore()
@@ -825,7 +825,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env)'), 'logger success')
 
@@ -858,7 +858,7 @@ ct => {
   main.set('HELLO', 'World', { plain: true })
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('◇ set HELLO (.env)'), 'logger success')
 
@@ -894,7 +894,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -963,7 +963,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -1067,7 +1067,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith("[MISPAIRED_PRIVATE_KEY] private key's derived public key (03a8ed4…) does not match the existing public key (10248e9…). fix: [https://github.com/dotenvx/dotenvx/issues/752]"), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -1106,7 +1106,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -1145,7 +1145,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -1184,7 +1184,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith("[INVALID_PUBLIC_KEY] could not encrypt using public key 'DOTENV_PUBLIC_KEY=10248e9…'. fix: [https://github.com/dotenvx/dotenvx/issues/756]"), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -1289,7 +1289,7 @@ ct => {
   main.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -1329,7 +1329,7 @@ ct => {
   mainNotIgnoring.set('HELLO', 'World')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -1364,7 +1364,7 @@ ct => {
   main.set('HELLO', 'dude')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
+  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileXSync .env')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
   t.ok(loggerNeutralStub.notCalled, 'logger info')
 
@@ -1398,7 +1398,7 @@ ct => {
   main.set('HELLO', 'dude')
 
   t.ok(stub.called, 'new Sets().run() called')
-  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
+  t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileXSync .env')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
   t.ok(loggerInfoStub.notCalled, 'logger info')
 

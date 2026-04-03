@@ -33,7 +33,7 @@ let writeStub
 
 t.beforeEach((ct) => {
   sinon.restore()
-  writeStub = sinon.stub(fsx, 'writeFileX')
+  writeStub = sinon.stub(fsx, 'writeFileXSync')
 })
 
 t.test('rotate - nothing', async ct => {
@@ -137,7 +137,7 @@ t.test('rotate - .env with changes', async ct => {
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileXSync')
   t.ok(loggerVerboseStub.calledWith('rotated .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + key (.env.keys)'), 'logger.success')
 
@@ -175,7 +175,7 @@ t.test('rotate - .env with changes and privateKeyAdded', async ct => {
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileXSync')
   t.ok(loggerVerboseStub.calledWith('rotated .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + key (.env.keys)'), 'logger.success')
 
@@ -213,7 +213,7 @@ t.test('rotate - MISSING_ENV_FILE', async ct => {
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -278,7 +278,7 @@ t.test('rotate - OTHER_ERROR', async ct => {
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -318,7 +318,7 @@ t.test('rotate - MISPAIRED_PRIVATE_KEY', async ct => {
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith("[MISPAIRED_PRIVATE_KEY] private key's derived public key (03a8ed4…) does not match the existing public key (10248e9…). fix: [https://github.com/dotenvx/dotenvx/issues/752]"), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -358,7 +358,7 @@ t.test('rotate - WRONG_PRIVATE_KEY', async ct => {
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -393,7 +393,7 @@ t.test('rotate - MISSING_PRIVATE_KEY', async ct => {
   await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
 
@@ -432,7 +432,7 @@ t.test('rotate - INVALID_PUBLIC_KEY', async ct => {
   t.ok(stub.called, 'Rotate().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith("[INVALID_PUBLIC_KEY] could not encrypt using public key 'DOTENV_PUBLIC_KEY=10248e9…'. fix: [https://github.com/dotenvx/dotenvx/issues/756]"), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -504,7 +504,7 @@ t.test('rotate - catch error', async ct => {
   await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')
   t.ok(loggerErrorStub.calledWith('Mock Error. Mock Help'), 'logger error')

@@ -18,7 +18,7 @@ class Generic {
     const changedPatterns = []
     if (!fsx.existsSync(this.filename)) {
       if (this.touchFile === true && this.patterns.length > 0) {
-        fsx.writeFileX(this.filename, '')
+        fsx.writeFileXSync(this.filename, '')
       } else {
         return
       }

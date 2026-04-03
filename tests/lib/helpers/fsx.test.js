@@ -15,8 +15,8 @@ t.afterEach((ct) => {
   writeFileSyncStub.restore()
 })
 
-t.test('#writeFileX', ct => {
-  fsx.writeFileX('tests/somefile.txt')
+t.test('#writeFileXSync', ct => {
+  fsx.writeFileXSync('tests/somefile.txt')
 
   t.ok(writeFileSyncStub.called, 'fs.writeFileSync() called')
 

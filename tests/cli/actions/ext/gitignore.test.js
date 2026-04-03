@@ -99,7 +99,7 @@ t.test('Generic class - append method', (ct) => {
 
 t.test('Generic class - run method - creates file if it does not exist and touchFile is true', (ct) => {
   const existsSyncStub = sinon.stub(fsx, 'existsSync').returns(false)
-  const writeFileXStub = sinon.stub(fsx, 'writeFileX')
+  const writeFileXStub = sinon.stub(fsx, 'writeFileXSync')
   const loggerNeutralStub = sinon.stub(logger, 'info')
 
   const generic = new Generic('.gitignore', ['.env*'], true)
@@ -107,20 +107,20 @@ t.test('Generic class - run method - creates file if it does not exist and touch
 
   ct.ok(existsSyncStub.calledWith('.gitignore'), 'existsSync should be called with correct filename')
   ct.ok(loggerNeutralStub.calledWith('○ no changes (.gitignore)'), 'logger.info should log the creation message')
-  ct.ok(writeFileXStub.calledWith('.gitignore', ''), 'writeFileX should be called to create the file')
+  ct.ok(writeFileXStub.calledWith('.gitignore', ''), 'writeFileXSync should be called to create the file')
 
   ct.end()
 })
 
 t.test('Generic class - run method - does nothing if file does not exist and touchFile is false', (ct) => {
   const existsSyncStub = sinon.stub(fsx, 'existsSync').returns(false)
-  const writeFileXStub = sinon.stub(fsx, 'writeFileX')
+  const writeFileXStub = sinon.stub(fsx, 'writeFileXSync')
 
   const generic = new Generic('.gitignore', false)
   generic.run()
 
   ct.ok(existsSyncStub.calledWith('.gitignore'), 'existsSync should be called with correct filename')
-  ct.notOk(writeFileXStub.called, 'writeFileX should not be called')
+  ct.notOk(writeFileXStub.called, 'writeFileXSync should not be called')
 
   ct.end()
 })

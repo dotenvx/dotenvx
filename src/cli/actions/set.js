@@ -47,7 +47,7 @@ async function set (key, value) {
       if (processedEnv.error) {
         logger.warn(processedEnv.error.messageWithHelp)
       } else {
-        fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+        fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
 
         logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
         logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)

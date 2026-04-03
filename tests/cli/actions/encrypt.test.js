@@ -1,7 +1,6 @@
 const t = require('tap')
 const fsx = require('./../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
-const capcon = require('capture-console')
 const proxyquire = require('proxyquire')
 
 const Encrypt = require('./../../../src/lib/services/encrypt')
@@ -13,12 +12,30 @@ const encrypt = proxyquire('../../../src/cli/actions/encrypt', {
 
 let writeStub
 
+async function captureStdout (fn) {
+  let stdout = ''
+  const stdoutWrite = process.stdout.write
+  process.stdout.write = function (chunk, encoding, callback) {
+    stdout += Buffer.isBuffer(chunk) ? chunk.toString() : chunk
+    if (typeof callback === 'function') callback()
+    return true
+  }
+
+  try {
+    await fn()
+  } finally {
+    process.stdout.write = stdoutWrite
+  }
+
+  return stdout
+}
+
 t.beforeEach((ct) => {
   sinon.restore()
-  writeStub = sinon.stub(fsx, 'writeFileX')
+  writeStub = sinon.stub(fsx, 'writeFileXSync')
 })
 
-t.test('encrypt - nothing', ct => {
+t.test('encrypt - nothing', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -27,14 +44,14 @@ t.test('encrypt - nothing', ct => {
     unchangedFilepaths: []
   })
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
 
   ct.end()
 })
 
-t.test('encrypt - --no-create passes through to service', ct => {
+t.test('encrypt - --no-create passes through to service', async ct => {
   let constructorArgs
 
   class EncryptMock {
@@ -59,14 +76,14 @@ t.test('encrypt - --no-create passes through to service', ct => {
   const optsStub = sinon.stub().returns({ create: false })
   const fakeContext = { opts: optsStub, envs: [] }
 
-  encryptWithMock.call(fakeContext)
+  await encryptWithMock.call(fakeContext)
 
   t.equal(constructorArgs[5], true, 'noCreate=true when --no-create is set')
 
   ct.end()
 })
 
-t.test('encrypt - .env but no changes', ct => {
+t.test('encrypt - .env but no changes', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -85,7 +102,7 @@ t.test('encrypt - .env but no changes', ct => {
   })
   const loggerNeutralStub = sinon.stub(logger, 'info')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.info')
@@ -93,7 +110,7 @@ t.test('encrypt - .env but no changes', ct => {
   ct.end()
 })
 
-t.test('encrypt - --stdout', ct => {
+t.test('encrypt - --stdout', async ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({ stdout: true })
   const fakeContext = { opts: optsStub }
@@ -112,8 +129,8 @@ t.test('encrypt - --stdout', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  const stdout = capcon.interceptStdout(() => {
-    encrypt.call(fakeContext)
+  const stdout = await captureStdout(async () => {
+    await encrypt.call(fakeContext)
   })
 
   t.ok(stub.called, 'Encrypt().run() called')
@@ -123,7 +140,7 @@ t.test('encrypt - --stdout', ct => {
   ct.end()
 })
 
-t.test('encrypt - .env with changes', ct => {
+t.test('encrypt - .env with changes', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -144,19 +161,19 @@ t.test('encrypt - .env with changes', ct => {
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileXSync')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env)'), 'logger.success')
 
   ct.end()
 })
 
-t.test('encrypt - .env with changes and privateKeyAdded', ct => {
+t.test('encrypt - .env with changes and privateKeyAdded', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -178,12 +195,12 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileXSync')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key (.env.keys)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -191,7 +208,7 @@ t.test('encrypt - .env with changes and privateKeyAdded', ct => {
   ct.end()
 })
 
-t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.keys', ct => {
+t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.keys', async ct => {
   const encryptNotIgnoring = proxyquire('../../../src/cli/actions/encrypt', {
     '../../../src/lib/helpers/isIgnoringDotenvKeys': () => false
   })
@@ -217,12 +234,12 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  encryptNotIgnoring.call(fakeContext)
+  await encryptNotIgnoring.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileXSync')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key (.env.keys)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
@@ -230,7 +247,7 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   ct.end()
 })
 
-t.test('encrypt - MISSING_ENV_FILE', ct => {
+t.test('encrypt - MISSING_ENV_FILE', async ct => {
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'
   error.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -256,12 +273,12 @@ t.test('encrypt - MISSING_ENV_FILE', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -269,7 +286,7 @@ t.test('encrypt - MISSING_ENV_FILE', ct => {
   ct.end()
 })
 
-t.test('encrypt - MISSING_ENV_FILE fallback filepath', ct => {
+t.test('encrypt - MISSING_ENV_FILE fallback filepath', async ct => {
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'
   error.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -288,13 +305,13 @@ t.test('encrypt - MISSING_ENV_FILE fallback filepath', ct => {
     unchangedFilepaths: []
   })
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger.warn fallback .env path')
   ct.end()
 })
 
-t.test('encrypt - OTHER_ERROR', ct => {
+t.test('encrypt - OTHER_ERROR', async ct => {
   const error = new Error('Mock Error')
   error.code = 'OTHER_ERROR'
   error.help = 'some help'
@@ -321,12 +338,12 @@ t.test('encrypt - OTHER_ERROR', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -334,7 +351,7 @@ t.test('encrypt - OTHER_ERROR', ct => {
   ct.end()
 })
 
-t.test('encrypt - MISPAIRED_PRIVATE_KEY', ct => {
+t.test('encrypt - MISPAIRED_PRIVATE_KEY', async ct => {
   const error = new Error("[MISPAIRED_PRIVATE_KEY] private key's derived public key (03a8ed4…) does not match the existing public key (10248e9…)")
   error.code = 'MISPAIRED_PRIVATE_KEY'
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/752]'
@@ -361,12 +378,12 @@ t.test('encrypt - MISPAIRED_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith("[MISPAIRED_PRIVATE_KEY] private key's derived public key (03a8ed4…) does not match the existing public key (10248e9…). fix: [https://github.com/dotenvx/dotenvx/issues/752]"), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -374,7 +391,7 @@ t.test('encrypt - MISPAIRED_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('encrypt - WRONG_PRIVATE_KEY', ct => {
+t.test('encrypt - WRONG_PRIVATE_KEY', async ct => {
   const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
   error.code = 'WRONG_PRIVATE_KEY'
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
@@ -401,12 +418,12 @@ t.test('encrypt - WRONG_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -414,7 +431,7 @@ t.test('encrypt - WRONG_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('encrypt - MISSING_PRIVATE_KEY', ct => {
+t.test('encrypt - MISSING_PRIVATE_KEY', async ct => {
   const error = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
   error.code = 'MISSING_PRIVATE_KEY'
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
@@ -438,17 +455,17 @@ t.test('encrypt - MISSING_PRIVATE_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
 
   ct.end()
 })
 
-t.test('encrypt - INVALID_PUBLIC_KEY', ct => {
+t.test('encrypt - INVALID_PUBLIC_KEY', async ct => {
   const error = new Error("[INVALID_PUBLIC_KEY] could not encrypt using public key 'DOTENV_PUBLIC_KEY=10248e9…'")
   error.code = 'INVALID_PUBLIC_KEY'
   error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/756]'
@@ -475,12 +492,12 @@ t.test('encrypt - INVALID_PUBLIC_KEY', ct => {
   const loggerWarnStub = sinon.stub(logger, 'warn')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerWarnStub.calledWith("[INVALID_PUBLIC_KEY] could not encrypt using public key 'DOTENV_PUBLIC_KEY=10248e9…'. fix: [https://github.com/dotenvx/dotenvx/issues/756]"), 'logger.warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
   t.ok(loggerSuccessStub.notCalled, 'logger.success')
@@ -488,7 +505,7 @@ t.test('encrypt - INVALID_PUBLIC_KEY', ct => {
   ct.end()
 })
 
-t.test('encrypt - preserves already punctuated error messages', ct => {
+t.test('encrypt - preserves already punctuated error messages', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const loggerWarnStub = sinon.stub(logger, 'warn')
@@ -522,7 +539,7 @@ t.test('encrypt - preserves already punctuated error messages', ct => {
     unchangedFilepaths: []
   })
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(loggerWarnStub.calledWith('[WRONG_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
   t.ok(loggerWarnStub.calledWith('[MISSING_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
@@ -531,7 +548,7 @@ t.test('encrypt - preserves already punctuated error messages', ct => {
   ct.end()
 })
 
-t.test('encrypt - catch error', ct => {
+t.test('encrypt - catch error', async ct => {
   const error = new Error('Mock Error')
   error.help = 'Mock Help'
   error.messageWithHelp = 'Mock Error. Mock Help'
@@ -549,10 +566,10 @@ t.test('encrypt - catch error', ct => {
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerDebugStub = sinon.stub(logger, 'debug')
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
-  t.ok(writeStub.notCalled, 'fsx.writeFileX')
+  t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.notCalled, 'logger success')
   t.ok(loggerErrorStub.calledWith('Mock Error. Mock Help'), 'logger error')
@@ -564,7 +581,7 @@ t.test('encrypt - catch error', ct => {
   ct.end()
 })
 
-t.test('encrypt - --no-ops passes opsOn false to Encrypt service', ct => {
+t.test('encrypt - --no-ops passes opsOn false to Encrypt service', async ct => {
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -573,7 +590,7 @@ t.test('encrypt - --no-ops passes opsOn false to Encrypt service', ct => {
     unchangedFilepaths: []
   })
 
-  encrypt.call(fakeContext)
+  await encrypt.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Encrypt().run() called')
   t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')

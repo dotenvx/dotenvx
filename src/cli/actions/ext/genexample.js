@@ -20,7 +20,7 @@ function genexample (directory) {
 
     logger.verbose(`loading env from ${envFile}`)
 
-    fsx.writeFileX(exampleFilepath, envExampleFile)
+    fsx.writeFileXSync(exampleFilepath, envExampleFile)
 
     if (addedKeys.length > 0) {
       logger.success(`▣ generated (${path.basename(exampleFilepath)})`)

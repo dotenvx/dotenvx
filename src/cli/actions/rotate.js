@@ -43,9 +43,9 @@ async function rotate () {
         if (processedEnv.error) {
           logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+          fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
           if (processedEnv.privateKeyAdded) {
-            fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+            fsx.writeFileXSync(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
           }
 
           logger.verbose(`rotated ${processedEnv.envFilepath} (${processedEnv.filepath})`)

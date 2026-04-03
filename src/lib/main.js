@@ -186,7 +186,7 @@ const set = function (key, value, options = {}) {
       const message = error.messageWithHelp || (error.help ? `${error.message}. ${error.help}` : error.message)
       logger.warn(message)
     } else {
-      fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+      fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
 
       logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
       logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)
