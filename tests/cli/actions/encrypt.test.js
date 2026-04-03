@@ -597,3 +597,59 @@ t.test('encrypt - --no-ops passes opsOn false to Encrypt service', async ct => {
 
   ct.end()
 })
+
+t.test('encrypt - spinner stop is called for stdout/success/catch flows', async ct => {
+  const stopStub = sinon.stub()
+  const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
+  const sessionStub = sinon.stub().resolves(true)
+  const catchAndLogStub = sinon.stub()
+  const processExitStub = sinon.stub(process, 'exit')
+
+  class SessionMock {
+    async opsOn () {
+      return sessionStub()
+    }
+  }
+
+  class EncryptMock {
+    async run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const encryptWithSpinner = proxyquire('../../../src/cli/actions/encrypt', {
+    './../../lib/services/encrypt': EncryptMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../db/session': SessionMock
+  })
+
+  await encryptWithSpinner.call({ opts: () => ({ stdout: true }), envs: [] })
+  ct.equal(stopStub.callCount, 1, 'stops spinner in stdout flow')
+
+  await encryptWithSpinner.call({ opts: () => ({}), envs: [] })
+  ct.equal(stopStub.callCount, 2, 'stops spinner in success flow')
+
+  class EncryptThrowsMock {
+    async run () {
+      throw new Error('boom')
+    }
+  }
+
+  const encryptWithSpinnerAndError = proxyquire('../../../src/cli/actions/encrypt', {
+    './../../lib/services/encrypt': EncryptThrowsMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../db/session': SessionMock
+  })
+
+  await encryptWithSpinnerAndError.call({ opts: () => ({}), envs: [] })
+  ct.equal(stopStub.callCount, 3, 'stops spinner in catch flow')
+  ct.ok(catchAndLogStub.calledOnce, 'catchAndLog called in catch flow')
+  ct.ok(processExitStub.calledWith(1), 'process.exit(1) called in catch flow')
+  ct.end()
+})

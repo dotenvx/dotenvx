@@ -531,3 +531,59 @@ t.test('rotate - --no-ops passes opsOn false to Rotate service', async ct => {
 
   ct.end()
 })
+
+t.test('rotate - spinner stop is called for stdout/success/catch flows', async ct => {
+  const stopStub = sinon.stub()
+  const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
+  const sessionStub = sinon.stub().resolves(true)
+  const catchAndLogStub = sinon.stub()
+  const processExitStub = sinon.stub(process, 'exit')
+
+  class SessionMock {
+    async opsOn () {
+      return sessionStub()
+    }
+  }
+
+  class RotateMock {
+    async run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const rotateWithSpinner = proxyquire('../../../src/cli/actions/rotate', {
+    './../../lib/services/rotate': RotateMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../db/session': SessionMock
+  })
+
+  await rotateWithSpinner.call({ opts: () => ({ stdout: true }), envs: [] })
+  ct.equal(stopStub.callCount, 1, 'stops spinner in stdout flow')
+
+  await rotateWithSpinner.call({ opts: () => ({}), envs: [] })
+  ct.equal(stopStub.callCount, 2, 'stops spinner in success flow')
+
+  class RotateThrowsMock {
+    async run () {
+      throw new Error('boom')
+    }
+  }
+
+  const rotateWithSpinnerAndError = proxyquire('../../../src/cli/actions/rotate', {
+    './../../lib/services/rotate': RotateThrowsMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../db/session': SessionMock
+  })
+
+  await rotateWithSpinnerAndError.call({ opts: () => ({}), envs: [] })
+  ct.equal(stopStub.callCount, 3, 'stops spinner in catch flow')
+  ct.ok(catchAndLogStub.calledOnce, 'catchAndLog called in catch flow')
+  ct.ok(processExitStub.calledWith(1), 'process.exit(1) called in catch flow')
+  ct.end()
+})

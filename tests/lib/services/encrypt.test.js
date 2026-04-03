@@ -675,7 +675,7 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
     const Encrypt = proxyquire('../../../src/lib/services/encrypt', {
       './../helpers/keyResolution': {
         keyNames,
-        keyValuesSync: keyValuesStub
+        keyValues: keyValuesStub
       }
     })
 

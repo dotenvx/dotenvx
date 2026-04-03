@@ -1,6 +1,7 @@
 const t = require('tap')
 const fsx = require('./../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const Decrypt = require('./../../../src/lib/services/decrypt')
 const { logger } = require('../../../src/shared/logger')
@@ -473,5 +474,61 @@ t.test('decrypt - --no-ops passes opsOn false to Decrypt service', async ct => {
   t.ok(runStub.calledOnce, 'Decrypt().run() called')
   t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
 
+  ct.end()
+})
+
+t.test('decrypt - spinner stop is called for stdout/success/catch flows', async ct => {
+  const stopStub = sinon.stub()
+  const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
+  const sessionStub = sinon.stub().resolves(true)
+  const catchAndLogStub = sinon.stub()
+  const processExitStub = sinon.stub(process, 'exit')
+
+  class SessionMock {
+    async opsOn () {
+      return sessionStub()
+    }
+  }
+
+  class DecryptMock {
+    async run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const decryptWithSpinner = proxyquire('../../../src/cli/actions/decrypt', {
+    './../../lib/services/decrypt': DecryptMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../db/session': SessionMock
+  })
+
+  await decryptWithSpinner.call({ opts: () => ({ stdout: true }), envs: [] })
+  ct.equal(stopStub.callCount, 1, 'stops spinner in stdout flow')
+
+  await decryptWithSpinner.call({ opts: () => ({}), envs: [] })
+  ct.equal(stopStub.callCount, 2, 'stops spinner in success flow')
+
+  class DecryptThrowsMock {
+    async run () {
+      throw new Error('boom')
+    }
+  }
+
+  const decryptWithSpinnerAndError = proxyquire('../../../src/cli/actions/decrypt', {
+    './../../lib/services/decrypt': DecryptThrowsMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../db/session': SessionMock
+  })
+
+  await decryptWithSpinnerAndError.call({ opts: () => ({}), envs: [] })
+  ct.equal(stopStub.callCount, 3, 'stops spinner in catch flow')
+  ct.ok(catchAndLogStub.calledOnce, 'catchAndLog called in catch flow')
+  ct.ok(processExitStub.calledWith(1), 'process.exit(1) called in catch flow')
   ct.end()
 })

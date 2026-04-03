@@ -101,7 +101,7 @@ t.test('falls back to cli binary and observe spawns detached process', (ct) => {
   ct.end()
 })
 
-t.test('observe noops when spawn fails, status off, or forced off', (ct) => {
+t.test('observe noops when spawn fails, status off, or forced off', async (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()
@@ -126,6 +126,7 @@ t.test('observe noops when spawn fails, status off, or forced off', (ct) => {
   process.env.DOTENVX_OPS_OFF = 'true'
   ct.equal(ops.statusSync(), 'off')
   ct.same(ops.keypairSync('ignored'), {})
+  ct.same(await ops.keypair('ignored'), {})
   ops.observe({ should: 'skip when forced off' })
   ct.equal(spawn.callCount, 1)
   ct.end()
@@ -149,5 +150,117 @@ t.test('status/statusSync are off when both npm and cli binaries are unavailable
   ct.same(await ops.keypair('anything'), {})
   ct.equal(execFileSync.callCount, 2)
   ct.equal(promisifiedExecFile.callCount, 2)
+  ct.end()
+})
+
+t.test('status/statusSync return off when status command fails after binary resolves', async (ct) => {
+  const execFileSync = sinon.stub()
+  const promisifiedExecFile = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = promisifiedExecFile
+  const spawn = sinon.stub()
+
+  execFileSync
+    .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
+    .onCall(1).throws(new Error('status failed')) // status npm
+
+  promisifiedExecFile
+    .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
+    .onCall(1).rejects(new Error('status failed')) // status npm
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const opsSync = new Ops()
+  ct.equal(opsSync.statusSync(), 'off')
+
+  const opsAsync = new Ops()
+  ct.equal(await opsAsync.status(), 'off')
+  ct.end()
+})
+
+t.test('keypair/keypairSync return empty object when parsing or exec fails', async (ct) => {
+  const execFileSync = sinon.stub()
+  const promisifiedExecFile = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = promisifiedExecFile
+  const spawn = sinon.stub()
+
+  execFileSync
+    .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
+    .onCall(1).returns(Buffer.from('not-json')) // keypair output
+
+  promisifiedExecFile
+    .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
+    .onCall(1).resolves({ stdout: Buffer.from('not-json') }) // keypair output
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const opsSync = new Ops()
+  ct.same(opsSync.keypairSync(), {})
+
+  const opsAsync = new Ops()
+  ct.same(await opsAsync.keypair(), {})
+  ct.end()
+})
+
+t.test('observe returns early when status check throws', (ct) => {
+  const execFileSync = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = sinon.stub()
+  const spawn = sinon.stub()
+
+  execFileSync
+    .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
+    .onCall(1).throws(new Error('status failed')) // status npm
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const ops = new Ops()
+  ct.doesNotThrow(() => ops.observe({ event: 'x' }))
+  ct.equal(spawn.callCount, 0)
+  ct.end()
+})
+
+t.test('status async falls back to cli binary when npm binary is unavailable', async (ct) => {
+  const execFileSync = sinon.stub()
+  const promisifiedExecFile = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = promisifiedExecFile
+  const spawn = sinon.stub()
+
+  promisifiedExecFile
+    .onCall(0).rejects(new Error('npm binary missing')) // npm --version
+    .onCall(1).resolves({ stdout: Buffer.from('1.0.0\n') }) // cli --version
+    .onCall(2).resolves({ stdout: Buffer.from('on\n') }) // cli status
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const ops = new Ops()
+  ct.equal(await ops.status(), 'on')
+  ct.equal(promisifiedExecFile.getCall(1).args[0], 'dotenvx-ops')
+  ct.end()
+})
+
+t.test('observe returns early when no binary can be resolved', (ct) => {
+  const execFileSync = sinon.stub().throws(new Error('binary missing'))
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = sinon.stub()
+  const spawn = sinon.stub()
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const ops = new Ops()
+  ct.doesNotThrow(() => ops.observe({ event: 'x' }))
+  ct.equal(spawn.callCount, 0)
   ct.end()
 })
