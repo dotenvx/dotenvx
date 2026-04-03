@@ -6,12 +6,13 @@ async function createSpinner (options = {}) {
   if (!enabled) return null
 
   const text = options.text || 'thinking'
+  const frames = options.frames || FRAMES
 
   const { default: yoctoSpinner } = await import('yocto-spinner')
   return yoctoSpinner({
     text,
     spinner: {
-      frames: FRAMES,
+      frames,
       interval: FRAME_INTERVAL_MS
     },
     stream: process.stderr

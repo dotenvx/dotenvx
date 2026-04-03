@@ -10,13 +10,16 @@ const Session = require('../../db/session')
 
 async function rotate () {
   const options = this.opts()
-  const spinner = await createSpinner({ ...options, text: 'rotating' })
+  const spinner = await createSpinner({ ...options, text: 'rotating', frames: ['⟳', '⤾', '⥁'] })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
   const sesh = new Session()
   const noOps = options.ops === false || !(await sesh.opsOn())
+
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+  await sleep(5000)
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
