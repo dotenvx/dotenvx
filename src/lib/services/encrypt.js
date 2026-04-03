@@ -20,7 +20,7 @@ const {
   isEncrypted,
   isPublicKey,
   provisionSync,
-  provisionWithPrivateKey
+  provisionWithPrivateKeySync
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
@@ -110,7 +110,7 @@ class Encrypt {
         row.privateKeyAdded = prov.privateKeyAdded
         row.envKeysFilepath = prov.envKeysFilepath
       } else if (privateKeyValue) {
-        const prov = provisionWithPrivateKey({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
+        const prov = provisionWithPrivateKeySync({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
         publicKey = prov.publicKey
         privateKey = prov.privateKey
         envSrc = prov.envSrc

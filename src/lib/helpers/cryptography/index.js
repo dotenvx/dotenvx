@@ -7,7 +7,7 @@ module.exports = {
   isEncrypted: require('./isEncrypted'),
   isPublicKey: require('./isPublicKey'),
   provisionSync: require('./provisionSync'),
-  provisionWithPrivateKey: require('./provisionWithPrivateKey'),
+  provisionWithPrivateKeySync: require('./provisionWithPrivateKeySync'),
   mutateSrc: require('./mutateSrc'),
 
   // other
