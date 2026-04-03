@@ -14,13 +14,12 @@ async function rotate () {
   const envs = this.envs
   const sesh = new Session()
   const noOps = options.ops === false || !(await sesh.opsOn())
-  const opsOn = !noOps
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
+    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, !noOps).run()
 
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -36,16 +35,16 @@ async function rotate () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
+      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, !noOps).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`rotating ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         if (processedEnv.error) {
           logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
+          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
           if (processedEnv.privateKeyAdded) {
-            fsx.writeFileXSync(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+            await fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
           }
 
           logger.verbose(`rotated ${processedEnv.envFilepath} (${processedEnv.filepath})`)

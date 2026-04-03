@@ -12,11 +12,11 @@ const {
 
 const {
   keyNames,
-  keyValuesSync
+  keyValues
 } = require('./../helpers/keyResolution')
 
 const {
-  opsKeypairSync,
+  opsKeypair,
   localKeypair,
   encryptValue,
   decryptKeyValue,
@@ -26,7 +26,7 @@ const {
 const append = require('./../helpers/append')
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
-const detectEncodingSync = require('./../helpers/detectEncodingSync')
+const detectEncoding = require('./../helpers/detectEncoding')
 
 class Rotate {
   constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
@@ -43,7 +43,7 @@ class Rotate {
     this.envKeysSources = {}
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -57,7 +57,7 @@ class Rotate {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._rotateEnvFile(env.value)
+        await this._rotateEnvFile(env.value)
       }
     }
 
@@ -68,7 +68,7 @@ class Rotate {
     }
   }
 
-  _rotateEnvFile (envFilepath) {
+  async _rotateEnvFile (envFilepath) {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
@@ -78,12 +78,12 @@ class Rotate {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = detectEncodingSync(filepath)
-      let envSrc = fsx.readFileXSync(filepath, { encoding })
+      const encoding = await detectEncoding(filepath)
+      let envSrc = await fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValuesSync(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       let newPublicKey
       let newPrivateKey
@@ -91,7 +91,7 @@ class Rotate {
       let envKeysSrc
 
       if (this.opsOn) {
-        const kp = opsKeypairSync()
+        const kp = await opsKeypair()
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 
@@ -102,7 +102,8 @@ class Rotate {
           envKeysFilepath = path.resolve(this.envKeysFilepath)
         }
         row.envKeysFilepath = envKeysFilepath
-        this.envKeysSources[envKeysFilepath] ||= fsx.readFileXSync(envKeysFilepath, { encoding: detectEncodingSync(envKeysFilepath) })
+        const encodingForKeys = await detectEncoding(envKeysFilepath)
+        this.envKeysSources[envKeysFilepath] ||= await fsx.readFileX(envKeysFilepath, { encoding: encodingForKeys })
         envKeysSrc = this.envKeysSources[envKeysFilepath]
 
         const kp = localKeypair()

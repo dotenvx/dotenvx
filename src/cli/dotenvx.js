@@ -148,7 +148,7 @@ program.command('decrypt')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
-    decryptAction.apply(this, args)
+    return decryptAction.apply(this, args)
   })
 
 // dotenvx rotate
@@ -163,7 +163,7 @@ program.command('rotate')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
-    rotateAction.apply(this, args)
+    return rotateAction.apply(this, args)
   })
 
 // dotenvx keypair
