@@ -3,19 +3,20 @@ const { logger } = require('./../../shared/logger')
 const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
-
-const Get = require('./../../lib/services/get')
+const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
+const Get = require('./../../lib/services/get')
 
 async function get (key) {
+  const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'decrypting' })
+
+  logger.debug(`options: ${JSON.stringify(options)}`)
   if (key) {
     logger.debug(`key: ${key}`)
   }
 
-  const options = this.opts()
-  logger.debug(`options: ${JSON.stringify(options)}`)
   const prettyPrint = options.prettyPrint || options.pp
-
   const ignore = options.ignore || []
 
   let envs = []
@@ -42,6 +43,7 @@ async function get (key) {
       logger.error(error.messageWithHelp)
     }
 
+    if (spinner) spinner.stop()
     if (key) {
       const single = parsed[key]
       if (single === undefined) {
@@ -76,6 +78,7 @@ async function get (key) {
       }
     }
   } catch (error) {
+    if (spinner) spinner.stop()
     catchAndLog(error)
     process.exit(1)
   }

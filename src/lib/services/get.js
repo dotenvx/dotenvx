@@ -11,7 +11,7 @@ class Get {
     this.opsOn = opsOn
   }
 
-  run () {
+  runSync () {
     const processEnv = { ...process.env }
     const { processedEnvs } = new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.opsOn).run()
 
@@ -53,6 +53,10 @@ class Get {
 
       return { parsed, errors }
     }
+  }
+
+  async run () {
+    return this.runSync()
   }
 }
 

@@ -228,7 +228,7 @@ const get = function (key, options = {}) {
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
+  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).runSync()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {

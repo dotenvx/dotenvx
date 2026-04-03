@@ -20,6 +20,7 @@ async function keypair (key) {
   const keypairs = await new Keypair(options.envFile, options.envKeysFile, !noOps).run()
   const results = key ? keypairs[key] : keypairs
 
+  if (spinner) spinner.stop()
   if (typeof results === 'object' && results !== null) {
     // inline shell format - env $(dotenvx keypair --format=shell) your-command
     if (options.format === 'shell') {
@@ -29,7 +30,6 @@ async function keypair (key) {
       }
       inline = inline.trim()
 
-      if (spinner) spinner.stop()
       console.log(inline)
     // json format
     } else {
@@ -38,11 +38,9 @@ async function keypair (key) {
         space = 2
       }
 
-      if (spinner) spinner.stop()
       console.log(JSON.stringify(results, null, space))
     }
   } else {
-    if (spinner) spinner.stop()
     if (results === undefined) {
       console.log('')
       process.exit(1)

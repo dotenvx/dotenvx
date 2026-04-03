@@ -1407,90 +1407,90 @@ t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .
     ct.end()
   })
 
-t.test('get calls Get.run',
+t.test('get calls Get.runSync',
   ct => {
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
     const result = main.get('KEY')
     t.equal(result, 'value')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
 
     stub.restore()
 
     ct.end()
   })
 
-t.test('get calls Get.run undefined',
+t.test('get calls Get.runSync undefined',
   ct => {
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: undefined }, errors: [] })
 
     const result = main.get('KEY')
     t.equal(result, undefined)
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
 
     stub.restore()
 
     ct.end()
   })
 
-t.test('get calls Get.run with no key',
+t.test('get calls Get.runSync with no key',
   ct => {
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
     const result = main.get(null)
     t.equal(result.KEY, 'value')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
 
     stub.restore()
 
     ct.end()
   })
 
-t.test('get calls Get.run format eval',
+t.test('get calls Get.runSync format eval',
   ct => {
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
     const result = main.get(null, { format: 'eval' })
     t.equal(result, 'KEY=value')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
 
     stub.restore()
 
     ct.end()
   })
 
-t.test('get calls Get.run format shell',
+t.test('get calls Get.runSync format shell',
   ct => {
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
     const result = main.get(null, { format: 'shell' })
     t.equal(result, 'KEY=value')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
 
     stub.restore()
 
     ct.end()
   })
 
-t.test('get calls Get.run with noOps true',
+t.test('get calls Get.runSync with noOps true',
   ct => {
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
     const result = main.get('KEY', { noOps: true })
     t.equal(result, 'value')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
     t.equal(stub.thisValues[0].opsOn, false, 'Get was called with opsOn false')
 
     stub.restore()
@@ -1518,7 +1518,7 @@ t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --stric
     ct.end()
   })
 
-t.test('get with Get.run errors',
+t.test('get with Get.runSync errors',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
 
@@ -1526,12 +1526,12 @@ t.test('get with Get.run errors',
     setCode(error, 'SOME_ERROR')
     error.help = 'some help'
     const errors = [error]
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors })
 
     main.get('KEY')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
     ct.ok(loggerErrorStub.called, 'logger.error')
 
     stub.restore()
@@ -1540,7 +1540,7 @@ t.test('get with Get.run errors',
     ct.end()
   })
 
-t.test('get with Get.run WRONG_PRIVATE_KEY errors',
+t.test('get with Get.runSync WRONG_PRIVATE_KEY errors',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
 
@@ -1548,12 +1548,12 @@ t.test('get with Get.run WRONG_PRIVATE_KEY errors',
     setCode(error, 'WRONG_PRIVATE_KEY')
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
     const errors = [error]
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors })
 
     main.get('KEY')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
     ct.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.error one-line')
     ct.notOk(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/466'), 'no separate help line')
 
@@ -1563,7 +1563,7 @@ t.test('get with Get.run WRONG_PRIVATE_KEY errors',
     ct.end()
   })
 
-t.test('get with Get.run MISSING_PRIVATE_KEY errors',
+t.test('get with Get.runSync MISSING_PRIVATE_KEY errors',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
 
@@ -1571,12 +1571,12 @@ t.test('get with Get.run MISSING_PRIVATE_KEY errors',
     setCode(error, 'MISSING_PRIVATE_KEY')
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
     const errors = [error]
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors })
 
     main.get('KEY')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
     ct.ok(loggerErrorStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.error one-line')
     ct.notOk(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464'), 'no separate help line')
 
@@ -1586,7 +1586,7 @@ t.test('get with Get.run MISSING_PRIVATE_KEY errors',
     ct.end()
   })
 
-t.test('get with Get.run punctuated private key errors',
+t.test('get with Get.runSync punctuated private key errors',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
     const errors = [
@@ -1601,12 +1601,12 @@ t.test('get with Get.run punctuated private key errors',
         return error
       })()
     ]
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors })
 
     main.get('KEY')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
     ct.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
     ct.ok(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
 
@@ -1616,16 +1616,16 @@ t.test('get with Get.run punctuated private key errors',
     ct.end()
   })
 
-t.test('get with Get.run undefined errors',
+t.test('get with Get.runSync undefined errors',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
 
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors: undefined })
 
     main.get('KEY')
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
     ct.ok(loggerErrorStub.notCalled, 'logger.error')
 
     stub.restore()
@@ -1634,7 +1634,7 @@ t.test('get with Get.run undefined errors',
     ct.end()
   })
 
-t.test('get with Get.run errors and ignore',
+t.test('get with Get.runSync errors and ignore',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
 
@@ -1642,12 +1642,12 @@ t.test('get with Get.run errors and ignore',
     setCode(error, 'SOME_ERROR')
     error.help = 'some help'
     const errors = [error]
-    const stub = sinon.stub(Get.prototype, 'run')
+    const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors })
 
     main.get('KEY', { ignore: ['SOME_ERROR'] })
 
-    t.ok(stub.called, 'new Get().run() called')
+    t.ok(stub.called, 'new Get().runSync() called')
     ct.ok(loggerErrorStub.notCalled, 'logger.error')
 
     stub.restore()
