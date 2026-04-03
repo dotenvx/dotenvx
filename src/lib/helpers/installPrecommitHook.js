@@ -55,7 +55,7 @@ class InstallPrecommitHook {
   }
 
   _currentHook () {
-    return fsx.readFileX(this.hookPath)
+    return fsx.readFileXSync(this.hookPath)
   }
 
   _createHook () {

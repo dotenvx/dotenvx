@@ -73,7 +73,7 @@ async ct => {
 
 t.test('#run (no arguments and some other error)',
 async ct => {
-  const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').throws(new Error('Mock Error'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
   const inst = new Decrypt()

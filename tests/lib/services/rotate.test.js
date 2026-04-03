@@ -75,7 +75,7 @@ async ct => {
 
 t.test('#run (no arguments and some other error)',
 async ct => {
-  const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').throws(new Error('Mock Error'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
   const inst = new Rotate()
@@ -107,8 +107,8 @@ async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-  const originalParsed = dotenvParse(fsx.readFileX(envFile))
-  const originalKeysParsed = dotenvParse(fsx.readFileX(envKeysFile))
+  const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
+  const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
 
   const envs = [
     { type: 'envFile', value: envFile }
@@ -147,8 +147,8 @@ async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-  const originalParsed = dotenvParse(fsx.readFileX(envFile))
-  const originalKeysParsed = dotenvParse(fsx.readFileX(envKeysFile))
+  const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
+  const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
 
   const envs = [
     { type: 'envFile', value: envFile }
@@ -187,8 +187,8 @@ async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-  const originalParsed = dotenvParse(fsx.readFileX(envFile))
-  const originalKeysParsed = dotenvParse(fsx.readFileX(envKeysFile))
+  const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
+  const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
 
   const envs = [
     { type: 'envFile', value: envFile }
@@ -227,8 +227,8 @@ async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-  const originalParsed = dotenvParse(fsx.readFileX(envFile))
-  const originalKeysParsed = dotenvParse(fsx.readFileX(envKeysFile))
+  const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
+  const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
 
   const envs = [
     { type: 'envFile', value: envFile }
@@ -267,8 +267,8 @@ async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-  const originalParsed = dotenvParse(fsx.readFileX(envFile))
-  const originalKeysParsed = dotenvParse(fsx.readFileX(envKeysFile))
+  const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
+  const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
 
   const envs = [
     { type: 'envFile', value: envFile }
@@ -307,8 +307,8 @@ async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-  const originalParsed = dotenvParse(fsx.readFileX(envFile))
-  const originalKeysParsed = dotenvParse(fsx.readFileX(envKeysFile))
+  const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
+  const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
 
   const envs = [
     { type: 'envFile', value: envFile }
@@ -347,8 +347,8 @@ async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-  const originalParsed = dotenvParse(fsx.readFileX(envFile))
-  const originalKeysParsed = dotenvParse(fsx.readFileX(envKeysFile))
+  const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
+  const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
 
   const envs = [
     { type: 'envFile', value: envFile }
@@ -496,8 +496,8 @@ async ct => {
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-  const originalParsed = dotenvParse(fsx.readFileX(envFile))
-  const originalKeysParsed = dotenvParse(fsx.readFileX(envKeysFile))
+  const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
+  const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
 
   const envs = [
     { type: 'envFile', value: envFile }

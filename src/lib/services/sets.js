@@ -84,7 +84,7 @@ class Sets {
       }
 
       const encoding = detectEncoding(filepath)
-      let envSrc = fsx.readFileX(filepath, { encoding })
+      let envSrc = fsx.readFileXSync(filepath, { encoding })
 
       // blank files seeded by `set` should contain only the key being set
       if (row.key && envSrc.trim().length === 0) {

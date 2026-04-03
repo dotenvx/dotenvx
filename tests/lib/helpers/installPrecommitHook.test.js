@@ -115,7 +115,7 @@ t.test('#_exists true/false', ct => {
 t.test('#_currentHook', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
-  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
 
   readFileXStub.returns('some file')
   const result = installPrecommitHook._currentHook()

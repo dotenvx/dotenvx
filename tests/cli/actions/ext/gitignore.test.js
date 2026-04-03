@@ -127,7 +127,7 @@ t.test('Generic class - run method - does nothing if file does not exist and tou
 
 t.test('Generic class - run method - appends patterns to existing file', (ct) => {
   const existsSyncStub = sinon.stub(fsx, 'existsSync').returns(true)
-  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('some content\n')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('some content\n')
   const appendStub = sinon.stub(Generic.prototype, 'append')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
@@ -135,7 +135,7 @@ t.test('Generic class - run method - appends patterns to existing file', (ct) =>
   generic.run()
 
   ct.ok(existsSyncStub.calledWith('.gitignore'), 'existsSync should be called with correct filename')
-  ct.ok(readFileXStub.calledWith('.gitignore'), 'readFileX should be called with correct arguments')
+  ct.ok(readFileXStub.calledWith('.gitignore'), 'readFileXSync should be called with correct arguments')
   ct.ok(appendStub.calledWith('.env.keys'), 'append stub called with .env.keys pattern')
   ct.ok(loggerSuccessStub.calledWith('▣ ignored .env.keys (.gitignore)'), 'logger.success should log the creation message')
   ct.end()

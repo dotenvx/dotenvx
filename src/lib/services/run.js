@@ -98,7 +98,7 @@ class Run {
     const filepath = path.resolve(envFilepath)
     try {
       const encoding = detectEncoding(filepath)
-      const src = fsx.readFileX(filepath, { encoding })
+      const src = fsx.readFileXSync(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)

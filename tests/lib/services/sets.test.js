@@ -167,7 +167,7 @@ async ct => {
 
 t.test('#run (no arguments and some other error)',
 async ct => {
-  const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').throws(new Error('Mock Error'))
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
 
   const inst = new Sets()
@@ -562,7 +562,7 @@ async ct => {
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
     return {}
   })
-  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('')
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [
@@ -621,7 +621,7 @@ async ct => {
   sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
     return {}
   })
-  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('## hi')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('## hi')
 
   const envFile = 'tests/monorepo/apps/encrypted/.env'
   const envs = [

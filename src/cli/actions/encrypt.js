@@ -42,7 +42,7 @@ async function encrypt () {
         if (processedEnv.error) {
           logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
+          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
           logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {

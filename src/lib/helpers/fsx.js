@@ -2,7 +2,15 @@ const fs = require('fs')
 
 const ENCODING = 'utf8'
 
-function readFileX (filepath, encoding = null) {
+async function readFileX (filepath, encoding = null) {
+  if (!encoding) {
+    encoding = ENCODING
+  }
+
+  return fs.promises.readFile(filepath, encoding)
+}
+
+function readFileXSync (filepath, encoding = null) {
   if (!encoding) {
     encoding = ENCODING
   }
@@ -12,6 +20,10 @@ function readFileX (filepath, encoding = null) {
 
 function writeFileXSync (filepath, str) {
   return fs.writeFileSync(filepath, str, ENCODING) // utf8 always
+}
+
+async function writeFileX (filepath, str) {
+  return fs.promises.writeFile(filepath, str, ENCODING)
 }
 
 const fsx = {
@@ -24,6 +36,8 @@ const fsx = {
 
   // fsx special commands
   readFileX,
+  writeFileX,
+  readFileXSync,
   writeFileXSync
 }
 

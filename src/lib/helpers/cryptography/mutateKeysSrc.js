@@ -20,7 +20,7 @@ function mutateKeysSrc ({ envFilepath, keysFilepath, privateKeyName, privateKeyV
 
   let keysSrc = ''
   if (fsx.existsSync(resolvedKeysFilepath)) {
-    keysSrc = fsx.readFileX(resolvedKeysFilepath)
+    keysSrc = fsx.readFileXSync(resolvedKeysFilepath)
   }
   keysSrc = keysSrc.length > 1 ? keysSrc : `${FIRST_TIME_KEYS_SRC}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`

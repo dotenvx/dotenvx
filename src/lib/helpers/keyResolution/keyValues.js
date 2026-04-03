@@ -15,7 +15,7 @@ function invertForPrivateKeyName (filepath) {
     return null
   }
 
-  const envSrc = fsx.readFileX(filepath)
+  const envSrc = fsx.readFileXSync(filepath)
   const envParsed = dotenvParse(envSrc)
 
   let publicKeyName

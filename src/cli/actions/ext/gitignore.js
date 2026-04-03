@@ -24,7 +24,7 @@ class Generic {
       }
     }
 
-    const lines = fsx.readFileX(this.filename).split(/\r?\n/)
+    const lines = fsx.readFileXSync(this.filename).split(/\r?\n/)
     this.patterns.forEach(pattern => {
       if (!lines.includes(pattern.trim())) {
         this.append(pattern)

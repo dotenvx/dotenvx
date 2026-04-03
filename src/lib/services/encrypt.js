@@ -87,7 +87,7 @@ class Encrypt {
         fileCreated = true
       }
       const encoding = detectEncoding(filepath)
-      let envSrc = fsx.readFileX(filepath, { encoding })
+      let envSrc = fsx.readFileXSync(filepath, { encoding })
       if (envSrc.trim().length === 0) {
         envSrc = SAMPLE_ENV_KIT
         row.kitCreated = 'sample'

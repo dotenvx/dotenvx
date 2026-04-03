@@ -79,7 +79,7 @@ class Rotate {
 
     try {
       const encoding = detectEncoding(filepath)
-      let envSrc = fsx.readFileX(filepath, { encoding })
+      let envSrc = fsx.readFileXSync(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
@@ -102,7 +102,7 @@ class Rotate {
           envKeysFilepath = path.resolve(this.envKeysFilepath)
         }
         row.envKeysFilepath = envKeysFilepath
-        this.envKeysSources[envKeysFilepath] ||= fsx.readFileX(envKeysFilepath, { encoding: detectEncoding(envKeysFilepath) })
+        this.envKeysSources[envKeysFilepath] ||= fsx.readFileXSync(envKeysFilepath, { encoding: detectEncoding(envKeysFilepath) })
         envKeysSrc = this.envKeysSources[envKeysFilepath]
 
         const kp = localKeypair()
