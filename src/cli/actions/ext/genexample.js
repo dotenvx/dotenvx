@@ -25,7 +25,7 @@ function genexample (directory) {
     if (addedKeys.length > 0) {
       logger.success(`▣ generated (${path.basename(exampleFilepath)})`)
     } else {
-      logger.info('○ no changes (.env.example)')
+      logger.info('○ no change (.env.example)')
     }
   } catch (error) {
     catchAndLog(error)

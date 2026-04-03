@@ -57,7 +57,7 @@ async function decrypt () {
 
           logger.verbose(`decrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
-          logger.verbose(`no changes ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+          logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
       }
 
@@ -65,7 +65,7 @@ async function decrypt () {
       if (changedFilepaths.length > 0) {
         logger.success(`◇ decrypted (${changedFilepaths.join(',')})`)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`○ no changes (${unchangedFilepaths})`)
+        logger.info(`○ no change (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
       }

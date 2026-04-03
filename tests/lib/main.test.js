@@ -744,7 +744,7 @@ t.test('set calls Sets.run with noOps true',
     ct.end()
   })
 
-t.test('set calls Sets.run - no changes',
+t.test('set calls Sets.run - no change',
   ct => {
     const stub = sinon.stub(Sets.prototype, 'run')
     const processedEnvs = [{
@@ -771,7 +771,7 @@ t.test('set calls Sets.run - no changes',
     ct.end()
   })
 
-t.test('set calls Sets.run - no changes',
+t.test('set calls Sets.run - no change',
   ct => {
     const loggerNeutralStub = sinon.stub(logger, 'info')
     const stub = sinon.stub(Sets.prototype, 'run').returns({
@@ -794,7 +794,7 @@ t.test('set calls Sets.run - no changes',
 
     t.ok(stub.called, 'new Sets().run() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
-    t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+    t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
 
     stub.restore()
 
@@ -895,7 +895,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE',
 
     t.ok(stub.called, 'new Sets().run() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-    t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+    t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger warn')
     t.ok(loggerHelpStub.notCalled, 'logger help')
 
@@ -964,7 +964,7 @@ t.test('set calls Sets.run - OTHER_ERROR',
 
     t.ok(stub.called, 'new Sets().run() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-    t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+    t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
     t.ok(loggerHelpStub.notCalled, 'logger help')
 
@@ -1068,7 +1068,7 @@ t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY',
 
     t.ok(stub.called, 'new Sets().run() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-    t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+    t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith("[MISPAIRED_PRIVATE_KEY] private key's derived public key (03a8ed4…) does not match the existing public key (10248e9…). fix: [https://github.com/dotenvx/dotenvx/issues/752]"), 'logger warn')
     t.ok(loggerHelpStub.notCalled, 'logger help')
 
@@ -1107,7 +1107,7 @@ t.test('set calls Sets.run - WRONG_PRIVATE_KEY',
 
     t.ok(stub.called, 'new Sets().run() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-    t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+    t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger warn')
     t.ok(loggerHelpStub.notCalled, 'logger help')
 
@@ -1146,7 +1146,7 @@ t.test('set calls Sets.run - MISSING_PRIVATE_KEY',
 
     t.ok(stub.called, 'new Sets().run() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-    t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+    t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger warn')
     t.ok(loggerHelpStub.notCalled, 'logger help')
 
@@ -1185,7 +1185,7 @@ t.test('set calls Sets.run - INVALID_PUBLIC_KEY',
 
     t.ok(stub.called, 'new Sets().run() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-    t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+    t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith("[INVALID_PUBLIC_KEY] could not encrypt using public key 'DOTENV_PUBLIC_KEY=10248e9…'. fix: [https://github.com/dotenvx/dotenvx/issues/756]"), 'logger warn')
     t.ok(loggerHelpStub.notCalled, 'logger help')
 

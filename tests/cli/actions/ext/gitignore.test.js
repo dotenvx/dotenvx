@@ -106,7 +106,7 @@ t.test('Generic class - run method - creates file if it does not exist and touch
   generic.run()
 
   ct.ok(existsSyncStub.calledWith('.gitignore'), 'existsSync should be called with correct filename')
-  ct.ok(loggerNeutralStub.calledWith('○ no changes (.gitignore)'), 'logger.info should log the creation message')
+  ct.ok(loggerNeutralStub.calledWith('○ no change (.gitignore)'), 'logger.info should log the creation message')
   ct.ok(writeFileXStub.calledWith('.gitignore', ''), 'writeFileXSync should be called to create the file')
 
   ct.end()

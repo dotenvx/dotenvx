@@ -52,7 +52,7 @@ t.test('rotate - nothing', async ct => {
   ct.end()
 })
 
-t.test('rotate - .env but no changes', async ct => {
+t.test('rotate - .env but no change', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Rotate.prototype, 'run').returns({
@@ -74,7 +74,7 @@ t.test('rotate - .env but no changes', async ct => {
   await rotate.call(fakeContext)
 
   t.ok(stub.called, 'Rotate().run() called')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger.info')
 
   ct.end()
 })

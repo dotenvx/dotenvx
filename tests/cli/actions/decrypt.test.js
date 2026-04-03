@@ -66,7 +66,7 @@ t.test('decrypt - nothing', async ct => {
   ct.end()
 })
 
-t.test('decrypt - .env but no changes', async ct => {
+t.test('decrypt - .env but no change', async ct => {
   sinon.stub(fsx, 'writeFileXSync')
   sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({})
@@ -86,7 +86,7 @@ t.test('decrypt - .env but no changes', async ct => {
 
   await decrypt.call(fakeContext)
 
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger.info')
 
   ct.end()
 })

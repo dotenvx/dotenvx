@@ -83,7 +83,7 @@ t.test('encrypt - --no-create passes through to service', async ct => {
   ct.end()
 })
 
-t.test('encrypt - .env but no changes', async ct => {
+t.test('encrypt - .env but no change', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -105,7 +105,7 @@ t.test('encrypt - .env but no changes', async ct => {
   await encrypt.call(fakeContext)
 
   t.ok(stub.called, 'Encrypt().run() called')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger.info')
 
   ct.end()
 })

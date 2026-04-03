@@ -58,7 +58,7 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
 
   t.ok(stub.called, 'main.genexample() called')
   t.ok(fsStub.called, 'fsx.writeFileXSync() called')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env.example)'), 'logger.info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env.example)'), 'logger.info')
   stub.restore()
   fsStub.restore()
   loggerNeutralStub.restore()

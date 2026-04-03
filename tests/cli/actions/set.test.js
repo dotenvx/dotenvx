@@ -14,7 +14,7 @@ t.beforeEach((ct) => {
   sinon.restore()
 })
 
-t.test('set - no changes', async ct => {
+t.test('set - no change', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileXSync')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -39,7 +39,7 @@ t.test('set - no changes', async ct => {
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
 
   ct.end()
 })
@@ -108,7 +108,7 @@ t.test('set - changes', async ct => {
   ct.end()
 })
 
-t.test('set - no changes and no unchanged', async ct => {
+t.test('set - no change and no unchanged', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileXSync')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -159,7 +159,7 @@ t.test('set - MISSING_ENV_FILE', async ct => {
 
   t.ok(stub.called, 'Sets().main() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger help')
 
@@ -227,7 +227,7 @@ t.test('set - OTHER_ERROR', async ct => {
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
 
@@ -266,7 +266,7 @@ t.test('set - MISPAIRED_PRIVATE_KEY', async ct => {
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith("[MISPAIRED_PRIVATE_KEY] private key's derived public key (03a8ed4…) does not match the existing public key (10248e9…). fix: [https://github.com/dotenvx/dotenvx/issues/752]"), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
 
@@ -305,7 +305,7 @@ t.test('set - WRONG_PRIVATE_KEY', async ct => {
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
 
@@ -344,7 +344,7 @@ t.test('set - MISSING_PRIVATE_KEY', async ct => {
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
 
@@ -383,7 +383,7 @@ t.test('set - INVALID_PUBLIC_KEY', async ct => {
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
   t.ok(loggerWarnStub.calledWith("[INVALID_PUBLIC_KEY] could not encrypt using public key 'DOTENV_PUBLIC_KEY=10248e9…'. fix: [https://github.com/dotenvx/dotenvx/issues/756]"), 'logger warn')
   t.ok(loggerHelpStub.notCalled, 'logger.help')
 
