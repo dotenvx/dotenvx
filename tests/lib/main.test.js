@@ -432,28 +432,28 @@ t.test('ls calls Ls.run',
     ct.end()
   })
 
-t.test('keypair calls Keypair.run',
+t.test('keypair calls Keypair.runSync',
   ct => {
-    const stub = sinon.stub(Keypair.prototype, 'run')
+    const stub = sinon.stub(Keypair.prototype, 'runSync')
     stub.returns({})
 
     main.keypair()
 
-    t.ok(stub.called, 'new Keypair().run() called')
+    t.ok(stub.called, 'new Keypair().runSync() called')
 
     stub.restore()
 
     ct.end()
   })
 
-t.test('keypair calls Keypair.run with key specified',
+t.test('keypair calls Keypair.runSync with key specified',
   ct => {
-    const stub = sinon.stub(Keypair.prototype, 'run')
+    const stub = sinon.stub(Keypair.prototype, 'runSync')
     stub.returns({ KEY: 'value' })
 
     const result = main.keypair('.env', 'KEY')
 
-    t.ok(stub.called, 'new Keypair().run() called')
+    t.ok(stub.called, 'new Keypair().runSync() called')
     t.equal(result, 'value')
 
     stub.restore()
@@ -461,14 +461,14 @@ t.test('keypair calls Keypair.run with key specified',
     ct.end()
   })
 
-t.test('keypair calls Keypair.run with noOps true',
+t.test('keypair calls Keypair.runSync with noOps true',
   ct => {
-    const stub = sinon.stub(Keypair.prototype, 'run')
+    const stub = sinon.stub(Keypair.prototype, 'runSync')
     stub.returns({ KEY: 'value' })
 
     const result = main.keypair('.env', 'KEY', null, true)
 
-    t.ok(stub.called, 'new Keypair().run() called')
+    t.ok(stub.called, 'new Keypair().runSync() called')
     t.equal(stub.thisValues[0].opsOn, false, 'Keypair was called with opsOn false')
     t.equal(result, 'value')
 

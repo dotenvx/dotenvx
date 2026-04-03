@@ -283,7 +283,7 @@ const genexample = function (directory, envFile) {
 /** @type {import('./main').keypair} */
 const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
   const opsOn = noOps !== true
-  const keypairs = new Keypair(envFile, envKeysFile, opsOn).run()
+  const keypairs = new Keypair(envFile, envKeysFile, opsOn).runSync()
   if (key) {
     return keypairs[key]
   } else {

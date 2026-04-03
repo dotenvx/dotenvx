@@ -559,7 +559,7 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
   async ct => {
     const Keypair = require('../../../src/lib/services/keypair')
     const sandbox = sinon.createSandbox()
-    sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
+    sandbox.stub(Keypair.prototype, 'runSync').callsFake(function () {
       return {}
     })
     const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('')
@@ -618,7 +618,7 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
   async ct => {
     const Keypair = require('../../../src/lib/services/keypair')
     const sandbox = sinon.createSandbox()
-    sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
+    sandbox.stub(Keypair.prototype, 'runSync').callsFake(function () {
       return {}
     })
     const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('## hi')
@@ -678,7 +678,7 @@ t.test('#run (finds .env with a shebang) with --encrypt',
   async ct => {
     const Keypair = require('../../../src/lib/services/keypair')
     const sandbox = sinon.createSandbox()
-    sandbox.stub(Keypair.prototype, 'run').callsFake(function () {
+    sandbox.stub(Keypair.prototype, 'runSync').callsFake(function () {
       return {}
     })
 

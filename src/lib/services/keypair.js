@@ -10,7 +10,7 @@ class Keypair {
     this.opsOn = opsOn
   }
 
-  run () {
+  runSync () {
     const out = {}
 
     const filepaths = this._filepaths()
