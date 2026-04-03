@@ -1,14 +1,16 @@
 const fsx = require('./../fsx')
 const dotenvParse = require('./../dotenvParse')
 
-function readFileKey (keyName, filepath) {
-  if (fsx.existsSync(filepath)) {
-    const src = fsx.readFileXSync(filepath)
-    const parsed = dotenvParse(src)
+async function readFileKey (keyName, filepath) {
+  if (!(await fsx.exists(filepath))) {
+    return undefined
+  }
 
-    if (parsed[keyName] && parsed[keyName].length > 0) {
-      return parsed[keyName]
-    }
+  const src = await fsx.readFileX(filepath)
+  const parsed = dotenvParse(src)
+
+  if (parsed[keyName] && parsed[keyName].length > 0) {
+    return parsed[keyName]
   }
 }
 

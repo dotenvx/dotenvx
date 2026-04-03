@@ -4,7 +4,7 @@ const fsx = require('./../fsx')
 const dotenvParse = require('./../dotenvParse')
 const keyNames = require('./keyNames')
 const readProcessKey = require('./readProcessKey')
-const readFileKey = require('./readFileKey')
+const readFileKeySync = require('./readFileKeySync')
 const opsKeypairSync = require('../cryptography/opsKeypairSync')
 
 function invertForPrivateKeyName (filepath) {
@@ -45,7 +45,7 @@ function keyValuesSync (filepath, opts = {}) {
   // public key: process.env first, then .env*
   publicKey = readProcessKey(publicKeyName)
   if (!publicKey) {
-    publicKey = readFileKey(publicKeyName, filepath) || null
+    publicKey = readFileKeySync(publicKeyName, filepath) || null
   }
 
   // private key: process.env first, then .env.keys, then invert public key
@@ -57,7 +57,7 @@ function keyValuesSync (filepath, opts = {}) {
       keysFilepath = path.resolve(path.dirname(filepath), '.env.keys') // typical scenario
     }
 
-    privateKey = readFileKey(privateKeyName, keysFilepath)
+    privateKey = readFileKeySync(privateKeyName, keysFilepath)
   }
   // invert
   if (!privateKey) {
@@ -65,7 +65,7 @@ function keyValuesSync (filepath, opts = {}) {
     if (privateKeyName) {
       privateKey = readProcessKey(privateKeyName)
       if (!privateKey) {
-        privateKey = readFileKey(privateKeyName, keysFilepath)
+        privateKey = readFileKeySync(privateKeyName, keysFilepath)
       }
     }
   }

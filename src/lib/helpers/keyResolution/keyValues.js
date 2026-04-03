@@ -4,20 +4,8 @@ const fsx = require('./../fsx')
 const dotenvParse = require('./../dotenvParse')
 const keyNames = require('./keyNames')
 const readProcessKey = require('./readProcessKey')
+const readFileKey = require('./readFileKey')
 const opsKeypair = require('../cryptography/opsKeypair')
-
-async function readFileKey (keyName, filepath) {
-  if (!(await fsx.exists(filepath))) {
-    return undefined
-  }
-
-  const src = await fsx.readFileX(filepath)
-  const parsed = dotenvParse(src)
-
-  if (parsed[keyName] && parsed[keyName].length > 0) {
-    return parsed[keyName]
-  }
-}
 
 async function invertForPrivateKeyName (filepath) {
   const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
