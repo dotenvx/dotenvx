@@ -5,7 +5,7 @@ const proxyquire = require('proxyquire')
 
 t.test('provisionSync builds env and keys for first-time setup', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: '#!/usr/bin/env node\nPUBLIC_BLOCK\nHELLO=world' })
-  const mutateKeysSrc = sinon.stub().returns({
+  const mutateKeysSrcSync = sinon.stub().returns({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_123\n',
     envKeysFilepath: path.join('apps', 'backend', '.env.keys')
   })
@@ -14,7 +14,7 @@ t.test('provisionSync builds env and keys for first-time setup', async (ct) => {
 
   const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
     './mutateSrc': mutateSrc,
-    './mutateKeysSrc': mutateKeysSrc,
+    './mutateKeysSrcSync': mutateKeysSrcSync,
     './localKeypair': localKeypair,
     './opsKeypairSync': opsKeypairSync,
     '../keyResolution': {
@@ -37,11 +37,11 @@ t.test('provisionSync builds env and keys for first-time setup', async (ct) => {
   ct.equal(mutateSrc.firstCall.args[0].keysFilepath, keysFilepath)
   ct.equal(mutateSrc.firstCall.args[0].publicKeyName, 'DOTENV_PUBLIC_KEY')
   ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'pub_123')
-  ct.equal(mutateKeysSrc.callCount, 1)
-  ct.equal(mutateKeysSrc.firstCall.args[0].envFilepath, envFilepath)
-  ct.equal(mutateKeysSrc.firstCall.args[0].keysFilepath, keysFilepath)
-  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
-  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_123')
+  ct.equal(mutateKeysSrcSync.callCount, 1)
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].envFilepath, envFilepath)
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].keysFilepath, keysFilepath)
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].privateKeyValue, 'priv_123')
   ct.equal(localKeypair.callCount, 1)
   ct.equal(opsKeypairSync.callCount, 0)
 
@@ -51,7 +51,7 @@ t.test('provisionSync builds env and keys for first-time setup', async (ct) => {
 t.test('provisionSync appends to existing keys file', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const keysSrc = 'EXISTING_KEYS\n# .env\nDOTENV_PRIVATE_KEY=priv_abc\n'
-  const mutateKeysSrc = sinon.stub().returns({
+  const mutateKeysSrcSync = sinon.stub().returns({
     keysSrc,
     envKeysFilepath: path.join('apps', '.env.keys')
   })
@@ -60,7 +60,7 @@ t.test('provisionSync appends to existing keys file', async (ct) => {
 
   const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
     './mutateSrc': mutateSrc,
-    './mutateKeysSrc': mutateKeysSrc,
+    './mutateKeysSrcSync': mutateKeysSrcSync,
     './localKeypair': localKeypair,
     './opsKeypairSync': opsKeypairSync,
     '../keyResolution': {
@@ -73,10 +73,10 @@ t.test('provisionSync appends to existing keys file', async (ct) => {
 
   ct.equal(out.keysSrc, keysSrc)
   ct.equal(mutateSrc.callCount, 1)
-  ct.equal(mutateKeysSrc.callCount, 1)
-  ct.equal(mutateKeysSrc.firstCall.args[0].keysFilepath, keysFilepath)
-  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
-  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_abc')
+  ct.equal(mutateKeysSrcSync.callCount, 1)
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].keysFilepath, keysFilepath)
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].privateKeyValue, 'priv_abc')
   ct.equal(localKeypair.callCount, 1)
   ct.equal(opsKeypairSync.callCount, 0)
   ct.end()
@@ -84,7 +84,7 @@ t.test('provisionSync appends to existing keys file', async (ct) => {
 
 t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
-  const mutateKeysSrc = sinon.stub().returns({
+  const mutateKeysSrcSync = sinon.stub().returns({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_x\n',
     envKeysFilepath: path.join('apps', 'api', '.env.keys')
   })
@@ -93,7 +93,7 @@ t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
 
   const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
     './mutateSrc': mutateSrc,
-    './mutateKeysSrc': mutateKeysSrc,
+    './mutateKeysSrcSync': mutateKeysSrcSync,
     './localKeypair': localKeypair,
     './opsKeypairSync': opsKeypairSync,
     '../keyResolution': {
@@ -107,10 +107,10 @@ t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
   ct.equal(out.envKeysFilepath, path.join('apps', 'api', '.env.keys'))
   ct.equal(mutateSrc.callCount, 1)
   ct.equal(mutateSrc.firstCall.args[0].keysFilepath, undefined)
-  ct.equal(mutateKeysSrc.callCount, 1)
-  ct.equal(mutateKeysSrc.firstCall.args[0].keysFilepath, undefined)
-  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
-  ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_x')
+  ct.equal(mutateKeysSrcSync.callCount, 1)
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].keysFilepath, undefined)
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
+  ct.equal(mutateKeysSrcSync.firstCall.args[0].privateKeyValue, 'priv_x')
   ct.equal(localKeypair.callCount, 1)
   ct.equal(opsKeypairSync.callCount, 0)
   ct.end()
@@ -118,7 +118,7 @@ t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
 
 t.test('provisionSync uses Ops keypair when opsOn is true', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
-  const mutateKeysSrc = sinon.stub().returns({
+  const mutateKeysSrcSync = sinon.stub().returns({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=ops_priv\n',
     envKeysFilepath: path.join('apps', 'api', '.env.keys')
   })
@@ -127,7 +127,7 @@ t.test('provisionSync uses Ops keypair when opsOn is true', async (ct) => {
 
   const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
     './mutateSrc': mutateSrc,
-    './mutateKeysSrc': mutateKeysSrc,
+    './mutateKeysSrcSync': mutateKeysSrcSync,
     './localKeypair': localKeypair,
     './opsKeypairSync': opsKeypairSync,
     '../keyResolution': {
@@ -143,7 +143,7 @@ t.test('provisionSync uses Ops keypair when opsOn is true', async (ct) => {
   ct.equal(opsKeypairSync.callCount, 1)
   ct.equal(localKeypair.callCount, 0)
   ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'ops_pub')
-  ct.equal(mutateKeysSrc.callCount, 0)
+  ct.equal(mutateKeysSrcSync.callCount, 0)
   ct.equal(out.privateKeyAdded, false)
   ct.equal(out.keysSrc, undefined)
   ct.equal(out.envKeysFilepath, undefined)

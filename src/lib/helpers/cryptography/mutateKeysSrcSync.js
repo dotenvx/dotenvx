@@ -9,7 +9,7 @@ const FIRST_TIME_KEYS_SRC = [
 const path = require('path')
 const fsx = require('./../fsx')
 
-function mutateKeysSrc ({ envFilepath, keysFilepath, privateKeyName, privateKeyValue }) {
+function mutateKeysSrcSync ({ envFilepath, keysFilepath, privateKeyName, privateKeyValue }) {
   const filename = path.basename(envFilepath)
   const filepath = path.resolve(envFilepath)
   let resolvedKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
@@ -35,4 +35,4 @@ function mutateKeysSrc ({ envFilepath, keysFilepath, privateKeyName, privateKeyV
   }
 }
 
-module.exports = mutateKeysSrc
+module.exports = mutateKeysSrcSync

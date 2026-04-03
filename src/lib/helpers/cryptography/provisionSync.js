@@ -1,5 +1,5 @@
 const mutateSrc = require('./mutateSrc')
-const mutateKeysSrc = require('./mutateKeysSrc')
+const mutateKeysSrcSync = require('./mutateKeysSrcSync')
 const opsKeypairSync = require('./opsKeypairSync')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
@@ -28,7 +28,7 @@ function provisionSync ({ envSrc, envFilepath, keysFilepath, opsOn }) {
   envSrc = mutated.envSrc
 
   if (!opsOn) {
-    const mutated = mutateKeysSrc({ envFilepath, keysFilepath, privateKeyName, privateKeyValue: privateKey })
+    const mutated = mutateKeysSrcSync({ envFilepath, keysFilepath, privateKeyName, privateKeyValue: privateKey })
     keysSrc = mutated.keysSrc
     envKeysFilepath = mutated.envKeysFilepath
     privateKeyAdded = true
