@@ -12,7 +12,7 @@ const {
 
 const {
   keyNames,
-  keyValuesSync
+  keyValues
 } = require('./../helpers/keyResolution')
 
 const {
@@ -99,7 +99,7 @@ class Encrypt {
       let privateKey
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { publicKeyValue, privateKeyValue } = await keyValuesSync(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
