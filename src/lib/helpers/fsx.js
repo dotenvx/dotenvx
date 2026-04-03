@@ -26,9 +26,18 @@ async function writeFileX (filepath, str) {
   return fs.promises.writeFile(filepath, str, ENCODING)
 }
 
+async function exists (filepath) {
+  try {
+    await fs.promises.access(filepath)
+    return true
+  } catch (_e) {
+    return false
+  }
+}
+
 const fsx = {
   chmodSync: fs.chmodSync,
-  exists: fs.exists,
+  exists,
   existsSync: fs.existsSync,
   readdirSync: fs.readdirSync,
   readFileSync: fs.readFileSync,

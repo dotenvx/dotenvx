@@ -7,12 +7,14 @@ const fsx = require('../../../src/lib/helpers/fsx')
 let writeFileSyncStub
 let readFileStub
 let writeFileStub
+let accessStub
 
 t.beforeEach((ct) => {
   sinon.restore()
   writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
   readFileStub = sinon.stub(fs.promises, 'readFile')
   writeFileStub = sinon.stub(fs.promises, 'writeFile')
+  accessStub = sinon.stub(fs.promises, 'access')
 })
 
 t.afterEach((ct) => {
@@ -53,6 +55,16 @@ t.test('#writeFileX', async ct => {
   await fsx.writeFileX('tests/somefile.txt', 'hello')
 
   t.ok(writeFileStub.calledWith('tests/somefile.txt', 'hello', 'utf8'), 'fs.promises.writeFile() called with utf8')
+
+  ct.end()
+})
+
+t.test('#exists', async ct => {
+  accessStub.resolves()
+  ct.equal(await fsx.exists('tests/somefile.txt'), true, 'returns true when access succeeds')
+
+  accessStub.rejects(new Error('ENOENT'))
+  ct.equal(await fsx.exists('tests/missing.txt'), false, 'returns false when access fails')
 
   ct.end()
 })

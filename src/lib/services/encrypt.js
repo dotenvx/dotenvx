@@ -25,7 +25,7 @@ const {
 
 const replace = require('./../helpers/replace')
 const dotenvParse = require('./../helpers/dotenvParse')
-const detectEncodingSync = require('./../helpers/detectEncodingSync')
+const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
 const YIELD_EVERY_KEYS = 50
@@ -86,7 +86,7 @@ class Encrypt {
         fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
         fileCreated = true
       }
-      const encoding = detectEncodingSync(filepath)
+      const encoding = await detectEncoding(filepath)
       let envSrc = await fsx.readFileX(filepath, { encoding })
       if (envSrc.trim().length === 0) {
         envSrc = SAMPLE_ENV_KIT
