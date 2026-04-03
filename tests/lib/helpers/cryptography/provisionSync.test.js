@@ -3,7 +3,7 @@ const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-t.test('provision builds env and keys for first-time setup', async (ct) => {
+t.test('provisionSync builds env and keys for first-time setup', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: '#!/usr/bin/env node\nPUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().returns({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_123\n',
@@ -12,7 +12,7 @@ t.test('provision builds env and keys for first-time setup', async (ct) => {
   const opsKeypairSync = sinon.stub().returns({ publicKey: 'ops_pub_unused', privateKey: 'ops_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_123', privateKey: 'priv_123' })
 
-  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+  const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
@@ -24,7 +24,7 @@ t.test('provision builds env and keys for first-time setup', async (ct) => {
 
   const envFilepath = path.join('apps', 'backend', 'services', 'api', '.env')
   const keysFilepath = path.join('apps', 'backend', '.env.keys')
-  const out = await provision({ envSrc: '#!/usr/bin/env node\nHELLO=world', envFilepath, keysFilepath })
+  const out = await provisionSync({ envSrc: '#!/usr/bin/env node\nHELLO=world', envFilepath, keysFilepath })
 
   ct.equal(out.envSrc, '#!/usr/bin/env node\nPUBLIC_BLOCK\nHELLO=world')
   ct.match(out.keysSrc, '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/')
@@ -48,7 +48,7 @@ t.test('provision builds env and keys for first-time setup', async (ct) => {
   ct.end()
 })
 
-t.test('provision appends to existing keys file', async (ct) => {
+t.test('provisionSync appends to existing keys file', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const keysSrc = 'EXISTING_KEYS\n# .env\nDOTENV_PRIVATE_KEY=priv_abc\n'
   const mutateKeysSrc = sinon.stub().returns({
@@ -58,7 +58,7 @@ t.test('provision appends to existing keys file', async (ct) => {
   const opsKeypairSync = sinon.stub().returns({ publicKey: 'ops_pub_unused', privateKey: 'ops_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_abc', privateKey: 'priv_abc' })
 
-  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+  const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
@@ -69,7 +69,7 @@ t.test('provision appends to existing keys file', async (ct) => {
   })
 
   const keysFilepath = path.join('apps', '.env.keys')
-  const out = await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), keysFilepath })
+  const out = await provisionSync({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), keysFilepath })
 
   ct.equal(out.keysSrc, keysSrc)
   ct.equal(mutateSrc.callCount, 1)
@@ -82,7 +82,7 @@ t.test('provision appends to existing keys file', async (ct) => {
   ct.end()
 })
 
-t.test('provision defaults keys filepath when omitted', async (ct) => {
+t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().returns({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_x\n',
@@ -91,7 +91,7 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
   const opsKeypairSync = sinon.stub().returns({ publicKey: 'ops_pub_unused', privateKey: 'ops_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_x', privateKey: 'priv_x' })
 
-  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+  const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
@@ -102,7 +102,7 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
   })
 
   const envFilepath = path.join('apps', 'api', '.env')
-  const out = await provision({ envSrc: 'HELLO=world', envFilepath })
+  const out = await provisionSync({ envSrc: 'HELLO=world', envFilepath })
 
   ct.equal(out.envKeysFilepath, path.join('apps', 'api', '.env.keys'))
   ct.equal(mutateSrc.callCount, 1)
@@ -116,7 +116,7 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
   ct.end()
 })
 
-t.test('provision uses Ops keypair when opsOn is true', async (ct) => {
+t.test('provisionSync uses Ops keypair when opsOn is true', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().returns({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=ops_priv\n',
@@ -125,7 +125,7 @@ t.test('provision uses Ops keypair when opsOn is true', async (ct) => {
   const opsKeypairSync = sinon.stub().returns({ publicKey: 'ops_pub', privateKey: 'ops_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
 
-  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+  const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
@@ -136,7 +136,7 @@ t.test('provision uses Ops keypair when opsOn is true', async (ct) => {
   })
 
   const envFilepath = path.join('apps', 'api', '.env')
-  const out = await provision({ envSrc: 'HELLO=world', envFilepath, opsOn: true })
+  const out = await provisionSync({ envSrc: 'HELLO=world', envFilepath, opsOn: true })
 
   ct.equal(out.publicKey, 'ops_pub')
   ct.equal(out.privateKey, 'ops_priv')

@@ -4,7 +4,7 @@ const opsKeypairSync = require('./opsKeypairSync')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provision ({ envSrc, envFilepath, keysFilepath, opsOn }) {
+function provisionSync ({ envSrc, envFilepath, keysFilepath, opsOn }) {
   opsOn = opsOn === true
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
@@ -44,4 +44,4 @@ function provision ({ envSrc, envFilepath, keysFilepath, opsOn }) {
   }
 }
 
-module.exports = provision
+module.exports = provisionSync

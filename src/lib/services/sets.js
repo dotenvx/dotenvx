@@ -18,7 +18,7 @@ const {
   encryptValue,
   decryptKeyValue,
   isEncrypted,
-  provision,
+  provisionSync,
   provisionWithPrivateKey
 } = require('./../helpers/cryptography')
 
@@ -107,9 +107,9 @@ class Sets {
         const { publicKeyName, privateKeyName } = keyNames(filepath)
         const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
 
-        // first pass - provision
+        // first pass - provisionSync
         if (!privateKeyValue && !publicKeyValue) {
-          const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+          const prov = provisionSync({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
           envSrc = prov.envSrc
           publicKey = prov.publicKey
           privateKey = prov.privateKey
