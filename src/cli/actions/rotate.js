@@ -4,11 +4,14 @@ const { logger } = require('./../../shared/logger')
 const Rotate = require('./../../lib/services/rotate')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+const createSpinner = require('../../lib/helpers/createSpinner')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
 
 async function rotate () {
   const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'rotating' })
+
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
@@ -20,7 +23,7 @@ async function rotate () {
     const {
       processedEnvs
     } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, !noOps).run()
-
+    if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
       if (processedEnv.privateKeyAdded) {
@@ -53,6 +56,7 @@ async function rotate () {
         }
       }
 
+      if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
         const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
         let msg = `⟳ rotated (${changedFilepaths.join(',')})`
@@ -67,6 +71,7 @@ async function rotate () {
         // do nothing - scenario when no .env files found
       }
     } catch (error) {
+      if (spinner) spinner.stop()
       catchAndLog(error)
       process.exit(1)
     }
