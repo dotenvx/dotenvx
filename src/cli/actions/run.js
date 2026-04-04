@@ -21,7 +21,6 @@ async function run () {
 
   const sesh = new Session()
   const noOps = options.ops === false || !(await sesh.opsOn())
-  const opsOn = !noOps
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
@@ -52,7 +51,7 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs, options.overload, process.env, options.envKeysFile, opsOn).run()
+    } = await new Run(envs, options.overload, process.env, options.envKeysFile, !noOps).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envFile') {
