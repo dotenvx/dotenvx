@@ -681,8 +681,8 @@ t.test('set - spinner stop called on success path when spinner exists', async ct
 
   class SessionMock {
     async noOps () {
-    return false
-  }
+      return false
+    }
   }
 
   class SetsMock {
@@ -725,8 +725,8 @@ t.test('set - spinner stop called on catch path when spinner exists', async ct =
 
   class SessionMock {
     async noOps () {
-    return false
-  }
+      return false
+    }
   }
 
   class SetsMock {

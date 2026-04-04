@@ -40,7 +40,7 @@ const config = function (options = {}) {
   const envKeysFile = options.envKeysFile
 
   // dotenvx-ops related
-  const noOps = options.noOps
+  const noOps = options.noOps || options.opsOff // opsOff deprecated
 
   if (options) {
     setLogLevel(options)
@@ -164,7 +164,7 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
-  const noOps = options.noOps
+  const noOps = options.noOps || options.opsOff // ops off deprecated
 
   const {
     processedEnvs,
@@ -223,7 +223,7 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
-  const noOps = options.noOps
+  const noOps = options.noOps || options.opsOff // opsOff deprecated
 
   // ignore
   const ignore = options.ignore || []

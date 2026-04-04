@@ -205,11 +205,11 @@ program.command('help [command]')
     }
   })
 
-// dotenvx pro
+// dotenvx ops
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  ops                          ⛨  Ops [www.dotenvx.com/ops]')
-program.addHelpText('after', '  ext                          🔌 extensions')
+program.addHelpText('after', '  ops                ⛨  Ops [www.dotenvx.com/ops]')
+program.addHelpText('after', '  ext                🔌 extensions')
 
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
