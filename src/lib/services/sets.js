@@ -127,7 +127,7 @@ class Sets {
         let privateKey
 
         const { publicKeyName, privateKeyName } = keyNames(filepath)
-        const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+        const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noOps: !this.opsOn })
 
         // first pass - provisionSync
         if (!privateKeyValue && !publicKeyValue) {
