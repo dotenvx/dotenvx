@@ -97,11 +97,8 @@ class Rotate {
 
         row.privateKeyAdded = false // TODO: change to localPrivateKeyAdded
       } else {
-        envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-        if (this.envKeysFilepath) {
-          envKeysFilepath = path.resolve(this.envKeysFilepath)
-        }
-        row.envKeysFilepath = envKeysFilepath
+        row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), '.env.keys')
+        envKeysFilepath = path.resolve(row.envKeysFilepath)
         const encodingForKeys = await detectEncoding(envKeysFilepath)
         this.envKeysSources[envKeysFilepath] ||= await fsx.readFileX(envKeysFilepath, { encoding: encodingForKeys })
         envKeysSrc = this.envKeysSources[envKeysFilepath]
@@ -156,7 +153,13 @@ class Rotate {
       this.changedFilepaths.add(envFilepath)
     } catch (e) {
       if (e.code === 'ENOENT') {
-        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+        const missingPath = e.path ? path.resolve(e.path) : null
+        const expectedEnvKeysPath = row.envKeysFilepath ? path.resolve(row.envKeysFilepath) : null
+        if (this.noOps && expectedEnvKeysPath && missingPath === expectedEnvKeysPath) {
+          row.error = new Errors({ envKeysFilepath: row.envKeysFilepath }).missingEnvKeysFile()
+        } else {
+          row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+        }
       } else {
         row.error = e
       }

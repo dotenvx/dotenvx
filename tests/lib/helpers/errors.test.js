@@ -50,3 +50,14 @@ t.test('#errors missingEnvFile falls back to .env', ct => {
 
   ct.end()
 })
+
+t.test('#errors missingEnvKeysFile falls back to .env.keys', ct => {
+  const result = new Errors({}).missingEnvKeysFile()
+
+  t.equal(result.code, 'MISSING_ENV_KEYS_FILE')
+  t.equal(result.message, '[MISSING_ENV_KEYS_FILE] missing file (.env.keys)')
+  t.equal(result.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/484]')
+  t.equal(result.messageWithHelp, '[MISSING_ENV_KEYS_FILE] missing file (.env.keys). fix: [https://github.com/dotenvx/dotenvx/issues/484]')
+
+  ct.end()
+})

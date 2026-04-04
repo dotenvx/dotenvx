@@ -116,6 +116,30 @@ t.test('#run (no arguments and some other error)',
     ct.end()
   })
 
+t.test('#run (missing .env.keys) returns missing env keys file error',
+  async ct => {
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-rotate-'))
+    const envFile = path.join(tmpdir, '.env')
+    fs.writeFileSync(envFile, [
+      'DOTENV_PUBLIC_KEY="03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba"',
+      'HELLO="encrypted:abc"'
+    ].join('\n') + '\n', 'utf8')
+
+    const envs = [{ type: 'envFile', value: envFile }]
+
+    const {
+      processedEnvs,
+      changedFilepaths,
+      unchangedFilepaths
+    } = await new Rotate(envs, [], [], null, true).run()
+
+    ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_KEYS_FILE')
+    ct.match(processedEnvs[0].error.message, /\[MISSING_ENV_KEYS_FILE\] missing file \(.+\.env\.keys\)/)
+    ct.same(changedFilepaths, [])
+    ct.same(unchangedFilepaths, [])
+    ct.end()
+  })
+
 t.test('#run (finds .env file)',
   async ct => {
     const envFile = 'tests/monorepo/apps/encrypted/.env'

@@ -78,7 +78,7 @@ function keyValuesSync (filepath, opts = {}) {
 
   return {
     publicKeyValue: publicKey || null, // important to make sure name is rendered
-    privateKeyValue: privateKey || null // importan to make sure name is rendered
+    privateKeyValue: privateKey || null // important to make sure name is rendered
   }
 }
 
