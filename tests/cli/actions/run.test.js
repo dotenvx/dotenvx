@@ -77,6 +77,26 @@ t.test('run --convention', async ct => {
   ct.end()
 })
 
+t.test('run --ops-off passes noOps true to Run service', async ct => {
+  const optsStub = sinon.stub().returns({ opsOff: true })
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--ops-off', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.equal(stub.thisValues[0].noOps, true, 'Run was called with noOps true')
+
+  ct.end()
+})
+
 t.test('run --convention', async ct => {
   const optsStub = sinon.stub().returns({ convention: 'flow' })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }

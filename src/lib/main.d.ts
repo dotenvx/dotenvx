@@ -154,6 +154,11 @@ export interface DotenvConfigOptions {
    * @example require('@dotenvx/dotenvx').config({ noOps: true })
    */
   noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
+   */
+  opsOff?: boolean;
 }
 
 export interface DotenvConfigOutput {
@@ -213,6 +218,11 @@ export interface SetOptions {
    * @example require('@dotenvx/dotenvx').set(key, value, { noOps: true })
    */
   noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
+   */
+  opsOff?: boolean;
 }
 
 export type SetProcessedEnv = {
@@ -288,6 +298,11 @@ export interface GetOptions {
    * @example require('@dotenvx/dotenvx').get('KEY', { noOps: true })
    */
   noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
+   */
+  opsOff?: boolean;
 }
 
 /**
