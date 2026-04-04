@@ -69,7 +69,7 @@ t.test('#keyValues inverts public key name for custom file and reads keys file p
   ct.end()
 })
 
-t.test('#keyValues loads private key from ops when opsOn and only public key exists', async ct => {
+t.test('#keyValues loads private key from ops when noOps is false and only public key exists', async ct => {
   const opsKeypair = sinon.stub().resolves({ privateKey: 'from-ops' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
     '../cryptography/opsKeypair': opsKeypair
@@ -77,10 +77,25 @@ t.test('#keyValues loads private key from ops when opsOn and only public key exi
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { opsOn: true })
+  const result = await keyValuesWithOpsStub('.env', { noOps: false })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
   ct.equal(opsKeypair.callCount, 1)
   ct.equal(opsKeypair.firstCall.args[0], '<publicKey>')
+  ct.end()
+})
+
+t.test('#keyValues does not load private key from ops when noOps is true', async ct => {
+  const opsKeypair = sinon.stub().resolves({ privateKey: 'from-ops' })
+  const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
+    '../cryptography/opsKeypair': opsKeypair
+  })
+
+  process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
+
+  const result = await keyValuesWithOpsStub('.env', { noOps: true })
+
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: null })
+  ct.equal(opsKeypair.callCount, 0)
   ct.end()
 })

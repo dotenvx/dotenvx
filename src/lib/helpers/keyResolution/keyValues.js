@@ -34,7 +34,7 @@ async function invertForPrivateKeyName (filepath) {
 
 async function keyValues (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const opsOn = opts.opsOn === true
+  const noOps = opts.noOps === true
   const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
@@ -71,7 +71,7 @@ async function keyValues (filepath, opts = {}) {
   }
 
   // ops
-  if (opsOn && !privateKey && publicKey && publicKey.length > 0) {
+  if (!noOps && !privateKey && publicKey && publicKey.length > 0) {
     const kp = await opsKeypair(publicKey)
     privateKey = kp.privateKey
   }
