@@ -12,6 +12,7 @@ let writeFileXStub
 const ROOT_DIR = path.resolve(__dirname, '../../..')
 const ROOT_ENV_FILE = path.join(ROOT_DIR, '.env')
 const ROOT_ENV_KEYS_FILE = path.join(ROOT_DIR, '.env.keys')
+const FRONTEND_ENV_KEYS_FILE = path.join(ROOT_DIR, 'tests/monorepo/apps/frontend/.env.keys')
 
 function cleanupRootEnvFiles () {
   if (fs.existsSync(ROOT_ENV_FILE)) {
@@ -19,6 +20,9 @@ function cleanupRootEnvFiles () {
   }
   if (fs.existsSync(ROOT_ENV_KEYS_FILE)) {
     fs.unlinkSync(ROOT_ENV_KEYS_FILE)
+  }
+  if (fs.existsSync(FRONTEND_ENV_KEYS_FILE)) {
+    fs.unlinkSync(FRONTEND_ENV_KEYS_FILE)
   }
 }
 
