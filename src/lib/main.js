@@ -12,6 +12,7 @@ const Sets = require('./services/sets')
 const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
+const Session = require('./../db/session')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
@@ -39,14 +40,14 @@ const config = function (options = {}) {
   // envKeysFile
   const envKeysFile = options.envKeysFile
 
-  // dotenvx-ops related
-  const noOps = options.noOps || options.opsOff // opsOff deprecated
-
   if (options) {
     setLogLevel(options)
     setLogName(options)
     setLogVersion(options)
   }
+
+  // dotenvx-ops related
+  const noOps = resolveNoOps(options)
 
   try {
     const envs = buildEnvs(options)
@@ -164,7 +165,7 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
-  const noOps = options.noOps || options.opsOff // ops off deprecated
+  const noOps = resolveNoOps(options)
 
   const {
     processedEnvs,
@@ -223,7 +224,7 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
-  const noOps = options.noOps || options.opsOff // opsOff deprecated
+  const noOps = resolveNoOps(options)
 
   // ignore
   const ignore = options.ignore || []
@@ -288,6 +289,11 @@ const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
   } else {
     return keypairs
   }
+}
+
+function resolveNoOps (options = {}) {
+  const sesh = new Session()
+  return options.noOps === true || options.opsOff === true || sesh.noOpsSync()
 }
 
 module.exports = {

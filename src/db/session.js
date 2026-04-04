@@ -1,4 +1,5 @@
 const Ops = require('./../lib/extensions/ops')
+const { logger } = require('./../shared/logger')
 
 class Session {
   constructor () {
@@ -10,6 +11,13 @@ class Session {
   //
   async noOps () {
     const status = await this.ops.status()
+    logger.debug(`ops: ${status}`)
+    return status === 'off'
+  }
+
+  noOpsSync () {
+    const status = this.ops.statusSync()
+    logger.debug(`ops: ${status}`)
     return status === 'off'
   }
 }
