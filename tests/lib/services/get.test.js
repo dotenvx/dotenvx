@@ -166,16 +166,16 @@ t.test('#run expansion',
     ct.end()
   })
 
-t.test('#run passes opsOn to Run service',
+t.test('#run passes noOps to Run service',
   async ct => {
     const runStub = sinon.stub(Run.prototype, 'run').resolves({ processedEnvs: [] })
 
     await new Get('KEY').run()
-    t.equal(runStub.firstCall.thisValue.opsOn, true, 'opsOn defaults to true')
+    t.equal(runStub.firstCall.thisValue.noOps, false, 'noOps defaults to false')
 
     runStub.resetHistory()
     await new Get('KEY', [], false, false, null, false).run()
-    t.equal(runStub.firstCall.thisValue.opsOn, false, 'opsOn false when provided')
+    t.equal(runStub.firstCall.thisValue.noOps, true, 'noOps true when provided')
 
     ct.end()
   })

@@ -20,12 +20,12 @@ const {
 } = require('./../helpers/envResolution')
 
 class Run {
-  constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, opsOn = false) {
+  constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, noOps = false) {
     this.envs = determine(envs, processEnv)
     this.overload = overload
     this.processEnv = processEnv
     this.envKeysFilepath = envKeysFilepath
-    this.opsOn = opsOn
+    this.noOps = !noOps
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
@@ -130,7 +130,7 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)
-      const { privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noOps: !this.opsOn })
+      const { privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
 
       const {
         parsed,
@@ -175,7 +175,7 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)
-      const { privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noOps: !this.opsOn })
+      const { privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
 
       const {
         parsed,

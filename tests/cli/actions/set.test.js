@@ -621,7 +621,7 @@ t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls 
   ct.end()
 })
 
-t.test('set - --no-ops passes opsOn false to Sets service', async ct => {
+t.test('set - --no-ops passes noOps true to Sets service', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
@@ -634,7 +634,7 @@ t.test('set - --no-ops passes opsOn false to Sets service', async ct => {
   await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(runStub.calledOnce, 'Sets().run() called')
-  t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
+  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
 
   ct.end()
 })

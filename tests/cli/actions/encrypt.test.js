@@ -581,7 +581,7 @@ t.test('encrypt - catch error', async ct => {
   ct.end()
 })
 
-t.test('encrypt - --no-ops passes opsOn false to Encrypt service', async ct => {
+t.test('encrypt - --no-ops passes noOps true to Encrypt service', async ct => {
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -593,7 +593,7 @@ t.test('encrypt - --no-ops passes opsOn false to Encrypt service', async ct => {
   await encrypt.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Encrypt().run() called')
-  t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
+  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
 
   ct.end()
 })

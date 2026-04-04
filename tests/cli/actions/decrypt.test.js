@@ -458,7 +458,7 @@ t.test('decrypt - catch error', async ct => {
   ct.end()
 })
 
-t.test('decrypt - --no-ops passes opsOn false to Decrypt service', async ct => {
+t.test('decrypt - --no-ops passes noOps true to Decrypt service', async ct => {
   sinon.stub(process, 'exit')
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ ops: false })
@@ -472,7 +472,7 @@ t.test('decrypt - --no-ops passes opsOn false to Decrypt service', async ct => {
   await decrypt.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Decrypt().run() called')
-  t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
+  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
 
   ct.end()
 })

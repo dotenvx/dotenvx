@@ -133,7 +133,7 @@ t.test('keypair KEY (not found)', async ct => {
   ct.end()
 })
 
-t.test('keypair --no-ops passes opsOn false to Keypair service', async ct => {
+t.test('keypair --no-ops passes noOps true to Keypair service', async ct => {
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Keypair.prototype, 'run').returns({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' })
@@ -141,7 +141,7 @@ t.test('keypair --no-ops passes opsOn false to Keypair service', async ct => {
   await keypair.call(fakeContext, undefined)
 
   t.ok(stub.calledOnce, 'new Keypair().run() called')
-  t.equal(stub.thisValues[0].opsOn, false, 'opsOn false')
+  t.equal(stub.thisValues[0].noOps, true, 'noOps true')
 
   ct.end()
 })

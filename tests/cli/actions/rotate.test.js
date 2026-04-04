@@ -515,7 +515,7 @@ t.test('rotate - catch error', async ct => {
   ct.end()
 })
 
-t.test('rotate - --no-ops passes opsOn false to Rotate service', async ct => {
+t.test('rotate - --no-ops passes noOps true to Rotate service', async ct => {
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Rotate.prototype, 'run').returns({
@@ -527,7 +527,7 @@ t.test('rotate - --no-ops passes opsOn false to Rotate service', async ct => {
   await rotate.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Rotate().run() called')
-  t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
+  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
 
   ct.end()
 })

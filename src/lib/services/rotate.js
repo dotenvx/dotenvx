@@ -29,12 +29,12 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Rotate {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
-    this.opsOn = opsOn
+    this.noOps = !noOps
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -83,14 +83,14 @@ class Rotate {
       const envParsed = dotenvParse(envSrc)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noOps: !this.opsOn })
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
 
       let newPublicKey
       let newPrivateKey
       let envKeysFilepath
       let envKeysSrc
 
-      if (this.opsOn) {
+      if (!this.noOps) {
         const kp = await opsKeypair()
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
@@ -146,7 +146,7 @@ class Rotate {
       row.privateKeyName = privateKeyName
       row.privateKey = newPrivateKey
 
-      if (!this.opsOn) {
+      if (this.noOps) {
         // keys src only for ops
         envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
         this.envKeysSources[envKeysFilepath] = envKeysSrc
