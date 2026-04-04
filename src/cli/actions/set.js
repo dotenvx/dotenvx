@@ -19,9 +19,6 @@ async function set (key, value) {
 
   const spinner = await createSpinner({ ...options, text: settingMessage })
 
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-  await sleep(5000)
-
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
   logger.debug(`options: ${JSON.stringify(options)}`)
