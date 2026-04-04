@@ -1,23 +1,30 @@
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
-const Sets = require('./../../lib/services/sets')
-
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+const createSpinner = require('../../lib/helpers/createSpinner')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
+const Sets = require('./../../lib/services/sets')
 
 async function set (key, value) {
   const options = this.opts()
 
+  let encrypt = true
+  let settingMessage = 'encrypting'
+  if (options.plain) {
+    encrypt = false
+    settingMessage = 'setting'
+  }
+
+  const spinner = await createSpinner({ ...options, text: settingMessage })
+
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+  await sleep(5000)
+
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
   logger.debug(`options: ${JSON.stringify(options)}`)
-
-  let encrypt = true
-  if (options.plain) {
-    encrypt = false
-  }
 
   try {
     const sesh = new Session()
@@ -31,7 +38,7 @@ async function set (key, value) {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn, noCreate).runSync()
+    } = await new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn, noCreate).run()
 
     let withEncryption = ''
 
@@ -45,7 +52,7 @@ async function set (key, value) {
       if (processedEnv.error) {
         logger.warn(processedEnv.error.messageWithHelp)
       } else {
-        fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
+        await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
         logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
         logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)
@@ -55,6 +62,7 @@ async function set (key, value) {
     const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
     const keyAddedSuffix = keyAddedEnv ? ` + key (${localDisplayPath(keyAddedEnv.envKeysFilepath)})` : ''
 
+    if (spinner) spinner.stop()
     if (changedFilepaths.length > 0) {
       if (encrypt) {
         logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
@@ -72,6 +80,7 @@ async function set (key, value) {
 
     // intentionally quiet: success line communicates key creation
   } catch (error) {
+    if (spinner) spinner.stop()
     catchAndLog(error)
     process.exit(1)
   }
