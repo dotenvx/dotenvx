@@ -175,7 +175,7 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)
-      const { privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noOps: !this.opsOn })
 
       const {
         parsed,
