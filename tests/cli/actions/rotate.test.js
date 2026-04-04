@@ -535,12 +535,12 @@ t.test('rotate - --no-ops passes noOps true to Rotate service', async ct => {
 t.test('rotate - spinner stop is called for stdout/success/catch flows', async ct => {
   const stopStub = sinon.stub()
   const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
-  const sessionStub = sinon.stub().resolves(true)
+  const sessionStub = sinon.stub().resolves(false)
   const catchAndLogStub = sinon.stub()
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async opsOn () {
+    async noOps () {
       return sessionStub()
     }
   }

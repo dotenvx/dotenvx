@@ -28,8 +28,8 @@ t.test('get stops spinner on success path', async ct => {
       }
     },
     '../../../src/db/session': class {
-      async opsOn () {
-        return false
+      async noOps () {
+        return true
       }
     },
     '../../../src/shared/logger': { logger: makeNoopLogger() }
@@ -57,8 +57,8 @@ t.test('get stops spinner on catch path', async ct => {
     },
     '../../../src/lib/helpers/catchAndLog': catchAndLogStub,
     '../../../src/db/session': class {
-      async opsOn () {
-        return false
+      async noOps () {
+        return true
       }
     },
     '../../../src/shared/logger': { logger: makeNoopLogger() }
@@ -84,8 +84,8 @@ t.test('keypair stops spinner before output', async ct => {
       }
     },
     '../../../src/db/session': class {
-      async opsOn () {
-        return false
+      async noOps () {
+        return true
       }
     },
     '../../../src/shared/logger': { logger: makeNoopLogger() }
@@ -118,8 +118,8 @@ t.test('run stops spinner when command missing', async ct => {
     },
     '../../../src/lib/helpers/executeCommand': async () => true,
     '../../../src/db/session': class {
-      async opsOn () {
-        return false
+      async noOps () {
+        return true
       }
     },
     '../../../src/shared/logger': { logger: makeNoopLogger() }
@@ -151,8 +151,8 @@ t.test('run stops spinner on success path', async ct => {
     },
     '../../../src/lib/helpers/executeCommand': async () => true,
     '../../../src/db/session': class {
-      async opsOn () {
-        return false
+      async noOps () {
+        return true
       }
     },
     '../../../src/shared/logger': { logger: makeNoopLogger() }
@@ -182,8 +182,8 @@ t.test('run stops spinner on catch path', async ct => {
     '../../../src/lib/helpers/catchAndLog': catchAndLogStub,
     '../../../src/lib/helpers/executeCommand': async () => true,
     '../../../src/db/session': class {
-      async opsOn () {
-        return false
+      async noOps () {
+        return true
       }
     },
     '../../../src/shared/logger': { logger: makeNoopLogger() }

@@ -469,7 +469,7 @@ t.test('keypair calls Keypair.runSync with noOps true',
     const result = main.keypair('.env', 'KEY', null, true)
 
     t.ok(stub.called, 'new Keypair().runSync() called')
-    t.equal(stub.thisValues[0].opsOn, false, 'Keypair was called with opsOn false')
+    t.equal(stub.thisValues[0].noOps, true, 'Keypair was called with noOps true')
     t.equal(result, 'value')
 
     stub.restore()
@@ -737,7 +737,7 @@ t.test('set calls Sets.run with noOps true',
     main.set('KEY', 'value', { noOps: true })
 
     t.ok(stub.called, 'new Sets().runSync() called')
-    t.equal(stub.thisValues[0].opsOn, false, 'Sets was called with opsOn false')
+    t.equal(stub.thisValues[0].noOps, true, 'Sets was called with noOps true')
 
     stub.restore()
 
@@ -1491,7 +1491,7 @@ t.test('get calls Get.runSync with noOps true',
     t.equal(result, 'value')
 
     t.ok(stub.called, 'new Get().runSync() called')
-    t.equal(stub.thisValues[0].opsOn, false, 'Get was called with opsOn false')
+    t.equal(stub.thisValues[0].noOps, true, 'Get was called with noOps true')
 
     stub.restore()
 

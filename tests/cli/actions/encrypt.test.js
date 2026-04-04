@@ -601,12 +601,12 @@ t.test('encrypt - --no-ops passes noOps true to Encrypt service', async ct => {
 t.test('encrypt - spinner stop is called for stdout/success/catch flows', async ct => {
   const stopStub = sinon.stub()
   const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
-  const sessionStub = sinon.stub().resolves(true)
+  const sessionStub = sinon.stub().resolves(false)
   const catchAndLogStub = sinon.stub()
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async opsOn () {
+    async noOps () {
       return sessionStub()
     }
   }

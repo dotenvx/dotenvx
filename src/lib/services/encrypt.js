@@ -34,7 +34,7 @@ class Encrypt {
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
-    this.noOps = !noOps
+    this.noOps = noOps
     this.noCreate = noCreate
 
     this.processedEnvs = []

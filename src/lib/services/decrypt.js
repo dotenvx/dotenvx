@@ -30,7 +30,7 @@ class Decrypt {
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
-    this.noOps = !noOps
+    this.noOps = noOps
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()

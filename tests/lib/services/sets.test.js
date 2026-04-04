@@ -94,7 +94,7 @@ t.test('#run (encrypt off) creates missing .env with only the set key/value',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'world', envs, false, null, false, false).runSync()
+    } = await new Sets('HELLO', 'world', envs, false, null, true, false).runSync()
 
     ct.equal(processedEnvs.length, 1)
     ct.notOk(processedEnvs[0].error)
@@ -117,7 +117,7 @@ t.test('#run (encrypt on) creates missing .env and encrypts the set key/value',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'world', envs, true, null, false, false).runSync()
+    } = await new Sets('HELLO', 'world', envs, true, null, true, false).runSync()
 
     ct.equal(processedEnvs.length, 1)
     ct.notOk(processedEnvs[0].error)
@@ -141,7 +141,7 @@ t.test('#run (encrypt off) with --no-create on missing .env returns missing file
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'world', envs, false, null, false, true).runSync()
+    } = await new Sets('HELLO', 'world', envs, false, null, true, true).runSync()
 
     ct.equal(processedEnvs.length, 1)
     ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
@@ -161,7 +161,7 @@ t.test('#run async (encrypt off) with --no-create on missing .env returns missin
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'world', envs, false, null, false, true).run()
+    } = await new Sets('HELLO', 'world', envs, false, null, true, true).run()
 
     ct.equal(processedEnvs.length, 1)
     ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
@@ -181,7 +181,7 @@ t.test('#run async (encrypt off) creates missing .env with only the set key/valu
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'world', envs, false, null, false, false).run()
+    } = await new Sets('HELLO', 'world', envs, false, null, true, false).run()
 
     ct.equal(processedEnvs.length, 1)
     ct.notOk(processedEnvs[0].error)

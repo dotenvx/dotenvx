@@ -36,7 +36,7 @@ class Sets {
     this.value = value
     this.encrypt = encrypt
     this.envKeysFilepath = envKeysFilepath
-    this.noOps = !noOps
+    this.noOps = noOps
     this.noCreate = noCreate
 
     this.processedEnvs = []

@@ -76,7 +76,7 @@ t.test('#run (no env file) with --no-create',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt([], [], [], null, false, true).run()
+    } = await new Encrypt([], [], [], null, true, true).run()
 
     ct.equal(processedEnvs.length, 1)
     ct.equal(processedEnvs[0].envFilepath, '.env')
@@ -189,7 +189,7 @@ t.test('#run (finds .env file) with ops off and no existing keys still generates
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Encrypt(envs, [], [], null, false).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
     ct.equal(processedEnvs[0].privateKeyAdded, true)

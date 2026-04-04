@@ -40,7 +40,7 @@ const config = function (options = {}) {
   const envKeysFile = options.envKeysFile
 
   // dotenvx-ops related
-  const opsOn = options.noOps !== true
+  const noOps = options.noOps
 
   if (options) {
     setLogLevel(options)
@@ -54,7 +54,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, opsOn).runSync()
+    } = new Run(envs, overload, processEnv, envKeysFile, noOps).runSync()
 
     let lastError
     /** @type {Record<string, string>} */
@@ -164,13 +164,13 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
-  const opsOn = options.noOps !== true
+  const noOps = options.noOps
 
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).runSync()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noOps).runSync()
 
   let withEncryption = ''
 
@@ -223,12 +223,12 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
-  const opsOn = options.noOps !== true
+  const noOps = options.noOps
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).runSync()
+  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noOps).runSync()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
@@ -282,8 +282,7 @@ const genexample = function (directory, envFile) {
 
 /** @type {import('./main').keypair} */
 const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
-  const opsOn = noOps !== true
-  const keypairs = new Keypair(envFile, envKeysFile, opsOn).runSync()
+  const keypairs = new Keypair(envFile, envKeysFile, noOps).runSync()
   if (key) {
     return keypairs[key]
   } else {

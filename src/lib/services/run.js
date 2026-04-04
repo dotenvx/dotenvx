@@ -25,7 +25,7 @@ class Run {
     this.overload = overload
     this.processEnv = processEnv
     this.envKeysFilepath = envKeysFilepath
-    this.noOps = !noOps
+    this.noOps = noOps
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()

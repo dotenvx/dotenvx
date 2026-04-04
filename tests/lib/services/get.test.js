@@ -174,7 +174,7 @@ t.test('#run passes noOps to Run service',
     t.equal(runStub.firstCall.thisValue.noOps, false, 'noOps defaults to false')
 
     runStub.resetHistory()
-    await new Get('KEY', [], false, false, null, false).run()
+    await new Get('KEY', [], false, false, null, true).run()
     t.equal(runStub.firstCall.thisValue.noOps, true, 'noOps true when provided')
 
     ct.end()

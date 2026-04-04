@@ -14,7 +14,7 @@ async function decrypt () {
 
   const sesh = new Session()
   const envs = this.envs
-  const noOps = options.ops === false || !(await sesh.opsOn())
+  const noOps = options.ops === false || (await sesh.noOps())
 
   let errorCount = 0
 
@@ -22,7 +22,7 @@ async function decrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, !noOps).run()
+    } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
@@ -44,7 +44,7 @@ async function decrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, !noOps).run()
+      } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

@@ -20,7 +20,7 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const noOps = options.ops === false || !(await sesh.opsOn())
+  const noOps = options.ops === false || (await sesh.noOps())
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
@@ -51,7 +51,7 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs, options.overload, process.env, options.envKeysFile, !noOps).run()
+    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noOps).run()
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envFile') {

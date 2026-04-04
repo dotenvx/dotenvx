@@ -8,7 +8,7 @@ class Keypair {
   constructor (envFile = '.env', envKeysFilepath = null, noOps = false) {
     this.envFile = envFile
     this.envKeysFilepath = envKeysFilepath
-    this.noOps = !noOps
+    this.noOps = noOps
   }
 
   runSync () {

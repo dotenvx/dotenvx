@@ -2,24 +2,24 @@ const Run = require('./run')
 const Errors = require('./../helpers/errors')
 
 class Get {
-  constructor (key, envs = [], overload = false, all = false, envKeysFilepath = null, noOps = true) {
+  constructor (key, envs = [], overload = false, all = false, envKeysFilepath = null, noOps = false) {
     this.key = key
     this.envs = envs
     this.overload = overload
     this.all = all
     this.envKeysFilepath = envKeysFilepath
-    this.noOps = !noOps
+    this.noOps = noOps
   }
 
   runSync () {
     const processEnv = { ...process.env }
-    const { processedEnvs } = new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, !this.noOps).runSync()
+    const { processedEnvs } = new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.noOps).runSync()
     return this._result(processedEnvs, processEnv)
   }
 
   async run () {
     const processEnv = { ...process.env }
-    const { processedEnvs } = await new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, !this.noOps).run()
+    const { processedEnvs } = await new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.noOps).run()
     return this._result(processedEnvs, processEnv)
   }
 

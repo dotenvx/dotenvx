@@ -8,9 +8,9 @@ class Session {
   //
   // ops status helpers
   //
-  async opsOn () {
+  async noOps () {
     const status = await this.ops.status()
-    return status === 'on'
+    return status === 'off'
   }
 }
 

@@ -16,13 +16,13 @@ async function rotate () {
 
   const envs = this.envs
   const sesh = new Session()
-  const noOps = options.ops === false || !(await sesh.opsOn())
+  const noOps = options.ops === false || (await sesh.noOps())
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, !noOps).run()
+    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -38,7 +38,7 @@ async function rotate () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, !noOps).run()
+      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`rotating ${processedEnv.envFilepath} (${processedEnv.filepath})`)
