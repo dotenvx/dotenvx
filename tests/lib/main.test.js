@@ -670,12 +670,12 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
 
 t.test('set calls Sets.run',
   ct => {
-    const stub = sinon.stub(Sets.prototype, 'run')
+    const stub = sinon.stub(Sets.prototype, 'runSync')
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
     main.set('KEY', 'value')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.equal(stub.thisValues[0].encrypt, true, 'Sets was called with encrypt true')
 
     stub.restore()
@@ -685,12 +685,12 @@ t.test('set calls Sets.run',
 
 t.test('set calls Sets.run with encrypt false',
   ct => {
-    const stub = sinon.stub(Sets.prototype, 'run')
+    const stub = sinon.stub(Sets.prototype, 'runSync')
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
     main.set('KEY', 'value', { encrypt: false })
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.equal(stub.thisValues[0].encrypt, false, 'Sets was called with encrypt false')
 
     stub.restore()
@@ -700,12 +700,12 @@ t.test('set calls Sets.run with encrypt false',
 
 t.test('set calls Sets.run with plain true',
   ct => {
-    const stub = sinon.stub(Sets.prototype, 'run')
+    const stub = sinon.stub(Sets.prototype, 'runSync')
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
     main.set('KEY', 'value', { plain: true })
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.equal(stub.thisValues[0].encrypt, false, 'Sets was called with encrypt false')
 
     stub.restore()
@@ -715,12 +715,12 @@ t.test('set calls Sets.run with plain true',
 
 t.test('set calls Sets.run with custom envKeysFile',
   ct => {
-    const stub = sinon.stub(Sets.prototype, 'run')
+    const stub = sinon.stub(Sets.prototype, 'runSync')
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
     main.set('KEY', 'value', { envKeysFile: 'path/to/.env.keys' })
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
 
     t.equal(stub.thisValues[0].envKeysFilepath, 'path/to/.env.keys', 'Sets was called with custom .env.keys path')
 
@@ -731,12 +731,12 @@ t.test('set calls Sets.run with custom envKeysFile',
 
 t.test('set calls Sets.run with noOps true',
   ct => {
-    const stub = sinon.stub(Sets.prototype, 'run')
+    const stub = sinon.stub(Sets.prototype, 'runSync')
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
     main.set('KEY', 'value', { noOps: true })
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.equal(stub.thisValues[0].opsOn, false, 'Sets was called with opsOn false')
 
     stub.restore()
@@ -746,7 +746,7 @@ t.test('set calls Sets.run with noOps true',
 
 t.test('set calls Sets.run - no change',
   ct => {
-    const stub = sinon.stub(Sets.prototype, 'run')
+    const stub = sinon.stub(Sets.prototype, 'runSync')
     const processedEnvs = [{
       key: 'HELLO',
       value: 'World',
@@ -762,7 +762,7 @@ t.test('set calls Sets.run - no change',
 
     main.set('KEY', 'value')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.equal(stub.thisValues[0].encrypt, true, 'Sets was called with encrypt true')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
 
@@ -774,7 +774,7 @@ t.test('set calls Sets.run - no change',
 t.test('set calls Sets.run - no change',
   ct => {
     const loggerNeutralStub = sinon.stub(logger, 'info')
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -792,7 +792,7 @@ t.test('set calls Sets.run - no change',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
     t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
 
@@ -806,7 +806,7 @@ t.test('set calls Sets.run - changes',
     const loggerInfoStub = sinon.stub(logger, 'info')
     const loggerSuccessStub = sinon.stub(logger, 'success')
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -824,7 +824,7 @@ t.test('set calls Sets.run - changes',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
     t.ok(loggerInfoStub.notCalled, 'logger info')
     t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env)'), 'logger success')
@@ -839,7 +839,7 @@ t.test('set calls Sets.run - changes plain',
     const loggerInfoStub = sinon.stub(logger, 'info')
     const loggerSuccessStub = sinon.stub(logger, 'success')
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -857,7 +857,7 @@ t.test('set calls Sets.run - changes plain',
 
     main.set('HELLO', 'World', { plain: true })
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
     t.ok(loggerInfoStub.notCalled, 'logger info')
     t.ok(loggerSuccessStub.calledWith('◇ set HELLO (.env)'), 'logger success')
@@ -875,7 +875,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE',
 
     const error = new Errors({ envFilepath: '.env' }).missingEnvFile()
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -893,7 +893,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
     t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger warn')
@@ -909,7 +909,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE fallback filepath',
     const loggerWarnStub = sinon.stub(logger, 'warn')
     const error = new Errors({ envFilepath: '.env' }).missingEnvFile()
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -927,7 +927,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE fallback filepath',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(loggerWarnStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger warn fallback .env path')
 
     stub.restore()
@@ -944,7 +944,7 @@ t.test('set calls Sets.run - OTHER_ERROR',
     setCode(error, 'OTHER_ERROR')
     error.help = 'some help'
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -962,7 +962,7 @@ t.test('set calls Sets.run - OTHER_ERROR',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
     t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger warn')
@@ -980,7 +980,7 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent with he
     const error = new Error('Mock Error')
     error.help = 'some help'
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -998,7 +998,7 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent with he
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(loggerWarnStub.calledWith('Mock Error. some help'), 'logger.warn fallback includes help')
 
     stub.restore()
@@ -1012,7 +1012,7 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent without
 
     const error = new Error('Mock Error')
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -1030,7 +1030,7 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent without
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(loggerWarnStub.calledWith('Mock Error'), 'logger.warn fallback uses base message')
 
     stub.restore()
@@ -1048,7 +1048,7 @@ t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY',
     setCode(error, 'MISPAIRED_PRIVATE_KEY')
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/752]'
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -1066,7 +1066,7 @@ t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
     t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith("[MISPAIRED_PRIVATE_KEY] private key's derived public key (03a8ed4…) does not match the existing public key (10248e9…). fix: [https://github.com/dotenvx/dotenvx/issues/752]"), 'logger warn')
@@ -1087,7 +1087,7 @@ t.test('set calls Sets.run - WRONG_PRIVATE_KEY',
     setCode(error, 'WRONG_PRIVATE_KEY')
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -1105,7 +1105,7 @@ t.test('set calls Sets.run - WRONG_PRIVATE_KEY',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
     t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger warn')
@@ -1126,7 +1126,7 @@ t.test('set calls Sets.run - MISSING_PRIVATE_KEY',
     setCode(error, 'MISSING_PRIVATE_KEY')
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -1144,7 +1144,7 @@ t.test('set calls Sets.run - MISSING_PRIVATE_KEY',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
     t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger warn')
@@ -1165,7 +1165,7 @@ t.test('set calls Sets.run - INVALID_PUBLIC_KEY',
     setCode(error, 'INVALID_PUBLIC_KEY')
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/756]'
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -1183,7 +1183,7 @@ t.test('set calls Sets.run - INVALID_PUBLIC_KEY',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.notCalled, 'fsx.writeFileXSync')
     t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger info')
     t.ok(loggerWarnStub.calledWith("[INVALID_PUBLIC_KEY] could not encrypt using public key 'DOTENV_PUBLIC_KEY=10248e9…'. fix: [https://github.com/dotenvx/dotenvx/issues/756]"), 'logger warn')
@@ -1197,7 +1197,7 @@ t.test('set calls Sets.run - INVALID_PUBLIC_KEY',
 t.test('set calls Sets.run - preserves punctuated key errors',
   ct => {
     const loggerWarnStub = sinon.stub(logger, 'warn')
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -1253,7 +1253,7 @@ t.test('set calls Sets.run - preserves punctuated key errors',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(loggerWarnStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
     t.ok(loggerWarnStub.calledWith('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
     t.ok(loggerWarnStub.calledWith('[INVALID_PUBLIC_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/756]'))
@@ -1269,7 +1269,7 @@ t.test('set calls Sets.run - privateKeyAdded',
     const loggerSuccessStub = sinon.stub(logger, 'success')
     const loggerHelpStub = sinon.stub(logger, 'help')
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -1288,7 +1288,7 @@ t.test('set calls Sets.run - privateKeyAdded',
 
     main.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
     t.ok(loggerInfoStub.notCalled, 'logger info')
     t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
@@ -1309,7 +1309,7 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys',
     const loggerSuccessStub = sinon.stub(logger, 'success')
     const loggerHelpStub = sinon.stub(logger, 'help')
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'World',
@@ -1328,7 +1328,7 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys',
 
     mainNotIgnoring.set('HELLO', 'World')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
     t.ok(loggerInfoStub.notCalled, 'logger info')
     t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
@@ -1344,7 +1344,7 @@ t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports k
     const loggerSuccessStub = sinon.stub(logger, 'success')
     const loggerNeutralStub = sinon.stub(logger, 'info')
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'dude',
@@ -1363,7 +1363,7 @@ t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports k
 
     main.set('HELLO', 'dude')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileXSync .env')
     t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
     t.ok(loggerNeutralStub.notCalled, 'logger info')
@@ -1378,7 +1378,7 @@ t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .
     const loggerSuccessStub = sinon.stub(logger, 'success')
     const loggerInfoStub = sinon.stub(logger, 'info')
 
-    const stub = sinon.stub(Sets.prototype, 'run').returns({
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
       processedEnvs: [{
         key: 'HELLO',
         value: 'dude',
@@ -1397,7 +1397,7 @@ t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .
 
     main.set('HELLO', 'dude')
 
-    t.ok(stub.called, 'new Sets().run() called')
+    t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileXSync .env')
     t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
     t.ok(loggerInfoStub.notCalled, 'logger info')

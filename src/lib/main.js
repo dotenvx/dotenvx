@@ -170,7 +170,7 @@ const set = function (key, value, options = {}) {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).run()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).runSync()
 
   let withEncryption = ''
 

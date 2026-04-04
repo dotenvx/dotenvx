@@ -31,7 +31,7 @@ async function set (key, value) {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn, noCreate).run()
+    } = await new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn, noCreate).runSync()
 
     let withEncryption = ''
 

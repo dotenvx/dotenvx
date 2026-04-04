@@ -42,7 +42,7 @@ class Sets {
     this.readableFilepaths = new Set()
   }
 
-  run () {
+  runSync () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -59,6 +59,10 @@ class Sets {
       changedFilepaths: [...this.changedFilepaths],
       unchangedFilepaths: [...this.unchangedFilepaths]
     }
+  }
+
+  async run () {
+    return this.runSync()
   }
 
   _setEnvFile (envFilepath) {

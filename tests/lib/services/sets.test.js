@@ -44,7 +44,7 @@ t.test('#run (no arguments)',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets().run()
+    } = await new Sets().runSync()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -77,7 +77,7 @@ t.test('#run (encrypt off) creates missing .env with only the set key/value',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'world', envs, false, null, false, false).run()
+    } = await new Sets('HELLO', 'world', envs, false, null, false, false).runSync()
 
     ct.equal(processedEnvs.length, 1)
     ct.notOk(processedEnvs[0].error)
@@ -100,7 +100,7 @@ t.test('#run (encrypt on) creates missing .env and encrypts the set key/value',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'world', envs, true, null, false, false).run()
+    } = await new Sets('HELLO', 'world', envs, true, null, false, false).runSync()
 
     ct.equal(processedEnvs.length, 1)
     ct.notOk(processedEnvs[0].error)
@@ -124,7 +124,7 @@ t.test('#run (encrypt off) with --no-create on missing .env returns missing file
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'world', envs, false, null, false, true).run()
+    } = await new Sets('HELLO', 'world', envs, false, null, false, true).runSync()
 
     ct.equal(processedEnvs.length, 1)
     ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
@@ -143,7 +143,7 @@ t.test('#run (no env file)',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets().run()
+    } = await new Sets().runSync()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -212,7 +212,7 @@ t.test('#run (encrypt off) (finds .env file)',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs, false).run()
+    } = await new Sets('KEY', 'value', envs, false).runSync()
 
     ct.same(processedEnvs, [{
       key: 'KEY',
@@ -244,7 +244,7 @@ t.test('#run (encrypt off) (finds .env file and overwrites existing key/value)',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs, false).run()
+    } = await new Sets('HELLO', 'new value', envs, false).runSync()
 
     ct.same(processedEnvs, [{
       key: 'HELLO',
@@ -277,7 +277,7 @@ t.test('#run (encrypt off) (finds .env file and attempts overwrite with same key
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets('HELLO', 'frontend', envs, false).run()
+    } = await new Sets('HELLO', 'frontend', envs, false).runSync()
 
     ct.same(processedEnvs, [{
       key: 'HELLO',
@@ -311,7 +311,7 @@ t.test('#run (encrypt off) (finds .env file as array)',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs, false).run()
+    } = await new Sets('KEY', 'value', envs, false).runSync()
 
     ct.same(processedEnvs, [{
       key: 'KEY',
@@ -338,7 +338,7 @@ t.test('#run (finds .env file) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs).run()
+    } = await new Sets('KEY', 'value', envs).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -391,7 +391,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs).run()
+    } = await new Sets('KEY', 'value', envs).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -439,7 +439,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt and changes original
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).run()
+    } = await new Sets('HELLO', 'new value', envs).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -487,7 +487,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
 
     const {
       processedEnvs
-    } = await new Sets('HELLO', 'new value', envs).run()
+    } = await new Sets('HELLO', 'new value', envs).runSync()
 
     const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
     error.code = 'MISPAIRED_PRIVATE_KEY'
@@ -518,7 +518,7 @@ t.test('#run (finds .env file only) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).run()
+    } = await new Sets('HELLO', 'new value', envs).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -572,7 +572,7 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).run()
+    } = await new Sets('HELLO', 'new value', envs).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -631,7 +631,7 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).run()
+    } = await new Sets('HELLO', 'new value', envs).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -690,7 +690,7 @@ t.test('#run (finds .env with a shebang) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).run()
+    } = await new Sets('HELLO', 'new value', envs).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -742,7 +742,7 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'unencrypted', envs).run() // this value should be the same value as currently in the file
+    } = await new Sets('HELLO', 'unencrypted', envs).runSync() // this value should be the same value as currently in the file
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -792,7 +792,7 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs, true, envKeysFilepath).run()
+    } = await new Sets('KEY', 'value', envs, true, envKeysFilepath).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -845,7 +845,7 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and pri
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs, true, envKeysFilepath).run()
+    } = await new Sets('KEY', 'value', envs, true, envKeysFilepath).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey

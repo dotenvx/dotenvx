@@ -97,7 +97,7 @@ program.command('get')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    getAction.apply(this, args)
+    return getAction.apply(this, args)
   })
 
 // dotenvx set
@@ -117,7 +117,7 @@ program.command('set')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    setAction.apply(this, args)
+    return setAction.apply(this, args)
   })
 
 // dotenvx encrypt
