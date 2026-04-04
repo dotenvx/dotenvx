@@ -151,6 +151,87 @@ t.test('#run (encrypt off) with --no-create on missing .env returns missing file
     ct.end()
   })
 
+t.test('#run async (encrypt off) with --no-create on missing .env returns missing file error',
+  async ct => {
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
+    const envFile = path.join(tmpdir, '.env')
+    const envs = [{ type: 'envFile', value: envFile }]
+
+    const {
+      processedEnvs,
+      changedFilepaths,
+      unchangedFilepaths
+    } = await new Sets('HELLO', 'world', envs, false, null, false, true).run()
+
+    ct.equal(processedEnvs.length, 1)
+    ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
+    ct.same(changedFilepaths, [])
+    ct.same(unchangedFilepaths, [])
+
+    ct.end()
+  })
+
+t.test('#run async (encrypt off) creates missing .env with only the set key/value',
+  async ct => {
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
+    const envFile = path.join(tmpdir, '.env')
+    const envs = [{ type: 'envFile', value: envFile }]
+
+    const {
+      processedEnvs,
+      changedFilepaths,
+      unchangedFilepaths
+    } = await new Sets('HELLO', 'world', envs, false, null, false, false).run()
+
+    ct.equal(processedEnvs.length, 1)
+    ct.notOk(processedEnvs[0].error)
+    ct.equal(processedEnvs[0].originalValue, null)
+    ct.equal(processedEnvs[0].changed, true)
+    ct.equal(processedEnvs[0].envSrc, 'HELLO="world"\n')
+    ct.same(changedFilepaths, [envFile])
+    ct.same(unchangedFilepaths, [])
+
+    ct.end()
+  })
+
+t.test('#run async uses detectEncoding when --no-create and file missing',
+  async ct => {
+    const detectEncodingStub = sinon.stub().resolves('utf8')
+    const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
+      './../helpers/fsx': {
+        exists: async () => false,
+        writeFileX: async () => undefined,
+        readFileX: async () => { throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' }) },
+        existsSync: () => false,
+        writeFileXSync: () => undefined,
+        readFileXSync: () => ''
+      },
+      './../helpers/detectEncoding': detectEncodingStub,
+      './../helpers/detectEncodingSync': () => 'utf8'
+    })
+
+    const { processedEnvs } = await new SetsWithStub('HELLO', 'world', [{ type: 'envFile', value: '.env' }], false, null, false, true).run()
+
+    ct.equal(detectEncodingStub.callCount, 2)
+    ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
+    ct.end()
+  })
+
+t.test('#run async (encrypt off) overwrites existing key with plain value',
+  async ct => {
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
+    const envFile = path.join(tmpdir, '.env')
+    fs.writeFileSync(envFile, 'HELLO="old"\n', 'utf8')
+    const envs = [{ type: 'envFile', value: envFile }]
+
+    const { processedEnvs, changedFilepaths } = await new Sets('HELLO', 'new', envs, false).run()
+
+    ct.equal(processedEnvs[0].changed, true)
+    ct.equal(processedEnvs[0].envSrc, 'HELLO="new"\n')
+    ct.same(changedFilepaths, [envFile])
+    ct.end()
+  })
+
 t.test('#run (no env file)',
   async ct => {
     const cwd = process.cwd()
@@ -957,5 +1038,95 @@ t.test('#run wraps invalid public key encryption errors',
     ct.equal(processedEnvs[0].error.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/756]')
     ct.same(changedFilepaths, [])
 
+    ct.end()
+  })
+
+t.test('#runSync (existing public key only) uses public key without provisioning private key',
+  async ct => {
+    const keyNames = require('../../../src/lib/helpers/keyResolution/keyNames')
+    const cryptography = require('../../../src/lib/helpers/cryptography')
+    const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
+      './../helpers/keyResolution': {
+        keyNames,
+        keyValuesSync: () => ({ publicKeyValue: 'public-only-key', privateKeyValue: null }),
+        keyValues: async () => ({ publicKeyValue: 'public-only-key', privateKeyValue: null })
+      },
+      './../helpers/cryptography': {
+        ...cryptography,
+        encryptValue: () => 'encrypted:abc'
+      }
+    })
+
+    const envs = [{ type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }]
+    const { processedEnvs, changedFilepaths } = new SetsWithStub('KEY', 'value', envs, true).runSync()
+
+    ct.equal(processedEnvs[0].publicKey, 'public-only-key')
+    ct.equal(processedEnvs[0].privateKey, undefined)
+    ct.equal(processedEnvs[0].encryptedValue, 'encrypted:abc')
+    ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
+    ct.end()
+  })
+
+t.test('#runSync wraps invalid public key encryption errors',
+  async ct => {
+    const cryptography = require('../../../src/lib/helpers/cryptography')
+    const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
+      './../helpers/cryptography': {
+        ...cryptography,
+        encryptValue: () => {
+          throw new Error('bad public key')
+        }
+      }
+    })
+
+    const envFile = 'tests/monorepo/apps/frontend/.env'
+    const envs = [{ type: 'envFile', value: envFile }]
+    const { processedEnvs, changedFilepaths } = new SetsWithStub('KEY', 'value', envs, true).runSync()
+
+    ct.equal(processedEnvs[0].error.code, 'INVALID_PUBLIC_KEY')
+    ct.same(changedFilepaths, [])
+    ct.end()
+  })
+
+t.test('#run async decrypts original encrypted value when private key is available',
+  async ct => {
+    const cryptography = require('../../../src/lib/helpers/cryptography')
+    const decryptKeyValueStub = sinon.stub().returns('decrypted-old-value')
+    const provisionWithPrivateKeyStub = sinon.stub().returns({
+      envSrc: 'HELLO="encrypted:old"\n',
+      publicKey: 'public-key',
+      privateKey: 'private-key'
+    })
+    const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
+      './../helpers/keyResolution': {
+        keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+        keyValues: async () => ({ publicKeyValue: 'public-key', privateKeyValue: 'private-key' }),
+        keyValuesSync: () => ({ publicKeyValue: 'public-key', privateKeyValue: 'private-key' })
+      },
+      './../helpers/cryptography': {
+        ...cryptography,
+        decryptKeyValue: decryptKeyValueStub,
+        provisionWithPrivateKey: provisionWithPrivateKeyStub,
+        encryptValue: () => 'encrypted:new'
+      },
+      './../helpers/fsx': {
+        exists: async () => true,
+        writeFileX: async () => undefined,
+        readFileX: async () => 'HELLO="encrypted:old"\n',
+        existsSync: () => true,
+        writeFileXSync: () => undefined,
+        readFileXSync: () => 'HELLO="encrypted:old"\n'
+      },
+      './../helpers/detectEncoding': async () => 'utf8',
+      './../helpers/detectEncodingSync': () => 'utf8'
+    })
+
+    const envs = [{ type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }]
+    const { processedEnvs } = await new SetsWithStub('HELLO', 'new-value', envs, true).run()
+
+    ct.ok(provisionWithPrivateKeyStub.calledOnce)
+    ct.ok(decryptKeyValueStub.calledOnce)
+    ct.equal(processedEnvs[0].originalValue, 'decrypted-old-value')
+    ct.equal(processedEnvs[0].encryptedValue, 'encrypted:new')
     ct.end()
   })

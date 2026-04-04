@@ -672,3 +672,81 @@ t.test('set - catch error', async ct => {
 
   ct.end()
 })
+
+t.test('set - spinner stop called on success path when spinner exists', async ct => {
+  const stopStub = sinon.stub()
+  const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
+  const writeStub = sinon.stub(fsx, 'writeFileX').resolves()
+  const successStub = sinon.stub(logger, 'success')
+
+  class SessionMock {
+    async opsOn () {
+      return true
+    }
+  }
+
+  class SetsMock {
+    async run () {
+      return {
+        processedEnvs: [{
+          key: 'HELLO',
+          value: 'World',
+          filepath: '.env',
+          envFilepath: '.env',
+          envSrc: 'HELLO=World',
+          error: null
+        }],
+        changedFilepaths: ['.env'],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const setWithSpinner = proxyquire('../../../src/cli/actions/set', {
+    './../../lib/helpers/createSpinner': createSpinnerStub,
+    './../../lib/services/sets': SetsMock,
+    './../../db/session': SessionMock
+  })
+
+  const fakeContext = { opts: sinon.stub().returns({}), envs: [] }
+  await setWithSpinner.call(fakeContext, 'HELLO', 'World')
+
+  t.ok(writeStub.calledOnce, 'writes env file')
+  t.ok(successStub.calledOnce, 'logs success')
+  t.ok(stopStub.calledOnce, 'spinner stopped on success')
+  ct.end()
+})
+
+t.test('set - spinner stop called on catch path when spinner exists', async ct => {
+  const stopStub = sinon.stub()
+  const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
+  const catchAndLogStub = sinon.stub()
+  const processExitStub = sinon.stub(process, 'exit')
+
+  class SessionMock {
+    async opsOn () {
+      return true
+    }
+  }
+
+  class SetsMock {
+    async run () {
+      throw new Error('boom')
+    }
+  }
+
+  const setWithSpinner = proxyquire('../../../src/cli/actions/set', {
+    './../../lib/helpers/createSpinner': createSpinnerStub,
+    './../../lib/helpers/catchAndLog': catchAndLogStub,
+    './../../lib/services/sets': SetsMock,
+    './../../db/session': SessionMock
+  })
+
+  const fakeContext = { opts: sinon.stub().returns({}), envs: [] }
+  await setWithSpinner.call(fakeContext, 'HELLO', 'World')
+
+  t.ok(stopStub.calledOnce, 'spinner stopped on catch')
+  t.ok(catchAndLogStub.calledOnce, 'catchAndLog called')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  ct.end()
+})
