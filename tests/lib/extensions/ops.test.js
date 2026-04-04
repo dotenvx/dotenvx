@@ -4,11 +4,11 @@ const proxyquire = require('proxyquire')
 const util = require('util')
 
 t.beforeEach(() => {
-  process.env.DOTENVX_OPS_OFF = 'false'
+  process.env.DOTENVX_NO_OPS = 'false'
 })
 
 t.afterEach(() => {
-  delete process.env.DOTENVX_OPS_OFF
+  delete process.env.DOTENVX_NO_OPS
 })
 
 t.test('statusSync and keypairSync use npm binary when available', (ct) => {
@@ -123,7 +123,7 @@ t.test('observe noops when spawn fails, status off, or forced off', async (ct) =
   ops.observe({ should: 'skip when off' })
   ct.equal(spawn.callCount, 1)
 
-  process.env.DOTENVX_OPS_OFF = 'true'
+  process.env.DOTENVX_NO_OPS = 'true'
   ct.equal(ops.statusSync(), 'off')
   ct.same(ops.keypairSync('ignored'), {})
   ct.same(await ops.keypair('ignored'), {})

@@ -140,7 +140,7 @@ class Ops {
   }
 
   _isForcedOff () {
-    return process.env.DOTENVX_OPS_OFF === 'true'
+    return process.env.DOTENVX_NO_OPS === 'true'
   }
 }
 
