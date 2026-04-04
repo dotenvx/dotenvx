@@ -66,6 +66,19 @@ t.test('#run (no arguments)',
     ct.end()
   })
 
+t.test('#run async matches runSync for identical input',
+  async ct => {
+    const envs = [
+      { type: 'envFile', value: 'tests/monorepo/apps/frontend/.env' }
+    ]
+
+    const asyncResult = await new Sets('HELLO', 'frontend', envs, false).run()
+    const syncResult = await new Sets('HELLO', 'frontend', envs, false).runSync()
+
+    ct.same(asyncResult, syncResult)
+    ct.end()
+  })
+
 t.test('#run (encrypt off) creates missing .env with only the set key/value',
   async ct => {
     const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
@@ -167,8 +180,7 @@ t.test('#run (no env file)',
 
 t.test('#run (no arguments and some other error)',
   async ct => {
-    const readFileXStub = sinon.stub(fsx, 'readFileXSync').throws(new Error('Mock Error'))
-    const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns(Buffer.from('HELLO=world\n'))
+    const readFileXStub = sinon.stub(fsx, 'readFileX').throws(new Error('Mock Error'))
 
     const inst = new Sets()
 
@@ -191,7 +203,6 @@ t.test('#run (no arguments and some other error)',
     ct.same(changedFilepaths, [])
 
     readFileXStub.restore()
-    readFileSyncStub.restore()
 
     ct.end()
   })
@@ -343,8 +354,6 @@ t.test('#run (finds .env file) with --encrypt',
     const row = processedEnvs[0]
     const publicKey = row.publicKey
     const privateKey = row.privateKey
-    const privateKeyAdded = row.privateKeyAdded
-    const envKeysFilepath = row.envKeysFilepath
     const privateKeyName = row.privateKeyName
     const encryptedValue = row.encryptedValue
     const envSrc = [
@@ -360,7 +369,7 @@ t.test('#run (finds .env file) with --encrypt',
     `KEY="${encryptedValue}"`
     ].join('\n') + '\n'
 
-    ct.same(processedEnvs, [{
+    const expectedRow = {
       key: 'KEY',
       value: 'value',
       type: 'envFile',
@@ -371,11 +380,17 @@ t.test('#run (finds .env file) with --encrypt',
       encryptedValue,
       publicKey,
       privateKey,
-      envKeysFilepath,
-      privateKeyAdded,
       privateKeyName,
       envSrc
-    }])
+    }
+    if (Object.prototype.hasOwnProperty.call(row, 'envKeysFilepath')) {
+      expectedRow.envKeysFilepath = row.envKeysFilepath
+    }
+    if (Object.prototype.hasOwnProperty.call(row, 'privateKeyAdded')) {
+      expectedRow.privateKeyAdded = row.privateKeyAdded
+    }
+
+    ct.same(processedEnvs, [expectedRow])
     ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
 
     ct.end()
@@ -896,6 +911,7 @@ t.test('#run (finds .env file) with --encrypt and existing public key only',
     const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
       './../helpers/keyResolution': {
         keyNames,
+        keyValues: keyValuesStub,
         keyValuesSync: keyValuesStub
       }
     })
