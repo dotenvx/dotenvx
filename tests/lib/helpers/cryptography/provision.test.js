@@ -116,7 +116,7 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
   ct.end()
 })
 
-t.test('provision uses Ops keypair when opsOn is true', async (ct) => {
+t.test('provision uses Ops keypair when noOps is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().resolves({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=ops_priv\n',
@@ -136,7 +136,7 @@ t.test('provision uses Ops keypair when opsOn is true', async (ct) => {
   })
 
   const envFilepath = path.join('apps', 'api', '.env')
-  const out = await provision({ envSrc: 'HELLO=world', envFilepath, opsOn: true })
+  const out = await provision({ envSrc: 'HELLO=world', envFilepath, noOps: false })
 
   ct.equal(out.publicKey, 'ops_pub')
   ct.equal(out.privateKey, 'ops_priv')
