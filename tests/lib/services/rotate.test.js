@@ -132,7 +132,7 @@ t.test('#run (finds .env file)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Rotate(envs).run()
+    } = await new Rotate(envs, [], [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO'])
@@ -172,7 +172,7 @@ t.test('#run (finds .env file with specified key)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Rotate(envs, ['HELLO']).run()
+    } = await new Rotate(envs, ['HELLO'], [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO'])
@@ -212,7 +212,7 @@ t.test('#run (finds .env file with specified key as string)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Rotate(envs, 'HELLO').run()
+    } = await new Rotate(envs, 'HELLO', [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO'])
@@ -252,7 +252,7 @@ t.test('#run (finds .env file with specified glob string)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Rotate(envs, 'H*').run()
+    } = await new Rotate(envs, 'H*', [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO'])
@@ -292,7 +292,7 @@ t.test('#run (finds .env file excluding specified key)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Rotate(envs, [], ['HELLO']).run()
+    } = await new Rotate(envs, [], ['HELLO'], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, [])
@@ -332,7 +332,7 @@ t.test('#run (finds .env file excluding specified key as string)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Rotate(envs, [], 'HELLO').run()
+    } = await new Rotate(envs, [], 'HELLO', null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, [])
@@ -372,7 +372,7 @@ t.test('#run (finds .env file excluding specified key globbed)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Rotate(envs, [], 'HE*').run()
+    } = await new Rotate(envs, [], 'HE*', null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, [])
@@ -521,7 +521,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Rotate(envs, [], [], envKeysFile).run()
+    } = await new Rotate(envs, [], [], envKeysFile, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO'])
@@ -562,7 +562,7 @@ t.test('#run (finds .env file) with opsOn uses ops keypair and does not append l
       { type: 'envFile', value: envFile }
     ]
 
-    const { processedEnvs } = await new RotateWithOpsStub(envs, [], [], null, true).run()
+    const { processedEnvs } = await new RotateWithOpsStub(envs, [], [], null, false).run()
 
     const p1 = processedEnvs[0]
     ct.equal(opsKeypair.callCount, 1)
@@ -589,7 +589,7 @@ t.test('#run wraps invalid public key re-encryption errors',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envs = [{ type: 'envFile', value: envFile }]
 
-    const { processedEnvs, changedFilepaths } = await new RotateWithStub(envs).run()
+    const { processedEnvs, changedFilepaths } = await new RotateWithStub(envs, [], [], null, true).run()
 
     ct.equal(processedEnvs[0].error.code, 'INVALID_PUBLIC_KEY')
     ct.match(processedEnvs[0].error.message, /^\[INVALID_PUBLIC_KEY\] could not encrypt using public key 'DOTENV_PUBLIC_KEY=/)

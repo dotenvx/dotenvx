@@ -49,7 +49,7 @@ t.test('#run (no arguments)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt().run()
+    } = await new Encrypt([], [], [], null, true).run()
 
     ct.equal(processedEnvs.length, 1)
     ct.equal(processedEnvs[0].envFilepath, '.env')
@@ -102,7 +102,7 @@ t.test('#run (blank existing .env file) seeds sample kit before encrypting',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt().run()
+    } = await new Encrypt([], [], [], null, true).run()
 
     ct.equal(processedEnvs.length, 1)
     ct.equal(processedEnvs[0].envFilepath, '.env')
@@ -162,7 +162,7 @@ t.test('#run (finds .env file)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO'])
@@ -208,7 +208,7 @@ t.test('#run (finds .env file with multiline values - implicit and explicit newl
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO', 'ALOHA'])
@@ -249,7 +249,7 @@ t.test('#run (finds .env file with CRLF multiline values - implicit and explicit
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO', 'ALOHA'])
@@ -290,7 +290,7 @@ t.test('#run (finds .env file already encrypted)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, [])
@@ -312,7 +312,7 @@ t.test('#run (finds .env file with specified key)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs, ['HELLO2']).run()
+    } = await new Encrypt(envs, ['HELLO2'], [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO2'])
@@ -341,7 +341,7 @@ t.test('#run (finds .env file with specified key as string)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs, 'HELLO2').run()
+    } = await new Encrypt(envs, 'HELLO2', [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO2'])
@@ -370,7 +370,7 @@ t.test('#run (finds .env file with specified glob string)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs, 'H*').run()
+    } = await new Encrypt(envs, 'H*', [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO', 'HELLO2', 'HELLO3'])
@@ -400,7 +400,7 @@ t.test('#run (finds .env file excluding specified key)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs, [], ['HELLO2']).run()
+    } = await new Encrypt(envs, [], ['HELLO2'], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO', 'HELLO3'])
@@ -430,7 +430,7 @@ t.test('#run (finds .env file excluding specified key as string)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs, [], 'HELLO3').run()
+    } = await new Encrypt(envs, [], 'HELLO3', null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['HELLO', 'HELLO2'])
@@ -460,7 +460,7 @@ t.test('#run (finds .env file excluding specified key globbed)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs, [], 'HE*').run()
+    } = await new Encrypt(envs, [], 'HE*', null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, [])
@@ -489,7 +489,7 @@ t.test('#run (finds .env.export file with exported key)',
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Encrypt(envs).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     const p1 = processedEnvs[0]
     ct.same(p1.keys, ['KEY'])
@@ -529,7 +529,7 @@ t.test('#run (finds .env and .env.keys file) but derived public key does not mat
 
     const {
       processedEnvs
-    } = await new Encrypt(envs).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
     error.code = 'MISPAIRED_PRIVATE_KEY'
@@ -563,7 +563,7 @@ t.test('#run (finds .env file only)',
     const {
       processedEnvs,
       unchangedFilepaths
-    } = await new Encrypt(envs).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -599,7 +599,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Encrypt(envs, [], [], envKeysFilepath).run()
+    } = await new Encrypt(envs, [], [], envKeysFilepath, true).run()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -637,7 +637,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Encrypt(envs, [], [], envKeysFilepath).run()
+    } = await new Encrypt(envs, [], [], envKeysFilepath, true).run()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -687,7 +687,7 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
     const {
       processedEnvs,
       unchangedFilepaths
-    } = await new Encrypt(envs).run()
+    } = await new Encrypt(envs, [], [], null, true).run()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey

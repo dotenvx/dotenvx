@@ -434,7 +434,7 @@ t.test('#run (finds .env file) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs).runSync()
+    } = await new Sets('KEY', 'value', envs, true, null, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -491,7 +491,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs).runSync()
+    } = await new Sets('KEY', 'value', envs, true, null, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -539,7 +539,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt and changes original
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).runSync()
+    } = await new Sets('HELLO', 'new value', envs, true, null, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -587,7 +587,7 @@ t.test('#run (finds .env and .env.keys file) with --encrypt but derived public k
 
     const {
       processedEnvs
-    } = await new Sets('HELLO', 'new value', envs).runSync()
+    } = await new Sets('HELLO', 'new value', envs, true, null, true).runSync()
 
     const error = new Error('[MISPAIRED_PRIVATE_KEY] private key\'s derived public key (03eaf21…) does not match the existing public key (12345…)')
     error.code = 'MISPAIRED_PRIVATE_KEY'
@@ -618,7 +618,7 @@ t.test('#run (finds .env file only) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).runSync()
+    } = await new Sets('HELLO', 'new value', envs, true, null, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -672,7 +672,7 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).runSync()
+    } = await new Sets('HELLO', 'new value', envs, true, null, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -731,7 +731,7 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).runSync()
+    } = await new Sets('HELLO', 'new value', envs, true, null, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -790,7 +790,7 @@ t.test('#run (finds .env with a shebang) with --encrypt',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'new value', envs).runSync()
+    } = await new Sets('HELLO', 'new value', envs, true, null, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -842,7 +842,7 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('HELLO', 'unencrypted', envs).runSync() // this value should be the same value as currently in the file
+    } = await new Sets('HELLO', 'unencrypted', envs, true, null, true).runSync() // this value should be the same value as currently in the file
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -892,7 +892,7 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs, true, envKeysFilepath).runSync()
+    } = await new Sets('KEY', 'value', envs, true, envKeysFilepath, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
@@ -945,7 +945,7 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath and pri
     const {
       processedEnvs,
       changedFilepaths
-    } = await new Sets('KEY', 'value', envs, true, envKeysFilepath).runSync()
+    } = await new Sets('KEY', 'value', envs, true, envKeysFilepath, true).runSync()
 
     const row = processedEnvs[0]
     const publicKey = row.publicKey
