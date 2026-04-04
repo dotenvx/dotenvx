@@ -623,6 +623,21 @@ t.test('#run wraps invalid public key re-encryption errors',
     ct.end()
   })
 
+t.test('#run handles ENOENT without error.path as missing env file',
+  async ct => {
+    const RotateWithStub = proxyquire('../../../src/lib/services/rotate', {
+      './../helpers/detectEncoding': async () => { throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' }) }
+    })
+
+    const envs = [{ type: 'envFile', value: '.env' }]
+    const { processedEnvs, changedFilepaths, unchangedFilepaths } = await new RotateWithStub(envs, [], [], null, true).run()
+
+    ct.equal(processedEnvs[0].error.code, 'MISSING_ENV_FILE')
+    ct.same(changedFilepaths, [])
+    ct.same(unchangedFilepaths, [])
+    ct.end()
+  })
+
 // t.test('#run (finds .env file) and custom envKeysFilepath and privateKey already exists',
 // async ct => {
 //   const envKeysFilepath = 'tests/monorepo/.env.keys'
