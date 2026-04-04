@@ -168,7 +168,7 @@ t.test('#run expansion',
 
 t.test('#run passes opsOn to Run service',
   async ct => {
-    const runStub = sinon.stub(Run.prototype, 'runSync').returns({ processedEnvs: [] })
+    const runStub = sinon.stub(Run.prototype, 'run').resolves({ processedEnvs: [] })
 
     await new Get('KEY').run()
     t.equal(runStub.firstCall.thisValue.opsOn, true, 'opsOn defaults to true')
