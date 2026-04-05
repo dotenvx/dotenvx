@@ -55,7 +55,7 @@
     "yocto-spinner": "^1.1.0"
   },
   "devDependencies": {
-    "@yao-pkg/pkg": "^5.14.2",
+    "@yao-pkg/pkg": "^6.14.2",
     "capture-console": "^1.0.2",
     "esbuild": "^0.25.8",
     "proxyquire": "^2.1.3",
