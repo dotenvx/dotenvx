@@ -46,9 +46,9 @@ HELLO=''
 })
 
 t.test('#run (.env.example already exists but with different keys)', ct => {
-  const originalReadFileSync = fsx.readFileX
+  const originalReadFileSync = fsx.readFileXSync
   const sandbox = sinon.createSandbox()
-  sandbox.stub(fsx, 'readFileX').callsFake((filepath, options) => {
+  sandbox.stub(fsx, 'readFileXSync').callsFake((filepath, options) => {
     if (filepath === path.resolve('tests/monorepo/apps/backend/.env')) {
       return 'HELLO=world\nHELLO2=universe'
     } else {

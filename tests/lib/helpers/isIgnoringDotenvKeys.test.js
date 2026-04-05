@@ -19,7 +19,7 @@ t.test('#isIgnoringDotenvKeys - no .gitignore file', ct => {
 t.test('#isIgnoringDotenvKeys - empty .gitignore file', ct => {
   const existsSyncStub = sinon.stub(fsx, 'existsSync')
   existsSyncStub.returns(true)
-  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   readFileXStub.returns('')
 
   const result = isIgnoringDotenvKeys()
@@ -35,7 +35,7 @@ t.test('#isIgnoringDotenvKeys - empty .gitignore file', ct => {
 t.test('#isIgnoringDotenvKeys - .gitignore file ignores .env*', ct => {
   const existsSyncStub = sinon.stub(fsx, 'existsSync')
   existsSyncStub.returns(true)
-  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   readFileXStub.returns('.env*')
 
   const result = isIgnoringDotenvKeys()

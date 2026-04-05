@@ -9,7 +9,7 @@ const FIRST_TIME_KEYS_SRC = [
 const path = require('path')
 const fsx = require('./../fsx')
 
-function mutateKeysSrc ({ envFilepath, keysFilepath, privateKeyName, privateKeyValue }) {
+async function mutateKeysSrc ({ envFilepath, keysFilepath, privateKeyName, privateKeyValue }) {
   const filename = path.basename(envFilepath)
   const filepath = path.resolve(envFilepath)
   let resolvedKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
@@ -19,13 +19,13 @@ function mutateKeysSrc ({ envFilepath, keysFilepath, privateKeyName, privateKeyV
   const appendPrivateKey = [`# ${filename}`, `${privateKeyName}=${privateKeyValue}`, ''].join('\n')
 
   let keysSrc = ''
-  if (fsx.existsSync(resolvedKeysFilepath)) {
-    keysSrc = fsx.readFileX(resolvedKeysFilepath)
+  if (await fsx.exists(resolvedKeysFilepath)) {
+    keysSrc = await fsx.readFileX(resolvedKeysFilepath)
   }
   keysSrc = keysSrc.length > 1 ? keysSrc : `${FIRST_TIME_KEYS_SRC}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
-  fsx.writeFileX(resolvedKeysFilepath, keysSrc) // TODO: don't write if ops
+  await fsx.writeFileX(resolvedKeysFilepath, keysSrc) // TODO: don't write if ops
 
   const envKeysFilepath = keysFilepath || path.join(path.dirname(envFilepath), path.basename(resolvedKeysFilepath))
 

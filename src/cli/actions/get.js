@@ -3,18 +3,20 @@ const { logger } = require('./../../shared/logger')
 const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
-
+const createSpinner = require('../../lib/helpers/createSpinner')
+const Session = require('../../db/session')
 const Get = require('./../../lib/services/get')
 
-function get (key) {
+async function get (key) {
+  const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'decrypting' })
+
+  logger.debug(`options: ${JSON.stringify(options)}`)
   if (key) {
     logger.debug(`key: ${key}`)
   }
 
-  const options = this.opts()
-  logger.debug(`options: ${JSON.stringify(options)}`)
   const prettyPrint = options.prettyPrint || options.pp
-
   const ignore = options.ignore || []
 
   let envs = []
@@ -26,8 +28,9 @@ function get (key) {
   }
 
   try {
-    const opsOn = options.opsOff !== true
-    const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
+    const sesh = new Session()
+    const noOps = options.ops === false || (await sesh.noOps())
+    const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noOps).run()
 
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict
@@ -39,6 +42,7 @@ function get (key) {
       logger.error(error.messageWithHelp)
     }
 
+    if (spinner) spinner.stop()
     if (key) {
       const single = parsed[key]
       if (single === undefined) {
@@ -73,6 +77,7 @@ function get (key) {
       }
     }
   } catch (error) {
+    if (spinner) spinner.stop()
     catchAndLog(error)
     process.exit(1)
   }

@@ -29,12 +29,12 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false, noCreate = false) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false, noCreate = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
-    this.opsOn = opsOn
+    this.noOps = noOps
     this.noCreate = noCreate
 
     this.processedEnvs = []
@@ -42,7 +42,7 @@ class Encrypt {
     this.unchangedFilepaths = new Set()
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -56,7 +56,7 @@ class Encrypt {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._encryptEnvFile(env.value)
+        await this._encryptEnvFile(env.value)
       }
     }
 
@@ -67,7 +67,7 @@ class Encrypt {
     }
   }
 
-  _encryptEnvFile (envFilepath) {
+  async _encryptEnvFile (envFilepath) {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
@@ -80,12 +80,12 @@ class Encrypt {
     try {
       // if noCreate is on then detectEncoding will throw and we'll halt the calls
       // but if noCreate is false then create the file if it doesn't exist
-      if (!fsx.existsSync(filepath) && !this.noCreate) {
-        fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
+      if (!(await fsx.exists(filepath)) && !this.noCreate) {
+        await fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
         fileCreated = true
       }
-      const encoding = detectEncoding(filepath)
-      let envSrc = fsx.readFileX(filepath, { encoding })
+      const encoding = await detectEncoding(filepath)
+      let envSrc = await fsx.readFileX(filepath, { encoding })
       if (envSrc.trim().length === 0) {
         envSrc = SAMPLE_ENV_KIT
         row.kitCreated = 'sample'
@@ -97,11 +97,11 @@ class Encrypt {
       let privateKey
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { publicKeyValue, privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
 
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
-        const prov = provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+        const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, noOps: this.noOps })
         envSrc = prov.envSrc
         publicKey = prov.publicKey
         privateKey = prov.privateKey

@@ -1,7 +1,7 @@
 const fs = require('fs')
 
-function detectEncoding (filepath) {
-  const buffer = fs.readFileSync(filepath)
+async function detectEncoding (filepath) {
+  const buffer = await fs.promises.readFile(filepath)
 
   // check for UTF-16LE BOM (Byte Order Mark)
   if (buffer.length >= 2 && buffer[0] === 0xFF && buffer[1] === 0xFE) {

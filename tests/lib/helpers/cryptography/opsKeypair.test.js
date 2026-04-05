@@ -2,8 +2,8 @@ const t = require('tap')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-t.test('opsKeypair returns normalized keys from Ops keypair', (ct) => {
-  const keypair = sinon.stub().returns({
+t.test('opsKeypair returns normalized keys from Ops keypair', async (ct) => {
+  const keypair = sinon.stub().resolves({
     public_key: 'ops_pub_123',
     private_key: 'ops_priv_123'
   })
@@ -16,7 +16,7 @@ t.test('opsKeypair returns normalized keys from Ops keypair', (ct) => {
     './../../extensions/ops': OpsMock
   })
 
-  const out = opsKeypair()
+  const out = await opsKeypair()
 
   ct.equal(out.publicKey, 'ops_pub_123')
   ct.equal(out.privateKey, 'ops_priv_123')
@@ -26,8 +26,8 @@ t.test('opsKeypair returns normalized keys from Ops keypair', (ct) => {
   ct.end()
 })
 
-t.test('opsKeypair forwards provided public key to Ops keypair', (ct) => {
-  const keypair = sinon.stub().returns({
+t.test('opsKeypair forwards provided public key to Ops keypair', async (ct) => {
+  const keypair = sinon.stub().resolves({
     public_key: 'ops_pub_abc',
     private_key: 'ops_priv_abc'
   })
@@ -40,7 +40,7 @@ t.test('opsKeypair forwards provided public key to Ops keypair', (ct) => {
     './../../extensions/ops': OpsMock
   })
 
-  const out = opsKeypair('existing_pub')
+  const out = await opsKeypair('existing_pub')
 
   ct.equal(out.publicKey, 'ops_pub_abc')
   ct.equal(out.privateKey, 'ops_priv_abc')

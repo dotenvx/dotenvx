@@ -3,13 +3,18 @@ const { logger } = require('./../../shared/logger')
 
 const Decrypt = require('./../../lib/services/decrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+const createSpinner = require('../../lib/helpers/createSpinner')
+const Session = require('../../db/session')
 
-function decrypt () {
+async function decrypt () {
   const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'decrypting' })
+
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  const sesh = new Session()
   const envs = this.envs
-  const opsOn = options.opsOff !== true
+  const noOps = options.ops === false || (await sesh.noOps())
 
   let errorCount = 0
 
@@ -17,8 +22,8 @@ function decrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
-
+    } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
+    if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
         errorCount += 1
@@ -39,7 +44,7 @@ function decrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
+      } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -48,18 +53,19 @@ function decrypt () {
           errorCount += 1
           logger.error(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
           logger.verbose(`decrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
-          logger.verbose(`no changes ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+          logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
       }
 
+      if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
         logger.success(`◇ decrypted (${changedFilepaths.join(',')})`)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`○ no changes (${unchangedFilepaths})`)
+        logger.info(`○ no change (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
       }
@@ -68,6 +74,7 @@ function decrypt () {
         process.exit(1)
       }
     } catch (error) {
+      if (spinner) spinner.stop()
       catchAndLog(error)
       process.exit(1)
     }

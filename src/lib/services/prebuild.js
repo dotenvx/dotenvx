@@ -30,7 +30,7 @@ class Prebuild {
       }).custom()
       warnings.push(warning)
     } else {
-      dockerignore = fsx.readFileX('.dockerignore')
+      dockerignore = fsx.readFileXSync('.dockerignore')
     }
 
     // 2. check .env* files against .dockerignore file
@@ -53,7 +53,7 @@ class Prebuild {
         }
       } else {
         if (file !== '.env.example' && file !== '.env.x') {
-          const src = fsx.readFileX(file)
+          const src = fsx.readFileXSync(file)
           const encrypted = isFullyEncrypted(src)
 
           // if contents are encrypted don't raise an error

@@ -4,21 +4,26 @@ const { logger } = require('./../../shared/logger')
 const Rotate = require('./../../lib/services/rotate')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+const createSpinner = require('../../lib/helpers/createSpinner')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
+const Session = require('../../db/session')
 
-function rotate () {
+async function rotate () {
   const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'rotating', frames: ['⟳', '⤾', '⥁'] })
+
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
-  const opsOn = options.opsOff !== true
+  const sesh = new Session()
+  const noOps = options.ops === false || (await sesh.noOps())
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
-
+    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
+    if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
       if (processedEnv.privateKeyAdded) {
@@ -33,24 +38,25 @@ function rotate () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, opsOn).run()
+      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`rotating ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         if (processedEnv.error) {
           logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
           if (processedEnv.privateKeyAdded) {
-            fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+            await fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
           }
 
           logger.verbose(`rotated ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
-          logger.verbose(`no changes ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+          logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
       }
 
+      if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
         const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
         let msg = `⟳ rotated (${changedFilepaths.join(',')})`
@@ -60,11 +66,12 @@ function rotate () {
         }
         logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`○ no changes (${unchangedFilepaths})`)
+        logger.info(`○ no change (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
       }
     } catch (error) {
+      if (spinner) spinner.stop()
       catchAndLog(error)
       process.exit(1)
     }

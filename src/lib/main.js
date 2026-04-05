@@ -12,6 +12,7 @@ const Sets = require('./services/sets')
 const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
+const Session = require('./../db/session')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
@@ -39,14 +40,14 @@ const config = function (options = {}) {
   // envKeysFile
   const envKeysFile = options.envKeysFile
 
-  // dotenvx-ops related
-  const opsOn = options.opsOff !== true
-
   if (options) {
     setLogLevel(options)
     setLogName(options)
     setLogVersion(options)
   }
+
+  // dotenvx-ops related
+  const noOps = resolveNoOps(options)
 
   try {
     const envs = buildEnvs(options)
@@ -54,7 +55,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, opsOn).run()
+    } = new Run(envs, overload, processEnv, envKeysFile, noOps).runSync()
 
     let lastError
     /** @type {Record<string, string>} */
@@ -164,13 +165,13 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
-  const opsOn = options.opsOff !== true
+  const noOps = resolveNoOps(options)
 
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath, opsOn).run()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noOps).runSync()
 
   let withEncryption = ''
 
@@ -186,7 +187,7 @@ const set = function (key, value, options = {}) {
       const message = error.messageWithHelp || (error.help ? `${error.message}. ${error.help}` : error.message)
       logger.warn(message)
     } else {
-      fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+      fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
 
       logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
       logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)
@@ -206,7 +207,7 @@ const set = function (key, value, options = {}) {
     const keyAddedEnvFilepath = keyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
     logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
   } else if (unchangedFilepaths.length > 0) {
-    logger.info(`○ no changes (${unchangedFilepaths})`)
+    logger.info(`○ no change (${unchangedFilepaths})`)
   } else {
     // do nothing
   }
@@ -223,12 +224,12 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
-  const opsOn = options.opsOff !== true
+  const noOps = resolveNoOps(options)
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, opsOn).run()
+  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noOps).runSync()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
@@ -281,14 +282,18 @@ const genexample = function (directory, envFile) {
 }
 
 /** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null, opsOff = false) {
-  const opsOn = opsOff !== true
-  const keypairs = new Keypair(envFile, envKeysFile, opsOn).run()
+const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
+  const keypairs = new Keypair(envFile, envKeysFile, noOps).runSync()
   if (key) {
     return keypairs[key]
   } else {
     return keypairs
   }
+}
+
+function resolveNoOps (options = {}) {
+  const sesh = new Session()
+  return options.noOps === true || options.opsOff === true || sesh.noOpsSync()
 }
 
 module.exports = {

@@ -39,7 +39,7 @@ class Genexample {
       }
 
       // get the original src
-      let src = fsx.readFileX(filepath)
+      let src = fsx.readFileXSync(filepath)
       const parsed = dotenvParse(src)
       for (const key in parsed) {
         // used later
@@ -63,7 +63,7 @@ class Genexample {
       }
     } else {
       // it already exists (which means the user might have it modified a way in which they prefer, so replace exampleSrc with their existing .env.example)
-      exampleSrc = fsx.readFileX(this.exampleFilepath)
+      exampleSrc = fsx.readFileXSync(this.exampleFilepath)
 
       const parsed = dotenvParse(exampleSrc)
       for (const key of [...keys]) {

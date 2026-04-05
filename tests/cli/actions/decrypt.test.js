@@ -1,18 +1,54 @@
 const t = require('tap')
 const fsx = require('./../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
-const capcon = require('capture-console')
+const proxyquire = require('proxyquire')
 
 const Decrypt = require('./../../../src/lib/services/decrypt')
 const { logger } = require('../../../src/shared/logger')
 
 const decrypt = require('./../../../src/cli/actions/decrypt')
 
+async function captureStdout (fn) {
+  let stdout = ''
+  const stdoutWrite = process.stdout.write
+  process.stdout.write = function (chunk, encoding, callback) {
+    stdout += Buffer.isBuffer(chunk) ? chunk.toString() : chunk
+    if (typeof callback === 'function') callback()
+    return true
+  }
+
+  try {
+    await fn()
+  } finally {
+    process.stdout.write = stdoutWrite
+  }
+
+  return stdout
+}
+
+async function captureStderr (fn) {
+  let stderr = ''
+  const stderrWrite = process.stderr.write
+  process.stderr.write = function (chunk, encoding, callback) {
+    stderr += Buffer.isBuffer(chunk) ? chunk.toString() : chunk
+    if (typeof callback === 'function') callback()
+    return true
+  }
+
+  try {
+    await fn()
+  } finally {
+    process.stderr.write = stderrWrite
+  }
+
+  return stderr
+}
+
 t.beforeEach((ct) => {
   sinon.restore()
 })
 
-t.test('decrypt - nothing', ct => {
+t.test('decrypt - nothing', async ct => {
   sinon.stub(process, 'exit')
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
@@ -23,14 +59,14 @@ t.test('decrypt - nothing', ct => {
     unchangedFilepaths: []
   })
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(stub.called, 'Decrypt().run() called')
 
   ct.end()
 })
 
-t.test('decrypt - .env but no changes', ct => {
+t.test('decrypt - .env but no change', async ct => {
   sinon.stub(fsx, 'writeFileX')
   sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({})
@@ -48,14 +84,14 @@ t.test('decrypt - .env but no changes', ct => {
   })
   const loggerNeutralStub = sinon.stub(logger, 'info')
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
-  t.ok(loggerNeutralStub.calledWith('○ no changes (.env)'), 'logger.info')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env)'), 'logger.info')
 
   ct.end()
 })
 
-t.test('decrypt - --stdout', ct => {
+t.test('decrypt - --stdout', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const processExitStub = sinon.stub(process, 'exit')
   const optsStub = sinon.stub().returns({ stdout: true })
@@ -72,8 +108,8 @@ t.test('decrypt - --stdout', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  const stdout = capcon.interceptStdout(() => {
-    decrypt.call(fakeContext)
+  const stdout = await captureStdout(async () => {
+    await decrypt.call(fakeContext)
   })
 
   t.ok(stub.called, 'Decrypt().run() called')
@@ -83,7 +119,7 @@ t.test('decrypt - --stdout', ct => {
   ct.end()
 })
 
-t.test('decrypt - --stdout with error', ct => {
+t.test('decrypt - --stdout with error', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
@@ -104,8 +140,8 @@ t.test('decrypt - --stdout with error', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  capcon.interceptStderr(() => {
-    decrypt.call(fakeContext)
+  await captureStderr(async () => {
+    await decrypt.call(fakeContext)
   })
 
   t.ok(stub.called, 'Decrypt().run() called')
@@ -116,7 +152,7 @@ t.test('decrypt - --stdout with error', ct => {
   ct.end()
 })
 
-t.test('decrypt - .env with changes', ct => {
+t.test('decrypt - .env with changes', async ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
@@ -136,7 +172,7 @@ t.test('decrypt - .env with changes', ct => {
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -148,7 +184,7 @@ t.test('decrypt - .env with changes', ct => {
   ct.end()
 })
 
-t.test('decrypt - MISSING_ENV_FILE', ct => {
+t.test('decrypt - MISSING_ENV_FILE', async ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
@@ -174,7 +210,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -187,7 +223,7 @@ t.test('decrypt - MISSING_ENV_FILE', ct => {
   ct.end()
 })
 
-t.test('decrypt - MISSING_ENV_FILE fallback filepath', ct => {
+t.test('decrypt - MISSING_ENV_FILE fallback filepath', async ct => {
   sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
   const error = new Error('Mock Error')
@@ -207,13 +243,13 @@ t.test('decrypt - MISSING_ENV_FILE fallback filepath', ct => {
     unchangedFilepaths: []
   })
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(loggerErrorStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'), 'logger.error fallback .env path')
   ct.end()
 })
 
-t.test('decrypt - OTHER_ERROR', ct => {
+t.test('decrypt - OTHER_ERROR', async ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
@@ -239,7 +275,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(loggerInfoStub.notCalled, 'logger.info')
@@ -253,7 +289,7 @@ t.test('decrypt - OTHER_ERROR', ct => {
   ct.end()
 })
 
-t.test('decrypt - WRONG_PRIVATE_KEY', ct => {
+t.test('decrypt - WRONG_PRIVATE_KEY', async ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
@@ -275,7 +311,7 @@ t.test('decrypt - WRONG_PRIVATE_KEY', ct => {
   })
   const loggerErrorStub = sinon.stub(logger, 'error')
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -285,7 +321,7 @@ t.test('decrypt - WRONG_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('decrypt - MISSING_PRIVATE_KEY', ct => {
+t.test('decrypt - MISSING_PRIVATE_KEY', async ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='")
@@ -307,7 +343,7 @@ t.test('decrypt - MISSING_PRIVATE_KEY', ct => {
   })
   const loggerErrorStub = sinon.stub(logger, 'error')
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
@@ -317,7 +353,7 @@ t.test('decrypt - MISSING_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('decrypt - MISSING_PRIVATE_KEY/WRONG_PRIVATE_KEY fallback base messages', ct => {
+t.test('decrypt - MISSING_PRIVATE_KEY/WRONG_PRIVATE_KEY fallback base messages', async ct => {
   sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
   const missingPrivateKey = new Error('')
@@ -348,14 +384,14 @@ t.test('decrypt - MISSING_PRIVATE_KEY/WRONG_PRIVATE_KEY fallback base messages',
     unchangedFilepaths: []
   })
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] could not decrypt fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
   t.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] could not decrypt fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
   ct.end()
 })
 
-t.test('decrypt - --stdout with WRONG_PRIVATE_KEY', ct => {
+t.test('decrypt - --stdout with WRONG_PRIVATE_KEY', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
@@ -377,8 +413,8 @@ t.test('decrypt - --stdout with WRONG_PRIVATE_KEY', ct => {
     unchangedFilepaths: ['.env']
   })
 
-  capcon.interceptStderr(() => {
-    decrypt.call(fakeContext)
+  await captureStderr(async () => {
+    await decrypt.call(fakeContext)
   })
 
   t.ok(stub.called, 'Decrypt().run() called')
@@ -389,7 +425,7 @@ t.test('decrypt - --stdout with WRONG_PRIVATE_KEY', ct => {
   ct.end()
 })
 
-t.test('decrypt - catch error', ct => {
+t.test('decrypt - catch error', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
   error.help = 'Mock Help'
@@ -408,7 +444,7 @@ t.test('decrypt - catch error', ct => {
   const loggerHelpStub = sinon.stub(logger, 'help')
   const loggerDebugStub = sinon.stub(logger, 'debug')
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(writeStub.notCalled, 'fsx.writeFileX')
   t.ok(loggerInfoStub.notCalled, 'logger info')
@@ -422,10 +458,10 @@ t.test('decrypt - catch error', ct => {
   ct.end()
 })
 
-t.test('decrypt - --ops-off passes opsOn false to Decrypt service', ct => {
+t.test('decrypt - --no-ops passes noOps true to Decrypt service', async ct => {
   sinon.stub(process, 'exit')
   sinon.stub(fsx, 'writeFileX')
-  const optsStub = sinon.stub().returns({ opsOff: true })
+  const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Decrypt.prototype, 'run').returns({
     processedEnvs: [],
@@ -433,10 +469,66 @@ t.test('decrypt - --ops-off passes opsOn false to Decrypt service', ct => {
     unchangedFilepaths: []
   })
 
-  decrypt.call(fakeContext)
+  await decrypt.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Decrypt().run() called')
-  t.equal(runStub.thisValues[0].opsOn, false, 'opsOn false')
+  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
 
+  ct.end()
+})
+
+t.test('decrypt - spinner stop is called for stdout/success/catch flows', async ct => {
+  const stopStub = sinon.stub()
+  const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
+  const sessionStub = sinon.stub().resolves(false)
+  const catchAndLogStub = sinon.stub()
+  const processExitStub = sinon.stub(process, 'exit')
+
+  class SessionMock {
+    async noOps () {
+      return sessionStub()
+    }
+  }
+
+  class DecryptMock {
+    async run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const decryptWithSpinner = proxyquire('../../../src/cli/actions/decrypt', {
+    './../../lib/services/decrypt': DecryptMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../db/session': SessionMock
+  })
+
+  await decryptWithSpinner.call({ opts: () => ({ stdout: true }), envs: [] })
+  ct.equal(stopStub.callCount, 1, 'stops spinner in stdout flow')
+
+  await decryptWithSpinner.call({ opts: () => ({}), envs: [] })
+  ct.equal(stopStub.callCount, 2, 'stops spinner in success flow')
+
+  class DecryptThrowsMock {
+    async run () {
+      throw new Error('boom')
+    }
+  }
+
+  const decryptWithSpinnerAndError = proxyquire('../../../src/cli/actions/decrypt', {
+    './../../lib/services/decrypt': DecryptThrowsMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../db/session': SessionMock
+  })
+
+  await decryptWithSpinnerAndError.call({ opts: () => ({}), envs: [] })
+  ct.equal(stopStub.callCount, 3, 'stops spinner in catch flow')
+  ct.ok(catchAndLogStub.calledOnce, 'catchAndLog called in catch flow')
+  ct.ok(processExitStub.calledWith(1), 'process.exit(1) called in catch flow')
   ct.end()
 })

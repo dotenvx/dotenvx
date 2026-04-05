@@ -38,7 +38,7 @@ t.test('#run (no dockerignore file)', ct => {
 
 t.test('#run (dockerignore is ignoring .env.example file and shouldn\'t)', ct => {
   sinon.stub(fsx, 'existsSync').returns(true)
-  sinon.stub(fsx, 'readFileX').returns('.env*')
+  sinon.stub(fsx, 'readFileXSync').returns('.env*')
   sinon.stub(fsx, 'readdirSync').returns(['.env.example'])
   sinon.stub(Ls.prototype, 'run').returns(['.env.example'])
   childProcess.execSync.returns(Buffer.from('.env.example'))
@@ -52,7 +52,7 @@ t.test('#run (dockerignore is ignoring .env.example file and shouldn\'t)', ct =>
 
 t.test('#run (dockerignore is ignoring .env.x file and shouldn\'t)', ct => {
   sinon.stub(fsx, 'existsSync').returns(true)
-  sinon.stub(fsx, 'readFileX').returns('.env*')
+  sinon.stub(fsx, 'readFileXSync').returns('.env*')
   sinon.stub(fsx, 'readdirSync').returns(['.env.x'])
   sinon.stub(Ls.prototype, 'run').returns(['.env.x'])
   childProcess.execSync.returns(Buffer.from('.env.x'))
@@ -67,7 +67,7 @@ t.test('#run (dockerignore is not ignore .env.production file and should)', ct =
   sinon.stub(fsx, 'existsSync').returns(true)
   sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
   childProcess.execSync.returns(Buffer.from('.env.production'))
-  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   // Stub different return values based on the file path
   readFileXStub.callsFake((filePath) => {
     if (filePath === '.env') {
@@ -92,7 +92,7 @@ t.test('#run (dockerignore is not ignore .env.keys file and should)', ct => {
   sinon.stub(fsx, 'existsSync').returns(true)
   sinon.stub(Ls.prototype, 'run').returns(['.env.keys'])
   childProcess.execSync.returns(Buffer.from('.env.keys'))
-  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   // Stub different return values based on the file path
   readFileXStub.callsFake((filePath) => {
     if (filePath === '.env') {
@@ -116,7 +116,7 @@ t.test('#run (dockerignore is not ignore .env.keys file and should)', ct => {
 t.test('#run (dockerignore is not ignore .env.production file and should) AND isFileToBeCommitted raises an error (should default to true on the filename)', ct => {
   sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
   childProcess.execSync.throws(new Error('Mock Error'))
-  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   // Stub different return values based on the file path
   readFileXStub.callsFake((filePath) => {
     if (filePath === '.env') {
@@ -141,7 +141,7 @@ t.test('#run (.env files in subfolders throw error in prebuild hook)', ct => {
   sinon.stub(Ls.prototype, 'run').returns(['packages/app/.env.production'])
   childProcess.execSync.returns(Buffer.from('packages/app/.env.production'))
 
-  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   readFileXStub.callsFake((filePath) => {
     if (filePath === 'packages/app/.env.production') {
       return 'ENV_VAR=value'

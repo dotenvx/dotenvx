@@ -35,8 +35,8 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap run --test-env=DOTENVX_OPS_OFF=true --allow-empty-coverage --disable-coverage --timeout=60000",
-    "test-coverage": "tap run --test-env=DOTENVX_OPS_OFF=true --show-full-coverage --timeout=60000",
+    "test": "tap run --test-env=DOTENVX_NO_OPS=true --allow-empty-coverage --disable-coverage --timeout=60000",
+    "test-coverage": "tap run --test-env=DOTENVX_NO_OPS=true --show-full-coverage --timeout=60000",
     "testshell": "bash shellspec",
     "prerelease": "npm test && npm run testshell",
     "release": "standard-version"
@@ -51,7 +51,8 @@
     "ignore": "^5.3.0",
     "object-treeify": "1.1.33",
     "picomatch": "^4.0.2",
-    "which": "^4.0.0"
+    "which": "^4.0.0",
+    "yocto-spinner": "^1.1.0"
   },
   "devDependencies": {
     "@yao-pkg/pkg": "^5.14.2",

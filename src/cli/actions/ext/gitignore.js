@@ -18,13 +18,13 @@ class Generic {
     const changedPatterns = []
     if (!fsx.existsSync(this.filename)) {
       if (this.touchFile === true && this.patterns.length > 0) {
-        fsx.writeFileX(this.filename, '')
+        fsx.writeFileXSync(this.filename, '')
       } else {
         return
       }
     }
 
-    const lines = fsx.readFileX(this.filename).split(/\r?\n/)
+    const lines = fsx.readFileXSync(this.filename).split(/\r?\n/)
     this.patterns.forEach(pattern => {
       if (!lines.includes(pattern.trim())) {
         this.append(pattern)
@@ -36,7 +36,7 @@ class Generic {
     if (changedPatterns.length > 0) {
       logger.success(`▣ ignored ${this.patterns} (${this.filename})`)
     } else {
-      logger.info(`○ no changes (${this.filename})`)
+      logger.info(`○ no change (${this.filename})`)
     }
   }
 }

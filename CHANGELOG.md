@@ -2,7 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.59.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.60.0...main)
+
+## [1.60.0](https://github.com/dotenvx/dotenvx/compare/v1.59.1...v1.60.0) (2026-04-04)
+
+### Added
+
+* Add spinner with loading messages
+  * `injecting` (`run`)
+  * `encrypting` (`encrypt`, `set`)
+  * `decrypting` (`decrypt`, `get`)
+  * `rotating` (`rotate`)
+  * `retrieving` (`keypair`)
 
 ## [1.59.1](https://github.com/dotenvx/dotenvx/compare/v1.59.0...v1.59.1) (2026-03-28)
 

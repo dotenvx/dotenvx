@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /* c8 ignore start */
-const { Command } = require('commander')
+const { Command, Option } = require('commander')
 const program = new Command()
 
 const { setLogLevel, logger } = require('../shared/logger')
@@ -12,9 +12,6 @@ const getCommanderVersion = require('./../lib/helpers/getCommanderVersion')
 const executeDynamic = require('./../lib/helpers/executeDynamic')
 const removeDynamicHelpSection = require('./../lib/helpers/removeDynamicHelpSection')
 const removeOptionsHelpParts = require('./../lib/helpers/removeOptionsHelpParts')
-
-const Session = require('./../db/session')
-const sesh = new Session()
 
 // for use with run
 const envs = []
@@ -74,10 +71,11 @@ program.command('run')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
+  .option('--no-ops', 'disable dotenvx-ops features')
+  .addOption(new Option('--ops-off', 'DEPRECATED: use --no-ops').hideHelp())
   .action(function (...args) {
     this.envs = envs
-    runAction.apply(this, args)
+    return runAction.apply(this, args)
   })
 
 // dotenvx get
@@ -97,10 +95,10 @@ program.command('get')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, eval)', 'json')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
+  .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    getAction.apply(this, args)
+    return getAction.apply(this, args)
   })
 
 // dotenvx set
@@ -117,10 +115,10 @@ program.command('set')
   .option('-c, --encrypt', 'encrypt value', true)
   .option('-p, --plain', 'store value as plain text', false)
   .option('--no-create', 'do not create .env file(s) when missing')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
+  .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    setAction.apply(this, args)
+    return setAction.apply(this, args)
   })
 
 // dotenvx encrypt
@@ -131,12 +129,12 @@ program.command('encrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
-  .option('--no-create', 'do not create .env file(s) when missing')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
   .option('--stdout', 'send to stdout')
+  .option('--no-create', 'do not create .env file(s) when missing')
+  .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    encryptAction.apply(this, args)
+    return encryptAction.apply(this, args)
   })
 
 // dotenvx decrypt
@@ -147,11 +145,11 @@ program.command('decrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
+  .option('--no-ops', 'disable dotenvx-ops features')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
-    decryptAction.apply(this, args)
+    return decryptAction.apply(this, args)
   })
 
 // dotenvx rotate
@@ -162,11 +160,11 @@ program.command('rotate')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
+  .option('--no-ops', 'disable dotenvx-ops features')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
-    rotateAction.apply(this, args)
+    return rotateAction.apply(this, args)
   })
 
 // dotenvx keypair
@@ -177,7 +175,7 @@ program.command('keypair')
   .argument('[KEY]', 'environment variable key name')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('--ops-off', 'disable dotenvx-ops features', sesh.opsOff())
+  .option('--no-ops', 'disable dotenvx-ops features')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell)', 'json')
@@ -208,11 +206,11 @@ program.command('help [command]')
     }
   })
 
-// dotenvx pro
+// dotenvx ops
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  ops                          ⛨  Ops [www.dotenvx.com/ops]')
-program.addHelpText('after', '  ext                          🔌 extensions')
+program.addHelpText('after', '  ops                ⛨  Ops [www.dotenvx.com/ops]')
+program.addHelpText('after', '  ext                🔌 extensions')
 
 // dotenvx ext
 program.addCommand(require('./commands/ext'))

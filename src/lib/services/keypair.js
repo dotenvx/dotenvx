@@ -1,22 +1,38 @@
 const {
   keyNames,
-  keyValues
+  keyValues,
+  keyValuesSync
 } = require('./../helpers/keyResolution')
 
 class Keypair {
-  constructor (envFile = '.env', envKeysFilepath = null, opsOn = false) {
+  constructor (envFile = '.env', envKeysFilepath = null, noOps = false) {
     this.envFile = envFile
     this.envKeysFilepath = envKeysFilepath
-    this.opsOn = opsOn
+    this.noOps = noOps
   }
 
-  run () {
+  runSync () {
     const out = {}
 
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
       const { publicKeyName, privateKeyName } = keyNames(filepath)
-      const { publicKeyValue, privateKeyValue } = keyValues(filepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
+
+      out[publicKeyName] = publicKeyValue
+      out[privateKeyName] = privateKeyValue
+    }
+
+    return out
+  }
+
+  async run () {
+    const out = {}
+
+    const filepaths = this._filepaths()
+    for (const filepath of filepaths) {
+      const { publicKeyName, privateKeyName } = keyNames(filepath)
+      const { publicKeyValue, privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
 
       out[publicKeyName] = publicKeyValue
       out[privateKeyName] = privateKeyValue

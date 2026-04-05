@@ -29,12 +29,12 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Rotate {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, opsOn = false) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
-    this.opsOn = opsOn
+    this.noOps = noOps
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -43,7 +43,7 @@ class Rotate {
     this.envKeysSources = {}
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -57,7 +57,7 @@ class Rotate {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._rotateEnvFile(env.value)
+        await this._rotateEnvFile(env.value)
       }
     }
 
@@ -68,7 +68,7 @@ class Rotate {
     }
   }
 
-  _rotateEnvFile (envFilepath) {
+  async _rotateEnvFile (envFilepath) {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
@@ -78,31 +78,29 @@ class Rotate {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = detectEncoding(filepath)
-      let envSrc = fsx.readFileX(filepath, { encoding })
+      const encoding = await detectEncoding(filepath)
+      let envSrc = await fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, opsOn: this.opsOn })
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
 
       let newPublicKey
       let newPrivateKey
       let envKeysFilepath
       let envKeysSrc
 
-      if (this.opsOn) {
-        const kp = opsKeypair()
+      if (!this.noOps) {
+        const kp = await opsKeypair()
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 
         row.privateKeyAdded = false // TODO: change to localPrivateKeyAdded
       } else {
-        envKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-        if (this.envKeysFilepath) {
-          envKeysFilepath = path.resolve(this.envKeysFilepath)
-        }
-        row.envKeysFilepath = envKeysFilepath
-        this.envKeysSources[envKeysFilepath] ||= fsx.readFileX(envKeysFilepath, { encoding: detectEncoding(envKeysFilepath) })
+        row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), '.env.keys')
+        envKeysFilepath = path.resolve(row.envKeysFilepath)
+        const encodingForKeys = await detectEncoding(envKeysFilepath)
+        this.envKeysSources[envKeysFilepath] ||= await fsx.readFileX(envKeysFilepath, { encoding: encodingForKeys })
         envKeysSrc = this.envKeysSources[envKeysFilepath]
 
         const kp = localKeypair()
@@ -145,7 +143,7 @@ class Rotate {
       row.privateKeyName = privateKeyName
       row.privateKey = newPrivateKey
 
-      if (!this.opsOn) {
+      if (this.noOps) {
         // keys src only for ops
         envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
         this.envKeysSources[envKeysFilepath] = envKeysSrc
@@ -155,7 +153,13 @@ class Rotate {
       this.changedFilepaths.add(envFilepath)
     } catch (e) {
       if (e.code === 'ENOENT') {
-        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+        const missingPath = e.path ? path.resolve(e.path) : null
+        const expectedEnvKeysPath = row.envKeysFilepath ? path.resolve(row.envKeysFilepath) : null
+        if (this.noOps && expectedEnvKeysPath && missingPath === expectedEnvKeysPath) {
+          row.error = new Errors({ envKeysFilepath: row.envKeysFilepath }).missingEnvKeysFile()
+        } else {
+          row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+        }
       } else {
         row.error = e
       }

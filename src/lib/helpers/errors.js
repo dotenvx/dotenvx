@@ -13,6 +13,7 @@ const ISSUE_BY_CODE = {
   MISPAIRED_PRIVATE_KEY: 'https://github.com/dotenvx/dotenvx/issues/752',
   MISSING_DIRECTORY: 'https://github.com/dotenvx/dotenvx/issues/758',
   MISSING_ENV_FILE: 'https://github.com/dotenvx/dotenvx/issues/484',
+  MISSING_ENV_KEYS_FILE: 'https://github.com/dotenvx/dotenvx/issues/775',
   MISSING_ENV_FILES: 'https://github.com/dotenvx/dotenvx/issues/760',
   MISSING_KEY: 'https://github.com/dotenvx/dotenvx/issues/759',
   MISSING_LOG_LEVEL: 'must be valid log level',
@@ -25,6 +26,7 @@ class Errors {
   constructor (options = {}) {
     this.filepath = options.filepath
     this.envFilepath = options.envFilepath
+    this.envKeysFilepath = options.envKeysFilepath
 
     this.key = options.key
     this.privateKey = options.privateKey
@@ -193,6 +195,19 @@ class Errors {
     const code = 'MISSING_ENV_FILE'
     const envFilepath = this.envFilepath || '.env'
     const message = `[${code}] missing file (${envFilepath})`
+    const help = `fix: [${ISSUE_BY_CODE[code]}]`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    e.messageWithHelp = `${message}. ${help}`
+    return e
+  }
+
+  missingEnvKeysFile () {
+    const code = 'MISSING_ENV_KEYS_FILE'
+    const envKeysFilepath = this.envKeysFilepath || '.env.keys'
+    const message = `[${code}] missing file (${envKeysFilepath})`
     const help = `fix: [${ISSUE_BY_CODE[code]}]`
 
     const e = new Error(message)

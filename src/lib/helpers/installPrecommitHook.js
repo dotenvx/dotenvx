@@ -55,12 +55,12 @@ class InstallPrecommitHook {
   }
 
   _currentHook () {
-    return fsx.readFileX(this.hookPath)
+    return fsx.readFileXSync(this.hookPath)
   }
 
   _createHook () {
     // If the pre-commit file doesn't exist, create a new one with the hookScript
-    fsx.writeFileX(this.hookPath, HOOK_SCRIPT)
+    fsx.writeFileXSync(this.hookPath, HOOK_SCRIPT)
     fsx.chmodSync(this.hookPath, '755') // Make the file executable
   }
 

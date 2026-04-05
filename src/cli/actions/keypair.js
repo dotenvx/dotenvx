@@ -1,18 +1,26 @@
 const { logger } = require('./../../shared/logger')
 
-const main = require('./../../lib/main')
+const Keypair = require('./../../lib/services/keypair')
+const createSpinner = require('../../lib/helpers/createSpinner')
+const Session = require('../../db/session')
 
-function keypair (key) {
+async function keypair (key) {
+  const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'retrieving' })
+
+  logger.debug(`options: ${JSON.stringify(options)}`)
   if (key) {
     logger.debug(`key: ${key}`)
   }
 
-  const options = this.opts()
-  logger.debug(`options: ${JSON.stringify(options)}`)
   const prettyPrint = options.prettyPrint || options.pp
 
-  const results = main.keypair(options.envFile, key, options.envKeysFile, options.opsOff)
+  const sesh = new Session()
+  const noOps = options.ops === false || await sesh.noOps()
+  const keypairs = await new Keypair(options.envFile, options.envKeysFile, noOps).run()
+  const results = key ? keypairs[key] : keypairs
 
+  if (spinner) spinner.stop()
   if (typeof results === 'object' && results !== null) {
     // inline shell format - env $(dotenvx keypair --format=shell) your-command
     if (options.format === 'shell') {

@@ -1,20 +1,24 @@
 const Ops = require('./../lib/extensions/ops')
+const { logger } = require('./../shared/logger')
 
 class Session {
   constructor () {
     this.ops = new Ops()
-    this.opsStatus = this.ops.status()
   }
 
   //
-  // opsOff/On
+  // ops status helpers
   //
-  opsOn () {
-    return this.opsStatus === 'on'
+  async noOps () {
+    const status = await this.ops.status()
+    logger.debug(`ops: ${status}`)
+    return status === 'off'
   }
 
-  opsOff () {
-    return !this.opsOn()
+  noOpsSync () {
+    const status = this.ops.statusSync()
+    logger.debug(`ops: ${status}`)
+    return status === 'off'
   }
 }
 

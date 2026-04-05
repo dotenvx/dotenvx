@@ -1,10 +1,53 @@
 const t = require('tap')
 const sinon = require('sinon')
-const capcon = require('capture-console')
 
 const Get = require('./../../../src/lib/services/get')
 const Errors = require('./../../../src/lib/helpers/errors')
 const get = require('./../../../src/cli/actions/get')
+
+async function captureStdout (fn) {
+  let stdout = ''
+  const stdoutWrite = process.stdout.write
+  process.stdout.write = function (chunk, encoding, callback) {
+    stdout += Buffer.isBuffer(chunk) ? chunk.toString() : chunk
+    if (typeof callback === 'function') callback()
+    return true
+  }
+
+  try {
+    await fn()
+  } finally {
+    process.stdout.write = stdoutWrite
+  }
+
+  return stdout
+}
+
+async function captureStdio (fn) {
+  let stdout = ''
+  let stderr = ''
+  const stdoutWrite = process.stdout.write
+  const stderrWrite = process.stderr.write
+  process.stdout.write = function (chunk, encoding, callback) {
+    stdout += Buffer.isBuffer(chunk) ? chunk.toString() : chunk
+    if (typeof callback === 'function') callback()
+    return true
+  }
+  process.stderr.write = function (chunk, encoding, callback) {
+    stderr += Buffer.isBuffer(chunk) ? chunk.toString() : chunk
+    if (typeof callback === 'function') callback()
+    return true
+  }
+
+  try {
+    await fn()
+  } finally {
+    process.stdout.write = stdoutWrite
+    process.stderr.write = stderrWrite
+  }
+
+  return { stdout, stderr }
+}
 
 function setCode (error, code) {
   error.code = code
@@ -30,14 +73,14 @@ t.beforeEach((ct) => {
   process.env = {}
 })
 
-t.test('get', ct => {
+t.test('get', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: 'World' } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, undefined)
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -46,14 +89,14 @@ t.test('get', ct => {
   ct.end()
 })
 
-t.test('get KEY', ct => {
+t.test('get KEY', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: 'World' } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, 'HELLO')
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -62,14 +105,14 @@ t.test('get KEY', ct => {
   ct.end()
 })
 
-t.test('get --format shell', ct => {
+t.test('get --format shell', async ct => {
   const optsStub = sinon.stub().returns({ format: 'shell' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: 'World' } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, undefined)
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -78,14 +121,14 @@ t.test('get --format shell', ct => {
   ct.end()
 })
 
-t.test('get --format shell (with single quotes in value)', ct => {
+t.test('get --format shell (with single quotes in value)', async ct => {
   const optsStub = sinon.stub().returns({ format: 'shell' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: "f'bar" } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, undefined)
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -94,14 +137,14 @@ t.test('get --format shell (with single quotes in value)', ct => {
   ct.end()
 })
 
-t.test('get --format eval (with single quotes in value)', ct => {
+t.test('get --format eval (with single quotes in value)', async ct => {
   const optsStub = sinon.stub().returns({ format: 'eval' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: "f'bar" } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, undefined)
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -110,14 +153,14 @@ t.test('get --format eval (with single quotes in value)', ct => {
   ct.end()
 })
 
-t.test('get --format eval (multiple keys use newlines)', ct => {
+t.test('get --format eval (multiple keys use newlines)', async ct => {
   const optsStub = sinon.stub().returns({ format: 'eval' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: 'World', HELLO2: 'World2' } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, undefined)
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -126,14 +169,14 @@ t.test('get --format eval (multiple keys use newlines)', ct => {
   ct.end()
 })
 
-t.test('get --pretty-print', ct => {
+t.test('get --pretty-print', async ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: 'World' } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, undefined)
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -142,14 +185,14 @@ t.test('get --pretty-print', ct => {
   ct.end()
 })
 
-t.test('get --pp', ct => {
+t.test('get --pp', async ct => {
   const optsStub = sinon.stub().returns({ pp: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: 'World' } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, undefined)
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -158,14 +201,14 @@ t.test('get --pp', ct => {
   ct.end()
 })
 
-t.test('get KEY --convention', ct => {
+t.test('get KEY --convention', async ct => {
   const optsStub = sinon.stub().returns({ convention: 'nextjs' })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: 'World' } })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, 'HELLO')
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -174,23 +217,23 @@ t.test('get KEY --convention', ct => {
   ct.end()
 })
 
-t.test('get --ops-off passes opsOn false to Get service', ct => {
-  const optsStub = sinon.stub().returns({ opsOff: true })
+t.test('get --no-ops passes noOps true to Get service', async ct => {
+  const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run').returns({ parsed: { HELLO: 'World' }, errors: [] })
 
-  const stdout = capcon.interceptStdout(() => {
-    get.call(fakeContext, 'HELLO')
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
-  t.equal(stub.thisValues[0].opsOn, false, 'opsOn false')
+  t.equal(stub.thisValues[0].noOps, true, 'noOps true')
   t.equal(stdout, 'World\n')
 
   ct.end()
 })
 
-t.test('get KEY (not found)', ct => {
+t.test('get KEY (not found)', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
 
@@ -201,8 +244,8 @@ t.test('get KEY (not found)', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'NOTFOUND')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'NOTFOUND')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -213,7 +256,7 @@ t.test('get KEY (not found)', ct => {
   ct.end()
 })
 
-t.test('get KEY (not found) --strict', ct => {
+t.test('get KEY (not found) --strict', async ct => {
   const optsStub = sinon.stub().returns({ strict: true })
   const fakeContext = { opts: optsStub }
 
@@ -224,8 +267,8 @@ t.test('get KEY (not found) --strict', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'NOTFOUND')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'NOTFOUND')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -237,7 +280,7 @@ t.test('get KEY (not found) --strict', ct => {
   ct.end()
 })
 
-t.test('get KEY (not found) --ignore', ct => {
+t.test('get KEY (not found) --ignore', async ct => {
   const optsStub = sinon.stub().returns({ ignore: ['MISSING_KEY'] })
   const fakeContext = { opts: optsStub }
 
@@ -248,8 +291,8 @@ t.test('get KEY (not found) --ignore', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'NOTFOUND')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'NOTFOUND')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -261,7 +304,7 @@ t.test('get KEY (not found) --ignore', ct => {
   ct.end()
 })
 
-t.test('get KEY (missing env file) logs one-line fix', ct => {
+t.test('get KEY (missing env file) logs one-line fix', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
 
@@ -273,8 +316,8 @@ t.test('get KEY (missing env file) logs one-line fix', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'NOTFOUND')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'NOTFOUND')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -286,7 +329,7 @@ t.test('get KEY (missing env file) logs one-line fix', ct => {
   ct.end()
 })
 
-t.test('get KEY (missing env file fallback path) logs one-line fix', ct => {
+t.test('get KEY (missing env file fallback path) logs one-line fix', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
 
@@ -299,8 +342,8 @@ t.test('get KEY (missing env file fallback path) logs one-line fix', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'NOTFOUND')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'NOTFOUND')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -311,7 +354,7 @@ t.test('get KEY (missing env file fallback path) logs one-line fix', ct => {
   ct.end()
 })
 
-t.test('get KEY (missing env file) --strict logs one-line fix', ct => {
+t.test('get KEY (missing env file) --strict logs one-line fix', async ct => {
   const optsStub = sinon.stub().returns({ strict: true })
   const fakeContext = { opts: optsStub }
 
@@ -323,8 +366,8 @@ t.test('get KEY (missing env file) --strict logs one-line fix', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'NOTFOUND')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'NOTFOUND')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -336,7 +379,7 @@ t.test('get KEY (missing env file) --strict logs one-line fix', ct => {
   ct.end()
 })
 
-t.test('get KEY (wrong private key) logs one-line fix', ct => {
+t.test('get KEY (wrong private key) logs one-line fix', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
 
@@ -348,8 +391,8 @@ t.test('get KEY (wrong private key) logs one-line fix', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'HELLO')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -361,15 +404,15 @@ t.test('get KEY (wrong private key) logs one-line fix', ct => {
   ct.end()
 })
 
-t.test('get KEY (wrong private key punctuated) keeps one-line fix', ct => {
+t.test('get KEY (wrong private key punctuated) keeps one-line fix', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   const error = new Error('[WRONG_PRIVATE_KEY] punctuated')
   setCode(error, 'WRONG_PRIVATE_KEY')
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
-  const { stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'HELLO')
+  const { stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -377,7 +420,7 @@ t.test('get KEY (wrong private key punctuated) keeps one-line fix', ct => {
   ct.end()
 })
 
-t.test('get KEY (wrong private key punctuated) --strict keeps one line', ct => {
+t.test('get KEY (wrong private key punctuated) --strict keeps one line', async ct => {
   const optsStub = sinon.stub().returns({ strict: true })
   const fakeContext = { opts: optsStub }
 
@@ -388,8 +431,8 @@ t.test('get KEY (wrong private key punctuated) --strict keeps one line', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'HELLO')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -400,7 +443,7 @@ t.test('get KEY (wrong private key punctuated) --strict keeps one line', ct => {
   ct.end()
 })
 
-t.test('get KEY (missing private key) logs one-line fix', ct => {
+t.test('get KEY (missing private key) logs one-line fix', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
 
@@ -412,8 +455,8 @@ t.test('get KEY (missing private key) logs one-line fix', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'HELLO')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -425,15 +468,15 @@ t.test('get KEY (missing private key) logs one-line fix', ct => {
   ct.end()
 })
 
-t.test('get KEY (missing private key punctuated) keeps one-line fix', ct => {
+t.test('get KEY (missing private key punctuated) keeps one-line fix', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   const error = new Error('[MISSING_PRIVATE_KEY] punctuated')
   setCode(error, 'MISSING_PRIVATE_KEY')
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
-  const { stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'HELLO')
+  const { stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -441,7 +484,7 @@ t.test('get KEY (missing private key punctuated) keeps one-line fix', ct => {
   ct.end()
 })
 
-t.test('get KEY (missing private key) --strict logs one-line fix', ct => {
+t.test('get KEY (missing private key) --strict logs one-line fix', async ct => {
   const optsStub = sinon.stub().returns({ strict: true })
   const fakeContext = { opts: optsStub }
 
@@ -453,8 +496,8 @@ t.test('get KEY (missing private key) --strict logs one-line fix', ct => {
 
   const processExitStub = sinon.stub(process, 'exit')
 
-  const { stdout, stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'HELLO')
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -466,7 +509,7 @@ t.test('get KEY (missing private key) --strict logs one-line fix', ct => {
   ct.end()
 })
 
-t.test('get KEY (wrong private key non-punctuated) --strict appends period', ct => {
+t.test('get KEY (wrong private key non-punctuated) --strict appends period', async ct => {
   const optsStub = sinon.stub().returns({ strict: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
@@ -474,8 +517,8 @@ t.test('get KEY (wrong private key non-punctuated) --strict appends period', ct 
   setCode(error, 'WRONG_PRIVATE_KEY')
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
   const processExitStub = sinon.stub(process, 'exit')
-  const { stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'HELLO')
+  const { stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
@@ -484,7 +527,7 @@ t.test('get KEY (wrong private key non-punctuated) --strict appends period', ct 
   ct.end()
 })
 
-t.test('get KEY (missing private key punctuated) --strict keeps period', ct => {
+t.test('get KEY (missing private key punctuated) --strict keeps period', async ct => {
   const optsStub = sinon.stub().returns({ strict: true })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
@@ -492,8 +535,8 @@ t.test('get KEY (missing private key punctuated) --strict keeps period', ct => {
   setCode(error, 'MISSING_PRIVATE_KEY')
   stub.returns({ parsed: { HELLO: 'World' }, errors: [error] })
   const processExitStub = sinon.stub(process, 'exit')
-  const { stderr } = capcon.interceptStdio(() => {
-    get.call(fakeContext, 'HELLO')
+  const { stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')

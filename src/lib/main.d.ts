@@ -151,7 +151,12 @@ export interface DotenvConfigOptions {
    * Turn off Dotenvx Ops features - https://dotenvx.com/ops
    *
    * @default false
-   * @example require('@dotenvx/dotenvx').config({ opsOff: true })
+   * @example require('@dotenvx/dotenvx').config({ noOps: true })
+   */
+  noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
    */
   opsOff?: boolean;
 }
@@ -210,7 +215,12 @@ export interface SetOptions {
    * Turn off Dotenvx Ops features - https://dotenvx.com/ops
    *
    * @default false
-   * @example require('@dotenvx/dotenvx').set(key, value, { opsOff: true })
+   * @example require('@dotenvx/dotenvx').set(key, value, { noOps: true })
+   */
+  noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
    */
   opsOff?: boolean;
 }
@@ -285,7 +295,12 @@ export interface GetOptions {
    * Turn off Dotenvx Ops features - https://dotenvx.com/ops
    *
    * @default false
-   * @example require('@dotenvx/dotenvx').get('KEY', { opsOff: true })
+   * @example require('@dotenvx/dotenvx').get('KEY', { noOps: true })
+   */
+  noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
    */
   opsOff?: boolean;
 }

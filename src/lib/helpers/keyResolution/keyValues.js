@@ -7,15 +7,15 @@ const readProcessKey = require('./readProcessKey')
 const readFileKey = require('./readFileKey')
 const opsKeypair = require('../cryptography/opsKeypair')
 
-function invertForPrivateKeyName (filepath) {
+async function invertForPrivateKeyName (filepath) {
   const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
   const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
 
-  if (!fsx.existsSync(filepath)) {
+  if (!(await fsx.exists(filepath))) {
     return null
   }
 
-  const envSrc = fsx.readFileX(filepath)
+  const envSrc = await fsx.readFileX(filepath)
   const envParsed = dotenvParse(envSrc)
 
   let publicKeyName
@@ -32,9 +32,9 @@ function invertForPrivateKeyName (filepath) {
   return null
 }
 
-function keyValues (filepath, opts = {}) {
+async function keyValues (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const opsOn = opts.opsOn === true
+  const noOps = opts.noOps === true
   const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
@@ -45,7 +45,7 @@ function keyValues (filepath, opts = {}) {
   // public key: process.env first, then .env*
   publicKey = readProcessKey(publicKeyName)
   if (!publicKey) {
-    publicKey = readFileKey(publicKeyName, filepath) || null
+    publicKey = await readFileKey(publicKeyName, filepath) || null
   }
 
   // private key: process.env first, then .env.keys, then invert public key
@@ -57,28 +57,28 @@ function keyValues (filepath, opts = {}) {
       keysFilepath = path.resolve(path.dirname(filepath), '.env.keys') // typical scenario
     }
 
-    privateKey = readFileKey(privateKeyName, keysFilepath)
+    privateKey = await readFileKey(privateKeyName, keysFilepath)
   }
   // invert
   if (!privateKey) {
-    privateKeyName = invertForPrivateKeyName(filepath)
+    privateKeyName = await invertForPrivateKeyName(filepath)
     if (privateKeyName) {
       privateKey = readProcessKey(privateKeyName)
       if (!privateKey) {
-        privateKey = readFileKey(privateKeyName, keysFilepath)
+        privateKey = await readFileKey(privateKeyName, keysFilepath)
       }
     }
   }
 
   // ops
-  if (opsOn && !privateKey && publicKey && publicKey.length > 0) {
-    const kp = opsKeypair(publicKey)
+  if (!noOps && !privateKey && publicKey && publicKey.length > 0) {
+    const kp = await opsKeypair(publicKey)
     privateKey = kp.privateKey
   }
 
   return {
     publicKeyValue: publicKey || null, // important to make sure name is rendered
-    privateKeyValue: privateKey || null // importan to make sure name is rendered
+    privateKeyValue: privateKey || null // important to make sure name is rendered
   }
 }
 
