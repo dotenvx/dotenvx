@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /* c8 ignore start */
-const { Command } = require('commander')
+const { Command, Option } = require('commander')
 const program = new Command()
 
 const { setLogLevel, logger } = require('../shared/logger')
@@ -72,7 +72,7 @@ program.command('run')
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('--no-ops', 'disable dotenvx-ops features')
-  .option('--ops-off', 'DEPRECATED: use --no-ops')
+  .addOption(new Option('--ops-off', 'DEPRECATED: use --no-ops').hideHelp())
   .action(function (...args) {
     this.envs = envs
     return runAction.apply(this, args)
