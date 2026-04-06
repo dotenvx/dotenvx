@@ -192,7 +192,7 @@ t.test('#run (finds .env file) with ops off and no existing keys still generates
     } = await new Encrypt(envs, [], [], null, true).run()
 
     ct.same(changedFilepaths, ['tests/monorepo/apps/frontend/.env'])
-    ct.equal(processedEnvs[0].privateKeyAdded, true)
+    ct.equal(processedEnvs[0].localPrivateKeyAdded, true)
 
     ct.end()
   })
@@ -604,7 +604,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
     const row = processedEnvs[0]
     const publicKey = row.publicKey
     const privateKey = row.privateKey
-    const privateKeyAdded = row.privateKeyAdded
+    const localPrivateKeyAdded = row.localPrivateKeyAdded
     const privateKeyName = row.privateKeyName
     const envSrc = row.envSrc
 
@@ -617,7 +617,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
       publicKey,
       privateKey,
       envKeysFilepath: 'tests/monorepo/.env.keys',
-      privateKeyAdded,
+      localPrivateKeyAdded,
       privateKeyName,
       envSrc
     }])

@@ -590,7 +590,7 @@ t.test('#run (finds .env file) with opsOn uses ops keypair and does not append l
 
     const p1 = processedEnvs[0]
     ct.equal(opsKeypair.callCount, 1)
-    ct.equal(p1.privateKeyAdded, false)
+    ct.equal(p1.localPrivateKeyAdded, false)
     ct.notOk(p1.envKeysSrc)
     ct.notOk(p1.envKeysFilepath)
     ct.equal(p1.privateKey, 'new-private-key-from-ops')

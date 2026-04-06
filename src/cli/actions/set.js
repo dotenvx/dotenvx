@@ -55,7 +55,7 @@ async function set (key, value) {
       }
     }
 
-    const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+    const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
     const keyAddedSuffix = keyAddedEnv ? ` + key (${localDisplayPath(keyAddedEnv.envKeysFilepath)})` : ''
 
     if (spinner) spinner.stop()

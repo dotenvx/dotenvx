@@ -61,7 +61,7 @@ t.test('rotate - .env but no change', async ct => {
       error: null,
       changed: false,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -89,7 +89,7 @@ t.test('rotate - --stdout', async ct => {
       error: null,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: 'newPrivateKey',
       envKeysSrc: 'DOTENV_PRIVATE_KEY=previous,newPrivateKey'
@@ -119,7 +119,7 @@ t.test('rotate - .env with changes', async ct => {
       error: null,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: 'newPrivateKey',
       envKeysSrc: 'DOTENV_PRIVATE_KEY=previous,newPrivateKey'
@@ -143,7 +143,7 @@ t.test('rotate - .env with changes', async ct => {
   ct.end()
 })
 
-t.test('rotate - .env with changes and privateKeyAdded', async ct => {
+t.test('rotate - .env with changes and localPrivateKeyAdded', async ct => {
   const rotateNotIgnoring = proxyquire('../../../src/cli/actions/rotate', {
     '../../../src/lib/helpers/isIgnoringDotenvKeys': () => false
   })
@@ -157,7 +157,7 @@ t.test('rotate - .env with changes and privateKeyAdded', async ct => {
       error: null,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: 'newPrivateKey',
       envKeysSrc: 'DOTENV_PRIVATE_KEY=previous,newPrivateKey'
@@ -194,7 +194,7 @@ t.test('rotate - MISSING_ENV_FILE', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -259,7 +259,7 @@ t.test('rotate - OTHER_ERROR', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -299,7 +299,7 @@ t.test('rotate - MISPAIRED_PRIVATE_KEY', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -339,7 +339,7 @@ t.test('rotate - WRONG_PRIVATE_KEY', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -379,7 +379,7 @@ t.test('rotate - MISSING_PRIVATE_KEY', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -413,7 +413,7 @@ t.test('rotate - INVALID_PUBLIC_KEY', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],

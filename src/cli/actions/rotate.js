@@ -26,7 +26,7 @@ async function rotate () {
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
-      if (processedEnv.privateKeyAdded) {
+      if (processedEnv.localPrivateKeyAdded) {
         console.log('')
         console.log(processedEnv.envKeysSrc)
       }
@@ -46,7 +46,7 @@ async function rotate () {
           logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
           await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
-          if (processedEnv.privateKeyAdded) {
+          if (processedEnv.localPrivateKeyAdded) {
             await fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
           }
 
@@ -58,7 +58,7 @@ async function rotate () {
 
       if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+        const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
         let msg = `⟳ rotated (${changedFilepaths.join(',')})`
         if (keyAddedEnv) {
           const envKeysFilepath = localDisplayPath(keyAddedEnv.envKeysFilepath)

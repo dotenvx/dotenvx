@@ -52,7 +52,7 @@ async function encrypt () {
 
       if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+        const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
         let msg = `◈ encrypted (${changedFilepaths.join(',')})`
         if (keyAddedEnv) {
           const envKeysFilepath = localDisplayPath(keyAddedEnv.envKeysFilepath)
@@ -66,7 +66,7 @@ async function encrypt () {
       }
 
       for (const processedEnv of processedEnvs) {
-        if (processedEnv.privateKeyAdded) {
+        if (processedEnv.localPrivateKeyAdded) {
           // intentionally quiet: success line already communicates key creation
         }
       }

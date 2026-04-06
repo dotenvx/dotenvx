@@ -194,7 +194,7 @@ const set = function (key, value, options = {}) {
     }
   }
 
-  const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.privateKeyAdded)
+  const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
   const keyAddedSuffix = keyAddedEnv ? ` + key (${localDisplayPath(keyAddedEnv.envKeysFilepath)})` : ''
 
   if (changedFilepaths.length > 0) {

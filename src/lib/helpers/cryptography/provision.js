@@ -12,7 +12,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noOps }) {
   let privateKey
   let keysSrc
   let envKeysFilepath
-  let privateKeyAdded = false
+  let localPrivateKeyAdded = false
 
   if (noOps) {
     const kp = localKeypair()
@@ -31,7 +31,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noOps }) {
     const mutated = await mutateKeysSrc({ envFilepath, keysFilepath, privateKeyName, privateKeyValue: privateKey })
     keysSrc = mutated.keysSrc
     envKeysFilepath = mutated.envKeysFilepath
-    privateKeyAdded = true
+    localPrivateKeyAdded = true
   }
 
   return {
@@ -39,7 +39,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noOps }) {
     keysSrc,
     publicKey,
     privateKey,
-    privateKeyAdded,
+    localPrivateKeyAdded,
     envKeysFilepath
   }
 }
