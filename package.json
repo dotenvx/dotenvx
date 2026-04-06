@@ -1,5 +1,5 @@
 {
-  "version": "1.60.0",
+  "version": "1.60.1",
   "name": "@dotenvx/dotenvx",
   "description": "secrets for agents–from the creator of `dotenv`",
   "author": "@motdotla",
