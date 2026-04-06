@@ -247,6 +247,40 @@ t.test('encrypt - .env with changes and localPrivateKeyAdded but not ignoring .e
   ct.end()
 })
 
+t.test('encrypt - .env with changes and remotePrivateKeyAdded', async ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
+    processedEnvs: [{
+      envFilepath: '.env',
+      filepath: '.env',
+      error: null,
+      changed: true,
+      envSrc: 'HELLO="encrypted:1234"',
+      localPrivateKeyAdded: false,
+      remotePrivateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234'
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+
+  await encrypt.call(fakeContext)
+
+  t.ok(stub.called, 'Encrypt().run() called')
+  t.ok(loggerInfoStub.notCalled, 'logger.info')
+  t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
+  t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key ⛨'), 'logger success')
+
+  ct.end()
+})
+
 t.test('encrypt - MISSING_ENV_FILE', async ct => {
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'

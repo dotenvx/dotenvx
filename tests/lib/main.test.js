@@ -1437,6 +1437,40 @@ t.test('set calls Sets.run - localPrivateKeyAdded missing envFilepath falls back
     ct.end()
   })
 
+t.test('set calls Sets.run - remotePrivateKeyAdded',
+  ct => {
+    const loggerInfoStub = sinon.stub(logger, 'info')
+    const loggerSuccessStub = sinon.stub(logger, 'success')
+
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
+      processedEnvs: [{
+        key: 'HELLO',
+        value: 'World',
+        filepath: '.env',
+        envFilepath: '.env',
+        envSrc: 'HELLO=World',
+        localPrivateKeyAdded: false,
+        remotePrivateKeyAdded: true,
+        privateKeyName: 'DOTENV_PRIVATE_KEY',
+        privateKey: '1234',
+        error: null
+      }],
+      changedFilepaths: ['.env'],
+      unchangedFilepaths: []
+    })
+
+    main.set('HELLO', 'World')
+
+    t.ok(stub.called, 'new Sets().runSync() called')
+    t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
+    t.ok(loggerInfoStub.notCalled, 'logger info')
+    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key ⛨'), 'logger success')
+
+    stub.restore()
+
+    ct.end()
+  })
+
 t.test('get calls Get.runSync',
   ct => {
     const stub = sinon.stub(Get.prototype, 'runSync')

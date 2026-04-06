@@ -621,6 +621,39 @@ t.test('set - localPrivateKeyAdded with unchanged file and missing envFilepath f
   ct.end()
 })
 
+t.test('set - remotePrivateKeyAdded', async ct => {
+  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      localPrivateKeyAdded: false,
+      remotePrivateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+
+  await set.call(fakeContext, 'HELLO', 'World')
+
+  t.ok(stub.called, 'Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(loggerInfoStub.notCalled, 'logger info')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key ⛨'), 'logger success')
+
+  ct.end()
+})
+
 t.test('set - --no-ops passes noOps true to Sets service', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ ops: false })
