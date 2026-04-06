@@ -95,7 +95,8 @@ class Rotate {
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 
-        row.privateKeyAdded = false // TODO: change to localPrivateKeyAdded
+        row.localPrivateKeyAdded = false
+        row.remotePrivateKeyAdded = true
       } else {
         row.envKeysFilepath = this.envKeysFilepath || path.join(path.dirname(envFilepath), '.env.keys')
         envKeysFilepath = path.resolve(row.envKeysFilepath)
@@ -107,7 +108,8 @@ class Rotate {
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 
-        row.privateKeyAdded = true
+        row.localPrivateKeyAdded = true
+        row.remotePrivateKeyAdded = false
       }
 
       // .env

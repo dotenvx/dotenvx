@@ -135,8 +135,9 @@ class Sets {
           envSrc = prov.envSrc
           publicKey = prov.publicKey
           privateKey = prov.privateKey
-          row.privateKeyAdded = prov.privateKeyAdded
           row.envKeysFilepath = prov.envKeysFilepath
+          row.localPrivateKeyAdded = prov.localPrivateKeyAdded
+          row.remotePrivateKeyAdded = prov.remotePrivateKeyAdded
         } else if (privateKeyValue) {
           const prov = provisionWithPrivateKey({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
           publicKey = prov.publicKey
@@ -240,8 +241,9 @@ class Sets {
           envSrc = prov.envSrc
           publicKey = prov.publicKey
           privateKey = prov.privateKey
-          row.privateKeyAdded = prov.privateKeyAdded
           row.envKeysFilepath = prov.envKeysFilepath
+          row.localPrivateKeyAdded = prov.localPrivateKeyAdded
+          row.remotePrivateKeyAdded = prov.remotePrivateKeyAdded
         } else if (privateKeyValue) {
           const prov = provisionWithPrivateKey({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
           publicKey = prov.publicKey

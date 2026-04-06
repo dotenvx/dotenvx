@@ -32,7 +32,7 @@ t.test('set - no change', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error: null
@@ -95,7 +95,7 @@ t.test('set - changes', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error: null
@@ -151,7 +151,7 @@ t.test('set - MISSING_ENV_FILE', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error
@@ -188,7 +188,7 @@ t.test('set - MISSING_ENV_FILE fallback filepath', async ct => {
       filepath: undefined,
       envFilepath: undefined,
       envSrc: '',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error
@@ -219,7 +219,7 @@ t.test('set - OTHER_ERROR', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error
@@ -258,7 +258,7 @@ t.test('set - MISPAIRED_PRIVATE_KEY', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error
@@ -297,7 +297,7 @@ t.test('set - WRONG_PRIVATE_KEY', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error
@@ -336,7 +336,7 @@ t.test('set - MISSING_PRIVATE_KEY', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error
@@ -375,7 +375,7 @@ t.test('set - INVALID_PUBLIC_KEY', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error
@@ -409,7 +409,7 @@ t.test('set - preserves already punctuated error messages', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: '',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       error: { code: 'WRONG_PRIVATE_KEY', message: '[WRONG_PRIVATE_KEY] already punctuated', messageWithHelp: '[WRONG_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/466]' }
     }, {
       key: 'HELLO',
@@ -417,7 +417,7 @@ t.test('set - preserves already punctuated error messages', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: '',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       error: { code: 'MISSING_PRIVATE_KEY', message: '[MISSING_PRIVATE_KEY] already punctuated', messageWithHelp: '[MISSING_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/464]' }
     }, {
       key: 'HELLO',
@@ -425,7 +425,7 @@ t.test('set - preserves already punctuated error messages', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: '',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       error: { code: 'INVALID_PUBLIC_KEY', message: '[INVALID_PUBLIC_KEY] already punctuated', messageWithHelp: '[INVALID_PUBLIC_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/756]' }
     }, {
       key: 'HELLO',
@@ -433,7 +433,7 @@ t.test('set - preserves already punctuated error messages', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: '',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       error: { code: 'MISPAIRED_PRIVATE_KEY', message: '[MISPAIRED_PRIVATE_KEY] already punctuated', messageWithHelp: '[MISPAIRED_PRIVATE_KEY] already punctuated fix: [https://github.com/dotenvx/dotenvx/issues/752]' }
     }],
     changedFilepaths: [],
@@ -460,7 +460,7 @@ t.test('set - changes --plain', async ct => {
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error: null
@@ -481,7 +481,7 @@ t.test('set - changes --plain', async ct => {
   ct.end()
 })
 
-t.test('set - privateKeyAdded', async ct => {
+t.test('set - localPrivateKeyAdded', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -493,7 +493,7 @@ t.test('set - privateKeyAdded', async ct => {
       envFilepath: '.env',
       envKeysFilepath: '.env.keys',
       envSrc: 'HELLO=World',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: '1234',
       error: null
@@ -516,7 +516,7 @@ t.test('set - privateKeyAdded', async ct => {
   ct.end()
 })
 
-t.test('set - privateKeyAdded and not ignoring .env.keys', async ct => {
+t.test('set - localPrivateKeyAdded and not ignoring .env.keys', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const setNotIgnoring = proxyquire('../../../src/cli/actions/set', {
     './../../db/session': SessionMock,
@@ -532,7 +532,7 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', async ct => {
       envFilepath: '.env',
       envKeysFilepath: '.env.keys',
       envSrc: 'HELLO=World',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: '1234',
       error: null
@@ -555,7 +555,7 @@ t.test('set - privateKeyAdded and not ignoring .env.keys', async ct => {
   ct.end()
 })
 
-t.test('set - privateKeyAdded with unchanged file still reports key addition', async ct => {
+t.test('set - localPrivateKeyAdded with unchanged file still reports key addition', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -567,7 +567,7 @@ t.test('set - privateKeyAdded with unchanged file still reports key addition', a
       envFilepath: '.env',
       envKeysFilepath: '.env.keys',
       envSrc: 'HELLO=dude',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: '1234',
       error: null
@@ -588,7 +588,7 @@ t.test('set - privateKeyAdded with unchanged file still reports key addition', a
   ct.end()
 })
 
-t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls back to .env', async ct => {
+t.test('set - localPrivateKeyAdded with unchanged file and missing envFilepath falls back to .env', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -600,7 +600,7 @@ t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls 
       envFilepath: undefined,
       envKeysFilepath: '.env.keys',
       envSrc: 'HELLO=dude',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: '1234',
       error: null
@@ -617,6 +617,39 @@ t.test('set - privateKeyAdded with unchanged file and missing envFilepath falls 
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
   t.ok(loggerInfoStub.notCalled, 'logger info')
+
+  ct.end()
+})
+
+t.test('set - remotePrivateKeyAdded', async ct => {
+  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'World',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=World',
+      localPrivateKeyAdded: false,
+      remotePrivateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234',
+      error: null
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+
+  await set.call(fakeContext, 'HELLO', 'World')
+
+  t.ok(stub.called, 'Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
+  t.ok(loggerInfoStub.notCalled, 'logger info')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key ⛨'), 'logger success')
 
   ct.end()
 })

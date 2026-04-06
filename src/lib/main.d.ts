@@ -235,7 +235,8 @@ export type SetProcessedEnv = {
   encryptedValue?: string;
   publicKey?: string;
   privateKey?: string;
-  privateKeyAdded?: boolean;
+  localPrivateKeyAdded?: boolean;
+  remotePrivateKeyAdded?: boolean;
   privateKeyName?: string;
   error?: Error;
 };

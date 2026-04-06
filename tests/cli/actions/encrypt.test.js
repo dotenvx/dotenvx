@@ -93,7 +93,7 @@ t.test('encrypt - .env but no change', async ct => {
       error: null,
       changed: false,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -121,7 +121,7 @@ t.test('encrypt - --stdout', async ct => {
       error: null,
       changed: false,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -150,7 +150,7 @@ t.test('encrypt - .env with changes', async ct => {
       error: null,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -173,7 +173,7 @@ t.test('encrypt - .env with changes', async ct => {
   ct.end()
 })
 
-t.test('encrypt - .env with changes and privateKeyAdded', async ct => {
+t.test('encrypt - .env with changes and localPrivateKeyAdded', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -183,7 +183,7 @@ t.test('encrypt - .env with changes and privateKeyAdded', async ct => {
       error: null,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: '1234'
     }],
@@ -208,7 +208,7 @@ t.test('encrypt - .env with changes and privateKeyAdded', async ct => {
   ct.end()
 })
 
-t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.keys', async ct => {
+t.test('encrypt - .env with changes and localPrivateKeyAdded but not ignoring .env.keys', async ct => {
   const encryptNotIgnoring = proxyquire('../../../src/cli/actions/encrypt', {
     '../../../src/lib/helpers/isIgnoringDotenvKeys': () => false
   })
@@ -222,7 +222,7 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
       error: null,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: '1234'
     }],
@@ -247,6 +247,40 @@ t.test('encrypt - .env with changes and privateKeyAdded but not ignoring .env.ke
   ct.end()
 })
 
+t.test('encrypt - .env with changes and remotePrivateKeyAdded', async ct => {
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Encrypt.prototype, 'run').returns({
+    processedEnvs: [{
+      envFilepath: '.env',
+      filepath: '.env',
+      error: null,
+      changed: true,
+      envSrc: 'HELLO="encrypted:1234"',
+      localPrivateKeyAdded: false,
+      remotePrivateKeyAdded: true,
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKey: '1234'
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+  const loggerInfoStub = sinon.stub(logger, 'info')
+  const loggerVerboseStub = sinon.stub(logger, 'verbose')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+
+  await encrypt.call(fakeContext)
+
+  t.ok(stub.called, 'Encrypt().run() called')
+  t.ok(loggerInfoStub.notCalled, 'logger.info')
+  t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
+  t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
+  t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key ⛨'), 'logger success')
+
+  ct.end()
+})
+
 t.test('encrypt - MISSING_ENV_FILE', async ct => {
   const error = new Error('Mock Error')
   error.code = 'MISSING_ENV_FILE'
@@ -260,7 +294,7 @@ t.test('encrypt - MISSING_ENV_FILE', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -325,7 +359,7 @@ t.test('encrypt - OTHER_ERROR', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -365,7 +399,7 @@ t.test('encrypt - MISPAIRED_PRIVATE_KEY', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -405,7 +439,7 @@ t.test('encrypt - WRONG_PRIVATE_KEY', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -445,7 +479,7 @@ t.test('encrypt - MISSING_PRIVATE_KEY', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],
@@ -479,7 +513,7 @@ t.test('encrypt - INVALID_PUBLIC_KEY', async ct => {
       error,
       changed: true,
       envSrc: 'HELLO="encrypted:1234"',
-      privateKeyAdded: null,
+      localPrivateKeyAdded: null,
       privateKeyName: null,
       privateKey: null
     }],

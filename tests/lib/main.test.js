@@ -783,7 +783,7 @@ t.test('set calls Sets.run - no change',
       filepath: '.env',
       envFilepath: '.env',
       envSrc: 'HELLO=World',
-      privateKeyAdded: false,
+      localPrivateKeyAdded: false,
       privateKeyName: null,
       privateKey: null,
       error: null
@@ -811,7 +811,7 @@ t.test('set calls Sets.run - no change',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error: null
@@ -843,7 +843,7 @@ t.test('set calls Sets.run - changes',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error: null
@@ -876,7 +876,7 @@ t.test('set calls Sets.run - changes plain',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error: null
@@ -912,7 +912,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -946,7 +946,7 @@ t.test('set calls Sets.run - MISSING_ENV_FILE fallback filepath',
         filepath: undefined,
         envFilepath: undefined,
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -981,7 +981,7 @@ t.test('set calls Sets.run - OTHER_ERROR',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -1017,7 +1017,7 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent with he
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -1049,7 +1049,7 @@ t.test('set calls Sets.run - OTHER_ERROR fallback messageWithHelp absent without
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -1085,7 +1085,7 @@ t.test('set calls Sets.run - MISPAIRED_PRIVATE_KEY',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -1124,7 +1124,7 @@ t.test('set calls Sets.run - WRONG_PRIVATE_KEY',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -1163,7 +1163,7 @@ t.test('set calls Sets.run - MISSING_PRIVATE_KEY',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -1202,7 +1202,7 @@ t.test('set calls Sets.run - INVALID_PUBLIC_KEY',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         privateKeyName: null,
         privateKey: null,
         error
@@ -1234,7 +1234,7 @@ t.test('set calls Sets.run - preserves punctuated key errors',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         error: (() => {
           const error = { message: '[WRONG_PRIVATE_KEY] punctuated' }
           setCode(error, 'WRONG_PRIVATE_KEY')
@@ -1246,7 +1246,7 @@ t.test('set calls Sets.run - preserves punctuated key errors',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         error: (() => {
           const error = { message: '[MISSING_PRIVATE_KEY] punctuated' }
           setCode(error, 'MISSING_PRIVATE_KEY')
@@ -1258,7 +1258,7 @@ t.test('set calls Sets.run - preserves punctuated key errors',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         error: (() => {
           const error = { message: '[INVALID_PUBLIC_KEY] punctuated' }
           setCode(error, 'INVALID_PUBLIC_KEY')
@@ -1270,7 +1270,7 @@ t.test('set calls Sets.run - preserves punctuated key errors',
         filepath: '.env',
         envFilepath: '.env',
         envSrc: 'HELLO=World',
-        privateKeyAdded: false,
+        localPrivateKeyAdded: false,
         error: (() => {
           const error = { message: '[MISPAIRED_PRIVATE_KEY] punctuated' }
           setCode(error, 'MISPAIRED_PRIVATE_KEY')
@@ -1293,7 +1293,7 @@ t.test('set calls Sets.run - preserves punctuated key errors',
     ct.end()
   })
 
-t.test('set calls Sets.run - privateKeyAdded',
+t.test('set calls Sets.run - localPrivateKeyAdded',
   ct => {
     const loggerInfoStub = sinon.stub(logger, 'info')
     const loggerSuccessStub = sinon.stub(logger, 'success')
@@ -1307,7 +1307,7 @@ t.test('set calls Sets.run - privateKeyAdded',
         envFilepath: '.env',
         envKeysFilepath: '.env.keys',
         envSrc: 'HELLO=World',
-        privateKeyAdded: true,
+        localPrivateKeyAdded: true,
         privateKeyName: 'DOTENV_PRIVATE_KEY',
         privateKey: '1234',
         error: null
@@ -1329,7 +1329,7 @@ t.test('set calls Sets.run - privateKeyAdded',
     ct.end()
   })
 
-t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys',
+t.test('set calls Sets.run - localPrivateKeyAdded and not ignoring .env.keys',
   ct => {
     const mainNotIgnoring = proxyquire('../../src/lib/main', {
       '../../src/lib/helpers/isIgnoringDotenvKeys': () => false
@@ -1347,7 +1347,7 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys',
         envFilepath: '.env',
         envKeysFilepath: '.env.keys',
         envSrc: 'HELLO=World',
-        privateKeyAdded: true,
+        localPrivateKeyAdded: true,
         privateKeyName: 'DOTENV_PRIVATE_KEY',
         privateKey: '1234',
         error: null
@@ -1369,7 +1369,7 @@ t.test('set calls Sets.run - privateKeyAdded and not ignoring .env.keys',
     ct.end()
   })
 
-t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports key addition',
+t.test('set calls Sets.run - localPrivateKeyAdded with unchanged file still reports key addition',
   ct => {
     const loggerSuccessStub = sinon.stub(logger, 'success')
     const loggerNeutralStub = sinon.stub(logger, 'info')
@@ -1382,7 +1382,7 @@ t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports k
         envFilepath: '.env',
         envKeysFilepath: '.env.keys',
         envSrc: 'HELLO=dude',
-        privateKeyAdded: true,
+        localPrivateKeyAdded: true,
         privateKeyName: 'DOTENV_PRIVATE_KEY',
         privateKey: '1234',
         error: null
@@ -1403,7 +1403,7 @@ t.test('set calls Sets.run - privateKeyAdded with unchanged file still reports k
     ct.end()
   })
 
-t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .env',
+t.test('set calls Sets.run - localPrivateKeyAdded missing envFilepath falls back to .env',
   ct => {
     const loggerSuccessStub = sinon.stub(logger, 'success')
     const loggerInfoStub = sinon.stub(logger, 'info')
@@ -1416,7 +1416,7 @@ t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .
         envFilepath: undefined,
         envKeysFilepath: '.env.keys',
         envSrc: 'HELLO=dude',
-        privateKeyAdded: true,
+        localPrivateKeyAdded: true,
         privateKeyName: 'DOTENV_PRIVATE_KEY',
         privateKey: '1234',
         error: null
@@ -1431,6 +1431,40 @@ t.test('set calls Sets.run - privateKeyAdded missing envFilepath falls back to .
     t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileXSync .env')
     t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
     t.ok(loggerInfoStub.notCalled, 'logger info')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('set calls Sets.run - remotePrivateKeyAdded',
+  ct => {
+    const loggerInfoStub = sinon.stub(logger, 'info')
+    const loggerSuccessStub = sinon.stub(logger, 'success')
+
+    const stub = sinon.stub(Sets.prototype, 'runSync').returns({
+      processedEnvs: [{
+        key: 'HELLO',
+        value: 'World',
+        filepath: '.env',
+        envFilepath: '.env',
+        envSrc: 'HELLO=World',
+        localPrivateKeyAdded: false,
+        remotePrivateKeyAdded: true,
+        privateKeyName: 'DOTENV_PRIVATE_KEY',
+        privateKey: '1234',
+        error: null
+      }],
+      changedFilepaths: ['.env'],
+      unchangedFilepaths: []
+    })
+
+    main.set('HELLO', 'World')
+
+    t.ok(stub.called, 'new Sets().runSync() called')
+    t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
+    t.ok(loggerInfoStub.notCalled, 'logger info')
+    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key ⛨'), 'logger success')
 
     stub.restore()
 

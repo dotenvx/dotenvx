@@ -122,7 +122,7 @@ t.test('#run (encrypt on) creates missing .env and encrypts the set key/value',
     ct.equal(processedEnvs.length, 1)
     ct.notOk(processedEnvs[0].error)
     ct.equal(processedEnvs[0].changed, true)
-    ct.ok(processedEnvs[0].privateKeyAdded)
+    ct.ok(processedEnvs[0].localPrivateKeyAdded)
     ct.match(processedEnvs[0].envSrc, /^#\/-------------------\[DOTENV_PUBLIC_KEY\]--------------------\//)
     ct.match(processedEnvs[0].envSrc, /HELLO="encrypted:/)
     ct.same(changedFilepaths, [envFile])
@@ -471,8 +471,11 @@ t.test('#run (finds .env file) with --encrypt',
     if (Object.prototype.hasOwnProperty.call(row, 'envKeysFilepath')) {
       expectedRow.envKeysFilepath = row.envKeysFilepath
     }
-    if (Object.prototype.hasOwnProperty.call(row, 'privateKeyAdded')) {
-      expectedRow.privateKeyAdded = row.privateKeyAdded
+    if (Object.prototype.hasOwnProperty.call(row, 'localPrivateKeyAdded')) {
+      expectedRow.localPrivateKeyAdded = row.localPrivateKeyAdded
+    }
+    if (Object.prototype.hasOwnProperty.call(row, 'remotePrivateKeyAdded')) {
+      expectedRow.remotePrivateKeyAdded = row.remotePrivateKeyAdded
     }
 
     ct.same(processedEnvs, [expectedRow])
@@ -698,7 +701,8 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
       envFilepath: 'tests/monorepo/apps/encrypted/.env',
       changed: true,
       originalValue: null,
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
+      remotePrivateKeyAdded: false,
       envKeysFilepath: 'tests/monorepo/apps/encrypted/.env.keys',
       publicKey,
       privateKey,
@@ -758,7 +762,8 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
       envFilepath: 'tests/monorepo/apps/encrypted/.env',
       changed: true,
       originalValue: null,
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
+      remotePrivateKeyAdded: false,
       envKeysFilepath: 'tests/monorepo/apps/encrypted/.env.keys',
       publicKey,
       privateKey,
@@ -818,7 +823,8 @@ t.test('#run (finds .env with a shebang) with --encrypt',
       envKeysFilepath: 'tests/monorepo/apps/shebang/.env.keys',
       changed: true,
       originalValue: 'shebang',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
+      remotePrivateKeyAdded: false,
       publicKey,
       privateKey,
       encryptedValue,
@@ -868,7 +874,8 @@ t.test('#run (finds .env file only) with --encrypt AND setting from unencrypted 
       envFilepath: 'tests/monorepo/apps/unencrypted/.env',
       changed: true,
       originalValue: 'unencrypted',
-      privateKeyAdded: true,
+      localPrivateKeyAdded: true,
+      remotePrivateKeyAdded: false,
       envKeysFilepath: 'tests/monorepo/apps/unencrypted/.env.keys',
       publicKey,
       privateKey,
@@ -897,7 +904,8 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath',
     const row = processedEnvs[0]
     const publicKey = row.publicKey
     const privateKey = row.privateKey
-    const privateKeyAdded = row.privateKeyAdded
+    const localPrivateKeyAdded = row.localPrivateKeyAdded
+    const remotePrivateKeyAdded = row.remotePrivateKeyAdded
     const privateKeyName = row.privateKeyName
     const encryptedValue = row.encryptedValue
     const envSrc = [
@@ -925,7 +933,8 @@ t.test('#run (finds .env file) with --encrypt and custom envKeysFilepath',
       publicKey,
       privateKey,
       envKeysFilepath: 'tests/monorepo/.env.keys',
-      privateKeyAdded,
+      localPrivateKeyAdded,
+      remotePrivateKeyAdded,
       privateKeyName,
       envSrc
     }])

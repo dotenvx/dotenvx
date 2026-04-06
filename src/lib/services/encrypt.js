@@ -105,7 +105,8 @@ class Encrypt {
         envSrc = prov.envSrc
         publicKey = prov.publicKey
         privateKey = prov.privateKey
-        row.privateKeyAdded = prov.privateKeyAdded
+        row.localPrivateKeyAdded = prov.localPrivateKeyAdded
+        row.remotePrivateKeyAdded = prov.remotePrivateKeyAdded
         row.envKeysFilepath = prov.envKeysFilepath
       } else if (privateKeyValue) {
         const prov = provisionWithPrivateKey({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, privateKeyValue, publicKeyValue, publicKeyName })
