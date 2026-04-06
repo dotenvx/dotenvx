@@ -55,8 +55,15 @@ async function set (key, value) {
       }
     }
 
-    const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
-    const keyAddedSuffix = keyAddedEnv ? ` + key (${localDisplayPath(keyAddedEnv.envKeysFilepath)})` : ''
+    const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+    const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+    let keyAddedSuffix = ''
+    if (localKeyAddedEnv) {
+      keyAddedSuffix = ` + key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
+    }
+    if (remoteKeyAddedEnv) {
+      keyAddedSuffix = ` + key ⛨`
+    }
 
     if (spinner) spinner.stop()
     if (changedFilepaths.length > 0) {
@@ -65,9 +72,9 @@ async function set (key, value) {
       } else {
         logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
       }
-    } else if (encrypt && keyAddedEnv) {
-      const keyAddedEnvFilepath = keyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
-      logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
+    } else if (encrypt && localKeyAddedEnv) { // TODO: this needs to take into account remoteKeyAddedEnv
+      const localKeyAddedEnvFilepath = localKeyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
+      logger.success(`◈ encrypted ${key} (${localKeyAddedEnvFilepath})${keyAddedSuffix}`)
     } else if (unchangedFilepaths.length > 0) {
       logger.info(`○ no change (${unchangedFilepaths})`)
     } else {

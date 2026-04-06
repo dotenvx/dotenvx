@@ -194,8 +194,16 @@ const set = function (key, value, options = {}) {
     }
   }
 
-  const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
-  const keyAddedSuffix = keyAddedEnv ? ` + key (${localDisplayPath(keyAddedEnv.envKeysFilepath)})` : ''
+  let keyAddedSuffix = ''
+  const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+  const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+
+  if (localKeyAddedEnv) {
+    keyAddedSuffix = ` + key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
+  }
+  if (remoteKeyAddedEnv) {
+    keyAddedSuffix = ' + key ⛨'
+  }
 
   if (changedFilepaths.length > 0) {
     if (encrypt) {
@@ -203,8 +211,8 @@ const set = function (key, value, options = {}) {
     } else {
       logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
     }
-  } else if (encrypt && keyAddedEnv) {
-    const keyAddedEnvFilepath = keyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
+  } else if (encrypt && localKeyAddedEnv) {
+    const keyAddedEnvFilepath = localKeyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
     logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
   } else if (unchangedFilepaths.length > 0) {
     logger.info(`○ no change (${unchangedFilepaths})`)

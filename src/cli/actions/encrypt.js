@@ -52,23 +52,21 @@ async function encrypt () {
 
       if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+        const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+        const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
         let msg = `◈ encrypted (${changedFilepaths.join(',')})`
-        if (keyAddedEnv) {
-          const envKeysFilepath = localDisplayPath(keyAddedEnv.envKeysFilepath)
+        if (localKeyAddedEnv) {
+          const envKeysFilepath = localDisplayPath(localKeyAddedEnv.envKeysFilepath)
           msg += ` + key (${envKeysFilepath})`
+        }
+        if (remoteKeyAddedEnv) {
+          msg += ` + key ⛨`
         }
         logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {
         logger.info(`○ no change (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
-      }
-
-      for (const processedEnv of processedEnvs) {
-        if (processedEnv.localPrivateKeyAdded) {
-          // intentionally quiet: success line already communicates key creation
-        }
       }
     } catch (error) {
       if (spinner) spinner.stop()

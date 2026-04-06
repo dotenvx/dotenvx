@@ -58,11 +58,16 @@ async function rotate () {
 
       if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        const keyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+        const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+        const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+
         let msg = `⟳ rotated (${changedFilepaths.join(',')})`
-        if (keyAddedEnv) {
-          const envKeysFilepath = localDisplayPath(keyAddedEnv.envKeysFilepath)
+        if (localKeyAddedEnv) {
+          const envKeysFilepath = localDisplayPath(localKeyAddedEnv.envKeysFilepath)
           msg += ` + key (${envKeysFilepath})`
+        }
+        if (remoteKeyAddedEnv) {
+          msg += ` + key ⛨`
         }
         logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {

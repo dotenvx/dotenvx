@@ -13,6 +13,7 @@ function provisionSync ({ envSrc, envFilepath, keysFilepath, noOps }) {
   let keysSrc
   let envKeysFilepath
   let localPrivateKeyAdded = false
+  let remotePrivateKeyAdded = false
 
   if (noOps) {
     const kp = localKeypair()
@@ -32,6 +33,8 @@ function provisionSync ({ envSrc, envFilepath, keysFilepath, noOps }) {
     keysSrc = mutated.keysSrc
     envKeysFilepath = mutated.envKeysFilepath
     localPrivateKeyAdded = true
+  } else {
+    remotePrivateKeyAdded = true
   }
 
   return {
@@ -39,8 +42,9 @@ function provisionSync ({ envSrc, envFilepath, keysFilepath, noOps }) {
     keysSrc,
     publicKey,
     privateKey,
+    envKeysFilepath,
     localPrivateKeyAdded,
-    envKeysFilepath
+    remotePrivateKeyAdded
   }
 }
 
