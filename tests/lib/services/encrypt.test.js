@@ -605,6 +605,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
     const publicKey = row.publicKey
     const privateKey = row.privateKey
     const localPrivateKeyAdded = row.localPrivateKeyAdded
+    const remotePrivateKeyAdded = row.remotePrivateKeyAdded
     const privateKeyName = row.privateKeyName
     const envSrc = row.envSrc
 
@@ -618,6 +619,7 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
       privateKey,
       envKeysFilepath: 'tests/monorepo/.env.keys',
       localPrivateKeyAdded,
+      remotePrivateKeyAdded,
       privateKeyName,
       envSrc
     }])
