@@ -62,7 +62,7 @@ async function set (key, value) {
       keyAddedSuffix = ` + key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
     }
     if (remoteKeyAddedEnv) {
-      keyAddedSuffix = ` + key ⛨`
+      keyAddedSuffix = ' + key ⛨'
     }
 
     if (spinner) spinner.stop()

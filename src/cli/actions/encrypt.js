@@ -60,7 +60,7 @@ async function encrypt () {
           msg += ` + key (${envKeysFilepath})`
         }
         if (remoteKeyAddedEnv) {
-          msg += ` + key ⛨`
+          msg += ' + key ⛨'
         }
         logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {
