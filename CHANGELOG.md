@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.60.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.60.1...main)
+
+## [1.60.1](https://github.com/dotenvx/dotenvx/compare/v1.60.0...v1.60.1) (2026-04-06)
+
+### Added
+
+* Added missing `+ key ⛨` for Ops stored keys ([#777](https://github.com/dotenvx/dotenvx/pull/777))
 
 ## [1.60.0](https://github.com/dotenvx/dotenvx/compare/v1.59.1...v1.60.0) (2026-04-04)
 
