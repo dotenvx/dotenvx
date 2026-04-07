@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.60.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.60.2...main)
+
+## [1.60.2](https://github.com/dotenvx/dotenvx/compare/v1.60.1...v1.60.2) (2026-04-07)
+
+### Changed
+
+* Communicate `local key` and `armored key` (for Ops stored keys) ([#778](https://github.com/dotenvx/dotenvx/pull/778))
 
 ## [1.60.1](https://github.com/dotenvx/dotenvx/compare/v1.60.0...v1.60.1) (2026-04-06)
 
