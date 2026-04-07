@@ -1572,7 +1572,7 @@ Encrypt the contents of a `.env` file to an encrypted `.env` file.
 $ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx encrypt
-◈ encrypted (.env) + key (.env.keys)
+◈ encrypted (.env) + local key (.env.keys)
 ⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='122...0b8' dotenvx run -- yourcommand] to test decryption locally
 ```
@@ -1587,7 +1587,7 @@ $ echo "HELLO=Dotenvx" > .env
 $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
-◈ encrypted (.env.production) + key (.env.keys)
+◈ encrypted (.env.production) + local key (.env.keys)
 ⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='bff...bc4' dotenvx run -- yourcommand] to test decryption locally
 ```

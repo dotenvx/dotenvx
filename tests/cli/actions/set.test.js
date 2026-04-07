@@ -510,7 +510,7 @@ t.test('set - localPrivateKeyAdded', async ct => {
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + local key (.env.keys)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
@@ -549,7 +549,7 @@ t.test('set - localPrivateKeyAdded and not ignoring .env.keys', async ct => {
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + local key (.env.keys)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
@@ -582,7 +582,7 @@ t.test('set - localPrivateKeyAdded with unchanged file still reports key additio
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + local key (.env.keys)'), 'logger success')
   t.ok(loggerNeutralStub.notCalled, 'logger info')
 
   ct.end()
@@ -615,7 +615,7 @@ t.test('set - localPrivateKeyAdded with unchanged file and missing envFilepath f
 
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileX .env')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + local key (.env.keys)'), 'logger success')
   t.ok(loggerInfoStub.notCalled, 'logger info')
 
   ct.end()
@@ -649,7 +649,7 @@ t.test('set - remotePrivateKeyAdded', async ct => {
   t.ok(stub.called, 'Sets().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key ⛨'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + armored key ⛨'), 'logger success')
 
   ct.end()
 })

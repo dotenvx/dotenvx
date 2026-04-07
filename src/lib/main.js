@@ -199,10 +199,10 @@ const set = function (key, value, options = {}) {
   const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
 
   if (localKeyAddedEnv) {
-    keyAddedSuffix = ` + key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
+    keyAddedSuffix = ` + local key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
   }
   if (remoteKeyAddedEnv) {
-    keyAddedSuffix = ' + key ⛨'
+    keyAddedSuffix = ' + armored key ⛨'
   }
 
   if (changedFilepaths.length > 0) {
