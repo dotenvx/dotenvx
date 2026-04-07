@@ -59,10 +59,10 @@ async function set (key, value) {
     const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
     let keyAddedSuffix = ''
     if (localKeyAddedEnv) {
-      keyAddedSuffix = ` + key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
+      keyAddedSuffix = ` + local key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
     }
     if (remoteKeyAddedEnv) {
-      keyAddedSuffix = ' + key ⛨'
+      keyAddedSuffix = ' + armored key ⛨'
     }
 
     if (spinner) spinner.stop()

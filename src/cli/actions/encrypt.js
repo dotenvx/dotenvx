@@ -57,10 +57,10 @@ async function encrypt () {
         let msg = `◈ encrypted (${changedFilepaths.join(',')})`
         if (localKeyAddedEnv) {
           const envKeysFilepath = localDisplayPath(localKeyAddedEnv.envKeysFilepath)
-          msg += ` + key (${envKeysFilepath})`
+          msg += ` + local key (${envKeysFilepath})`
         }
         if (remoteKeyAddedEnv) {
-          msg += ' + key ⛨'
+          msg += ' + armored key ⛨'
         }
         logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {

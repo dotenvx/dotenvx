@@ -138,7 +138,7 @@ t.test('rotate - .env with changes', async ct => {
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('rotated .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + key (.env.keys)'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + local key (.env.keys)'), 'logger.success')
 
   ct.end()
 })
@@ -176,7 +176,7 @@ t.test('rotate - .env with changes and localPrivateKeyAdded', async ct => {
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('rotated .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + key (.env.keys)'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + local key (.env.keys)'), 'logger.success')
 
   ct.end()
 })
@@ -211,7 +211,7 @@ t.test('rotate - .env with changes and remotePrivateKeyAdded', async ct => {
   t.ok(loggerVerboseStub.calledWith('rotating .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('rotated .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + key ⛨'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('⟳ rotated (.env) + armored key ⛨'), 'logger.success')
 
   ct.end()
 })

@@ -202,7 +202,7 @@ t.test('encrypt - .env with changes and localPrivateKeyAdded', async ct => {
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + local key (.env.keys)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
@@ -241,7 +241,7 @@ t.test('encrypt - .env with changes and localPrivateKeyAdded but not ignoring .e
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key (.env.keys)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + local key (.env.keys)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
@@ -276,7 +276,7 @@ t.test('encrypt - .env with changes and remotePrivateKeyAdded', async ct => {
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + key ⛨'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + armored key ⛨'), 'logger success')
 
   ct.end()
 })

@@ -1321,7 +1321,7 @@ t.test('set calls Sets.run - localPrivateKeyAdded',
     t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
     t.ok(loggerInfoStub.notCalled, 'logger info')
-    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + local key (.env.keys)'), 'logger success')
     t.ok(loggerHelpStub.notCalled, 'logger help')
 
     stub.restore()
@@ -1361,7 +1361,7 @@ t.test('set calls Sets.run - localPrivateKeyAdded and not ignoring .env.keys',
     t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
     t.ok(loggerInfoStub.notCalled, 'logger info')
-    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + local key (.env.keys)'), 'logger success')
     t.ok(loggerHelpStub.notCalled, 'logger help')
 
     stub.restore()
@@ -1395,7 +1395,7 @@ t.test('set calls Sets.run - localPrivateKeyAdded with unchanged file still repo
 
     t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileXSync .env')
-    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + local key (.env.keys)'), 'logger success')
     t.ok(loggerNeutralStub.notCalled, 'logger info')
 
     stub.restore()
@@ -1429,7 +1429,7 @@ t.test('set calls Sets.run - localPrivateKeyAdded missing envFilepath falls back
 
     t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=dude'), 'fsx.writeFileXSync .env')
-    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key (.env.keys)'), 'logger success')
+    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + local key (.env.keys)'), 'logger success')
     t.ok(loggerInfoStub.notCalled, 'logger info')
 
     stub.restore()
@@ -1464,7 +1464,7 @@ t.test('set calls Sets.run - remotePrivateKeyAdded',
     t.ok(stub.called, 'new Sets().runSync() called')
     t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileXSync .env')
     t.ok(loggerInfoStub.notCalled, 'logger info')
-    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + key ⛨'), 'logger success')
+    t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + armored key ⛨'), 'logger success')
 
     stub.restore()
 
