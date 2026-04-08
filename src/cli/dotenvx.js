@@ -190,6 +190,14 @@ program.command('ls')
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
   .action(lsAction)
 
+// dotenvx login
+program.command('login')
+  .description('optional: log in to your dotenvx account')
+  .action(() => {
+    const rawArgs = ['ops', 'login', ...process.argv.slice(3)]
+    executeDynamic(program, 'ops', rawArgs)
+  })
+
 // dotenvx help
 program.command('help [command]')
   .description('display help for command')
