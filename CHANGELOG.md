@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.60.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.0...main)
+
+## [1.61.0](https://github.com/dotenvx/dotenvx/compare/v1.60.2...v1.61.0) (2026-04-08)
+
+### Added
+
+* Add `login` and `logout` method that proxy to `dotenvx-ops login/logout` ([#780](https://github.com/dotenvx/dotenvx/pull/780))
+* Note: dotenvx continues to make zero outgoing HTTP requests and includes no telemetry. Outgoing requests occur only if you explicitly install the [dotenvx-ops](https://dotenvx.com/ops) SDK or CLI.
 
 ## [1.60.2](https://github.com/dotenvx/dotenvx/compare/v1.60.1...v1.60.2) (2026-04-07)
 
