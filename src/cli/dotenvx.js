@@ -192,7 +192,7 @@ program.command('ls')
 
 // dotenvx login
 program.command('login')
-  .description('log in to unlock ⛨ Armored Keys')
+  .description('log in to unlock ⛨ ARMORED KEYS ✦ BETA')
   .action(() => {
     const rawArgs = ['ops', 'login', ...process.argv.slice(3)]
     executeDynamic(program, 'ops', rawArgs)
