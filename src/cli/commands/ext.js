@@ -24,28 +24,36 @@ ext.command('ls')
   .argument('[directory]', 'directory to list .env files from', '.')
   .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
-  .action(require('./../actions/ls'))
+  .action(function (...args) {
+    return require('./../actions/ls').apply(this, args)
+  })
 
 // dotenvx ext genexample
 ext.command('genexample')
   .description('generate .env.example')
   .argument('[directory]', 'directory to generate from', '.')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
-  .action(require('./../actions/ext/genexample'))
+  .action(function (...args) {
+    return require('./../actions/ext/genexample').apply(this, args)
+  })
 
 // dotenvx ext gitignore
 ext.command('gitignore')
   .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
   .addHelpText('after', examples.gitignore)
   .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
-  .action(require('./../actions/ext/gitignore'))
+  .action(function (...args) {
+    return require('./../actions/ext/gitignore').apply(this, args)
+  })
 
 // dotenvx ext prebuild
 ext.command('prebuild')
   .description('prevent including .env files in docker builds')
   .addHelpText('after', examples.prebuild)
   .argument('[directory]', 'directory to prevent including .env files from', '.')
-  .action(require('./../actions/ext/prebuild'))
+  .action(function (...args) {
+    return require('./../actions/ext/prebuild').apply(this, args)
+  })
 
 // dotenvx ext precommit
 ext.command('precommit')
@@ -53,12 +61,16 @@ ext.command('precommit')
   .addHelpText('after', examples.precommit)
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
-  .action(require('./../actions/ext/precommit'))
+  .action(function (...args) {
+    return require('./../actions/ext/precommit').apply(this, args)
+  })
 
 // dotenvx scan
 ext.command('scan')
   .description('scan for leaked secrets')
-  .action(require('./../actions/ext/scan'))
+  .action(function (...args) {
+    return require('./../actions/ext/scan').apply(this, args)
+  })
 
 // override helpInformation to hide dynamic commands
 ext.helpInformation = function () {
