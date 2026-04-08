@@ -18,7 +18,7 @@ function opsBanner (installCommand) {
     '',
     '  ⛨  ARMORED KEYS: Harden your private keys.',
     `  ⮕  install [${installCommand}]`,
-    '  ⮕  and then run [dotenvx-ops login]'
+    '  ⮕  then run [dotenvx-ops login]'
   ]
 
   const innerWidth = Math.max(67, ...lines.map((line) => line.length))

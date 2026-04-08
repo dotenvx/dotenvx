@@ -190,6 +190,23 @@ program.command('ls')
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
   .action(lsAction)
 
+// dotenvx login
+program.command('login')
+  .description('log in to unlock ⛨ ARMORED KEYS ✦ BETA')
+  .action(() => {
+    const rawArgs = ['ops', 'login', ...process.argv.slice(3)]
+    executeDynamic(program, 'ops', rawArgs)
+  })
+
+// dotenvx logout
+program.command('logout', { hidden: true })
+  .description('optional: log out of your dotenvx account')
+  .allowUnknownOption()
+  .action(() => {
+    const rawArgs = ['ops', 'logout', ...process.argv.slice(3)]
+    executeDynamic(program, 'ops', rawArgs)
+  })
+
 // dotenvx help
 program.command('help [command]')
   .description('display help for command')

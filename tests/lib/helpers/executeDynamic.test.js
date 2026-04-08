@@ -330,3 +330,35 @@ t.test('executeDynamic - pro found', ct => {
 
   ct.end()
 })
+
+t.test('executeDynamic - ops found with login arg', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 0
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+
+  executeDynamic(program, 'ops', ['ops', 'login'])
+
+  ct.ok(spawnSyncStub.calledWith('dotenvx-ops', ['login'], sinon.match.object), 'spawnSync proxies to dotenvx-ops login')
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
+t.test('executeDynamic - ops found with logout arg', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 0
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+
+  executeDynamic(program, 'ops', ['ops', 'logout'])
+
+  ct.ok(spawnSyncStub.calledWith('dotenvx-ops', ['logout'], sinon.match.object), 'spawnSync proxies to dotenvx-ops logout')
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
