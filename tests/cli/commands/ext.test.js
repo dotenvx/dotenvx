@@ -4,6 +4,8 @@ const proxyquire = require('proxyquire').noCallThru()
 
 t.test('ext dynamic action forwards to executeExtension', (ct) => {
   const executeExtensionStub = sinon.stub()
+  const originalArgv = process.argv
+  process.argv = ['node', 'dotenvx', 'ext', 'scan', '--json']
 
   const ext = proxyquire('../../../src/cli/commands/ext', {
     './../../lib/helpers/executeExtension': executeExtensionStub,
@@ -21,10 +23,14 @@ t.test('ext dynamic action forwards to executeExtension', (ct) => {
     './../actions/ext/scan': sinon.stub()
   })
 
-  ext._actionHandler('scan', ['--json'])
+  ext._actionHandler(['scan', ['--json']])
 
   ct.ok(executeExtensionStub.calledOnce, 'executeExtension called')
-  ct.ok(executeExtensionStub.calledWith(ext, 'scan', ['--json']), 'executeExtension called with expected args')
+  ct.equal(executeExtensionStub.firstCall.args[0], ext, 'executeExtension receives ext command')
+  ct.equal(executeExtensionStub.firstCall.args[1], 'scan', 'executeExtension receives command name')
+  ct.same(executeExtensionStub.firstCall.args[2], ['scan', '--json'], 'executeExtension receives forwarded raw args')
+
+  process.argv = originalArgv
   ct.end()
 })
 
@@ -60,16 +66,29 @@ t.test('ext subcommands lazy-load handlers and preserve this context', (ct) => {
     precommit: precommitStub,
     scan: scanStub
   }
+  const commandHasPositionalArg = {
+    ls: true,
+    genexample: true,
+    gitignore: false,
+    prebuild: true,
+    precommit: true,
+    scan: false
+  }
 
   for (const [name, stub] of Object.entries(commandToStub)) {
     ct.equal(stub.callCount, 0, `${name} handler not called before action executes`)
 
     const subcommand = ext.commands.find((c) => c.name() === name)
-    subcommand._actionHandler('arg1', 'arg2')
+    subcommand._actionHandler(['arg1', 'arg2'])
 
     ct.equal(stub.callCount, 1, `${name} handler called once`)
     ct.ok(stub.calledOn(subcommand), `${name} handler called with commander context`)
-    ct.same(stub.firstCall.args, ['arg1', 'arg2'], `${name} handler receives forwarded args`)
+    if (commandHasPositionalArg[name]) {
+      ct.equal(stub.firstCall.args[0], 'arg1', `${name} handler receives first positional arg`)
+      ct.type(stub.firstCall.args[1], 'object', `${name} handler receives options object`)
+    } else {
+      ct.type(stub.firstCall.args[0], 'object', `${name} handler receives options object`)
+    }
   }
 
   ct.end()
