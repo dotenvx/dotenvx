@@ -192,9 +192,18 @@ program.command('ls')
 
 // dotenvx login
 program.command('login')
-  .description('optional: log in to your dotenvx account')
+  .description('log in to unlock ⛨ Armored Keys')
   .action(() => {
     const rawArgs = ['ops', 'login', ...process.argv.slice(3)]
+    executeDynamic(program, 'ops', rawArgs)
+  })
+
+// dotenvx logout
+program.command('logout', { hidden: true })
+  .description('optional: log out of your dotenvx account')
+  .allowUnknownOption()
+  .action(() => {
+    const rawArgs = ['ops', 'logout', ...process.argv.slice(3)]
     executeDynamic(program, 'ops', rawArgs)
   })
 
