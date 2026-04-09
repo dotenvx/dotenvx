@@ -60,7 +60,6 @@ program
   .allowUnknownOption()
 
 // dotenvx run -- node index.js
-const runAction = require('./actions/run')
 program.command('run')
   .description('inject env at runtime [dotenvx run -- yourcommand]')
   .addHelpText('after', examples.run)
@@ -75,11 +74,10 @@ program.command('run')
   .addOption(new Option('--ops-off', 'DEPRECATED: use --no-ops').hideHelp())
   .action(function (...args) {
     this.envs = envs
-    return runAction.apply(this, args)
+    return require('./actions/run').apply(this, args)
   })
 
 // dotenvx get
-const getAction = require('./actions/get')
 program.command('get')
   .usage('[KEY] [options]')
   .description('return a single environment variable')
@@ -98,11 +96,10 @@ program.command('get')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    return getAction.apply(this, args)
+    return require('./actions/get').apply(this, args)
   })
 
 // dotenvx set
-const setAction = require('./actions/set')
 program.command('set')
   .usage('<KEY> <value> [options]')
   .description('encrypt a single environment variable')
@@ -118,11 +115,10 @@ program.command('set')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    return setAction.apply(this, args)
+    return require('./actions/set').apply(this, args)
   })
 
 // dotenvx encrypt
-const encryptAction = require('./actions/encrypt')
 program.command('encrypt')
   .description('convert .env file(s) to encrypted .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
@@ -134,11 +130,10 @@ program.command('encrypt')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
-    return encryptAction.apply(this, args)
+    return require('./actions/encrypt').apply(this, args)
   })
 
 // dotenvx decrypt
-const decryptAction = require('./actions/decrypt')
 program.command('decrypt')
   .description('convert encrypted .env file(s) to plain .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
@@ -149,11 +144,10 @@ program.command('decrypt')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
-    return decryptAction.apply(this, args)
+    return require('./actions/decrypt').apply(this, args)
   })
 
 // dotenvx rotate
-const rotateAction = require('./actions/rotate')
 program.command('rotate')
   .description('rotate keypair(s) and re-encrypt .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
@@ -164,11 +158,10 @@ program.command('rotate')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
-    return rotateAction.apply(this, args)
+    return require('./actions/rotate').apply(this, args)
   })
 
 // dotenvx keypair
-const keypairAction = require('./actions/keypair')
 program.command('keypair')
   .usage('[KEY] [options]')
   .description('print public/private keys for .env file(s)')
@@ -179,16 +172,19 @@ program.command('keypair')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell)', 'json')
-  .action(keypairAction)
+  .action(function (...args) {
+    return require('./actions/keypair').apply(this, args)
+  })
 
 // dotenvx ls
-const lsAction = require('./actions/ls')
 program.command('ls')
   .description('print all .env files in a tree structure')
   .argument('[directory]', 'directory to list .env files from', '.')
   .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
-  .action(lsAction)
+  .action(function (...args) {
+    return require('./actions/ls').apply(this, args)
+  })
 
 // dotenvx login
 program.command('login')
@@ -235,17 +231,15 @@ program.addCommand(require('./commands/ext'))
 //
 // MOVED
 //
-const prebuildAction = require('./actions/ext/prebuild')
 program.command('prebuild')
   .description('DEPRECATED: moved to [dotenvx ext prebuild]')
   .addHelpText('after', examples.prebuild)
   .action(function (...args) {
     logger.warn('DEPRECATION NOTICE: [prebuild] has moved to [dotenvx ext prebuild]')
 
-    prebuildAction.apply(this, args)
+    require('./actions/ext/prebuild').apply(this, args)
   })
 
-const precommitAction = require('./actions/ext/precommit')
 program.command('precommit')
   .description('DEPRECATED: moved to [dotenvx ext precommit]')
   .addHelpText('after', examples.precommit)
@@ -253,7 +247,7 @@ program.command('precommit')
   .action(function (...args) {
     logger.warn('DEPRECATION NOTICE: [precommit] has moved to [dotenvx ext precommit]')
 
-    precommitAction.apply(this, args)
+    require('./actions/ext/precommit').apply(this, args)
   })
 
 // override helpInformation to hide DEPRECATED and 'ext' commands
