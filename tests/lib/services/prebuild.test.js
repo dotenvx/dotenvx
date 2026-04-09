@@ -158,3 +158,33 @@ t.test('#run (.env files in subfolders throw error in prebuild hook)', ct => {
 
   ct.end()
 })
+
+t.test('#constructor sets default exclusions', ct => {
+  const prebuild = new Prebuild()
+
+  ct.same(prebuild.excludeEnvFile, ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**'])
+
+  ct.end()
+})
+
+t.test('#constructor merges user exclusions with defaults', ct => {
+  const prebuild = new Prebuild('./', { exclude: ['.env.*.config', '.env.public'] })
+
+  ct.same(prebuild.excludeEnvFile, ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**', '.env.*.config', '.env.public'])
+
+  ct.end()
+})
+
+t.test('#run passes exclusions to Ls service', ct => {
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileX').returns('')
+  const lsRunStub = sinon.stub(Ls.prototype, 'run').returns([])
+
+  const prebuild = new Prebuild('./', { exclude: ['.env.custom'] })
+  prebuild.run()
+
+  ct.ok(lsRunStub.called, 'Ls.run should be called')
+  ct.same(prebuild.excludeEnvFile, ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**', '.env.custom'])
+
+  ct.end()
+})

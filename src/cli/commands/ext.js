@@ -45,6 +45,7 @@ ext.command('prebuild')
   .description('prevent including .env files in docker builds')
   .addHelpText('after', examples.prebuild)
   .argument('[directory]', 'directory to prevent including .env files from', '.')
+  .option('-x, --exclude <patterns...>', 'pattern(s) to exclude from .env file checks')
   .action(require('./../actions/ext/prebuild'))
 
 // dotenvx ext precommit
@@ -53,6 +54,7 @@ ext.command('precommit')
   .addHelpText('after', examples.precommit)
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
+  .option('-x, --exclude <patterns...>', 'pattern(s) to exclude from .env file checks')
   .action(require('./../actions/ext/precommit'))
 
 // dotenvx scan
