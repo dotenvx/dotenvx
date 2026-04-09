@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.0...main)
 
+* Improved coldstart ([#781](https://github.com/dotenvx/dotenvx/pull/781))
+
 ## [1.61.0](https://github.com/dotenvx/dotenvx/compare/v1.60.2...v1.61.0) (2026-04-08)
 
 ### Added
