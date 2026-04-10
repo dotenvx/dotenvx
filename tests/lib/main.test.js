@@ -1546,6 +1546,111 @@ t.test('get calls Get.runSync format shell',
     ct.end()
   })
 
+t.test('get calls Get.runSync format eval-singlequotes',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+    const result = main.get(null, { format: 'eval-singlequotes' })
+    t.equal(result, "KEY='value'")
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('get calls Get.runSync format eval-singlequotes with dollar sign',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { PASSWORD: 'price$100' }, errors: [] })
+
+    const result = main.get(null, { format: 'eval-singlequotes' })
+    t.equal(result, "PASSWORD='price$100'")
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('get calls Get.runSync format eval-singlequotes with single quote in value',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { KEY: "it's" }, errors: [] })
+
+    const result = main.get(null, { format: 'eval-singlequotes' })
+    t.equal(result, "KEY='it'\\''s'")
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('get calls Get.runSync format eval-export',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+    const result = main.get(null, { format: 'eval-export' })
+    t.equal(result, "export KEY='value'")
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('get calls Get.runSync format eval-export with dollar sign',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { PASSWORD: 'price$100' }, errors: [] })
+
+    const result = main.get(null, { format: 'eval-export' })
+    t.equal(result, "export PASSWORD='price$100'")
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('get calls Get.runSync format eval-export with single quote in value',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { KEY: "it's" }, errors: [] })
+
+    const result = main.get(null, { format: 'eval-export' })
+    t.equal(result, "export KEY='it'\\''s'")
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('get calls Get.runSync format eval-export with multiple keys',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { KEY1: 'val1', KEY2: 'val2' }, errors: [] })
+
+    const result = main.get(null, { format: 'eval-export' })
+    t.equal(result, "export KEY1='val1'\nexport KEY2='val2'")
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
 t.test('get calls Get.runSync with noOps true',
   ct => {
     const stub = sinon.stub(Get.prototype, 'runSync')
