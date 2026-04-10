@@ -249,6 +249,86 @@ t.test('get --format eval-singlequotes (multiple keys use newlines)', async ct =
   ct.end()
 })
 
+t.test('get --format eval-export (basic)', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval-export' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { HELLO: 'World' } })
+
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.equal(stdout, "export HELLO='World'\n")
+
+  ct.end()
+})
+
+t.test('get --format eval-export (with dollar sign in value)', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval-export' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { PASSWORD: 'price$100' } })
+
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.equal(stdout, "export PASSWORD='price$100'\n")
+
+  ct.end()
+})
+
+t.test('get --format eval-export (with backtick in value)', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval-export' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { PASSWORD: 'foo`bar' } })
+
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.equal(stdout, "export PASSWORD='foo`bar'\n")
+
+  ct.end()
+})
+
+t.test('get --format eval-export (with single quotes in value)', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval-export' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { HELLO: "f'bar" } })
+
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.equal(stdout, "export HELLO='f'\\''bar'\n")
+
+  ct.end()
+})
+
+t.test('get --format eval-export (multiple keys use newlines)', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval-export' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { HELLO: 'World', HELLO2: 'World2' } })
+
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.equal(stdout, "export HELLO='World'\nexport HELLO2='World2'\n")
+
+  ct.end()
+})
+
 t.test('get --pretty-print', async ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }

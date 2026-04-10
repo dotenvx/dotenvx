@@ -266,10 +266,11 @@ const get = function (key, options = {}) {
       inline = inline.trim()
 
       return inline
-    } else if (options.format === 'eval-singlequotes') {
+    } else if (options.format === 'eval-singlequotes' || options.format === 'eval-export') {
+      const prefix = options.format === 'eval-export' ? 'export ' : ''
       let inline = ''
       for (const [key, value] of Object.entries(parsed)) {
-        inline += `${key}=${escapeSingleQuote(value)}\n`
+        inline += `${prefix}${key}=${escapeSingleQuote(value)}\n`
       }
       inline = inline.trim()
 
