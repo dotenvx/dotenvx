@@ -2,6 +2,7 @@ const { logger } = require('./../../shared/logger')
 
 const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
+const escapeSingleQuote = require('./../../lib/helpers/escapeSingleQuote')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
@@ -55,6 +56,14 @@ async function get (key) {
         let inline = ''
         for (const [key, value] of Object.entries(parsed)) {
           inline += `${key}=${escape(value)}\n`
+        }
+        inline = inline.trim()
+
+        console.log(inline)
+      } else if (options.format === 'eval-singlequotes') {
+        let inline = ''
+        for (const [key, value] of Object.entries(parsed)) {
+          inline += `${key}=${escapeSingleQuote(value)}\n`
         }
         inline = inline.trim()
 

@@ -19,6 +19,7 @@ const buildEnvs = require('./helpers/buildEnvs')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
 const localDisplayPath = require('./helpers/localDisplayPath')
+const escapeSingleQuote = require('./helpers/escapeSingleQuote')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -261,6 +262,14 @@ const get = function (key, options = {}) {
       let inline = ''
       for (const [key, value] of Object.entries(parsed)) {
         inline += `${key}=${escape(value)}\n`
+      }
+      inline = inline.trim()
+
+      return inline
+    } else if (options.format === 'eval-singlequotes') {
+      let inline = ''
+      for (const [key, value] of Object.entries(parsed)) {
+        inline += `${key}=${escapeSingleQuote(value)}\n`
       }
       inline = inline.trim()
 

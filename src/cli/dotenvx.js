@@ -92,7 +92,7 @@ program.command('get')
   .option('-a, --all', 'include all machine envs as well')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
-  .option('--format <type>', 'format of the output (json, shell, eval)', 'json')
+  .option('--format <type>', 'format of the output (json, shell, eval, eval-singlequotes)', 'json')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
