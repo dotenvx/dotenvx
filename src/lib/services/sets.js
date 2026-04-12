@@ -46,11 +46,6 @@ class Sets {
   }
 
   runSync () {
-    // example
-    // envs [
-    //   { type: 'envFile', value: '.env' }
-    // ]
-
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
         this._setEnvFileSync(env.value)
@@ -65,11 +60,6 @@ class Sets {
   }
 
   async run () {
-    // example
-    // envs [
-    //   { type: 'envFile', value: '.env' }
-    // ]
-
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
         await this._setEnvFile(env.value)
@@ -161,23 +151,7 @@ class Sets {
         row.privateKeyName = privateKeyName
       }
 
-      const goingFromPlainTextToEncrypted = wasPlainText && this.encrypt
-      const valueChanged = this.value !== row.originalValue
-      const shouldPersistSeededPlainValue = seededWithInitialKey && !this.encrypt
-
-      if (shouldPersistSeededPlainValue) {
-        row.envSrc = envSrc
-        this.changedFilepaths.add(envFilepath)
-        row.changed = true
-      } else if (goingFromPlainTextToEncrypted || valueChanged) {
-        row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
-        this.changedFilepaths.add(envFilepath)
-        row.changed = true
-      } else {
-        row.envSrc = envSrc
-        this.unchangedFilepaths.add(envFilepath)
-        row.changed = false
-      }
+      this._applyResult(envFilepath, wasPlainText, seededWithInitialKey, row, envSrc)
     } catch (e) {
       if (e.code === 'ENOENT') {
         row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
@@ -267,23 +241,7 @@ class Sets {
         row.privateKeyName = privateKeyName
       }
 
-      const goingFromPlainTextToEncrypted = wasPlainText && this.encrypt
-      const valueChanged = this.value !== row.originalValue
-      const shouldPersistSeededPlainValue = seededWithInitialKey && !this.encrypt
-
-      if (shouldPersistSeededPlainValue) {
-        row.envSrc = envSrc
-        this.changedFilepaths.add(envFilepath)
-        row.changed = true
-      } else if (goingFromPlainTextToEncrypted || valueChanged) {
-        row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
-        this.changedFilepaths.add(envFilepath)
-        row.changed = true
-      } else {
-        row.envSrc = envSrc
-        this.unchangedFilepaths.add(envFilepath)
-        row.changed = false
-      }
+      this._applyResult(envFilepath, wasPlainText, seededWithInitialKey, row, envSrc)
     } catch (e) {
       if (e.code === 'ENOENT') {
         row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
@@ -294,6 +252,36 @@ class Sets {
 
     this.processedEnvs.push(row)
   }
+
+  _applyResult (envFilepath, wasPlainText, seededWithInitialKey, row, envSrc) {
+    const { changed, envSrc: finalEnvSrc } = buildResult(envSrc, row.encryptedValue, this.key, this.value, row.originalValue, this.encrypt, wasPlainText, seededWithInitialKey)
+    row.envSrc = finalEnvSrc
+    row.changed = changed
+    if (changed) {
+      this.changedFilepaths.add(envFilepath)
+    } else {
+      this.unchangedFilepaths.add(envFilepath)
+    }
+  }
+}
+
+/**
+ * Pure function: decides if the env file changed and what its new content should be.
+ * No side effects, no mutation, no I/O.
+ */
+function buildResult (envSrc, encryptedValue, key, value, originalValue, encrypt, wasPlainText, seededWithInitialKey) {
+  const goingFromPlainTextToEncrypted = wasPlainText && encrypt
+  const valueChanged = value !== originalValue
+  const shouldPersistSeededPlainValue = seededWithInitialKey && !encrypt
+
+  if (shouldPersistSeededPlainValue || goingFromPlainTextToEncrypted || valueChanged) {
+    return {
+      changed: true,
+      envSrc: shouldPersistSeededPlainValue ? envSrc : replace(envSrc, key, encryptedValue || value)
+    }
+  }
+
+  return { changed: false, envSrc }
 }
 
 module.exports = Sets
