@@ -9,7 +9,10 @@ const Run = require('../../../src/lib/services/run')
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
-  process.env = {}
+  process.env = {
+    TMP: process.env.TMP,
+    TEMP: process.env.TEMP
+  }
 })
 
 t.test('#run (no arguments)',

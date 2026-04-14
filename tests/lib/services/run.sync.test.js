@@ -7,7 +7,10 @@ const proxyquire = require('proxyquire').noCallThru()
 const Run = require('../../../src/lib/services/run')
 
 t.beforeEach(() => {
-  process.env = {}
+  process.env = {
+    TMP: process.env.TMP,
+    TEMP: process.env.TEMP
+  }
 })
 
 t.test('#runSync processes inline env strings', ct => {

@@ -14,7 +14,10 @@ let writeFileXStub
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
-  process.env = {}
+  process.env = {
+    TMP: process.env.TMP,
+    TEMP: process.env.TEMP
+  }
   writeFileXStub = sinon.stub(fsx, 'writeFileXSync')
 })
 

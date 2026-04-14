@@ -26,7 +26,10 @@ function cleanupRootEnvFiles () {
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
-  process.env = {}
+  process.env = {
+    TMP: process.env.TMP,
+    TEMP: process.env.TEMP
+  }
   cleanupRootEnvFiles()
   writeFileXStub = sinon.stub(fsx, 'writeFileX')
 })

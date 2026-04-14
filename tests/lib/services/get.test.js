@@ -6,7 +6,10 @@ const Run = require('../../../src/lib/services/run')
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
-  process.env = {}
+  process.env = {
+    TMP: process.env.TMP,
+    TEMP: process.env.TEMP
+  }
   sinon.restore()
 })
 
@@ -24,10 +27,10 @@ t.test('#run (all object) with preset process.env',
     process.env.PRESET_ENV_EXAMPLE = 'something/on/machine'
 
     const { parsed } = await new Get(null, [], false, true).run()
-    ct.same(parsed, { PRESET_ENV_EXAMPLE: 'something/on/machine' })
+    ct.equal(parsed.PRESET_ENV_EXAMPLE, 'something/on/machine')
 
     const result = await new Get(null, [], false, false).run()
-    ct.same(result.parsed, {})
+    ct.equal(result.parsed.PRESET_ENV_EXAMPLE, undefined)
 
     ct.end()
   })
