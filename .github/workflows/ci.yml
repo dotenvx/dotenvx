@@ -243,6 +243,7 @@ jobs:
           tar --gzip -cf ./dist/dotenvx-linux-amd64.tar.gz -C bin/linux-amd64/ .
           tar --gzip -cf ./dist/dotenvx-linux-x86_64.tar.gz -C bin/linux-x86_64/ .
           tar --gzip -cf ./dist/dotenvx-linux-arm64.tar.gz -C bin/linux-arm64/ .
+          tar --gzip -cf ./dist/dotenvx-linux-aarch64.tar.gz -C bin/linux-aarch64/ .
           tar --gzip -cf ./dist/dotenvx-linux-armv7l.tar.gz -C bin/linux-armv7l/ .
           tar --gzip -cf ./dist/dotenvx-windows-amd64.tar.gz -C bin/windows-amd64/ .
           tar --gzip -cf ./dist/dotenvx-windows-x86_64.tar.gz -C bin/windows-x86_64/ .
