@@ -1,10 +1,49 @@
 const path = require('path')
 const which = require('which')
 const execute = require('./../../lib/helpers/execute')
+const Ops = require('./../extensions/ops')
 const { logger } = require('./../../shared/logger')
 const Errors = require('./errors')
 
-async function executeCommand (commandArgs, env) {
+function createOpsRedactionForwarder (source, destination, ops, redactionSecretValues) {
+  const maxSecretLength = redactionSecretValues.reduce((max, value) => {
+    return Math.max(max, value.length)
+  }, 0)
+
+  const tailLength = Math.max(0, maxSecretLength - 1)
+  let pending = ''
+
+  return new Promise((resolve, reject) => {
+    source.on('data', (chunk) => {
+      pending += chunk.toString()
+
+      if (tailLength === 0) {
+        destination.write(ops.redactSync(pending, redactionSecretValues))
+        pending = ''
+        return
+      }
+
+      if (pending.length <= tailLength) return
+
+      const splitAt = pending.length - tailLength
+      const safeChunk = pending.slice(0, splitAt)
+      pending = pending.slice(splitAt)
+
+      destination.write(ops.redactSync(safeChunk, redactionSecretValues))
+    })
+
+    source.on('end', () => {
+      if (pending.length > 0) {
+        destination.write(ops.redactSync(pending, redactionSecretValues))
+      }
+      resolve()
+    })
+
+    source.on('error', reject)
+  })
+}
+
+async function executeCommand (commandArgs, env, options = {}) {
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
     'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2'
@@ -50,6 +89,9 @@ async function executeCommand (commandArgs, env) {
   }
   /* c8 ignore stop */
 
+  const redactionSecretValues = Array.isArray(options.redactionSecretValues) ? options.redactionSecretValues : []
+  const useOpsRedaction = options.useOpsRedaction === true && redactionSecretValues.length > 0
+
   try {
     // ensure the first command is expanded
     try {
@@ -73,6 +115,39 @@ async function executeCommand (commandArgs, env) {
         }
         expandNext = false
       }
+    }
+
+    if (useOpsRedaction) {
+      logger.debug(`ops redaction enabled for ${redactionSecretValues.length} injected value(s)`)
+
+      child = execute.execa(commandArgs[0], commandArgs.slice(1), {
+        stdio: ['inherit', 'pipe', 'pipe'],
+        env: { ...process.env, ...env }
+      })
+
+      const ops = new Ops()
+      const stdoutForwarder = createOpsRedactionForwarder(child.stdout, process.stdout, ops, redactionSecretValues)
+      const stderrForwarder = createOpsRedactionForwarder(child.stderr, process.stderr, ops, redactionSecretValues)
+
+      process.on('SIGINT', sigintHandler)
+      process.on('SIGTERM', sigtermHandler)
+
+      signals.forEach(signal => {
+        process.on(signal, () => handleOtherSignal(signal))
+      })
+
+      const [{ exitCode }] = await Promise.all([
+        child,
+        stdoutForwarder,
+        stderrForwarder
+      ])
+
+      if (exitCode !== 0) {
+        logger.debug(`received exitCode ${exitCode}`)
+        throw new Errors({ exitCode }).commandExitedWithCode()
+      }
+
+      return
     }
 
     child = execute.execa(commandArgs[0], commandArgs.slice(1), {

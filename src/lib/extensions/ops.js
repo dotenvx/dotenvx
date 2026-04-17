@@ -89,6 +89,23 @@ class Ops {
     }
   }
 
+  redactSync (chunk, secrets = []) {
+    if (this._isForcedOff()) return chunk
+    if (typeof chunk !== 'string' || chunk.length === 0) return chunk
+    if (!Array.isArray(secrets) || secrets.length === 0) return chunk
+
+    const binary = this._resolveBinarySync()
+    if (!binary) return chunk
+
+    const payload = Buffer.from(JSON.stringify({ chunk, secrets })).toString('base64')
+
+    try {
+      return this._execSyncRaw(binary, ['redact', payload])
+    } catch (_e) {
+      return chunk
+    }
+  }
+
   async _exec (binary, args) {
     const { stdout } = await execFile(binary, args)
     return stdout.toString().trim()
@@ -96,6 +113,10 @@ class Ops {
 
   _execSync (binary, args) {
     return childProcess.execFileSync(binary, args).toString().trim()
+  }
+
+  _execSyncRaw (binary, args) {
+    return childProcess.execFileSync(binary, args).toString()
   }
 
   async _resolveBinary () {
