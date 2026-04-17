@@ -234,6 +234,7 @@ program.addCommand(require('./commands/ext'))
 program.command('prebuild')
   .description('DEPRECATED: moved to [dotenvx ext prebuild]')
   .addHelpText('after', examples.prebuild)
+  .argument('[directory]', 'directory to prevent including .env files from', '.')
   .action(function (...args) {
     logger.warn('DEPRECATION NOTICE: [prebuild] has moved to [dotenvx ext prebuild]')
 
@@ -243,6 +244,7 @@ program.command('prebuild')
 program.command('precommit')
   .description('DEPRECATED: moved to [dotenvx ext precommit]')
   .addHelpText('after', examples.precommit)
+  .argument('[directory]', 'directory to prevent committing .env files from', '.')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(function (...args) {
     logger.warn('DEPRECATION NOTICE: [precommit] has moved to [dotenvx ext precommit]')
