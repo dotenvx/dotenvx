@@ -21,6 +21,7 @@ async function run () {
 
   const sesh = new Session()
   const noOps = options.ops === false || options.opsOff === true || (await sesh.noOps())
+  let redactionSecretValues = []
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
@@ -91,7 +92,17 @@ async function run () {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
         logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
+
+      // collect injected values for optional ops-backed output redaction
+      for (const value of Object.values(processedEnv.injected || {})) {
+        if (typeof value !== 'string' || value.length < 1) {
+          continue
+        }
+        redactionSecretValues.push(value)
+      }
     }
+
+    redactionSecretValues = [...new Set(redactionSecretValues)].sort((a, b) => b.length - a.length)
 
     let msg = `injected env (${uniqueInjectedKeys.length})`
     if (readableFilepaths.length > 0 && readableStrings.length > 0) {
@@ -110,7 +121,10 @@ async function run () {
     process.exit(1)
   }
 
-  await executeCommand(commandArgs, process.env)
+  await executeCommand(commandArgs, process.env, {
+    useOpsRedaction: !noOps,
+    redactionSecretValues
+  })
 }
 
 module.exports = run
