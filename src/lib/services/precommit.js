@@ -55,12 +55,13 @@ class Precommit {
         count += 1
 
         const file = path.join(this.directory, _file) // to handle when directory argument passed
+        const filename = path.basename(file)
 
         // check if file is going to be committed
         if (this._isFileToBeCommitted(file)) {
           // check if that file is being ignored
           if (ig.ignores(file)) {
-            if (file === '.env.example' || file === '.env.x') {
+            if (filename === '.env.example' || filename === '.env.x') {
               const warning = new Errors({
                 message: `${file} ignored (should not be)`,
                 help: `fix: [dotenvx ext gitignore --pattern !${file}]`
@@ -68,7 +69,7 @@ class Precommit {
               warnings.push(warning)
             }
           } else {
-            if (file !== '.env.example' && file !== '.env.x') {
+            if (filename !== '.env.example' && filename !== '.env.x') {
               const src = fsx.readFileXSync(file)
               const encrypted = isFullyEncrypted(src)
 
