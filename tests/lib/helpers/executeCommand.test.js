@@ -122,6 +122,86 @@ t.test('executeCommand - sigintHandler', async ct => {
   ct.end()
 })
 
+t.test('executeCommand - SIGINT forwarding waits and skips if child already exited', async ct => {
+  const clock = sinon.useFakeTimers()
+  const signalHandlers = {}
+
+  sinon.stub(process, 'on').callsFake((signal, handler) => {
+    signalHandlers[signal] = handler
+    return process
+  })
+  sinon.stub(process, 'removeListener').callsFake((_signal, _handler) => {
+    return process
+  })
+
+  let resolveChild
+  const child = new Promise(resolve => {
+    resolveChild = resolve
+  })
+  child.exitCode = null
+  child.signalCode = null
+  child.killed = false
+  child.kill = sinon.spy()
+
+  sinon.stub(execute, 'execa').returns(child)
+  sinon.stub(process, 'exit')
+
+  const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
+
+  signalHandlers.SIGINT()
+  clock.tick(999)
+  ct.equal(child.kill.callCount, 0, 'signal is not forwarded before grace period')
+
+  child.exitCode = 0
+  resolveChild({ exitCode: 0 })
+  await Promise.resolve()
+
+  clock.tick(1)
+  ct.equal(child.kill.callCount, 0, 'signal is not forwarded after child already exited')
+
+  await runPromise
+  clock.restore()
+  ct.end()
+})
+
+t.test('executeCommand - SIGINT forwarding sends signal when child still running', async ct => {
+  const clock = sinon.useFakeTimers()
+  const signalHandlers = {}
+
+  sinon.stub(process, 'on').callsFake((signal, handler) => {
+    signalHandlers[signal] = handler
+    return process
+  })
+  sinon.stub(process, 'removeListener').callsFake((_signal, _handler) => {
+    return process
+  })
+
+  let resolveChild
+  const child = new Promise(resolve => {
+    resolveChild = resolve
+  })
+  child.exitCode = null
+  child.signalCode = null
+  child.killed = false
+  child.kill = sinon.spy()
+
+  sinon.stub(execute, 'execa').returns(child)
+  sinon.stub(process, 'exit')
+
+  const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
+
+  signalHandlers.SIGINT()
+  clock.tick(1000)
+  ct.ok(child.kill.calledWith('SIGINT'), 'SIGINT forwarded after grace period when child still running')
+
+  child.exitCode = 0
+  resolveChild({ exitCode: 0 })
+  await runPromise
+
+  clock.restore()
+  ct.end()
+})
+
 // this test fails with npm test - related to sending SIGTERM
 // t.test('executeCommand - sigtermHandler', async ct => {
 //   sinon.stub(process, 'exit')

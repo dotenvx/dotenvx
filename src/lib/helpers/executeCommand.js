@@ -5,6 +5,7 @@ const { logger } = require('./../../shared/logger')
 const Errors = require('./errors')
 
 async function executeCommand (commandArgs, env) {
+  const FORWARD_SIGNAL_GRACE_MS = 1000
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
     'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2'
@@ -14,6 +15,31 @@ async function executeCommand (commandArgs, env) {
 
   let child
   let signalSent
+  const signalForwardTimers = new Set()
+  const otherSignalHandlers = new Map()
+
+  const queueSignalForward = (signal) => {
+    if (!child) {
+      logger.debug(`no command process to send ${signal} to`)
+      return
+    }
+
+    logger.debug(`queueing ${signal} to command process after ${FORWARD_SIGNAL_GRACE_MS}ms`)
+    const timer = setTimeout(() => {
+      signalForwardTimers.delete(timer)
+
+      if (!child || child.exitCode !== null || child.signalCode !== null || child.killed) {
+        logger.debug(`skipping ${signal} forward because command process is already exiting`)
+        return
+      }
+
+      logger.debug(`sending ${signal} to command process`)
+      child.kill(signal)
+    }, FORWARD_SIGNAL_GRACE_MS)
+
+    if (typeof timer.unref === 'function') timer.unref()
+    signalForwardTimers.add(timer)
+  }
 
   /* c8 ignore start */
   const sigintHandler = () => {
@@ -21,13 +47,8 @@ async function executeCommand (commandArgs, env) {
     logger.debug('checking command process')
     logger.debug(child)
 
-    if (child) {
-      logger.debug('sending SIGINT to command process')
-      signalSent = 'SIGINT'
-      child.kill('SIGINT') // Send SIGINT to the command process
-    } else {
-      logger.debug('no command process to send SIGINT to')
-    }
+    signalSent = 'SIGINT'
+    queueSignalForward('SIGINT')
   }
 
   const sigtermHandler = () => {
@@ -35,18 +56,13 @@ async function executeCommand (commandArgs, env) {
     logger.debug('checking command process')
     logger.debug(child)
 
-    if (child) {
-      logger.debug('sending SIGTERM to command process')
-      signalSent = 'SIGTERM'
-      child.kill('SIGTERM') // Send SIGTERM to the command process
-    } else {
-      logger.debug('no command process to send SIGTERM to')
-    }
+    signalSent = 'SIGTERM'
+    queueSignalForward('SIGTERM')
   }
 
   const handleOtherSignal = (signal) => {
     logger.debug(`received ${signal}`)
-    child.kill(signal)
+    if (child) child.kill(signal)
   }
   /* c8 ignore stop */
 
@@ -84,7 +100,9 @@ async function executeCommand (commandArgs, env) {
     process.on('SIGTERM', sigtermHandler)
 
     signals.forEach(signal => {
-      process.on(signal, () => handleOtherSignal(signal))
+      const handler = () => handleOtherSignal(signal)
+      otherSignalHandlers.set(signal, handler)
+      process.on(signal, handler)
     })
 
     // Wait for the command process to finish
@@ -107,10 +125,17 @@ async function executeCommand (commandArgs, env) {
     // Exit with the error code from the command process, or 1 if unavailable
     process.exit(error.exitCode || 1)
   } finally {
+    signalForwardTimers.forEach(timer => clearTimeout(timer))
+    signalForwardTimers.clear()
+
     // Clean up: Remove the SIGINT handler
     process.removeListener('SIGINT', sigintHandler)
     // Clean up: Remove the SIGTERM handler
     process.removeListener('SIGTERM', sigtermHandler)
+
+    otherSignalHandlers.forEach((handler, signal) => {
+      process.removeListener(signal, handler)
+    })
   }
 }
 
