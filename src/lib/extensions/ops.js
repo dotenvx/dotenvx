@@ -90,7 +90,10 @@ class Ops {
   }
 
   async _exec (binary, args) {
-    const { stdout } = await execFile(binary, args)
+    const { stdout, stderr } = await execFile(binary, args)
+    if (stderr && stderr.length > 0) {
+      process.stderr.write(stderr.toString())
+    }
     return stdout.toString().trim()
   }
 

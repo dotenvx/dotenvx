@@ -264,3 +264,32 @@ t.test('observe returns early when no binary can be resolved', (ct) => {
   ct.equal(spawn.callCount, 0)
   ct.end()
 })
+
+t.test('keypair async forwards stderr from dotenvx-ops while parsing stdout json', async (ct) => {
+  const execFileSync = sinon.stub()
+  const promisifiedExecFile = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = promisifiedExecFile
+  const spawn = sinon.stub()
+
+  promisifiedExecFile
+    .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
+    .onCall(1).resolves({
+      stdout: Buffer.from('{"public_key":"pub","private_key":"priv"}'),
+      stderr: Buffer.from('⤴ update available\n')
+    }) // keypair npm
+
+  const stderrWriteStub = sinon.stub(process.stderr, 'write').returns(true)
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const ops = new Ops()
+  ct.same(await ops.keypair(), { public_key: 'pub', private_key: 'priv' })
+  ct.equal(stderrWriteStub.callCount, 1)
+  ct.equal(stderrWriteStub.firstCall.args[0], '⤴ update available\n')
+
+  stderrWriteStub.restore()
+  ct.end()
+})
