@@ -2217,7 +2217,7 @@ Prevent `.env` files from being committed to code.
 
 ```sh
 $ dotenvx ext precommit
-[dotenvx][precommit] .env files (1) protected (encrypted or gitignored)
+▣ .env files (1) protected (encrypted or gitignored)
 ```
 
 </details>
@@ -2227,7 +2227,7 @@ Install a shell script to `.git/hooks/pre-commit` to prevent accidentally commit
 
 ```sh
 $ dotenvx ext precommit --install
-[dotenvx][precommit] dotenvx ext precommit installed [.git/hooks/pre-commit]
+▣ dotenvx ext precommit installed [.git/hooks/pre-commit]
 ```
 
 </details>
@@ -2241,7 +2241,7 @@ $ mkdir -p apps/backend
 $ echo "HELLO=Backend" > apps/backend/.env
 
 $ dotenvx ext precommit apps/backend
-[dotenvx][precommit] apps/backend/.env not protected (encrypted or gitignored)
+▣ apps/backend/.env not protected (encrypted or gitignored)
 ```
 
 </details>
