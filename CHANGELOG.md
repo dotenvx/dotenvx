@@ -2,9 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.2...main)
+
+## [1.61.2](https://github.com/dotenvx/dotenvx/compare/v1.61.1...v1.61.2) (2026-04-21)
+
+### Changed
+
+* For Ops ⛨ users surface stderr ([#796](https://github.com/dotenvx/dotenvx/pull/796))
 
 ## [1.61.1](https://github.com/dotenvx/dotenvx/compare/v1.61.0...v1.61.1) (2026-04-17)
+
+### Changed
 
 * Faster coldstarts! ([#781](https://github.com/dotenvx/dotenvx/pull/781))
 * Patch `dotenvx precommit|prebuild` shorthand ([#793](https://github.com/dotenvx/dotenvx/pull/793))
