@@ -2617,11 +2617,13 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ## Ops ⛨
 
-[![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=5)](https://dotenvx.com/ops)
+[![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=6)](https://dotenvx.com/ops)
 
-> ⛨  ARMORED KEYS: Harden your private keys.
-> ⮕  install [curl -sfS https://dotenvx.sh/ops | sh]
-> ⮕  then run [dotenvx-ops login]
+```
+⛨ ARMORED KEYS: Harden your private keys.
+⮕ install [curl -sfS https://dotenvx.sh/ops | sh]
+⮕ then run [dotenvx-ops login]
+```
 
 [Learn more](https://dotenvx.com/ops)
 
