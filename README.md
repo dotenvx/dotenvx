@@ -2617,77 +2617,13 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 ## Ops ⛨
 
-[![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=3)](https://dotenvx.com/ops)
+[![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=4)](https://dotenvx.com/ops)
 
-> ⛨  ARMORED KEYS: Harden your private keys.
-
-### Quickstart
-
-Install it and gain `ops` commands.
-
-```sh
-$ curl -sfS https://dotenvx.sh/ops | sh
-$ dotenvx ops login
-$ dotenvx encrypt
-```
-
-### CLI
-
-<details><summary>`ops login`</summary><br>
-
-Log in.
-
-```sh
-$ dotenvx-ops login
-press Enter to open [https://ops.dotenvx.com/login/device] and enter code [D9C1-03BC]... (Y/n)
-⠹ waiting on browser authorization
-◈ logged in [username] to this device and activated token [dxo_6kjPifI…]
-```
-
-</details>
-<details><summary>`ops logout`</summary><br>
-
-Log out.
-
-```sh
-$ dotenvx ops logout
-◈ logged out [username] from this device and revoked token [dxo_5ZrwRXV…]
-```
-
-</details>
-<details><summary>`ops settings`</summary><br>
-
-Check and configure various settings for [Ops](https://dotenvx.com/ops) - `username`, `token`, and more.
-
-```sh
-$ dotenvx-ops settings
-Usage: dotenvx-ops settings [options] [command]
-
-⚙️  settings
-
-Options:
-  -h, --help        display help for command
-
-Commands:
-  username          print your username
-  token [options]   print your access token (--unmask)
-  device [options]  print your device pubkey (--unmask)
-  hostname          print hostname
-  path              print path to settings file
-  help [command]    display help for command
-```
-
-</details>
-<details><summary>`ops status`</summary><br>
-
-Check current status of [Ops](https://dotenvx.com/ops) - `on` or `off` (logged in or out).
-
-```sh
-$ dotenvx ops status
-on
-```
-
-</details>
+> ⛨  ARMORED KEYS: Harden your private keys.                       |
+> ⮕  install [curl -sfS https://dotenvx.sh/ops | sh]               |
+> ⮕  then run [dotenvx-ops login]
+>
+> [Learn more](https://dotenvx.com/ops)
 
 &nbsp;
 
