@@ -19,16 +19,11 @@ async function executeCommand (commandArgs, env) {
   const otherSignalHandlers = new Map()
 
   const queueSignalForward = (signal) => {
-    if (!child) {
-      logger.debug(`no command process to send ${signal} to`)
-      return
-    }
-
     logger.debug(`queueing ${signal} to command process after ${FORWARD_SIGNAL_GRACE_MS}ms`)
     const timer = setTimeout(() => {
       signalForwardTimers.delete(timer)
 
-      if (!child || child.exitCode !== null || child.signalCode !== null || child.killed) {
+      if (child.exitCode !== null || child.signalCode !== null || child.killed) {
         logger.debug(`skipping ${signal} forward because command process is already exiting`)
         return
       }
@@ -47,6 +42,8 @@ async function executeCommand (commandArgs, env) {
     logger.debug('checking command process')
     logger.debug(child)
 
+    if (!child) return
+
     signalSent = 'SIGINT'
     queueSignalForward('SIGINT')
   }
@@ -55,6 +52,8 @@ async function executeCommand (commandArgs, env) {
     logger.debug('received SIGTERM')
     logger.debug('checking command process')
     logger.debug(child)
+
+    if (!child) return
 
     signalSent = 'SIGTERM'
     queueSignalForward('SIGTERM')

@@ -153,12 +153,10 @@ t.test('executeCommand - SIGINT forwarding waits and skips if child already exit
   ct.equal(child.kill.callCount, 0, 'signal is not forwarded before grace period')
 
   child.exitCode = 0
-  resolveChild({ exitCode: 0 })
-  await Promise.resolve()
-
   clock.tick(1)
   ct.equal(child.kill.callCount, 0, 'signal is not forwarded after child already exited')
 
+  resolveChild({ exitCode: 0 })
   await runPromise
   clock.restore()
   ct.end()
