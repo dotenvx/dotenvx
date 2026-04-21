@@ -363,6 +363,97 @@ t.test('executeCommand - queued SIGINT forward is skipped if child is already ex
   ct.end()
 })
 
+t.test('executeCommand - SIGTERM forwards in non-TTY mode', async ct => {
+  const clock = sinon.useFakeTimers()
+  const signalHandlers = {}
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
+
+  sinon.stub(process, 'on').callsFake((signal, handler) => {
+    signalHandlers[signal] = handler
+    return process
+  })
+  sinon.stub(process, 'removeListener').callsFake((_signal, _handler) => {
+    return process
+  })
+
+  let resolveChild
+  const child = new Promise(resolve => {
+    resolveChild = resolve
+  })
+  child.exitCode = null
+  child.signalCode = null
+  child.killed = false
+  child.kill = sinon.spy()
+
+  Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: false })
+
+  sinon.stub(execute, 'execa').returns(child)
+  sinon.stub(process, 'exit')
+
+  const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
+
+  signalHandlers.SIGTERM()
+  clock.tick(1000)
+  ct.ok(child.kill.calledWith('SIGTERM'), 'SIGTERM is forwarded in non-TTY mode')
+
+  child.exitCode = 0
+  resolveChild({ exitCode: 0 })
+  await runPromise
+
+  if (stdinDescriptor) {
+    Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)
+  } else {
+    delete process.stdin.isTTY
+  }
+
+  clock.restore()
+  ct.end()
+})
+
+t.test('executeCommand - forwards non-SIGINT/SIGTERM signals immediately', async ct => {
+  const signalHandlers = {}
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
+
+  sinon.stub(process, 'on').callsFake((signal, handler) => {
+    signalHandlers[signal] = handler
+    return process
+  })
+  sinon.stub(process, 'removeListener').callsFake((_signal, _handler) => {
+    return process
+  })
+
+  let resolveChild
+  const child = new Promise(resolve => {
+    resolveChild = resolve
+  })
+  child.exitCode = null
+  child.signalCode = null
+  child.killed = false
+  child.kill = sinon.spy()
+
+  Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: false })
+
+  sinon.stub(execute, 'execa').returns(child)
+  sinon.stub(process, 'exit')
+
+  const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
+
+  signalHandlers.SIGHUP()
+  ct.ok(child.kill.calledWith('SIGHUP'), 'non-SIGINT/SIGTERM signal is forwarded immediately')
+
+  child.exitCode = 0
+  resolveChild({ exitCode: 0 })
+  await runPromise
+
+  if (stdinDescriptor) {
+    Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)
+  } else {
+    delete process.stdin.isTTY
+  }
+
+  ct.end()
+})
+
 // this test fails with npm test - related to sending SIGTERM
 // t.test('executeCommand - sigtermHandler', async ct => {
 //   sinon.stub(process, 'exit')
