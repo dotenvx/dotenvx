@@ -12,8 +12,8 @@ then
   npx dotenvx ext precommit
 else
   if [ -t 2 ]; then
-    RED="$(printf '\033[31m')"
-    RESET="$(printf '\033[0m')"
+    RED="$(printf '\\033[31m')"
+    RESET="$(printf '\\033[0m')"
   else
     RED=""
     RESET=""

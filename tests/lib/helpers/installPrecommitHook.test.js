@@ -15,7 +15,7 @@ t.test('#run (exists and already includes dotenvx ext precommit) does nothing', 
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx ext precommit exists [.git/hooks/pre-commit]')
+  ct.same(successMessage, '▣ dotenvx ext precommit exists [.git/hooks/pre-commit]')
 
   // restore stubs
   existsStub.restore()
@@ -36,7 +36,7 @@ t.test('#run (exists but does not include dotenvx ext precommit) appends', ct =>
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx ext precommit appended [.git/hooks/pre-commit]')
+  ct.same(successMessage, '▣ dotenvx ext precommit appended [.git/hooks/pre-commit]')
 
   t.ok(appendFileSyncStub.called, 'fsx.appendFileSync should be called')
 
@@ -59,7 +59,7 @@ t.test('#run (does not exist) creates', ct => {
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx ext precommit installed [.git/hooks/pre-commit]')
+  ct.same(successMessage, '▣ dotenvx ext precommit installed [.git/hooks/pre-commit]')
 
   t.ok(writeFileXStub.called, 'fsx.writeFileXSync should be called')
   t.ok(chmodSyncStub.called, 'fsx.chomdSyncStub should be called')
