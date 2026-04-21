@@ -125,6 +125,7 @@ t.test('executeCommand - sigintHandler', async ct => {
 t.test('executeCommand - SIGINT forwarding waits and skips if child already exited', async ct => {
   const clock = sinon.useFakeTimers()
   const signalHandlers = {}
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
 
   sinon.stub(process, 'on').callsFake((signal, handler) => {
     signalHandlers[signal] = handler
@@ -142,6 +143,8 @@ t.test('executeCommand - SIGINT forwarding waits and skips if child already exit
   child.signalCode = null
   child.killed = false
   child.kill = sinon.spy()
+
+  Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: true })
 
   sinon.stub(execute, 'execa').returns(child)
   sinon.stub(process, 'exit')
@@ -149,22 +152,25 @@ t.test('executeCommand - SIGINT forwarding waits and skips if child already exit
   const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
   signalHandlers.SIGINT()
-  clock.tick(999)
-  ct.equal(child.kill.callCount, 0, 'signal is not forwarded before grace period')
-
-  child.exitCode = 0
-  clock.tick(1)
-  ct.equal(child.kill.callCount, 0, 'signal is not forwarded after child already exited')
+  ct.equal(child.kill.callCount, 0, 'first SIGINT in TTY mode is not forwarded')
 
   resolveChild({ exitCode: 0 })
   await runPromise
+
+  if (stdinDescriptor) {
+    Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)
+  } else {
+    delete process.stdin.isTTY
+  }
+
   clock.restore()
   ct.end()
 })
 
-t.test('executeCommand - SIGINT forwarding sends signal when child still running', async ct => {
+t.test('executeCommand - SIGINT second press escalates to SIGTERM then SIGKILL in TTY mode', async ct => {
   const clock = sinon.useFakeTimers()
   const signalHandlers = {}
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
 
   sinon.stub(process, 'on').callsFake((signal, handler) => {
     signalHandlers[signal] = handler
@@ -182,6 +188,60 @@ t.test('executeCommand - SIGINT forwarding sends signal when child still running
   child.signalCode = null
   child.killed = false
   child.kill = sinon.spy()
+
+  Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: true })
+
+  sinon.stub(execute, 'execa').returns(child)
+  sinon.stub(process, 'exit')
+
+  const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
+
+  signalHandlers.SIGINT()
+  ct.equal(child.kill.callCount, 0, 'first SIGINT in TTY mode is not forwarded')
+
+  signalHandlers.SIGINT()
+  ct.ok(child.kill.calledWith('SIGTERM'), 'second SIGINT escalates to SIGTERM')
+
+  clock.tick(1000)
+  ct.ok(child.kill.calledWith('SIGKILL'), 'SIGKILL is sent if process is still running')
+
+  child.exitCode = 0
+  resolveChild({ exitCode: 0 })
+  await runPromise
+
+  if (stdinDescriptor) {
+    Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)
+  } else {
+    delete process.stdin.isTTY
+  }
+
+  clock.restore()
+  ct.end()
+})
+
+t.test('executeCommand - SIGINT forwards in non-TTY mode', async ct => {
+  const clock = sinon.useFakeTimers()
+  const signalHandlers = {}
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
+
+  sinon.stub(process, 'on').callsFake((signal, handler) => {
+    signalHandlers[signal] = handler
+    return process
+  })
+  sinon.stub(process, 'removeListener').callsFake((_signal, _handler) => {
+    return process
+  })
+
+  let resolveChild
+  const child = new Promise(resolve => {
+    resolveChild = resolve
+  })
+  child.exitCode = null
+  child.signalCode = null
+  child.killed = false
+  child.kill = sinon.spy()
+
+  Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: false })
 
   sinon.stub(execute, 'execa').returns(child)
   sinon.stub(process, 'exit')
@@ -190,11 +250,114 @@ t.test('executeCommand - SIGINT forwarding sends signal when child still running
 
   signalHandlers.SIGINT()
   clock.tick(1000)
-  ct.ok(child.kill.calledWith('SIGINT'), 'SIGINT forwarded after grace period when child still running')
+  ct.ok(child.kill.calledWith('SIGINT'), 'SIGINT is forwarded in non-TTY mode')
 
   child.exitCode = 0
   resolveChild({ exitCode: 0 })
   await runPromise
+
+  if (stdinDescriptor) {
+    Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)
+  } else {
+    delete process.stdin.isTTY
+  }
+
+  clock.restore()
+  ct.end()
+})
+
+t.test('executeCommand - queued SIGKILL is skipped if child is already exiting', async ct => {
+  const clock = sinon.useFakeTimers()
+  const signalHandlers = {}
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
+
+  sinon.stub(process, 'on').callsFake((signal, handler) => {
+    signalHandlers[signal] = handler
+    return process
+  })
+  sinon.stub(process, 'removeListener').callsFake((_signal, _handler) => {
+    return process
+  })
+
+  let resolveChild
+  const child = new Promise(resolve => {
+    resolveChild = resolve
+  })
+  child.exitCode = null
+  child.signalCode = null
+  child.killed = false
+  child.kill = sinon.spy()
+
+  Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: true })
+
+  sinon.stub(execute, 'execa').returns(child)
+  sinon.stub(process, 'exit')
+
+  const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
+
+  signalHandlers.SIGINT()
+  signalHandlers.SIGINT()
+  ct.ok(child.kill.calledWith('SIGTERM'), 'second SIGINT sends SIGTERM')
+
+  child.exitCode = 0
+  clock.tick(1000)
+  ct.equal(child.kill.withArgs('SIGKILL').callCount, 0, 'queued SIGKILL is skipped when child is exiting')
+
+  resolveChild({ exitCode: 0 })
+  await runPromise
+
+  if (stdinDescriptor) {
+    Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)
+  } else {
+    delete process.stdin.isTTY
+  }
+
+  clock.restore()
+  ct.end()
+})
+
+t.test('executeCommand - queued SIGINT forward is skipped if child is already exiting in non-TTY mode', async ct => {
+  const clock = sinon.useFakeTimers()
+  const signalHandlers = {}
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
+
+  sinon.stub(process, 'on').callsFake((signal, handler) => {
+    signalHandlers[signal] = handler
+    return process
+  })
+  sinon.stub(process, 'removeListener').callsFake((_signal, _handler) => {
+    return process
+  })
+
+  let resolveChild
+  const child = new Promise(resolve => {
+    resolveChild = resolve
+  })
+  child.exitCode = null
+  child.signalCode = null
+  child.killed = false
+  child.kill = sinon.spy()
+
+  Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: false })
+
+  sinon.stub(execute, 'execa').returns(child)
+  sinon.stub(process, 'exit')
+
+  const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
+
+  signalHandlers.SIGINT()
+  child.exitCode = 0
+  clock.tick(1000)
+  ct.equal(child.kill.withArgs('SIGINT').callCount, 0, 'queued SIGINT forward is skipped when child is exiting')
+
+  resolveChild({ exitCode: 0 })
+  await runPromise
+
+  if (stdinDescriptor) {
+    Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)
+  } else {
+    delete process.stdin.isTTY
+  }
 
   clock.restore()
   ct.end()

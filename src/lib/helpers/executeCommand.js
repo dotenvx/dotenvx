@@ -6,6 +6,7 @@ const Errors = require('./errors')
 
 async function executeCommand (commandArgs, env) {
   const FORWARD_SIGNAL_GRACE_MS = 1000
+  const FORCE_KILL_GRACE_MS = 1000
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
     'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2'
@@ -15,15 +16,21 @@ async function executeCommand (commandArgs, env) {
 
   let child
   let signalSent
+  let sigintCount = 0
   const signalForwardTimers = new Set()
   const otherSignalHandlers = new Map()
+  const isInteractiveTTY = Boolean(process.stdin && process.stdin.isTTY)
+
+  const isChildRunning = () => {
+    return child && child.exitCode === null && child.signalCode === null && !child.killed
+  }
 
   const queueSignalForward = (signal) => {
     logger.debug(`queueing ${signal} to command process after ${FORWARD_SIGNAL_GRACE_MS}ms`)
     const timer = setTimeout(() => {
       signalForwardTimers.delete(timer)
 
-      if (child.exitCode !== null || child.signalCode !== null || child.killed) {
+      if (!isChildRunning()) {
         logger.debug(`skipping ${signal} forward because command process is already exiting`)
         return
       }
@@ -31,6 +38,24 @@ async function executeCommand (commandArgs, env) {
       logger.debug(`sending ${signal} to command process`)
       child.kill(signal)
     }, FORWARD_SIGNAL_GRACE_MS)
+
+    if (typeof timer.unref === 'function') timer.unref()
+    signalForwardTimers.add(timer)
+  }
+
+  const queueForceKill = () => {
+    logger.debug(`queueing SIGKILL to command process after ${FORCE_KILL_GRACE_MS}ms`)
+    const timer = setTimeout(() => {
+      signalForwardTimers.delete(timer)
+
+      if (!isChildRunning()) {
+        logger.debug('skipping SIGKILL because command process is already exiting')
+        return
+      }
+
+      logger.debug('sending SIGKILL to command process')
+      child.kill('SIGKILL')
+    }, FORCE_KILL_GRACE_MS)
 
     if (typeof timer.unref === 'function') timer.unref()
     signalForwardTimers.add(timer)
@@ -45,6 +70,21 @@ async function executeCommand (commandArgs, env) {
     if (!child) return
 
     signalSent = 'SIGINT'
+    sigintCount += 1
+
+    if (isInteractiveTTY) {
+      if (sigintCount === 1) {
+        logger.debug('TTY mode: not forwarding first SIGINT to command process')
+        return
+      }
+
+      logger.debug('TTY mode: forwarding SIGTERM on second SIGINT to command process')
+      child.kill('SIGTERM')
+
+      if (sigintCount === 2) queueForceKill()
+      return
+    }
+
     queueSignalForward('SIGINT')
   }
 
