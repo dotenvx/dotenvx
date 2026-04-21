@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.3...main)
+
+## [1.61.3](https://github.com/dotenvx/dotenvx/compare/v1.61.2...v1.61.3) (2026-04-21)
+
+### Changed
+
+* Tighten up `ext precommit --install` message ([#797](https://github.com/dotenvx/dotenvx/pull/797))
 
 ## [1.61.2](https://github.com/dotenvx/dotenvx/compare/v1.61.1...v1.61.2) (2026-04-21)
 
