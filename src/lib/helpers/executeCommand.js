@@ -22,7 +22,7 @@ async function executeCommand (commandArgs, env) {
   const isInteractiveTTY = Boolean(process.stdin && process.stdin.isTTY)
 
   const isChildRunning = () => {
-    return child && child.exitCode === null && child.signalCode === null && !child.killed
+    return child && child.exitCode === null && child.signalCode === null
   }
 
   const queueSignalForward = (signal) => {
