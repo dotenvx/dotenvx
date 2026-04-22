@@ -5,6 +5,8 @@ const { logger } = require('./../../shared/logger')
 const Errors = require('./errors')
 
 async function executeCommand (commandArgs, env) {
+  const FORWARD_SIGNAL_GRACE_MS = 1000
+  const FORCE_KILL_GRACE_MS = 1000
   const signals = [
     'SIGHUP', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
     'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2'
@@ -14,6 +16,51 @@ async function executeCommand (commandArgs, env) {
 
   let child
   let signalSent
+  let sigintCount = 0
+  const signalForwardTimers = new Set()
+  const otherSignalHandlers = new Map()
+  const isInteractiveTTY = Boolean(process.stdin && process.stdin.isTTY)
+
+  const isChildRunning = () => {
+    return child && child.exitCode === null && child.signalCode === null
+  }
+
+  const queueSignalForward = (signal) => {
+    logger.debug(`queueing ${signal} to command process after ${FORWARD_SIGNAL_GRACE_MS}ms`)
+    const timer = setTimeout(() => {
+      signalForwardTimers.delete(timer)
+
+      if (!isChildRunning()) {
+        logger.debug(`skipping ${signal} forward because command process is already exiting`)
+        return
+      }
+
+      logger.debug(`sending ${signal} to command process`)
+      signalSent = signal
+      child.kill(signal)
+    }, FORWARD_SIGNAL_GRACE_MS)
+
+    if (typeof timer.unref === 'function') timer.unref()
+    signalForwardTimers.add(timer)
+  }
+
+  const queueForceKill = () => {
+    logger.debug(`queueing SIGKILL to command process after ${FORCE_KILL_GRACE_MS}ms`)
+    const timer = setTimeout(() => {
+      signalForwardTimers.delete(timer)
+
+      if (!isChildRunning()) {
+        logger.debug('skipping SIGKILL because command process is already exiting')
+        return
+      }
+
+      logger.debug('sending SIGKILL to command process')
+      child.kill('SIGKILL')
+    }, FORCE_KILL_GRACE_MS)
+
+    if (typeof timer.unref === 'function') timer.unref()
+    signalForwardTimers.add(timer)
+  }
 
   /* c8 ignore start */
   const sigintHandler = () => {
@@ -21,13 +68,25 @@ async function executeCommand (commandArgs, env) {
     logger.debug('checking command process')
     logger.debug(child)
 
-    if (child) {
-      logger.debug('sending SIGINT to command process')
-      signalSent = 'SIGINT'
-      child.kill('SIGINT') // Send SIGINT to the command process
-    } else {
-      logger.debug('no command process to send SIGINT to')
+    if (!child) return
+
+    sigintCount += 1
+
+    if (isInteractiveTTY) {
+      if (sigintCount === 1) {
+        logger.debug('TTY mode: not forwarding first SIGINT to command process')
+        return
+      }
+
+      logger.debug('TTY mode: forwarding SIGTERM on second SIGINT to command process')
+      signalSent = 'SIGTERM'
+      child.kill('SIGTERM')
+
+      if (sigintCount === 2) queueForceKill()
+      return
     }
+
+    queueSignalForward('SIGINT')
   }
 
   const sigtermHandler = () => {
@@ -35,18 +94,14 @@ async function executeCommand (commandArgs, env) {
     logger.debug('checking command process')
     logger.debug(child)
 
-    if (child) {
-      logger.debug('sending SIGTERM to command process')
-      signalSent = 'SIGTERM'
-      child.kill('SIGTERM') // Send SIGTERM to the command process
-    } else {
-      logger.debug('no command process to send SIGTERM to')
-    }
+    if (!child) return
+
+    queueSignalForward('SIGTERM')
   }
 
   const handleOtherSignal = (signal) => {
     logger.debug(`received ${signal}`)
-    child.kill(signal)
+    if (child) child.kill(signal)
   }
   /* c8 ignore stop */
 
@@ -84,7 +139,9 @@ async function executeCommand (commandArgs, env) {
     process.on('SIGTERM', sigtermHandler)
 
     signals.forEach(signal => {
-      process.on(signal, () => handleOtherSignal(signal))
+      const handler = () => handleOtherSignal(signal)
+      otherSignalHandlers.set(signal, handler)
+      process.on(signal, handler)
     })
 
     // Wait for the command process to finish
@@ -107,10 +164,17 @@ async function executeCommand (commandArgs, env) {
     // Exit with the error code from the command process, or 1 if unavailable
     process.exit(error.exitCode || 1)
   } finally {
+    signalForwardTimers.forEach(timer => clearTimeout(timer))
+    signalForwardTimers.clear()
+
     // Clean up: Remove the SIGINT handler
     process.removeListener('SIGINT', sigintHandler)
     // Clean up: Remove the SIGTERM handler
     process.removeListener('SIGTERM', sigtermHandler)
+
+    otherSignalHandlers.forEach((handler, signal) => {
+      process.removeListener(signal, handler)
+    })
   }
 }
 
