@@ -103,7 +103,7 @@ const config = function (options = {}) {
       }
     }
 
-    let msg = `injecting env (${uniqueInjectedKeys.length})`
+    let msg = `injected env (${uniqueInjectedKeys.length})`
     if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
     }
