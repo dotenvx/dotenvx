@@ -122,7 +122,7 @@ t.test('executeCommand - sigintHandler', async ct => {
   ct.end()
 })
 
-t.test('executeCommand - SIGINT forwarding waits and skips if child already exited', async ct => {
+t.test('executeCommand - first SIGINT in TTY mode is not forwarded', async ct => {
   const clock = sinon.useFakeTimers()
   const signalHandlers = {}
   const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
