@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.4...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.5...main)
+
+## [1.61.5](https://github.com/dotenvx/dotenvx/compare/v1.61.4...v1.61.5) (2026-04-22)
+
+### Changed
+
+* Support `--hostname` flag to `dotenvx-ops.login` ([#801](https://github.com/dotenvx/dotenvx/pull/801))
 
 ## [1.61.4](https://github.com/dotenvx/dotenvx/compare/v1.61.3...v1.61.4) (2026-04-21)
 
