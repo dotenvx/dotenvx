@@ -817,6 +817,20 @@ TABS_SINGLE='hi\\tfriend'
   ct.end()
 })
 
+t.test('#run - unescape escaped single quotes in single quoted values - https://github.com/dotenvx/dotenvx/issues/728', ct => {
+  src = `# .env
+QUOTE='Let\\'s go!'
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    QUOTE: "Let's go!"
+  })
+
+  ct.end()
+})
+
 t.test('#run - combine complex expansion and evaluation from same .env file - https://github.com/dotenvx/dotenvx/issues/488', ct => {
   src = `# .env
 FILENAME=$(echo tests/monorepo/apps/unencrypted/.env)

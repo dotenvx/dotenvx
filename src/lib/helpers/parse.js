@@ -123,6 +123,10 @@ class Parse {
     // Remove surrounding quotes
     v = v.replace(/^(['"`])([\s\S]*)\1$/mg, '$2')
 
+    if (_quote === "'") {
+      v = v.replace(/\\'/g, "'")
+    }
+
     // Expand newlines if double quoted
     if (_quote === '"') {
       v = v.replace(/\\n/g, '\n') // newline
