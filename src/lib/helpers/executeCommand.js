@@ -36,6 +36,7 @@ async function executeCommand (commandArgs, env) {
       }
 
       logger.debug(`sending ${signal} to command process`)
+      signalSent = signal
       child.kill(signal)
     }, FORWARD_SIGNAL_GRACE_MS)
 
@@ -69,7 +70,6 @@ async function executeCommand (commandArgs, env) {
 
     if (!child) return
 
-    signalSent = 'SIGINT'
     sigintCount += 1
 
     if (isInteractiveTTY) {
@@ -79,6 +79,7 @@ async function executeCommand (commandArgs, env) {
       }
 
       logger.debug('TTY mode: forwarding SIGTERM on second SIGINT to command process')
+      signalSent = 'SIGTERM'
       child.kill('SIGTERM')
 
       if (sigintCount === 2) queueForceKill()
@@ -95,7 +96,6 @@ async function executeCommand (commandArgs, env) {
 
     if (!child) return
 
-    signalSent = 'SIGTERM'
     queueSignalForward('SIGTERM')
   }
 

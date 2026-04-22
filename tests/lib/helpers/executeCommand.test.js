@@ -167,6 +167,57 @@ t.test('executeCommand - first SIGINT in TTY mode is not forwarded', async ct =>
   ct.end()
 })
 
+t.test('executeCommand - first SIGINT in TTY mode does not suppress non-signal errors', async ct => {
+  const signalHandlers = {}
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
+
+  sinon.stub(process, 'on').callsFake((signal, handler) => {
+    signalHandlers[signal] = handler
+    return process
+  })
+  sinon.stub(process, 'removeListener').callsFake((_signal, _handler) => {
+    return process
+  })
+
+  let rejectChild
+  const child = new Promise((resolve, reject) => {
+    rejectChild = reject
+  })
+  child.exitCode = null
+  child.signalCode = null
+  child.killed = false
+  child.kill = sinon.spy()
+
+  Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: true })
+
+  sinon.stub(execute, 'execa').returns(child)
+  const processExitStub = sinon.stub(process, 'exit')
+  const loggerErrorStub = sinon.stub(logger, 'error')
+
+  const runPromise = executeCommand(['node', 'index.js'], { HELLO: 'World' })
+
+  signalHandlers.SIGINT()
+  ct.equal(child.kill.callCount, 0, 'first SIGINT in TTY mode is not forwarded')
+
+  const error = new Error('Mock Error After SIGINT')
+  error.signal = 'OTHER'
+  error.exitCode = 1
+  rejectChild(error)
+
+  await runPromise
+
+  ct.ok(loggerErrorStub.calledWith('Mock Error After SIGINT'), 'logger error is not suppressed')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
+
+  if (stdinDescriptor) {
+    Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)
+  } else {
+    delete process.stdin.isTTY
+  }
+
+  ct.end()
+})
+
 t.test('executeCommand - SIGINT second press escalates to SIGTERM then SIGKILL in TTY mode', async ct => {
   const clock = sinon.useFakeTimers()
   const signalHandlers = {}
