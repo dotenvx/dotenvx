@@ -23,7 +23,7 @@ function executeExtension (ext, command, rawArgs) {
   const result = childProcess.spawnSync(`dotenvx-ext-${command}`, forwardedArgs, { stdio: 'inherit', env })
   if (result.error) {
     // list known extension here for convenience to the user
-    if (['vault', 'hub'].includes(command)) {
+    if (['vault'].includes(command)) {
       logger.warn(`[INSTALLATION_NEEDED] install dotenvx-ext-${command} to use [dotenvx ext ${command}] commands`)
       logger.help('? see installation instructions [https://github.com/dotenvx/dotenvx-ext-vault]')
     } else {
