@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.5...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.6...main)
+
+## [1.61.6](https://github.com/dotenvx/dotenvx/compare/v1.61.5...v1.61.6) (2026-04-23)
+
+### Changed
+
+* Guard against command substitution following `encrypted:` ([#802](https://github.com/dotenvx/dotenvx/pull/802))
 
 ## [1.61.5](https://github.com/dotenvx/dotenvx/compare/v1.61.4...v1.61.5) (2026-04-22)
 
