@@ -717,11 +717,14 @@ ENCRYPTED_EXPAND=encrypted:djf$\{MACHINE}tail
 `
 
   const { parsed } = new Parse(src, null, process.env, true).run()
+  /* eslint-disable no-template-curly-in-string */
+  const encryptedExpand = 'encrypted:djf${MACHINE}tail'
+  /* eslint-enable no-template-curly-in-string */
 
   ct.same(parsed, {
     MACHINE: 'machine',
     ENCRYPTED_EVAL: 'encrypted:djf$(echo pwned)tail',
-    ENCRYPTED_EXPAND: 'encrypted:djf${MACHINE}tail'
+    ENCRYPTED_EXPAND: encryptedExpand
   })
 
   ct.end()
@@ -734,10 +737,13 @@ ENCRYPTED_EXPAND_BRACED=encrypted:$\{EXPAND_SOMETHING}
 `
 
   const { parsed } = new Parse(src, null, process.env, true).run()
+  /* eslint-disable no-template-curly-in-string */
+  const encryptedExpandBraced = 'encrypted:${EXPAND_SOMETHING}'
+  /* eslint-enable no-template-curly-in-string */
 
   ct.same(parsed, {
     EXPAND_SOMETHING: 'machine',
-    ENCRYPTED_EXPAND_BRACED: 'encrypted:${EXPAND_SOMETHING}'
+    ENCRYPTED_EXPAND_BRACED: encryptedExpandBraced
   })
 
   ct.end()
