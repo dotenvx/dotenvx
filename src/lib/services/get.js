@@ -1,5 +1,6 @@
 const Run = require('./run')
 const Errors = require('./../helpers/errors')
+const { determine } = require('./../helpers/envResolution')
 
 class Get {
   constructor (key, envs = [], overload = false, all = false, envKeysFilepath = null, noOps = false) {
@@ -13,13 +14,15 @@ class Get {
 
   runSync () {
     const processEnv = { ...process.env }
-    const { processedEnvs } = new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.noOps).runSync()
+    const envs = determine(this.envs, processEnv)
+    const { processedEnvs } = new Run(envs, this.overload, processEnv, this.envKeysFilepath, this.noOps).runSync()
     return this._result(processedEnvs, processEnv)
   }
 
   async run () {
     const processEnv = { ...process.env }
-    const { processedEnvs } = await new Run(this.envs, this.overload, processEnv, this.envKeysFilepath, this.noOps).run()
+    const envs = determine(this.envs, processEnv)
+    const { processedEnvs } = await new Run(envs, this.overload, processEnv, this.envKeysFilepath, this.noOps).run()
     return this._result(processedEnvs, processEnv)
   }
 

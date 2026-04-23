@@ -15,18 +15,13 @@ const {
   keyValuesSync
 } = require('./../helpers/keyResolution')
 
-const {
-  determine
-} = require('./../helpers/envResolution')
-
 class Run {
-  constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, noOps = false, applyDefaultEnvFile = true) {
-    this.envs = applyDefaultEnvFile ? determine(envs, processEnv) : envs
+  constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, noOps = false) {
+    this.envs = envs
     this.overload = overload
     this.processEnv = processEnv
     this.envKeysFilepath = envKeysFilepath
     this.noOps = noOps
-    this.applyDefaultEnvFile = applyDefaultEnvFile
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()

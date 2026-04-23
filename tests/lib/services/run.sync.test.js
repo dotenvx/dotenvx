@@ -50,8 +50,8 @@ t.test('#runSync records non-ENOENT env file read errors', ct => {
   ct.end()
 })
 
-t.test('#runSync can skip default env file resolution', ct => {
-  const result = new Run([{ type: 'env', value: 'HELLO=sync' }], false, process.env, null, false, false).runSync()
+t.test('#runSync runs exact env list', ct => {
+  const result = new Run([{ type: 'env', value: 'HELLO=sync' }]).runSync()
 
   t.same(result.processedEnvs, [{
     type: 'env',

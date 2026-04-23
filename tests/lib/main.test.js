@@ -111,7 +111,6 @@ t.test('config with envs ignores path and convention',
 
     t.ok(stub.called, 'new Run().runSync() called')
     t.same(stub.thisValues[0].envs, envs)
-    t.equal(stub.thisValues[0].applyDefaultEnvFile, false)
 
     stub.restore()
 

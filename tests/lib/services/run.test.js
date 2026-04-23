@@ -6,6 +6,11 @@ const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
 
 const Run = require('../../../src/lib/services/run')
+const { determine } = require('../../../src/lib/helpers/envResolution')
+
+function runWithDefaults (envs = [], overload = false) {
+  return new Run(determine(envs, process.env), overload)
+}
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
@@ -22,7 +27,7 @@ t.test('#run (no arguments)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run().run()
+    } = await runWithDefaults().run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -54,7 +59,7 @@ t.test('#run (no arguments and some other error)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run().run()
+    } = await runWithDefaults().run()
 
     const exampleError = new Error('Mock Error')
 
@@ -91,7 +96,7 @@ t.test('#run (no arguments and fsx readFileX throws)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new RunWithReadError().run()
+    } = await new RunWithReadError(determine([], process.env)).run()
 
     const exampleError = new Error('Mock Error')
 
@@ -117,7 +122,7 @@ t.test('#run (finds .env file)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -150,7 +155,7 @@ t.test('#run (encrypted .env finds .env.keys next to itself)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -187,7 +192,7 @@ t.test('#run (encrypted .env with bad private key)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     const error = new Error('[INVALID_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=bad-pri…\'')
     error.code = 'INVALID_PRIVATE_KEY'
@@ -230,7 +235,7 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run().run()
+    } = await runWithDefaults().run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -269,7 +274,7 @@ t.test('#run (finds .env file) with already falsy value',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -301,7 +306,7 @@ t.test('#run (finds .env file as array)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -336,7 +341,7 @@ t.test('#run (finds .env file but HELLO already exists)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -371,7 +376,7 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs, true).run()
+    } = await runWithDefaults(envs, true).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -409,7 +414,7 @@ t.test('#run (command substitution)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -447,7 +452,7 @@ t.test('#run (with envs as string)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -497,7 +502,7 @@ t.test('#run (with encrypted env string and privateKeyName)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -546,7 +551,7 @@ t.test('#run (with envs as string and errors somehow from inject)',
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
     exampleError.code = 'MISSING_ENV_FILE'
     exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-    const run = new Run(envs)
+    const run = runWithDefaults(envs)
     const mockError = new Error('Mock Error')
     const injectStub = sinon.stub(run, 'inject').throws(mockError)
 
@@ -593,7 +598,7 @@ t.test('#run (mixed string and file)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [
       {
@@ -648,7 +653,7 @@ options="$\{options} optD"`
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'

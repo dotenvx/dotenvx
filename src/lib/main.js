@@ -16,6 +16,7 @@ const Session = require('./../db/session')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
+const { determine } = require('./helpers/envResolution')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
 const localDisplayPath = require('./helpers/localDisplayPath')
@@ -50,13 +51,15 @@ const config = function (options = {}) {
   const noOps = resolveNoOps(options)
 
   try {
-    const envs = buildEnvs(options)
-    const applyDefaultEnvFile = !options.envs
+    let envs = buildEnvs(options)
+    if (!options.envs) {
+      envs = determine(envs, processEnv)
+    }
     const {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, noOps, applyDefaultEnvFile).runSync()
+    } = new Run(envs, overload, processEnv, envKeysFile, noOps).runSync()
 
     let lastError
     /** @type {Record<string, string>} */
