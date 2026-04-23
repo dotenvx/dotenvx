@@ -44,9 +44,11 @@ class Parse {
         this.errors.push(e)
       }
 
+      const encryptedPrefixed = typeof this.parsed[key] === 'string' && this.parsed[key].startsWith('encrypted:')
+
       // eval empty, double, or backticks
       let evaled = false
-      if (quote !== "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
+      if (!encryptedPrefixed && quote !== "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
         const priorEvaled = this.parsed[key]
         // eval
         try {
@@ -60,7 +62,7 @@ class Parse {
       }
 
       // expand empty, double, or backticks
-      if (!evaled && quote !== "'" && (!this.processEnv[key] || this.overload)) {
+      if (!encryptedPrefixed && !evaled && quote !== "'" && (!this.processEnv[key] || this.overload)) {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
 

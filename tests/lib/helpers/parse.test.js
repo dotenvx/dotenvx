@@ -709,6 +709,24 @@ JSON3="$(echo '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{
   ct.end()
 })
 
+t.test('#run - do not eval or expand encrypted-prefixed values when undecryptable', ct => {
+  src = `# .env
+MACHINE=machine
+ENCRYPTED_EVAL=encrypted:djf$(echo pwned)tail
+ENCRYPTED_EXPAND=encrypted:djf$\{MACHINE}tail
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    MACHINE: 'machine',
+    ENCRYPTED_EVAL: 'encrypted:djf$(echo pwned)tail',
+    ENCRYPTED_EXPAND: 'encrypted:djf${MACHINE}tail'
+  })
+
+  ct.end()
+})
+
 t.test('#run - https://github.com/dotenvx/dotenvx/issues/457', ct => {
   src = `# .env
 # https://github.com/dotenvx/dotenvx/issues/457
