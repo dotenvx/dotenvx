@@ -1,4 +1,5 @@
 const decryptKeyValue = require('./cryptography/decryptKeyValue')
+const isEncrypted = require('./cryptography/isEncrypted')
 const evalKeyValue = require('./evalKeyValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
 
@@ -44,9 +45,11 @@ class Parse {
         this.errors.push(e)
       }
 
+      const encryptedPrefixed = isEncrypted(this.parsed[key]) // do not eval encrypted prefix
+
       // eval empty, double, or backticks
       let evaled = false
-      if (quote !== "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
+      if (!encryptedPrefixed && quote !== "'" && (!this.inProcessEnv(key) || this.processEnv[key] === this.parsed[key])) {
         const priorEvaled = this.parsed[key]
         // eval
         try {
@@ -60,7 +63,7 @@ class Parse {
       }
 
       // expand empty, double, or backticks
-      if (!evaled && quote !== "'" && (!this.processEnv[key] || this.overload)) {
+      if (!encryptedPrefixed && !evaled && quote !== "'" && (!this.processEnv[key] || this.overload)) {
         this.parsed[key] = resolveEscapeSequences(this.expand(this.parsed[key]))
       }
 

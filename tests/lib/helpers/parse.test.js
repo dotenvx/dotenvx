@@ -709,6 +709,46 @@ JSON3="$(echo '{"$schema":"https://json.schemastore.org/eslintrc.json","rules":{
   ct.end()
 })
 
+t.test('#run - do not eval or expand encrypted-prefixed values when undecryptable', ct => {
+  src = `# .env
+MACHINE=machine
+ENCRYPTED_EVAL=encrypted:djf$(echo pwned)tail
+ENCRYPTED_EXPAND=encrypted:djf$\{MACHINE}tail
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+  /* eslint-disable no-template-curly-in-string */
+  const encryptedExpand = 'encrypted:djf${MACHINE}tail'
+  /* eslint-enable no-template-curly-in-string */
+
+  ct.same(parsed, {
+    MACHINE: 'machine',
+    ENCRYPTED_EVAL: 'encrypted:djf$(echo pwned)tail',
+    ENCRYPTED_EXPAND: encryptedExpand
+  })
+
+  ct.end()
+})
+
+t.test('#run - do not expand encrypted-prefixed braced variables', ct => {
+  src = `# .env
+EXPAND_SOMETHING=machine
+ENCRYPTED_EXPAND_BRACED=encrypted:$\{EXPAND_SOMETHING}
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+  /* eslint-disable no-template-curly-in-string */
+  const encryptedExpandBraced = 'encrypted:${EXPAND_SOMETHING}'
+  /* eslint-enable no-template-curly-in-string */
+
+  ct.same(parsed, {
+    EXPAND_SOMETHING: 'machine',
+    ENCRYPTED_EXPAND_BRACED: encryptedExpandBraced
+  })
+
+  ct.end()
+})
+
 t.test('#run - https://github.com/dotenvx/dotenvx/issues/457', ct => {
   src = `# .env
 # https://github.com/dotenvx/dotenvx/issues/457
