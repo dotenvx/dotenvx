@@ -21,6 +21,8 @@ t.test('#runSync processes inline env strings', ct => {
   t.same(envRow, {
     type: 'env',
     string: 'HELLO=sync',
+    privateKeyName: null,
+    privateKey: null,
     parsed: { HELLO: 'sync' },
     errors: [],
     injected: { HELLO: 'sync' },

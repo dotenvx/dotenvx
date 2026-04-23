@@ -46,7 +46,7 @@ class Run {
       if (env.type === TYPE_ENV_FILE) {
         this._injectEnvFileSync(env.value)
       } else if (env.type === TYPE_ENV) {
-        this._injectEnv(env.value)
+        this._injectEnv(env.value, env.privateKeyName)
       }
     }
 
@@ -72,7 +72,7 @@ class Run {
       if (env.type === TYPE_ENV_FILE) {
         await this._injectEnvFile(env.value)
       } else if (env.type === TYPE_ENV) {
-        this._injectEnv(env.value)
+        this._injectEnv(env.value, env.privateKeyName)
       }
     }
 
@@ -86,19 +86,23 @@ class Run {
     }
   }
 
-  _injectEnv (env) {
+  _injectEnv (env, privateKeyName = null) {
     const row = {}
     row.type = TYPE_ENV
     row.string = env
 
     try {
+      const privateKey = privateKeyName ? this.processEnv[privateKeyName] || null : null
+
       const {
         parsed,
         errors,
         injected,
         preExisted
-      } = new Parse(env, null, this.processEnv, this.overload).run()
+      } = new Parse(env, privateKey, this.processEnv, this.overload, privateKeyName).run()
 
+      row.privateKeyName = privateKeyName
+      row.privateKey = privateKey
       row.parsed = parsed
       row.errors = errors
       row.injected = injected
