@@ -49,3 +49,20 @@ t.test('#runSync records non-ENOENT env file read errors', ct => {
   t.equal(result.processedEnvs[0].errors[0].message, 'Mock Sync Error')
   ct.end()
 })
+
+t.test('#runSync can skip default env file resolution', ct => {
+  const result = new Run([{ type: 'env', value: 'HELLO=sync' }], false, process.env, null, false, false).runSync()
+
+  t.same(result.processedEnvs, [{
+    type: 'env',
+    string: 'HELLO=sync',
+    privateKeyName: null,
+    privateKey: null,
+    parsed: { HELLO: 'sync' },
+    errors: [],
+    injected: { HELLO: 'sync' },
+    preExisted: {}
+  }])
+
+  ct.end()
+})

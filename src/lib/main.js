@@ -51,11 +51,12 @@ const config = function (options = {}) {
 
   try {
     const envs = buildEnvs(options)
+    const applyDefaultEnvFile = !options.envs
     const {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, noOps).runSync()
+    } = new Run(envs, overload, processEnv, envKeysFile, noOps, applyDefaultEnvFile).runSync()
 
     let lastError
     /** @type {Record<string, string>} */
