@@ -727,6 +727,22 @@ ENCRYPTED_EXPAND=encrypted:djf$\{MACHINE}tail
   ct.end()
 })
 
+t.test('#run - do not expand encrypted-prefixed braced variables', ct => {
+  src = `# .env
+EXPAND_SOMETHING=machine
+ENCRYPTED_EXPAND_BRACED=encrypted:$\{EXPAND_SOMETHING}
+`
+
+  const { parsed } = new Parse(src, null, process.env, true).run()
+
+  ct.same(parsed, {
+    EXPAND_SOMETHING: 'machine',
+    ENCRYPTED_EXPAND_BRACED: 'encrypted:${EXPAND_SOMETHING}'
+  })
+
+  ct.end()
+})
+
 t.test('#run - https://github.com/dotenvx/dotenvx/issues/457', ct => {
   src = `# .env
 # https://github.com/dotenvx/dotenvx/issues/457
