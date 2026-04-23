@@ -2,6 +2,10 @@ const conventions = require('./conventions')
 const dotenvOptionPaths = require('./dotenvOptionPaths')
 
 function buildEnvs (options) {
+  if (options.envs) {
+    return options.envs
+  }
+
   // build envs using user set option.path
   const optionPaths = dotenvOptionPaths(options) // [ '.env' ]
 

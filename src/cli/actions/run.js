@@ -8,6 +8,7 @@ const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 
 const conventions = require('./../../lib/helpers/conventions')
+const { determine } = require('./../../lib/helpers/envResolution')
 
 async function run () {
   const options = this.opts()
@@ -45,6 +46,7 @@ async function run () {
     } else {
       envs = this.envs
     }
+    envs = determine(envs, process.env)
 
     const {
       processedEnvs,

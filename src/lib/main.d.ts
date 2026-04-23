@@ -51,6 +51,15 @@ export function parse<T extends DotenvParseOutput = DotenvParseOutput>(
 
 export interface DotenvConfigOptions {
   /**
+   * Specify explicit env sources. When set, `path` and `convention` are ignored.
+   *
+   * @default undefined
+   * @example require('@dotenvx/dotenvx').config({ envs: [{ type: 'envFile', value: '.env' }] })
+   * @example require('@dotenvx/dotenvx').config({ envs: [{ type: 'env', value: 'HELLO=World', privateKeyName: 'DOTENV_PRIVATE_KEY' }] })
+   */
+  envs?: DotenvConfigEnv[];
+
+  /**
    * Specify a custom path if your file containing environment variables is located elsewhere.
    * Can also be an array of strings, specifying multiple paths.
    *
@@ -159,6 +168,21 @@ export interface DotenvConfigOptions {
    * @deprecated use `noOps` instead.
    */
   opsOff?: boolean;
+}
+
+export type DotenvConfigEnv =
+  | DotenvConfigEnvFile
+  | DotenvConfigEnvSrc;
+
+export interface DotenvConfigEnvFile {
+  type: 'envFile';
+  value: string | URL;
+}
+
+export interface DotenvConfigEnvSrc {
+  type: 'env';
+  value: string | Buffer;
+  privateKeyName?: string;
 }
 
 export interface DotenvConfigOutput {

@@ -101,6 +101,22 @@ t.test('config with convention flow - calls Run.run with proper envs',
     ct.end()
   })
 
+t.test('config with envs ignores path and convention',
+  ct => {
+    const envs = [{ type: 'env', value: 'HELLO=envs' }]
+    const stub = sinon.stub(Run.prototype, 'runSync')
+    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+    main.config({ path: 'tests/.env', convention: 'nextjs', envs })
+
+    t.ok(stub.called, 'new Run().runSync() called')
+    t.same(stub.thisValues[0].envs, envs)
+
+    stub.restore()
+
+    ct.end()
+  })
+
 t.test('config with Run.run errors',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')

@@ -21,6 +21,8 @@ t.test('#runSync processes inline env strings', ct => {
   t.same(envRow, {
     type: 'env',
     string: 'HELLO=sync',
+    privateKeyName: null,
+    privateKey: null,
     parsed: { HELLO: 'sync' },
     errors: [],
     injected: { HELLO: 'sync' },
@@ -45,5 +47,22 @@ t.test('#runSync records non-ENOENT env file read errors', ct => {
   t.equal(result.processedEnvs[0].type, 'envFile')
   t.equal(result.processedEnvs[0].filepath, '.env')
   t.equal(result.processedEnvs[0].errors[0].message, 'Mock Sync Error')
+  ct.end()
+})
+
+t.test('#runSync runs exact env list', ct => {
+  const result = new Run([{ type: 'env', value: 'HELLO=sync' }]).runSync()
+
+  t.same(result.processedEnvs, [{
+    type: 'env',
+    string: 'HELLO=sync',
+    privateKeyName: null,
+    privateKey: null,
+    parsed: { HELLO: 'sync' },
+    errors: [],
+    injected: { HELLO: 'sync' },
+    preExisted: {}
+  }])
+
   ct.end()
 })

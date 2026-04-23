@@ -6,6 +6,11 @@ const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
 
 const Run = require('../../../src/lib/services/run')
+const { determine } = require('../../../src/lib/helpers/envResolution')
+
+function runWithDefaults (envs = [], overload = false) {
+  return new Run(determine(envs, process.env), overload)
+}
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
@@ -22,7 +27,7 @@ t.test('#run (no arguments)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run().run()
+    } = await runWithDefaults().run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -54,7 +59,7 @@ t.test('#run (no arguments and some other error)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run().run()
+    } = await runWithDefaults().run()
 
     const exampleError = new Error('Mock Error')
 
@@ -91,7 +96,7 @@ t.test('#run (no arguments and fsx readFileX throws)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new RunWithReadError().run()
+    } = await new RunWithReadError(determine([], process.env)).run()
 
     const exampleError = new Error('Mock Error')
 
@@ -117,7 +122,7 @@ t.test('#run (finds .env file)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -150,7 +155,7 @@ t.test('#run (encrypted .env finds .env.keys next to itself)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -187,7 +192,7 @@ t.test('#run (encrypted .env with bad private key)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     const error = new Error('[INVALID_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=bad-pri…\'')
     error.code = 'INVALID_PRIVATE_KEY'
@@ -230,7 +235,7 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run().run()
+    } = await runWithDefaults().run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -269,7 +274,7 @@ t.test('#run (finds .env file) with already falsy value',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -301,7 +306,7 @@ t.test('#run (finds .env file as array)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -336,7 +341,7 @@ t.test('#run (finds .env file but HELLO already exists)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -371,7 +376,7 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs, true).run()
+    } = await runWithDefaults(envs, true).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -409,7 +414,7 @@ t.test('#run (command substitution)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
       type: 'envFile',
@@ -447,7 +452,7 @@ t.test('#run (with envs as string)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -462,6 +467,8 @@ t.test('#run (with envs as string)',
       {
         type: 'env',
         string: 'HELLO=string',
+        privateKeyName: null,
+        privateKey: null,
         parsed: {
           HELLO: 'string'
         },
@@ -479,6 +486,97 @@ t.test('#run (with envs as string)',
     ct.end()
   })
 
+t.test('#run (with encrypted env string and privateKeyName)',
+  async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
+    process.chdir(tmpdir)
+
+    process.env.DOTENV_PRIVATE_KEY_PRODUCTION = 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c'
+    const src = 'HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"'
+    const envs = [
+      { type: 'env', value: src, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' }
+    ]
+
+    const {
+      processedEnvs,
+      readableFilepaths,
+      uniqueInjectedKeys
+    } = await runWithDefaults(envs).run()
+
+    const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
+    exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
+    exampleError.code = 'MISSING_ENV_FILE'
+    exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
+    ct.same(processedEnvs, [
+      {
+        type: 'envFile',
+        filepath: '.env',
+        errors: [exampleError]
+      },
+      {
+        type: 'env',
+        string: src,
+        privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
+        privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c',
+        parsed: {
+          HELLO: 'World'
+        },
+        errors: [],
+        injected: {
+          HELLO: 'World'
+        },
+        preExisted: {}
+      }
+    ])
+    ct.same(readableFilepaths, [])
+    ct.same(uniqueInjectedKeys, ['HELLO'])
+    ct.equal(process.env.HELLO, 'World')
+
+    process.chdir(cwd)
+    ct.end()
+  })
+
+t.test('#run (with encrypted env string and missing privateKeyName value)',
+  async ct => {
+    const src = 'HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"'
+    const envs = [
+      { type: 'env', value: src, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' }
+    ]
+
+    const {
+      processedEnvs,
+      readableFilepaths,
+      uniqueInjectedKeys
+    } = await new Run(envs).run()
+
+    const error = new Error('[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY_PRODUCTION=\'')
+    error.code = 'MISSING_PRIVATE_KEY'
+    error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
+    error.messageWithHelp = '[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY_PRODUCTION=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]'
+
+    ct.same(processedEnvs, [
+      {
+        type: 'env',
+        string: src,
+        privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
+        privateKey: null,
+        parsed: {
+          HELLO: 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l'
+        },
+        errors: [error],
+        injected: {
+          HELLO: 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l'
+        },
+        preExisted: {}
+      }
+    ])
+    ct.same(readableFilepaths, [])
+    ct.same(uniqueInjectedKeys, ['HELLO'])
+
+    ct.end()
+  })
+
 t.test('#run (with envs as string and errors somehow from inject)',
   async ct => {
     const cwd = process.cwd()
@@ -493,7 +591,7 @@ t.test('#run (with envs as string and errors somehow from inject)',
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
     exampleError.code = 'MISSING_ENV_FILE'
     exampleError.messageWithHelp = '[MISSING_ENV_FILE] missing file (.env). fix: [https://github.com/dotenvx/dotenvx/issues/484]'
-    const run = new Run(envs)
+    const run = runWithDefaults(envs)
     const mockError = new Error('Mock Error')
     const injectStub = sinon.stub(run, 'inject').throws(mockError)
 
@@ -510,6 +608,8 @@ t.test('#run (with envs as string and errors somehow from inject)',
       {
         type: 'env',
         string: 'HELLO=string',
+        privateKeyName: null,
+        privateKey: null,
         parsed: {
           HELLO: 'string'
         },
@@ -538,12 +638,14 @@ t.test('#run (mixed string and file)',
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [
       {
         type: 'env',
         string: 'HELLO=string',
+        privateKeyName: null,
+        privateKey: null,
         parsed: { HELLO: 'string' },
         injected: { HELLO: 'string' },
         errors: [],
@@ -591,7 +693,7 @@ options="$\{options} optD"`
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs).run()
+    } = await runWithDefaults(envs).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
     exampleError.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/484]'
@@ -607,6 +709,8 @@ options="$\{options} optD"`
       {
         type: 'env',
         string: src,
+        privateKeyName: null,
+        privateKey: null,
         parsed: { options: ' optA optB optC optX optD', configX: 'blah' },
         errors: [],
         injected: { options: ' optA optB optC optX optD', configX: 'blah' },
