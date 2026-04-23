@@ -537,6 +537,46 @@ t.test('#run (with encrypted env string and privateKeyName)',
     ct.end()
   })
 
+t.test('#run (with encrypted env string and missing privateKeyName value)',
+  async ct => {
+    const src = 'HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"'
+    const envs = [
+      { type: 'env', value: src, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' }
+    ]
+
+    const {
+      processedEnvs,
+      readableFilepaths,
+      uniqueInjectedKeys
+    } = await new Run(envs).run()
+
+    const error = new Error('[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY_PRODUCTION=\'')
+    error.code = 'MISSING_PRIVATE_KEY'
+    error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
+    error.messageWithHelp = '[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY_PRODUCTION=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]'
+
+    ct.same(processedEnvs, [
+      {
+        type: 'env',
+        string: src,
+        privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
+        privateKey: null,
+        parsed: {
+          HELLO: 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l'
+        },
+        errors: [error],
+        injected: {
+          HELLO: 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l'
+        },
+        preExisted: {}
+      }
+    ])
+    ct.same(readableFilepaths, [])
+    ct.same(uniqueInjectedKeys, ['HELLO'])
+
+    ct.end()
+  })
+
 t.test('#run (with envs as string and errors somehow from inject)',
   async ct => {
     const cwd = process.cwd()
