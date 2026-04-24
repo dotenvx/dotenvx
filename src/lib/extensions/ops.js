@@ -1,6 +1,7 @@
 const path = require('path')
 const childProcess = require('child_process')
 const util = require('util')
+const { logger } = require('../../shared/logger')
 
 const execFile = util.promisify(childProcess.execFile)
 
@@ -98,6 +99,8 @@ class Ops {
   }
 
   _execSync (binary, args) {
+    logger.debug(binary)
+    logger.debug(args)
     return childProcess.execFileSync(binary, args).toString().trim()
   }
 
@@ -130,13 +133,17 @@ class Ops {
       this._execSync(npmBin, ['--version'])
       this._binarySync = npmBin
       return this._binarySync
-    } catch (_e) {}
+    } catch (err) {
+      logger.debug(err.message)
+    }
 
     try {
       this._execSync('dotenvx-ops', ['--version'])
       this._binarySync = 'dotenvx-ops'
       return this._binarySync
-    } catch (_e) {}
+    } catch (err) {
+      logger.debug(err.message)
+    }
 
     this._binarySync = null
     return null

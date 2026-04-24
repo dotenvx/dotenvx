@@ -22,11 +22,18 @@ async function keypair (key) {
 
   if (spinner) spinner.stop()
   if (typeof results === 'object' && results !== null) {
-    // inline shell format - env $(dotenvx keypair --format=shell) your-command
     if (options.format === 'shell') {
       let inline = ''
-      for (const [key, value] of Object.entries(results)) {
-        inline += `${key}=${value || ''} `
+      for (const [keyName, value] of Object.entries(results)) {
+        inline += `${keyName}=${value || ''} `
+      }
+      inline = inline.trim()
+
+      console.log(inline)
+    } else if (options.format === 'colon') {
+      let inline = ''
+      for (const [keyName, value] of Object.entries(results)) {
+        inline += `${keyName}:${value || ''} `
       }
       inline = inline.trim()
 
@@ -44,6 +51,8 @@ async function keypair (key) {
     if (results === undefined) {
       console.log('')
       process.exit(1)
+    } else if (options.format === 'colon' && key) {
+      console.log(`${key}:${results}`)
     } else {
       console.log(results)
     }

@@ -537,6 +537,48 @@ t.test('#run (with encrypted env string and privateKeyName)',
     ct.end()
   })
 
+t.test('#run (with encrypted env string and privateKeyName reads .env.keys)',
+  async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-run-'))
+    process.chdir(tmpdir)
+    fs.writeFileSync('.env.keys', 'DOTENV_PRIVATE_KEY_PRODUCTION="a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c"\n')
+
+    const src = 'HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"'
+    const envs = [
+      { type: 'env', value: src, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' }
+    ]
+
+    const {
+      processedEnvs,
+      readableFilepaths,
+      uniqueInjectedKeys
+    } = await new Run(envs).run()
+
+    ct.same(processedEnvs, [
+      {
+        type: 'env',
+        string: src,
+        privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
+        privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c',
+        parsed: {
+          HELLO: 'World'
+        },
+        errors: [],
+        injected: {
+          HELLO: 'World'
+        },
+        preExisted: {}
+      }
+    ])
+    ct.same(readableFilepaths, [])
+    ct.same(uniqueInjectedKeys, ['HELLO'])
+    ct.equal(process.env.HELLO, 'World')
+
+    process.chdir(cwd)
+    ct.end()
+  })
+
 t.test('#run (with encrypted env string and missing privateKeyName value)',
   async ct => {
     const src = 'HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"'

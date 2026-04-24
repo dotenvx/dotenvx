@@ -86,6 +86,51 @@ t.test('keypair --format shell (when null value should be empty string for shell
   ct.end()
 })
 
+t.test('keypair --format colon', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'colon' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Keypair.prototype, 'run').returns({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' })
+
+  const stdout = await captureStdout(async () => {
+    await keypair.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'new Keypair().run() called')
+  t.equal(stdout, 'DOTENV_PUBLIC_KEY:<publicKey> DOTENV_PRIVATE_KEY:<privateKey>\n')
+
+  ct.end()
+})
+
+t.test('keypair --format colon (when null value should be empty string for colon format)', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'colon' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Keypair.prototype, 'run').returns({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: null })
+
+  const stdout = await captureStdout(async () => {
+    await keypair.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'new Keypair().run() called')
+  t.equal(stdout, 'DOTENV_PUBLIC_KEY:<publicKey> DOTENV_PRIVATE_KEY:\n')
+
+  ct.end()
+})
+
+t.test('keypair KEY --format colon', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'colon' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Keypair.prototype, 'run').returns({ DOTENV_PRIVATE_KEY: '<privateKey>' })
+
+  const stdout = await captureStdout(async () => {
+    await keypair.call(fakeContext, 'DOTENV_PRIVATE_KEY')
+  })
+
+  t.ok(stub.called, 'new Keypair().run() called')
+  t.equal(stdout, 'DOTENV_PRIVATE_KEY:<privateKey>\n')
+
+  ct.end()
+})
+
 t.test('keypair --pretty-print', async ct => {
   const optsStub = sinon.stub().returns({ prettyPrint: true })
   const fakeContext = { opts: optsStub }

@@ -1562,6 +1562,21 @@ t.test('get calls Get.runSync format shell',
     ct.end()
   })
 
+t.test('get calls Get.runSync format colon',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+    const result = main.get(null, { format: 'colon' })
+    t.equal(result, 'KEY:value')
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
 t.test('get calls Get.runSync with noOps true',
   ct => {
     const stub = sinon.stub(Get.prototype, 'runSync')

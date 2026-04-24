@@ -67,6 +67,14 @@ async function get (key) {
         inline = inline.trim()
 
         console.log(inline)
+      } else if (options.format === 'colon') {
+        let inline = ''
+        for (const [key, value] of Object.entries(parsed)) {
+          inline += `${key}:${value} `
+        }
+        inline = inline.trim()
+
+        console.log(inline)
       } else {
         let space = 0
         if (prettyPrint) {
