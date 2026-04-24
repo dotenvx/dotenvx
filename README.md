@@ -151,6 +151,28 @@ Hello Dotenvx
 ```
 
 </details>
+<details><summary>Cloudflare Workers ⛅️</summary><br>
+
+```sh
+cp .env .env.txt
+```
+
+```js
+import envSrc from '../.env.txt' // txt so cloudflare includes it in deployment
+import dotenvx from '@dotenvx/dotenvx'
+
+// use `wrangler secret put DOTENV_PRIVATE_KEY` to set decryption key once
+const config = dotenvx.config({ envs: [{ type: 'env', value: envSrc, privateKeyName: 'DOTENV_PRIVATE_KEY' }] })
+const envx = config.parsed
+
+export default {
+  async fetch(request, env, ctx) {
+    return new Response(`Hello ${envx.HELLO}`)
+  }
+}
+```
+
+</details>
 <details><summary>Deno 🦕</summary><br>
 
 ```sh
