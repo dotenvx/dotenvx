@@ -12,7 +12,8 @@ const detectEncodingSync = require('./../helpers/detectEncodingSync')
 const {
   keyNames,
   keyValues,
-  keyValuesSync
+  keyValuesSync,
+  keyValuesFromEnvSrc
 } = require('./../helpers/keyResolution')
 
 class Run {
@@ -88,17 +89,20 @@ class Run {
     row.string = env
 
     try {
-      const privateKey = privateKeyName ? this.processEnv[privateKeyName] || null : null
+      const {
+        privateKeyName: resolvedPrivateKeyName,
+        privateKeyValue
+      } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noOps: this.noOps, processEnv: this.processEnv })
 
       const {
         parsed,
         errors,
         injected,
         preExisted
-      } = new Parse(env, privateKey, this.processEnv, this.overload, privateKeyName).run()
+      } = new Parse(env, privateKeyValue, this.processEnv, this.overload, resolvedPrivateKeyName).run()
 
-      row.privateKeyName = privateKeyName
-      row.privateKey = privateKey
+      row.privateKeyName = resolvedPrivateKeyName
+      row.privateKey = privateKeyValue
       row.parsed = parsed
       row.errors = errors
       row.injected = injected
