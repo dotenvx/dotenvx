@@ -131,6 +131,32 @@ t.test('#run (encrypt on) creates missing .env and encrypts the set key/value',
     ct.end()
   })
 
+t.test('#run (encrypt on) creates missing .env.production.txt using production key names',
+  async ct => {
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))
+    const envFile = path.join(tmpdir, '.env.production.txt')
+    const envs = [{ type: 'envFile', value: envFile }]
+    writeFileXStub.callsFake((filepath, str) => fs.writeFileSync(filepath, str, 'utf8'))
+
+    const {
+      processedEnvs,
+      changedFilepaths,
+      unchangedFilepaths
+    } = await new Sets('HELLO', 'world', envs, true, null, true, false).runSync()
+
+    ct.equal(processedEnvs.length, 1)
+    ct.notOk(processedEnvs[0].error)
+    ct.equal(processedEnvs[0].changed, true)
+    ct.equal(processedEnvs[0].privateKeyName, 'DOTENV_PRIVATE_KEY_PRODUCTION')
+    ct.match(processedEnvs[0].envSrc, /DOTENV_PUBLIC_KEY_PRODUCTION="/)
+    ct.match(fs.readFileSync(path.join(tmpdir, '.env.keys'), 'utf8'), /DOTENV_PRIVATE_KEY_PRODUCTION=/)
+    ct.notMatch(processedEnvs[0].envSrc, /DOTENV_PUBLIC_KEY_PRODUCTION_TXT/)
+    ct.same(changedFilepaths, [envFile])
+    ct.same(unchangedFilepaths, [])
+
+    ct.end()
+  })
+
 t.test('#run (encrypt off) with --no-create on missing .env returns missing file error',
   async ct => {
     const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-'))

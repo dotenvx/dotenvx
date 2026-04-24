@@ -1,7 +1,7 @@
-const path = require('path')
+const canonicalEnvFilename = require('./../canonicalEnvFilename')
 
 function environment (filepath) {
-  const filename = path.basename(filepath).toLowerCase()
+  const filename = canonicalEnvFilename(filepath)
 
   const parts = filename.split('.')
   const possibleEnvironmentList = [...parts.slice(2)]

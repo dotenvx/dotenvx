@@ -24,6 +24,28 @@ t.test('#keyNames (.env.production)', ct => {
   ct.end()
 })
 
+t.test('#keyNames (.env.txt)', ct => {
+  const result = keyNames('.env.txt')
+
+  ct.same(result, {
+    publicKeyName: 'DOTENV_PUBLIC_KEY',
+    privateKeyName: 'DOTENV_PRIVATE_KEY'
+  })
+
+  ct.end()
+})
+
+t.test('#keyNames (.env.production.txt)', ct => {
+  const result = keyNames('.env.production.txt')
+
+  ct.same(result, {
+    publicKeyName: 'DOTENV_PUBLIC_KEY_PRODUCTION',
+    privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION'
+  })
+
+  ct.end()
+})
+
 t.test('#keyNames (.ENV.LOCAL)', ct => {
   const result = keyNames('.ENV.LOCAL')
 

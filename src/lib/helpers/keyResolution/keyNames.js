@@ -1,8 +1,8 @@
-const path = require('path')
+const canonicalEnvFilename = require('./../canonicalEnvFilename')
 const environment = require('./../envResolution/environment')
 
 function keyNames (filepath) {
-  const filename = path.basename(filepath).toLowerCase()
+  const filename = canonicalEnvFilename(filepath)
 
   // .env
   if (filename === '.env') {

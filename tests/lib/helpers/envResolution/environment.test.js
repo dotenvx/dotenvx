@@ -20,6 +20,24 @@ t.test('#environment (.env.production)', ct => {
   ct.end()
 })
 
+t.test('#environment (.env.txt)', ct => {
+  const filepath = '.env.txt'
+  const result = environment(filepath)
+
+  ct.same(result, 'development')
+
+  ct.end()
+})
+
+t.test('#environment (.env.production.txt)', ct => {
+  const filepath = '.env.production.txt'
+  const result = environment(filepath)
+
+  ct.same(result, 'production')
+
+  ct.end()
+})
+
 t.test('#environment (.ENV.PRODUCTION)', ct => {
   const filepath = '.ENV.PRODUCTION'
   const result = environment(filepath)
