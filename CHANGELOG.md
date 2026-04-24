@@ -2,7 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.61.6...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.62.0...main)
+
+## [1.62.0](https://github.com/dotenvx/dotenvx/compare/v1.61.6...v1.62.0) (2026-04-23)
+
+### Added
+
+* Add support for `config({ envs })`. unlocks simpler cloudflare worker integration ([#803](https://github.com/dotenvx/dotenvx/pull/803))
+
+```js
+import envSrc from '../.env.txt'
+import dotenvx from '@dotenvx/dotenvx'
+
+export default {
+  async fetch(request, env, ctx) {
+    dotenvx.config({ envs: [{ type: 'env', value: envSrc, privateKeyName: 'DOTENV_PRIVATE_KEY' }] processEnv: env })
+
+    return new Response(`Hello ${env.HELLO}`)
+  },
+};
+```
 
 ## [1.61.6](https://github.com/dotenvx/dotenvx/compare/v1.61.5...v1.61.6) (2026-04-23)
 
