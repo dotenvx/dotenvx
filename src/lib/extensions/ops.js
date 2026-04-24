@@ -134,7 +134,7 @@ class Ops {
       this._binarySync = npmBin
       return this._binarySync
     } catch (err) {
-      logger.debug(err)
+      logger.debug(err.message)
     }
 
     try {
@@ -142,7 +142,7 @@ class Ops {
       this._binarySync = 'dotenvx-ops'
       return this._binarySync
     } catch (err) {
-      logger.debug(err)
+      logger.debug(err.message)
     }
 
     this._binarySync = null

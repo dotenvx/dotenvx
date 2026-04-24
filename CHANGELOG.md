@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.62.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.63.0...main)
+
+## [1.63.0](https://github.com/dotenvx/dotenvx/compare/v1.62.0...v1.63.0) (2026-04-24)
+
+### Added
+
+* Add support for encrypted values passed to `--env` flag ([#804](https://github.com/dotenvx/dotenvx/pull/804))
+* Add support for `--format=colon` in order to support cloudflare's wrangler `--var` flag format ([#804](https://github.com/dotenvx/dotenvx/pull/804))
 
 ## [1.62.0](https://github.com/dotenvx/dotenvx/compare/v1.61.6...v1.62.0) (2026-04-23)
 
@@ -11,16 +18,26 @@ All notable changes to this project will be documented in this file. See [standa
 * Add support for `config({ envs })`. unlocks simpler cloudflare worker integration ([#803](https://github.com/dotenvx/dotenvx/pull/803))
 
 ```js
+// src/index.js
 import envSrc from '../.env.txt'
 import dotenvx from '@dotenvx/dotenvx'
 
+const config = dotenvx.config({ envs: [{ type: 'env', value: envSrc, privateKeyName: 'DOTENV_PRIVATE_KEY' }] })
+const envx = config.parsed
+
 export default {
   async fetch(request, env, ctx) {
-    dotenvx.config({ envs: [{ type: 'env', value: envSrc, privateKeyName: 'DOTENV_PRIVATE_KEY' }] processEnv: env })
-
-    return new Response(`Hello ${env.HELLO}`)
-  },
-};
+    return new Response(`Hello ${envx.HELLO}`)
+  }
+}
+```
+```json
+"scripts": {
+  "deploy": "wrangler deploy",
+  "dev": "wrangler dev --var $(dotenvx keypair -f .env.txt --format=colon)",
+  "start": "wrangler dev --var $(dotenvx keypair -f .env.txt --format=colon)",
+  "test": "vitest"
+},
 ```
 
 ## [1.61.6](https://github.com/dotenvx/dotenvx/compare/v1.61.5...v1.61.6) (2026-04-23)

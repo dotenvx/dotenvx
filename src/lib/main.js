@@ -269,10 +269,11 @@ const get = function (key, options = {}) {
       inline = inline.trim()
 
       return inline
-    } else if (options.format === 'shell') {
+    } else if (options.format === 'shell' || options.format === 'colon') {
       let inline = ''
+      const separator = options.format === 'colon' ? ':' : '='
       for (const [key, value] of Object.entries(parsed)) {
-        inline += `${key}=${value} `
+        inline += `${key}${separator}${value} `
       }
       inline = inline.trim()
 

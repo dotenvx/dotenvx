@@ -137,6 +137,22 @@ t.test('get --format shell (with single quotes in value)', async ct => {
   ct.end()
 })
 
+t.test('get --format colon', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'colon' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { HELLO: 'World' } })
+
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.equal(stdout, 'HELLO:World\n')
+
+  ct.end()
+})
+
 t.test('get --format eval (with single quotes in value)', async ct => {
   const optsStub = sinon.stub().returns({ format: 'eval' })
   const fakeContext = { opts: optsStub }
