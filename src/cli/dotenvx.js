@@ -92,7 +92,7 @@ program.command('get')
   .option('-a, --all', 'include all machine envs as well')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
-  .option('--format <type>', 'format of the output (json, shell, eval, colon)', 'json')
+  .option('--format <type>', 'format of the output (json, shell, colon)', 'json')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
     this.envs = envs
@@ -171,7 +171,7 @@ program.command('keypair')
   .option('--no-ops', 'disable dotenvx-ops features')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
-  .option('--format <type>', 'format of the output (json, shell, colon)', 'json')
+  .option('--format <type>', 'format of the output (json, shell, eval, colon)', 'json')
   .action(function (...args) {
     return require('./actions/keypair').apply(this, args)
   })

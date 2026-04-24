@@ -22,11 +22,18 @@ async function keypair (key) {
 
   if (spinner) spinner.stop()
   if (typeof results === 'object' && results !== null) {
-    if (options.format === 'shell' || options.format === 'colon') {
+    if (options.format === 'shell') {
       let inline = ''
-      const separator = options.format === 'colon' ? ':' : '='
       for (const [keyName, value] of Object.entries(results)) {
-        inline += `${keyName}${separator}${value || ''} `
+        inline += `${keyName}=${value || ''} `
+      }
+      inline = inline.trim()
+
+      console.log(inline)
+    } else if (options.format === 'colon') {
+      let inline = ''
+      for (const [keyName, value] of Object.entries(results)) {
+        inline += `${keyName}:${value || ''} `
       }
       inline = inline.trim()
 
