@@ -17,6 +17,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Add support for `config({ envs })`. unlocks simpler cloudflare worker integration ([#803](https://github.com/dotenvx/dotenvx/pull/803))
 
+```sh
+$ dotenvx encrypt -f .env.txt
+```
 ```js
 // src/index.js
 import envSrc from '../.env.txt'
