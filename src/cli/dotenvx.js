@@ -204,6 +204,16 @@ program.command('logout', { hidden: true })
     executeDynamic(program, 'ops', rawArgs)
   })
 
+// dotenvx armor
+program.command('armor', { hidden: true })
+  .description('internal alias for [dotenvx ops armor]')
+  .allowUnknownOption()
+  .argument('[args...]', 'armor command arguments')
+  .action((args) => {
+    const rawArgs = ['ops', 'armor', ...args]
+    executeDynamic(program, 'ops', rawArgs)
+  })
+
 // dotenvx help
 program.command('help [command]')
   .description('display help for command')
