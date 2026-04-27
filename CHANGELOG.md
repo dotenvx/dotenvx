@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.63.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.64.0...main)
+
+## [1.64.0](https://github.com/dotenvx/dotenvx/compare/v1.63.0...v1.64.0) (2026-04-27)
+
+### Added
+
+* Add optional `dotenvx armor` command.
+  * `armor up` armor private key
+  * `armor down` dearmor private key
+  * `armor push` push armored key (from .env.keys)
+  * `armor pull` pull armored key (into .env.keys)
+
+Move private keys off device and under access control with Dotenvx Ops ⛨. [Learn more](https://dotenvx.com/ops)
 
 ## [1.63.0](https://github.com/dotenvx/dotenvx/compare/v1.62.0...v1.63.0) (2026-04-24)
 
