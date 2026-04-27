@@ -197,7 +197,7 @@ program.command('login')
 
 // dotenvx logout
 program.command('logout', { hidden: true })
-  .description('optional: log out of your dotenvx account')
+  .description('log out of your dotenvx account')
   .allowUnknownOption()
   .action(() => {
     const rawArgs = ['ops', 'logout', ...process.argv.slice(3)]
@@ -205,12 +205,11 @@ program.command('logout', { hidden: true })
   })
 
 // dotenvx armor
-program.command('armor')
-  .description('internal alias for [dotenvx ops armor]')
+program.command('armor', { hidden: true })
+  .description('ARMORED KEYS ⛨')
   .allowUnknownOption()
-  .argument('[args...]', 'armor command arguments')
   .action((args) => {
-    const rawArgs = ['ops', 'armor', ...args]
+    const rawArgs = ['ops', 'armor', ...process.argv.slice(3)]
     executeDynamic(program, 'ops', rawArgs)
   })
 
@@ -276,7 +275,6 @@ program.helpInformation = function () {
     !line.includes('DEPRECATED') &&
     !line.includes('help [command]') &&
     !line.includes('🔌 extensions') &&
-    !/^\s*armor\b/.test(line) &&
     !/^\s*ls\b/.test(line)
   )
 
