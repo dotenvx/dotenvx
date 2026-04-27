@@ -204,6 +204,16 @@ program.command('logout', { hidden: true })
     executeDynamic(program, 'ops', rawArgs)
   })
 
+// dotenvx armor
+program.command('armor')
+  .description('internal alias for [dotenvx ops armor]')
+  .allowUnknownOption()
+  .argument('[args...]', 'armor command arguments')
+  .action((args) => {
+    const rawArgs = ['ops', 'armor', ...args]
+    executeDynamic(program, 'ops', rawArgs)
+  })
+
 // dotenvx help
 program.command('help [command]')
   .description('display help for command')
@@ -266,6 +276,7 @@ program.helpInformation = function () {
     !line.includes('DEPRECATED') &&
     !line.includes('help [command]') &&
     !line.includes('🔌 extensions') &&
+    !/^\s*armor\b/.test(line) &&
     !/^\s*ls\b/.test(line)
   )
 
