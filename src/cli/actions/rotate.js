@@ -45,10 +45,11 @@ async function rotate () {
         if (processedEnv.error) {
           logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
           if (processedEnv.localPrivateKeyAdded) {
             await fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
           }
+          //Saving the enviroment variables after the keys so that it fails gracefully if private keys cannot be written to
+          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
           logger.verbose(`rotated ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
