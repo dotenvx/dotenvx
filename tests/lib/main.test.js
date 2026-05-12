@@ -1538,7 +1538,7 @@ t.test('get calls Get.runSync format eval',
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
     const result = main.get(null, { format: 'eval' })
-    t.equal(result, 'KEY=value')
+    t.equal(result, "KEY='value'")
 
     t.ok(stub.called, 'new Get().runSync() called')
 
@@ -1554,6 +1554,23 @@ t.test('get calls Get.runSync format shell',
 
     const result = main.get(null, { format: 'shell' })
     t.equal(result, 'KEY=value')
+
+    t.ok(stub.called, 'new Get().runSync() called')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('get calls Get.runSync format shell rejects values with whitespace',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { GREETING: 'hello NODE_OPTIONS=--require=./payload.js' }, errors: [] })
+
+    t.throws(
+      () => main.get(null, { format: 'shell' }),
+      /cannot format GREETING as shell/
+    )
 
     t.ok(stub.called, 'new Get().runSync() called')
 

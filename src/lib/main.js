@@ -20,6 +20,8 @@ const { determine } = require('./helpers/envResolution')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
 const localDisplayPath = require('./helpers/localDisplayPath')
+const escape = require('./helpers/escape')
+const formatShell = require('./helpers/formatShell')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -270,13 +272,7 @@ const get = function (key, options = {}) {
 
       return inline
     } else if (options.format === 'shell') {
-      let inline = ''
-      for (const [key, value] of Object.entries(parsed)) {
-        inline += `${key}=${value} `
-      }
-      inline = inline.trim()
-
-      return inline
+      return formatShell(parsed)
     } else if (options.format === 'colon') {
       let inline = ''
       for (const [key, value] of Object.entries(parsed)) {
