@@ -29,13 +29,14 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false, noCreate = false) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false, noCreate = false, token = undefined) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
     this.noOps = noOps
     this.noCreate = noCreate
+    this.token = token
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -101,7 +102,7 @@ class Encrypt {
 
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
-        const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, noOps: this.noOps })
+        const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, noOps: this.noOps, token: this.token })
         envSrc = prov.envSrc
         publicKey = prov.publicKey
         privateKey = prov.privateKey

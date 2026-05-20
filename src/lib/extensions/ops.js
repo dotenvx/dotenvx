@@ -40,6 +40,8 @@ class Ops {
 
     const args = ['keypair']
     if (options.noSpinner) args.push('--no-spinner')
+    if (options.token) args.push('--token', options.token)
+    if (options.team) args.push('--team', options.team)
     if (publicKey) args.push(publicKey)
 
     try {
@@ -57,6 +59,8 @@ class Ops {
 
     const args = ['keypair']
     if (options.noSpinner) args.push('--no-spinner')
+    if (options.token) args.push('--token', options.token)
+    if (options.team) args.push('--team', options.team)
     if (publicKey) args.push(publicKey)
 
     try {

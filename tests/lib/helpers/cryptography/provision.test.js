@@ -149,3 +149,27 @@ t.test('provision uses Ops keypair when noOps is false', async (ct) => {
   ct.equal(out.envKeysFilepath, undefined)
   ct.end()
 })
+
+t.test('provision forwards token to Ops keypair when noOps is false', async (ct) => {
+  const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
+  const mutateKeysSrc = sinon.stub()
+  const opsKeypair = sinon.stub().resolves({ publicKey: 'ops_pub', privateKey: 'ops_priv' })
+  const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
+
+  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+    './mutateSrc': mutateSrc,
+    './mutateKeysSrc': mutateKeysSrc,
+    './localKeypair': localKeypair,
+    './opsKeypair': opsKeypair,
+    '../keyResolution': {
+      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+    }
+  })
+
+  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noOps: false, token: 'token-123' })
+
+  ct.equal(opsKeypair.callCount, 1)
+  ct.same(opsKeypair.firstCall.args, [undefined, { token: 'token-123' }])
+  ct.equal(localKeypair.callCount, 0)
+  ct.end()
+})
