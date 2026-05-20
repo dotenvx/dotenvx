@@ -126,7 +126,7 @@ program.command('encrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--stdout', 'send to stdout')
-  .option('--token <token>', 'set token')
+  .option('--token <token>', 'set Ops token')
   .option('--no-create', 'do not create .env file(s) when missing')
   .option('--no-ops', 'disable dotenvx-ops features')
   .action(function (...args) {
