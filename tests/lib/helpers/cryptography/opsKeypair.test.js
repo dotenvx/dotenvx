@@ -49,6 +49,29 @@ t.test('opsKeypair forwards provided public key to Ops keypair', async (ct) => {
   ct.end()
 })
 
+t.test('opsKeypair forwards token to Ops keypair', async (ct) => {
+  const keypair = sinon.stub().resolves({
+    public_key: 'ops_pub_abc',
+    private_key: 'ops_priv_abc'
+  })
+
+  function OpsMock () {
+    this.keypair = keypair
+  }
+
+  const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
+    './../../extensions/ops': OpsMock
+  })
+
+  const out = await opsKeypair(undefined, { token: 'token-123' })
+
+  ct.equal(out.publicKey, 'ops_pub_abc')
+  ct.equal(out.privateKey, 'ops_priv_abc')
+  ct.equal(keypair.callCount, 1)
+  ct.same(keypair.firstCall.args, [undefined, { token: 'token-123' }])
+  ct.end()
+})
+
 t.test('opsKeypair brackets Ops keypair with spinner hooks', async (ct) => {
   const beforeOpsKeypair = sinon.stub().resolves()
   const afterOpsKeypair = sinon.stub().resolves()

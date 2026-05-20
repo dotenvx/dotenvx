@@ -83,6 +83,38 @@ t.test('encrypt - --no-create passes through to service', async ct => {
   ct.end()
 })
 
+t.test('encrypt - --token passes through to service', async ct => {
+  let constructorArgs
+
+  class EncryptMock {
+    constructor (...args) {
+      constructorArgs = args
+    }
+
+    run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
+    './../../lib/services/encrypt': EncryptMock,
+    '../../../src/lib/helpers/isIgnoringDotenvKeys': () => true
+  })
+
+  const optsStub = sinon.stub().returns({ token: 'token-123' })
+  const fakeContext = { opts: optsStub, envs: [] }
+
+  await encryptWithMock.call(fakeContext)
+
+  t.equal(constructorArgs[6], 'token-123', 'token is passed to Encrypt service')
+
+  ct.end()
+})
+
 t.test('encrypt - .env but no change', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
@@ -628,6 +660,43 @@ t.test('encrypt - --no-ops passes noOps true to Encrypt service', async ct => {
 
   t.ok(runStub.calledOnce, 'Encrypt().run() called')
   t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
+
+  ct.end()
+})
+
+t.test('encrypt - --token uses Ops even when session status is off', async ct => {
+  let constructorArgs
+  const sessionNoOpsStub = sinon.stub().resolves(true)
+
+  class SessionMock {
+    async noOps () {
+      return sessionNoOpsStub()
+    }
+  }
+
+  class EncryptMock {
+    constructor (...args) {
+      constructorArgs = args
+    }
+
+    run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
+    './../../lib/services/encrypt': EncryptMock,
+    '../../db/session': SessionMock
+  })
+
+  await encryptWithMock.call({ opts: () => ({ token: 'token-123' }), envs: [] })
+
+  t.equal(constructorArgs[4], false, 'noOps=false when token is explicitly provided')
+  t.equal(sessionNoOpsStub.callCount, 0, 'does not query ops status when token is explicit')
 
   ct.end()
 })
