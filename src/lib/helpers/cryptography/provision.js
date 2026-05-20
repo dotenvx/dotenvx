@@ -20,7 +20,9 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noOps, token }) {
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {
-    const kp = await opsKeypair(undefined, { token })
+    const keypairOptions = { metadata: { env_filepath: envFilepath } }
+    if (token) keypairOptions.token = token
+    const kp = await opsKeypair(undefined, keypairOptions)
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   }
