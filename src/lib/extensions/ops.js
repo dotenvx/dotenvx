@@ -41,7 +41,6 @@ class Ops {
     const args = ['keypair']
     if (options.noSpinner) args.push('--no-spinner')
     if (options.token) args.push('--token', options.token)
-    if (options.metadata) args.push('--metadata', JSON.stringify(options.metadata))
     if (publicKey) args.push(publicKey)
 
     try {
@@ -60,7 +59,6 @@ class Ops {
     const args = ['keypair']
     if (options.noSpinner) args.push('--no-spinner')
     if (options.token) args.push('--token', options.token)
-    if (options.metadata) args.push('--metadata', JSON.stringify(options.metadata))
     if (publicKey) args.push(publicKey)
 
     try {
