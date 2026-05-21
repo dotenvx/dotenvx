@@ -805,8 +805,9 @@ t.test('set - interactive prompt when value is undefined', async ct => {
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
+  const secretValue = 'SecretValue'
   const fakeRl = {
-    question: sinon.stub().callsFake((prompt, cb) => cb('SecretValue')),
+    question: sinon.stub().callsFake((prompt, cb) => cb(secretValue)),
     close: sinon.stub(),
     line: ''
   }
