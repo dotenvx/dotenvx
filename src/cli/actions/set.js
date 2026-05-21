@@ -31,9 +31,6 @@ function promptForValue (key) {
 }
 
 async function set (key, value) {
-  logger.debug(`key: ${key}`)
-  logger.debug(`value: ${value}`)
-
   if (value === undefined) {
     value = await promptForValue(key)
   }
