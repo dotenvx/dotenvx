@@ -81,14 +81,17 @@ class Encrypt {
     row.envFilepath = envFilepath
 
     try {
-      // if noCreate is on then detectEncoding will throw and we'll halt the calls
-      // but if noCreate is false then create the file if it doesn't exist
-      if (!(await fsx.exists(filepath)) && !this.noCreate) {
-        await fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
+      const fileExists = await fsx.exists(filepath)
+      let envSrc
+      if (!fileExists && !this.noCreate) {
+        envSrc = SAMPLE_ENV_KIT
         fileCreated = true
+        row.kitCreated = 'sample'
+        row.changed = true
+      } else {
+        const encoding = await detectEncoding(filepath)
+        envSrc = await fsx.readFileX(filepath, { encoding })
       }
-      const encoding = await detectEncoding(filepath)
-      let envSrc = await fsx.readFileX(filepath, { encoding })
       if (envSrc.trim().length === 0) {
         envSrc = SAMPLE_ENV_KIT
         row.kitCreated = 'sample'

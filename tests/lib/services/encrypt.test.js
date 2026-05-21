@@ -98,6 +98,38 @@ t.test('#run (no env file) with --no-create',
     ct.end()
   })
 
+t.test('#run (no env file) does not write plaintext sample if provisioning aborts',
+  async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+    process.chdir(tmpdir)
+
+    const provisionError = new Error('prompt aborted')
+    const cryptography = require('../../../src/lib/helpers/cryptography')
+    const EncryptWithProvisionStub = proxyquire('../../../src/lib/services/encrypt', {
+      './../helpers/cryptography': {
+        ...cryptography,
+        provision: sinon.stub().rejects(provisionError)
+      }
+    })
+
+    const {
+      processedEnvs,
+      changedFilepaths,
+      unchangedFilepaths
+    } = await new EncryptWithProvisionStub([], [], [], null, false).run()
+
+    ct.equal(processedEnvs.length, 1)
+    ct.equal(processedEnvs[0].error, provisionError)
+    ct.notOk(fs.existsSync(path.join(tmpdir, '.env')), 'does not leave plaintext .env behind')
+    ct.notOk(writeFileXStub.calledWith(path.join(tmpdir, '.env'), sinon.match.string), 'does not write .env before provisioning completes')
+    ct.same(changedFilepaths, [])
+    ct.same(unchangedFilepaths, [])
+
+    process.chdir(cwd)
+    ct.end()
+  })
+
 t.test('#run (blank existing .env file) seeds sample kit before encrypting',
   async ct => {
     const cwd = process.cwd()
