@@ -24,8 +24,7 @@ class Run {
     this.envKeysFilepath = envKeysFilepath
     this.noOps = noOps
     this.noSpinner = options.noSpinner
-    this.beforeOpsKeypair = options.beforeOpsKeypair
-    this.afterOpsKeypair = options.afterOpsKeypair
+    this.keypairHooks = options.keypairHooks
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
@@ -189,8 +188,7 @@ class Run {
       const { privateKeyValue } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
         noOps: this.noOps,
-        beforeOpsKeypair: this.beforeOpsKeypair,
-        afterOpsKeypair: this.afterOpsKeypair
+        keypairHooks: this.keypairHooks
       })
 
       const {

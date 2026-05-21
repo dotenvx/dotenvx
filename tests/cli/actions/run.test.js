@@ -68,8 +68,8 @@ t.test('run passes spinner text handoff hooks to Run service', async ct => {
     }
 
     async run () {
-      await runArgs[5].beforeOpsKeypair()
-      await runArgs[5].afterOpsKeypair()
+      await runArgs[5].keypairHooks.before()
+      await runArgs[5].keypairHooks.after()
       return {
         processedEnvs: [],
         readableStrings: [],

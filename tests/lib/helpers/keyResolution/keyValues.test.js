@@ -85,22 +85,24 @@ t.test('#keyValues loads private key from ops when noOps is false and only publi
   ct.end()
 })
 
-t.test('#keyValues forwards ops keypair spinner hooks', async ct => {
+t.test('#keyValues forwards ops keypair hooks', async ct => {
   const opsKeypair = sinon.stub().resolves({ privateKey: 'from-ops' })
-  const beforeOpsKeypair = sinon.stub()
-  const afterOpsKeypair = sinon.stub()
+  const keypairHooks = {
+    before: sinon.stub(),
+    after: sinon.stub()
+  }
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
     '../cryptography/opsKeypair': opsKeypair
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noOps: false, beforeOpsKeypair, afterOpsKeypair })
+  const result = await keyValuesWithOpsStub('.env', { noOps: false, keypairHooks })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
   ct.equal(opsKeypair.callCount, 1)
   ct.equal(opsKeypair.firstCall.args[0], '<publicKey>')
-  ct.same(opsKeypair.firstCall.args[1], { beforeOpsKeypair, afterOpsKeypair })
+  ct.same(opsKeypair.firstCall.args[1], { hooks: keypairHooks })
   ct.end()
 })
 

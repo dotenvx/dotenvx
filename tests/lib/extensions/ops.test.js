@@ -4,12 +4,18 @@ const proxyquire = require('proxyquire')
 const util = require('util')
 const { EventEmitter } = require('events')
 
-function spawnResult (stdout, code = 0) {
+function spawnResult (stdout, code = 0, stderr) {
   const subprocess = new EventEmitter()
   subprocess.stdout = new EventEmitter()
+  subprocess.stderr = new EventEmitter()
   setImmediate(() => {
     if (stdout !== undefined) {
       subprocess.stdout.emit('data', Buffer.from(stdout))
+    }
+    if (stderr !== undefined) {
+      for (const chunk of [].concat(stderr)) {
+        subprocess.stderr.emit('data', Buffer.from(chunk))
+      }
     }
     subprocess.emit('close', code)
   })
@@ -118,10 +124,10 @@ t.test('status uses execFile and keypair uses interactive spawn', async (ct) => 
   ct.same(promisifiedExecFile.getCall(0).args[1], ['--version'])
   ct.same(promisifiedExecFile.getCall(1).args[1], ['status'])
   ct.same(spawn.getCall(0).args, [promisifiedExecFile.getCall(0).args[0], ['keypair'], {
-    stdio: ['inherit', 'pipe', 'inherit']
+    stdio: ['inherit', 'pipe', 'pipe']
   }])
   ct.same(spawn.getCall(1).args, [promisifiedExecFile.getCall(0).args[0], ['keypair', 'existing-public-key'], {
-    stdio: ['inherit', 'pipe', 'inherit']
+    stdio: ['inherit', 'pipe', 'pipe']
   }])
   ct.end()
 })
@@ -323,7 +329,7 @@ t.test('observe returns early when no binary can be resolved', (ct) => {
   ct.end()
 })
 
-t.test('keypair async inherits stdin/stderr while parsing stdout json', async (ct) => {
+t.test('keypair async inherits stdin and pipes stderr while parsing stdout json', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -341,8 +347,36 @@ t.test('keypair async inherits stdin/stderr while parsing stdout json', async (c
   const ops = new Ops()
   ct.same(await ops.keypair(), { public_key: 'pub', private_key: 'priv' })
   ct.same(spawn.firstCall.args[2], {
-    stdio: ['inherit', 'pipe', 'inherit']
+    stdio: ['inherit', 'pipe', 'pipe']
   })
+  ct.end()
+})
+
+t.test('keypair async forwards child stderr after onStderr hook', async (ct) => {
+  const execFileSync = sinon.stub()
+  const promisifiedExecFile = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = promisifiedExecFile
+  const spawn = sinon.stub()
+  const onStderr = sinon.stub()
+  const stderrWrite = sinon.stub(process.stderr, 'write')
+  ct.teardown(() => stderrWrite.restore())
+
+  promisifiedExecFile
+    .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
+  spawn.onCall(0).returns(spawnResult('{"public_key":"pub","private_key":"priv"}', 0, ['Select team', '\n']))
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const ops = new Ops()
+  ct.same(await ops.keypair(undefined, { onStderr }), { public_key: 'pub', private_key: 'priv' })
+  ct.equal(onStderr.callCount, 1)
+  ct.equal(stderrWrite.callCount, 2)
+  ct.equal(stderrWrite.firstCall.args[0].toString(), 'Select team')
+  ct.ok(onStderr.calledBefore(stderrWrite))
+  ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'pipe'])
   ct.end()
 })
 
@@ -364,7 +398,7 @@ t.test('keypair async can disable child spinner', async (ct) => {
   const ops = new Ops()
   ct.same(await ops.keypair('existing-public-key', { noSpinner: true }), { public_key: 'pub', private_key: 'priv' })
   ct.same(spawn.firstCall.args[1], ['keypair', '--no-spinner', 'existing-public-key'])
-  ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'inherit'])
+  ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'pipe'])
   ct.notOk(spawn.firstCall.args[2].env)
   ct.end()
 })
@@ -387,7 +421,7 @@ t.test('keypair async forwards token to dotenvx-ops', async (ct) => {
   const ops = new Ops()
   ct.same(await ops.keypair('existing-public-key', { token: 'token-123' }), { public_key: 'pub', private_key: 'priv' })
   ct.same(spawn.firstCall.args[1], ['keypair', '--token', 'token-123', 'existing-public-key'])
-  ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'inherit'])
+  ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'pipe'])
   ct.end()
 })
 

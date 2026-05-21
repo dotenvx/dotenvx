@@ -37,8 +37,8 @@ class Encrypt {
     this.noOps = noOps
     this.noCreate = noCreate
     this.token = token
-    this.beforeOpsKeypair = options.beforeOpsKeypair
-    this.afterOpsKeypair = options.afterOpsKeypair
+    this.keypairHooks = options.keypairHooks
+    this.selectKeyStorage = options.selectKeyStorage
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -103,7 +103,11 @@ class Encrypt {
       let privateKey
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
+      const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, {
+        keysFilepath: this.envKeysFilepath,
+        noOps: this.noOps,
+        keypairHooks: this.keypairHooks
+      })
 
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
@@ -113,8 +117,8 @@ class Encrypt {
           keysFilepath: this.envKeysFilepath,
           noOps: this.noOps,
           token: this.token,
-          beforeOpsKeypair: this.beforeOpsKeypair,
-          afterOpsKeypair: this.afterOpsKeypair
+          keypairHooks: this.keypairHooks,
+          selectKeyStorage: this.selectKeyStorage
         })
         envSrc = prov.envSrc
         publicKey = prov.publicKey
