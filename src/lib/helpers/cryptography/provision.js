@@ -4,7 +4,7 @@ const opsKeypair = require('./opsKeypair')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-async function provision ({ envSrc, envFilepath, keysFilepath, noOps, token }) {
+async function provision ({ envSrc, envFilepath, keysFilepath, noOps, token, beforeOpsKeypair, afterOpsKeypair }) {
   noOps = noOps !== false
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
@@ -22,6 +22,8 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noOps, token }) {
   } else {
     const keypairOptions = {}
     if (token) keypairOptions.token = token
+    if (beforeOpsKeypair) keypairOptions.beforeOpsKeypair = beforeOpsKeypair
+    if (afterOpsKeypair) keypairOptions.afterOpsKeypair = afterOpsKeypair
     const kp = await opsKeypair(undefined, keypairOptions)
     publicKey = kp.publicKey
     privateKey = kp.privateKey

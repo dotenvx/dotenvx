@@ -701,6 +701,51 @@ t.test('encrypt - --token uses Ops even when session status is off', async ct =>
   ct.end()
 })
 
+t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
+  const spinner = {
+    stop: sinon.stub(),
+    start: sinon.stub()
+  }
+  const createSpinnerStub = sinon.stub().resolves(spinner)
+  let constructorArgs
+
+  class SessionMock {
+    async noOps () {
+      return false
+    }
+  }
+
+  class EncryptMock {
+    constructor (...args) {
+      constructorArgs = args
+    }
+
+    async run () {
+      await constructorArgs[7].beforeOpsKeypair()
+      await constructorArgs[7].afterOpsKeypair()
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
+    './../../lib/services/encrypt': EncryptMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../db/session': SessionMock
+  })
+
+  await encryptWithMock.call({ opts: () => ({}), envs: [] })
+
+  ct.equal(spinner.stop.callCount, 2, 'stops before Ops keypair and before final output')
+  ct.equal(spinner.start.callCount, 1, 'restarts after Ops keypair')
+  ct.equal(spinner.start.firstCall.args[0], 'encrypting')
+
+  ct.end()
+})
+
 t.test('encrypt - spinner stop is called for stdout/success/catch flows', async ct => {
   const stopStub = sinon.stub()
   const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })
