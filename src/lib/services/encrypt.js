@@ -29,7 +29,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false, noCreate = false, token = undefined) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false, noCreate = false, token = undefined, options = {}) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
@@ -37,6 +37,8 @@ class Encrypt {
     this.noOps = noOps
     this.noCreate = noCreate
     this.token = token
+    this.beforeOpsKeypair = options.beforeOpsKeypair
+    this.afterOpsKeypair = options.afterOpsKeypair
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -79,14 +81,17 @@ class Encrypt {
     row.envFilepath = envFilepath
 
     try {
-      // if noCreate is on then detectEncoding will throw and we'll halt the calls
-      // but if noCreate is false then create the file if it doesn't exist
-      if (!(await fsx.exists(filepath)) && !this.noCreate) {
-        await fsx.writeFileX(filepath, SAMPLE_ENV_KIT)
+      const fileExists = await fsx.exists(filepath)
+      let envSrc
+      if (!fileExists && !this.noCreate) {
+        envSrc = SAMPLE_ENV_KIT
         fileCreated = true
+        row.kitCreated = 'sample'
+        row.changed = true
+      } else {
+        const encoding = await detectEncoding(filepath)
+        envSrc = await fsx.readFileX(filepath, { encoding })
       }
-      const encoding = await detectEncoding(filepath)
-      let envSrc = await fsx.readFileX(filepath, { encoding })
       if (envSrc.trim().length === 0) {
         envSrc = SAMPLE_ENV_KIT
         row.kitCreated = 'sample'
@@ -102,7 +107,15 @@ class Encrypt {
 
       // first pass - provision
       if (!privateKeyValue && !publicKeyValue) {
-        const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, noOps: this.noOps, token: this.token })
+        const prov = await provision({
+          envSrc,
+          envFilepath,
+          keysFilepath: this.envKeysFilepath,
+          noOps: this.noOps,
+          token: this.token,
+          beforeOpsKeypair: this.beforeOpsKeypair,
+          afterOpsKeypair: this.afterOpsKeypair
+        })
         envSrc = prov.envSrc
         publicKey = prov.publicKey
         privateKey = prov.privateKey

@@ -23,7 +23,14 @@ async function encrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, {
+      beforeOpsKeypair: () => {
+        if (spinner) spinner.stop()
+      },
+      afterOpsKeypair: () => {
+        if (spinner) spinner.start('encrypting')
+      }
+    }).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -35,7 +42,14 @@ async function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, {
+        beforeOpsKeypair: () => {
+          if (spinner) spinner.stop()
+        },
+        afterOpsKeypair: () => {
+          if (spinner) spinner.start('encrypting')
+        }
+      }).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
