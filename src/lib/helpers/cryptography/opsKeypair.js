@@ -5,7 +5,8 @@ async function opsKeypair (existingPublicKey, options = {}) {
 
   const keypairOptions = {}
   if (options.token) keypairOptions.token = options.token
-  if (options.beforeOpsKeypair || options.afterOpsKeypair) keypairOptions.noSpinner = true
+  if (options.beforeOpsKeypairStderr) keypairOptions.beforeStderr = options.beforeOpsKeypairStderr
+  if (options.beforeOpsKeypair || options.beforeOpsKeypairStderr || options.afterOpsKeypair) keypairOptions.noSpinner = true
 
   let kp
   try {

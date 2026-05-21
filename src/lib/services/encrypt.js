@@ -38,6 +38,7 @@ class Encrypt {
     this.noCreate = noCreate
     this.token = token
     this.beforeOpsKeypair = options.beforeOpsKeypair
+    this.beforeOpsKeypairStderr = options.beforeOpsKeypairStderr
     this.afterOpsKeypair = options.afterOpsKeypair
 
     this.processedEnvs = []
@@ -114,6 +115,7 @@ class Encrypt {
           noOps: this.noOps,
           token: this.token,
           beforeOpsKeypair: this.beforeOpsKeypair,
+          beforeOpsKeypairStderr: this.beforeOpsKeypairStderr,
           afterOpsKeypair: this.afterOpsKeypair
         })
         envSrc = prov.envSrc

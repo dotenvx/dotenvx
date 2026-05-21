@@ -8,6 +8,25 @@ const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 
+function opsSpinnerHandoff (spinner) {
+  let stoppedForOps = false
+
+  return {
+    beforeOpsKeypairStderr: () => {
+      if (spinner && !stoppedForOps) {
+        spinner.stop()
+        stoppedForOps = true
+      }
+    },
+    afterOpsKeypair: () => {
+      if (spinner && stoppedForOps) {
+        spinner.start('encrypting')
+        stoppedForOps = false
+      }
+    }
+  }
+}
+
 async function encrypt () {
   const options = this.opts()
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
@@ -23,14 +42,7 @@ async function encrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, {
-      beforeOpsKeypair: () => {
-        if (spinner) spinner.stop()
-      },
-      afterOpsKeypair: () => {
-        if (spinner) spinner.start('encrypting')
-      }
-    }).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, opsSpinnerHandoff(spinner)).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -42,14 +54,7 @@ async function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, {
-        beforeOpsKeypair: () => {
-          if (spinner) spinner.stop()
-        },
-        afterOpsKeypair: () => {
-          if (spinner) spinner.start('encrypting')
-        }
-      }).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, opsSpinnerHandoff(spinner)).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

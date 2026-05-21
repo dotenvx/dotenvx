@@ -44,7 +44,9 @@ class Ops {
     if (publicKey) args.push(publicKey)
 
     try {
-      return JSON.parse(await this._execInteractive(binary, args))
+      return JSON.parse(await this._execInteractive(binary, args, {
+        beforeStderr: options.beforeStderr
+      }))
     } catch (_e) {
       return {}
     }
@@ -108,16 +110,25 @@ class Ops {
     return childProcess.execFileSync(binary, args).toString().trim()
   }
 
-  _execInteractive (binary, args) {
+  _execInteractive (binary, args, options = {}) {
     return new Promise((resolve, reject) => {
       const spawnOptions = {
-        stdio: ['inherit', 'pipe', 'inherit']
+        stdio: ['inherit', 'pipe', 'pipe']
       }
       const subprocess = childProcess.spawn(binary, args, spawnOptions)
       let stdout = ''
+      let sawStderr = false
 
       subprocess.stdout.on('data', (data) => {
         stdout += data.toString()
+      })
+      subprocess.stderr.on('data', (data) => {
+        if (!sawStderr) {
+          sawStderr = true
+          if (options.beforeStderr) options.beforeStderr()
+        }
+
+        process.stderr.write(data)
       })
       subprocess.on('error', reject)
       subprocess.on('close', (code) => {
