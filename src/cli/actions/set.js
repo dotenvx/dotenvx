@@ -4,14 +4,11 @@ const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
 const Sets = require('./../../lib/services/sets')
-
-<<<<<<< HEAD
-const catchAndLog = require('../../lib/helpers/catchAndLog')
-const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
 
 function promptForValue (key) {
   return new Promise((resolve) => {
@@ -42,9 +39,6 @@ async function set (key, value) {
     value = await promptForValue(key)
   }
 
-=======
-async function set (key, value) {
->>>>>>> origin/main
   const options = this.opts()
 
   let encrypt = true

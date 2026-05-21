@@ -555,26 +555,13 @@ t.test('set - localPrivateKeyAdded and not ignoring .env.keys', async ct => {
   ct.end()
 })
 
-<<<<<<< HEAD
-t.test('set - interactive prompt when value is undefined', async ct => {
-=======
 t.test('set - localPrivateKeyAdded with unchanged file still reports key addition', async ct => {
->>>>>>> origin/main
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Sets.prototype, 'run').returns({
     processedEnvs: [{
       key: 'HELLO',
-<<<<<<< HEAD
-      value: 'SecretValue',
-      filepath: '.env',
-      envFilepath: '.env',
-      envSrc: 'HELLO=SecretValue',
-      privateKeyAdded: false,
-      privateKeyName: null,
-      privateKey: null,
-=======
       value: 'dude',
       filepath: '.env',
       envFilepath: '.env',
@@ -649,36 +636,11 @@ t.test('set - remotePrivateKeyAdded', async ct => {
       remotePrivateKeyAdded: true,
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKey: '1234',
->>>>>>> origin/main
       error: null
     }],
     changedFilepaths: ['.env'],
     unchangedFilepaths: []
   })
-<<<<<<< HEAD
-  const loggerSuccessStub = sinon.stub(logger, 'success')
-
-  const fakeRl = {
-    question: sinon.stub().callsFake((prompt, cb) => cb('SecretValue')),
-    close: sinon.stub(),
-    line: ''
-  }
-  const setInteractive = proxyquire('../../../src/cli/actions/set', {
-    '../../../src/lib/helpers/isIgnoringDotenvKeys': () => true,
-    readline: {
-      createInterface: sinon.stub().returns(fakeRl)
-    }
-  })
-
-  await setInteractive.call(fakeContext, 'HELLO', undefined)
-
-  t.ok(fakeRl.question.calledOnce, 'rl.question called')
-  t.match(fakeRl.question.firstCall.args[0], /HELLO/, 'prompt contains key name')
-  t.ok(fakeRl.close.calledOnce, 'rl.close called')
-  t.ok(stub.called, 'Sets().run() called')
-  t.ok(writeStub.calledWith('.env', 'HELLO=SecretValue'), 'fsx.writeFileX .env')
-  t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
-=======
   const loggerInfoStub = sinon.stub(logger, 'info')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
@@ -688,14 +650,10 @@ t.test('set - remotePrivateKeyAdded', async ct => {
   t.ok(writeStub.calledWith('.env', 'HELLO=World'), 'fsx.writeFileX .env')
   t.ok(loggerInfoStub.notCalled, 'logger info')
   t.ok(loggerSuccessStub.calledWith('◈ encrypted HELLO (.env) + armored key ⛨'), 'logger success')
->>>>>>> origin/main
 
   ct.end()
 })
 
-<<<<<<< HEAD
-t.test('set - catch error', ct => {
-=======
 t.test('set - --no-ops passes noOps true to Sets service', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ ops: false })
@@ -715,7 +673,6 @@ t.test('set - --no-ops passes noOps true to Sets service', async ct => {
 })
 
 t.test('set - catch error', async ct => {
->>>>>>> origin/main
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
   error.help = 'Mock Help'
@@ -824,5 +781,50 @@ t.test('set - spinner stop called on catch path when spinner exists', async ct =
   t.ok(stopStub.calledOnce, 'spinner stopped on catch')
   t.ok(catchAndLogStub.calledOnce, 'catchAndLog called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  ct.end()
+})
+
+t.test('set - interactive prompt when value is undefined', async ct => {
+  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [{
+      key: 'HELLO',
+      value: 'SecretValue',
+      filepath: '.env',
+      envFilepath: '.env',
+      envSrc: 'HELLO=SecretValue',
+      privateKeyAdded: false,
+      privateKeyName: null,
+      privateKey: null,
+      error: null
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+
+  const fakeRl = {
+    question: sinon.stub().callsFake((prompt, cb) => cb('SecretValue')),
+    close: sinon.stub(),
+    line: ''
+  }
+  const setInteractive = proxyquire('../../../src/cli/actions/set', {
+    '../../../src/lib/helpers/isIgnoringDotenvKeys': () => true,
+    readline: {
+      createInterface: sinon.stub().returns(fakeRl)
+    }
+  })
+
+  await setInteractive.call(fakeContext, 'HELLO', undefined)
+
+  t.ok(fakeRl.question.calledOnce, 'rl.question called')
+  t.match(fakeRl.question.firstCall.args[0], /HELLO/, 'prompt contains key name')
+  t.ok(fakeRl.close.calledOnce, 'rl.close called')
+  t.ok(stub.called, 'Sets().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO=SecretValue'), 'fsx.writeFileX .env')
+  t.ok(loggerSuccessStub.calledWith('✔ set HELLO with encryption (.env)'), 'logger success')
+
   ct.end()
 })
