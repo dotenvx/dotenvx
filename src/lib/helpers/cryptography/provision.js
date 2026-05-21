@@ -4,8 +4,12 @@ const opsKeypair = require('./opsKeypair')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-async function provision ({ envSrc, envFilepath, keysFilepath, noOps, token, keypairHooks }) {
+async function provision ({ envSrc, envFilepath, keysFilepath, noOps, token, keypairHooks, selectKeyStorage }) {
   noOps = noOps !== false
+  if (!noOps && selectKeyStorage) {
+    noOps = await selectKeyStorage() !== 'armored'
+  }
+
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
   let publicKey

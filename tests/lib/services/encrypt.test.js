@@ -130,6 +130,91 @@ t.test('#run (no env file) does not write plaintext sample if provisioning abort
     ct.end()
   })
 
+t.test('#run forwards key storage selector to provision',
+  async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+    process.chdir(tmpdir)
+    fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
+
+    const cryptography = require('../../../src/lib/helpers/cryptography')
+    const kp = cryptography.localKeypair()
+    const provision = sinon.stub().resolves({
+      envSrc: `DOTENV_PUBLIC_KEY="${kp.publicKey}"\nHELLO=world\n`,
+      publicKey: kp.publicKey,
+      privateKey: kp.privateKey
+    })
+    const selectKeyStorage = sinon.stub().resolves('armored')
+    const EncryptWithProvisionStub = proxyquire('../../../src/lib/services/encrypt', {
+      './../helpers/cryptography': {
+        ...cryptography,
+        provision
+      }
+    })
+
+    const {
+      processedEnvs,
+      changedFilepaths
+    } = await new EncryptWithProvisionStub([], [], [], null, false, false, undefined, { selectKeyStorage }).run()
+
+    ct.equal(processedEnvs.length, 1)
+    ct.notOk(processedEnvs[0].error)
+    ct.same(changedFilepaths, ['.env'])
+    ct.equal(provision.callCount, 1)
+    ct.equal(provision.firstCall.args[0].selectKeyStorage, selectKeyStorage)
+
+    process.chdir(cwd)
+    ct.end()
+  })
+
+t.test('#run does not prompt for key storage when existing public key is resolved',
+  async ct => {
+    const cwd = process.cwd()
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-encrypt-'))
+    process.chdir(tmpdir)
+    fs.writeFileSync('.env', 'HELLO=world\n', 'utf8')
+
+    const cryptography = require('../../../src/lib/helpers/cryptography')
+    const kp = cryptography.localKeypair()
+    const keyNames = require('../../../src/lib/helpers/keyResolution/keyNames')
+    const keyValues = sinon.stub().resolves({
+      publicKeyValue: kp.publicKey,
+      privateKeyValue: null
+    })
+    const provision = sinon.stub().rejects(new Error('should not provision'))
+    const selectKeyStorage = sinon.stub().resolves('local')
+    const EncryptWithStubs = proxyquire('../../../src/lib/services/encrypt', {
+      './../helpers/keyResolution': {
+        keyNames,
+        keyValues
+      },
+      './../helpers/cryptography': {
+        ...cryptography,
+        provision
+      }
+    })
+
+    const {
+      processedEnvs,
+      changedFilepaths
+    } = await new EncryptWithStubs([], [], [], null, false, false, undefined, { selectKeyStorage }).run()
+
+    ct.equal(processedEnvs.length, 1)
+    ct.notOk(processedEnvs[0].error)
+    ct.same(changedFilepaths, ['.env'])
+    ct.equal(keyValues.callCount, 1)
+    ct.same(keyValues.firstCall.args[1], {
+      keysFilepath: null,
+      noOps: false,
+      keypairHooks: undefined
+    })
+    ct.equal(selectKeyStorage.callCount, 0)
+    ct.equal(provision.callCount, 0)
+
+    process.chdir(cwd)
+    ct.end()
+  })
+
 t.test('#run (blank existing .env file) seeds sample kit before encrypting',
   async ct => {
     const cwd = process.cwd()

@@ -229,3 +229,96 @@ t.test('provision forwards token and ops keypair hooks when noOps is false', asy
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })
+
+t.test('provision uses local keypair when storage selector chooses local', async (ct) => {
+  const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
+  const mutateKeysSrc = sinon.stub().resolves({
+    keysSrc: '# .env\nDOTENV_PRIVATE_KEY=local_priv\n',
+    envKeysFilepath: path.join('apps', 'api', '.env.keys')
+  })
+  const opsKeypair = sinon.stub().resolves({ publicKey: 'ops_pub', privateKey: 'ops_priv' })
+  const localKeypair = sinon.stub().returns({ publicKey: 'local_pub', privateKey: 'local_priv' })
+  const selectKeyStorage = sinon.stub().resolves('local')
+
+  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+    './mutateSrc': mutateSrc,
+    './mutateKeysSrc': mutateKeysSrc,
+    './localKeypair': localKeypair,
+    './opsKeypair': opsKeypair,
+    '../keyResolution': {
+      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+    }
+  })
+
+  const out = await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noOps: false, selectKeyStorage })
+
+  ct.equal(selectKeyStorage.callCount, 1)
+  ct.equal(localKeypair.callCount, 1)
+  ct.equal(opsKeypair.callCount, 0)
+  ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'local_pub')
+  ct.equal(mutateKeysSrc.callCount, 1)
+  ct.equal(out.localPrivateKeyAdded, true)
+  ct.equal(out.remotePrivateKeyAdded, false)
+  ct.equal(out.envKeysFilepath, path.join('apps', 'api', '.env.keys'))
+
+  ct.end()
+})
+
+t.test('provision uses ops keypair when storage selector chooses armored', async (ct) => {
+  const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
+  const mutateKeysSrc = sinon.stub()
+  const opsKeypair = sinon.stub().resolves({ publicKey: 'ops_pub', privateKey: 'ops_priv' })
+  const localKeypair = sinon.stub().returns({ publicKey: 'local_pub', privateKey: 'local_priv' })
+  const selectKeyStorage = sinon.stub().resolves('armored')
+
+  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+    './mutateSrc': mutateSrc,
+    './mutateKeysSrc': mutateKeysSrc,
+    './localKeypair': localKeypair,
+    './opsKeypair': opsKeypair,
+    '../keyResolution': {
+      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+    }
+  })
+
+  const out = await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noOps: false, selectKeyStorage })
+
+  ct.equal(selectKeyStorage.callCount, 1)
+  ct.equal(opsKeypair.callCount, 1)
+  ct.equal(localKeypair.callCount, 0)
+  ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'ops_pub')
+  ct.equal(mutateKeysSrc.callCount, 0)
+  ct.equal(out.localPrivateKeyAdded, false)
+  ct.equal(out.remotePrivateKeyAdded, true)
+
+  ct.end()
+})
+
+t.test('provision does not select key storage when noOps is true', async (ct) => {
+  const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
+  const mutateKeysSrc = sinon.stub().resolves({
+    keysSrc: '# .env\nDOTENV_PRIVATE_KEY=local_priv\n',
+    envKeysFilepath: path.join('apps', 'api', '.env.keys')
+  })
+  const opsKeypair = sinon.stub().resolves({ publicKey: 'ops_pub', privateKey: 'ops_priv' })
+  const localKeypair = sinon.stub().returns({ publicKey: 'local_pub', privateKey: 'local_priv' })
+  const selectKeyStorage = sinon.stub().resolves('armored')
+
+  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
+    './mutateSrc': mutateSrc,
+    './mutateKeysSrc': mutateKeysSrc,
+    './localKeypair': localKeypair,
+    './opsKeypair': opsKeypair,
+    '../keyResolution': {
+      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+    }
+  })
+
+  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noOps: true, selectKeyStorage })
+
+  ct.equal(selectKeyStorage.callCount, 0)
+  ct.equal(localKeypair.callCount, 1)
+  ct.equal(opsKeypair.callCount, 0)
+
+  ct.end()
+})

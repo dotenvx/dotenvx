@@ -746,6 +746,97 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
   ct.end()
 })
 
+t.test('encrypt passes memoized key storage selector when Ops is enabled', async ct => {
+  const spinner = {
+    stop: sinon.stub(),
+    start: sinon.stub()
+  }
+  const createSpinnerStub = sinon.stub().resolves(spinner)
+  const selectStub = sinon.stub().resolves('local')
+  let constructorArgs
+  let firstSelected
+  let secondSelected
+
+  class SessionMock {
+    async noOps () {
+      return false
+    }
+  }
+
+  class EncryptMock {
+    constructor (...args) {
+      constructorArgs = args
+    }
+
+    async run () {
+      firstSelected = await constructorArgs[7].selectKeyStorage()
+      secondSelected = await constructorArgs[7].selectKeyStorage()
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
+    './../../lib/services/encrypt': EncryptMock,
+    '../../lib/helpers/createSpinner': createSpinnerStub,
+    '../../lib/helpers/prompts': { select: selectStub },
+    '../../db/session': SessionMock
+  })
+
+  await encryptWithMock.call({ opts: () => ({}), envs: [] })
+
+  ct.equal(firstSelected, 'local')
+  ct.equal(secondSelected, 'local')
+  ct.equal(selectStub.callCount, 1, 'prompts once per encrypt command')
+  ct.same(selectStub.firstCall.args, [{
+    message: 'Select key storage',
+    choices: [
+      { name: 'Local (.env.keys)', value: 'local' },
+      { name: 'Armored ⛨', value: 'armored' }
+    ]
+  }, {
+    input: process.stdin,
+    output: process.stderr
+  }])
+  ct.equal(spinner.stop.callCount, 2, 'stops before prompt and before final output')
+  ct.equal(spinner.start.callCount, 1, 'restarts after prompt')
+  ct.equal(spinner.start.firstCall.args[0], 'encrypting')
+
+  ct.end()
+})
+
+t.test('encrypt does not pass key storage selector when Ops is disabled', async ct => {
+  let constructorArgs
+
+  class EncryptMock {
+    constructor (...args) {
+      constructorArgs = args
+    }
+
+    run () {
+      return {
+        processedEnvs: [],
+        changedFilepaths: [],
+        unchangedFilepaths: []
+      }
+    }
+  }
+
+  const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
+    './../../lib/services/encrypt': EncryptMock
+  })
+
+  await encryptWithMock.call({ opts: () => ({ ops: false }), envs: [] })
+
+  ct.equal(constructorArgs[4], true, 'noOps=true')
+  ct.equal(constructorArgs[7].selectKeyStorage, undefined)
+
+  ct.end()
+})
+
 t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async ct => {
   const spinner = {
     stop: sinon.stub(),

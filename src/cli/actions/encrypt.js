@@ -6,6 +6,7 @@ const Encrypt = require('./../../lib/services/encrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const createSpinner = require('../../lib/helpers/createSpinner')
+const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
 
 function keypairSpinnerHooks (spinner) {
@@ -27,6 +28,41 @@ function keypairSpinnerHooks (spinner) {
   }
 }
 
+function keyStorageSelector (spinner) {
+  let selected
+
+  return async function selectKeyStorage () {
+    if (selected) return selected
+
+    if (spinner) spinner.stop()
+    selected = await prompts.select({
+      message: 'Select key storage',
+      choices: [
+        { name: 'Local (.env.keys)', value: 'local' },
+        { name: 'Armored ⛨', value: 'armored' }
+      ]
+    }, {
+      input: process.stdin,
+      output: process.stderr
+    })
+    if (spinner) spinner.start('encrypting')
+
+    return selected
+  }
+}
+
+function encryptOptions (spinner, noOps) {
+  const options = {
+    keypairHooks: keypairSpinnerHooks(spinner)
+  }
+
+  if (!noOps) {
+    options.selectKeyStorage = keyStorageSelector(spinner)
+  }
+
+  return options
+}
+
 async function encrypt () {
   const options = this.opts()
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
@@ -42,9 +78,7 @@ async function encrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, {
-      keypairHooks: keypairSpinnerHooks(spinner)
-    }).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, encryptOptions(spinner, noOps)).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -56,9 +90,7 @@ async function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, {
-        keypairHooks: keypairSpinnerHooks(spinner)
-      }).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, encryptOptions(spinner, noOps)).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
