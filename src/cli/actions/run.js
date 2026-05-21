@@ -54,11 +54,13 @@ async function run () {
       readableFilepaths,
       uniqueInjectedKeys
     } = await new Run(envs, options.overload, process.env, options.envKeysFile, noOps, {
-      beforeOpsKeypair: () => {
-        if (spinner) spinner.start('retrieving')
-      },
-      afterOpsKeypair: () => {
-        if (spinner) spinner.start('injecting')
+      keypairHooks: {
+        before: () => {
+          if (spinner) spinner.start('retrieving')
+        },
+        after: () => {
+          if (spinner) spinner.start('injecting')
+        }
       }
     }).run()
 

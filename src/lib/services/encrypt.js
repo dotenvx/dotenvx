@@ -37,9 +37,7 @@ class Encrypt {
     this.noOps = noOps
     this.noCreate = noCreate
     this.token = token
-    this.beforeOpsKeypair = options.beforeOpsKeypair
-    this.beforeOpsKeypairStderr = options.beforeOpsKeypairStderr
-    this.afterOpsKeypair = options.afterOpsKeypair
+    this.keypairHooks = options.keypairHooks
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -114,9 +112,7 @@ class Encrypt {
           keysFilepath: this.envKeysFilepath,
           noOps: this.noOps,
           token: this.token,
-          beforeOpsKeypair: this.beforeOpsKeypair,
-          beforeOpsKeypairStderr: this.beforeOpsKeypairStderr,
-          afterOpsKeypair: this.afterOpsKeypair
+          keypairHooks: this.keypairHooks
         })
         envSrc = prov.envSrc
         publicKey = prov.publicKey

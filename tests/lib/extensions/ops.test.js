@@ -352,13 +352,13 @@ t.test('keypair async inherits stdin and pipes stderr while parsing stdout json'
   ct.end()
 })
 
-t.test('keypair async forwards child stderr after beforeStderr hook', async (ct) => {
+t.test('keypair async forwards child stderr after onStderr hook', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = promisifiedExecFile
   const spawn = sinon.stub()
-  const beforeStderr = sinon.stub()
+  const onStderr = sinon.stub()
   const stderrWrite = sinon.stub(process.stderr, 'write')
   ct.teardown(() => stderrWrite.restore())
 
@@ -371,11 +371,11 @@ t.test('keypair async forwards child stderr after beforeStderr hook', async (ct)
   })
 
   const ops = new Ops()
-  ct.same(await ops.keypair(undefined, { beforeStderr }), { public_key: 'pub', private_key: 'priv' })
-  ct.equal(beforeStderr.callCount, 1)
+  ct.same(await ops.keypair(undefined, { onStderr }), { public_key: 'pub', private_key: 'priv' })
+  ct.equal(onStderr.callCount, 1)
   ct.equal(stderrWrite.callCount, 2)
   ct.equal(stderrWrite.firstCall.args[0].toString(), 'Select team')
-  ct.ok(beforeStderr.calledBefore(stderrWrite))
+  ct.ok(onStderr.calledBefore(stderrWrite))
   ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'pipe'])
   ct.end()
 })

@@ -1,12 +1,13 @@
 const Ops = require('../../extensions/ops')
 
 async function opsKeypair (existingPublicKey, options = {}) {
-  if (options.beforeOpsKeypair) await options.beforeOpsKeypair()
+  const hooks = options.hooks || {}
+  if (hooks.before) await hooks.before()
 
   const keypairOptions = {}
   if (options.token) keypairOptions.token = options.token
-  if (options.beforeOpsKeypairStderr) keypairOptions.beforeStderr = options.beforeOpsKeypairStderr
-  if (options.beforeOpsKeypair || options.beforeOpsKeypairStderr || options.afterOpsKeypair) keypairOptions.noSpinner = true
+  if (hooks.onStderr) keypairOptions.onStderr = hooks.onStderr
+  if (hooks.before || hooks.onStderr || hooks.after) keypairOptions.noSpinner = true
 
   let kp
   try {
@@ -16,7 +17,7 @@ async function opsKeypair (existingPublicKey, options = {}) {
       kp = await new Ops().keypair(existingPublicKey)
     }
   } finally {
-    if (options.afterOpsKeypair) await options.afterOpsKeypair()
+    if (hooks.after) await hooks.after()
   }
 
   const publicKey = kp.public_key

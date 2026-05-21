@@ -721,8 +721,8 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
     }
 
     async run () {
-      await constructorArgs[7].beforeOpsKeypairStderr()
-      await constructorArgs[7].afterOpsKeypair()
+      await constructorArgs[7].keypairHooks.onStderr()
+      await constructorArgs[7].keypairHooks.after()
       return {
         processedEnvs: [],
         changedFilepaths: [],
@@ -767,8 +767,8 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
     }
 
     async run () {
-      await constructorArgs[7].beforeOpsKeypairStderr()
-      await constructorArgs[7].afterOpsKeypair()
+      await constructorArgs[7].keypairHooks.onStderr()
+      await constructorArgs[7].keypairHooks.after()
       return {
         processedEnvs: [],
         changedFilepaths: [],

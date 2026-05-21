@@ -45,7 +45,7 @@ class Ops {
 
     try {
       return JSON.parse(await this._execInteractive(binary, args, {
-        beforeStderr: options.beforeStderr
+        onStderr: options.onStderr
       }))
     } catch (_e) {
       return {}
@@ -125,7 +125,7 @@ class Ops {
       subprocess.stderr.on('data', (data) => {
         if (!sawStderr) {
           sawStderr = true
-          if (options.beforeStderr) options.beforeStderr()
+          if (options.onStderr) options.onStderr()
         }
 
         process.stderr.write(data)
