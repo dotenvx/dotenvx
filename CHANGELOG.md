@@ -2,7 +2,265 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.52.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.66.0...main)
+
+## [1.66.0](https://github.com/dotenvx/dotenvx/compare/v1.65.3...v1.66.0) (2026-05-13)
+
+### Added
+
+* Add `dotenvx doctor` ([#815](https://github.com/dotenvx/dotenvx/pull/815))
+
+## [1.65.3](https://github.com/dotenvx/dotenvx/compare/v1.65.2...v1.65.3) (2026-05-13)
+
+### Changed
+
+* Improve spinner message blinking with simpler `--no-spinner` flag passed to ops ([#814](https://github.com/dotenvx/dotenvx/pull/814))
+
+## [1.65.2](https://github.com/dotenvx/dotenvx/compare/v1.65.1...v1.65.2) (2026-05-13)
+
+### Changed
+
+* Improve spinner message coordination between `dotenvx` and `dotenvx-ops` ([#813](https://github.com/dotenvx/dotenvx/pull/813))
+
+## [1.65.1](https://github.com/dotenvx/dotenvx/compare/v1.65.0...v1.65.1) (2026-05-13)
+
+### Changed
+
+* Prompts from `ops` should bubble up ([#812](https://github.com/dotenvx/dotenvx/pull/812))
+
+## [1.65.0](https://github.com/dotenvx/dotenvx/compare/v1.64.0...v1.65.0) (2026-05-05)
+
+### Added
+
+* Add support for `replace`ing duplicate keys with different values ([#806](https://github.com/dotenvx/dotenvx/pull/806))
+
+## [1.64.0](https://github.com/dotenvx/dotenvx/compare/v1.63.0...v1.64.0) (2026-04-27)
+
+### Added
+
+* Add optional `dotenvx armor` command.
+  * `armor up` armor private key
+  * `armor down` dearmor private key
+  * `armor push` push armored key (from .env.keys)
+  * `armor pull` pull armored key (into .env.keys)
+
+Move private keys off device and under access control with Dotenvx Ops ⛨. [Learn more](https://dotenvx.com/ops)
+
+## [1.63.0](https://github.com/dotenvx/dotenvx/compare/v1.62.0...v1.63.0) (2026-04-24)
+
+### Added
+
+* Add support for encrypted values passed to `--env` flag ([#804](https://github.com/dotenvx/dotenvx/pull/804))
+* Add support for `--format=colon` in order to support cloudflare's wrangler `--var` flag format ([#804](https://github.com/dotenvx/dotenvx/pull/804))
+
+## [1.62.0](https://github.com/dotenvx/dotenvx/compare/v1.61.6...v1.62.0) (2026-04-23)
+
+### Added
+
+* Add support for `config({ envs })`. unlocks simpler cloudflare worker integration ([#803](https://github.com/dotenvx/dotenvx/pull/803))
+
+```sh
+$ dotenvx encrypt -f .env.txt
+```
+```js
+// src/index.js
+import envSrc from '../.env.txt'
+import dotenvx from '@dotenvx/dotenvx'
+
+const config = dotenvx.config({ envs: [{ type: 'env', value: envSrc, privateKeyName: 'DOTENV_PRIVATE_KEY' }] })
+const envx = config.parsed
+
+export default {
+  async fetch(request, env, ctx) {
+    return new Response(`Hello ${envx.HELLO}`)
+  }
+}
+```
+```json
+"scripts": {
+  "deploy": "wrangler deploy",
+  "dev": "wrangler dev --var $(dotenvx keypair -f .env.txt --format=colon)",
+  "start": "wrangler dev --var $(dotenvx keypair -f .env.txt --format=colon)",
+  "test": "vitest"
+},
+```
+
+## [1.61.6](https://github.com/dotenvx/dotenvx/compare/v1.61.5...v1.61.6) (2026-04-23)
+
+### Changed
+
+* Guard against command substitution following `encrypted:` ([#802](https://github.com/dotenvx/dotenvx/pull/802))
+
+## [1.61.5](https://github.com/dotenvx/dotenvx/compare/v1.61.4...v1.61.5) (2026-04-22)
+
+### Changed
+
+* Support `--hostname` flag to `dotenvx-ops.login` ([#801](https://github.com/dotenvx/dotenvx/pull/801))
+
+## [1.61.4](https://github.com/dotenvx/dotenvx/compare/v1.61.3...v1.61.4) (2026-04-21)
+
+### Changed
+
+* Respect SIGINT handler completion ([#798](https://github.com/dotenvx/dotenvx/pull/798))
+
+## [1.61.3](https://github.com/dotenvx/dotenvx/compare/v1.61.2...v1.61.3) (2026-04-21)
+
+### Changed
+
+* Tighten up `ext precommit --install` message ([#797](https://github.com/dotenvx/dotenvx/pull/797))
+
+## [1.61.2](https://github.com/dotenvx/dotenvx/compare/v1.61.1...v1.61.2) (2026-04-21)
+
+### Changed
+
+* For Ops ⛨ users surface stderr ([#796](https://github.com/dotenvx/dotenvx/pull/796))
+
+## [1.61.1](https://github.com/dotenvx/dotenvx/compare/v1.61.0...v1.61.1) (2026-04-17)
+
+### Changed
+
+* Faster coldstarts! ([#781](https://github.com/dotenvx/dotenvx/pull/781))
+* Patch `dotenvx precommit|prebuild` shorthand ([#793](https://github.com/dotenvx/dotenvx/pull/793))
+
+## [1.61.0](https://github.com/dotenvx/dotenvx/compare/v1.60.2...v1.61.0) (2026-04-08)
+
+### Added
+
+* Add `login` and `logout` method that proxy to `dotenvx-ops login/logout` ([#780](https://github.com/dotenvx/dotenvx/pull/780))
+* Note: dotenvx continues to make zero outgoing HTTP requests and includes no telemetry. Outgoing requests occur only if you explicitly install the [dotenvx-ops](https://dotenvx.com/ops) SDK or CLI.
+
+## [1.60.2](https://github.com/dotenvx/dotenvx/compare/v1.60.1...v1.60.2) (2026-04-07)
+
+### Changed
+
+* Communicate `local key` and `armored key` (for Ops stored keys) ([#778](https://github.com/dotenvx/dotenvx/pull/778))
+
+## [1.60.1](https://github.com/dotenvx/dotenvx/compare/v1.60.0...v1.60.1) (2026-04-06)
+
+### Added
+
+* Added missing `+ key ⛨` for Ops stored keys ([#777](https://github.com/dotenvx/dotenvx/pull/777))
+
+## [1.60.0](https://github.com/dotenvx/dotenvx/compare/v1.59.1...v1.60.0) (2026-04-04)
+
+### Added
+
+* Add spinner with loading messages
+  * `injecting` (`run`)
+  * `encrypting` (`encrypt`, `set`)
+  * `decrypting` (`decrypt`, `get`)
+  * `rotating` (`rotate`)
+  * `retrieving` (`keypair`)
+
+## [1.59.1](https://github.com/dotenvx/dotenvx/compare/v1.59.0...v1.59.1) (2026-03-28)
+
+### Added
+
+* add `HELLO` key to the kit sample to match most of our examples in the README
+
+## [1.59.0](https://github.com/dotenvx/dotenvx/compare/v1.58.0...v1.59.0) (2026-03-28)
+
+### Changed
+
+* `encrypt` and `set` now create a `.env` file if one does not exist ([#771](https://github.com/dotenvx/dotenvx/pull/771))
+* pass `--no-create` to prevent file creation
+
+## [1.58.0](https://github.com/dotenvx/dotenvx/compare/v1.57.5...v1.58.0) (2026-03-27)
+
+### Changed
+
+* Changed runtime injection message to format `⟐ injecting env (N) from FILE · dotenvx@VERSION` ([#770](https://github.com/dotenvx/dotenvx/pull/770))
+
+## [1.57.5](https://github.com/dotenvx/dotenvx/compare/v1.57.4...v1.57.5) (2026-03-26)
+
+### Changes
+
+* Improve already installed message ([#768](https://github.com/dotenvx/dotenvx/pull/768))
+
+## [1.57.4](https://github.com/dotenvx/dotenvx/compare/v1.57.3...v1.57.4) (2026-03-26)
+
+### Changes
+
+* Use `curl` example for install [dotenvx.com/ops](https://dotenvx.com/ops) ([#767](https://github.com/dotenvx/dotenvx/pull/767))
+
+## [1.57.3](https://github.com/dotenvx/dotenvx/compare/v1.57.2...v1.57.3) (2026-03-26)
+
+### Changes
+
+* Simplify installed success message ([#766](https://github.com/dotenvx/dotenvx/pull/766))
+
+## [1.57.2](https://github.com/dotenvx/dotenvx/compare/v1.57.1...v1.57.2) (2026-03-22)
+
+### Changes
+
+* Ran `npm audit` to update package-lock.json ([#763](https://github.com/dotenvx/dotenvx/pull/763))
+
+## [1.57.1](https://github.com/dotenvx/dotenvx/compare/v1.57.0...v1.57.1) (2026-03-21)
+
+### Changes
+
+* improved error logs and compacted most to a single line ([#755](https://github.com/dotenvx/dotenvx/pull/755))
+* introduced leading log glyphs as a visual status language:
+
+  * `⟐` success action (injected)
+  * `◈` success action (encrypted)
+  * `◇` success action (set plain value, decrypted)
+  * `⟳` success action (rotated)
+  * `○` informational no-op (no changes)
+  * `▣` success action for generated/updated support files
+  * `⚠` warning
+  * `☠` error
+
+## [1.57.0](https://github.com/dotenvx/dotenvx/compare/v1.56.0...v1.57.0) (2026-03-19)
+
+### Changed
+
+* color and formatting changes to outputs ([#754](https://github.com/dotenvx/dotenvx/pull/754))
+
+## [1.56.0](https://github.com/dotenvx/dotenvx/compare/v1.55.1...v1.56.0) (2026-03-19)
+
+### Changed
+
+* `ops off` flag — now respected by `get`, `keypair`, `rotate`, and `encrypt` ([#750](https://github.com/dotenvx/dotenvx/pull/750))
+* `--pp` alias — added as shorthand for `--pretty-print`; toward sunsetting `-pp` ([#750](https://github.com/dotenvx/dotenvx/pull/750))
+
+### Removed
+
+* Remove support for `.env.vault` files ([#750](https://github.com/dotenvx/dotenvx/pull/750))
+
+## [1.55.1](https://github.com/dotenvx/dotenvx/compare/v1.55.0...v1.55.1) (2026-03-13)
+
+### Added
+
+* Respect `dotenvx-ops status (on|off)` ([#749](https://github.com/dotenvx/dotenvx/pull/749))
+
+## [1.55.0](https://github.com/dotenvx/dotenvx/compare/v1.54.1...v1.55.0) (2026-03-13)
+
+### Added
+
+* Add '⛨  ARMORED KEYS: Harden your private keys.' security feature when [dotenvx-ops](https://dotenvx.com/ops) installed ([#746](https://github.com/dotenvx/dotenvx/pull/746))
+
+### Removed
+
+* Remove `ProKeypair` logic
+
+## [1.54.1](https://github.com/dotenvx/dotenvx/compare/v1.54.0...v1.54.1) (2026-03-06)
+
+### Changed
+
+* Fix npm publish
+
+## [1.54.0](https://github.com/dotenvx/dotenvx/compare/v1.53.0...v1.54.0) (2026-03-06)
+
+### Removed
+
+* Remove `ops observe` (radar feature). If needed download [dotenvx-ops](https://dotenvx.com/ops) and reach out to me directly at mot@dotenvx.com. ([#745](https://github.com/dotenvx/dotenvx/pull/745))
+
+## [1.53.0](https://github.com/dotenvx/dotenvx/compare/v1.52.0...v1.53.0) (2026-03-05)
+
+### Removed
+
+* Remove `radar`. It has been a year since replaced by `ops`. ([#743](https://github.com/dotenvx/dotenvx/pull/743))
 
 ## [1.52.0](https://github.com/dotenvx/dotenvx/compare/v1.51.4...v1.52.0) (2026-01-22)
 
@@ -91,55 +349,55 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Remove unnecessary use of `eval` in proKeypair helper ([#654](https://github.com/dotenvx/dotenvx/pull/654))
 
-## 1.48.3
+## 1.48.3 (2025-07-21)
 
 ### Changed
 
 * Include `privateKeyName` and `privateKey` on internal `processedEnv` object ([#649](https://github.com/dotenvx/dotenvx/pull/649))
 
-## 1.48.2
+## 1.48.2 (2025-07-20)
 
 ### Changed
 
 * Check radar status before sending ([#646](https://github.com/dotenvx/dotenvx/pull/646))
 
-## 1.48.1
+## 1.48.1 (2025-07-19)
 
 ### Changed
 
 * Send `beforEnv` and `afterEnv` to Radar if user has installed ([#645](https://github.com/dotenvx/dotenvx/pull/645))
 
-## 1.48.0
+## 1.48.0 (2025-07-17)
 
 ### Added
 
 * Include `beforeEnv` and `afterEnv` for user debugging ([#644](https://github.com/dotenvx/dotenvx/pull/644))
 
-## 1.47.7
+## 1.47.7 (2025-07-17)
 
 ### Changed
 
 * `src` should be in internal `processEnv` object ([#643](https://github.com/dotenvx/dotenvx/pull/643))
 
-## 1.47.6
+## 1.47.6 (2025-07-14)
 
 ### Changed
 
 * Make Radar call non-blocking ([#642](https://github.com/dotenvx/dotenvx/pull/642))
 
-## 1.47.5
+## 1.47.5 (2025-07-11)
 
 ### Changed
 
 * Add resilient handling of any Radar failures ([#639](https://github.com/dotenvx/dotenvx/pull/639))
 
-## 1.47.4
+## 1.47.4 (2025-07-11)
 
 ### Changed
 
 * Smarter require of non-installed libs like [`dotenvx-radar`](https://dotenvx.com/radar) ([#638](https://github.com/dotenvx/dotenvx/pull/638))
 
-## 1.47.3
+## 1.47.3 (2025-07-09)
 
 ### Added
 
@@ -149,19 +407,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Remove `cli` in package.json ([#632](https://github.com/dotenvx/dotenvx/pull/632))
 
-## 1.47.2
+## 1.47.2 (2025-07-09)
 
 ### Added
 
 * Export `cli` in package.json ([#629](https://github.com/dotenvx/dotenvx/pull/629))
 
-## 1.47.1
+## 1.47.1 (2025-07-08)
 
 ### Added
 
 * Add convenience log that `radar active 📡` when dotenvx-radar is installed ([#625](https://github.com/dotenvx/dotenvx/pull/625))
 
-## 1.47.0
+## 1.47.0 (2025-07-08)
 
 ### Added
 
@@ -190,7 +448,7 @@ All notable changes to this project will be documented in this file. See [standa
 |_______________________________________________________________________|
 ```
 
-## 1.46.0
+## 1.46.0 (2025-07-07)
 
 ### Added
 
@@ -200,43 +458,43 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Remove `git-dotenvx` and `git dotenvx` shorthand ([#621](https://github.com/dotenvx/dotenvx/pull/621))
 
-## 1.45.2
+## 1.45.2 (2025-07-01)
 
 ### Changed
 
 * Minor README updates
 
-## 1.45.1
+## 1.45.1 (2025-06-20)
 
 ### Changed
 
 * Include `setLogName` and `setLogVersion` in `config` ([#613](https://github.com/dotenvx/dotenvx/pull/613))
 
-## 1.45.0
+## 1.45.0 (2025-06-20)
 
 ### Added
 
 * Add `logger.setName` and `logger.setVersion` for customization of logger ([#612](https://github.com/dotenvx/dotenvx/pull/612))
 
-## 1.44.2
+## 1.44.2 (2025-06-10)
 
 ### Changed
 
 * Clarify license is BSD-3.
 
-## [1.44.1](https://github.com/dotenvx/dotenvx/compare/v1.44.0...v1.44.1)
+## [1.44.1](https://github.com/dotenvx/dotenvx/compare/v1.44.0...v1.44.1) (2025-05-19)
 
 ### Changed
 
 * Patch `SetOutput` type ([#597](https://github.com/dotenvx/dotenvx/pull/597))
 
-## [1.44.0](https://github.com/dotenvx/dotenvx/compare/v1.43.0...v1.44.0)
+## [1.44.0](https://github.com/dotenvx/dotenvx/compare/v1.43.0...v1.44.0) (2025-05-12)
 
 ### Added
 
 * Add `armv7` support ([#593](https://github.com/dotenvx/dotenvx/pull/593))
 
-## [1.43.0](https://github.com/dotenvx/dotenvx/compare/v1.42.2...v1.43.0)
+## [1.43.0](https://github.com/dotenvx/dotenvx/compare/v1.42.2...v1.43.0) (2025-05-03)
 
 ### Removed
 
@@ -246,49 +504,49 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Replace instances of `console.error` with `logger.error` ([#584](https://github.com/dotenvx/dotenvx/pull/584))
 
-## [1.42.2](https://github.com/dotenvx/dotenvx/compare/v1.42.1...v1.42.2)
+## [1.42.2](https://github.com/dotenvx/dotenvx/compare/v1.42.1...v1.42.2) (2025-05-01)
 
 ### Changed
 
 * Fix `--force` flag work with `?force=true` ([2776715](https://github.com/dotenvx/dotenvx/commit/2776715075928fa534b270cef0554b58b60bcd12))
 
-## [1.42.1](https://github.com/dotenvx/dotenvx/compare/v1.42.0...v1.42.1)
+## [1.42.1](https://github.com/dotenvx/dotenvx/compare/v1.42.0...v1.42.1) (2025-05-01)
 
 ### Added
 
 * Add `--force` flag to `install.sh` ([0b8d21c](https://github.com/dotenvx/dotenvx/commit/0b8d21c612167354451213ef30e6e1299d91016d))
 
-## [1.42.0](https://github.com/dotenvx/dotenvx/compare/v1.41.0...v1.42.0)
+## [1.42.0](https://github.com/dotenvx/dotenvx/compare/v1.41.0...v1.42.0) (2025-04-30)
 
 ### Added
 
 * Add ability to override the `os` and `arch` via `install.sh` and `dotenvx.sh` ([3ded752](https://github.com/dotenvx/dotenvx/commit/3ded752fbe60aa4eeebe9fe90a87f35dba502a76))
 
-## [1.41.0](https://github.com/dotenvx/dotenvx/compare/v1.40.1...v1.41.0)
+## [1.41.0](https://github.com/dotenvx/dotenvx/compare/v1.40.1...v1.41.0) (2025-04-18)
 
 ### Added
 
 * Add [directory] argument to precommit and prebuild ([#572](https://github.com/dotenvx/dotenvx/pull/572))
 
-## [1.40.1](https://github.com/dotenvx/dotenvx/compare/v1.40.0...v1.40.1)
+## [1.40.1](https://github.com/dotenvx/dotenvx/compare/v1.40.0...v1.40.1) (2025-04-16)
 
 ### Changed
 
 * Patch `ext scan` command ([#570](https://github.com/dotenvx/dotenvx/pull/570))
 
-## [1.40.0](https://github.com/dotenvx/dotenvx/compare/v1.39.1...v1.40.0)
+## [1.40.0](https://github.com/dotenvx/dotenvx/compare/v1.39.1...v1.40.0) (2025-04-13)
 
 ### Added
 
 * Smarter `ext precommit` and `ext prebuild` – catch duplicate KEYs in the same .env file where one is mistakenly left unencrypted ([#567](https://github.com/dotenvx/dotenvx/pull/567))
 
-## [1.39.1](https://github.com/dotenvx/dotenvx/compare/v1.39.0...v1.39.1)
+## [1.39.1](https://github.com/dotenvx/dotenvx/compare/v1.39.0...v1.39.1) (2025-04-04)
 
 ### Added
 
 * Add `version` to homebrew formula ([#564](https://github.com/dotenvx/dotenvx/pull/564))
 
-## [1.39.0](https://github.com/dotenvx/dotenvx/compare/v1.38.5...v1.39.0)
+## [1.39.0](https://github.com/dotenvx/dotenvx/compare/v1.38.5...v1.39.0) (2025-03-16)
 
 ### Added
 
@@ -298,31 +556,31 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Fix typos ([#550](https://github.com/dotenvx/dotenvx/pull/550))
 
-## [1.38.5](https://github.com/dotenvx/dotenvx/compare/v1.38.4...v1.38.5)
+## [1.38.5](https://github.com/dotenvx/dotenvx/compare/v1.38.4...v1.38.5) (2025-03-11)
 
 ### Added
 
 * 🐞 Add `config.d.ts` file to fix type error when loading `dotenvx/dotenvx/config` with dynamic import ([#547](https://github.com/dotenvx/dotenvx/pull/547))
 
-## [1.38.4](https://github.com/dotenvx/dotenvx/compare/v1.38.3...v1.38.4)
+## [1.38.4](https://github.com/dotenvx/dotenvx/compare/v1.38.3...v1.38.4) (2025-03-04)
 
 ### Changed
 
 * 🐞 Fix blank line disappearing after encrypting empty value ([#542](https://github.com/dotenvx/dotenvx/pull/542))
 
-## [1.38.3](https://github.com/dotenvx/dotenvx/compare/v1.38.2...v1.38.3)
+## [1.38.3](https://github.com/dotenvx/dotenvx/compare/v1.38.2...v1.38.3) (2025-02-25)
 
 ### Changed
 
 * 🐞 Fix self-referencing expansion when key exists already in `process.env` ([#536](https://github.com/dotenvx/dotenvx/pull/536))
 
-## [1.38.2](https://github.com/dotenvx/dotenvx/compare/v1.38.1...v1.38.2)
+## [1.38.2](https://github.com/dotenvx/dotenvx/compare/v1.38.1...v1.38.2) (2025-02-24)
 
 ### Added
 
 * Add typescript types for `main.get`.
 
-## [1.38.1](https://github.com/dotenvx/dotenvx/compare/v1.38.0...v1.38.1)
+## [1.38.1](https://github.com/dotenvx/dotenvx/compare/v1.38.0...v1.38.1) (2025-02-24)
 
 ### Changed
 
@@ -330,14 +588,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 Note: dotenvx will convert these `\r\n` newlines to `\n`. Our recommendation is to stop using `CRLF` - its origin is from typewriter days. Instead, set your editor or gitattributes to use `LF`.
 
-## [1.38.0](https://github.com/dotenvx/dotenvx/compare/v1.37.0...v1.38.0)
+## [1.38.0](https://github.com/dotenvx/dotenvx/compare/v1.37.0...v1.38.0) (2025-02-24)
 
 ### Changed
 
 * Command substitution failures no longer halt further processing of keys in a .env file ([#533](https://github.com/dotenvx/dotenvx/pull/533))
 * A more helpful error is raised if a command substitution failure occurs ([#533](https://github.com/dotenvx/dotenvx/pull/533))
 
-## [1.37.0](https://github.com/dotenvx/dotenvx/compare/v1.36.0...v1.37.0)
+## [1.37.0](https://github.com/dotenvx/dotenvx/compare/v1.36.0...v1.37.0) (2025-02-20)
 
 ### Added
 
@@ -345,13 +603,13 @@ Note: dotenvx will convert these `\r\n` newlines to `\n`. Our recommendation is 
 
 also: [our whitepaper](https://dotenvx.com/dotenvx.pdf) is released as a draft.
 
-## [1.36.0](https://github.com/dotenvx/dotenvx/compare/v1.35.0...v1.36.0)
+## [1.36.0](https://github.com/dotenvx/dotenvx/compare/v1.35.0...v1.36.0) (2025-02-12)
 
 ### Changed
 
 * `--strict` flag respects (doesn't throw) anything in `--ignore` flag ([#527](https://github.com/dotenvx/dotenvx/pull/527))
 
-## [1.35.0](https://github.com/dotenvx/dotenvx/compare/v1.34.0...v1.35.0)
+## [1.35.0](https://github.com/dotenvx/dotenvx/compare/v1.34.0...v1.35.0) (2025-02-07)
 
 ### Added
 
@@ -360,25 +618,25 @@ also: [our whitepaper](https://dotenvx.com/dotenvx.pdf) is released as a draft.
 
 The addition of `main.get` facilitates what we term Decryption at Access, a concept explored in greater detail in our [whitepaper](https://dotenvx.com/dotenvx.pdf).
 
-## [1.34.0](https://github.com/dotenvx/dotenvx/compare/v1.33.0...v1.34.0)
+## [1.34.0](https://github.com/dotenvx/dotenvx/compare/v1.33.0...v1.34.0) (2025-01-25)
 
 ### Added
 
 * `main.set` method now writes to files ([#517](https://github.com/dotenvx/dotenvx/pull/517))
 
-## [1.33.0](https://github.com/dotenvx/dotenvx/compare/v1.32.1...v1.33.0)
+## [1.33.0](https://github.com/dotenvx/dotenvx/compare/v1.32.1...v1.33.0) (2025-01-13)
 
 ### Added
 
 * support ESM import convenience `import '@dotenvx/dotenvx/config'` ([#508](https://github.com/dotenvx/dotenvx/pull/508))
 
-## [1.32.1](https://github.com/dotenvx/dotenvx/compare/v1.32.0...v1.32.1)
+## [1.32.1](https://github.com/dotenvx/dotenvx/compare/v1.32.0...v1.32.1) (2025-01-07)
 
 ### Changed
 
 * remove duplicated help messages ([#504](https://github.com/dotenvx/dotenvx/pull/504))
 
-## [1.32.0](https://github.com/dotenvx/dotenvx/compare/v1.31.3...v1.32.0)
+## [1.32.0](https://github.com/dotenvx/dotenvx/compare/v1.31.3...v1.32.0) (2024-12-27)
 
 ### Added
 
@@ -392,38 +650,38 @@ The addition of `main.get` facilitates what we term Decryption at Access, a conc
 
 * remove internal logger methods `errorvp, errorvpb, warnv, warnvp, warnvpb, successvp, successvpb, help2` ([#501](https://github.com/dotenvx/dotenvx/pull/501))
 
-## [1.31.3](https://github.com/dotenvx/dotenvx/compare/v1.31.2...v1.31.3)
+## [1.31.3](https://github.com/dotenvx/dotenvx/compare/v1.31.2...v1.31.3) (2024-12-20)
 
 ### Changed
 
 * adjust wingetcreate to use powershell when parsing version
 
-## [1.31.2](https://github.com/dotenvx/dotenvx/compare/v1.31.1...v1.31.2)
+## [1.31.2](https://github.com/dotenvx/dotenvx/compare/v1.31.1...v1.31.2) (2024-12-20)
 
 ### Changed
 
 * use wingetcreate for releasing to WinGet ([#498](https://github.com/dotenvx/dotenvx/pull/498))
 
-## [1.31.1](https://github.com/dotenvx/dotenvx/compare/v1.31.0...v1.31.1)
+## [1.31.1](https://github.com/dotenvx/dotenvx/compare/v1.31.0...v1.31.1) (2024-12-20)
 
 ### Changed
 
 * 🐞 fix encryption of values containing explicit `\n` newlines ([#495](https://github.com/dotenvx/dotenvx/pull/495))
 
-## [1.31.0](https://github.com/dotenvx/dotenvx/compare/v1.30.1...v1.31.0)
+## [1.31.0](https://github.com/dotenvx/dotenvx/compare/v1.30.1...v1.31.0) (2024-12-14)
 
 ### Added
 
 * expose `main.set` function ([#492](https://github.com/dotenvx/dotenvx/pull/492))
 * add missing types for `main.config` ([#491](https://github.com/dotenvx/dotenvx/pull/491))
 
-## [1.30.1](https://github.com/dotenvx/dotenvx/compare/v1.30.0...v1.30.1)
+## [1.30.1](https://github.com/dotenvx/dotenvx/compare/v1.30.0...v1.30.1) (2024-12-13)
 
 ### Added
 
 * support complex command substitution combining variable expansion ([#490](https://github.com/dotenvx/dotenvx/pull/490))
 
-## [1.30.0](https://github.com/dotenvx/dotenvx/compare/v1.29.0...v1.30.0)
+## [1.30.0](https://github.com/dotenvx/dotenvx/compare/v1.29.0...v1.30.0) (2024-12-13)
 
 ### Added
 
@@ -446,43 +704,43 @@ $ tree -a .
 $ dotenvx get -fk .env.keys -f apps/backend/.env
 ```
 
-## [1.29.0](https://github.com/dotenvx/dotenvx/compare/v1.28.0...v1.29.0)
+## [1.29.0](https://github.com/dotenvx/dotenvx/compare/v1.28.0...v1.29.0) (2024-12-09)
 
 ### Added
 
 * add `--ignore` flag to suppress specified errors. example: `dotenvx run --ignore=MISSING_ENV_FILE` ([#485](https://github.com/dotenvx/dotenvx/pull/485))
 
-## [1.28.0](https://github.com/dotenvx/dotenvx/compare/v1.27.0...v1.28.0)
+## [1.28.0](https://github.com/dotenvx/dotenvx/compare/v1.27.0...v1.28.0) (2024-12-03)
 
 ### Changed
 
 * `.env.keys` file is generated WITHOUT quotes going forward. This is to minimize friction around Docker gotchas to developers - old versions of Docker do not support `--env-file` containing quoted keys/values. ([#480](https://github.com/dotenvx/dotenvx/pull/480)) ([additional note](https://github.com/dotenvx/dotenvx/issues/465#issuecomment-2515279676))
 
-## [1.27.0](https://github.com/dotenvx/dotenvx/compare/v1.26.2...v1.27.0)
+## [1.27.0](https://github.com/dotenvx/dotenvx/compare/v1.26.2...v1.27.0) (2024-12-03)
 
 ### Added
 
 * add support for `\t` expansion when double quoted. (e.g. `TAB="hi\tfriend"` becomes `hi   friend`) ([#479](https://github.com/dotenvx/dotenvx/pull/479))
 
-## [1.26.2](https://github.com/dotenvx/dotenvx/compare/v1.26.1...v1.26.2)
+## [1.26.2](https://github.com/dotenvx/dotenvx/compare/v1.26.1...v1.26.2) (2024-12-02)
 
 ### Changed
 
 * build binaries with bytecode option ([#477](https://github.com/dotenvx/dotenvx/pull/477))
 
-## [1.26.1](https://github.com/dotenvx/dotenvx/compare/v1.26.0...v1.26.1)
+## [1.26.1](https://github.com/dotenvx/dotenvx/compare/v1.26.0...v1.26.1) (2024-12-02)
 
 ### Added
 
 * add typescript type definitions for `main.parse` method ([#475](https://github.com/dotenvx/dotenvx/pull/475))
 
-## [1.26.0](https://github.com/dotenvx/dotenvx/compare/v1.25.2...v1.26.0)
+## [1.26.0](https://github.com/dotenvx/dotenvx/compare/v1.25.2...v1.26.0) (2024-11-29)
 
 ### Added
 
 * add `privateKey` option to `main.parse` method ([#474](https://github.com/dotenvx/dotenvx/pull/474))
 
-## [1.25.2](https://github.com/dotenvx/dotenvx/compare/v1.25.1...v1.25.2)
+## [1.25.2](https://github.com/dotenvx/dotenvx/compare/v1.25.1...v1.25.2) (2024-11-29)
 
 ### Added
 
@@ -492,13 +750,13 @@ $ dotenvx get -fk .env.keys -f apps/backend/.env
 
 * remove types for functions that were removed a while back ([2aa660](https://github.com/dotenvx/dotenvx/commit/2aa660695757143f65751a201115f074b81942a8))
 
-## [1.25.1](https://github.com/dotenvx/dotenvx/compare/v1.25.0...v1.25.1)
+## [1.25.1](https://github.com/dotenvx/dotenvx/compare/v1.25.0...v1.25.1) (2024-11-25)
 
 ### Changed
 
 * improve helpful error messaging around decryption failures by specifying specific key and private key name ([#463](https://github.com/dotenvx/dotenvx/pull/463))
 
-## [1.25.0](https://github.com/dotenvx/dotenvx/compare/v1.24.5...v1.25.0)
+## [1.25.0](https://github.com/dotenvx/dotenvx/compare/v1.24.5...v1.25.0) (2024-11-25)
 
 ### Added
 
@@ -514,37 +772,37 @@ $ dotenvx get -fk .env.keys -f apps/backend/.env
 
 * remove `dotenvx.get()` function from `lib/main.js`. (`parse` already historically exists for this purpose) ([#461](https://github.com/dotenvx/dotenvx/pull/461))
 
-## [1.24.5](https://github.com/dotenvx/dotenvx/compare/v1.24.4...v1.24.5)
+## [1.24.5](https://github.com/dotenvx/dotenvx/compare/v1.24.4...v1.24.5) (2024-11-22)
 
 ### Changed
 
 * 🐞 do not expand prior literal values ([#458](https://github.com/dotenvx/dotenvx/pull/458))
 
-## [1.24.4](https://github.com/dotenvx/dotenvx/compare/v1.24.3...v1.24.4)
+## [1.24.4](https://github.com/dotenvx/dotenvx/compare/v1.24.3...v1.24.4) (2024-11-20)
 
 ### Changed
 
 * do not expand command substitution ([#456](https://github.com/dotenvx/dotenvx/pull/456))
 
-## [1.24.3](https://github.com/dotenvx/dotenvx/compare/v1.24.2...v1.24.3)
+## [1.24.3](https://github.com/dotenvx/dotenvx/compare/v1.24.2...v1.24.3) (2024-11-20)
 
 ### Changed
 
 * 🐞 fix command substitution for more complex commands ([#455](https://github.com/dotenvx/dotenvx/pull/455))
 
-## [1.24.2](https://github.com/dotenvx/dotenvx/compare/v1.24.1...v1.24.2)
+## [1.24.2](https://github.com/dotenvx/dotenvx/compare/v1.24.1...v1.24.2) (2024-11-18)
 
 ### Changed
 
 * treat pre-existing expandable values as literal in `process.env` ([#450](https://github.com/dotenvx/dotenvx/pull/450))
 
-## [1.24.1](https://github.com/dotenvx/dotenvx/compare/v1.24.0...v1.24.1)
+## [1.24.1](https://github.com/dotenvx/dotenvx/compare/v1.24.0...v1.24.1) (2024-11-18)
 
 ### Changed
 
 * bump `cross-spawn` to prevent potential ReDoS [CVE-2024-21538](https://github.com/advisories/ghsa-3xgq-45jj-v275) ([#449](https://github.com/dotenvx/dotenvx/pull/449))
 
-## [1.24.0](https://github.com/dotenvx/dotenvx/compare/v1.23.0...v1.24.0)
+## [1.24.0](https://github.com/dotenvx/dotenvx/compare/v1.23.0...v1.24.0) (2024-11-15)
 
 ### Added
 
@@ -568,25 +826,25 @@ FOO=${FOO}bar
 
 * removed `dotenvx.configDotenv()`. use `dotenvx.config()` ([#445](https://github.com/dotenvx/dotenvx/pull/445))
 
-## 1.23.0
+## 1.23.0 (2024-11-12)
 
 ### Added
 
 * deeper variable expansion support and protection against self-referencing variables 🛡️ ([#439](https://github.com/dotenvx/dotenvx/pull/439))
 
-## 1.22.2
+## 1.22.2 (2024-11-12)
 
 ### Changed
 
 * more lenient handling of `--` separator and better error messaging when flags are ambiguous ([#438](https://github.com/dotenvx/dotenvx/pull/438))
 
-## 1.22.1
+## 1.22.1 (2024-11-11)
 
 ### Changed
 
 * 🐞 patch loading order issue with single quotes ([#436](https://github.com/dotenvx/dotenvx/pull/436))
 
-## 1.22.0
+## 1.22.0 (2024-11-04)
 
 ### Added
 
@@ -596,7 +854,7 @@ FOO=${FOO}bar
 
 * clarify next steps after first time encrypting ([#430](https://github.com/dotenvx/dotenvx/pull/430))
 
-## 1.21.1
+## 1.21.1 (2024-10-31)
 
 ### Changed
 
@@ -604,7 +862,7 @@ FOO=${FOO}bar
 * for `precommit` redirect missing `dotenvx` command using POSIX compliant redirection ([#424](https://github.com/dotenvx/dotenvx/pull/424))
 * make parent `dotenvx help` command less noisy by removing `[options]`. run `dotenvx COMMAND -h` to list all available options like always ([#429](https://github.com/dotenvx/dotenvx/pull/429))
 
-## 1.21.0
+## 1.21.0 (2024-10-25)
 
 ### Changed
 
@@ -613,14 +871,14 @@ FOO=${FOO}bar
 
 🎓 now if you choose to single quote, double quote, no quote, or backtick your value it will be respected - including for encrypted values. this more intuitively handles complex cases like escaped characters, literals, and json.
 
-## 1.20.1
+## 1.20.1 (2024-10-23)
 
 ### Changed
 
 * update [eciesjs](https://github.com/ecies/js/issues/802) ([#421](https://github.com/dotenvx/dotenvx/pull/421))
 * remove default values for ts interface - no longer permitted by latest ts ([#419](https://github.com/dotenvx/dotenvx/pull/419))
 
-## 1.20.0
+## 1.20.0 (2024-10-17)
 
 ### Changed
 
@@ -633,37 +891,37 @@ FOO=${FOO}bar
 
 * remove `main.decrypt,encrypt,set` ([#410](https://github.com/dotenvx/dotenvx/pull/410))
 
-## 1.19.3
+## 1.19.3 (2024-10-15)
 
 ### Changed
 
 * 🐞 fix decrypt re-encrypt of values containing backslashes ([#406](https://github.com/dotenvx/dotenvx/pull/407))
 
-## 1.19.2
+## 1.19.2 (2024-10-13)
 
 ### Changed
 
 * forward additional signals like `SIGUSR2` ([#403](https://github.com/dotenvx/dotenvx/pull/403))
 
-## 1.19.1
+## 1.19.1 (2024-10-13)
 
 ### Changed
 
 * if `SIGTERM` or `SIGINT` sent, don't bubble wrapped process error ([#402](https://github.com/dotenvx/dotenvx/pull/402))
 
-## 1.19.0
+## 1.19.0 (2024-10-11)
 
 ### Added
 
 * support key glob filtering for `encrypt` and `decrypt`. example: `dotenvx encrypt -ek "NEXT_PUBLIC_*"` ([#397](https://github.com/dotenvx/dotenvx/pull/397))
 
-## 1.18.1
+## 1.18.1 (2024-10-11)
 
 ### Added
 
 * escape user inputted regex groupings like `$1` or `$2`. ([#396](https://github.com/dotenvx/dotenvx/pull/396))
 
-## 1.18.0
+## 1.18.0 (2024-10-11)
 
 ### Added
 
@@ -696,115 +954,115 @@ API_KEY='encrypted:5678'
 
 It's an aesthetic side effect only. Your values will continue to be decrypted and encrypted correctly.
 
-## 1.17.0
+## 1.17.0 (2024-10-09)
 
 ### Added
 
 * add `--format=eval` option for `get` ([#393](https://github.com/dotenvx/dotenvx/pull/393))
 
-## 1.16.1
+## 1.16.1 (2024-10-08)
 
 ### Changed
 
 * suppress stderr using `options.stdio` ([#391](https://github.com/dotenvx/dotenvx/pull/391))
 
-## 1.16.0
+## 1.16.0 (2024-10-07)
 
 ### Changed
 
 * for `dotenvx keypair` call out to `dotenvx pro keypair` if [pro](https://github.com/dotenvx/dotenvx/issues/259) installed ([#390](https://github.com/dotenvx/dotenvx/pull/390))
 
-## 1.15.0
+## 1.15.0 (2024-10-05)
 
 ### Added
 
 * add `--format=shell` option for `keypair` ([#389](https://github.com/dotenvx/dotenvx/pull/389))
 
-## 1.14.2
+## 1.14.2 (2024-09-27)
 
 ### Changed
 
 * swap `process.stdout.write` for `console.log` to patch up npx edge case ([#387](https://github.com/dotenvx/dotenvx/pull/387))
 
-## 1.14.1
+## 1.14.1 (2024-09-13)
 
 ### Changed
 
 * run precommit hook only on staged files ([#380](https://github.com/dotenvx/dotenvx/pull/380))
 
-## 1.14.0
+## 1.14.0 (2024-09-04)
 
 ### Added
 
 * add `dotenvx keypair` command for printing your public/private keypairs ([#375](https://github.com/dotenvx/dotenvx/pull/375))
 
-## 1.13.3
+## 1.13.3 (2024-09-04)
 
 ### Changed
 
 * exit code 1 when `decrypt` fails in any way ([#374](https://github.com/dotenvx/dotenvx/pull/374))
 
-## 1.13.2
+## 1.13.2 (2024-09-02)
 
 ### Added
 
 * expose `getColor` and `bold` to `lib/main.js` ([#369](https://github.com/dotenvx/dotenvx/pull/369))
 
-## 1.13.1
+## 1.13.1 (2024-09-02)
 
 ### Added
 
 * expose `logger` and `setLogLevel` to `lib/main.js` - `const = { logger, setLogLevel } = require('@dotenvx/dotenvx')` ([#368](https://github.com/dotenvx/dotenvx/pull/368))
 
-## 1.13.0
+## 1.13.0 (2024-09-02)
 
 ### Changed
 
 * move `ls` to core commands ([#367](https://github.com/dotenvx/dotenvx/pull/367))
 
-## 1.12.1
+## 1.12.1 (2024-08-31)
 
 ### Changed
 
 * return without quotations for `dotenvx get --format shell` ([#366](https://github.com/dotenvx/dotenvx/pull/366))
 
-## 1.12.0
+## 1.12.0 (2024-08-31)
 
 ### Added
 
 * add `dotenvx get --format shell` option ([#363](https://github.com/dotenvx/dotenvx/pull/363))
 
-## 1.11.5
+## 1.11.5 (2024-08-28)
 
 ### Changed
 
 * revert `tinyexec` for `execa` - to support usage in bun
 
-## 1.11.4
+## 1.11.4 (2024-08-28)
 
 ### Changed
 
 * bump `tinyexec` and add postrelease-bunx check ([#362](https://github.com/dotenvx/dotenvx/pull/362))
 
-## 1.11.3
+## 1.11.3 (2024-08-27)
 
 ### Changed
 
 * fallback to `process.env.TERM` for color depth where deno and bun do not support it ([#360](https://github.com/dotenvx/dotenvx/pull/360))
 
-## 1.11.2
+## 1.11.2 (2024-08-27)
 
 ### Added
 
 * detect encoding when reading `.env*` file on `run/get` ([#359](https://github.com/dotenvx/dotenvx/pull/359))
 
-## 1.11.1
+## 1.11.1 (2024-08-26)
 
 ### Changed
 
 * support encryption of `export KEY` variables and preserve `#!shebangs` ([#357](https://github.com/dotenvx/dotenvx/pull/357))
 
-## 1.11.0
+## 1.11.0 (2024-08-26)
 
 ### Added
 
@@ -814,43 +1072,43 @@ It's an aesthetic side effect only. Your values will continue to be decrypted an
 
 * `ext precommit` ignores `tests/` directory (and similar) ([#356](https://github.com/dotenvx/dotenvx/pull/356))
 
-## 1.10.4
+## 1.10.4 (2024-08-25)
 
 ### Changed
 
 * fix `pro` display in help command
 
-## 1.10.3
+## 1.10.3 (2024-08-24)
 
 ### Added
 
 * ci: automate publishing to `winget` ([#354](https://github.com/dotenvx/dotenvx/pull/354))
 
-## 1.10.2
+## 1.10.2 (2024-08-23)
 
 ### Changed
 
 * default `config` to empty `[]` array so that `DOTENV_KEY_${environment}` looks up correctly ([#352](https://github.com/dotenvx/dotenvx/pull/352))
 
-## 1.10.1
+## 1.10.1 (2024-08-23)
 
 ### Changed
 
 * check subfolders on `dotenvx ext precommit` hook ([#350](https://github.com/dotenvx/dotenvx/pull/350))
 
-## 1.10.0
+## 1.10.0 (2024-08-23)
 
 ### Removed
 
 * remove `dotenvx ext vault`, replace with [dotenvx-ext-vault](https://github.com/dotenvx/dotenvx-ext-vaut) (install there to continue using `ext vault`) ([#351](https://github.com/dotenvx/dotenvx/pull/351))
 
-## 1.9.1
+## 1.9.1 (2024-08-22)
 
 ### Added
 
 * warn if private key is missing or blank ([#349](https://github.com/dotenvx/dotenvx/pull/349))
 
-## 1.9.0
+## 1.9.0 (2024-08-21)
 
 ### Added
 
@@ -864,7 +1122,7 @@ It's an aesthetic side effect only. Your values will continue to be decrypted an
 
 * removed `winston` - logger simplified to use `console.log` going forward ([#347](https://github.com/dotenvx/dotenvx/pull/347))
 
-## 1.8.0
+## 1.8.0 (2024-08-20)
 
 ### Added
 
@@ -883,43 +1141,43 @@ It's an aesthetic side effect only. Your values will continue to be decrypted an
 * remove `picocolors` and `color-name` - cutting down on 2 dependencies ([#340](https://github.com/dotenvx/dotenvx/pull/340))
 * remove `ext hub` from extension list (you can still install it as an extension [here](https://github.com/dotenvx/dotenvx-ext-hub)) ([#337](https://github.com/dotenvx/dotenvx/pull/337))
 
-## 1.7.0
+## 1.7.0 (2024-08-09)
 
 ### Removed
 
 * remove `ext settings` command (and [`conf`](https://www.npmjs.com/package/conf) along with it) ([#323](https://github.com/dotenvx/dotenvx/pull/323))
 
-## 1.6.5
+## 1.6.5 (2024-08-09)
 
 ### Changed
 
 * 🐞 patch `chomp` for interpolation. strip ending newline (was stripping first found newline) ([#322](https://github.com/dotenvx/dotenvx/pull/322))
 
-## 1.6.4
+## 1.6.4 (2024-07-15)
 
 ### Changed
 
 * fix `dotenvx help` (command was missing)
 
-## 1.6.3
+## 1.6.3 (2024-07-15)
 
 ### Changed
 
 * adjust `dotenvx pro` to be dynamic if [dotenvx-pro](https://github.com/dotenvx/dotenvx-pro) is installed user's machine
 
-## 1.6.2
+## 1.6.2 (2024-07-12)
 
 ### Added
 
 * add more detailed type definitions ([#313](https://github.com/dotenvx/dotenvx/pull/313)) 
 
-## 1.6.1
+## 1.6.1 (2024-07-11)
 
 ### Added
 
 * add support for `.env1` (`.env*`) file format. (private key expands to `DOTENV_PRIVATE_KEY_DEVELOPMENT1`) ([#312](https://github.com/dotenvx/dotenvx/pull/312))
 
-## 1.6.0
+## 1.6.0 (2024-07-11)
 
 ### Added
 
@@ -936,7 +1194,7 @@ It's an aesthetic side effect only. Your values will continue to be decrypted an
 * remove `dotenvx convert` - still at `dotenvx encrypt`
 * remove `dotenvx vault` - still at `dotenvx ext vault`
 
-## 1.5.0
+## 1.5.0 (2024-06-30)
 
 ### Added
 
@@ -950,32 +1208,32 @@ It's an aesthetic side effect only. Your values will continue to be decrypted an
 
 * remove `dotenvx ext hub`, replace with [dotenvx-ext-hub](https://github.com/dotenvx/dotenvx-ext-hub) (install there to continue using hub) ([#291](https://github.com/dotenvx/dotenvx/pull/291))
 
-## 1.4.0
+## 1.4.0 (2024-06-30)
 
 ### Removed
 
 * remove update notice. let users decide what version they want without nagging them to update ([#288](https://github.com/dotenvx/dotenvx/pull/288))
 * remove `dotenvx hub`. still available at `dotenvx ext hub` ([#290](https://github.com/dotenvx/dotenvx/pull/290))
 
-## 1.3.2
+## 1.3.2 (2024-06-30)
 
 ### Changed
 
 * 🐞 remove risky `prepare` and `postinstall` scripts and replace with `npm run patch` for development and binary building ([#286](https://github.com/dotenvx/dotenvx/pull/286))
 
-## 1.3.1
+## 1.3.1 (2024-06-30)
 
 ### Changed
 
 * 🐞 make `patch-package` only run locally with `prepare` ([#283](https://github.com/dotenvx/dotenvx/pull/283))
 
-## 1.3.0
+## 1.3.0 (2024-06-29)
 
 ### Added
 
 * encrypt specified keys with `--key` option - `dotenvx encrypt -k HELLO` ([#281](https://github.com/dotenvx/dotenvx/pull/281))
 
-## 1.2.0
+## 1.2.0 (2024-06-29)
 
 ### Added
 
@@ -985,19 +1243,19 @@ It's an aesthetic side effect only. Your values will continue to be decrypted an
 
 * replace `glob` with faster approach ([#278](https://github.com/dotenvx/dotenvx/pull/278))
 
-## 1.1.0
+## 1.1.0 (2024-06-28)
 
 ### Added
 
 * add TypeScript type definitions ([#272](https://github.com/dotenvx/dotenvx/pull/272))
 
-## 1.0.1
+## 1.0.1 (2024-06-27)
 
 ### Changed
 
 * 🐞 fix expansion when preset on `process.env` and/or with `--overload` ([#271](https://github.com/dotenvx/dotenvx/pull/271))
 
-## 1.0.0 
+## 1.0.0 (2024-06-24)
 
 🎉 `dotenvx` has made it to `1.0.0`. There are BREAKING CHANGES ⚠️ .
 
@@ -1029,82 +1287,82 @@ This is a BIG release that sets the tone for `dotenvx`'s core offering and featu
 
 [blog post: "From dotenv to dotenvx: Next Generation Config Management"](https://dotenvx.com/blog/2024/06/24/dotenvx-next-generation-config-management.html)
 
-## 0.45.0
+## 0.45.0 (2024-06-17)
 
 ### Changed
 
 * Rename `dotenvx vault convert` to `dotenvx vault migrate` ([#251](https://github.com/dotenvx/dotenvx/pull/251))
 * Update `install.sh` regex version check to be `sh` compatible (not just bash)
 
-## 0.44.6
+## 0.44.6 (2024-06-17)
 
 ### Added
 
 * Added `checksums.txt` as part of each release
 
-## 0.44.5
+## 0.44.5 (2024-06-16)
 
 ### Changed
 
 * Removed `.github` folder from published binaries on npm (example: [npm code](https://www.npmjs.com/package/@dotenvx/dotenvx-darwin-arm64?activeTab=code))
 * Add help message to `install.sh`
 
-## 0.44.4
+## 0.44.4 (2024-06-15)
 
 ### Changed
 
 * Automated deployment of `install.sh` along with sanity checks ([#250](https://github.com/dotenvx/dotenvx/pull/250))
 
-## 0.44.3
+## 0.44.3 (2024-06-15)
 
 ### Added
 
 * Include `CHANGELOG.md` in npm release
 * Include `install.sh` in package release
 
-## 0.44.2
+## 0.44.2 (2024-06-14)
 
 ### Changed
 
 * Fix license in `package.json` to match project's license BSD-3.
 
-## 0.44.1
+## 0.44.1 (2024-05-27)
 
 ### Changed
 
 * Respect decryption of zero length strings - `dotenvx set HELLO '' --encrypt` ([#236](https://github.com/dotenvx/dotenvx/pull/236))
 
-## 0.44.0
+## 0.44.0 (2024-05-22)
 
 ### Added
 
 * Added `options.debug`, `options.verbose`, `options.quiet`, and `options.logLevel` to `.config()` ([#233](https://github.com/dotenvx/dotenvx/pull/233))
 
-## 0.43.2
+## 0.43.2 (2024-05-21)
 
 ### Changed
 
 * Patch `replace` when replacing double, single, or backticked quoted at anywhere in the `.env` file. ([#232](https://github.com/dotenvx/dotenvx/pull/232))
 
-## 0.43.1
+## 0.43.1 (2024-05-21)
 
 ### Changed
 
 * Improved `replace` function regex - to handle more edge case scenarios with replacing KEY/values ([#227](https://github.com/dotenvx/dotenvx/pull/227))
 
-## 0.43.0
+## 0.43.0 (2024-05-20)
 
 ### Added
 
 * Support `require('@dotenvx/dotenvx').config()` for `DOTENV_PRIVATE_KEY` decryption ([#225](https://github.com/dotenvx/dotenvx/pull/225))
 
-## 0.42.0
+## 0.42.0 (2024-05-20)
 
 ### Added
 
 * Added `.env.vault deprecated` warning when using `DOTENV_KEY`. Provide instructions to convert to encrypted `.env` files. ([#224](https://github.com/dotenvx/dotenvx/pull/224))
 
-## 0.41.0
+## 0.41.0 (2024-05-20)
 
 ### Added
 
@@ -1137,13 +1395,13 @@ Learn more at [https://dotenvx.com/docs/quickstart#add-encryption]
 
 * Rename `encryptme` to `convert` ([#222](https://github.com/dotenvx/dotenvx/pull/222))
 
-## 0.40.1
+## 0.40.1 (2024-05-19)
 
 ### Added
 
 * Support encryption replacement of multiline values ([#220](https://github.com/dotenvx/dotenvx/pull/220))
 
-## 0.40.0
+## 0.40.0 (2024-05-18)
 
 ### Added
 
@@ -1157,7 +1415,7 @@ Learn more at [https://dotenvx.com/docs/quickstart#add-encryption]
 
 * Do not warn of missing files for conventions (too noisy) ([#216](https://github.com/dotenvx/dotenvx/pull/216))
 
-## 0.39.0
+## 0.39.0 (2024-05-14)
 
 ### Added
 
@@ -1167,7 +1425,7 @@ Learn more at [https://dotenvx.com/docs/quickstart#add-encryption]
 
 * Removed help messages like 'in production' and 'in ci'. Too specific and could lead to confusion.
 
-## 0.38.0
+## 0.38.0 (2024-05-09)
 
 ### Changed
 
@@ -1203,88 +1461,88 @@ Further notes:
 * This solution is brand new, but I intend it to be the future for `.env` files. It has many benefits over `.env.vault` files. We will be sunsetting the `.env.vault` mechanism but its tooling will stay around in `dotenvx` for at least 1 year to come - under `dotenvx vault` parent command.
 * Be patient as we update our documentation to prioritize this improved encryption format for `.env` files.
 
-## 0.37.1
+## 0.37.1 (2024-04-30)
 
 * warn when running `dotenvx status` against any untracked (not in .env.vault) files ([#196](https://github.com/dotenvx/dotenvx/pull/196))
 
-## 0.37.0
+## 0.37.0 (2024-04-27)
 
 * add `--convention nextjs` flag to `dotenvx run` ([#193](https://github.com/dotenvx/dotenvx/pull/193))
 * improve `status` error message when decrypt fails or no `.env*` files ([#192](https://github.com/dotenvx/dotenvx/pull/192))
 
-## 0.36.1
+## 0.36.1 (2024-04-27)
 
 * handle `SIGTERM` ([#191](https://github.com/dotenvx/dotenvx/pull/191))
 
-## 0.36.0
+## 0.36.0 (2024-04-27)
 
 * add `dotenvx status` command ([#186](https://github.com/dotenvx/dotenvx/pull/186))
 * add `dotenvx decrypt [directory]` argument option ([#186](https://github.com/dotenvx/dotenvx/pull/186))
 * add `dotenvx decrypt --environment` flag option ([#186](https://github.com/dotenvx/dotenvx/pull/186))
 * normalize windows `\` paths ([#186](https://github.com/dotenvx/dotenvx/pull/186))
 
-## 0.35.1
+## 0.35.1 (2024-04-19)
 
 ### Changed
 
 * exit code `1` if `get KEY` not found/undefined ([#185](https://github.com/dotenvx/dotenvx/pull/185))
 
-## 0.35.0
+## 0.35.0 (2024-04-19)
 
 ### Added
 
 * added `set` command, and optionally pass `--env-file` flag(s) to `set` usage: `dotenvx set HELLO World` ([#182](https://github.com/dotenvx/dotenvx/pull/182))
 
-## 0.34.0
+## 0.34.0 (2024-04-16)
 
 ### Changed
 
 * make `hub push` more forgiving by permitting full filepath like `hub push directory/.env.keys` ([#180](https://github.com/dotenvx/dotenvx/pull/180))
 * add note on generated `.env.example` ([#181](https://github.com/dotenvx/dotenvx/pull/181))
 
-## 0.33.1
+## 0.33.1 (2024-04-15)
 
 ### Changed
 
 * patch injection around falsy values ([#177](https://github.com/dotenvx/dotenvx/pull/177))
 
-## 0.33.0
+## 0.33.0 (2024-04-15)
 
 ### Added
 
 * add .env.vault support for `.env.something.something` (useful for Next.js pattern of .env.development.local) ([#174](https://github.com/dotenvx/dotenvx/pull/174))
 
-## 0.32.0
+## 0.32.0 (2024-04-09)
 
 ### Changed
 
 * quiet exit code 1 message ([#173](https://github.com/dotenvx/dotenvx/pull/173))
 
-## 0.31.1
+## 0.31.1 (2024-04-08)
 
 ### Changed
 
 * improve error messages ([#171](https://github.com/dotenvx/dotenvx/pull/171))
 
-## 0.31.0
+## 0.31.0 (2024-04-08)
 
 ### Added
 
 * add `hub logout` command ([#170](https://github.com/dotenvx/dotenvx/pull/170))
 
-## 0.30.2
+## 0.30.2 (2024-04-08)
 
 ### Changed
 
 * small fixes for windows users related to `hub open` and `hub push` ([#169](https://github.com/dotenvx/dotenvx/pull/169))
 
-## 0.30.1
+## 0.30.1 (2024-04-07)
 
 ### Changed
 
 * remove windows warnings related to missing `git` or `git origin` ([#166](https://github.com/dotenvx/dotenvx/pull/166) [#167](https://github.com/dotenvx/dotenvx/pull/167))
 
-## 0.30.0
+## 0.30.0 (2024-04-06)
 
 ### Added
 
@@ -1294,31 +1552,31 @@ Further notes:
 
 * refactor `dotenvx get` to use `run` under the hood
 
-## 0.29.2
+## 0.29.2 (2024-04-05)
 
 ### Changed
 
 * fix broken `hub login` and `hub open` ([#160](https://github.com/dotenvx/dotenvx/pull/160))
 
-## 0.29.1
+## 0.29.1 (2024-04-04)
 
 ### Changed
 
 * patch situation where `DOTENV_KEY` is present and `--env-file` flag is set. assume to still look for `.env.vault` file as first in line ([#157](https://github.com/dotenvx/dotenvx/pull/157))
 
-## 0.29.0
+## 0.29.0 (2024-04-04)
 
 ### Changed
 
 * respect order for `--env-vault-file`, `--env-file` and `--env` flags (for example: `dotenvx run --env "HELLO=one" --env-file=.env` will prioritize `--env` flag. Add `--overload` here to prioritize `--env-file` or reverse the order.). you can now mix and match multiple flags in any complex order you wish and dotenvx will respect it. ([#155](https://github.com/dotenvx/dotenvx/pull/155))
 
-## 0.28.0
+## 0.28.0 (2024-04-03)
 
 ### Added
 
 * add `dotenvx settings` command to list your current settings. in the future we'll provide ways to modify these settings as dotenvx's functionality grows ([#153](https://github.com/dotenvx/dotenvx/pull/153))
 
-## 0.27.2
+## 0.27.2 (2024-04-02)
 
 ### Added
 
@@ -1331,7 +1589,7 @@ Further notes:
 * return current version if remote version fails ([#149](https://github.com/dotenvx/dotenvx/pull/149))
 * switch to our own update notice mechanism (eliminating multiple deps) ([#151](https://github.com/dotenvx/dotenvx/pull/151))
 
-## 0.27.1
+## 0.27.1 (2024-03-26)
 
 ### Added
 
@@ -1341,50 +1599,50 @@ Further notes:
 
 * remove `got` from top level deps ([#139](https://github.com/dotenvx/dotenvx/pull/139))
 
-## 0.27.0
+## 0.27.0 (2024-03-25)
 
 ### Changed
 
 * move `update-notifier` into `lib/helpers` for more control over `got` lib ([#138](https://github.com/dotenvx/dotenvx/pull/138))
 * move `clipboardy` into `lib/helpers` for more control and to support commonjs going forward (sindre has dropped support and many mature systems still require commonjs for their infra and have need of dotenvx). ([#137](https://github.com/dotenvx/dotenvx/pull/137))
 
-## 0.26.0
+## 0.26.0 (2024-03-18)
 
 ### Added
 
 * add `hub pull` command to pull a repo's `.env.keys` down. ([#129](https://github.com/dotenvx/dotenvx/pull/129))
 
-## 0.25.1
+## 0.25.1 (2024-03-14)
 
 ### Changed
 
 * 🐞 patch bug with evaluate commands. do not attempt to evaluate risky preset envs in `process.env`. evaluate only what's set in a `.env*` file ([#125](https://github.com/dotenvx/dotenvx/pull/125))
 
-## 0.25.0
+## 0.25.0 (2024-03-12)
 
 ### Added
 
 * expand `hub push` with `[directory]` option. use for monorepos. for example: `dotenvx hub push apps/backend` ([#121](https://github.com/dotenvx/dotenvx/pull/121))
 
-## 0.24.0
+## 0.24.0 (2024-02-29)
 
 ### Added
 
 * add command substitution. for example `DATABASE_URL="postgres://$(whoami)@localhost/my_database"` ([#113](https://github.com/dotenvx/dotenvx/pull/113))
 
-## 0.23.0
+## 0.23.0 (2024-02-28)
 
 ### Added
 
 * support personal environment variables. anything after the comment `# personal.dotenvx.com` will be considered personal and will not be encrypted to .env.vault ([#110](https://github.com/dotenvx/dotenvx/pull/110))
 
-## 0.22.0
+## 0.22.0 (2024-02-27)
 
 ### Added
 
 * `require('@dotenvx/dotenvx').config()` expands/interpolates variables. this matches the behavior of `run`. (note that this behavior differs from the original `require('dotenv').config()` ([#107](https://github.com/dotenvx/dotenvx/pull/107))
 
-## 0.21.0
+## 0.21.0 (2024-02-27)
 
 ### Added
 
@@ -1398,61 +1656,61 @@ Further notes:
 
 * remove `main.inject` function ([#102](https://github.com/dotenvx/dotenvx/pull/102))
 
-## 0.20.2
+## 0.20.2 (2024-02-24)
 
 ### Added
 
 * added support for `--env` flag on the `.env.vault` decryption portion of `run` ([#101](https://github.com/dotenvx/dotenvx/pull/101))
 
-## 0.20.1
+## 0.20.1 (2024-02-24)
 
 ### Changed
 
 * use system command path ([#98](https://github.com/dotenvx/dotenvx/pull/98))
 
-## 0.20.0
+## 0.20.0 (2024-02-23)
 
 ### Changed
 
 * added `--env` flag. for example, `dotenvx --env="HELLO=World" -- yourcommand` ([#94](https://github.com/dotenvx/dotenvx/pull/94))
 
-## 0.19.1
+## 0.19.1 (2024-02-22)
 
 ### Changed
 
 * patched up the `precommit` command ([#91](https://github.com/dotenvx/dotenvx/pull/91))
 
-## 0.19.0
+## 0.19.0 (2024-02-22)
 
 ### Added
 
 * added `scan` command to scan for possible leaked secrets in your code ([#90](https://github.com/dotenvx/dotenvx/pull/90))
 
-## 0.18.0
+## 0.18.0 (2024-02-21)
 
 ### Added
 
 * added `get` command, optionally pass `--env-file` flag(s) to `get`, optionally pass `--overload`, and optionally pass `--pretty-print`. usage: `dotenvx get HELLO` => `World` ([#89](https://github.com/dotenvx/dotenvx/pull/89))
 
-## 0.17.1
+## 0.17.1 (2024-02-20)
 
 ### Changed
 
 * expose `main.encrypt` and `main.ls` functions
 
-## 0.17.0
+## 0.17.0 (2024-02-19)
 
 ### Added
 
 * added `[directory]` argument to `encrypt`. for example, in your nx repo from root `dotenvx encrypt apps/backend` will encrypt .env* files in that directory and manage the `.env.keys` and `.env.vault` in that directory as well ([#82](https://github.com/dotenvx/dotenvx/pull/82))
 
-## 0.16.1
+## 0.16.1 (2024-02-19)
 
 ### Changed
 
 * bumped `dotenv` version to fix `encrypt` bug
 
-## 0.16.0
+## 0.16.0 (2024-02-17)
 
 ### Added
 
@@ -1460,276 +1718,275 @@ Further notes:
 * added `--env-file` option `ls` ([#82](https://github.com/dotenvx/dotenvx/pull/82))
 * optionally specify `--env-vault-file` path to `.env.vault` (defaults to `.env.vault`) ([#73](https://github.com/dotenvx/dotenvx/pull/73))
 
-## 0.15.4
+## 0.15.4 (2024-02-11)
 
 ### Changed
 
 * 🐞 patch `--overload` flag logic ([#66](https://github.com/dotenvx/dotenvx/pull/66))
 
-## 0.15.3
+## 0.15.3 (2024-02-11)
 
 ### Changed
 
 * 🐞 fix undici readablestream error ([#65](https://github.com/dotenvx/dotenvx/pull/65))
 
-## 0.15.2
+## 0.15.2 (2024-02-11)
 
 ### Changed
 
 * switch from axios to undici ([#59](https://github.com/dotenvx/dotenvx/pull/59))
 * bump `dotenv-expand` ([#63](https://github.com/dotenvx/dotenvx/pull/63))
 
-## 0.15.1
+## 0.15.1 (2024-02-10)
 
 ### Changed
 
 * use improved dotenv expansion ([#62](https://github.com/dotenvx/dotenvx/pull/62))
 
-## 0.15.0
+## 0.15.0 (2024-02-06)
 
 ### Added
 
 * add expansion ([#60](https://github.com/dotenvx/dotenvx/pull/60))
 * use `dotenvx.com` ([#56](https://github.com/dotenvx/dotenvx/pull/56))
 
-## 0.14.1
+## 0.14.1 (2024-01-27)
 
 ### Changed
 
 * patch esm issue. use update-notifier ^5.1.0
 
-## 0.14.0
+## 0.14.0 (2024-01-27)
 
 ### Added
 
 * Added `genexample` command. Generate `.env.example` from your `.env` file. ([#49](https://github.com/dotenvx/dotenvx/pull/49))
 * couple security patches ([#50](https://github.com/dotenvx/dotenvx/pull/50), [#51](https://github.com/dotenvx/dotenvx/pull/51))
 
-## 0.13.0
+## 0.13.0 (2024-01-27)
 
 ### Added
 
 * Added `decrypt` command. Decrypt `.env.vault` to prospective `.env*` files. `.env.keys` must be present. ([#48](https://github.com/dotenvx/dotenvx/pull/48))
 
-## 0.12.0
+## 0.12.0 (2024-01-26)
 
 ### Added
 
 * Append to `.gitignore` with `gitignore` command (also `.dockerignore`, `.npmignore`, and `.vercelignore` if existing) ([#47](https://github.com/dotenvx/dotenvx/pull/47))
 
-## 0.11.0
+## 0.11.0 (2024-01-25)
 
 ### Removed
 
 * no longer append to `*ignore` files automatically. too invasive. will provide as separate cli command ([#45](https://github.com/dotenvx/dotenvx/pull/45))
 
-## 0.10.6
+## 0.10.6 (2024-01-24)
 
 ### Changed
 
 * Improve error message when decryption fails ([#40](https://github.com/dotenvx/dotenvx/pull/40))
 
-## 0.10.5
+## 0.10.5 (2024-01-17)
 
 ### Changed
 
 * Rename `predockerbuild` command to `prebuild` ([#36](https://github.com/dotenvx/pull/36))
 
-## 0.10.4
+## 0.10.4 (2024-01-17)
 
 ### Added
 
 * Add `predockerbuild` command to prevent including `.env` file in your docker builds ([#35](https://github.com/dotenvx/pull/35))
 
-## 0.10.3
+## 0.10.3 (2024-01-17)
 
 ### Changed
 
 * If dotenvx is missing tell user how to install it from pre-commit ([#34](https://github.com/dotenvx/pull/34))
 * Add help notice for ci (when .env file not present) ([#33](https://github.com/dotenvx/pull/33))
 
-## 0.10.2
+## 0.10.2 (2024-01-14)
 
 ### Changed
 
 * Improve error message when custom `--env-file` passed ([#32](https://github.com/dotenvx/pull/32))
 
-## 0.10.1
+## 0.10.1 (2024-01-14)
 
 ### Changed
 
 * Adjust `precommit` verbosity and coloring
 * Add `--install` flag to precommit - installs to `.git/hooks/pre-commit` ([#31](https://github.com/dotenvx/dotenvx/pull/31))
 
-## 0.10.0
+## 0.10.0 (2024-01-13)
 
 ### Added
 
 * Added `dotenvx precommit` command and instructions for git pre-commit hook ([#30](https://github.com/dotenvx/dotenvx/pull/30))
 
-## 0.9.0
+## 0.9.0 (2024-01-13)
 
 ### Changed
 
 * Remove `.flaskenv` from appends ([#27](https://github.com/dotenvx/dotenvx/pull/27))
 * Improved error message when .env file is missing ([#28](https://github.com/dotenvx/dotenvx/pull/28))
 
-## 0.8.4
+## 0.8.4 (2024-01-11)
 
 ### Changed
 
 Load `axios` with a try/catch depending on context 🐞 ([#24](https://github.com/dotenvx/dotenvx/pull/24))
 
-## 0.8.3
+## 0.8.3 (2024-01-11)
 
 ### Changed
 
 Patched `helpers.guessEnvironment` bug when filepath contained a `.` in the folder name. 🐞 ([#23](https://github.com/dotenvx/dotenvx/pull/23))
 
-## 0.8.2
+## 0.8.2 (2024-01-04)
 
 ### Changed
 
 Change path to axios in attempt for `pkg` to build correctly.
 
-## 0.8.1
+## 0.8.1 (2024-01-04)
 
 ### Added
 
 Add axios (missing) to `package-lock.json`
 
-## 0.8.0
+## 0.8.0 (2024-01-04)
 
 ### Added
 
 Added [hub](https://hub.dotenvx.com) support. 🎉 ([#16](https://github.com/dotenvx/dotenvx/pull/16))
 
-## 0.7.4
+## 0.7.4 (2023-12-22)
 
 ### Changed
 
 Create binaries with root:root defaults. ([#21](https://github.com/dotenvx/dotenvx/pull/21))
 
-## 0.7.3
+## 0.7.3 (2023-12-22)
 
 ### Added
 
 Tell user about undefined subprocess with additional `debug` logs ([#19](https://github.com/dotenvx/dotenvx/pull/19))
 
-## 0.7.2
+## 0.7.2 (2023-12-22)
 
 ### Added
 
 `debug` other signals send to execa process ([#18](https://github.com/dotenvx/dotenvx/pull/18))
 
-## 0.7.1
+## 0.7.1 (2023-12-22)
 
 ### Changed
 
 Fix missed package.json#version
 
-## 0.7.0
+## 0.7.0 (2023-12-22)
 
 ### Added
 
 handle `SIGINT` ([#17](https://github.com/dotenvx/dotenvx/pull/17))
 
-## 0.6.13
+## 0.6.13 (2023-12-02)
 
 write to `/latest` only for [releases](https://github.com/dotenvx/releases) repo ([#15](https://github.com/dotenvx/dotenvx/pull/15))
 
-## 0.6.12
+## 0.6.12 (2023-12-01)
 
 ### Changed
 
 do not package README alongside binary. adds noise to a user's machine. keep their machine shiny. ([#14](https://github.com/dotenvx/dotenvx/pull/14))
 
-## 0.6.11
+## 0.6.11 (2023-12-01)
 
 ### Added
 
 tell user what to do next ([#13](https://github.com/dotenvx/dotenvx/pull/13))
 
-## 0.6.10
+## 0.6.10 (2023-12-01)
 
 ### Patched
 
 do not log when error code is 0 ([#12](https://github.com/dotenvx/dotenvx/pull/12))
 
-## 0.6.9
+## 0.6.9 (2023-12-01)
 
 ### Added
 
 tell user when no changes to re-encrypt ([#11](https://github.com/dotenvx/dotenvx/pull/11))
 
-## 0.6.8
+## 0.6.8 (2023-12-01)
 
 ### Added
 
 added help text when user's command fails. include link to report issue ([#10](https://github.com/dotenvx/dotenvx/pull/10))
 
-## 0.6.7
+## 0.6.7 (2023-12-01)
 
 ## Added
 
 added next step help message when running `dotenvx run` with no argument ([#9](https://github.com/dotenvx/dotenvx/pull/9))
 
 
-## 0.6.6
+## 0.6.6 (2023-12-01)
 
 ### Added
 
 help includes a command example as well as a full working 'try it out' example ([#8](https://github.com/dotenvx/dotenvx/pull/8))
 
-## 0.6.5
+## 0.6.5 (2023-12-01)
 
 ### Changed
 
 made the info messaging more succinct ([#7](https://github.com/dotenvx/dotenvx/pull/7))
 
-## 0.6.4
+## 0.6.4 (2023-11-29)
 
 ### Added
 
 added tagged images to [hub.docker.com/u/dotenv](https://hub.docker.com/r/dotenv/dotenvx/tags)
 
-## 0.6.3
+## 0.6.3 (2023-11-29)
 
 ### Changed
 
 fixed the `.env.keys` file comment. spacing was off. ([#6](https://github.com/dotenvx/dotenvx/pull/6))
 
-## 0.6.2
+## 0.6.2 (2023-11-28)
 
 ### Added
 
 added help text to `encrypt`. ([#5](https://github.com/dotenvx/dotenvx/pull/5))
 
-## 0.6.1
+## 0.6.1 (2023-11-28)
 
 ### Changed
 
 removed the `pad` on the logging level. didn't look good when running in default INFO mode. ([#4](https://github.com/dotenvx/dotenvx/pull/4))
 
-## 0.6.0
+## 0.6.0 (2023-11-28)
 
 ### Added
 
 prevent committing a `.env*` file to code. append to `.gitignore`, `.dockerignore`, `.vercelignore`, and `.npmignore` 🗂️ ([#3](https://github.com/dotenvx/dotenvx/pull/3))
 
-## 0.5.0
+## 0.5.0 (2023-11-27)
 
 ### Added
 
 `run` support for `.env.vault` files 🔑 ([#2](https://github.com/dotenvx/dotenvx/pull/2))
 
-## 0.4.0
+## 0.4.0 (2023-11-27)
 
 ### Added
 
 `encrypt` 🔐 ([#1](https://github.com/dotenvx/dotenvx/pull/1))
 
-## 0.3.9 and prior
+## 0.3.9 and prior (2023-11-26)
 
 Please see commit history.
-

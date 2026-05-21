@@ -4,6 +4,7 @@ const sinon = require('sinon')
 
 const main = require('../../../../src/lib/main')
 const genexample = require('../../../../src/cli/actions/ext/genexample')
+const { logger } = require('../../../../src/shared/logger')
 
 t.test('genexample calls main.genexample', ct => {
   const stub = sinon.stub(main, 'genexample')
@@ -14,7 +15,8 @@ t.test('genexample calls main.genexample', ct => {
     addedKeys: ['HELLO']
   })
 
-  const fsStub = sinon.stub(fsx, 'writeFileX')
+  const fsStub = sinon.stub(fsx, 'writeFileXSync')
+  const loggerSuccessStub = sinon.stub(logger, 'success')
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = {
@@ -25,9 +27,11 @@ t.test('genexample calls main.genexample', ct => {
   genexample.call(fakeContext, '.')
 
   t.ok(stub.called, 'main.genexample() called')
-  t.ok(fsStub.called, 'fs.writeFileX() called')
+  t.ok(fsStub.called, 'fs.writeFileXSync() called')
+  t.ok(loggerSuccessStub.calledWith('▣ generated (.env.example)'), 'logger.success')
   stub.restore()
   fsStub.restore()
+  loggerSuccessStub.restore()
 
   ct.end()
 })
@@ -41,7 +45,8 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
     addedKeys: []
   })
 
-  const fsStub = sinon.stub(fsx, 'writeFileX')
+  const fsStub = sinon.stub(fsx, 'writeFileXSync')
+  const loggerNeutralStub = sinon.stub(logger, 'info')
 
   const optsStub = sinon.stub().returns({})
   const fakeContext = {
@@ -52,9 +57,11 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
   genexample.call(fakeContext, '.')
 
   t.ok(stub.called, 'main.genexample() called')
-  t.ok(fsStub.called, 'fsx.writeFileX() called')
+  t.ok(fsStub.called, 'fsx.writeFileXSync() called')
+  t.ok(loggerNeutralStub.calledWith('○ no change (.env.example)'), 'logger.info')
   stub.restore()
   fsStub.restore()
+  loggerNeutralStub.restore()
 
   ct.end()
 })

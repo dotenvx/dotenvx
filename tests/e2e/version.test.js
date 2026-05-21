@@ -23,3 +23,11 @@ t.test('#--version', ct => {
 
   ct.end()
 })
+
+t.test('#--help hides armor alias', ct => {
+  const output = execShell(`${dotenvx} --help`)
+
+  ct.notMatch(output, /\barmor\b/, 'armor alias is hidden from help output')
+
+  ct.end()
+})

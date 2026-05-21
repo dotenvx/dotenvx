@@ -25,7 +25,7 @@ Try it:
   $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
   $ dotenvx run -f .env -- node index.js
-  [dotenvx] injecting env (1) from .env
+  [dotenvx] injected env (1) from .env
   Hello World
   \`\`\`
   `
@@ -81,11 +81,11 @@ Examples:
   $ dotenvx ext gitignore --pattern .env.keys
   \`\`\`
 
-Try it:
+  Try it:
 
   \`\`\`
   $ dotenvx ext gitignore
-  ✔ ignored .env* (.gitignore)
+  ▣ ignored .env* (.gitignore)
   \`\`\`
   `
   t.equal(gitignore(), expected)

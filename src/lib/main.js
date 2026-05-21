@@ -7,19 +7,20 @@ const { getColor, bold } = require('./../shared/colors')
 
 // services
 const Ls = require('./services/ls')
+const Doctor = require('./services/doctor')
 const Run = require('./services/run')
 const Sets = require('./services/sets')
 const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
-const Radar = require('./services/radar')
-const Ops = require('./services/ops')
+const Session = require('./../db/session')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
+const { determine } = require('./helpers/envResolution')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
-const isIgnoringDotenvKeys = require('./helpers/isIgnoringDotenvKeys')
+const localDisplayPath = require('./helpers/localDisplayPath')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -41,45 +42,32 @@ const config = function (options = {}) {
   // envKeysFile
   const envKeysFile = options.envKeysFile
 
-  // DOTENV_KEY (DEPRECATED)
-  let DOTENV_KEY = process.env.DOTENV_KEY
-  if (options && options.DOTENV_KEY) {
-    DOTENV_KEY = options.DOTENV_KEY
-  }
-
-  // dotenvx-ops related
-  const opsOn = options.opsOff !== true
-
   if (options) {
     setLogLevel(options)
     setLogName(options)
     setLogVersion(options)
   }
 
+  // dotenvx-ops related
+  const noOps = resolveNoOps(options)
+
   try {
-    const envs = buildEnvs(options, DOTENV_KEY)
+    let envs = buildEnvs(options)
+    if (!options.envs) {
+      envs = determine(envs, processEnv)
+    }
     const {
-      beforeEnv,
-      afterEnv,
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, DOTENV_KEY, processEnv, envKeysFile, opsOn).run()
-
-    if (opsOn) {
-      try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
-      try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
-    }
+    } = new Run(envs, overload, processEnv, envKeysFile, noOps, {
+      noSpinner: options.noSpinner
+    }).runSync()
 
     let lastError
     /** @type {Record<string, string>} */
     const parsedAll = {}
     for (const processedEnv of processedEnvs) {
-      if (processedEnv.type === 'envVaultFile') {
-        logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-        logger.debug(`decrypting encrypted env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-      }
-
       if (processedEnv.type === 'envFile') {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
@@ -96,16 +84,10 @@ const config = function (options = {}) {
 
         if (error.code === 'MISSING_ENV_FILE') {
           if (!options.convention) { // do not output error for conventions (too noisy)
-            logger.error(error.message)
-            if (error.help) {
-              logger.error(error.help)
-            }
+            logger.error(error.messageWithHelp)
           }
         } else {
-          logger.error(error.message)
-          if (error.help) {
-            logger.error(error.help)
-          }
+          logger.error(error.messageWithHelp)
         }
       }
 
@@ -128,7 +110,7 @@ const config = function (options = {}) {
       }
     }
 
-    let msg = `injecting env (${uniqueInjectedKeys.length})`
+    let msg = `injected env (${uniqueInjectedKeys.length})`
     if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
     }
@@ -142,10 +124,7 @@ const config = function (options = {}) {
   } catch (error) {
     if (strict) throw error // throw immediately if strict
 
-    logger.error(error.message)
-    if (error.help) {
-      logger.help(error.help)
-    }
+    logger.error(error.messageWithHelp)
 
     return { parsed: {}, error }
   }
@@ -169,10 +148,7 @@ const parse = function (src, options = {}) {
 
   // display any errors
   for (const error of errors) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    logger.error(error.messageWithHelp)
   }
 
   return parsed
@@ -196,12 +172,13 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
+  const noOps = resolveNoOps(options)
 
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath).run()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noOps).runSync()
 
   let withEncryption = ''
 
@@ -213,43 +190,44 @@ const set = function (key, value, options = {}) {
     logger.verbose(`setting for ${processedEnv.envFilepath}`)
 
     if (processedEnv.error) {
-      if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-        logger.warn(processedEnv.error.message)
-        logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx set]`)
-      } else {
-        logger.warn(processedEnv.error.message)
-        if (processedEnv.error.help) {
-          logger.help(processedEnv.error.help)
-        }
-      }
+      const error = processedEnv.error
+      const message = error.messageWithHelp || (error.help ? `${error.message}. ${error.help}` : error.message)
+      logger.warn(message)
     } else {
-      fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+      fsx.writeFileXSync(processedEnv.filepath, processedEnv.envSrc)
 
       logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
       logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)
     }
   }
 
+  let keyAddedSuffix = ''
+  const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+  const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+
+  if (localKeyAddedEnv) {
+    keyAddedSuffix = ` + local key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
+  }
+  if (remoteKeyAddedEnv) {
+    keyAddedSuffix = ' + armored key ⛨'
+  }
+
   if (changedFilepaths.length > 0) {
-    logger.success(`✔ set ${key}${withEncryption} (${changedFilepaths.join(',')})`)
+    if (encrypt) {
+      logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
+    } else {
+      logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
+    }
+  } else if (encrypt && localKeyAddedEnv) {
+    const keyAddedEnvFilepath = localKeyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
+    logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
   } else if (unchangedFilepaths.length > 0) {
-    logger.info(`no changes (${unchangedFilepaths})`)
+    logger.info(`○ no change (${unchangedFilepaths})`)
   } else {
     // do nothing
   }
 
-  for (const processedEnv of processedEnvs) {
-    if (processedEnv.privateKeyAdded) {
-      logger.success(`✔ key added to ${processedEnv.envKeysFilepath} (${processedEnv.privateKeyName})`)
-      logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
-
-      if (!isIgnoringDotenvKeys()) {
-        logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
-      }
-
-      logger.help(`⮕  next run: [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get ${key}] to test decryption locally`)
-    }
-  }
+  // intentionally quiet: success line communicates key creation
 
   return {
     processedEnvs,
@@ -261,11 +239,12 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
+  const noOps = resolveNoOps(options)
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile).run()
+  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noOps).runSync()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
@@ -274,10 +253,7 @@ const get = function (key, options = {}) {
 
     if (options.strict) throw error // throw immediately if strict
 
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    logger.error(error.messageWithHelp)
   }
 
   if (key) {
@@ -304,6 +280,14 @@ const get = function (key, options = {}) {
       inline = inline.trim()
 
       return inline
+    } else if (options.format === 'colon') {
+      let inline = ''
+      for (const [key, value] of Object.entries(parsed)) {
+        inline += `${key}:${value} `
+      }
+      inline = inline.trim()
+
+      return inline
     } else {
       return parsed
     }
@@ -315,19 +299,28 @@ const ls = function (directory, envFile, excludeEnvFile) {
   return new Ls(directory, envFile, excludeEnvFile).run()
 }
 
+const doctor = function (directory) {
+  return new Doctor(directory).run()
+}
+
 /** @type {import('./main').genexample} */
 const genexample = function (directory, envFile) {
   return new Genexample(directory, envFile).run()
 }
 
 /** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null) {
-  const keypairs = new Keypair(envFile, envKeysFile).run()
+const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
+  const keypairs = new Keypair(envFile, envKeysFile, noOps).runSync()
   if (key) {
     return keypairs[key]
   } else {
     return keypairs
   }
+}
+
+function resolveNoOps (options = {}) {
+  const sesh = new Session()
+  return options.noOps === true || options.opsOff === true || sesh.noOpsSync()
 }
 
 module.exports = {
@@ -338,9 +331,10 @@ module.exports = {
   set,
   get,
   ls,
+  doctor,
   keypair,
   genexample,
-  // expose for libs depending on @dotenvx/dotenvx - like dotenvx-radar
+  // expose for libs depending on @dotenvx/dotenvx - like dotenvx-ops
   setLogLevel,
   logger,
   getColor,

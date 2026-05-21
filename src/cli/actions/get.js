@@ -2,17 +2,21 @@ const { logger } = require('./../../shared/logger')
 
 const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
-
+const catchAndLog = require('./../../lib/helpers/catchAndLog')
+const createSpinner = require('../../lib/helpers/createSpinner')
+const Session = require('../../db/session')
 const Get = require('./../../lib/services/get')
 
-function get (key) {
+async function get (key) {
+  const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'decrypting' })
+
+  logger.debug(`options: ${JSON.stringify(options)}`)
   if (key) {
     logger.debug(`key: ${key}`)
   }
 
-  const options = this.opts()
-  logger.debug(`options: ${JSON.stringify(options)}`)
-
+  const prettyPrint = options.prettyPrint || options.pp
   const ignore = options.ignore || []
 
   let envs = []
@@ -24,7 +28,9 @@ function get (key) {
   }
 
   try {
-    const { parsed, errors } = new Get(key, envs, options.overload, process.env.DOTENV_KEY, options.all, options.envKeysFile).run()
+    const sesh = new Session()
+    const noOps = options.ops === false || (await sesh.noOps())
+    const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noOps).run()
 
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict
@@ -33,12 +39,10 @@ function get (key) {
         continue // ignore error
       }
 
-      logger.error(error.message)
-      if (error.help) {
-        logger.error(error.help)
-      }
+      logger.error(error.messageWithHelp)
     }
 
+    if (spinner) spinner.stop()
     if (key) {
       const single = parsed[key]
       if (single === undefined) {
@@ -63,9 +67,17 @@ function get (key) {
         inline = inline.trim()
 
         console.log(inline)
+      } else if (options.format === 'colon') {
+        let inline = ''
+        for (const [key, value] of Object.entries(parsed)) {
+          inline += `${key}:${value} `
+        }
+        inline = inline.trim()
+
+        console.log(inline)
       } else {
         let space = 0
-        if (options.prettyPrint) {
+        if (prettyPrint) {
           space = 2
         }
 
@@ -73,10 +85,8 @@ function get (key) {
       }
     }
   } catch (error) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    if (spinner) spinner.stop()
+    catchAndLog(error)
     process.exit(1)
   }
 }

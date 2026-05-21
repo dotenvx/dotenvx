@@ -15,7 +15,7 @@ t.test('#run (exists and already includes dotenvx ext precommit) does nothing', 
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx ext precommit exists [.git/hooks/pre-commit]')
+  ct.same(successMessage, '▣ dotenvx ext precommit exists [.git/hooks/pre-commit]')
 
   // restore stubs
   existsStub.restore()
@@ -36,7 +36,7 @@ t.test('#run (exists but does not include dotenvx ext precommit) appends', ct =>
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx ext precommit appended [.git/hooks/pre-commit]')
+  ct.same(successMessage, '▣ dotenvx ext precommit appended [.git/hooks/pre-commit]')
 
   t.ok(appendFileSyncStub.called, 'fsx.appendFileSync should be called')
 
@@ -52,16 +52,16 @@ t.test('#run (does not exist) creates', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
-  const writeFileXStub = sinon.stub(fsx, 'writeFileX')
+  const writeFileXStub = sinon.stub(fsx, 'writeFileXSync')
   const chmodSyncStub = sinon.stub(fsx, 'chmodSync')
 
   existsStub.returns(false)
 
   const { successMessage } = installPrecommitHook.run()
 
-  ct.same(successMessage, 'dotenvx ext precommit installed [.git/hooks/pre-commit]')
+  ct.same(successMessage, '▣ dotenvx ext precommit installed [.git/hooks/pre-commit]')
 
-  t.ok(writeFileXStub.called, 'fsx.writeFileX should be called')
+  t.ok(writeFileXStub.called, 'fsx.writeFileXSync should be called')
   t.ok(chmodSyncStub.called, 'fsx.chomdSyncStub should be called')
 
   // restore stubs
@@ -76,7 +76,7 @@ t.test('#run (fs throws an error) logs error', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
   const existsStub = sinon.stub(installPrecommitHook, '_exists')
-  const writeFileXStub = sinon.stub(fsx, 'writeFileX').throws(new Error('Mock Error'))
+  const writeFileXStub = sinon.stub(fsx, 'writeFileXSync').throws(new Error('Mock Error'))
 
   existsStub.returns(false)
 
@@ -84,7 +84,7 @@ t.test('#run (fs throws an error) logs error', ct => {
     installPrecommitHook.run()
     ct.fail('should have raised an error but did not')
   } catch (error) {
-    ct.same(error.message, 'failed to modify pre-commit hook: Mock Error')
+    ct.same(error.message, '[PRECOMMIT_HOOK_MODIFY_FAILED] failed to modify pre-commit hook: Mock Error')
   }
 
   // restore stubs
@@ -115,7 +115,7 @@ t.test('#_exists true/false', ct => {
 t.test('#_currentHook', ct => {
   const installPrecommitHook = new InstallPrecommitHook()
 
-  const readFileXStub = sinon.stub(fsx, 'readFileX')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
 
   readFileXStub.returns('some file')
   const result = installPrecommitHook._currentHook()

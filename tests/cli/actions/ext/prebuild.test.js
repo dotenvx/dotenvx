@@ -31,7 +31,7 @@ t.test('prebuild - successMessage', (ct) => {
 
 t.test('prebuild - success with warnings', (ct) => {
   const warning = new Error('.dockerignore missing')
-  warning.help = '? add it with [touch .dockerignore]'
+  warning.messageWithHelp = '.dockerignore missing. fix: [touch .dockerignore]'
   // Stub the Prebuild service
   sinon.stub(Prebuild.prototype, 'run').returns({
     successMessage: 'success (with 1 warning)',
@@ -40,13 +40,11 @@ t.test('prebuild - success with warnings', (ct) => {
 
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerWarnStub = sinon.stub(logger, 'warn')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   prebuild.call(fakeContext)
 
   ct.ok(loggerSuccessStub.calledWith('success (with 1 warning)'), 'logger.success logs')
-  ct.ok(loggerWarnStub.calledWith('.dockerignore missing'), 'logger.warn logs')
-  ct.ok(loggerHelpStub.calledWith('? add it with [touch .dockerignore]'), 'logger.help logs')
+  ct.ok(loggerWarnStub.calledWith('.dockerignore missing. fix: [touch .dockerignore]'), 'logger.warn logs')
 
   ct.end()
 })
@@ -54,18 +52,16 @@ t.test('prebuild - success with warnings', (ct) => {
 t.test('prebuild - error raised', (ct) => {
   sinon.stub(Prebuild.prototype, 'run').throws({
     message: 'An error occurred',
-    help: 'Help message for error'
+    messageWithHelp: 'An error occurred. fix: [https://github.com/dotenvx/dotenvx/issues/NEEDED]'
   })
 
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
-  const loggerHelpStub = sinon.stub(logger, 'help')
 
   prebuild.call(fakeContext)
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
-  ct.ok(loggerErrorStub.calledWith('An error occurred'), 'logger.success logs')
-  ct.ok(loggerHelpStub.calledWith('Help message for error'), 'logger.help logs')
+  ct.ok(loggerErrorStub.calledWith('An error occurred. fix: [https://github.com/dotenvx/dotenvx/issues/NEEDED]'), 'logger.success logs')
 
   ct.end()
 })

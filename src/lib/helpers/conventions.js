@@ -1,3 +1,5 @@
+const Errors = require('./errors')
+
 function conventions (convention) {
   const env = process.env.DOTENV_ENV || process.env.NODE_ENV || 'development'
 
@@ -19,7 +21,7 @@ function conventions (convention) {
       { type: 'envFile', value: '.env.defaults' }
     ]
   } else {
-    throw new Error(`INVALID_CONVENTION: '${convention}'. permitted conventions: ['nextjs', 'flow']`)
+    throw new Errors({ convention }).invalidConvention()
   }
 }
 

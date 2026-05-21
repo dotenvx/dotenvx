@@ -1,7 +1,7 @@
 {
-  "version": "1.52.0",
+  "version": "1.66.0",
   "name": "@dotenvx/dotenvx",
-  "description": "a secure dotenv–from the creator of `dotenv`",
+  "description": "secrets for agents–from the creator of `dotenv`",
   "author": "@motdotla",
   "keywords": [
     "dotenv",
@@ -35,8 +35,8 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
-    "test-coverage": "tap run --show-full-coverage --timeout=60000",
+    "test": "tap run --test-env=DOTENVX_NO_OPS=true --allow-empty-coverage --disable-coverage --timeout=60000",
+    "test-coverage": "tap run --test-env=DOTENVX_NO_OPS=true --show-full-coverage --timeout=60000",
     "testshell": "bash shellspec",
     "prerelease": "npm test && npm run testshell",
     "release": "standard-version"
@@ -50,11 +50,12 @@
     "fdir": "^6.2.0",
     "ignore": "^5.3.0",
     "object-treeify": "1.1.33",
-    "picomatch": "^4.0.2",
-    "which": "^4.0.0"
+    "picomatch": "^4.0.4",
+    "which": "^4.0.0",
+    "yocto-spinner": "^1.1.0"
   },
   "devDependencies": {
-    "@yao-pkg/pkg": "^5.14.2",
+    "@yao-pkg/pkg": "^6.14.2",
     "capture-console": "^1.0.2",
     "esbuild": "^0.25.8",
     "proxyquire": "^2.1.3",

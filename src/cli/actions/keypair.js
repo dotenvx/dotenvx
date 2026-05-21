@@ -1,23 +1,39 @@
 const { logger } = require('./../../shared/logger')
 
-const main = require('./../../lib/main')
+const Keypair = require('./../../lib/services/keypair')
+const createSpinner = require('../../lib/helpers/createSpinner')
+const Session = require('../../db/session')
 
-function keypair (key) {
+async function keypair (key) {
+  const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'retrieving' })
+
+  logger.debug(`options: ${JSON.stringify(options)}`)
   if (key) {
     logger.debug(`key: ${key}`)
   }
 
-  const options = this.opts()
-  logger.debug(`options: ${JSON.stringify(options)}`)
+  const prettyPrint = options.prettyPrint || options.pp
 
-  const results = main.keypair(options.envFile, key, options.envKeysFile)
+  const sesh = new Session()
+  const noOps = options.ops === false || await sesh.noOps()
+  const keypairs = await new Keypair(options.envFile, options.envKeysFile, noOps).run()
+  const results = key ? keypairs[key] : keypairs
 
+  if (spinner) spinner.stop()
   if (typeof results === 'object' && results !== null) {
-    // inline shell format - env $(dotenvx keypair --format=shell) your-command
     if (options.format === 'shell') {
       let inline = ''
-      for (const [key, value] of Object.entries(results)) {
-        inline += `${key}=${value || ''} `
+      for (const [keyName, value] of Object.entries(results)) {
+        inline += `${keyName}=${value || ''} `
+      }
+      inline = inline.trim()
+
+      console.log(inline)
+    } else if (options.format === 'colon') {
+      let inline = ''
+      for (const [keyName, value] of Object.entries(results)) {
+        inline += `${keyName}:${value || ''} `
       }
       inline = inline.trim()
 
@@ -25,7 +41,7 @@ function keypair (key) {
     // json format
     } else {
       let space = 0
-      if (options.prettyPrint) {
+      if (prettyPrint) {
         space = 2
       }
 
@@ -35,6 +51,8 @@ function keypair (key) {
     if (results === undefined) {
       console.log('')
       process.exit(1)
+    } else if (options.format === 'colon' && key) {
+      console.log(`${key}:${results}`)
     } else {
       console.log(results)
     }

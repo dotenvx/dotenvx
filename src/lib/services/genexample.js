@@ -17,14 +17,7 @@ class Genexample {
 
   run () {
     if (this.envFile.length < 1) {
-      const code = 'MISSING_ENV_FILES'
-      const message = 'no .env* files found'
-      const help = '? add one with [echo "HELLO=World" > .env] and then run [dotenvx genexample]'
-
-      const error = new Error(message)
-      error.code = code
-      error.help = help
-      throw error
+      throw new Errors().missingEnvFiles()
     }
 
     const keys = new Set()
@@ -46,7 +39,7 @@ class Genexample {
       }
 
       // get the original src
-      let src = fsx.readFileX(filepath)
+      let src = fsx.readFileXSync(filepath)
       const parsed = dotenvParse(src)
       for (const key in parsed) {
         // used later
@@ -70,7 +63,7 @@ class Genexample {
       }
     } else {
       // it already exists (which means the user might have it modified a way in which they prefer, so replace exampleSrc with their existing .env.example)
-      exampleSrc = fsx.readFileX(this.exampleFilepath)
+      exampleSrc = fsx.readFileXSync(this.exampleFilepath)
 
       const parsed = dotenvParse(exampleSrc)
       for (const key of [...keys]) {

@@ -1,5 +1,5 @@
 const t = require('tap')
-const isEncrypted = require('../../../src/lib/helpers/isEncrypted')
+const isEncrypted = require('../../../src/lib/helpers/cryptography/isEncrypted')
 
 t.test('#isEncrypted', ct => {
   const result = isEncrypted('encrypted:1234')

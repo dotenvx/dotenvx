@@ -4,24 +4,32 @@ const { logger } = require('./../../shared/logger')
 const Rotate = require('./../../lib/services/rotate')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
-const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
+const createSpinner = require('../../lib/helpers/createSpinner')
+const localDisplayPath = require('../../lib/helpers/localDisplayPath')
+const Session = require('../../db/session')
 
-function rotate () {
+async function rotate () {
   const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'rotating', frames: ['⟳', '⤾', '⥁'] })
+
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
+  const sesh = new Session()
+  const noOps = options.ops === false || (await sesh.noOps())
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile).run()
-
+    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
+    if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
-      console.log('')
-      console.log(processedEnv.envKeysSrc)
+      if (processedEnv.localPrivateKeyAdded) {
+        console.log('')
+        console.log(processedEnv.envKeysSrc)
+      }
     }
     process.exit(0) // exit early
   } else {
@@ -30,51 +38,45 @@ function rotate () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Rotate(envs, options.key, options.excludeKey, options.envKeysFile).run()
+      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noOps).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`rotating ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         if (processedEnv.error) {
-          if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-            logger.warn(processedEnv.error.message)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx rotate]`)
-          } else {
-            logger.warn(processedEnv.error.message)
-            if (processedEnv.error.help) {
-              logger.help(processedEnv.error.help)
-            }
-          }
+          logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
-          fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+          if (processedEnv.localPrivateKeyAdded) {
+            await fsx.writeFileX(processedEnv.envKeysFilepath, processedEnv.envKeysSrc)
+          }
 
           logger.verbose(`rotated ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
-          logger.verbose(`no changes ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+          logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
       }
 
+      if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        logger.success(`✔ rotated (${changedFilepaths.join(',')})`)
+        const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+        const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+
+        let msg = `⟳ rotated (${changedFilepaths.join(',')})`
+        if (localKeyAddedEnv) {
+          const envKeysFilepath = localDisplayPath(localKeyAddedEnv.envKeysFilepath)
+          msg += ` + local key (${envKeysFilepath})`
+        }
+        if (remoteKeyAddedEnv) {
+          msg += ' + armored key ⛨'
+        }
+        logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`no changes (${unchangedFilepaths})`)
+        logger.info(`○ no change (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
       }
-
-      for (const processedEnv of processedEnvs) {
-        if (processedEnv.privateKeyAdded) {
-          logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
-          logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
-
-          if (!isIgnoringDotenvKeys()) {
-            logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
-          }
-
-          logger.help(`⮕  next run: [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx get] to test decryption locally`)
-        }
-      }
     } catch (error) {
+      if (spinner) spinner.stop()
       catchAndLog(error)
       process.exit(1)
     }

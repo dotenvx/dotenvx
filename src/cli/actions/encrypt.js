@@ -4,20 +4,34 @@ const { logger } = require('./../../shared/logger')
 const Encrypt = require('./../../lib/services/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
-const isIgnoringDotenvKeys = require('../../lib/helpers/isIgnoringDotenvKeys')
+const localDisplayPath = require('../../lib/helpers/localDisplayPath')
+const createSpinner = require('../../lib/helpers/createSpinner')
+const Session = require('../../db/session')
 
-function encrypt () {
+async function encrypt () {
   const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'encrypting' })
+
   logger.debug(`options: ${JSON.stringify(options)}`)
 
+  const sesh = new Session()
   const envs = this.envs
+  const noOps = options.ops === false || (!options.token && (await sesh.noOps()))
+  const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
-
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, {
+      beforeOpsKeypair: () => {
+        if (spinner) spinner.stop()
+      },
+      afterOpsKeypair: () => {
+        if (spinner) spinner.start('encrypting')
+      }
+    }).run()
+    if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
     }
@@ -28,50 +42,48 @@ function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, {
+        beforeOpsKeypair: () => {
+          if (spinner) spinner.stop()
+        },
+        afterOpsKeypair: () => {
+          if (spinner) spinner.start('encrypting')
+        }
+      }).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         if (processedEnv.error) {
-          if (processedEnv.error.code === 'MISSING_ENV_FILE') {
-            logger.warn(processedEnv.error.message)
-            logger.help(`? add one with [echo "HELLO=World" > ${processedEnv.envFilepath}] and re-run [dotenvx encrypt]`)
-          } else {
-            logger.warn(processedEnv.error.message)
-            if (processedEnv.error.help) {
-              logger.help(processedEnv.error.help)
-            }
-          }
+          logger.warn(processedEnv.error.messageWithHelp)
         } else if (processedEnv.changed) {
-          fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
           logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         } else {
-          logger.verbose(`no changes ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+          logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
       }
 
+      if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        logger.success(`✔ encrypted (${changedFilepaths.join(',')})`)
+        const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+        const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+        let msg = `◈ encrypted (${changedFilepaths.join(',')})`
+        if (localKeyAddedEnv) {
+          const envKeysFilepath = localDisplayPath(localKeyAddedEnv.envKeysFilepath)
+          msg += ` + local key (${envKeysFilepath})`
+        }
+        if (remoteKeyAddedEnv) {
+          msg += ' + armored key ⛨'
+        }
+        logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`no changes (${unchangedFilepaths})`)
+        logger.info(`○ no change (${unchangedFilepaths})`)
       } else {
         // do nothing - scenario when no .env files found
       }
-
-      for (const processedEnv of processedEnvs) {
-        if (processedEnv.privateKeyAdded) {
-          logger.success(`✔ key added to .env.keys (${processedEnv.privateKeyName})`)
-          logger.help('⮕  optional: [dotenvx ops backup] to securely backup private key')
-
-          if (!isIgnoringDotenvKeys()) {
-            logger.help('⮕  next run: [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys')
-          }
-
-          logger.help(`⮕  next run: [${processedEnv.privateKeyName}='${processedEnv.privateKey}' dotenvx run -- yourcommand] to test decryption locally`)
-        }
-      }
     } catch (error) {
+      if (spinner) spinner.stop()
       catchAndLog(error)
       process.exit(1)
     }

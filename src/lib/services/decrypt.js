@@ -5,28 +5,39 @@ const picomatch = require('picomatch')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
-const { findPrivateKey } = require('./../helpers/findPrivateKey')
-const decryptKeyValue = require('./../helpers/decryptKeyValue')
-const isEncrypted = require('./../helpers/isEncrypted')
-const dotenvParse = require('./../helpers/dotenvParse')
+
+const {
+  determine
+} = require('./../helpers/envResolution')
+
+const {
+  keyNames,
+  keyValues
+} = require('./../helpers/keyResolution')
+
+const {
+  decryptKeyValue,
+  isEncrypted
+} = require('./../helpers/cryptography')
+
 const replace = require('./../helpers/replace')
+const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
-const determineEnvs = require('./../helpers/determineEnvs')
 
 class Decrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null) {
-    this.envs = determineEnvs(envs, process.env)
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false) {
+    this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
+    this.noOps = noOps
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
     this.unchangedFilepaths = new Set()
   }
 
-  run () {
+  async run () {
     // example
     // envs [
     //   { type: 'envFile', value: '.env' }
@@ -40,7 +51,7 @@ class Decrypt {
 
     for (const env of this.envs) {
       if (env.type === TYPE_ENV_FILE) {
-        this._decryptEnvFile(env.value)
+        await this._decryptEnvFile(env.value)
       }
     }
 
@@ -51,7 +62,7 @@ class Decrypt {
     }
   }
 
-  _decryptEnvFile (envFilepath) {
+  async _decryptEnvFile (envFilepath) {
     const row = {}
     row.keys = []
     row.type = TYPE_ENV_FILE
@@ -61,18 +72,18 @@ class Decrypt {
     row.envFilepath = envFilepath
 
     try {
-      const encoding = this._detectEncoding(filepath)
-      let envSrc = fsx.readFileX(filepath, { encoding })
-      const envParsed = dotenvParse(envSrc)
+      const encoding = await detectEncoding(filepath)
+      let envSrc = await fsx.readFileX(filepath, { encoding })
+      const envParsed = dotenvParse(envSrc, false, false, true)
 
-      const privateKey = findPrivateKey(envFilepath, this.envKeysFilepath)
-      const privateKeyName = guessPrivateKeyName(envFilepath)
+      const { privateKeyName } = keyNames(envFilepath)
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
 
-      row.privateKey = privateKey
+      row.privateKey = privateKeyValue
       row.privateKeyName = privateKeyName
       row.changed = false // track possible changes
 
-      for (const [key, value] of Object.entries(envParsed)) {
+      for (const [key, values] of Object.entries(envParsed)) {
         // key excluded - don't decrypt it
         if (this.exclude(key)) {
           continue
@@ -83,13 +94,20 @@ class Decrypt {
           continue
         }
 
-        const encrypted = isEncrypted(value)
+        const encrypted = values.some(value => isEncrypted(value))
         if (encrypted) {
           row.keys.push(key) // track key(s)
 
-          const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKey)
+          const decryptedValues = values.map(value => {
+            if (!isEncrypted(value)) {
+              return value
+            }
+
+            return decryptKeyValue(key, value, privateKeyName, privateKeyValue)
+          })
+
           // once newSrc is built write it out
-          envSrc = replace(envSrc, key, decryptedValue)
+          envSrc = replace(envSrc, key, decryptedValues)
 
           row.changed = true // track change
         }
@@ -126,10 +144,6 @@ class Decrypt {
     }
 
     return this.excludeKey
-  }
-
-  _detectEncoding (filepath) {
-    return detectEncoding(filepath)
   }
 }
 

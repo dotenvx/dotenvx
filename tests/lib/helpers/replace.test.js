@@ -1693,6 +1693,29 @@ BAR=`)
   ct.end()
 })
 
+t.test('#replace when dotted key is blank does not count newlines from regex-like key', ct => {
+  const src = `# Similar key with extra newlines
+DxOyTzS=
+
+
+# Dotted key
+D.O.T.S=
+# My Bar
+BAR=`
+
+  const newSrc = replace(src, 'D.O.T.S', 'encrypted:1234')
+  ct.same(newSrc, `# Similar key with extra newlines
+DxOyTzS=
+
+
+# Dotted key
+D.O.T.S=encrypted:1234
+# My Bar
+BAR=`)
+
+  ct.end()
+})
+
 t.test('#replace when single quotes and newline', ct => {
   const src = `# My blank foo
 FOO=''
@@ -1744,15 +1767,123 @@ BAR=`)
   ct.end()
 })
 
-t.test('#replace doesn\'t replace all duplicate keys. replaces the last.', ct => {
+t.test('#replace replaces all duplicate keys.', ct => {
   const src = `# duplicate keys
 HELLO=one
 HELLO=two`
 
   const newSrc = replace(src, 'HELLO', 'encrypted:1234')
   ct.same(newSrc, `# duplicate keys
-HELLO=one
+HELLO=encrypted:1234
 HELLO=encrypted:1234`)
+
+  ct.end()
+})
+
+t.test('#replace replaces duplicate keys with replacement values in order.', ct => {
+  const src = `# duplicate keys
+HELLO=one
+HELLO=two`
+
+  const newSrc = replace(src, 'HELLO', ['encrypted:one', 'encrypted:two'])
+  ct.same(newSrc, `# duplicate keys
+HELLO=encrypted:one
+HELLO=encrypted:two`)
+
+  ct.end()
+})
+
+t.test('#replace replaces ten duplicate keys with plaintext replacement values in order.', ct => {
+  const src = `# duplicate keys
+HELLO=one
+HELLO=two
+HELLO=three
+HELLO=four
+HELLO=five
+HELLO=six
+HELLO=seven
+HELLO=eight
+HELLO=nine
+HELLO=ten`
+
+  const newSrc = replace(src, 'HELLO', [
+    'plaintext:one',
+    'plaintext:two',
+    'plaintext:three',
+    'plaintext:four',
+    'plaintext:five',
+    'plaintext:six',
+    'plaintext:seven',
+    'plaintext:eight',
+    'plaintext:nine',
+    'plaintext:ten'
+  ])
+
+  ct.same(newSrc, `# duplicate keys
+HELLO=plaintext:one
+HELLO=plaintext:two
+HELLO=plaintext:three
+HELLO=plaintext:four
+HELLO=plaintext:five
+HELLO=plaintext:six
+HELLO=plaintext:seven
+HELLO=plaintext:eight
+HELLO=plaintext:nine
+HELLO=plaintext:ten`)
+
+  ct.end()
+})
+
+t.test('#replace replaces ten duplicate keys with encrypted replacement values in order.', ct => {
+  const src = `# duplicate keys
+HELLO=one
+HELLO=two
+HELLO=three
+HELLO=four
+HELLO=five
+HELLO=six
+HELLO=seven
+HELLO=eight
+HELLO=nine
+HELLO=ten`
+
+  const newSrc = replace(src, 'HELLO', [
+    'encrypted:one',
+    'encrypted:two',
+    'encrypted:three',
+    'encrypted:four',
+    'encrypted:five',
+    'encrypted:six',
+    'encrypted:seven',
+    'encrypted:eight',
+    'encrypted:nine',
+    'encrypted:ten'
+  ])
+
+  ct.same(newSrc, `# duplicate keys
+HELLO=encrypted:one
+HELLO=encrypted:two
+HELLO=encrypted:three
+HELLO=encrypted:four
+HELLO=encrypted:five
+HELLO=encrypted:six
+HELLO=encrypted:seven
+HELLO=encrypted:eight
+HELLO=encrypted:nine
+HELLO=encrypted:ten`)
+
+  ct.end()
+})
+
+t.test('#replace duplicate keys preserves dollar-sign replacement values literally.', ct => {
+  const src = `# duplicate keys
+HELLO=one
+HELLO=two`
+
+  const newSrc = replace(src, 'HELLO', ['$1$2', '$bar$baz$paz$1234'])
+  ct.same(newSrc, `# duplicate keys
+HELLO=$1$2
+HELLO=$bar$baz$paz$1234`)
 
   ct.end()
 })

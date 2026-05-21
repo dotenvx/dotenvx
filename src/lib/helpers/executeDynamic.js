@@ -2,6 +2,33 @@ const path = require('path')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
 
+function installCommandForOps () {
+  return 'curl -sfS https://dotenvx.sh/ops | sh'
+}
+
+function opsBanner (installCommand) {
+  const lines = [
+    '',
+    '   ██████╗ ██████╗ ███████╗',
+    '  ██╔═══██╗██╔══██╗██╔════╝',
+    '  ██║   ██║██████╔╝███████╗',
+    '  ██║   ██║██╔═══╝ ╚════██║  [www.dotenvx.com/ops]',
+    '  ╚██████╔╝██║     ███████║',
+    '   ╚═════╝ ╚═╝     ╚══════╝',
+    '',
+    '  ⛨  ARMORED KEYS: Harden your private keys.',
+    `  ⮕  install [${installCommand}]`,
+    '  ⮕  then run [dotenvx-ops login]'
+  ]
+
+  const innerWidth = Math.max(67, ...lines.map((line) => line.length))
+  const top = ` ${'_'.repeat(innerWidth)}`
+  const middle = lines.map((line) => `|${line.padEnd(innerWidth)}|`).join('\n')
+  const bottom = `|${'_'.repeat(innerWidth)}|`
+
+  return `${top}\n${middle}\n${bottom}`
+}
+
 function executeDynamic (program, command, rawArgs) {
   if (!command) {
     program.outputHelp()
@@ -22,31 +49,9 @@ function executeDynamic (program, command, rawArgs) {
 
   const result = childProcess.spawnSync(`dotenvx-${command}`, forwardedArgs, { stdio: 'inherit', env })
   if (result.error) {
-    if (command === 'radar') {
-      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 📡`)
-      logger.warn('[DEPRECATION NOTICE] dotenvx-radar to be sunsetted soon (2026) and its featureset to be rolled into dotenvx-ops')
-      logger.help('? see installation instructions [https://dotenvx.com/radar]')
-    } else if (command === 'ops') {
-      const ops = ` _______________________________________________________________________
-|                                                                       |
-|  dotenvx-ops: production grade dotenvx–with operational primitives    |
-|                                                                       |
-|  ░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓███████▓▒░                              |
-| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
-| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░                                     |
-| ░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░ ░▒▓██████▓▒░                               |
-| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
-| ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░                              |
-|  ░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░                               |
-|                                                                       |
-|  Learn more at https://dotenvx.com/ops                                |
-|_______________________________________________________________________|`
-
-      console.log(ops)
-      console.log('')
-      logger.warn(`[INSTALLATION_NEEDED] install dotenvx-${command} to use [dotenvx ${command}] 🏰`)
-      logger.help('⮕  next run: [curl -sfS https://dotenvx.sh/ops | sh]')
-      logger.help('⮕  see more: [https://dotenvx.com/ops]')
+    if (command === 'ops') {
+      const installCommand = installCommandForOps()
+      console.log(opsBanner(installCommand))
     } else {
       logger.info(`error: unknown command '${command}'`)
     }

@@ -30,8 +30,8 @@ t.test('scan - gitleaks not installed', (ct) => {
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(loggerErrorStub.calledWith('gitleaks: command not found'), 'logger.error logs')
-  ct.ok(loggerHelpStub.calledWith('? install gitleaks:      [brew install gitleaks]'), 'logger.help logs')
-  ct.ok(loggerHelpStub.calledWith('? other install options: [https://github.com/gitleaks/gitleaks]'), 'logger.help logs')
+  ct.ok(loggerHelpStub.calledWith('fix: install gitleaks:      [brew install gitleaks]'), 'logger.help logs')
+  ct.ok(loggerHelpStub.calledWith('fix: other install options: [https://github.com/gitleaks/gitleaks]'), 'logger.help logs')
 
   ct.end()
 })

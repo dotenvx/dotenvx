@@ -1,35 +1,47 @@
-const guessPublicKeyName = require('./../helpers/guessPublicKeyName')
-const smartDotenvPublicKey = require('./../helpers/smartDotenvPublicKey')
-const guessPrivateKeyName = require('./../helpers/guessPrivateKeyName')
-const smartDotenvPrivateKey = require('./../helpers/smartDotenvPrivateKey')
+const {
+  keyNames,
+  keyValues,
+  keyValuesSync
+} = require('./../helpers/keyResolution')
 
 class Keypair {
-  constructor (envFile = '.env', envKeysFilepath = null) {
+  constructor (envFile = '.env', envKeysFilepath = null, noOps = false) {
     this.envFile = envFile
     this.envKeysFilepath = envKeysFilepath
+    this.noOps = noOps
   }
 
-  run () {
+  runSync () {
     const out = {}
 
-    const envFilepaths = this._envFilepaths()
-    for (const envFilepath of envFilepaths) {
-      // public key
-      const publicKeyName = guessPublicKeyName(envFilepath)
-      const publicKeyValue = smartDotenvPublicKey(envFilepath)
+    const filepaths = this._filepaths()
+    for (const filepath of filepaths) {
+      const { publicKeyName, privateKeyName } = keyNames(filepath)
+      const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
+
       out[publicKeyName] = publicKeyValue
-
-      // private key
-      const privateKeyName = guessPrivateKeyName(envFilepath)
-      const privateKeyValue = smartDotenvPrivateKey(envFilepath, this.envKeysFilepath)
-
       out[privateKeyName] = privateKeyValue
     }
 
     return out
   }
 
-  _envFilepaths () {
+  async run () {
+    const out = {}
+
+    const filepaths = this._filepaths()
+    for (const filepath of filepaths) {
+      const { publicKeyName, privateKeyName } = keyNames(filepath)
+      const { publicKeyValue, privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
+
+      out[publicKeyName] = publicKeyValue
+      out[privateKeyName] = privateKeyValue
+    }
+
+    return out
+  }
+
+  _filepaths () {
     if (!Array.isArray(this.envFile)) {
       return [this.envFile]
     }

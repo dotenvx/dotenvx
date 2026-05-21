@@ -1,4 +1,5 @@
 const packageJson = require('../lib/helpers/packageJson')
+const Errors = require('../lib/helpers/errors')
 const { getColor, bold } = require('./colors')
 
 const levels = {
@@ -13,13 +14,14 @@ const levels = {
   silly: 6
 }
 
-const error = (m) => bold(getColor('red')(m))
-const warn = getColor('orangered')
-const success = getColor('green')
-const successv = getColor('olive') // yellow-ish tint that 'looks' like dotenv
+const error = (m) => bold(getColor('red')(`☠ ${m}`))
+const warn = (m) => getColor('orangered')(`⚠ ${m}`)
+const success = getColor('amber')
+const successv = (m) => getColor('amber')(`⟐ ${m}`)
+const info = getColor('gray')
 const help = getColor('dodgerblue')
-const verbose = getColor('plum')
-const debug = getColor('plum')
+const verbose = (m) => getColor('plum')(`┆ ${m}`)
+const debug = (m) => getColor('plum')(`┆ ${m}`)
 
 let currentLevel = levels.info // default log level
 let currentName = 'dotenvx' // default logger name
@@ -32,7 +34,7 @@ function stderr (level, message) {
 
 function stdout (level, message) {
   if (levels[level] === undefined) {
-    throw new Error(`MISSING_LOG_LEVEL: '${level}'. implement in logger.`)
+    throw new Errors({ level }).missingLogLevel()
   }
 
   if (levels[level] <= currentLevel) {
@@ -55,10 +57,10 @@ function formatMessage (level, message) {
     case 'success':
       return success(formattedMessage)
     case 'successv': // success with 'version'
-      return successv(`[${currentName}@${currentVersion}] ${formattedMessage}`)
+      return successv(`${formattedMessage} · ${currentName}@${currentVersion}`)
     // info
     case 'info':
-      return formattedMessage
+      return info(formattedMessage)
     // help
     case 'help':
       return help(formattedMessage)
@@ -119,7 +121,7 @@ function setLogLevel (options) {
   logger.setLevel(logLevel)
   // Only log which level it's setting if it's not set to quiet mode
   if (!options.quiet || (options.quiet && logLevel !== 'error')) {
-    logger.debug(`Setting log level to ${logLevel}`)
+    logger.debug(`setting log level to: ${logLevel}`)
   }
 }
 

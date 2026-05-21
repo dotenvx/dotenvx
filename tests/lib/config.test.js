@@ -78,7 +78,7 @@ t.test('sets values from both .env.local and .env. but neither is used as value 
 })
 
 t.test('takes option for path along with home directory char ~', ct => {
-  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('test=foo')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('test=foo')
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo') // for purpose of encoding check
   const mockedHomedir = '/Users/dummy'
   const homedirStub = sinon.stub(os, 'homedir').returns(mockedHomedir)
@@ -95,7 +95,7 @@ t.test('takes option for path along with home directory char ~', ct => {
 })
 
 t.test('reads path with encoding, parsing output to process.env', ct => {
-  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('BASIC=basic')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('BASIC=basic')
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo') // for purpose of encoding check
   const parseStub = sinon.stub(dotenvx, 'parse').returns({ BASIC: 'basic' })
 
@@ -183,7 +183,7 @@ t.test('returns parsed object', ct => {
 })
 
 t.test('returns any errors thrown from reading file or parsing', ct => {
-  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('test=foo')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('test=foo')
 
   readFileXStub.throws()
   const env = dotenvx.config()
@@ -199,7 +199,7 @@ t.test('logs any errors thrown from reading file or parsing when in debug mode',
   ct.plan(2)
 
   const consoleErrorStub = sinon.stub(console, 'error')
-  const readFileXStub = sinon.stub(fsx, 'readFileX').returns('test=foo')
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('test=foo')
 
   readFileXStub.throws()
   const env = dotenvx.config({ debug: true })
@@ -218,7 +218,7 @@ t.test('logs when in debug mode', ct => {
   dotenvx.config({ debug: true })
 
   ct.equal(logger.level, 'debug')
-  ct.ok(logStub.calledWith('Setting log level to debug'))
+  ct.ok(logStub.calledWith('setting log level to: debug'))
 
   logStub.restore()
 })
@@ -239,7 +239,7 @@ t.test('logs in verbose mode', ct => {
   dotenvx.config({ verbose: true })
 
   ct.equal(logger.level, 'verbose')
-  ct.ok(logStub.calledWith('Setting log level to verbose'))
+  ct.ok(logStub.calledWith('setting log level to: verbose'))
 
   logStub.restore()
 })
@@ -252,7 +252,7 @@ t.test('sets specific log level and logs it', ct => {
   dotenvx.config({ logLevel: 'warn' })
 
   ct.equal(logger.level, 'warn')
-  ct.ok(logStub.calledWith('Setting log level to warn'))
+  ct.ok(logStub.calledWith('setting log level to: warn'))
 
   logStub.restore()
 })
@@ -265,7 +265,7 @@ t.test('verbose mode overrides quiet mode', ct => {
   dotenvx.config({ quiet: true, verbose: true })
 
   ct.equal(logger.level, 'verbose')
-  ct.ok(logStub.calledWith('Setting log level to verbose'))
+  ct.ok(logStub.calledWith('setting log level to: verbose'))
 
   logStub.restore()
 })

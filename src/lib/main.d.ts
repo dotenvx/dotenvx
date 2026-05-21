@@ -51,6 +51,15 @@ export function parse<T extends DotenvParseOutput = DotenvParseOutput>(
 
 export interface DotenvConfigOptions {
   /**
+   * Specify explicit env sources. When set, `path` and `convention` are ignored.
+   *
+   * @default undefined
+   * @example require('@dotenvx/dotenvx').config({ envs: [{ type: 'envFile', value: '.env' }] })
+   * @example require('@dotenvx/dotenvx').config({ envs: [{ type: 'env', value: 'HELLO=World', privateKeyName: 'DOTENV_PRIVATE_KEY' }] })
+   */
+  envs?: DotenvConfigEnv[];
+
+  /**
    * Specify a custom path if your file containing environment variables is located elsewhere.
    * Can also be an array of strings, specifying multiple paths.
    *
@@ -113,10 +122,10 @@ export interface DotenvConfigOptions {
   envKeysFile?: string;
 
   /**
-   * Pass the DOTENV_KEY directly to config options. Defaults to looking for process.env.DOTENV_KEY environment variable. Note this only applies to decrypting .env.vault files. If passed as null or undefined, or not passed at all, dotenv falls back to its traditional job of parsing a .env file.
+   * Legacy option retained for compatibility.
    *
    * @default undefined
-   * @example require('@dotenvx/dotenvx').config({ DOTENV_KEY: 'dotenv://:key_1234…@dotenvx.com/vault/.env.vault?environment=production' })
+   * @example require('@dotenvx/dotenvx').config({ DOTENV_KEY: 'dotenv://:key_1234…' })
    */
   DOTENV_KEY?: string;
 
@@ -137,6 +146,14 @@ export interface DotenvConfigOptions {
 
   quiet?: boolean;
 
+  /**
+   * Disable spinner output from child Dotenvx Ops commands.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').config({ noSpinner: true })
+   */
+  noSpinner?: boolean;
+
   logLevel?:
     | 'error'
     | 'warn'
@@ -151,9 +168,29 @@ export interface DotenvConfigOptions {
    * Turn off Dotenvx Ops features - https://dotenvx.com/ops
    *
    * @default false
-   * @example require('@dotenvx/dotenvx').config({ opsOff: true })
+   * @example require('@dotenvx/dotenvx').config({ noOps: true })
+   */
+  noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
    */
   opsOff?: boolean;
+}
+
+export type DotenvConfigEnv =
+  | DotenvConfigEnvFile
+  | DotenvConfigEnvSrc;
+
+export interface DotenvConfigEnvFile {
+  type: 'envFile';
+  value: string | URL;
+}
+
+export interface DotenvConfigEnvSrc {
+  type: 'env';
+  value: string | Buffer;
+  privateKeyName?: string;
 }
 
 export interface DotenvConfigOutput {
@@ -166,7 +203,7 @@ export interface DotenvPopulateInput {
 }
 
 /**
- * Loads `.env` file contents into process.env by default. If `DOTENV_KEY` is present, it smartly attempts to load encrypted `.env.vault` file contents into process.env.
+ * Loads `.env` file contents into process.env by default.
  *
  * @see https://dotenvx.com/docs
  *
@@ -205,6 +242,19 @@ export interface SetOptions {
    * @example require('@dotenvx/dotenvx').config(key, value, { encrypt: false } })
    */
   encrypt?: boolean;
+
+  /**
+   * Turn off Dotenvx Ops features - https://dotenvx.com/ops
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').set(key, value, { noOps: true })
+   */
+  noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
+   */
+  opsOff?: boolean;
 }
 
 export type SetProcessedEnv = {
@@ -217,7 +267,8 @@ export type SetProcessedEnv = {
   encryptedValue?: string;
   publicKey?: string;
   privateKey?: string;
-  privateKeyAdded?: boolean;
+  localPrivateKeyAdded?: boolean;
+  remotePrivateKeyAdded?: boolean;
   privateKeyName?: string;
   error?: Error;
 };
@@ -272,6 +323,19 @@ export interface GetOptions {
    * @example require('@dotenvx/dotenvx').get('KEY', { strict: true })
    */
   strict?: boolean;
+
+  /**
+   * Turn off Dotenvx Ops features - https://dotenvx.com/ops
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').get('KEY', { noOps: true })
+   */
+  noOps?: boolean;
+
+  /**
+   * @deprecated use `noOps` instead.
+   */
+  opsOff?: boolean;
 }
 
 /**
@@ -298,6 +362,23 @@ export function ls(
   envFile: string | string[],
   excludeEnvFile: string | string[]
 ): string[];
+
+export type DoctorFinding = {
+  lang: string;
+  filepath: string;
+  line: number;
+  code: string;
+  msg: string;
+};
+
+/**
+ * Scan code for dotenv loaders that can conflict with dotenvx.
+ *
+ * @param directory - directory to scan
+ */
+export function doctor(
+  directory: string
+): DoctorFinding[];
 
 export type GenExampleOutput = {
   envExampleFile: string;

@@ -1,10 +1,11 @@
-const path = require('path')
-
 const conventions = require('./conventions')
 const dotenvOptionPaths = require('./dotenvOptionPaths')
-const DeprecationNotice = require('./deprecationNotice')
 
-function buildEnvs (options, DOTENV_KEY = undefined) {
+function buildEnvs (options) {
+  if (options.envs) {
+    return options.envs
+  }
+
   // build envs using user set option.path
   const optionPaths = dotenvOptionPaths(options) // [ '.env' ]
 
@@ -13,18 +14,8 @@ function buildEnvs (options, DOTENV_KEY = undefined) {
     envs = conventions(options.convention).concat(envs)
   }
 
-  new DeprecationNotice({ DOTENV_KEY }).dotenvKey() // DEPRECATION NOTICE
-
   for (const optionPath of optionPaths) {
-    // if DOTENV_KEY is set then assume we are checking envVaultFile
-    if (DOTENV_KEY) {
-      envs.push({
-        type: 'envVaultFile',
-        value: path.join(path.dirname(optionPath), '.env.vault')
-      })
-    } else {
-      envs.push({ type: 'envFile', value: optionPath })
-    }
+    envs.push({ type: 'envFile', value: optionPath })
   }
 
   return envs

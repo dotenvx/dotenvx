@@ -3,25 +3,29 @@ const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
-const Radar = require('./../../lib/services/radar')
-const Ops = require('./../../lib/services/ops')
+const catchAndLog = require('./../../lib/helpers/catchAndLog')
+const createSpinner = require('../../lib/helpers/createSpinner')
+const Session = require('../../db/session')
 
 const conventions = require('./../../lib/helpers/conventions')
-const DeprecationNotice = require('./../../lib/helpers/deprecationNotice')
+const { determine } = require('./../../lib/helpers/envResolution')
 
 async function run () {
-  const commandArgs = this.args
-  logger.debug(`process command [${commandArgs.join(' ')}]`)
-
   const options = this.opts()
+  const commandArgs = this.args
+  const spinner = await createSpinner({ ...options, text: 'injecting' })
+
   logger.debug(`options: ${JSON.stringify(options)}`)
+  logger.debug(`process command [${commandArgs.join(' ')}]`)
 
   const ignore = options.ignore || []
 
-  // dotenvx-ops related
-  const opsOn = options.opsOff !== true
+  const sesh = new Session()
+  const noOps = options.ops === false || options.opsOff === true || (await sesh.noOps())
 
   if (commandArgs.length < 1) {
+    if (spinner) spinner.stop()
+
     const hasSeparator = process.argv.indexOf('--') !== -1
 
     if (hasSeparator) {
@@ -42,29 +46,23 @@ async function run () {
     } else {
       envs = this.envs
     }
-
-    new DeprecationNotice().dotenvKey() // DEPRECATION NOTICE
+    envs = determine(envs, process.env)
 
     const {
-      beforeEnv,
-      afterEnv,
       processedEnvs,
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, options.overload, process.env.DOTENV_KEY, process.env, options.envKeysFile, opsOn).run()
-
-    if (opsOn) {
-      try { new Radar().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
-      try { new Ops().observe({ beforeEnv, processedEnvs, afterEnv }) } catch {}
-    }
+    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noOps, {
+      beforeOpsKeypair: () => {
+        if (spinner) spinner.start('retrieving')
+      },
+      afterOpsKeypair: () => {
+        if (spinner) spinner.start('injecting')
+      }
+    }).run()
 
     for (const processedEnv of processedEnvs) {
-      if (processedEnv.type === 'envVaultFile') {
-        logger.verbose(`loading env from encrypted ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-        logger.debug(`decrypting encrypted env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
-      }
-
       if (processedEnv.type === 'envFile') {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
@@ -81,18 +79,10 @@ async function run () {
 
         if (options.strict) throw error // throw if strict and not ignored
 
-        if (error.code === 'MISSING_ENV_FILE') {
-          if (!options.convention) { // do not output error for conventions (too noisy)
-            logger.error(error.message)
-            if (error.help) {
-              logger.error(`${error.help} and re-run [dotenvx run -- ${commandArgs.join(' ')}]`)
-            }
-          }
+        if (error.code === 'MISSING_ENV_FILE' && options.convention) { // do not output error for conventions (too noisy)
+          // intentionally quiet
         } else {
-          logger.error(error.message)
-          if (error.help) {
-            logger.error(error.help)
-          }
+          logger.error(error.messageWithHelp)
         }
       }
 
@@ -112,7 +102,7 @@ async function run () {
       }
     }
 
-    let msg = `injecting env (${uniqueInjectedKeys.length})`
+    let msg = `injected env (${uniqueInjectedKeys.length})`
     if (readableFilepaths.length > 0 && readableStrings.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}, and --env flag${readableStrings.length > 1 ? 's' : ''}`
     } else if (readableFilepaths.length > 0) {
@@ -121,12 +111,11 @@ async function run () {
       msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
     }
 
+    if (spinner) spinner.stop()
     logger.successv(msg)
   } catch (error) {
-    logger.error(error.message)
-    if (error.help) {
-      logger.error(error.help)
-    }
+    if (spinner) spinner.stop()
+    catchAndLog(error)
     process.exit(1)
   }
 

@@ -25,7 +25,7 @@ t.test('#findEnvFiles (bad directory)', ct => {
     findEnvFiles('tests/does/not/exist')
     ct.fail('should have raised an error but did not')
   } catch (e) {
-    ct.same(e.message, 'missing directory (tests/does/not/exist)')
+    ct.same(e.message, '[MISSING_DIRECTORY] missing directory (tests/does/not/exist)')
     ct.same(e.code, 'MISSING_DIRECTORY')
   }
 
