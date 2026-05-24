@@ -4,9 +4,10 @@ async function opsKeypair (existingPublicKey, options = {}) {
   const hooks = options.hooks || {}
   if (hooks.before) await hooks.before()
 
-  const keypairOptions = {}
-  if (options.token) keypairOptions.token = options.token
-  if (options.envFilepath) keypairOptions.envFilepath = options.envFilepath
+  const keypairOptions = {
+    token: options.token,
+    envFilepath: options.envFilepath
+  }
   if (hooks.onStderr) keypairOptions.onStderr = hooks.onStderr
   if (hooks.before || hooks.onStderr || hooks.after) keypairOptions.noSpinner = true
 

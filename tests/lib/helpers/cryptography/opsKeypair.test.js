@@ -21,7 +21,7 @@ t.test('opsKeypair returns normalized keys from Ops keypair', async (ct) => {
   ct.equal(out.publicKey, 'ops_pub_123')
   ct.equal(out.privateKey, 'ops_priv_123')
   ct.equal(keypair.callCount, 1)
-  ct.equal(keypair.firstCall.args.length, 1)
+  ct.equal(keypair.firstCall.args.length, 2)
   ct.equal(keypair.firstCall.args[0], undefined)
   ct.end()
 })

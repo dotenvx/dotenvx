@@ -114,7 +114,7 @@ t.test('keypairSync forwards env filepath to dotenvx-ops', (ct) => {
 
   const ops = new Ops()
   ct.same(ops.keypairSync('existing-public-key', { envFilepath: '.env.production' }), { public_key: 'pub', private_key: 'priv' })
-  ct.same(execFileSync.getCall(1).args[1], ['keypair', '--env-file', '.env.production', 'existing-public-key'])
+  ct.same(execFileSync.getCall(1).args[1], ['keypair', '-f', '.env.production', 'existing-public-key'])
   ct.end()
 })
 
@@ -170,7 +170,7 @@ t.test('keypair forwards env filepath to dotenvx-ops', async (ct) => {
 
   const ops = new Ops()
   ct.same(await ops.keypair('existing-public-key', { envFilepath: '.env.production' }), { public_key: 'pub', private_key: 'priv' })
-  ct.same(spawn.getCall(0).args, [promisifiedExecFile.getCall(0).args[0], ['keypair', '--env-file', '.env.production', 'existing-public-key'], {
+  ct.same(spawn.getCall(0).args, [promisifiedExecFile.getCall(0).args[0], ['keypair', '-f', '.env.production', 'existing-public-key'], {
     stdio: ['inherit', 'pipe', 'pipe']
   }])
   ct.end()
