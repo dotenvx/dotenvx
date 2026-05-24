@@ -24,11 +24,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noOps, token, key
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {
-    const keypairOptions = {}
-    if (token) keypairOptions.token = token
-    if (envFilepath) keypairOptions.envFilepath = envFilepath
-    if (keypairHooks) keypairOptions.hooks = keypairHooks
-    const kp = await opsKeypair(undefined, keypairOptions)
+    const kp = await opsKeypair(undefined, { token, envFilepath, hooks: keypairHooks })
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   }

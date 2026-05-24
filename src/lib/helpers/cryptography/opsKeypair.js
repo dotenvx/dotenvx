@@ -12,11 +12,7 @@ async function opsKeypair (existingPublicKey, options = {}) {
 
   let kp
   try {
-    if (Object.keys(keypairOptions).length > 0) {
-      kp = await new Ops().keypair(existingPublicKey, keypairOptions)
-    } else {
-      kp = await new Ops().keypair(existingPublicKey)
-    }
+    kp = await new Ops().keypair(existingPublicKey, keypairOptions)
   } finally {
     if (hooks.after) await hooks.after()
   }
