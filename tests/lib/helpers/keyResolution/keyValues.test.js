@@ -82,6 +82,7 @@ t.test('#keyValues loads private key from ops when noOps is false and only publi
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
   ct.equal(opsKeypair.callCount, 1)
   ct.equal(opsKeypair.firstCall.args[0], '<publicKey>')
+  ct.same(opsKeypair.firstCall.args[1], { envFilepath: '.env', hooks: undefined })
   ct.end()
 })
 
@@ -102,7 +103,7 @@ t.test('#keyValues forwards ops keypair hooks', async ct => {
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
   ct.equal(opsKeypair.callCount, 1)
   ct.equal(opsKeypair.firstCall.args[0], '<publicKey>')
-  ct.same(opsKeypair.firstCall.args[1], { hooks: keypairHooks })
+  ct.same(opsKeypair.firstCall.args[1], { envFilepath: '.env', hooks: keypairHooks })
   ct.end()
 })
 

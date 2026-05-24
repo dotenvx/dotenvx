@@ -141,6 +141,7 @@ t.test('provisionSync uses Ops keypair when noOps is false', async (ct) => {
   ct.equal(out.publicKey, 'ops_pub')
   ct.equal(out.privateKey, 'ops_priv')
   ct.equal(opsKeypairSync.callCount, 1)
+  ct.same(opsKeypairSync.firstCall.args, [undefined, { envFilepath }])
   ct.equal(localKeypair.callCount, 0)
   ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'ops_pub')
   ct.equal(mutateKeysSrcSync.callCount, 0)

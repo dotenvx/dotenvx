@@ -169,7 +169,7 @@ t.test('provision forwards token to Ops keypair when noOps is false', async (ct)
   await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noOps: false, token: 'token-123' })
 
   ct.equal(opsKeypair.callCount, 1)
-  ct.same(opsKeypair.firstCall.args, [undefined, { token: 'token-123' }])
+  ct.same(opsKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env') }])
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })
@@ -197,7 +197,7 @@ t.test('provision forwards ops keypair hooks when noOps is false', async (ct) =>
   await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noOps: false, keypairHooks })
 
   ct.equal(opsKeypair.callCount, 1)
-  ct.same(opsKeypair.firstCall.args, [undefined, { hooks: keypairHooks }])
+  ct.same(opsKeypair.firstCall.args, [undefined, { envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })
@@ -225,7 +225,7 @@ t.test('provision forwards token and ops keypair hooks when noOps is false', asy
   await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noOps: false, token: 'token-123', keypairHooks })
 
   ct.equal(opsKeypair.callCount, 1)
-  ct.same(opsKeypair.firstCall.args, [undefined, { token: 'token-123', hooks: keypairHooks }])
+  ct.same(opsKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })

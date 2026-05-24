@@ -82,6 +82,7 @@ t.test('#keyValuesSync loads private key from ops when noOps is false and only p
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
   ct.equal(opsKeypairSync.callCount, 1)
   ct.equal(opsKeypairSync.firstCall.args[0], '<publicKey>')
+  ct.same(opsKeypairSync.firstCall.args[1], { envFilepath: '.env' })
   ct.end()
 })
 
@@ -97,7 +98,7 @@ t.test('#keyValuesSync forwards noSpinner to ops', async ct => {
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
   ct.equal(opsKeypairSync.callCount, 1)
-  ct.same(opsKeypairSync.firstCall.args, ['<publicKey>', { noSpinner: true }])
+  ct.same(opsKeypairSync.firstCall.args, ['<publicKey>', { envFilepath: '.env', noSpinner: true }])
   ct.end()
 })
 

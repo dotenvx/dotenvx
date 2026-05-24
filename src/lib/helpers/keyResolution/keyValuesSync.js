@@ -72,12 +72,12 @@ function keyValuesSync (filepath, opts = {}) {
 
   // ops
   if (!noOps && !privateKey && publicKey && publicKey.length > 0) {
-    const opsOptions = {}
+    const opsOptions = { envFilepath: filepath }
     if (opts.noSpinner) {
       opsOptions.noSpinner = true
     }
 
-    const kp = Object.keys(opsOptions).length > 0 ? opsKeypairSync(publicKey, opsOptions) : opsKeypairSync(publicKey)
+    const kp = opsKeypairSync(publicKey, opsOptions)
     privateKey = kp.privateKey
   }
 

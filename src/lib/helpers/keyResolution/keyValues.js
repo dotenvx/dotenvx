@@ -72,9 +72,7 @@ async function keyValues (filepath, opts = {}) {
 
   // ops
   if (!noOps && !privateKey && publicKey && publicKey.length > 0) {
-    const kp = await opsKeypair(publicKey, {
-      hooks: opts.keypairHooks
-    })
+    const kp = await opsKeypair(publicKey, { envFilepath: filepath, hooks: opts.keypairHooks })
     privateKey = kp.privateKey
   }
 

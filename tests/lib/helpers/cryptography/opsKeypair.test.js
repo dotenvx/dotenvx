@@ -21,7 +21,7 @@ t.test('opsKeypair returns normalized keys from Ops keypair', async (ct) => {
   ct.equal(out.publicKey, 'ops_pub_123')
   ct.equal(out.privateKey, 'ops_priv_123')
   ct.equal(keypair.callCount, 1)
-  ct.equal(keypair.firstCall.args.length, 1)
+  ct.equal(keypair.firstCall.args.length, 2)
   ct.equal(keypair.firstCall.args[0], undefined)
   ct.end()
 })
@@ -69,6 +69,29 @@ t.test('opsKeypair forwards token to Ops keypair', async (ct) => {
   ct.equal(out.privateKey, 'ops_priv_abc')
   ct.equal(keypair.callCount, 1)
   ct.same(keypair.firstCall.args, [undefined, { token: 'token-123' }])
+  ct.end()
+})
+
+t.test('opsKeypair forwards env filepath to Ops keypair', async (ct) => {
+  const keypair = sinon.stub().resolves({
+    public_key: 'ops_pub_abc',
+    private_key: 'ops_priv_abc'
+  })
+
+  function OpsMock () {
+    this.keypair = keypair
+  }
+
+  const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
+    './../../extensions/ops': OpsMock
+  })
+
+  const out = await opsKeypair(undefined, { envFilepath: '.env.production' })
+
+  ct.equal(out.publicKey, 'ops_pub_abc')
+  ct.equal(out.privateKey, 'ops_priv_abc')
+  ct.equal(keypair.callCount, 1)
+  ct.same(keypair.firstCall.args, [undefined, { envFilepath: '.env.production' }])
   ct.end()
 })
 
