@@ -144,10 +144,18 @@ const parse = function (src, options = {}) {
   // overload
   const overload = options.overload || options.override
 
+  // ignore
+  const ignore = options.ignore || []
+
   const { parsed, errors } = new Parse(src, privateKey, processEnv, overload).run()
 
   // display any errors
   for (const error of errors) {
+    if (ignore.includes(error.code)) {
+      logger.verbose(`ignored: ${error.message}`)
+      continue // ignore error
+    }
+
     logger.error(error.messageWithHelp)
   }
 
