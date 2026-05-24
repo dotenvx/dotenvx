@@ -6,6 +6,7 @@ async function opsKeypair (existingPublicKey, options = {}) {
 
   const keypairOptions = {}
   if (options.token) keypairOptions.token = options.token
+  if (options.envFilepath) keypairOptions.envFilepath = options.envFilepath
   if (hooks.onStderr) keypairOptions.onStderr = hooks.onStderr
   if (hooks.before || hooks.onStderr || hooks.after) keypairOptions.noSpinner = true
 

@@ -162,6 +162,7 @@ t.test('#run forwards key storage selector to provision',
     ct.same(changedFilepaths, ['.env'])
     ct.equal(provision.callCount, 1)
     ct.equal(provision.firstCall.args[0].selectKeyStorage, selectKeyStorage)
+    ct.equal(provision.firstCall.args[0].envFilepath, '.env')
 
     process.chdir(cwd)
     ct.end()

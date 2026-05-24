@@ -20,7 +20,9 @@ function provisionSync ({ envSrc, envFilepath, keysFilepath, noOps }) {
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {
-    const kp = opsKeypairSync()
+    const keypairOptions = {}
+    if (envFilepath) keypairOptions.envFilepath = envFilepath
+    const kp = opsKeypairSync(undefined, keypairOptions)
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   }
