@@ -465,6 +465,19 @@ t.test('parse logs one line for non-fix text',
     ct.end()
   })
 
+t.test('parse ignores configured error codes',
+  ct => {
+    const loggerErrorStub = sinon.stub(logger, 'error')
+    const loggerVerboseStub = sinon.stub(logger, 'verbose')
+
+    const parsed = main.parse('HELLO="encrypted:abc123"', { ignore: ['MISSING_PRIVATE_KEY'] })
+    ct.equal(parsed.HELLO, 'encrypted:abc123')
+    ct.ok(loggerVerboseStub.calledWithMatch(/ignored: \[MISSING_PRIVATE_KEY\] could not decrypt HELLO/))
+    ct.notOk(loggerErrorStub.called, 'ignored error is not logged as an error')
+
+    ct.end()
+  })
+
 t.test('ls calls Ls.run',
   ct => {
     const stub = sinon.stub(Ls.prototype, 'run')
