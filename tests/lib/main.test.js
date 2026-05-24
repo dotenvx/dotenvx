@@ -469,29 +469,11 @@ t.test('parse ignores configured error codes',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
     const loggerVerboseStub = sinon.stub(logger, 'verbose')
-    const ignored = {
-      code: 'IGNORED_ERROR',
-      message: '[IGNORED_ERROR] ignore me',
-      messageWithHelp: '[IGNORED_ERROR] ignore me. fix: [ignore]'
-    }
-    const reported = {
-      code: 'REPORTED_ERROR',
-      message: '[REPORTED_ERROR] report me',
-      messageWithHelp: '[REPORTED_ERROR] report me. fix: [report]'
-    }
-    const mainWithErrors = proxyquire('../../src/lib/main', {
-      './helpers/parse': class ParseMock {
-        run () {
-          return { parsed: { HELLO: 'World' }, errors: [ignored, reported] }
-        }
-      }
-    })
 
-    const parsed = mainWithErrors.parse('HELLO=World', { ignore: ['IGNORED_ERROR'] })
-    ct.equal(parsed.HELLO, 'World')
-    ct.ok(loggerVerboseStub.calledWith('ignored: [IGNORED_ERROR] ignore me'))
-    ct.equal(loggerErrorStub.callCount, 1)
-    ct.ok(loggerErrorStub.calledWith('[REPORTED_ERROR] report me. fix: [report]'))
+    const parsed = main.parse('HELLO="encrypted:abc123"', { ignore: ['MISSING_PRIVATE_KEY'] })
+    ct.equal(parsed.HELLO, 'encrypted:abc123')
+    ct.ok(loggerVerboseStub.calledWithMatch(/ignored: \[MISSING_PRIVATE_KEY\] could not decrypt HELLO/))
+    ct.notOk(loggerErrorStub.called, 'ignored error is not logged as an error')
 
     ct.end()
   })
