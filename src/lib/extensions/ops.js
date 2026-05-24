@@ -41,7 +41,7 @@ class Ops {
     const args = ['keypair']
     if (options.noSpinner) args.push('--no-spinner')
     if (options.token) args.push('--token', options.token)
-    if (options.envFilepath) args.push('--env-file', options.envFilepath)
+    if (options.envFilepath) args.push('-f', options.envFilepath)
     if (publicKey) args.push(publicKey)
 
     try {
@@ -62,7 +62,7 @@ class Ops {
     const args = ['keypair']
     if (options.noSpinner) args.push('--no-spinner')
     if (options.token) args.push('--token', options.token)
-    if (options.envFilepath) args.push('--env-file', options.envFilepath)
+    if (options.envFilepath) args.push('-f', options.envFilepath)
     if (publicKey) args.push(publicKey)
 
     try {
