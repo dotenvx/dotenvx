@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.67.0...main)
 
+### Changed
+
+* Support `ignore` option on `parse` ([#820](https://github.com/dotenvx/dotenvx/pull/820))
+
 ## [1.67.0](https://github.com/dotenvx/dotenvx/compare/v1.66.0...v1.67.0) (2026-05-21)
 
 ### Added
