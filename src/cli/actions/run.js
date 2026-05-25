@@ -22,7 +22,7 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const noOps = options.ops === false || (await sesh.noOps())
+  const noOps = options.ops === false || (await sesh.noVlt())
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()

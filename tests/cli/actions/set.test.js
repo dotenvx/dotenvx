@@ -7,7 +7,7 @@ const Sets = require('../../../src/lib/services/sets')
 const { logger } = require('../../../src/shared/logger')
 
 class SessionMock {
-  async noOps () {
+  async noVlt () {
     return false
   }
 }
@@ -731,7 +731,7 @@ t.test('set - spinner stop called on success path when spinner exists', async ct
   const successStub = sinon.stub(logger, 'success')
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return false
     }
   }
@@ -775,7 +775,7 @@ t.test('set - spinner stop called on catch path when spinner exists', async ct =
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return false
     }
   }

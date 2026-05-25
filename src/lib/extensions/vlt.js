@@ -6,7 +6,7 @@ const { logger } = require('../../shared/logger')
 const execFile = util.promisify(childProcess.execFile)
 const BINARY_NAMES = ['dotenvx-vlt', 'dotenvx-ops']
 
-class Ops {
+class Vlt {
   async status () {
     if (this._isForcedOff()) return 'off'
 
@@ -199,4 +199,4 @@ class Ops {
   }
 }
 
-module.exports = Ops
+module.exports = Vlt

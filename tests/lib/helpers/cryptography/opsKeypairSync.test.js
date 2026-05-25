@@ -2,18 +2,18 @@ const t = require('tap')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-t.test('opsKeypairSync returns normalized keys from Ops keypair', async (ct) => {
+t.test('opsKeypairSync returns normalized keys from Vlt keypair', async (ct) => {
   const keypairSync = sinon.stub().returns({
     public_key: 'ops_pub_123',
     private_key: 'ops_priv_123'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypairSync = keypairSync
   }
 
   const opsKeypairSync = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypairSync', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = opsKeypairSync()
@@ -26,18 +26,18 @@ t.test('opsKeypairSync returns normalized keys from Ops keypair', async (ct) => 
   ct.end()
 })
 
-t.test('opsKeypairSync forwards provided public key to Ops keypair', async (ct) => {
+t.test('opsKeypairSync forwards provided public key to Vlt keypair', async (ct) => {
   const keypairSync = sinon.stub().returns({
     public_key: 'ops_pub_abc',
     private_key: 'ops_priv_abc'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypairSync = keypairSync
   }
 
   const opsKeypairSync = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypairSync', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = opsKeypairSync('existing_pub')
@@ -49,18 +49,18 @@ t.test('opsKeypairSync forwards provided public key to Ops keypair', async (ct) 
   ct.end()
 })
 
-t.test('opsKeypairSync forwards options to Ops keypair', async (ct) => {
+t.test('opsKeypairSync forwards options to Vlt keypair', async (ct) => {
   const keypairSync = sinon.stub().returns({
     public_key: 'ops_pub_abc',
     private_key: 'ops_priv_abc'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypairSync = keypairSync
   }
 
   const opsKeypairSync = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypairSync', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = opsKeypairSync('existing_pub', { noSpinner: true })

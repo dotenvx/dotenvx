@@ -592,7 +592,7 @@ t.test('rotate - spinner stop is called for stdout/success/catch flows', async c
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return sessionStub()
     }
   }

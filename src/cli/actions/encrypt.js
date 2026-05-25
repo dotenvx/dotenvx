@@ -72,7 +72,7 @@ async function encrypt () {
 
   const sesh = new Session()
   const envs = this.envs
-  const noOps = options.ops === false || (!options.token && (await sesh.noOps()))
+  const noOps = options.ops === false || (!options.token && (await sesh.noVlt()))
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout

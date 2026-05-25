@@ -17,7 +17,7 @@ async function rotate () {
 
   const envs = this.envs
   const sesh = new Session()
-  const noOps = options.ops === false || (await sesh.noOps())
+  const noOps = options.ops === false || (await sesh.noVlt())
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {

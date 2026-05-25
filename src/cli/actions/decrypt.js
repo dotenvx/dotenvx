@@ -15,7 +15,7 @@ async function decrypt () {
 
   const sesh = new Session()
   const envs = this.envs
-  const noOps = options.ops === false || (await sesh.noOps())
+  const noOps = options.ops === false || (await sesh.noVlt())
 
   let errorCount = 0
 

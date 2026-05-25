@@ -1,23 +1,23 @@
-const Ops = require('./../lib/extensions/ops')
+const Vlt = require('./../lib/extensions/vlt')
 const { logger } = require('./../shared/logger')
 
 class Session {
   constructor () {
-    this.ops = new Ops()
+    this.vlt = new Vlt()
   }
 
   //
-  // ops status helpers
+  // vlt status helpers
   //
-  async noOps () {
-    const status = await this.ops.status()
-    logger.debug(`ops: ${status}`)
+  async noVlt () {
+    const status = await this.vlt.status()
+    logger.debug(`vlt: ${status}`)
     return status === 'off'
   }
 
   noVltSync () {
-    const status = this.ops.statusSync()
-    logger.debug(`ops: ${status}`)
+    const status = this.vlt.statusSync()
+    logger.debug(`vlt: ${status}`)
     return status === 'off'
   }
 }

@@ -17,7 +17,7 @@ async function keypair (key) {
   const prettyPrint = options.prettyPrint || options.pp
 
   const sesh = new Session()
-  const noOps = options.ops === false || await sesh.noOps()
+  const noOps = options.ops === false || await sesh.noVlt()
   const keypairs = await new Keypair(options.envFile, options.envKeysFile, noOps).run()
   const results = key ? keypairs[key] : keypairs
 

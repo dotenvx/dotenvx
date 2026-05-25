@@ -28,7 +28,7 @@ async function set (key, value) {
     const sesh = new Session()
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const noOps = options.ops === false || (await sesh.noOps())
+    const noOps = options.ops === false || (await sesh.noVlt())
     const noCreate = options.create === false
 
     const {
