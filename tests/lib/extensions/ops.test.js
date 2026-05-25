@@ -23,12 +23,10 @@ function spawnResult (stdout, code = 0, stderr) {
 }
 
 t.beforeEach(() => {
-  process.env.DOTENVX_NO_OPS = 'false'
   process.env.DOTENVX_NO_VLT = 'false'
 })
 
 t.afterEach(() => {
-  delete process.env.DOTENVX_NO_OPS
   delete process.env.DOTENVX_NO_VLT
 })
 
@@ -233,7 +231,7 @@ t.test('observe noops when spawn fails, status off, or forced off', async (ct) =
   ops.observe({ should: 'skip when off' })
   ct.equal(spawn.callCount, 1)
 
-  process.env.DOTENVX_NO_OPS = 'true'
+  process.env.DOTENVX_NO_VLT = 'true'
   ct.equal(ops.statusSync(), 'off')
   ct.same(ops.keypairSync('ignored'), {})
   ct.same(await ops.keypair('ignored'), {})
@@ -242,7 +240,7 @@ t.test('observe noops when spawn fails, status off, or forced off', async (ct) =
   ct.end()
 })
 
-t.test('forced off supports DOTENVX_NO_VLT synonym', async (ct) => {
+t.test('forced off skips binary resolution with DOTENVX_NO_VLT', async (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()

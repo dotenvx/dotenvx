@@ -7,10 +7,10 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
-const normalizeOpsOptions = require('./normalizeOpsOptions')
+const normalizeVltOptions = require('./normalizeVltOptions')
 
 async function rotate () {
-  const options = normalizeOpsOptions(this.opts())
+  const options = normalizeVltOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'rotating', frames: ['⟳', '⤾', '⥁'] })
 
   logger.debug(`options: ${JSON.stringify(options)}`)

@@ -1,4 +1,4 @@
-function normalizeOpsOptions (options) {
+function normalizeVltOptions (options) {
   if (options.ops === false || options.vlt === false) {
     options.ops = false
     options.vlt = false
@@ -7,4 +7,4 @@ function normalizeOpsOptions (options) {
   return options
 }
 
-module.exports = normalizeOpsOptions
+module.exports = normalizeVltOptions

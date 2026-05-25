@@ -8,7 +8,7 @@ const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
-const normalizeOpsOptions = require('./normalizeOpsOptions')
+const normalizeVltOptions = require('./normalizeVltOptions')
 
 function keypairSpinnerHooks (spinner) {
   let stoppedForOps = false
@@ -65,7 +65,7 @@ function encryptOptions (spinner, noOps) {
 }
 
 async function encrypt () {
-  const options = normalizeOpsOptions(this.opts())
+  const options = normalizeVltOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)

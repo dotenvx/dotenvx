@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.68.1...main)
 
+### Changed
+
+* Remove fully-deprecated `opsOff` option in favor of `noOps`
+
 ## [1.68.1](https://github.com/dotenvx/dotenvx/compare/v1.68.0...v1.68.1) (2026-05-24)
 
 ### Changed

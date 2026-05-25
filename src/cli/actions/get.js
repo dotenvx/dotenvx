@@ -6,10 +6,10 @@ const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 const Get = require('./../../lib/services/get')
-const normalizeOpsOptions = require('./normalizeOpsOptions')
+const normalizeVltOptions = require('./normalizeVltOptions')
 
 async function get (key) {
-  const options = normalizeOpsOptions(this.opts())
+  const options = normalizeVltOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'decrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)

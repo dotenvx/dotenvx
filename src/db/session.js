@@ -15,7 +15,7 @@ class Session {
     return status === 'off'
   }
 
-  noOpsSync () {
+  noVltSync () {
     const status = this.ops.statusSync()
     logger.debug(`ops: ${status}`)
     return status === 'off'
