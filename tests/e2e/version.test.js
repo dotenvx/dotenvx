@@ -31,3 +31,12 @@ t.test('#--help hides armor alias', ct => {
 
   ct.end()
 })
+
+t.test('#--help shows vlt advanced command', ct => {
+  const output = execShell(`${dotenvx} --help`)
+
+  ct.match(output, /vlt\s+⛨ {2}Vlt Ops \[www\.dotenvx\.com\/vlt\]/, 'vlt advanced command is shown')
+  ct.notMatch(output, /ops\s+⛨ {2}Vlt Ops \[www\.dotenvx\.com\/vlt\]/, 'ops advanced command is not shown')
+
+  ct.end()
+})
