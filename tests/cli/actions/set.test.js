@@ -672,6 +672,24 @@ t.test('set - --no-ops passes noOps true to Sets service', async ct => {
   ct.end()
 })
 
+t.test('set - --no-vlt passes noOps true to Sets service', async ct => {
+  sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({ vlt: false })
+  const fakeContext = { opts: optsStub }
+  const runStub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [],
+    changedFilepaths: [],
+    unchangedFilepaths: []
+  })
+
+  await set.call(fakeContext, 'HELLO', 'World')
+
+  t.ok(runStub.calledOnce, 'Sets().run() called')
+  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
+
+  ct.end()
+})
+
 t.test('set - catch error', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')

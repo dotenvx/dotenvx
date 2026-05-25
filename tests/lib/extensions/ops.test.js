@@ -24,10 +24,12 @@ function spawnResult (stdout, code = 0, stderr) {
 
 t.beforeEach(() => {
   process.env.DOTENVX_NO_OPS = 'false'
+  process.env.DOTENVX_NO_VLT = 'false'
 })
 
 t.afterEach(() => {
   delete process.env.DOTENVX_NO_OPS
+  delete process.env.DOTENVX_NO_VLT
 })
 
 t.test('statusSync and keypairSync use npm binary when available', (ct) => {
@@ -237,6 +239,27 @@ t.test('observe noops when spawn fails, status off, or forced off', async (ct) =
   ct.same(await ops.keypair('ignored'), {})
   ops.observe({ should: 'skip when forced off' })
   ct.equal(spawn.callCount, 1)
+  ct.end()
+})
+
+t.test('forced off supports DOTENVX_NO_VLT synonym', async (ct) => {
+  const execFileSync = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = sinon.stub()
+  const spawn = sinon.stub()
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  process.env.DOTENVX_NO_VLT = 'true'
+  const ops = new Ops()
+  ct.equal(ops.statusSync(), 'off')
+  ct.same(ops.keypairSync('ignored'), {})
+  ct.same(await ops.keypair('ignored'), {})
+  ops.observe({ should: 'skip when forced off' })
+  ct.equal(execFileSync.callCount, 0)
+  ct.equal(spawn.callCount, 0)
   ct.end()
 })
 

@@ -3,9 +3,10 @@ const { logger } = require('./../../shared/logger')
 const Keypair = require('./../../lib/services/keypair')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
+const normalizeOpsOptions = require('./normalizeOpsOptions')
 
 async function keypair (key) {
-  const options = this.opts()
+  const options = normalizeOpsOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'retrieving' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)

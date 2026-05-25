@@ -124,10 +124,11 @@ t.test('run --convention', async ct => {
   ct.end()
 })
 
-t.test('run --ops-off passes noOps true to Run service', async ct => {
-  const optsStub = sinon.stub().returns({ opsOff: true })
+t.test('run --no-ops normalizes vlt off', async ct => {
+  const options = { ops: false, vlt: true }
+  const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
-  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--ops-off', '--', 'echo', ''])
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--no-ops', '--', 'echo', ''])
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [],
@@ -140,6 +141,31 @@ t.test('run --ops-off passes noOps true to Run service', async ct => {
 
   t.ok(stub.called, 'new Run().run() called')
   t.equal(stub.thisValues[0].noOps, true, 'Run was called with noOps true')
+  t.equal(options.ops, false, 'ops false')
+  t.equal(options.vlt, false, 'vlt false')
+
+  ct.end()
+})
+
+t.test('run --no-vlt passes noOps true to Run service', async ct => {
+  const options = { ops: true, vlt: false }
+  const optsStub = sinon.stub().returns(options)
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--no-vlt', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.equal(stub.thisValues[0].noOps, true, 'Run was called with noOps true')
+  t.equal(options.ops, false, 'ops false')
+  t.equal(options.vlt, false, 'vlt false')
 
   ct.end()
 })

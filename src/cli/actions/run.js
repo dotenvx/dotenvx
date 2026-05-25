@@ -6,12 +6,13 @@ const Run = require('./../../lib/services/run')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
+const normalizeOpsOptions = require('./normalizeOpsOptions')
 
 const conventions = require('./../../lib/helpers/conventions')
 const { determine } = require('./../../lib/helpers/envResolution')
 
 async function run () {
-  const options = this.opts()
+  const options = normalizeOpsOptions(this.opts())
   const commandArgs = this.args
   const spinner = await createSpinner({ ...options, text: 'injecting' })
 
@@ -21,7 +22,7 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const noOps = options.ops === false || options.opsOff === true || (await sesh.noOps())
+  const noOps = options.ops === false || (await sesh.noOps())
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()

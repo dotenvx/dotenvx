@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /* c8 ignore start */
-const { Command, Option } = require('commander')
+const { Command } = require('commander')
 const program = new Command()
 
 const { setLogLevel, logger } = require('../shared/logger')
@@ -71,7 +71,7 @@ program.command('run')
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('--no-ops', 'disable dotenvx-ops features')
-  .addOption(new Option('--ops-off', 'DEPRECATED: use --no-ops').hideHelp())
+  .option('--no-vlt', 'disable dotenvx-vlt features')
   .action(function (...args) {
     this.envs = envs
     return require('./actions/run').apply(this, args)
@@ -94,6 +94,7 @@ program.command('get')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, colon, eval)', 'json')
   .option('--no-ops', 'disable dotenvx-ops features')
+  .option('--no-vlt', 'disable dotenvx-vlt features')
   .action(function (...args) {
     this.envs = envs
     return require('./actions/get').apply(this, args)
@@ -113,6 +114,7 @@ program.command('set')
   .option('-p, --plain', 'store value as plain text', false)
   .option('--no-create', 'do not create .env file(s) when missing')
   .option('--no-ops', 'disable dotenvx-ops features')
+  .option('--no-vlt', 'disable dotenvx-vlt features')
   .action(function (...args) {
     this.envs = envs
     return require('./actions/set').apply(this, args)
@@ -129,6 +131,7 @@ program.command('encrypt')
   .option('--token <token>', 'set Ops token')
   .option('--no-create', 'do not create .env file(s) when missing')
   .option('--no-ops', 'disable dotenvx-ops features')
+  .option('--no-vlt', 'disable dotenvx-vlt features')
   .action(function (...args) {
     this.envs = envs
     return require('./actions/encrypt').apply(this, args)
@@ -142,6 +145,7 @@ program.command('decrypt')
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
   .option('--no-ops', 'disable dotenvx-ops features')
+  .option('--no-vlt', 'disable dotenvx-vlt features')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
@@ -156,6 +160,7 @@ program.command('rotate')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--no-ops', 'disable dotenvx-ops features')
+  .option('--no-vlt', 'disable dotenvx-vlt features')
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
@@ -170,6 +175,7 @@ program.command('keypair')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('--no-ops', 'disable dotenvx-ops features')
+  .option('--no-vlt', 'disable dotenvx-vlt features')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, colon)', 'json')

@@ -6,9 +6,10 @@ const createSpinner = require('../../lib/helpers/createSpinner')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
 const Sets = require('./../../lib/services/sets')
+const normalizeOpsOptions = require('./normalizeOpsOptions')
 
 async function set (key, value) {
-  const options = this.opts()
+  const options = normalizeOpsOptions(this.opts())
 
   let encrypt = true
   let settingMessage = 'encrypting'

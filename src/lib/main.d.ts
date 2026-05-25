@@ -173,9 +173,13 @@ export interface DotenvConfigOptions {
   noOps?: boolean;
 
   /**
-   * @deprecated use `noOps` instead.
+   * Turn off Dotenvx Ops/Vlt features. Alias for `noOps`.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').config({ noVlt: true })
    */
-  opsOff?: boolean;
+  noVlt?: boolean;
+
 }
 
 export type DotenvConfigEnv =
@@ -252,9 +256,13 @@ export interface SetOptions {
   noOps?: boolean;
 
   /**
-   * @deprecated use `noOps` instead.
+   * Turn off Dotenvx Ops/Vlt features. Alias for `noOps`.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').set(key, value, { noVlt: true })
    */
-  opsOff?: boolean;
+  noVlt?: boolean;
+
 }
 
 export type SetProcessedEnv = {
@@ -333,9 +341,13 @@ export interface GetOptions {
   noOps?: boolean;
 
   /**
-   * @deprecated use `noOps` instead.
+   * Turn off Dotenvx Ops/Vlt features. Alias for `noOps`.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').get('KEY', { noVlt: true })
    */
-  opsOff?: boolean;
+  noVlt?: boolean;
+
 }
 
 /**
