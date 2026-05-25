@@ -6,9 +6,10 @@ const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 const Get = require('./../../lib/services/get')
+const normalizeVltOptions = require('./normalizeVltOptions')
 
 async function get (key) {
-  const options = this.opts()
+  const options = normalizeVltOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'decrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -29,7 +30,7 @@ async function get (key) {
 
   try {
     const sesh = new Session()
-    const noOps = options.ops === false || (await sesh.noOps())
+    const noOps = options.ops === false || (await sesh.noVlt())
     const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noOps).run()
 
     for (const error of errors || []) {

@@ -1287,12 +1287,12 @@ $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 ```
 
 </details>
-<details><summary>`run --no-ops`</summary><br>
+<details><summary>`run --no-vlt`</summary><br>
 
-Turn off [Dotenvx Ops](https://dotenvx.com/ops) features.
+Turn off [Dotenvx Vlt Ops](https://dotenvx.com/vlt) features.
 
 ```sh
-$ dotenvx run --no-ops -- yourcommand
+$ dotenvx run --no-vlt -- yourcommand
 ```
 
 </details>
@@ -1622,12 +1622,12 @@ $ dotenvx encrypt -f .env.production
 ```
 
 </details>
-<details><summary>`encrypt --no-ops`</summary><br>
+<details><summary>`encrypt --no-vlt`</summary><br>
 
-Turn off [Dotenvx Ops](https://dotenvx.com/ops) features for encrypt.
+Turn off [Dotenvx Vlt Ops](https://dotenvx.com/vlt) features for encrypt.
 
 ```sh
-$ dotenvx encrypt --no-ops
+$ dotenvx encrypt --no-vlt
 ◈ encrypted (.env)
 ```
 
@@ -2548,13 +2548,13 @@ $ dotenvx run --convention=nextjs -- node index.js
 ```
 
 </details>
-<details><summary>`config(noOps:)` - noOps</summary><br>
+<details><summary>`config(noVlt:)` - noVlt</summary><br>
 
-Turn off [Dotenvx Ops](https://dotenvx.com/ops) features.
+Turn off [Dotenvx Vlt Ops](https://dotenvx.com/vlt) features.
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({noOps: true})
+require('@dotenvx/dotenvx').config({noVlt: true})
 ```
 
 </details>
@@ -2650,17 +2650,17 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
-## Ops ⛨
+## Vlt Ops ⛨
 
-[![dotenvx-ops](https://dotenvx.com/dotenvx-ops-banner.png?v=6)](https://dotenvx.com/ops)
+[![dotenvx-vlt](https://dotenvx.com/dotenvx-vlt-banner.png)](https://dotenvx.com/vlt)
 
 ```
 ⛨ ARMORED KEYS: Harden your private keys.
-⮕ install [curl -sfS https://dotenvx.sh/ops | sh]
-⮕ then run [dotenvx-ops login]
+⮕ install [curl -sfS https://dotenvx.sh/vlt | sh]
+⮕ then run [dotenvx-vlt login]
 ```
 
-[Learn more](https://dotenvx.com/ops)
+[Learn more](https://dotenvx.com/vlt)
 
 &nbsp;
 

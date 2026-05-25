@@ -664,12 +664,29 @@ t.test('encrypt - --no-ops passes noOps true to Encrypt service', async ct => {
   ct.end()
 })
 
+t.test('encrypt - --no-vlt passes noOps true to Encrypt service', async ct => {
+  const optsStub = sinon.stub().returns({ vlt: false })
+  const fakeContext = { opts: optsStub }
+  const runStub = sinon.stub(Encrypt.prototype, 'run').returns({
+    processedEnvs: [],
+    changedFilepaths: [],
+    unchangedFilepaths: []
+  })
+
+  await encrypt.call(fakeContext)
+
+  t.ok(runStub.calledOnce, 'Encrypt().run() called')
+  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
+
+  ct.end()
+})
+
 t.test('encrypt - --token uses Ops even when session status is off', async ct => {
   let constructorArgs
   const sessionNoOpsStub = sinon.stub().resolves(true)
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return sessionNoOpsStub()
     }
   }
@@ -710,7 +727,7 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
   let constructorArgs
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return false
     }
   }
@@ -740,7 +757,7 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
   await encryptWithMock.call({ opts: () => ({}), envs: [] })
 
   ct.equal(spinner.stop.callCount, 2, 'stops on Ops stderr and before final output')
-  ct.equal(spinner.start.callCount, 1, 'restarts after Ops keypair')
+  ct.equal(spinner.start.callCount, 1, 'restarts after Vlt keypair')
   ct.equal(spinner.start.firstCall.args[0], 'encrypting')
 
   ct.end()
@@ -758,7 +775,7 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
   let secondSelected
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return false
     }
   }
@@ -847,7 +864,7 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
   let constructorArgs
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return false
     }
   }
@@ -877,7 +894,7 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
   await encryptWithMock.call({ opts: () => ({ stdout: true }), envs: [] })
 
   ct.equal(spinner.stop.callCount, 2, 'stops on Ops stderr and before stdout exit')
-  ct.equal(spinner.start.callCount, 1, 'restarts after Ops keypair')
+  ct.equal(spinner.start.callCount, 1, 'restarts after Vlt keypair')
   ct.equal(spinner.start.firstCall.args[0], 'encrypting')
   ct.ok(processExitStub.calledWith(0), 'process.exit(0) called')
 
@@ -892,7 +909,7 @@ t.test('encrypt - spinner stop is called for stdout/success/catch flows', async 
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return sessionStub()
     }
   }

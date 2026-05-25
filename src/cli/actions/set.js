@@ -6,9 +6,10 @@ const createSpinner = require('../../lib/helpers/createSpinner')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
 const Sets = require('./../../lib/services/sets')
+const normalizeVltOptions = require('./normalizeVltOptions')
 
 async function set (key, value) {
-  const options = this.opts()
+  const options = normalizeVltOptions(this.opts())
 
   let encrypt = true
   let settingMessage = 'encrypting'
@@ -27,7 +28,7 @@ async function set (key, value) {
     const sesh = new Session()
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const noOps = options.ops === false || (await sesh.noOps())
+    const noOps = options.ops === false || (await sesh.noVlt())
     const noCreate = options.create === false
 
     const {

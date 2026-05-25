@@ -7,7 +7,7 @@ const Sets = require('../../../src/lib/services/sets')
 const { logger } = require('../../../src/shared/logger')
 
 class SessionMock {
-  async noOps () {
+  async noVlt () {
     return false
   }
 }
@@ -672,6 +672,24 @@ t.test('set - --no-ops passes noOps true to Sets service', async ct => {
   ct.end()
 })
 
+t.test('set - --no-vlt passes noOps true to Sets service', async ct => {
+  sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({ vlt: false })
+  const fakeContext = { opts: optsStub }
+  const runStub = sinon.stub(Sets.prototype, 'run').returns({
+    processedEnvs: [],
+    changedFilepaths: [],
+    unchangedFilepaths: []
+  })
+
+  await set.call(fakeContext, 'HELLO', 'World')
+
+  t.ok(runStub.calledOnce, 'Sets().run() called')
+  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
+
+  ct.end()
+})
+
 t.test('set - catch error', async ct => {
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const error = new Error('Mock Error')
@@ -713,7 +731,7 @@ t.test('set - spinner stop called on success path when spinner exists', async ct
   const successStub = sinon.stub(logger, 'success')
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return false
     }
   }
@@ -757,7 +775,7 @@ t.test('set - spinner stop called on catch path when spinner exists', async ct =
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noOps () {
+    async noVlt () {
       return false
     }
   }

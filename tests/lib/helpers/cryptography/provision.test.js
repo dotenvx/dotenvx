@@ -116,7 +116,7 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
   ct.end()
 })
 
-t.test('provision uses Ops keypair when noOps is false', async (ct) => {
+t.test('provision uses Vlt keypair when noOps is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().resolves({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=ops_priv\n',
@@ -150,7 +150,7 @@ t.test('provision uses Ops keypair when noOps is false', async (ct) => {
   ct.end()
 })
 
-t.test('provision forwards token to Ops keypair when noOps is false', async (ct) => {
+t.test('provision forwards token to Vlt keypair when noOps is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
   const opsKeypair = sinon.stub().resolves({ publicKey: 'ops_pub', privateKey: 'ops_priv' })

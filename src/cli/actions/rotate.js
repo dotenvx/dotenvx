@@ -7,16 +7,17 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
+const normalizeVltOptions = require('./normalizeVltOptions')
 
 async function rotate () {
-  const options = this.opts()
+  const options = normalizeVltOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'rotating', frames: ['⟳', '⤾', '⥁'] })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
   const sesh = new Session()
-  const noOps = options.ops === false || (await sesh.noOps())
+  const noOps = options.ops === false || (await sesh.noVlt())
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {

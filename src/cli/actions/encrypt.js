@@ -8,6 +8,7 @@ const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
+const normalizeVltOptions = require('./normalizeVltOptions')
 
 function keypairSpinnerHooks (spinner) {
   let stoppedForOps = false
@@ -64,14 +65,14 @@ function encryptOptions (spinner, noOps) {
 }
 
 async function encrypt () {
-  const options = this.opts()
+  const options = normalizeVltOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const sesh = new Session()
   const envs = this.envs
-  const noOps = options.ops === false || (!options.token && (await sesh.noOps()))
+  const noOps = options.ops === false || (!options.token && (await sesh.noVlt()))
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout

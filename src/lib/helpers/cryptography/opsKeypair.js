@@ -1,4 +1,4 @@
-const Ops = require('../../extensions/ops')
+const Vlt = require('../../extensions/vlt')
 
 async function opsKeypair (existingPublicKey, options = {}) {
   const hooks = options.hooks || {}
@@ -13,7 +13,7 @@ async function opsKeypair (existingPublicKey, options = {}) {
 
   let kp
   try {
-    kp = await new Ops().keypair(existingPublicKey, keypairOptions)
+    kp = await new Vlt().keypair(existingPublicKey, keypairOptions)
   } finally {
     if (hooks.after) await hooks.after()
   }

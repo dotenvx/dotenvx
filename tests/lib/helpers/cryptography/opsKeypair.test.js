@@ -2,18 +2,18 @@ const t = require('tap')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-t.test('opsKeypair returns normalized keys from Ops keypair', async (ct) => {
+t.test('opsKeypair returns normalized keys from Vlt keypair', async (ct) => {
   const keypair = sinon.stub().resolves({
     public_key: 'ops_pub_123',
     private_key: 'ops_priv_123'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypair = keypair
   }
 
   const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = await opsKeypair()
@@ -26,18 +26,18 @@ t.test('opsKeypair returns normalized keys from Ops keypair', async (ct) => {
   ct.end()
 })
 
-t.test('opsKeypair forwards provided public key to Ops keypair', async (ct) => {
+t.test('opsKeypair forwards provided public key to Vlt keypair', async (ct) => {
   const keypair = sinon.stub().resolves({
     public_key: 'ops_pub_abc',
     private_key: 'ops_priv_abc'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypair = keypair
   }
 
   const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = await opsKeypair('existing_pub')
@@ -49,18 +49,18 @@ t.test('opsKeypair forwards provided public key to Ops keypair', async (ct) => {
   ct.end()
 })
 
-t.test('opsKeypair forwards token to Ops keypair', async (ct) => {
+t.test('opsKeypair forwards token to Vlt keypair', async (ct) => {
   const keypair = sinon.stub().resolves({
     public_key: 'ops_pub_abc',
     private_key: 'ops_priv_abc'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypair = keypair
   }
 
   const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = await opsKeypair(undefined, { token: 'token-123' })
@@ -72,18 +72,18 @@ t.test('opsKeypair forwards token to Ops keypair', async (ct) => {
   ct.end()
 })
 
-t.test('opsKeypair forwards env filepath to Ops keypair', async (ct) => {
+t.test('opsKeypair forwards env filepath to Vlt keypair', async (ct) => {
   const keypair = sinon.stub().resolves({
     public_key: 'ops_pub_abc',
     private_key: 'ops_priv_abc'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypair = keypair
   }
 
   const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = await opsKeypair(undefined, { envFilepath: '.env.production' })
@@ -95,7 +95,7 @@ t.test('opsKeypair forwards env filepath to Ops keypair', async (ct) => {
   ct.end()
 })
 
-t.test('opsKeypair forwards stderr hook to Ops keypair', async (ct) => {
+t.test('opsKeypair forwards stderr hook to Vlt keypair', async (ct) => {
   const hooks = {
     onStderr: sinon.stub()
   }
@@ -104,12 +104,12 @@ t.test('opsKeypair forwards stderr hook to Ops keypair', async (ct) => {
     private_key: 'ops_priv_abc'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypair = keypair
   }
 
   const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = await opsKeypair(undefined, { hooks })
@@ -121,7 +121,7 @@ t.test('opsKeypair forwards stderr hook to Ops keypair', async (ct) => {
   ct.end()
 })
 
-t.test('opsKeypair brackets Ops keypair with spinner hooks', async (ct) => {
+t.test('opsKeypair brackets Vlt keypair with spinner hooks', async (ct) => {
   const hooks = {
     before: sinon.stub().resolves(),
     after: sinon.stub().resolves()
@@ -131,12 +131,12 @@ t.test('opsKeypair brackets Ops keypair with spinner hooks', async (ct) => {
     private_key: 'ops_priv_abc'
   })
 
-  function OpsMock () {
+  function VltMock () {
     this.keypair = keypair
   }
 
   const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   const out = await opsKeypair('existing_pub', { hooks })
@@ -151,19 +151,19 @@ t.test('opsKeypair brackets Ops keypair with spinner hooks', async (ct) => {
   ct.end()
 })
 
-t.test('opsKeypair runs after hook when Ops keypair fails', async (ct) => {
+t.test('opsKeypair runs after hook when Vlt keypair fails', async (ct) => {
   const hooks = {
     before: sinon.stub().resolves(),
     after: sinon.stub().resolves()
   }
   const keypair = sinon.stub().rejects(new Error('ops failed'))
 
-  function OpsMock () {
+  function VltMock () {
     this.keypair = keypair
   }
 
   const opsKeypair = proxyquire('../../../../src/lib/helpers/cryptography/opsKeypair', {
-    './../../extensions/ops': OpsMock
+    './../../extensions/vlt': VltMock
   })
 
   await ct.rejects(opsKeypair('existing_pub', { hooks }), /ops failed/)

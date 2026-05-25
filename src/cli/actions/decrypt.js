@@ -5,16 +5,17 @@ const Decrypt = require('./../../lib/services/decrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
+const normalizeVltOptions = require('./normalizeVltOptions')
 
 async function decrypt () {
-  const options = this.opts()
+  const options = normalizeVltOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'decrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const sesh = new Session()
   const envs = this.envs
-  const noOps = options.ops === false || (await sesh.noOps())
+  const noOps = options.ops === false || (await sesh.noVlt())
 
   let errorCount = 0
 

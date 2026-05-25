@@ -59,12 +59,12 @@ t.test('config calls Run.run',
     ct.end()
   })
 
-t.test('config supports deprecated opsOff option',
+t.test('config supports noVlt option',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
     stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
-    main.config({ opsOff: true })
+    main.config({ noVlt: true })
 
     t.ok(stub.called, 'new Run().runSync() called')
     t.equal(stub.thisValues[0].noOps, true, 'Run was called with noOps true')
@@ -818,12 +818,12 @@ t.test('set calls Sets.run with noOps true',
     ct.end()
   })
 
-t.test('set supports deprecated opsOff option',
+t.test('set supports noVlt option',
   ct => {
     const stub = sinon.stub(Sets.prototype, 'runSync')
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
-    main.set('KEY', 'value', { opsOff: true })
+    main.set('KEY', 'value', { noVlt: true })
 
     t.ok(stub.called, 'new Sets().runSync() called')
     t.equal(stub.thisValues[0].noOps, true, 'Sets was called with noOps true')
@@ -1636,12 +1636,12 @@ t.test('get calls Get.runSync with noOps true',
     ct.end()
   })
 
-t.test('get supports deprecated opsOff option',
+t.test('get supports noVlt option',
   ct => {
     const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
-    const result = main.get('KEY', { opsOff: true })
+    const result = main.get('KEY', { noVlt: true })
     t.equal(result, 'value')
 
     t.ok(stub.called, 'new Get().runSync() called')
