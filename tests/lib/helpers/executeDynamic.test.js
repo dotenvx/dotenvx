@@ -89,6 +89,28 @@ t.test('executeDynamic - ops command missing', ct => {
   ct.end()
 })
 
+t.test('executeDynamic - vlt command missing', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 1,
+    error: new Error('Mock Error')
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+
+  executeDynamic(program, 'vlt', ['vlt'])
+
+  ct.ok(spawnSyncStub.calledWith('dotenvx-vlt', [], sinon.match.object), 'spawnSync proxies to dotenvx-vlt')
+  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.ok(consoleLogStub.called, 'console.log')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /then run \[dotenvx-vlt login\]/i, 'uses dotenvx-vlt login command')
+  ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
+
+  ct.end()
+})
+
 t.test('executeDynamic - ops command missing with npm user agent', ct => {
   const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
   const mockResult = {
