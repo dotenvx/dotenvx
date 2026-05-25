@@ -6,6 +6,10 @@ function installCommandForOps () {
   return 'curl -sfS https://dotenvx.sh/ops | sh'
 }
 
+function installCommandForVlt () {
+  return 'curl -sfS https://dotenvx.sh/vlt | sh'
+}
+
 function opsBanner (installCommand) {
   const lines = [
     '',
@@ -19,6 +23,29 @@ function opsBanner (installCommand) {
     '  ⛨  ARMORED KEYS: Harden your private keys.',
     `  ⮕  install [${installCommand}]`,
     '  ⮕  then run [dotenvx-ops login]'
+  ]
+
+  const innerWidth = Math.max(67, ...lines.map((line) => line.length))
+  const top = ` ${'_'.repeat(innerWidth)}`
+  const middle = lines.map((line) => `|${line.padEnd(innerWidth)}|`).join('\n')
+  const bottom = `|${'_'.repeat(innerWidth)}|`
+
+  return `${top}\n${middle}\n${bottom}`
+}
+
+function vltBanner (installCommand) {
+  const lines = [
+    '',
+    '  ██╗   ██╗██╗  ████████╗',
+    '  ██║   ██║██║  ╚══██╔══╝',
+    '  ██║   ██║██║     ██║   ',
+    '  ╚██╗ ██╔╝██║     ██║       [www.dotenvx.com/vlt]',
+    '   ╚████╔╝ ███████╗██║   ',
+    '    ╚═══╝  ╚══════╝╚═╝   ',
+    '',
+    '  ⛨  ARMORED KEYS: Harden your private keys.',
+    `  ⮕  install [${installCommand}]`,
+    '  ⮕  then run [dotenvx-vlt login]'
   ]
 
   const innerWidth = Math.max(67, ...lines.map((line) => line.length))
@@ -49,9 +76,13 @@ function executeDynamic (program, command, rawArgs) {
 
   const result = childProcess.spawnSync(`dotenvx-${command}`, forwardedArgs, { stdio: 'inherit', env })
   if (result.error) {
-    if (command === 'ops') {
+    if (command === 'vlt') {
+      const installCommand = installCommandForVlt()
+      console.log(vltBanner(installCommand))
+    } else if (command === 'ops') {
       const installCommand = installCommandForOps()
       console.log(opsBanner(installCommand))
+
     } else {
       logger.info(`error: unknown command '${command}'`)
     }

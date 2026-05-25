@@ -43,7 +43,7 @@ program
     setLogLevel(options)
   })
 
-// for dynamic loading of dotenvx-ops, etc
+// for dynamic loading of dotenvx-vlt, etc
 program
   .argument('[command]', 'dynamic command')
   .argument('[args...]', 'dynamic command arguments')
@@ -128,7 +128,7 @@ program.command('encrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--stdout', 'send to stdout')
-  .option('--token <token>', 'set Ops token')
+  .option('--token <token>', 'set Vlt Ops token')
   .option('--no-create', 'do not create .env file(s) when missing')
   .option('--no-ops', 'disable dotenvx-ops features')
   .option('--no-vlt', 'disable dotenvx-vlt features')
@@ -244,10 +244,10 @@ program.command('help [command]')
     }
   })
 
-// dotenvx ops
+// dotenvx vlt ops
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  ops                ⛨  Ops [www.dotenvx.com/ops]')
+program.addHelpText('after', '  ops                ⛨  Vlt Ops [www.dotenvx.com/vlt]')
 program.addHelpText('after', '  ext                🔌 extensions')
 
 // dotenvx ext
