@@ -82,7 +82,6 @@ function executeDynamic (program, command, rawArgs) {
     } else if (command === 'ops') {
       const installCommand = installCommandForOps()
       console.log(opsBanner(installCommand))
-
     } else {
       logger.info(`error: unknown command '${command}'`)
     }

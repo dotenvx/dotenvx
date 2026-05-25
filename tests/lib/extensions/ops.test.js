@@ -30,7 +30,7 @@ t.afterEach(() => {
   delete process.env.DOTENVX_NO_VLT
 })
 
-t.test('statusSync and keypairSync use npm binary when available', (ct) => {
+t.test('statusSync and keypairSync use npm dotenvx-vlt binary when available', (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()
@@ -78,7 +78,7 @@ t.test('keypairSync can disable child spinner', (ct) => {
   ct.end()
 })
 
-t.test('keypairSync forwards token to dotenvx-ops', (ct) => {
+t.test('keypairSync forwards token to resolved vlt/ops binary', (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()
@@ -98,7 +98,7 @@ t.test('keypairSync forwards token to dotenvx-ops', (ct) => {
   ct.end()
 })
 
-t.test('keypairSync forwards env filepath to dotenvx-ops', (ct) => {
+t.test('keypairSync forwards env filepath to resolved vlt/ops binary', (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()
@@ -152,7 +152,7 @@ t.test('status uses execFile and keypair uses interactive spawn', async (ct) => 
   ct.end()
 })
 
-t.test('keypair forwards env filepath to dotenvx-ops', async (ct) => {
+t.test('keypair forwards env filepath to resolved vlt/ops binary', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -176,7 +176,7 @@ t.test('keypair forwards env filepath to dotenvx-ops', async (ct) => {
   ct.end()
 })
 
-t.test('falls back to cli binary and observe spawns detached process', (ct) => {
+t.test('falls back to dotenvx-vlt cli binary and observe spawns detached process', (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -199,6 +199,7 @@ t.test('falls back to cli binary and observe spawns detached process', (ct) => {
   ct.same(execFileSync.getCall(0).args[1], ['--version'])
   ct.same(execFileSync.getCall(1).args[1], ['--version'])
   ct.same(execFileSync.getCall(2).args[1], ['status'])
+  ct.equal(execFileSync.getCall(1).args[0], 'dotenvx-vlt')
 
   ct.equal(spawn.callCount, 1)
   const spawnArgs = spawn.getCall(0).args
@@ -206,6 +207,39 @@ t.test('falls back to cli binary and observe spawns detached process', (ct) => {
   ct.same(spawnArgs[2], { stdio: 'ignore', detached: true })
   ct.ok(Buffer.from(spawnArgs[1][1], 'base64').toString('utf8').includes('"event":"rotated"'))
   ct.equal(unref.callCount, 1)
+  ct.end()
+})
+
+t.test('falls back to dotenvx-ops when dotenvx-vlt is unavailable', async (ct) => {
+  const execFileSync = sinon.stub()
+  const promisifiedExecFile = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = promisifiedExecFile
+  const spawn = sinon.stub()
+
+  execFileSync
+    .onCall(0).throws(new Error('npm dotenvx-vlt missing'))
+    .onCall(1).throws(new Error('cli dotenvx-vlt missing'))
+    .onCall(2).returns(Buffer.from('1.0.0\n'))
+    .onCall(3).returns(Buffer.from('on\n'))
+
+  promisifiedExecFile
+    .onCall(0).rejects(new Error('npm dotenvx-vlt missing'))
+    .onCall(1).rejects(new Error('cli dotenvx-vlt missing'))
+    .onCall(2).resolves({ stdout: Buffer.from('1.0.0\n') })
+    .onCall(3).resolves({ stdout: Buffer.from('on\n') })
+
+  const Ops = proxyquire('../../../src/lib/extensions/ops', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const opsSync = new Ops()
+  ct.equal(opsSync.statusSync(), 'on')
+  ct.ok(execFileSync.getCall(2).args[0].endsWith('node_modules/.bin/dotenvx-ops'))
+
+  const opsAsync = new Ops()
+  ct.equal(await opsAsync.status(), 'on')
+  ct.ok(promisifiedExecFile.getCall(2).args[0].endsWith('node_modules/.bin/dotenvx-ops'))
   ct.end()
 })
 
@@ -261,7 +295,7 @@ t.test('forced off skips binary resolution with DOTENVX_NO_VLT', async (ct) => {
   ct.end()
 })
 
-t.test('status/statusSync are off when both npm and cli binaries are unavailable', async (ct) => {
+t.test('status/statusSync are off when all vlt and ops binaries are unavailable', async (ct) => {
   const execFileSync = sinon.stub().throws(new Error('binary missing'))
   const promisifiedExecFile = sinon.stub().rejects(new Error('binary missing'))
   const execFile = sinon.stub()
@@ -277,8 +311,8 @@ t.test('status/statusSync are off when both npm and cli binaries are unavailable
   ct.same(ops.keypairSync('anything'), {})
   ct.equal(await ops.status(), 'off')
   ct.same(await ops.keypair('anything'), {})
-  ct.equal(execFileSync.callCount, 2)
-  ct.equal(promisifiedExecFile.callCount, 2)
+  ct.equal(execFileSync.callCount, 4)
+  ct.equal(promisifiedExecFile.callCount, 4)
   ct.end()
 })
 
@@ -356,7 +390,7 @@ t.test('observe returns early when status check throws', (ct) => {
   ct.end()
 })
 
-t.test('status async falls back to cli binary when npm binary is unavailable', async (ct) => {
+t.test('status async falls back to dotenvx-vlt cli binary when npm binary is unavailable', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -374,7 +408,7 @@ t.test('status async falls back to cli binary when npm binary is unavailable', a
 
   const ops = new Ops()
   ct.equal(await ops.status(), 'on')
-  ct.equal(promisifiedExecFile.getCall(1).args[0], 'dotenvx-ops')
+  ct.equal(promisifiedExecFile.getCall(1).args[0], 'dotenvx-vlt')
   ct.end()
 })
 
@@ -468,7 +502,7 @@ t.test('keypair async can disable child spinner', async (ct) => {
   ct.end()
 })
 
-t.test('keypair async forwards token to dotenvx-ops', async (ct) => {
+t.test('keypair async forwards token to resolved vlt/ops binary', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()

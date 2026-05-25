@@ -4,6 +4,7 @@ const util = require('util')
 const { logger } = require('../../shared/logger')
 
 const execFile = util.promisify(childProcess.execFile)
+const BINARY_NAMES = ['dotenvx-vlt', 'dotenvx-ops']
 
 class Ops {
   async status () {
@@ -156,16 +157,12 @@ class Ops {
     if (this._binaryPromise) return this._binaryPromise
 
     this._binaryPromise = (async () => {
-      const npmBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
-      try {
-        await this._exec(npmBin, ['--version'])
-        return npmBin
-      } catch (_e) {}
-
-      try {
-        await this._exec('dotenvx-ops', ['--version'])
-        return 'dotenvx-ops'
-      } catch (_e) {}
+      for (const binary of this._binaryCandidates()) {
+        try {
+          await this._exec(binary, ['--version'])
+          return binary
+        } catch (_e) {}
+      }
 
       return null
     })()
@@ -176,25 +173,25 @@ class Ops {
   _resolveBinarySync () {
     if (this._binarySync !== undefined) return this._binarySync
 
-    const npmBin = path.resolve(process.cwd(), 'node_modules/.bin/dotenvx-ops')
-    try {
-      this._execSync(npmBin, ['--version'])
-      this._binarySync = npmBin
-      return this._binarySync
-    } catch (err) {
-      logger.debug(err.message)
-    }
-
-    try {
-      this._execSync('dotenvx-ops', ['--version'])
-      this._binarySync = 'dotenvx-ops'
-      return this._binarySync
-    } catch (err) {
-      logger.debug(err.message)
+    for (const binary of this._binaryCandidates()) {
+      try {
+        this._execSync(binary, ['--version'])
+        this._binarySync = binary
+        return this._binarySync
+      } catch (err) {
+        logger.debug(err.message)
+      }
     }
 
     this._binarySync = null
     return null
+  }
+
+  _binaryCandidates () {
+    return BINARY_NAMES.flatMap((binary) => [
+      path.resolve(process.cwd(), `node_modules/.bin/${binary}`),
+      binary
+    ])
   }
 
   _isForcedOff () {
