@@ -1,3 +1,5 @@
+const readline = require('readline')
+
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
@@ -7,7 +9,32 @@ const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
 const Sets = require('./../../lib/services/sets')
 
+function promptForValue (key) {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stderr
+    })
+
+    const prompt = `Enter value for ${key}: `
+    // mask value with '*'
+    rl._writeToOutput = function () {
+      process.stderr.write(`\r\x1b[K${prompt}${'*'.repeat(rl.line.length)}`)
+    }
+
+    rl.question(prompt, (answer) => {
+      process.stderr.write('\n')
+      rl.close()
+      resolve(answer)
+    })
+  })
+}
+
 async function set (key, value) {
+  if (value === undefined) {
+    value = await promptForValue(key)
+  }
+
   const options = this.opts()
 
   let encrypt = true
