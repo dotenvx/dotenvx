@@ -23,8 +23,8 @@ function stripOpsStatus (output) {
 
   return output
     .split('\n')
-    .filter(line => !line.match(/^\[dotenvx@.+\] ⛨ ops: (on|off)$/))
-    .filter(line => !line.match(/^(┆ )?ops: (on|off)$/))
+    .filter(line => !line.match(/^\[dotenvx@.+\] ⛨ (ops|vlt): (on|off)$/))
+    .filter(line => !line.match(/^(┆ )?(ops|vlt): (on|off)$/))
     .join('\n')
 }
 
@@ -73,7 +73,7 @@ t.test('#run', ct => {
   ct.equal(execShell(`${dotenvx} run -- ${command}`).stdout, `⟐ injected env (1) from .env · dotenvx@${version}\nHello World`)
   ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello World') // --quiet
   ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
-options: {"env":[],"envFile":[],"strict":false,"ops":true}
+options: {"env":[],"envFile":[],"strict":false,"ops":true,"vlt":true}
 process command [${node} index.js]
 loading env from .env (${tempDir}/.env)
 {"HELLO":"World"}
@@ -98,7 +98,7 @@ t.test('#run - multiple .env files', ct => {
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env -- ${command}`).stdout, `⟐ injected env (1) from .env.local, .env · dotenvx@${version}\nHello local`)
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --quiet -- ${command}`).stdout, 'Hello local') // --quiet
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
-options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"ops":true}
+options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"ops":true,"vlt":true}
 process command [${node} index.js]
 loading env from .env.local (${tempDir}/.env.local)
 {"HELLO":"local"}
@@ -127,7 +127,7 @@ t.test('#run - multiple .env files --overload', ct => {
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload -- ${command}`).stdout, `⟐ injected env (1) from .env.local, .env · dotenvx@${version}\nHello World`)
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --quiet -- ${command}`).stdout, 'Hello World') // --quiet
   ct.equal(execShell(`${dotenvx} run -f .env.local -f .env --overload --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
-options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"ops":true,"overload":true}
+options: {"env":[],"envFile":[".env.local",".env"],"strict":false,"ops":true,"vlt":true,"overload":true}
 process command [${node} index.js]
 loading env from .env.local (${tempDir}/.env.local)
 {"HELLO":"local"}
@@ -182,7 +182,7 @@ t.test('#run - --env', ct => {
   ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env -- ${command}`).stdout, `⟐ injected env (1) from .env, and --env flag · dotenvx@${version}\nHello String`)
   ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --quiet -- ${command}`).stdout, 'Hello String') // --quiet
   ct.equal(execShell(`${dotenvx} run --env HELLO=String -f .env --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
-options: {"env":["HELLO=String"],"envFile":[".env"],"strict":false,"ops":true}
+options: {"env":["HELLO=String"],"envFile":[".env"],"strict":false,"ops":true,"vlt":true}
 process command [${node} index.js]
 loading env from string (HELLO=String)
 {"HELLO":"String"}
@@ -214,7 +214,7 @@ t.test('#run - encrypted .env', ct => {
   ct.equal(execShell(`${dotenvx} run -- ${command}`).stdout, `⟐ injected env (2) from .env · dotenvx@${version}\nHello encrypted`)
   ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello encrypted') // --quiet
   ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
-options: {"env":[],"envFile":[],"strict":false,"ops":true}
+options: {"env":[],"envFile":[],"strict":false,"ops":true,"vlt":true}
 process command [${node} index.js]
 loading env from .env (${tempDir}/.env)
 {"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"encrypted"}
@@ -256,7 +256,7 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   o = execShell(`${dotenvx} run --debug -- ${command}`)
   ct.equal(o.stderr, '☠ [MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]')
   ct.equal(o.stdout, modernizeDebugOutput(`Setting log level to debug
-options: {"env":[],"envFile":[],"strict":false,"ops":true}
+options: {"env":[],"envFile":[],"strict":false,"ops":true,"vlt":true}
 process command [${node} index.js]
 loading env from .env (${tempDir}/.env)
 {"DOTENV_PUBLIC_KEY":"${DOTENV_PUBLIC_KEY}","HELLO":"${encrypted}"}
