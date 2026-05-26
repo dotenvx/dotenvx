@@ -2,6 +2,7 @@ const { logger } = require('./../../shared/logger')
 
 const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
+const formatShell = require('./../../lib/helpers/formatShell')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
@@ -61,13 +62,7 @@ async function get (key) {
 
         console.log(inline)
       } else if (options.format === 'shell') {
-        let inline = ''
-        for (const [key, value] of Object.entries(parsed)) {
-          inline += `${key}=${value} `
-        }
-        inline = inline.trim()
-
-        console.log(inline)
+        console.log(formatShell(parsed))
       } else if (options.format === 'colon') {
         let inline = ''
         for (const [key, value] of Object.entries(parsed)) {

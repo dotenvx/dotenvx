@@ -1,5 +1,5 @@
 function escape (value) {
-  return JSON.stringify(value)
+  return `'${String(value).replace(/'/g, "'\\''")}'`
 }
 
 module.exports = escape

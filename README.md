@@ -1432,7 +1432,7 @@ $ dotenvx get --format shell
 HELLO=Dotenvx KEY=value
 ```
 
-This can be useful when combined with `env` on the command line.
+This can be useful when combined with `env` on the command line for values without whitespace.
 
 ```
 $ echo "console.log('Hello ' + process.env.KEY + ' ' + process.env.HELLO)" > index.js
@@ -1440,12 +1440,11 @@ $ env $(dotenvx get --format=shell) node index.js
 Hello value World
 ```
 
-or with `export`.
+For values that include whitespace or shell-special characters, prefer `dotenvx run --`.
 
 ```
 $ echo "console.log('Hello ' + process.env.KEY + ' ' + process.env.HELLO)" > index.js
-$ export $(dotenvx get --format=shell)
-$ node index.js
+$ dotenvx run -- node index.js
 Hello value World
 ```
 
@@ -1459,8 +1458,8 @@ $ echo "HELLO=Dotenvx" > .env
 $ echo "KEY=value" >> .env
 
 $ dotenvx get --format eval
-HELLO="Dotenvx"
-KEY="value"
+HELLO='Dotenvx'
+KEY='value'
 ```
 
 Note that this exports newlines and quoted strings.
@@ -1469,7 +1468,8 @@ This can be useful for more complex .env values (spaces, escaped characters, quo
 
 ```sh
 $ echo "console.log('Hello ' + process.env.KEY + ' ' + process.env.HELLO)" > index.js
-$ eval $(dotenvx get --format=eval) node index.js
+$ set -a; eval "$(dotenvx get --format=eval)"; set +a
+$ node index.js
 Hello value World
 ```
 

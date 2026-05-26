@@ -137,6 +137,25 @@ t.test('get --format shell (with single quotes in value)', async ct => {
   ct.end()
 })
 
+t.test('get --format shell rejects values with whitespace', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'shell' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { GREETING: 'hello NODE_OPTIONS=--require=./payload.js' } })
+  const processExitStub = sinon.stub(process, 'exit')
+
+  const { stdout, stderr } = await captureStdio(async () => {
+    await get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  t.equal(stdout, '')
+  t.ok(stderr.includes('cannot format GREETING as shell'), 'stderr contains shell formatter error')
+
+  ct.end()
+})
+
 t.test('get --format colon', async ct => {
   const optsStub = sinon.stub().returns({ format: 'colon' })
   const fakeContext = { opts: optsStub }
@@ -164,7 +183,23 @@ t.test('get --format eval (with single quotes in value)', async ct => {
   })
 
   t.ok(stub.called, 'Get().run() called')
-  t.equal(stdout, 'HELLO="f\'bar"\n')
+  t.equal(stdout, "HELLO='f'\\''bar'\n")
+
+  ct.end()
+})
+
+t.test('get --format eval (with command substitution in value)', async ct => {
+  const optsStub = sinon.stub().returns({ format: 'eval' })
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Get.prototype, 'run')
+  stub.returns({ parsed: { HELLO: '$(./payload.sh)' } })
+
+  const stdout = await captureStdout(async () => {
+    await get.call(fakeContext, undefined)
+  })
+
+  t.ok(stub.called, 'Get().run() called')
+  t.equal(stdout, "HELLO='$(./payload.sh)'\n")
 
   ct.end()
 })
@@ -180,7 +215,7 @@ t.test('get --format eval (multiple keys use newlines)', async ct => {
   })
 
   t.ok(stub.called, 'Get().run() called')
-  t.equal(stdout, 'HELLO="World"\nHELLO2="World2"\n')
+  t.equal(stdout, "HELLO='World'\nHELLO2='World2'\n")
 
   ct.end()
 })
