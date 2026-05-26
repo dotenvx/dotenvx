@@ -48,8 +48,8 @@ const config = function (options = {}) {
     setLogVersion(options)
   }
 
-  // dotenvx-ops related
-  const noOps = resolveNoOps(options)
+  // dotenvx-vlt related
+  const noVlt = resolveNoVlt(options)
 
   try {
     let envs = buildEnvs(options)
@@ -60,7 +60,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, noOps, {
+    } = new Run(envs, overload, processEnv, envKeysFile, noVlt, {
       noSpinner: options.noSpinner
     }).runSync()
 
@@ -180,13 +180,13 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
-  const noOps = resolveNoOps(options)
+  const noVlt = resolveNoVlt(options)
 
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noOps).runSync()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noVlt).runSync()
 
   let withEncryption = ''
 
@@ -247,12 +247,12 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
-  const noOps = resolveNoOps(options)
+  const noVlt = resolveNoVlt(options)
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noOps).runSync()
+  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noVlt).runSync()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
@@ -317,8 +317,8 @@ const genexample = function (directory, envFile) {
 }
 
 /** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
-  const keypairs = new Keypair(envFile, envKeysFile, noOps).runSync()
+const keypair = function (envFile, key, envKeysFile = null, noVlt = false) {
+  const keypairs = new Keypair(envFile, envKeysFile, noVlt).runSync()
   if (key) {
     return keypairs[key]
   } else {
@@ -326,9 +326,9 @@ const keypair = function (envFile, key, envKeysFile = null, noOps = false) {
   }
 }
 
-function resolveNoOps (options = {}) {
+function resolveNoVlt (options = {}) {
   const sesh = new Session()
-  return options.noOps === true || options.noVlt === true || sesh.noVltSync()
+  return options.noVlt === true || options.noOps === true || sesh.noVltSync()
 }
 
 module.exports = {

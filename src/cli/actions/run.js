@@ -22,7 +22,7 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const noOps = options.ops === false || (await sesh.noVlt())
+  const noVlt = options.vlt === false || (await sesh.noVlt())
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
@@ -54,7 +54,7 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noOps, {
+    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noVlt, {
       keypairHooks: {
         before: () => {
           if (spinner) spinner.start('retrieving')

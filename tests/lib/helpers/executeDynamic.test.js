@@ -79,7 +79,7 @@ t.test('executeDynamic - ops command missing', ct => {
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/ops \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   process.env.npm_config_user_agent = originalUserAgent
@@ -104,7 +104,7 @@ t.test('executeDynamic - vlt command missing', ct => {
   ct.ok(spawnSyncStub.calledWith('dotenvx-vlt', [], sinon.match.object), 'spawnSync proxies to dotenvx-vlt')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.match(consoleLogStub.firstCall.args[0], /then run \[dotenvx-vlt login\]/i, 'uses dotenvx-vlt login command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
@@ -128,7 +128,7 @@ t.test('executeDynamic - ops command missing with npm user agent', ct => {
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/ops \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   process.env.npm_config_user_agent = originalUserAgent
@@ -153,7 +153,7 @@ t.test('executeDynamic - ops command missing with pnpm user agent', ct => {
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/ops \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   process.env.npm_config_user_agent = originalUserAgent
@@ -178,7 +178,7 @@ t.test('executeDynamic - ops command missing with yarn user agent', ct => {
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/ops \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   process.env.npm_config_user_agent = originalUserAgent
@@ -207,7 +207,7 @@ t.test('executeDynamic - ops command missing with pnpm lockfile', ct => {
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/ops \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   process.env.npm_config_user_agent = originalUserAgent
@@ -238,7 +238,7 @@ t.test('executeDynamic - ops command missing with yarn lockfile', ct => {
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/ops \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   process.env.npm_config_user_agent = originalUserAgent
@@ -269,7 +269,7 @@ t.test('executeDynamic - ops command missing with package-lock lockfile', ct => 
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/ops \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   process.env.npm_config_user_agent = originalUserAgent
@@ -300,7 +300,7 @@ t.test('executeDynamic - ops command missing with package.json only', ct => {
   ct.ok(spawnSyncStub.called, 'spawnSync')
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
-  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/ops \| sh\]/i, 'uses curl install command')
+  ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   process.env.npm_config_user_agent = originalUserAgent

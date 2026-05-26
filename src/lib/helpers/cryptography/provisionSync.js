@@ -1,11 +1,11 @@
 const mutateSrc = require('./mutateSrc')
 const mutateKeysSrcSync = require('./mutateKeysSrcSync')
-const opsKeypairSync = require('./opsKeypairSync')
+const vltKeypairSync = require('./vltKeypairSync')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provisionSync ({ envSrc, envFilepath, keysFilepath, noOps }) {
-  noOps = noOps !== false
+function provisionSync ({ envSrc, envFilepath, keysFilepath, noVlt }) {
+  noVlt = noVlt !== false
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
   let publicKey
@@ -15,12 +15,12 @@ function provisionSync ({ envSrc, envFilepath, keysFilepath, noOps }) {
   let localPrivateKeyAdded = false
   let remotePrivateKeyAdded = false
 
-  if (noOps) {
+  if (noVlt) {
     const kp = localKeypair()
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {
-    const kp = opsKeypairSync(undefined, { envFilepath })
+    const kp = vltKeypairSync(undefined, { envFilepath })
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   }
@@ -28,7 +28,7 @@ function provisionSync ({ envSrc, envFilepath, keysFilepath, noOps }) {
   const mutated = mutateSrc({ envSrc, envFilepath, keysFilepath, publicKeyName, publicKeyValue: publicKey })
   envSrc = mutated.envSrc
 
-  if (noOps) {
+  if (noVlt) {
     const mutated = mutateKeysSrcSync({ envFilepath, keysFilepath, privateKeyName, privateKeyValue: privateKey })
     keysSrc = mutated.keysSrc
     envKeysFilepath = mutated.envKeysFilepath

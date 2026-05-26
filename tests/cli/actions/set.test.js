@@ -654,7 +654,7 @@ t.test('set - remotePrivateKeyAdded', async ct => {
   ct.end()
 })
 
-t.test('set - --no-ops passes noOps true to Sets service', async ct => {
+t.test('set - --no-ops passes noVlt true to Sets service', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
@@ -667,12 +667,12 @@ t.test('set - --no-ops passes noOps true to Sets service', async ct => {
   await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(runStub.calledOnce, 'Sets().run() called')
-  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
+  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
 
   ct.end()
 })
 
-t.test('set - --no-vlt passes noOps true to Sets service', async ct => {
+t.test('set - --no-vlt passes noVlt true to Sets service', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ vlt: false })
   const fakeContext = { opts: optsStub }
@@ -685,7 +685,7 @@ t.test('set - --no-vlt passes noOps true to Sets service', async ct => {
   await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(runStub.calledOnce, 'Sets().run() called')
-  t.equal(runStub.thisValues[0].noOps, true, 'noOps true')
+  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
 
   ct.end()
 })

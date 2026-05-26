@@ -302,7 +302,7 @@ export default {
 
 ### Added
 
-* Add hint on `.env.keys` for `dotenvx ops backup`. Dotenvx Ops Backup lets you back up your private keys securely with just a single command. It's a convenient alterantive to manually copy/pasting them in and out of 1Password. ([#718](https://github.com/dotenvx/dotenvx/pull/718))
+* Add hint on `.env.keys` for `dotenvx armor up`. Dotenvx Armor lets you armor your private keys securely with just a single command. It's a convenient alternative to manually copy/pasting them in and out of 1Password. ([#718](https://github.com/dotenvx/dotenvx/pull/718))
 
 ## [1.51.2](https://github.com/dotenvx/dotenvx/compare/v1.51.1...v1.51.2) (2025-12-12)
 

@@ -28,14 +28,14 @@ async function set (key, value) {
     const sesh = new Session()
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const noOps = options.ops === false || (await sesh.noVlt())
+    const noVlt = options.vlt === false || (await sesh.noVlt())
     const noCreate = options.create === false
 
     const {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets(key, value, envs, encrypt, envKeysFilepath, noOps, noCreate).run()
+    } = await new Sets(key, value, envs, encrypt, envKeysFilepath, noVlt, noCreate).run()
 
     let withEncryption = ''
 
