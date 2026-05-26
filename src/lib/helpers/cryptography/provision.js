@@ -4,8 +4,7 @@ const vltKeypair = require('./vltKeypair')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-async function provision ({ envSrc, envFilepath, keysFilepath, noVlt, noOps, token, keypairHooks, selectKeyStorage }) {
-  if (noVlt === undefined) noVlt = noOps
+async function provision ({ envSrc, envFilepath, keysFilepath, noVlt, token, keypairHooks, selectKeyStorage }) {
   noVlt = noVlt !== false
   if (!noVlt && selectKeyStorage) {
     noVlt = await selectKeyStorage() !== 'armored'

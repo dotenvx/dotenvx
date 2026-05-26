@@ -25,7 +25,7 @@ function publicKeyNameFromEnvSrc (envParsed) {
 
 function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const noVlt = opts.noVlt === true || opts.noOps === true
+  const noVlt = opts.noVlt === true
   const processEnv = opts.processEnv || process.env
   const envParsed = dotenvParse(src)
 

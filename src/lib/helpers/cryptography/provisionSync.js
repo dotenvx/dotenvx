@@ -4,8 +4,7 @@ const vltKeypairSync = require('./vltKeypairSync')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provisionSync ({ envSrc, envFilepath, keysFilepath, noVlt, noOps }) {
-  if (noVlt === undefined) noVlt = noOps
+function provisionSync ({ envSrc, envFilepath, keysFilepath, noVlt }) {
   noVlt = noVlt !== false
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
