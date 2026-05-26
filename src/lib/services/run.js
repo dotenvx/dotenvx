@@ -17,12 +17,12 @@ const {
 } = require('./../helpers/keyResolution')
 
 class Run {
-  constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, noOps = false, options = {}) {
+  constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, noVlt = false, options = {}) {
     this.envs = envs
     this.overload = overload
     this.processEnv = processEnv
     this.envKeysFilepath = envKeysFilepath
-    this.noOps = noOps
+    this.noVlt = noVlt
     this.noSpinner = options.noSpinner
     this.keypairHooks = options.keypairHooks
 
@@ -94,7 +94,7 @@ class Run {
       const {
         privateKeyName: resolvedPrivateKeyName,
         privateKeyValue
-      } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noOps: this.noOps, processEnv: this.processEnv })
+      } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt, processEnv: this.processEnv })
 
       const {
         parsed,
@@ -138,7 +138,7 @@ class Run {
       const { privateKeyName } = keyNames(filepath)
       const { privateKeyValue } = keyValuesSync(filepath, {
         keysFilepath: this.envKeysFilepath,
-        noOps: this.noOps,
+        noVlt: this.noVlt,
         noSpinner: this.noSpinner
       })
 
@@ -187,7 +187,7 @@ class Run {
       const { privateKeyName } = keyNames(filepath)
       const { privateKeyValue } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
-        noOps: this.noOps,
+        noVlt: this.noVlt,
         keypairHooks: this.keypairHooks
       })
 

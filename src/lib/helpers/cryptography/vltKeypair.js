@@ -1,6 +1,6 @@
 const Vlt = require('../../extensions/vlt')
 
-async function opsKeypair (existingPublicKey, options = {}) {
+async function vltKeypair (existingPublicKey, options = {}) {
   const hooks = options.hooks || {}
   if (hooks.before) await hooks.before()
 
@@ -27,4 +27,4 @@ async function opsKeypair (existingPublicKey, options = {}) {
   }
 }
 
-module.exports = opsKeypair
+module.exports = vltKeypair

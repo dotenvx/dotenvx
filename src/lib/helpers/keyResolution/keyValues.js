@@ -5,7 +5,7 @@ const dotenvParse = require('./../dotenvParse')
 const keyNames = require('./keyNames')
 const readProcessKey = require('./readProcessKey')
 const readFileKey = require('./readFileKey')
-const opsKeypair = require('../cryptography/opsKeypair')
+const vltKeypair = require('../cryptography/vltKeypair')
 
 async function invertForPrivateKeyName (filepath) {
   const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
@@ -34,7 +34,7 @@ async function invertForPrivateKeyName (filepath) {
 
 async function keyValues (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const noOps = opts.noOps === true
+  const noVlt = opts.noVlt === true || opts.noOps === true
   const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
@@ -70,9 +70,9 @@ async function keyValues (filepath, opts = {}) {
     }
   }
 
-  // ops
-  if (!noOps && !privateKey && publicKey && publicKey.length > 0) {
-    const kp = await opsKeypair(publicKey, { envFilepath: filepath, hooks: opts.keypairHooks })
+  // vlt
+  if (!noVlt && !privateKey && publicKey && publicKey.length > 0) {
+    const kp = await vltKeypair(publicKey, { envFilepath: filepath, hooks: opts.keypairHooks })
     privateKey = kp.privateKey
   }
 

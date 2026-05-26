@@ -30,8 +30,8 @@ async function get (key) {
 
   try {
     const sesh = new Session()
-    const noOps = options.ops === false || (await sesh.noVlt())
-    const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noOps).run()
+    const noVlt = options.vlt === false || (await sesh.noVlt())
+    const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noVlt).run()
 
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict

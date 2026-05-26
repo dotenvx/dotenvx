@@ -2,35 +2,8 @@ const path = require('path')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
 
-function installCommandForOps () {
-  return 'curl -sfS https://dotenvx.sh/ops | sh'
-}
-
 function installCommandForVlt () {
   return 'curl -sfS https://dotenvx.sh/vlt | sh'
-}
-
-function opsBanner (installCommand) {
-  const lines = [
-    '',
-    '   ██████╗ ██████╗ ███████╗',
-    '  ██╔═══██╗██╔══██╗██╔════╝',
-    '  ██║   ██║██████╔╝███████╗',
-    '  ██║   ██║██╔═══╝ ╚════██║  [www.dotenvx.com/ops]',
-    '  ╚██████╔╝██║     ███████║',
-    '   ╚═════╝ ╚═╝     ╚══════╝',
-    '',
-    '  ⛨  ARMORED KEYS: Harden your private keys.',
-    `  ⮕  install [${installCommand}]`,
-    '  ⮕  then run [dotenvx-ops login]'
-  ]
-
-  const innerWidth = Math.max(67, ...lines.map((line) => line.length))
-  const top = ` ${'_'.repeat(innerWidth)}`
-  const middle = lines.map((line) => `|${line.padEnd(innerWidth)}|`).join('\n')
-  const bottom = `|${'_'.repeat(innerWidth)}|`
-
-  return `${top}\n${middle}\n${bottom}`
 }
 
 function vltBanner (installCommand) {
@@ -80,8 +53,8 @@ function executeDynamic (program, command, rawArgs) {
       const installCommand = installCommandForVlt()
       console.log(vltBanner(installCommand))
     } else if (command === 'ops') {
-      const installCommand = installCommandForOps()
-      console.log(opsBanner(installCommand))
+      const installCommand = installCommandForVlt()
+      console.log(vltBanner(installCommand))
     } else {
       logger.info(`error: unknown command '${command}'`)
     }

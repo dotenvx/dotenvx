@@ -166,16 +166,16 @@ t.test('#run expansion',
     ct.end()
   })
 
-t.test('#run passes noOps to Run service',
+t.test('#run passes noVlt to Run service',
   async ct => {
     const runStub = sinon.stub(Run.prototype, 'run').resolves({ processedEnvs: [] })
 
     await new Get('KEY').run()
-    t.equal(runStub.firstCall.thisValue.noOps, false, 'noOps defaults to false')
+    t.equal(runStub.firstCall.thisValue.noVlt, false, 'noVlt defaults to false')
 
     runStub.resetHistory()
     await new Get('KEY', [], false, false, null, true).run()
-    t.equal(runStub.firstCall.thisValue.noOps, true, 'noOps true when provided')
+    t.equal(runStub.firstCall.thisValue.noVlt, true, 'noVlt true when provided')
 
     ct.end()
   })

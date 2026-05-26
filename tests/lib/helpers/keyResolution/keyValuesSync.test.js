@@ -69,50 +69,50 @@ t.test('#keyValuesSync inverts public key name for custom file and reads keys fi
   ct.end()
 })
 
-t.test('#keyValuesSync loads private key from ops when noOps is false and only public key exists', async ct => {
-  const opsKeypairSync = sinon.stub().returns({ privateKey: 'from-ops' })
+t.test('#keyValuesSync loads private key from vlt when noVlt is false and only public key exists', async ct => {
+  const vltKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
-    '../cryptography/opsKeypairSync': opsKeypairSync
+    '../cryptography/vltKeypairSync': vltKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noOps: false })
+  const result = await keyValuesWithOpsStub('.env', { noVlt: false })
 
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
-  ct.equal(opsKeypairSync.callCount, 1)
-  ct.equal(opsKeypairSync.firstCall.args[0], '<publicKey>')
-  ct.same(opsKeypairSync.firstCall.args[1], { envFilepath: '.env' })
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt' })
+  ct.equal(vltKeypairSync.callCount, 1)
+  ct.equal(vltKeypairSync.firstCall.args[0], '<publicKey>')
+  ct.same(vltKeypairSync.firstCall.args[1], { envFilepath: '.env' })
   ct.end()
 })
 
-t.test('#keyValuesSync forwards noSpinner to ops', async ct => {
-  const opsKeypairSync = sinon.stub().returns({ privateKey: 'from-ops' })
+t.test('#keyValuesSync forwards noSpinner to vlt', async ct => {
+  const vltKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
-    '../cryptography/opsKeypairSync': opsKeypairSync
+    '../cryptography/vltKeypairSync': vltKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noOps: false, noSpinner: true })
+  const result = await keyValuesWithOpsStub('.env', { noVlt: false, noSpinner: true })
 
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-ops' })
-  ct.equal(opsKeypairSync.callCount, 1)
-  ct.same(opsKeypairSync.firstCall.args, ['<publicKey>', { envFilepath: '.env', noSpinner: true }])
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt' })
+  ct.equal(vltKeypairSync.callCount, 1)
+  ct.same(vltKeypairSync.firstCall.args, ['<publicKey>', { envFilepath: '.env', noSpinner: true }])
   ct.end()
 })
 
-t.test('#keyValuesSync does not load private key from ops when noOps is true', async ct => {
-  const opsKeypairSync = sinon.stub().returns({ privateKey: 'from-ops' })
+t.test('#keyValuesSync does not load private key from vlt when noVlt is true', async ct => {
+  const vltKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
-    '../cryptography/opsKeypairSync': opsKeypairSync
+    '../cryptography/vltKeypairSync': vltKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noOps: true })
+  const result = await keyValuesWithOpsStub('.env', { noVlt: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: null })
-  ct.equal(opsKeypairSync.callCount, 0)
+  ct.equal(vltKeypairSync.callCount, 0)
   ct.end()
 })

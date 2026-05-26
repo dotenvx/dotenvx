@@ -11,19 +11,19 @@ const Session = require('../../db/session')
 const normalizeVltOptions = require('./normalizeVltOptions')
 
 function keypairSpinnerHooks (spinner) {
-  let stoppedForOps = false
+  let stoppedForVlt = false
 
   return {
     onStderr: () => {
-      if (spinner && !stoppedForOps) {
+      if (spinner && !stoppedForVlt) {
         spinner.stop()
-        stoppedForOps = true
+        stoppedForVlt = true
       }
     },
     after: () => {
-      if (spinner && stoppedForOps) {
+      if (spinner && stoppedForVlt) {
         spinner.start('encrypting')
-        stoppedForOps = false
+        stoppedForVlt = false
       }
     }
   }
@@ -52,12 +52,12 @@ function keyStorageSelector (spinner) {
   }
 }
 
-function encryptOptions (spinner, noOps) {
+function encryptOptions (spinner, noVlt) {
   const options = {
     keypairHooks: keypairSpinnerHooks(spinner)
   }
 
-  if (!noOps) {
+  if (!noVlt) {
     options.selectKeyStorage = keyStorageSelector(spinner)
   }
 
@@ -72,14 +72,14 @@ async function encrypt () {
 
   const sesh = new Session()
   const envs = this.envs
-  const noOps = options.ops === false || (!options.token && (await sesh.noVlt()))
+  const noVlt = options.vlt === false || (!options.token && (await sesh.noVlt()))
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, encryptOptions(spinner, noOps)).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noVlt, noCreate, options.token, encryptOptions(spinner, noVlt)).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -91,7 +91,7 @@ async function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noOps, noCreate, options.token, encryptOptions(spinner, noOps)).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noVlt, noCreate, options.token, encryptOptions(spinner, noVlt)).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

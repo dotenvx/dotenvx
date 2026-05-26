@@ -25,12 +25,12 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Decrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noOps = false) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noVlt = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
-    this.noOps = noOps
+    this.noVlt = noVlt
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -77,7 +77,7 @@ class Decrypt {
       const envParsed = dotenvParse(envSrc, false, false, true)
 
       const { privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noOps: this.noOps })
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
 
       row.privateKey = privateKeyValue
       row.privateKeyName = privateKeyName
