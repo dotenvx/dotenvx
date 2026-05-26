@@ -2,7 +2,7 @@ const FIRST_TIME_KEYS_SRC = [
   '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
   '#/ private decryption keys. DO NOT commit to source control /',
   '#/     [how it works](https://dotenvx.com/encryption)       /',
-  // '#/             armor with: `dotenvx armor up`               /',
+  '#/        harden private keys: `dotenvx armor up`           /',
   '#/----------------------------------------------------------/'
 ].join('\n')
 
