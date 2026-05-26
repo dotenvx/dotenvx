@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.69.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.69.1...main)
+
+## [1.69.1](https://github.com/dotenvx/dotenvx/compare/v1.69.0...v1.69.1) (2026-05-25)
+
+### Changed
+
+* Internally rename `ops` to `vlt` ([#823](https://github.com/dotenvx/dotenvx/pull/823))
 
 ## [1.69.0](https://github.com/dotenvx/dotenvx/compare/v1.68.1...v1.69.0) (2026-05-25)
 
