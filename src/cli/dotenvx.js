@@ -202,8 +202,8 @@ program.command('doctor', { hidden: true })
   })
 
 // dotenvx login
-program.command('login')
-  .description('log in to unlock ⛨ ARMORED KEYS ✦ BETA')
+program.command('login', { hidden: true })
+  .description('')
   .allowUnknownOption()
   .action(() => {
     const rawArgs = ['ops', 'login', ...process.argv.slice(3)]
@@ -247,8 +247,9 @@ program.command('help [command]')
 // dotenvx vlt ops
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  vlt                ⛨  VLT [www.dotenvx.com/vlt]')
-program.addHelpText('after', '  ext                🔌 extensions')
+program.addHelpText('after', '  login')
+program.addHelpText('after', '  vlt                      ⛨ ARMORED KEYS [www.dotenvx.com/vlt]')
+program.addHelpText('after', '  ext                      ⊕ extensions')
 
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
