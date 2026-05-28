@@ -20,7 +20,6 @@ const buildEnvs = require('./helpers/buildEnvs')
 const { determine } = require('./helpers/envResolution')
 const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
-const localDisplayPath = require('./helpers/localDisplayPath')
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -213,11 +212,8 @@ const set = function (key, value, options = {}) {
   const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
   const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
 
-  if (localKeyAddedEnv) {
-    keyAddedSuffix = ` + local key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
-  }
   if (remoteKeyAddedEnv) {
-    keyAddedSuffix = ' + armored key ⛨'
+    keyAddedSuffix = ' · armored ⛨'
   }
 
   if (changedFilepaths.length > 0) {

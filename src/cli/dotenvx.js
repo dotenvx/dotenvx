@@ -247,7 +247,7 @@ program.command('help [command]')
 // dotenvx vlt ops
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  vlt                ⛨  Vlt Ops [www.dotenvx.com/vlt]')
+program.addHelpText('after', '  vlt                ⛨  VLT [www.dotenvx.com/vlt]')
 program.addHelpText('after', '  ext                🔌 extensions')
 
 // dotenvx ext

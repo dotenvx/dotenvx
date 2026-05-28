@@ -4,7 +4,6 @@ const { logger } = require('./../../shared/logger')
 const Encrypt = require('./../../lib/services/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
-const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
@@ -37,10 +36,10 @@ function keyStorageSelector (spinner) {
 
     if (spinner) spinner.stop()
     selected = await prompts.select({
-      message: 'Select key storage',
+      message: 'Choose private key storage',
       choices: [
-        { name: 'Local (.env.keys)', value: 'local' },
-        { name: 'Armored ⛨', value: 'armored' }
+        { name: '◫ File (.env.keys)', value: 'local' },
+        { name: '⛨ Armor (vlt.dotenvx.com)', value: 'armored' }
       ]
     }, {
       input: process.stdin,
@@ -108,15 +107,10 @@ async function encrypt () {
 
       if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
         const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
         let msg = `◈ encrypted (${changedFilepaths.join(',')})`
-        if (localKeyAddedEnv) {
-          const envKeysFilepath = localDisplayPath(localKeyAddedEnv.envKeysFilepath)
-          msg += ` + local key (${envKeysFilepath})`
-        }
         if (remoteKeyAddedEnv) {
-          msg += ' + armored key ⛨'
+          msg += ' · armored ⛨'
         }
         logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {

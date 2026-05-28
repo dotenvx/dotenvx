@@ -234,7 +234,7 @@ t.test('encrypt - .env with changes and localPrivateKeyAdded', async ct => {
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + local key (.env.keys)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
@@ -273,7 +273,7 @@ t.test('encrypt - .env with changes and localPrivateKeyAdded but not ignoring .e
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + local key (.env.keys)'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env)'), 'logger success')
   t.ok(loggerHelpStub.notCalled, 'logger help')
 
   ct.end()
@@ -308,7 +308,7 @@ t.test('encrypt - .env with changes and remotePrivateKeyAdded', async ct => {
   t.ok(loggerVerboseStub.calledWith('encrypting .env (.env)'), 'logger.verbose')
   t.ok(writeStub.calledWith('.env', 'HELLO="encrypted:1234"'), 'fsx.writeFileX')
   t.ok(loggerVerboseStub.calledWith('encrypted .env (.env)'), 'logger.verbose')
-  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) + armored key ⛨'), 'logger success')
+  t.ok(loggerSuccessStub.calledWith('◈ encrypted (.env) · armored ⛨'), 'logger success')
 
   ct.end()
 })
@@ -809,10 +809,10 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
   ct.equal(secondSelected, 'local')
   ct.equal(selectStub.callCount, 1, 'prompts once per encrypt command')
   ct.same(selectStub.firstCall.args, [{
-    message: 'Select key storage',
+    message: 'Choose private key storage',
     choices: [
-      { name: 'Local (.env.keys)', value: 'local' },
-      { name: 'Armored ⛨', value: 'armored' }
+      { name: '◫ File (.env.keys)', value: 'local' },
+      { name: '⛨ Armor (vlt.dotenvx.com)', value: 'armored' }
     ]
   }, {
     input: process.stdin,

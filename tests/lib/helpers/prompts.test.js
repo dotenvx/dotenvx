@@ -16,10 +16,10 @@ t.test('select uses enquirer with normalized choices and IO context', async ct =
   const input = {}
   const output = {}
   const value = await prompts.select({
-    message: 'Select key storage',
+    message: 'Choose private key storage',
     choices: [
       'raw',
-      { name: 'Local (.env.keys)', value: 'local' },
+      { name: '◫ File (.env.keys)', value: 'local' },
       { value: 'armored' }
     ]
   }, { input, output })
@@ -28,10 +28,10 @@ t.test('select uses enquirer with normalized choices and IO context', async ct =
   ct.same(prompt.firstCall.args[0], {
     type: 'select',
     name: 'value',
-    message: 'Select key storage',
+    message: 'Choose private key storage',
     choices: [
       'raw',
-      { name: 'local', message: 'Local (.env.keys)' },
+      { name: 'local', message: '◫ File (.env.keys)' },
       { name: 'armored', message: 'armored' }
     ],
     stdin: input,
@@ -53,7 +53,7 @@ t.test('select does not require IO context', async ct => {
   })
 
   const value = await prompts.select({
-    message: 'Select key storage',
+    message: 'Choose private key storage',
     choices: ['local']
   })
 
@@ -61,7 +61,7 @@ t.test('select does not require IO context', async ct => {
   ct.same(prompt.firstCall.args[0], {
     type: 'select',
     name: 'value',
-    message: 'Select key storage',
+    message: 'Choose private key storage',
     choices: ['local'],
     stdout: process.stderr
   })

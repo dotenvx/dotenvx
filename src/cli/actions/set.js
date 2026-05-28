@@ -3,7 +3,6 @@ const { logger } = require('./../../shared/logger')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
 const Sets = require('./../../lib/services/sets')
 const normalizeVltOptions = require('./normalizeVltOptions')
@@ -59,11 +58,8 @@ async function set (key, value) {
     const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
     const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
     let keyAddedSuffix = ''
-    if (localKeyAddedEnv) {
-      keyAddedSuffix = ` + local key (${localDisplayPath(localKeyAddedEnv.envKeysFilepath)})`
-    }
     if (remoteKeyAddedEnv) {
-      keyAddedSuffix = ' + armored key ⛨'
+      keyAddedSuffix = ' · armored ⛨'
     }
 
     if (spinner) spinner.stop()
@@ -73,7 +69,7 @@ async function set (key, value) {
       } else {
         logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
       }
-    } else if (encrypt && localKeyAddedEnv) { // TODO: this needs to take into account remoteKeyAddedEnv
+    } else if (encrypt && localKeyAddedEnv) {
       const localKeyAddedEnvFilepath = localKeyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
       logger.success(`◈ encrypted ${key} (${localKeyAddedEnvFilepath})${keyAddedSuffix}`)
     } else if (unchangedFilepaths.length > 0) {
