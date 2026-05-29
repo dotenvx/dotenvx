@@ -65,7 +65,7 @@ ext.command('precommit')
     return require('./../actions/ext/precommit').apply(this, args)
   })
 
-// dotenvx scan
+// dotenvx ext scan
 ext.command('scan')
   .description('scan for leaked secrets')
   .action(function (...args) {
