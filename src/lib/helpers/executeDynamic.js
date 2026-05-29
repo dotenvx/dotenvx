@@ -23,7 +23,7 @@ function vltBanner () {
     '                              Then',
     '                       [dotenvx armor up]',
     '                     (sign in when prompted)',
-    '',
+    ''
   ]
 
   const innerWidth = Math.max(67, ...lines.map((line) => line.length))
