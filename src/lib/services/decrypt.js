@@ -77,9 +77,11 @@ class Decrypt {
       const envParsed = dotenvParse(envSrc, false, false, true)
 
       const { privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
+      const { privateKeyValue, privateKeySource } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
 
       row.privateKey = privateKeyValue
+      row.privateKeySource = privateKeySource
+      row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
       row.privateKeyName = privateKeyName
       row.changed = false // track possible changes
 

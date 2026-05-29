@@ -202,12 +202,12 @@ program.command('doctor', { hidden: true })
   })
 
 // dotenvx login
-program.command('login')
-  .description('log in to unlock ⛨ ARMORED KEYS ✦ BETA')
+program.command('login', { hidden: true })
+  .description('')
   .allowUnknownOption()
   .action(() => {
-    const rawArgs = ['ops', 'login', ...process.argv.slice(3)]
-    executeDynamic(program, 'ops', rawArgs)
+    const rawArgs = ['vlt', 'login', ...process.argv.slice(3)]
+    executeDynamic(program, 'vlt', rawArgs)
   })
 
 // dotenvx logout
@@ -215,8 +215,8 @@ program.command('logout', { hidden: true })
   .description('log out of your dotenvx account')
   .allowUnknownOption()
   .action(() => {
-    const rawArgs = ['ops', 'logout', ...process.argv.slice(3)]
-    executeDynamic(program, 'ops', rawArgs)
+    const rawArgs = ['vlt', 'logout', ...process.argv.slice(3)]
+    executeDynamic(program, 'vlt', rawArgs)
   })
 
 // dotenvx armor
@@ -224,8 +224,8 @@ program.command('armor', { hidden: true })
   .description('ARMORED KEYS ⛨')
   .allowUnknownOption()
   .action((args) => {
-    const rawArgs = ['ops', 'armor', ...process.argv.slice(3)]
-    executeDynamic(program, 'ops', rawArgs)
+    const rawArgs = ['vlt', 'armor', ...process.argv.slice(3)]
+    executeDynamic(program, 'vlt', rawArgs)
   })
 
 // dotenvx help
@@ -247,8 +247,9 @@ program.command('help [command]')
 // dotenvx vlt ops
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  vlt                ⛨  Vlt Ops [www.dotenvx.com/vlt]')
-program.addHelpText('after', '  ext                🔌 extensions')
+program.addHelpText('after', '  login')
+program.addHelpText('after', '  vlt                      ⛨ ARMORED KEYS [www.dotenvx.com/vlt]')
+program.addHelpText('after', '  ext                      ⊕ extensions')
 
 // dotenvx ext
 program.addCommand(require('./commands/ext'))

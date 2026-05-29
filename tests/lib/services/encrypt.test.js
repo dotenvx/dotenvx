@@ -183,7 +183,7 @@ t.test('#run does not prompt for key storage when existing public key is resolve
       privateKeyValue: null
     })
     const provision = sinon.stub().rejects(new Error('should not provision'))
-    const selectKeyStorage = sinon.stub().resolves('local')
+    const selectKeyStorage = sinon.stub().resolves('file')
     const EncryptWithStubs = proxyquire('../../../src/lib/services/encrypt', {
       './../helpers/keyResolution': {
         keyNames,

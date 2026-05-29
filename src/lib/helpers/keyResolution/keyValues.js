@@ -41,6 +41,7 @@ async function keyValues (filepath, opts = {}) {
 
   let publicKey = null
   let privateKey = null
+  let privateKeySource = null
 
   // public key: process.env first, then .env*
   publicKey = readProcessKey(publicKeyName)
@@ -74,12 +75,18 @@ async function keyValues (filepath, opts = {}) {
   if (!noVlt && !privateKey && publicKey && publicKey.length > 0) {
     const kp = await vltKeypair(publicKey, { envFilepath: filepath, hooks: opts.keypairHooks })
     privateKey = kp.privateKey
+    privateKeySource = 'vlt'
   }
 
-  return {
+  const result = {
     publicKeyValue: publicKey || null, // important to make sure name is rendered
     privateKeyValue: privateKey || null // important to make sure name is rendered
   }
+  if (privateKeySource) {
+    result.privateKeySource = privateKeySource
+  }
+
+  return result
 }
 
 module.exports = keyValues

@@ -37,6 +37,7 @@ function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
   }
 
   let privateKeyValue = null
+  let privateKeySource = null
   if (privateKeyName) {
     privateKeyValue = readProcessKey(processEnv, privateKeyName)
 
@@ -54,13 +55,19 @@ function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
   if (!noVlt && !privateKeyValue && publicKeyValue && publicKeyValue.length > 0) {
     const kp = vltKeypairSync(publicKeyValue)
     privateKeyValue = kp.privateKey
+    privateKeySource = 'vlt'
   }
 
-  return {
+  const result = {
     publicKeyValue: publicKeyValue || null,
     privateKeyValue: privateKeyValue || null,
     privateKeyName: privateKeyName || null
   }
+  if (privateKeySource) {
+    result.privateKeySource = privateKeySource
+  }
+
+  return result
 }
 
 module.exports = keyValuesFromEnvSrc

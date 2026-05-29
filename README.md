@@ -1,4 +1,4 @@
-[![dotenvx](https://dotenvx.com/banner.png)](https://dotenvx.com)
+[![dotenvx](https://dotenvx.com/banner.png?v2)](https://dotenvx.com)
 
 *a secure dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
@@ -1289,7 +1289,7 @@ $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 </details>
 <details><summary>`run --no-vlt`</summary><br>
 
-Turn off [Dotenvx Vlt Ops](https://dotenvx.com/vlt) features.
+Turn off [Dotenvx VLT ⛨](https://dotenvx.com/vlt) features.
 
 ```sh
 $ dotenvx run --no-vlt -- yourcommand
@@ -1624,7 +1624,7 @@ $ dotenvx encrypt -f .env.production
 </details>
 <details><summary>`encrypt --no-vlt`</summary><br>
 
-Turn off [Dotenvx Vlt Ops](https://dotenvx.com/vlt) features for encrypt.
+Turn off [Dotenvx VLT ⛨](https://dotenvx.com/vlt) features for encrypt.
 
 ```sh
 $ dotenvx encrypt --no-vlt
@@ -2550,7 +2550,7 @@ $ dotenvx run --convention=nextjs -- node index.js
 </details>
 <details><summary>`config(noVlt:)` - noVlt</summary><br>
 
-Turn off [Dotenvx Vlt Ops](https://dotenvx.com/vlt) features.
+Turn off [Dotenvx VLT ⛨](https://dotenvx.com/vlt) features.
 
 ```js
 // index.js
@@ -2650,14 +2650,14 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
-## Vlt Ops ⛨
+## VLT ⛨
 
-[![dotenvx-vlt](https://dotenvx.com/dotenvx-vlt-banner.png)](https://dotenvx.com/vlt)
+[![dotenvx-vlt](https://dotenvx.com/dotenvx-vlt-banner.png?v2)](https://dotenvx.com/vlt)
 
 ```
 ⛨ ARMORED KEYS: Harden your private keys.
 ⮕ install [curl -sfS https://dotenvx.sh/vlt | sh]
-⮕ then run [dotenvx-vlt login]
+⮕ then run [dotenvx vlt login]
 ```
 
 [Learn more](https://dotenvx.com/vlt)

@@ -230,7 +230,7 @@ t.test('provision forwards token and vlt keypair hooks when noVlt is false', asy
   ct.end()
 })
 
-t.test('provision uses local keypair when storage selector chooses local', async (ct) => {
+t.test('provision uses local keypair when storage selector chooses file', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().resolves({
     keysSrc: '# .env\nDOTENV_PRIVATE_KEY=local_priv\n',
@@ -238,7 +238,7 @@ t.test('provision uses local keypair when storage selector chooses local', async
   })
   const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub', privateKey: 'local_priv' })
-  const selectKeyStorage = sinon.stub().resolves('local')
+  const selectKeyStorage = sinon.stub().resolves('file')
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,

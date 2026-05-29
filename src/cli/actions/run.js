@@ -56,9 +56,6 @@ async function run () {
       uniqueInjectedKeys
     } = await new Run(envs, options.overload, process.env, options.envKeysFile, noVlt, {
       keypairHooks: {
-        before: () => {
-          if (spinner) spinner.start('retrieving')
-        },
         after: () => {
           if (spinner) spinner.start('injecting')
         }
@@ -114,8 +111,11 @@ async function run () {
       msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
     }
 
+    const armoredPrivateKeyUsed = processedEnvs.some((processedEnv) => processedEnv.armoredPrivateKeyUsed)
+    const keyUsedSuffix = armoredPrivateKeyUsed ? ' · armored ⛨' : ''
+
     if (spinner) spinner.stop()
-    logger.successv(msg)
+    logger.success(`⟐ ${msg}${keyUsedSuffix}`)
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

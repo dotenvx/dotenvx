@@ -5,10 +5,12 @@ const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const dotenv = require('dotenv')
+const proxyquire = require('proxyquire')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
 const encryptValue = require('../../../src/lib/helpers/cryptography/encryptValue')
 const Decrypt = require('../../../src/lib/services/decrypt')
+const keyResolution = require('../../../src/lib/helpers/keyResolution')
 
 let writeFileXStub
 const PUBLIC_KEY = '02b106c30579baf896ae1fddf077cbcb4fef5e7d457932974878dcb51f42b45498'
@@ -146,6 +148,33 @@ t.test('#run (finds .env file)',
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.same(parsed.HELLO, 'encrypted') // the decrypted value is 'encrypted'
 
+    ct.end()
+  })
+
+t.test('#run marks armored private key usage',
+  async ct => {
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-decrypt-armored-'))
+    const envFile = path.join(tmpdir, '.env')
+    const encrypted = encryptValue('encrypted', PUBLIC_KEY)
+    fs.writeFileSync(envFile, `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"\nHELLO="${encrypted}"\n`, 'utf8')
+
+    const keyValues = sinon.stub().resolves({
+      privateKeyValue: PRIVATE_KEY,
+      privateKeySource: 'vlt'
+    })
+    const DecryptWithStub = proxyquire('../../../src/lib/services/decrypt', {
+      './../helpers/keyResolution': { ...keyResolution, keyValues }
+    })
+
+    const { processedEnvs } = await new DecryptWithStub([{ type: 'envFile', value: envFile }]).run()
+    const row = processedEnvs[0]
+
+    ct.equal(keyValues.callCount, 1)
+    ct.equal(row.privateKeySource, 'vlt')
+    ct.equal(row.armoredPrivateKeyUsed, true)
+    ct.same(helloValues(row.envSrc), ['encrypted'])
+
+    fs.rmSync(tmpdir, { recursive: true, force: true })
     ct.end()
   })
 

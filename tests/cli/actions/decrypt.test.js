@@ -184,6 +184,34 @@ t.test('decrypt - .env with changes', async ct => {
   ct.end()
 })
 
+t.test('decrypt - .env with changes with armored metadata', async ct => {
+  sinon.stub(process, 'exit')
+  const writeStub = sinon.stub(fsx, 'writeFileX')
+  const optsStub = sinon.stub().returns({})
+  const fakeContext = { opts: optsStub }
+  const stub = sinon.stub(Decrypt.prototype, 'run').returns({
+    processedEnvs: [{
+      envFilepath: '.env',
+      filepath: '.env',
+      error: null,
+      changed: true,
+      envSrc: 'HELLO="World"',
+      armoredPrivateKeyUsed: true
+    }],
+    changedFilepaths: ['.env'],
+    unchangedFilepaths: []
+  })
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+
+  await decrypt.call(fakeContext)
+
+  t.ok(stub.called, 'Decrypt().run() called')
+  t.ok(writeStub.calledWith('.env', 'HELLO="World"'), 'fsx.writeFileX')
+  t.ok(loggerSuccessStub.calledWith('◇ decrypted (.env) · armored ⛨'), 'logger.success')
+
+  ct.end()
+})
+
 t.test('decrypt - MISSING_ENV_FILE', async ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')

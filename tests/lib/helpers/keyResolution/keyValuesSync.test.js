@@ -79,7 +79,7 @@ t.test('#keyValuesSync loads private key from vlt when noVlt is false and only p
 
   const result = await keyValuesWithOpsStub('.env', { noVlt: false })
 
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt' })
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt', privateKeySource: 'vlt' })
   ct.equal(vltKeypairSync.callCount, 1)
   ct.equal(vltKeypairSync.firstCall.args[0], '<publicKey>')
   ct.same(vltKeypairSync.firstCall.args[1], { envFilepath: '.env' })
@@ -96,7 +96,7 @@ t.test('#keyValuesSync forwards noSpinner to vlt', async ct => {
 
   const result = await keyValuesWithOpsStub('.env', { noVlt: false, noSpinner: true })
 
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt' })
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt', privateKeySource: 'vlt' })
   ct.equal(vltKeypairSync.callCount, 1)
   ct.same(vltKeypairSync.firstCall.args, ['<publicKey>', { envFilepath: '.env', noSpinner: true }])
   ct.end()

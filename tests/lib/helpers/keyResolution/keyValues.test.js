@@ -79,7 +79,7 @@ t.test('#keyValues loads private key from vlt when noVlt is false and only publi
 
   const result = await keyValuesWithOpsStub('.env', { noVlt: false })
 
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt' })
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt', privateKeySource: 'vlt' })
   ct.equal(vltKeypair.callCount, 1)
   ct.equal(vltKeypair.firstCall.args[0], '<publicKey>')
   ct.same(vltKeypair.firstCall.args[1], { envFilepath: '.env', hooks: undefined })
@@ -100,7 +100,7 @@ t.test('#keyValues forwards vlt keypair hooks', async ct => {
 
   const result = await keyValuesWithOpsStub('.env', { noVlt: false, keypairHooks })
 
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt' })
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt', privateKeySource: 'vlt' })
   ct.equal(vltKeypair.callCount, 1)
   ct.equal(vltKeypair.firstCall.args[0], '<publicKey>')
   ct.same(vltKeypair.firstCall.args[1], { envFilepath: '.env', hooks: keypairHooks })

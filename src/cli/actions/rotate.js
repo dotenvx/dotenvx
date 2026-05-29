@@ -5,7 +5,6 @@ const Rotate = require('./../../lib/services/rotate')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const localDisplayPath = require('../../lib/helpers/localDisplayPath')
 const Session = require('../../db/session')
 const normalizeVltOptions = require('./normalizeVltOptions')
 
@@ -59,16 +58,11 @@ async function rotate () {
 
       if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
         const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
 
         let msg = `⟳ rotated (${changedFilepaths.join(',')})`
-        if (localKeyAddedEnv) {
-          const envKeysFilepath = localDisplayPath(localKeyAddedEnv.envKeysFilepath)
-          msg += ` + local key (${envKeysFilepath})`
-        }
         if (remoteKeyAddedEnv) {
-          msg += ' + armored key ⛨'
+          msg += ' · armored ⛨'
         }
         logger.success(msg)
       } else if (unchangedFilepaths.length > 0) {

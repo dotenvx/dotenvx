@@ -93,7 +93,8 @@ class Run {
     try {
       const {
         privateKeyName: resolvedPrivateKeyName,
-        privateKeyValue
+        privateKeyValue,
+        privateKeySource
       } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt, processEnv: this.processEnv })
 
       const {
@@ -105,6 +106,10 @@ class Run {
 
       row.privateKeyName = resolvedPrivateKeyName
       row.privateKey = privateKeyValue
+      if (privateKeySource) {
+        row.privateKeySource = privateKeySource
+        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+      }
       row.parsed = parsed
       row.errors = errors
       row.injected = injected
@@ -136,7 +141,7 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)
-      const { privateKeyValue } = keyValuesSync(filepath, {
+      const { privateKeyValue, privateKeySource } = keyValuesSync(filepath, {
         keysFilepath: this.envKeysFilepath,
         noVlt: this.noVlt,
         noSpinner: this.noSpinner
@@ -151,6 +156,10 @@ class Run {
 
       row.privateKeyName = privateKeyName
       row.privateKey = privateKeyValue
+      if (privateKeySource) {
+        row.privateKeySource = privateKeySource
+        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+      }
       row.src = src
       row.parsed = parsed
       row.errors = errors
@@ -185,7 +194,7 @@ class Run {
       this.readableFilepaths.add(envFilepath)
 
       const { privateKeyName } = keyNames(filepath)
-      const { privateKeyValue } = await keyValues(filepath, {
+      const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
         noVlt: this.noVlt,
         keypairHooks: this.keypairHooks
@@ -200,6 +209,10 @@ class Run {
 
       row.privateKeyName = privateKeyName
       row.privateKey = privateKeyValue
+      if (privateKeySource) {
+        row.privateKeySource = privateKeySource
+        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+      }
       row.src = src
       row.parsed = parsed
       row.errors = errors
