@@ -105,7 +105,7 @@ t.test('executeDynamic - vlt command missing', ct => {
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
   ct.ok(consoleLogStub.called, 'console.log')
   ct.match(consoleLogStub.firstCall.args[0], /install \[curl -sfS https:\/\/dotenvx.sh\/vlt \| sh\]/i, 'uses vlt curl install command')
-  ct.match(consoleLogStub.firstCall.args[0], /then run \[dotenvx-vlt login\]/i, 'uses dotenvx-vlt login command')
+  ct.match(consoleLogStub.firstCall.args[0], /then run \[dotenvx vlt login\]/i, 'uses dotenvx vlt login command')
   ct.ok(hasValidBoxShape(consoleLogStub.firstCall.args[0]), 'banner box shape is valid')
 
   ct.end()

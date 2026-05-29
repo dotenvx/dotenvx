@@ -2,23 +2,28 @@ const path = require('path')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
 
-function installCommandForVlt () {
-  return 'curl -sfS https://dotenvx.sh/vlt | sh'
-}
-
-function vltBanner (installCommand) {
+function vltBanner () {
   const lines = [
+    '                       [www.dotenvx.com/vlt]',
+    '–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––',
     '',
-    '  ██╗   ██╗██╗  ████████╗',
-    '  ██║   ██║██║  ╚══██╔══╝',
-    '  ██║   ██║██║     ██║   ',
-    '  ╚██╗ ██╔╝██║     ██║       [www.dotenvx.com/vlt]',
-    '   ╚████╔╝ ███████╗██║   ',
-    '    ╚═══╝  ╚══════╝╚═╝   ',
+    '                          Dotenvx + VLT ⛨',
     '',
-    '  ⛨  ARMORED KEYS: Harden your private keys.',
-    `  ⮕  install [${installCommand}]`,
-    '  ⮕  then run [dotenvx-vlt login]'
+    '                           ARMORED KEYS',
+    '               Private keys. Off device. Under guard.',
+    '',
+    '                                -',
+    '',
+    '                            Install one',
+    '             [curl -sfS https://dotenvx.sh/vlt | sh]',
+    '                 [npm i @dotenvx/dotenvx --save]',
+    '',
+    '                                -',
+    '',
+    '                              Then',
+    '                       [dotenvx armor up]',
+    '                     (sign in when prompted)',
+    '',
   ]
 
   const innerWidth = Math.max(67, ...lines.map((line) => line.length))
@@ -50,11 +55,9 @@ function executeDynamic (program, command, rawArgs) {
   const result = childProcess.spawnSync(`dotenvx-${command}`, forwardedArgs, { stdio: 'inherit', env })
   if (result.error) {
     if (command === 'vlt') {
-      const installCommand = installCommandForVlt()
-      console.log(vltBanner(installCommand))
+      console.log(vltBanner())
     } else if (command === 'ops') {
-      const installCommand = installCommandForVlt()
-      console.log(vltBanner(installCommand))
+      console.log(vltBanner())
     } else {
       logger.info(`error: unknown command '${command}'`)
     }
