@@ -41,11 +41,10 @@ t.test('#--help shows vlt advanced command', ct => {
   ct.end()
 })
 
-t.test('#--help shows login in advanced only', ct => {
+t.test('#--help hides login command', ct => {
   const output = execShell(`${dotenvx} --help`)
 
-  ct.match(output, /Advanced:\s+login\s+vlt\s+⛨ ARMORED KEYS \[www\.dotenvx\.com\/vlt\]/, 'login is shown in advanced')
-  ct.notMatch(output, /Commands:[\s\S]*login[\s\S]*Advanced:/, 'login is hidden from main commands')
+  ct.notMatch(output, /\blogin\b/, 'login is hidden from help output')
 
   ct.end()
 })

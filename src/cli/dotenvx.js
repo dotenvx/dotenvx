@@ -247,7 +247,6 @@ program.command('help [command]')
 // dotenvx vlt
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  login')
 program.addHelpText('after', '  vlt                      ⛨ ARMORED KEYS [www.dotenvx.com/vlt]')
 program.addHelpText('after', '  ext                      ⊕ extensions')
 
