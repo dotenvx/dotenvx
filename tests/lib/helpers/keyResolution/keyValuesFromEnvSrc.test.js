@@ -86,7 +86,7 @@ t.test('#keyValuesFromEnvSrc loads private key from vlt when noVlt is false and 
 
   const result = keyValuesFromEnvSrcWithOpsStub(src, null, { noVlt: false })
 
-  ct.same(result, { publicKeyValue: '03_public', privateKeyValue: 'from-vlt', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+  ct.same(result, { publicKeyValue: '03_public', privateKeyValue: 'from-vlt', privateKeyName: 'DOTENV_PRIVATE_KEY', privateKeySource: 'vlt' })
   ct.equal(vltKeypairSync.callCount, 1)
   ct.equal(vltKeypairSync.firstCall.args[0], '03_public')
   ct.end()

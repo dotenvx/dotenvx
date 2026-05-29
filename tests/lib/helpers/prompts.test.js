@@ -3,7 +3,7 @@ const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
 t.test('select uses enquirer with normalized choices and IO context', async ct => {
-  const prompt = sinon.stub().resolves({ value: 'local' })
+  const prompt = sinon.stub().resolves({ value: 'file' })
 
   function EnquirerMock () {
     this.prompt = prompt
@@ -19,19 +19,19 @@ t.test('select uses enquirer with normalized choices and IO context', async ct =
     message: 'Choose private key storage',
     choices: [
       'raw',
-      { name: '◫ File (.env.keys)', value: 'local' },
+      { name: '◫ File (.env.keys)', value: 'file' },
       { value: 'armored' }
     ]
   }, { input, output })
 
-  ct.equal(value, 'local')
+  ct.equal(value, 'file')
   ct.same(prompt.firstCall.args[0], {
     type: 'select',
     name: 'value',
     message: 'Choose private key storage',
     choices: [
       'raw',
-      { name: 'local', message: '◫ File (.env.keys)' },
+      { name: 'file', message: '◫ File (.env.keys)' },
       { name: 'armored', message: 'armored' }
     ],
     stdin: input,

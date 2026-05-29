@@ -769,7 +769,7 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
     start: sinon.stub()
   }
   const createSpinnerStub = sinon.stub().resolves(spinner)
-  const selectStub = sinon.stub().resolves('local')
+  const selectStub = sinon.stub().resolves('file')
   let constructorArgs
   let firstSelected
   let secondSelected
@@ -805,13 +805,13 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
 
   await encryptWithMock.call({ opts: () => ({}), envs: [] })
 
-  ct.equal(firstSelected, 'local')
-  ct.equal(secondSelected, 'local')
+  ct.equal(firstSelected, 'file')
+  ct.equal(secondSelected, 'file')
   ct.equal(selectStub.callCount, 1, 'prompts once per encrypt command')
   ct.same(selectStub.firstCall.args, [{
     message: 'Choose private key storage',
     choices: [
-      { name: '◫ File (.env.keys)', value: 'local' },
+      { name: '◫ File (.env.keys)', value: 'file' },
       { name: '⛨ Armor (vlt.dotenvx.com)', value: 'armored' }
     ]
   }, {

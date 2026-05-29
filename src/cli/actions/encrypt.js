@@ -38,7 +38,7 @@ function keyStorageSelector (spinner) {
     selected = await prompts.select({
       message: 'Choose private key storage',
       choices: [
-        { name: '◫ File (.env.keys)', value: 'local' },
+        { name: '◫ File (.env.keys)', value: 'file' },
         { name: '⛨ Armor (vlt.dotenvx.com)', value: 'armored' }
       ]
     }, {

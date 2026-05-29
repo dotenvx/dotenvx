@@ -369,6 +369,28 @@ t.test('executeDynamic - ops found with login arg', ct => {
   ct.end()
 })
 
+t.test('executeDynamic - ops falls back to vlt when ops binary is missing', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  spawnSyncStub.onFirstCall().returns({
+    status: 1,
+    error: new Error('spawn dotenvx-ops ENOENT')
+  })
+  spawnSyncStub.onSecondCall().returns({
+    status: 0
+  })
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+
+  executeDynamic(program, 'ops', ['ops', 'login'])
+
+  ct.ok(spawnSyncStub.firstCall.calledWith('dotenvx-ops', ['login'], sinon.match.object), 'tries dotenvx-ops first')
+  ct.ok(spawnSyncStub.secondCall.calledWith('dotenvx-vlt', ['login'], sinon.match.object), 'falls back to dotenvx-vlt')
+  ct.ok(consoleLogStub.notCalled, 'does not show install banner')
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
 t.test('executeDynamic - ops found with logout arg', ct => {
   const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
   const mockResult = {

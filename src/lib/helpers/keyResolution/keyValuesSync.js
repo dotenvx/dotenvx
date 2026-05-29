@@ -41,6 +41,7 @@ function keyValuesSync (filepath, opts = {}) {
 
   let publicKey = null
   let privateKey = null
+  let privateKeySource = null
 
   // public key: process.env first, then .env*
   publicKey = readProcessKey(publicKeyName)
@@ -79,12 +80,18 @@ function keyValuesSync (filepath, opts = {}) {
 
     const kp = vltKeypairSync(publicKey, vltOptions)
     privateKey = kp.privateKey
+    privateKeySource = 'vlt'
   }
 
-  return {
+  const result = {
     publicKeyValue: publicKey || null, // important to make sure name is rendered
     privateKeyValue: privateKey || null // important to make sure name is rendered
   }
+  if (privateKeySource) {
+    result.privateKeySource = privateKeySource
+  }
+
+  return result
 }
 
 module.exports = keyValuesSync
