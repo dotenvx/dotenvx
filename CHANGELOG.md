@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.69.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.69.2...main)
+
+## [1.69.2](https://github.com/dotenvx/dotenvx/compare/v1.69.1...v1.69.2) (2026-05-29)
+
+### Changed
+
+* Minor messaging improvements, especially if using armored keys ([#825](https://github.com/dotenvx/dotenvx/pull/825))
 
 ## [1.69.1](https://github.com/dotenvx/dotenvx/compare/v1.69.0...v1.69.1) (2026-05-25)
 
