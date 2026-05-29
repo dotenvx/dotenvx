@@ -619,6 +619,100 @@ t.test('#run (with encrypted env string and missing privateKeyName value)',
     ct.end()
   })
 
+t.test('#run marks armored private key source for env string and env file paths', async ct => {
+  const src = 'HELLO=world'
+  const keyResolution = {
+    keyNames: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+    keyValuesFromEnvSrc: () => ({
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      privateKeyValue: 'private',
+      privateKeySource: 'vlt'
+    }),
+    keyValuesSync: () => ({
+      privateKeyValue: 'private',
+      privateKeySource: 'vlt'
+    }),
+    keyValues: async () => ({
+      privateKeyValue: 'private',
+      privateKeySource: 'vlt'
+    })
+  }
+  const RunWithArmoredKeys = proxyquire('../../../src/lib/services/run', {
+    './../helpers/detectEncoding': async () => 'utf8',
+    './../helpers/detectEncodingSync': () => 'utf8',
+    './../helpers/fsx': {
+      readFileX: async () => src,
+      readFileXSync: () => src
+    },
+    './../helpers/keyResolution': keyResolution
+  })
+
+  const envResult = await new RunWithArmoredKeys([
+    { type: 'env', value: src }
+  ], false, {}).run()
+  const syncResult = new RunWithArmoredKeys([
+    { type: 'envFile', value: '.env' }
+  ], false, {}).runSync()
+  const asyncResult = await new RunWithArmoredKeys([
+    { type: 'envFile', value: '.env' }
+  ], false, {}).run()
+
+  ct.same(envResult.processedEnvs[0], {
+    type: 'env',
+    string: src,
+    privateKeyName: 'DOTENV_PRIVATE_KEY',
+    privateKey: 'private',
+    privateKeySource: 'vlt',
+    armoredPrivateKeyUsed: true,
+    parsed: {
+      HELLO: 'world'
+    },
+    errors: [],
+    injected: {
+      HELLO: 'world'
+    },
+    preExisted: {}
+  })
+  ct.same(syncResult.processedEnvs[0], {
+    type: 'envFile',
+    filepath: '.env',
+    privateKeyName: 'DOTENV_PRIVATE_KEY',
+    privateKey: 'private',
+    privateKeySource: 'vlt',
+    armoredPrivateKeyUsed: true,
+    src,
+    parsed: {
+      HELLO: 'world'
+    },
+    errors: [],
+    injected: {
+      HELLO: 'world'
+    },
+    preExisted: {}
+  })
+  ct.same(asyncResult.processedEnvs[0], {
+    type: 'envFile',
+    filepath: '.env',
+    privateKeyName: 'DOTENV_PRIVATE_KEY',
+    privateKey: 'private',
+    privateKeySource: 'vlt',
+    armoredPrivateKeyUsed: true,
+    src,
+    parsed: {
+      HELLO: 'world'
+    },
+    errors: [],
+    injected: {
+      HELLO: 'world'
+    },
+    preExisted: {}
+  })
+  ct.same(envResult.uniqueInjectedKeys, ['HELLO'])
+  ct.same(syncResult.uniqueInjectedKeys, ['HELLO'])
+  ct.same(asyncResult.uniqueInjectedKeys, ['HELLO'])
+  ct.end()
+})
+
 t.test('#run (with envs as string and errors somehow from inject)',
   async ct => {
     const cwd = process.cwd()
