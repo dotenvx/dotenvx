@@ -22,7 +22,7 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const noVlt = options.vlt === false || (await sesh.noArmor())
+  const noArmor = options.vlt === false || (await sesh.noArmor())
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
@@ -54,7 +54,7 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noVlt, {
+    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
       keypairHooks: {
         after: () => {
           if (spinner) spinner.start('injecting')

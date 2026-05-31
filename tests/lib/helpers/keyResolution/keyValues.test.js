@@ -69,7 +69,7 @@ t.test('#keyValues inverts public key name for custom file and reads keys file p
   ct.end()
 })
 
-t.test('#keyValues loads private key from armor when noVlt is false and only public key exists', async ct => {
+t.test('#keyValues loads private key from armor when noArmor is false and only public key exists', async ct => {
   const armorKeypair = sinon.stub().resolves({ privateKey: 'from-armor' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
     '../cryptography/armorKeypair': armorKeypair
@@ -107,7 +107,7 @@ t.test('#keyValues forwards armor keypair hooks', async ct => {
   ct.end()
 })
 
-t.test('#keyValues does not load private key from armor when noVlt is true', async ct => {
+t.test('#keyValues does not load private key from armor when noArmor is true', async ct => {
   const armorKeypair = sinon.stub().resolves({ privateKey: 'from-armor' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
     '../cryptography/armorKeypair': armorKeypair

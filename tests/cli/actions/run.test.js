@@ -138,7 +138,7 @@ t.test('run --no-ops normalizes vlt off', async ct => {
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
-  t.equal(stub.thisValues[0].noVlt, true, 'Run was called with noVlt true')
+  t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
   t.equal(options.armor, false, 'armor false')
   t.equal(options.ops, false, 'ops false')
   t.equal(options.vlt, false, 'vlt false')
@@ -162,7 +162,7 @@ t.test('run --no-armor normalizes vlt off', async ct => {
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
-  t.equal(stub.thisValues[0].noVlt, true, 'Run was called with noVlt true')
+  t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
   t.equal(options.armor, false, 'armor false')
   t.equal(options.ops, false, 'ops false')
   t.equal(options.vlt, false, 'vlt false')
@@ -170,7 +170,7 @@ t.test('run --no-armor normalizes vlt off', async ct => {
   ct.end()
 })
 
-t.test('run --no-vlt passes noVlt true to Run service', async ct => {
+t.test('run --no-vlt passes noArmor true to Run service', async ct => {
   const options = { armor: true, ops: true, vlt: false }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
@@ -186,7 +186,7 @@ t.test('run --no-vlt passes noVlt true to Run service', async ct => {
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
-  t.equal(stub.thisValues[0].noVlt, true, 'Run was called with noVlt true')
+  t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
   t.equal(options.armor, false, 'armor false')
   t.equal(options.ops, false, 'ops false')
   t.equal(options.vlt, false, 'vlt false')

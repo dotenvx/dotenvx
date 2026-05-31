@@ -116,7 +116,7 @@ t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
   ct.end()
 })
 
-t.test('provisionSync uses Armor keypair when noVlt is false', async (ct) => {
+t.test('provisionSync uses Armor keypair when noArmor is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrcSync = sinon.stub().returns({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=armor_priv\n',

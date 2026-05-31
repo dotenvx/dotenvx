@@ -486,7 +486,7 @@ t.test('decrypt - catch error', async ct => {
   ct.end()
 })
 
-t.test('decrypt - --no-ops passes noVlt true to Decrypt service', async ct => {
+t.test('decrypt - --no-ops passes noArmor true to Decrypt service', async ct => {
   sinon.stub(process, 'exit')
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ ops: false })
@@ -500,12 +500,12 @@ t.test('decrypt - --no-ops passes noVlt true to Decrypt service', async ct => {
   await decrypt.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Decrypt().run() called')
-  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
 
   ct.end()
 })
 
-t.test('decrypt - --no-vlt passes noVlt true to Decrypt service', async ct => {
+t.test('decrypt - --no-vlt passes noArmor true to Decrypt service', async ct => {
   sinon.stub(process, 'exit')
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ vlt: false })
@@ -519,7 +519,7 @@ t.test('decrypt - --no-vlt passes noVlt true to Decrypt service', async ct => {
   await decrypt.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Decrypt().run() called')
-  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
 
   ct.end()
 })

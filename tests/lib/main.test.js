@@ -67,7 +67,7 @@ t.test('config supports noVlt option',
     main.config({ noVlt: true })
 
     t.ok(stub.called, 'new Run().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Run was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
 
     stub.restore()
 
@@ -82,7 +82,7 @@ t.test('config supports noArmor option',
     main.config({ noArmor: true })
 
     t.ok(stub.called, 'new Run().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Run was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
 
     stub.restore()
 
@@ -550,7 +550,7 @@ t.test('keypair calls Keypair.runSync with key specified',
     ct.end()
   })
 
-t.test('keypair calls Keypair.runSync with noVlt true',
+t.test('keypair calls Keypair.runSync with noArmor true',
   ct => {
     const stub = sinon.stub(Keypair.prototype, 'runSync')
     stub.returns({ KEY: 'value' })
@@ -558,7 +558,7 @@ t.test('keypair calls Keypair.runSync with noVlt true',
     const result = main.keypair('.env', 'KEY', null, true)
 
     t.ok(stub.called, 'new Keypair().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Keypair was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Keypair was called with noArmor true')
     t.equal(result, 'value')
 
     stub.restore()
@@ -818,7 +818,7 @@ t.test('set calls Sets.run with custom envKeysFile',
     ct.end()
   })
 
-t.test('set calls Sets.run with noVlt true',
+t.test('set calls Sets.run with noArmor true',
   ct => {
     const stub = sinon.stub(Sets.prototype, 'runSync')
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
@@ -826,7 +826,7 @@ t.test('set calls Sets.run with noVlt true',
     main.set('KEY', 'value', { noOps: true })
 
     t.ok(stub.called, 'new Sets().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Sets was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Sets was called with noArmor true')
 
     stub.restore()
 
@@ -841,7 +841,7 @@ t.test('set supports noVlt option',
     main.set('KEY', 'value', { noVlt: true })
 
     t.ok(stub.called, 'new Sets().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Sets was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Sets was called with noArmor true')
 
     stub.restore()
 
@@ -856,7 +856,7 @@ t.test('set supports noArmor option',
     main.set('KEY', 'value', { noArmor: true })
 
     t.ok(stub.called, 'new Sets().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Sets was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Sets was called with noArmor true')
 
     stub.restore()
 
@@ -1650,7 +1650,7 @@ t.test('get calls Get.runSync format colon',
     ct.end()
   })
 
-t.test('get calls Get.runSync with noVlt true',
+t.test('get calls Get.runSync with noArmor true',
   ct => {
     const stub = sinon.stub(Get.prototype, 'runSync')
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
@@ -1659,7 +1659,7 @@ t.test('get calls Get.runSync with noVlt true',
     t.equal(result, 'value')
 
     t.ok(stub.called, 'new Get().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Get was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Get was called with noArmor true')
 
     stub.restore()
 
@@ -1675,7 +1675,7 @@ t.test('get supports noVlt option',
     t.equal(result, 'value')
 
     t.ok(stub.called, 'new Get().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Get was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Get was called with noArmor true')
 
     stub.restore()
 
@@ -1691,7 +1691,7 @@ t.test('get supports noArmor option',
     t.equal(result, 'value')
 
     t.ok(stub.called, 'new Get().runSync() called')
-    t.equal(stub.thisValues[0].noVlt, true, 'Get was called with noVlt true')
+    t.equal(stub.thisValues[0].noArmor, true, 'Get was called with noArmor true')
 
     stub.restore()
 

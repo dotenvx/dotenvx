@@ -25,7 +25,7 @@ function publicKeyNameFromEnvSrc (envParsed) {
 
 function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const noVlt = opts.noVlt === true
+  const noArmor = opts.noArmor === true || opts.noVlt === true
   const processEnv = opts.processEnv || process.env
   const envParsed = dotenvParse(src)
 
@@ -52,7 +52,7 @@ function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
     }
   }
 
-  if (!noVlt && !privateKeyValue && publicKeyValue && publicKeyValue.length > 0) {
+  if (!noArmor && !privateKeyValue && publicKeyValue && publicKeyValue.length > 0) {
     const kp = armorKeypairSync(publicKeyValue)
     privateKeyValue = kp.privateKey
     privateKeySource = 'armor'

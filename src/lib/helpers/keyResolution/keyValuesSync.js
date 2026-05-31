@@ -34,7 +34,7 @@ function invertForPrivateKeyName (filepath) {
 
 function keyValuesSync (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const noVlt = opts.noVlt === true
+  const noArmor = opts.noArmor === true || opts.noVlt === true
   const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
@@ -72,7 +72,7 @@ function keyValuesSync (filepath, opts = {}) {
   }
 
   // armor
-  if (!noVlt && !privateKey && publicKey && publicKey.length > 0) {
+  if (!noArmor && !privateKey && publicKey && publicKey.length > 0) {
     const armorOptions = { envFilepath: filepath }
     if (opts.noSpinner) {
       armorOptions.noSpinner = true

@@ -29,12 +29,12 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
 class Encrypt {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noVlt = false, noCreate = false, token = undefined, options = {}) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noArmor = false, noCreate = false, token = undefined, options = {}) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
-    this.noVlt = noVlt
+    this.noArmor = noArmor
     this.noCreate = noCreate
     this.token = token
     this.keypairHooks = options.keypairHooks
@@ -105,7 +105,7 @@ class Encrypt {
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
       const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, {
         keysFilepath: this.envKeysFilepath,
-        noVlt: this.noVlt,
+        noArmor: this.noArmor,
         keypairHooks: this.keypairHooks
       })
 
@@ -115,7 +115,7 @@ class Encrypt {
           envSrc,
           envFilepath,
           keysFilepath: this.envKeysFilepath,
-          noVlt: this.noVlt,
+          noArmor: this.noArmor,
           token: this.token,
           keypairHooks: this.keypairHooks,
           selectKeyStorage: this.selectKeyStorage

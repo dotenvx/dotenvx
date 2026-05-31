@@ -116,7 +116,7 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
   ct.end()
 })
 
-t.test('provision uses Armor keypair when noVlt is false', async (ct) => {
+t.test('provision uses Armor keypair when noArmor is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().resolves({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=armor_priv\n',
@@ -150,7 +150,7 @@ t.test('provision uses Armor keypair when noVlt is false', async (ct) => {
   ct.end()
 })
 
-t.test('provision forwards token to Armor keypair when noVlt is false', async (ct) => {
+t.test('provision forwards token to Armor keypair when noArmor is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
   const armorKeypair = sinon.stub().resolves({ publicKey: 'armor_pub', privateKey: 'armor_priv' })
@@ -174,7 +174,7 @@ t.test('provision forwards token to Armor keypair when noVlt is false', async (c
   ct.end()
 })
 
-t.test('provision forwards armor keypair hooks when noVlt is false', async (ct) => {
+t.test('provision forwards armor keypair hooks when noArmor is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
   const armorKeypair = sinon.stub().resolves({ publicKey: 'armor_pub', privateKey: 'armor_priv' })
@@ -202,7 +202,7 @@ t.test('provision forwards armor keypair hooks when noVlt is false', async (ct) 
   ct.end()
 })
 
-t.test('provision forwards token and vlt keypair hooks when noVlt is false', async (ct) => {
+t.test('provision forwards token and vlt keypair hooks when noArmor is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
   const armorKeypair = sinon.stub().resolves({ publicKey: 'armor_pub', privateKey: 'armor_priv' })
@@ -294,7 +294,7 @@ t.test('provision uses armor keypair when storage selector chooses armored', asy
   ct.end()
 })
 
-t.test('provision does not select key storage when noVlt is true', async (ct) => {
+t.test('provision does not select key storage when noArmor is true', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().resolves({
     keysSrc: '# .env\nDOTENV_PRIVATE_KEY=local_priv\n',

@@ -51,12 +51,12 @@ function keyStorageSelector (spinner) {
   }
 }
 
-function encryptOptions (spinner, noVlt) {
+function encryptOptions (spinner, noArmor) {
   const options = {
     keypairHooks: keypairSpinnerHooks(spinner)
   }
 
-  if (!noVlt) {
+  if (!noArmor) {
     options.selectKeyStorage = keyStorageSelector(spinner)
   }
 
@@ -71,14 +71,14 @@ async function encrypt () {
 
   const sesh = new Session()
   const envs = this.envs
-  const noVlt = options.vlt === false || (!options.token && (await sesh.noArmor()))
+  const noArmor = options.vlt === false || (!options.token && (await sesh.noArmor()))
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noVlt, noCreate, options.token, encryptOptions(spinner, noVlt)).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, encryptOptions(spinner, noArmor)).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -90,7 +90,7 @@ async function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noVlt, noCreate, options.token, encryptOptions(spinner, noVlt)).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, encryptOptions(spinner, noArmor)).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

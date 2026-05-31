@@ -233,7 +233,7 @@ t.test('get KEY --convention', async ct => {
   ct.end()
 })
 
-t.test('get --no-ops passes noVlt true to Get service', async ct => {
+t.test('get --no-ops passes noArmor true to Get service', async ct => {
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run').returns({ parsed: { HELLO: 'World' }, errors: [] })
@@ -243,13 +243,13 @@ t.test('get --no-ops passes noVlt true to Get service', async ct => {
   })
 
   t.ok(stub.called, 'Get().run() called')
-  t.equal(stub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(stub.thisValues[0].noArmor, true, 'noArmor true')
   t.equal(stdout, 'World\n')
 
   ct.end()
 })
 
-t.test('get --no-vlt passes noVlt true to Get service', async ct => {
+t.test('get --no-vlt passes noArmor true to Get service', async ct => {
   const optsStub = sinon.stub().returns({ vlt: false })
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run').returns({ parsed: { HELLO: 'World' }, errors: [] })
@@ -259,7 +259,7 @@ t.test('get --no-vlt passes noVlt true to Get service', async ct => {
   })
 
   t.ok(stub.called, 'Get().run() called')
-  t.equal(stub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(stub.thisValues[0].noArmor, true, 'noArmor true')
   t.equal(stdout, 'World\n')
 
   ct.end()

@@ -17,8 +17,8 @@ async function keypair (key) {
   const prettyPrint = options.prettyPrint || options.pp
 
   const sesh = new Session()
-  const noVlt = options.vlt === false || await sesh.noArmor()
-  const keypairs = await new Keypair(options.envFile, options.envKeysFile, noVlt).run()
+  const noArmor = options.vlt === false || await sesh.noArmor()
+  const keypairs = await new Keypair(options.envFile, options.envKeysFile, noArmor).run()
   const results = key ? keypairs[key] : keypairs
 
   if (spinner) spinner.stop()

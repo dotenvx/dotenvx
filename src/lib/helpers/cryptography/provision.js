@@ -4,10 +4,10 @@ const armorKeypair = require('./armorKeypair')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-async function provision ({ envSrc, envFilepath, keysFilepath, noVlt, token, keypairHooks, selectKeyStorage }) {
-  noVlt = noVlt !== false
-  if (!noVlt && selectKeyStorage) {
-    noVlt = await selectKeyStorage() !== 'armored'
+async function provision ({ envSrc, envFilepath, keysFilepath, noArmor, noVlt, token, keypairHooks, selectKeyStorage }) {
+  noArmor = noArmor !== undefined ? noArmor !== false : noVlt !== false
+  if (!noArmor && selectKeyStorage) {
+    noArmor = await selectKeyStorage() !== 'armored'
   }
 
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
@@ -19,7 +19,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noVlt, token, key
   let localPrivateKeyAdded = false
   let remotePrivateKeyAdded = false
 
-  if (noVlt) {
+  if (noArmor) {
     const kp = localKeypair()
     publicKey = kp.publicKey
     privateKey = kp.privateKey
@@ -32,7 +32,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noVlt, token, key
   const mutated = mutateSrc({ envSrc, envFilepath, keysFilepath, publicKeyName, publicKeyValue: publicKey })
   envSrc = mutated.envSrc
 
-  if (noVlt) {
+  if (noArmor) {
     const mutated = await mutateKeysSrc({ envFilepath, keysFilepath, privateKeyName, privateKeyValue: privateKey })
     keysSrc = mutated.keysSrc
     envKeysFilepath = mutated.envKeysFilepath
