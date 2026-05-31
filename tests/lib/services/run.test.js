@@ -626,15 +626,15 @@ t.test('#run marks armored private key source for env string and env file paths'
     keyValuesFromEnvSrc: () => ({
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKeyValue: 'private',
-      privateKeySource: 'vlt'
+      privateKeySource: 'armor'
     }),
     keyValuesSync: () => ({
       privateKeyValue: 'private',
-      privateKeySource: 'vlt'
+      privateKeySource: 'armor'
     }),
     keyValues: async () => ({
       privateKeyValue: 'private',
-      privateKeySource: 'vlt'
+      privateKeySource: 'armor'
     })
   }
   const RunWithArmoredKeys = proxyquire('../../../src/lib/services/run', {
@@ -662,7 +662,7 @@ t.test('#run marks armored private key source for env string and env file paths'
     string: src,
     privateKeyName: 'DOTENV_PRIVATE_KEY',
     privateKey: 'private',
-    privateKeySource: 'vlt',
+    privateKeySource: 'armor',
     armoredPrivateKeyUsed: true,
     parsed: {
       HELLO: 'world'
@@ -678,7 +678,7 @@ t.test('#run marks armored private key source for env string and env file paths'
     filepath: '.env',
     privateKeyName: 'DOTENV_PRIVATE_KEY',
     privateKey: 'private',
-    privateKeySource: 'vlt',
+    privateKeySource: 'armor',
     armoredPrivateKeyUsed: true,
     src,
     parsed: {
@@ -695,7 +695,7 @@ t.test('#run marks armored private key source for env string and env file paths'
     filepath: '.env',
     privateKeyName: 'DOTENV_PRIVATE_KEY',
     privateKey: 'private',
-    privateKeySource: 'vlt',
+    privateKeySource: 'armor',
     armoredPrivateKeyUsed: true,
     src,
     parsed: {

@@ -15,10 +15,10 @@ const originalDir = process.cwd()
 const node = path.resolve(which.sync('node')) // /opt/homebrew/node
 const dotenvx = `${node} ${path.join(originalDir, 'src/cli/dotenvx.js')}`
 
-function stripOpsStatus (output) {
+function stripArmorStatus (output) {
   return output
     .split('\n')
-    .filter(line => !line.match(/^\[dotenvx@.+\] ⛨ (ops|vlt): (on|off)$/))
+    .filter(line => !line.match(/^\[dotenvx@.+\] ⛨ (armor|ops|vlt): (on|off)$/))
     .join('\n')
 }
 
@@ -28,7 +28,7 @@ function execShell (commands) {
     shell: true
   }).trim()
 
-  return stripOpsStatus(output)
+  return stripArmorStatus(output)
 }
 
 t.beforeEach((ct) => {

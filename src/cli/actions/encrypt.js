@@ -7,22 +7,22 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
-const normalizeVltOptions = require('./normalizeVltOptions')
+const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 function keypairSpinnerHooks (spinner) {
-  let stoppedForVlt = false
+  let stoppedForArmor = false
 
   return {
     onStderr: () => {
-      if (spinner && !stoppedForVlt) {
+      if (spinner && !stoppedForArmor) {
         spinner.stop()
-        stoppedForVlt = true
+        stoppedForArmor = true
       }
     },
     after: () => {
-      if (spinner && stoppedForVlt) {
+      if (spinner && stoppedForArmor) {
         spinner.start('encrypting')
-        stoppedForVlt = false
+        stoppedForArmor = false
       }
     }
   }
@@ -39,7 +39,7 @@ function keyStorageSelector (spinner) {
       message: 'Choose private key storage',
       choices: [
         { name: '◫ File (.env.keys)', value: 'file' },
-        { name: '⛨ Armor (vlt.dotenvx.com)', value: 'armored' }
+        { name: '⛨ Armor (armor.dotenvx.com)', value: 'armored' }
       ]
     }, {
       input: process.stdin,
@@ -51,12 +51,12 @@ function keyStorageSelector (spinner) {
   }
 }
 
-function encryptOptions (spinner, noVlt) {
+function encryptOptions (spinner, noArmor) {
   const options = {
     keypairHooks: keypairSpinnerHooks(spinner)
   }
 
-  if (!noVlt) {
+  if (!noArmor) {
     options.selectKeyStorage = keyStorageSelector(spinner)
   }
 
@@ -64,21 +64,21 @@ function encryptOptions (spinner, noVlt) {
 }
 
 async function encrypt () {
-  const options = normalizeVltOptions(this.opts())
+  const options = normalizeArmorOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const sesh = new Session()
   const envs = this.envs
-  const noVlt = options.vlt === false || (!options.token && (await sesh.noVlt()))
+  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noVlt, noCreate, options.token, encryptOptions(spinner, noVlt)).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, encryptOptions(spinner, noArmor)).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -90,7 +90,7 @@ async function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noVlt, noCreate, options.token, encryptOptions(spinner, noVlt)).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, encryptOptions(spinner, noArmor)).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

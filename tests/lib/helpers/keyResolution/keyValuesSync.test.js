@@ -69,50 +69,50 @@ t.test('#keyValuesSync inverts public key name for custom file and reads keys fi
   ct.end()
 })
 
-t.test('#keyValuesSync loads private key from vlt when noVlt is false and only public key exists', async ct => {
-  const vltKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
-  const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
-    '../cryptography/vltKeypairSync': vltKeypairSync
+t.test('#keyValuesSync loads private key from armor when noArmor is false and only public key exists', async ct => {
+  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
+  const keyValuesWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
+    '../cryptography/armorKeypairSync': armorKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: false })
+  const result = await keyValuesWithArmorStub('.env', { noArmor: false })
 
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt', privateKeySource: 'vlt' })
-  ct.equal(vltKeypairSync.callCount, 1)
-  ct.equal(vltKeypairSync.firstCall.args[0], '<publicKey>')
-  ct.same(vltKeypairSync.firstCall.args[1], { envFilepath: '.env' })
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
+  ct.equal(armorKeypairSync.callCount, 1)
+  ct.equal(armorKeypairSync.firstCall.args[0], '<publicKey>')
+  ct.same(armorKeypairSync.firstCall.args[1], { envFilepath: '.env' })
   ct.end()
 })
 
-t.test('#keyValuesSync forwards noSpinner to vlt', async ct => {
-  const vltKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
-  const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
-    '../cryptography/vltKeypairSync': vltKeypairSync
+t.test('#keyValuesSync forwards noSpinner to armor', async ct => {
+  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
+  const keyValuesWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
+    '../cryptography/armorKeypairSync': armorKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: false, noSpinner: true })
+  const result = await keyValuesWithArmorStub('.env', { noArmor: false, noSpinner: true })
 
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt', privateKeySource: 'vlt' })
-  ct.equal(vltKeypairSync.callCount, 1)
-  ct.same(vltKeypairSync.firstCall.args, ['<publicKey>', { envFilepath: '.env', noSpinner: true }])
+  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
+  ct.equal(armorKeypairSync.callCount, 1)
+  ct.same(armorKeypairSync.firstCall.args, ['<publicKey>', { envFilepath: '.env', noSpinner: true }])
   ct.end()
 })
 
-t.test('#keyValuesSync does not load private key from vlt when noVlt is true', async ct => {
-  const vltKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
-  const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
-    '../cryptography/vltKeypairSync': vltKeypairSync
+t.test('#keyValuesSync does not load private key from armor when noArmor is true', async ct => {
+  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
+  const keyValuesWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
+    '../cryptography/armorKeypairSync': armorKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: true })
+  const result = await keyValuesWithArmorStub('.env', { noArmor: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: null })
-  ct.equal(vltKeypairSync.callCount, 0)
+  ct.equal(armorKeypairSync.callCount, 0)
   ct.end()
 })

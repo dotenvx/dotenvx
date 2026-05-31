@@ -5,10 +5,10 @@ const {
 } = require('./../helpers/keyResolution')
 
 class Keypair {
-  constructor (envFile = '.env', envKeysFilepath = null, noVlt = false) {
+  constructor (envFile = '.env', envKeysFilepath = null, noArmor = false) {
     this.envFile = envFile
     this.envKeysFilepath = envKeysFilepath
-    this.noVlt = noVlt
+    this.noArmor = noArmor
   }
 
   runSync () {
@@ -17,7 +17,7 @@ class Keypair {
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
       const { publicKeyName, privateKeyName } = keyNames(filepath)
-      const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
+      const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor })
 
       out[publicKeyName] = publicKeyValue
       out[privateKeyName] = privateKeyValue
@@ -32,7 +32,7 @@ class Keypair {
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
       const { publicKeyName, privateKeyName } = keyNames(filepath)
-      const { publicKeyValue, privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
+      const { publicKeyValue, privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor })
 
       out[publicKeyName] = publicKeyValue
       out[privateKeyName] = privateKeyValue

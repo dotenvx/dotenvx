@@ -47,8 +47,8 @@ const config = function (options = {}) {
     setLogVersion(options)
   }
 
-  // dotenvx-vlt related
-  const noVlt = resolveNoVlt(options)
+  // dotenvx-armor related
+  const noArmor = resolveNoArmor(options)
 
   try {
     let envs = buildEnvs(options)
@@ -59,7 +59,7 @@ const config = function (options = {}) {
       processedEnvs,
       readableFilepaths,
       uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, noVlt, {
+    } = new Run(envs, overload, processEnv, envKeysFile, noArmor, {
       noSpinner: options.noSpinner
     }).runSync()
 
@@ -179,13 +179,13 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
-  const noVlt = resolveNoVlt(options)
+  const noArmor = resolveNoArmor(options)
 
   const {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noVlt).runSync()
+  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noArmor).runSync()
 
   let withEncryption = ''
 
@@ -243,12 +243,12 @@ const set = function (key, value, options = {}) {
 /* @type {import('./main').get} */
 const get = function (key, options = {}) {
   const envs = buildEnvs(options)
-  const noVlt = resolveNoVlt(options)
+  const noArmor = resolveNoArmor(options)
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noVlt).runSync()
+  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noArmor).runSync()
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
@@ -313,8 +313,8 @@ const genexample = function (directory, envFile) {
 }
 
 /** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null, noVlt = false) {
-  const keypairs = new Keypair(envFile, envKeysFile, noVlt).runSync()
+const keypair = function (envFile, key, envKeysFile = null, noArmor = false) {
+  const keypairs = new Keypair(envFile, envKeysFile, noArmor).runSync()
   if (key) {
     return keypairs[key]
   } else {
@@ -322,9 +322,9 @@ const keypair = function (envFile, key, envKeysFile = null, noVlt = false) {
   }
 }
 
-function resolveNoVlt (options = {}) {
+function resolveNoArmor (options = {}) {
   const sesh = new Session()
-  return options.noVlt === true || options.noOps === true || sesh.noVltSync()
+  return options.noArmor === true || options.noVlt === true || options.noOps === true || sesh.noArmorSync()
 }
 
 module.exports = {

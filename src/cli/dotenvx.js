@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /* c8 ignore start */
-const { Command } = require('commander')
+const { Command, Option } = require('commander')
 const program = new Command()
 
 const { setLogLevel, logger } = require('../shared/logger')
@@ -43,7 +43,7 @@ program
     setLogLevel(options)
   })
 
-// for dynamic loading of dotenvx-vlt, etc
+// for dynamic loading of dotenvx-armor, etc
 program
   .argument('[command]', 'dynamic command')
   .argument('[args...]', 'dynamic command arguments')
@@ -70,8 +70,9 @@ program.command('run')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
-  .option('--no-ops', 'disable dotenvx-ops features')
-  .option('--no-vlt', 'disable dotenvx-vlt features')
+  .option('--no-armor', 'disable dotenvx-armor features')
+  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
+  .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .action(function (...args) {
     this.envs = envs
     return require('./actions/run').apply(this, args)
@@ -93,8 +94,9 @@ program.command('get')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, colon, eval)', 'json')
-  .option('--no-ops', 'disable dotenvx-ops features')
-  .option('--no-vlt', 'disable dotenvx-vlt features')
+  .option('--no-armor', 'disable dotenvx-armor features')
+  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
+  .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .action(function (...args) {
     this.envs = envs
     return require('./actions/get').apply(this, args)
@@ -113,8 +115,9 @@ program.command('set')
   .option('-c, --encrypt', 'encrypt value', true)
   .option('-p, --plain', 'store value as plain text', false)
   .option('--no-create', 'do not create .env file(s) when missing')
-  .option('--no-ops', 'disable dotenvx-ops features')
-  .option('--no-vlt', 'disable dotenvx-vlt features')
+  .option('--no-armor', 'disable dotenvx-armor features')
+  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
+  .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .action(function (...args) {
     this.envs = envs
     return require('./actions/set').apply(this, args)
@@ -128,10 +131,11 @@ program.command('encrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--stdout', 'send to stdout')
-  .option('--token <token>', 'set VLT ⛨ token')
+  .option('--token <token>', 'set Armor ⛨ token')
   .option('--no-create', 'do not create .env file(s) when missing')
-  .option('--no-ops', 'disable dotenvx-ops features')
-  .option('--no-vlt', 'disable dotenvx-vlt features')
+  .option('--no-armor', 'disable dotenvx-armor features')
+  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
+  .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .action(function (...args) {
     this.envs = envs
     return require('./actions/encrypt').apply(this, args)
@@ -144,8 +148,9 @@ program.command('decrypt')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
-  .option('--no-ops', 'disable dotenvx-ops features')
-  .option('--no-vlt', 'disable dotenvx-vlt features')
+  .option('--no-armor', 'disable dotenvx-armor features')
+  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
+  .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
@@ -159,8 +164,9 @@ program.command('rotate')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
-  .option('--no-ops', 'disable dotenvx-ops features')
-  .option('--no-vlt', 'disable dotenvx-vlt features')
+  .option('--no-armor', 'disable dotenvx-armor features')
+  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
+  .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
     this.envs = envs
@@ -174,8 +180,9 @@ program.command('keypair')
   .argument('[KEY]', 'environment variable key name')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('--no-ops', 'disable dotenvx-ops features')
-  .option('--no-vlt', 'disable dotenvx-vlt features')
+  .option('--no-armor', 'disable dotenvx-armor features')
+  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
+  .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, colon)', 'json')
@@ -206,8 +213,8 @@ program.command('login', { hidden: true })
   .description('')
   .allowUnknownOption()
   .action(() => {
-    const rawArgs = ['vlt', 'login', ...process.argv.slice(3)]
-    executeDynamic(program, 'vlt', rawArgs)
+    const rawArgs = ['armor', 'login', ...process.argv.slice(3)]
+    executeDynamic(program, 'armor', rawArgs)
   })
 
 // dotenvx logout
@@ -215,17 +222,8 @@ program.command('logout', { hidden: true })
   .description('log out of your dotenvx account')
   .allowUnknownOption()
   .action(() => {
-    const rawArgs = ['vlt', 'logout', ...process.argv.slice(3)]
-    executeDynamic(program, 'vlt', rawArgs)
-  })
-
-// dotenvx armor
-program.command('armor', { hidden: true })
-  .description('ARMORED KEYS ⛨')
-  .allowUnknownOption()
-  .action((args) => {
-    const rawArgs = ['vlt', 'armor', ...process.argv.slice(3)]
-    executeDynamic(program, 'vlt', rawArgs)
+    const rawArgs = ['armor', 'logout', ...process.argv.slice(3)]
+    executeDynamic(program, 'armor', rawArgs)
   })
 
 // dotenvx help
@@ -244,10 +242,10 @@ program.command('help [command]')
     }
   })
 
-// dotenvx vlt
+// dotenvx armor
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  vlt                      ⛨ ARMORED KEYS [www.dotenvx.com/vlt]')
+program.addHelpText('after', '  armor                    ⛨ ARMORED KEYS [www.dotenvx.com/armor]')
 program.addHelpText('after', '  ext                      ⊕ extensions')
 
 // dotenvx ext

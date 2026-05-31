@@ -5,7 +5,7 @@ const dotenvParse = require('./../dotenvParse')
 const keyNames = require('./keyNames')
 const readProcessKey = require('./readProcessKey')
 const readFileKeySync = require('./readFileKeySync')
-const vltKeypairSync = require('../cryptography/vltKeypairSync')
+const armorKeypairSync = require('../cryptography/armorKeypairSync')
 
 function invertForPrivateKeyName (filepath) {
   const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
@@ -34,7 +34,7 @@ function invertForPrivateKeyName (filepath) {
 
 function keyValuesSync (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const noVlt = opts.noVlt === true
+  const noArmor = opts.noArmor === true
   const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
@@ -71,16 +71,16 @@ function keyValuesSync (filepath, opts = {}) {
     }
   }
 
-  // vlt
-  if (!noVlt && !privateKey && publicKey && publicKey.length > 0) {
-    const vltOptions = { envFilepath: filepath }
+  // armor
+  if (!noArmor && !privateKey && publicKey && publicKey.length > 0) {
+    const armorOptions = { envFilepath: filepath }
     if (opts.noSpinner) {
-      vltOptions.noSpinner = true
+      armorOptions.noSpinner = true
     }
 
-    const kp = vltKeypairSync(publicKey, vltOptions)
+    const kp = armorKeypairSync(publicKey, armorOptions)
     privateKey = kp.privateKey
-    privateKeySource = 'vlt'
+    privateKeySource = 'armor'
   }
 
   const result = {

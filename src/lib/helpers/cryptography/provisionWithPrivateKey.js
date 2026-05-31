@@ -3,7 +3,7 @@ const mutateSrc = require('./mutateSrc')
 const localKeypair = require('./localKeypair')
 
 function provisionWithPrivateKey ({ envSrc, envFilepath, keysFilepath, privateKeyValue, publicKeyValue, publicKeyName }) {
-  const { publicKey, privateKey } = localKeypair(privateKeyValue) // noVlt doesn't matter here since privateKeyValue was already discovered prior (via vlt and local) and passed as privateKeyValue
+  const { publicKey, privateKey } = localKeypair(privateKeyValue) // noArmor doesn't matter here since privateKeyValue was already discovered prior (via armor and local) and passed as privateKeyValue
 
   // if derivation doesn't match what's in the file (or preset in env)
   if (publicKeyValue && publicKeyValue !== publicKey) {

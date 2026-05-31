@@ -1287,13 +1287,15 @@ $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 ```
 
 </details>
-<details><summary>`run --no-vlt`</summary><br>
+<details><summary>`run --no-armor`</summary><br>
 
-Turn off [Dotenvx VLT ⛨](https://dotenvx.com/vlt) features.
+Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features.
 
 ```sh
-$ dotenvx run --no-vlt -- yourcommand
+$ dotenvx run --no-armor -- yourcommand
 ```
+
+`--no-vlt` and `--no-ops` are deprecated aliases.
 
 </details>
 <details><summary>`get KEY`</summary><br>
@@ -1622,14 +1624,16 @@ $ dotenvx encrypt -f .env.production
 ```
 
 </details>
-<details><summary>`encrypt --no-vlt`</summary><br>
+<details><summary>`encrypt --no-armor`</summary><br>
 
-Turn off [Dotenvx VLT ⛨](https://dotenvx.com/vlt) features for encrypt.
+Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features for encrypt.
 
 ```sh
-$ dotenvx encrypt --no-vlt
+$ dotenvx encrypt --no-armor
 ◈ encrypted (.env)
 ```
+
+`--no-vlt` and `--no-ops` are deprecated aliases.
 
 </details>
 <details><summary>`encrypt -fk`</summary><br>
@@ -2548,14 +2552,16 @@ $ dotenvx run --convention=nextjs -- node index.js
 ```
 
 </details>
-<details><summary>`config(noVlt:)` - noVlt</summary><br>
+<details><summary>`config(noArmor:)` - noArmor</summary><br>
 
-Turn off [Dotenvx VLT ⛨](https://dotenvx.com/vlt) features.
+Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features.
 
 ```js
 // index.js
-require('@dotenvx/dotenvx').config({noVlt: true})
+require('@dotenvx/dotenvx').config({noArmor: true})
 ```
+
+`noVlt` and `noOps` are deprecated aliases.
 
 </details>
 <details><summary>`parse(src)`</summary><br>
@@ -2650,17 +2656,17 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
-## VLT ⛨
+## Armor ⛨
 
-[![dotenvx-vlt](https://dotenvx.com/dotenvx-vlt-banner.png?v2)](https://dotenvx.com/vlt)
+[![dotenvx-armor](https://dotenvx.com/dotenvx-armor-banner.png?v2)](https://dotenvx.com/armor)
 
 ```
 ⛨ ARMORED KEYS: Harden your private keys.
-⮕ install [curl -sfS https://dotenvx.sh/vlt | sh]
-⮕ then run [dotenvx vlt login]
+⮕ install [curl -sfS https://dotenvx.sh/armor | sh]
+⮕ then run [dotenvx armor login]
 ```
 
-[Learn more](https://dotenvx.com/vlt)
+[Learn more](https://dotenvx.com/armor)
 
 &nbsp;
 

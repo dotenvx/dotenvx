@@ -17,12 +17,12 @@ const {
 } = require('./../helpers/keyResolution')
 
 class Run {
-  constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, noVlt = false, options = {}) {
+  constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, noArmor = false, options = {}) {
     this.envs = envs
     this.overload = overload
     this.processEnv = processEnv
     this.envKeysFilepath = envKeysFilepath
-    this.noVlt = noVlt
+    this.noArmor = noArmor
     this.noSpinner = options.noSpinner
     this.keypairHooks = options.keypairHooks
 
@@ -95,7 +95,7 @@ class Run {
         privateKeyName: resolvedPrivateKeyName,
         privateKeyValue,
         privateKeySource
-      } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt, processEnv: this.processEnv })
+      } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor, processEnv: this.processEnv })
 
       const {
         parsed,
@@ -108,7 +108,7 @@ class Run {
       row.privateKey = privateKeyValue
       if (privateKeySource) {
         row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
       }
       row.parsed = parsed
       row.errors = errors
@@ -143,7 +143,7 @@ class Run {
       const { privateKeyName } = keyNames(filepath)
       const { privateKeyValue, privateKeySource } = keyValuesSync(filepath, {
         keysFilepath: this.envKeysFilepath,
-        noVlt: this.noVlt,
+        noArmor: this.noArmor,
         noSpinner: this.noSpinner
       })
 
@@ -158,7 +158,7 @@ class Run {
       row.privateKey = privateKeyValue
       if (privateKeySource) {
         row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
       }
       row.src = src
       row.parsed = parsed
@@ -196,7 +196,7 @@ class Run {
       const { privateKeyName } = keyNames(filepath)
       const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
-        noVlt: this.noVlt,
+        noArmor: this.noArmor,
         keypairHooks: this.keypairHooks
       })
 
@@ -211,7 +211,7 @@ class Run {
       row.privateKey = privateKeyValue
       if (privateKeySource) {
         row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
       }
       row.src = src
       row.parsed = parsed

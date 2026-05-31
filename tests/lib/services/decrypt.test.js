@@ -160,7 +160,7 @@ t.test('#run marks armored private key usage',
 
     const keyValues = sinon.stub().resolves({
       privateKeyValue: PRIVATE_KEY,
-      privateKeySource: 'vlt'
+      privateKeySource: 'armor'
     })
     const DecryptWithStub = proxyquire('../../../src/lib/services/decrypt', {
       './../helpers/keyResolution': { ...keyResolution, keyValues }
@@ -170,7 +170,7 @@ t.test('#run marks armored private key usage',
     const row = processedEnvs[0]
 
     ct.equal(keyValues.callCount, 1)
-    ct.equal(row.privateKeySource, 'vlt')
+    ct.equal(row.privateKeySource, 'armor')
     ct.equal(row.armoredPrivateKeyUsed, true)
     ct.same(helloValues(row.envSrc), ['encrypted'])
 

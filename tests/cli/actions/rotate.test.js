@@ -550,7 +550,7 @@ t.test('rotate - catch error', async ct => {
   ct.end()
 })
 
-t.test('rotate - --no-ops passes noVlt true to Rotate service', async ct => {
+t.test('rotate - --no-ops passes noArmor true to Rotate service', async ct => {
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Rotate.prototype, 'run').returns({
@@ -562,12 +562,12 @@ t.test('rotate - --no-ops passes noVlt true to Rotate service', async ct => {
   await rotate.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Rotate().run() called')
-  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
 
   ct.end()
 })
 
-t.test('rotate - --no-vlt passes noVlt true to Rotate service', async ct => {
+t.test('rotate - --no-vlt passes noArmor true to Rotate service', async ct => {
   const optsStub = sinon.stub().returns({ vlt: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Rotate.prototype, 'run').returns({
@@ -579,7 +579,7 @@ t.test('rotate - --no-vlt passes noVlt true to Rotate service', async ct => {
   await rotate.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Rotate().run() called')
-  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
 
   ct.end()
 })
@@ -592,7 +592,7 @@ t.test('rotate - spinner stop is called for stdout/success/catch flows', async c
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return sessionStub()
     }
   }

@@ -5,17 +5,17 @@ const Decrypt = require('./../../lib/services/decrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const normalizeVltOptions = require('./normalizeVltOptions')
+const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 async function decrypt () {
-  const options = normalizeVltOptions(this.opts())
+  const options = normalizeArmorOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'decrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const sesh = new Session()
   const envs = this.envs
-  const noVlt = options.vlt === false || (await sesh.noVlt())
+  const noArmor = options.armor === false || (await sesh.noArmor())
 
   let errorCount = 0
 
@@ -23,7 +23,7 @@ async function decrypt () {
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noVlt).run()
+    } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
@@ -45,7 +45,7 @@ async function decrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noVlt).run()
+      } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

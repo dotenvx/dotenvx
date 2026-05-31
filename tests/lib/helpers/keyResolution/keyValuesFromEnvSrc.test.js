@@ -12,7 +12,7 @@ t.beforeEach((ct) => {
 })
 
 t.test('#keyValuesFromEnvSrc with no keys', ct => {
-  const result = keyValuesFromEnvSrc('HELLO=World', null, { noVlt: true })
+  const result = keyValuesFromEnvSrc('HELLO=World', null, { noArmor: true })
 
   ct.same(result, { publicKeyValue: null, privateKeyValue: null, privateKeyName: null })
   ct.end()
@@ -20,7 +20,7 @@ t.test('#keyValuesFromEnvSrc with no keys', ct => {
 
 t.test('#keyValuesFromEnvSrc reads explicit private key from processEnv option', ct => {
   const processEnv = { DOTENV_PRIVATE_KEY_PRODUCTION: '<privateKey>' }
-  const result = keyValuesFromEnvSrc('HELLO=World', 'DOTENV_PRIVATE_KEY_PRODUCTION', { processEnv, noVlt: true })
+  const result = keyValuesFromEnvSrc('HELLO=World', 'DOTENV_PRIVATE_KEY_PRODUCTION', { processEnv, noArmor: true })
 
   ct.same(result, { publicKeyValue: null, privateKeyValue: '<privateKey>', privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' })
   ct.end()
@@ -32,7 +32,7 @@ t.test('#keyValuesFromEnvSrc reads explicit private key from default .env.keys',
   process.chdir(tmpdir)
   fs.writeFileSync('.env.keys', 'DOTENV_PRIVATE_KEY_PRODUCTION="from-file"\n')
 
-  const result = keyValuesFromEnvSrc('HELLO=World', 'DOTENV_PRIVATE_KEY_PRODUCTION', { noVlt: true })
+  const result = keyValuesFromEnvSrc('HELLO=World', 'DOTENV_PRIVATE_KEY_PRODUCTION', { noArmor: true })
 
   ct.same(result, { publicKeyValue: null, privateKeyValue: 'from-file', privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' })
 
@@ -45,7 +45,7 @@ t.test('#keyValuesFromEnvSrc reads explicit private key from custom .env.keys', 
   const keysFilepath = path.join(tmpdir, 'custom.keys')
   fs.writeFileSync(keysFilepath, 'DOTENV_PRIVATE_KEY_PRODUCTION="from-custom-file"\n')
 
-  const result = keyValuesFromEnvSrc('HELLO=World', 'DOTENV_PRIVATE_KEY_PRODUCTION', { keysFilepath, noVlt: true })
+  const result = keyValuesFromEnvSrc('HELLO=World', 'DOTENV_PRIVATE_KEY_PRODUCTION', { keysFilepath, noArmor: true })
 
   ct.same(result, { publicKeyValue: null, privateKeyValue: 'from-custom-file', privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' })
 
@@ -54,7 +54,7 @@ t.test('#keyValuesFromEnvSrc reads explicit private key from custom .env.keys', 
 
 t.test('#keyValuesFromEnvSrc infers private key name from public key in src', ct => {
   const src = 'DOTENV_PUBLIC_KEY_PRODUCTION="03_public"\nHELLO=World'
-  const result = keyValuesFromEnvSrc(src, null, { noVlt: true })
+  const result = keyValuesFromEnvSrc(src, null, { noArmor: true })
 
   ct.same(result, { publicKeyValue: '03_public', privateKeyValue: null, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' })
   ct.end()
@@ -63,7 +63,7 @@ t.test('#keyValuesFromEnvSrc infers private key name from public key in src', ct
 t.test('#keyValuesFromEnvSrc prefers public key from processEnv option', ct => {
   const src = 'DOTENV_PUBLIC_KEY_PRODUCTION="03_public_from_src"\nHELLO=World'
   const processEnv = { DOTENV_PUBLIC_KEY_PRODUCTION: '03_public_from_process' }
-  const result = keyValuesFromEnvSrc(src, null, { processEnv, noVlt: true })
+  const result = keyValuesFromEnvSrc(src, null, { processEnv, noArmor: true })
 
   ct.same(result, { publicKeyValue: '03_public_from_process', privateKeyValue: null, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' })
   ct.end()
@@ -71,37 +71,37 @@ t.test('#keyValuesFromEnvSrc prefers public key from processEnv option', ct => {
 
 t.test('#keyValuesFromEnvSrc handles empty public key in src', ct => {
   const src = 'DOTENV_PUBLIC_KEY_PRODUCTION=\nHELLO=World'
-  const result = keyValuesFromEnvSrc(src, null, { noVlt: true })
+  const result = keyValuesFromEnvSrc(src, null, { noArmor: true })
 
   ct.same(result, { publicKeyValue: null, privateKeyValue: null, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' })
   ct.end()
 })
 
-t.test('#keyValuesFromEnvSrc loads private key from vlt when noVlt is false and only public key exists', ct => {
-  const vltKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
-  const keyValuesFromEnvSrcWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
-    '../cryptography/vltKeypairSync': vltKeypairSync
+t.test('#keyValuesFromEnvSrc loads private key from armor when noArmor is false and only public key exists', ct => {
+  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
+  const keyValuesFromEnvSrcWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
+    '../cryptography/armorKeypairSync': armorKeypairSync
   })
   const src = 'DOTENV_PUBLIC_KEY="03_public"\nHELLO=World'
 
-  const result = keyValuesFromEnvSrcWithOpsStub(src, null, { noVlt: false })
+  const result = keyValuesFromEnvSrcWithArmorStub(src, null, { noArmor: false })
 
-  ct.same(result, { publicKeyValue: '03_public', privateKeyValue: 'from-vlt', privateKeyName: 'DOTENV_PRIVATE_KEY', privateKeySource: 'vlt' })
-  ct.equal(vltKeypairSync.callCount, 1)
-  ct.equal(vltKeypairSync.firstCall.args[0], '03_public')
+  ct.same(result, { publicKeyValue: '03_public', privateKeyValue: 'from-armor', privateKeyName: 'DOTENV_PRIVATE_KEY', privateKeySource: 'armor' })
+  ct.equal(armorKeypairSync.callCount, 1)
+  ct.equal(armorKeypairSync.firstCall.args[0], '03_public')
   ct.end()
 })
 
-t.test('#keyValuesFromEnvSrc does not load private key from vlt when noVlt is true', ct => {
-  const vltKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
-  const keyValuesFromEnvSrcWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
-    '../cryptography/vltKeypairSync': vltKeypairSync
+t.test('#keyValuesFromEnvSrc does not load private key from armor when noArmor is true', ct => {
+  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
+  const keyValuesFromEnvSrcWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
+    '../cryptography/armorKeypairSync': armorKeypairSync
   })
   const src = 'DOTENV_PUBLIC_KEY="03_public"\nHELLO=World'
 
-  const result = keyValuesFromEnvSrcWithOpsStub(src, null, { noVlt: true })
+  const result = keyValuesFromEnvSrcWithArmorStub(src, null, { noArmor: true })
 
   ct.same(result, { publicKeyValue: '03_public', privateKeyValue: null, privateKeyName: 'DOTENV_PRIVATE_KEY' })
-  ct.equal(vltKeypairSync.callCount, 0)
+  ct.equal(armorKeypairSync.callCount, 0)
   ct.end()
 })

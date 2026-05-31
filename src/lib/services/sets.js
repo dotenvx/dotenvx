@@ -34,13 +34,13 @@ function allValuesForKey (envSrc, key) {
 }
 
 class Sets {
-  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, noVlt = false, noCreate = false) {
+  constructor (key, value, envs = [], encrypt = true, envKeysFilepath = null, noArmor = false, noCreate = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.value = value
     this.encrypt = encrypt
     this.envKeysFilepath = envKeysFilepath
-    this.noVlt = noVlt
+    this.noArmor = noArmor
     this.noCreate = noCreate
 
     this.processedEnvs = []
@@ -131,11 +131,11 @@ class Sets {
         let privateKey
 
         const { publicKeyName, privateKeyName } = keyNames(filepath)
-        const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
+        const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor })
 
         // first pass - provisionSync
         if (!privateKeyValue && !publicKeyValue) {
-          const prov = provisionSync({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
+          const prov = provisionSync({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, noArmor: this.noArmor })
           envSrc = prov.envSrc
           publicKey = prov.publicKey
           privateKey = prov.privateKey
@@ -238,11 +238,11 @@ class Sets {
         let privateKey
 
         const { publicKeyName, privateKeyName } = keyNames(filepath)
-        const { publicKeyValue, privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
+        const { publicKeyValue, privateKeyValue } = await keyValues(filepath, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor })
 
         // first pass - provision
         if (!privateKeyValue && !publicKeyValue) {
-          const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
+          const prov = await provision({ envSrc, envFilepath, keysFilepath: this.envKeysFilepath, noArmor: this.noArmor })
           envSrc = prov.envSrc
           publicKey = prov.publicKey
           privateKey = prov.privateKey

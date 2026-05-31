@@ -24,19 +24,12 @@ t.test('#--version', ct => {
   ct.end()
 })
 
-t.test('#--help hides armor alias', ct => {
+t.test('#--help shows armor advanced command', ct => {
   const output = execShell(`${dotenvx} --help`)
 
-  ct.notMatch(output, /\barmor\b/, 'armor alias is hidden from help output')
-
-  ct.end()
-})
-
-t.test('#--help shows vlt advanced command', ct => {
-  const output = execShell(`${dotenvx} --help`)
-
-  ct.match(output, /vlt\s+⛨ ARMORED KEYS \[www\.dotenvx\.com\/vlt\]/, 'vlt advanced command is shown')
-  ct.notMatch(output, /ops\s+⛨ ARMORED KEYS \[www\.dotenvx\.com\/vlt\]/, 'ops advanced command is not shown')
+  ct.match(output, /armor\s+⛨ ARMORED KEYS \[www\.dotenvx\.com\/armor\]/, 'armor advanced command is shown')
+  ct.notMatch(output, /vlt\s+⛨ ARMORED KEYS/, 'vlt advanced command is not shown')
+  ct.notMatch(output, /ops\s+⛨ ARMORED KEYS/, 'ops advanced command is not shown')
 
   ct.end()
 })
@@ -45,6 +38,16 @@ t.test('#--help hides login command', ct => {
   const output = execShell(`${dotenvx} --help`)
 
   ct.notMatch(output, /\blogin\b/, 'login is hidden from help output')
+
+  ct.end()
+})
+
+t.test('#run --help shows no-armor and hides legacy no-vlt/no-ops flags', ct => {
+  const output = execShell(`${dotenvx} run --help`)
+
+  ct.match(output, /--no-armor\b/, 'no-armor is shown')
+  ct.notMatch(output, /--no-vlt\b/, 'no-vlt is hidden')
+  ct.notMatch(output, /--no-ops\b/, 'no-ops is hidden')
 
   ct.end()
 })

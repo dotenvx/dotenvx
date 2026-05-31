@@ -647,7 +647,7 @@ t.test('encrypt - catch error', async ct => {
   ct.end()
 })
 
-t.test('encrypt - --no-ops passes noVlt true to Encrypt service', async ct => {
+t.test('encrypt - --no-ops passes noArmor true to Encrypt service', async ct => {
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -659,12 +659,12 @@ t.test('encrypt - --no-ops passes noVlt true to Encrypt service', async ct => {
   await encrypt.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Encrypt().run() called')
-  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
 
   ct.end()
 })
 
-t.test('encrypt - --no-vlt passes noVlt true to Encrypt service', async ct => {
+t.test('encrypt - --no-vlt passes noArmor true to Encrypt service', async ct => {
   const optsStub = sinon.stub().returns({ vlt: false })
   const fakeContext = { opts: optsStub }
   const runStub = sinon.stub(Encrypt.prototype, 'run').returns({
@@ -676,18 +676,18 @@ t.test('encrypt - --no-vlt passes noVlt true to Encrypt service', async ct => {
   await encrypt.call(fakeContext)
 
   t.ok(runStub.calledOnce, 'Encrypt().run() called')
-  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
 
   ct.end()
 })
 
-t.test('encrypt - --token uses Ops even when session status is off', async ct => {
+t.test('encrypt - --token uses Armor even when session status is off', async ct => {
   let constructorArgs
-  const sessionNoOpsStub = sinon.stub().resolves(true)
+  const sessionNoArmorStub = sinon.stub().resolves(true)
 
   class SessionMock {
-    async noVlt () {
-      return sessionNoOpsStub()
+    async noArmor () {
+      return sessionNoArmorStub()
     }
   }
 
@@ -712,8 +712,8 @@ t.test('encrypt - --token uses Ops even when session status is off', async ct =>
 
   await encryptWithMock.call({ opts: () => ({ token: 'token-123' }), envs: [] })
 
-  t.equal(constructorArgs[4], false, 'noVlt=false when token is explicitly provided')
-  t.equal(sessionNoOpsStub.callCount, 0, 'does not query ops status when token is explicit')
+  t.equal(constructorArgs[4], false, 'noArmor=false when token is explicitly provided')
+  t.equal(sessionNoArmorStub.callCount, 0, 'does not query armor status when token is explicit')
 
   ct.end()
 })
@@ -727,7 +727,7 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
   let constructorArgs
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }
@@ -756,14 +756,14 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
 
   await encryptWithMock.call({ opts: () => ({}), envs: [] })
 
-  ct.equal(spinner.stop.callCount, 2, 'stops on Ops stderr and before final output')
-  ct.equal(spinner.start.callCount, 1, 'restarts after Vlt keypair')
+  ct.equal(spinner.stop.callCount, 2, 'stops on Armor stderr and before final output')
+  ct.equal(spinner.start.callCount, 1, 'restarts after Armor keypair')
   ct.equal(spinner.start.firstCall.args[0], 'encrypting')
 
   ct.end()
 })
 
-t.test('encrypt passes memoized key storage selector when Ops is enabled', async ct => {
+t.test('encrypt passes memoized key storage selector when Armor is enabled', async ct => {
   const spinner = {
     stop: sinon.stub(),
     start: sinon.stub()
@@ -775,7 +775,7 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
   let secondSelected
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }
@@ -812,7 +812,7 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
     message: 'Choose private key storage',
     choices: [
       { name: '◫ File (.env.keys)', value: 'file' },
-      { name: '⛨ Armor (vlt.dotenvx.com)', value: 'armored' }
+      { name: '⛨ Armor (armor.dotenvx.com)', value: 'armored' }
     ]
   }, {
     input: process.stdin,
@@ -825,7 +825,7 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
   ct.end()
 })
 
-t.test('encrypt does not pass key storage selector when Ops is disabled', async ct => {
+t.test('encrypt does not pass key storage selector when Armor is disabled', async ct => {
   let constructorArgs
 
   class EncryptMock {
@@ -848,7 +848,7 @@ t.test('encrypt does not pass key storage selector when Ops is disabled', async 
 
   await encryptWithMock.call({ opts: () => ({ ops: false }), envs: [] })
 
-  ct.equal(constructorArgs[4], true, 'noVlt=true')
+  ct.equal(constructorArgs[4], true, 'noArmor=true')
   ct.equal(constructorArgs[7].selectKeyStorage, undefined)
 
   ct.end()
@@ -864,7 +864,7 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
   let constructorArgs
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }
@@ -893,8 +893,8 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
 
   await encryptWithMock.call({ opts: () => ({ stdout: true }), envs: [] })
 
-  ct.equal(spinner.stop.callCount, 2, 'stops on Ops stderr and before stdout exit')
-  ct.equal(spinner.start.callCount, 1, 'restarts after Vlt keypair')
+  ct.equal(spinner.stop.callCount, 2, 'stops on Armor stderr and before stdout exit')
+  ct.equal(spinner.start.callCount, 1, 'restarts after Armor keypair')
   ct.equal(spinner.start.firstCall.args[0], 'encrypting')
   ct.ok(processExitStub.calledWith(0), 'process.exit(0) called')
 
@@ -909,7 +909,7 @@ t.test('encrypt - spinner stop is called for stdout/success/catch flows', async 
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return sessionStub()
     }
   }

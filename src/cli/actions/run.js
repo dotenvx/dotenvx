@@ -6,13 +6,13 @@ const Run = require('./../../lib/services/run')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const normalizeVltOptions = require('./normalizeVltOptions')
+const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 const conventions = require('./../../lib/helpers/conventions')
 const { determine } = require('./../../lib/helpers/envResolution')
 
 async function run () {
-  const options = normalizeVltOptions(this.opts())
+  const options = normalizeArmorOptions(this.opts())
   const commandArgs = this.args
   const spinner = await createSpinner({ ...options, text: 'injecting' })
 
@@ -22,7 +22,7 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const noVlt = options.vlt === false || (await sesh.noVlt())
+  const noArmor = options.armor === false || (await sesh.noArmor())
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
@@ -54,7 +54,7 @@ async function run () {
       readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
-    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noVlt, {
+    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
       keypairHooks: {
         after: () => {
           if (spinner) spinner.start('injecting')

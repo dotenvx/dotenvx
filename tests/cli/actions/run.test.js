@@ -78,7 +78,7 @@ t.test('run passes spinner text handoff hooks to Run service', async ct => {
     }
   }
   class SessionStub {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }
@@ -122,8 +122,8 @@ t.test('run --convention', async ct => {
   ct.end()
 })
 
-t.test('run --no-ops normalizes vlt off', async ct => {
-  const options = { ops: false, vlt: true }
+t.test('run --no-ops normalizes Armor aliases off', async ct => {
+  const options = { armor: true, ops: false, vlt: true }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--no-ops', '--', 'echo', ''])
@@ -138,15 +138,40 @@ t.test('run --no-ops normalizes vlt off', async ct => {
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
-  t.equal(stub.thisValues[0].noVlt, true, 'Run was called with noVlt true')
+  t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
+  t.equal(options.armor, false, 'armor false')
   t.equal(options.ops, false, 'ops false')
   t.equal(options.vlt, false, 'vlt false')
 
   ct.end()
 })
 
-t.test('run --no-vlt passes noVlt true to Run service', async ct => {
-  const options = { ops: true, vlt: false }
+t.test('run --no-armor normalizes Armor aliases off', async ct => {
+  const options = { armor: false, ops: true, vlt: true }
+  const optsStub = sinon.stub().returns(options)
+  const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--no-armor', '--', 'echo', ''])
+  const stub = sinon.stub(Run.prototype, 'run')
+  stub.returns({
+    processedEnvs: [],
+    readableStrings: [],
+    readableFilepaths: [],
+    uniqueInjectedKeys: []
+  })
+
+  await run.call(fakeContext)
+
+  t.ok(stub.called, 'new Run().run() called')
+  t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
+  t.equal(options.armor, false, 'armor false')
+  t.equal(options.ops, false, 'ops false')
+  t.equal(options.vlt, false, 'vlt false')
+
+  ct.end()
+})
+
+t.test('run --no-vlt passes noArmor true to Run service', async ct => {
+  const options = { armor: true, ops: true, vlt: false }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--no-vlt', '--', 'echo', ''])
@@ -161,7 +186,8 @@ t.test('run --no-vlt passes noVlt true to Run service', async ct => {
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
-  t.equal(stub.thisValues[0].noVlt, true, 'Run was called with noVlt true')
+  t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
+  t.equal(options.armor, false, 'armor false')
   t.equal(options.ops, false, 'ops false')
   t.equal(options.vlt, false, 'vlt false')
 

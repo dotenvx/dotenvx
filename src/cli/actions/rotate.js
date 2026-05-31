@@ -6,23 +6,23 @@ const Rotate = require('./../../lib/services/rotate')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const normalizeVltOptions = require('./normalizeVltOptions')
+const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 async function rotate () {
-  const options = normalizeVltOptions(this.opts())
+  const options = normalizeArmorOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'rotating', frames: ['⟳', '⤾', '⥁'] })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
   const sesh = new Session()
-  const noVlt = options.vlt === false || (await sesh.noVlt())
+  const noArmor = options.armor === false || (await sesh.noArmor())
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
     const {
       processedEnvs
-    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noVlt).run()
+    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noArmor).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -38,7 +38,7 @@ async function rotate () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noVlt).run()
+      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noArmor).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`rotating ${processedEnv.envFilepath} (${processedEnv.filepath})`)

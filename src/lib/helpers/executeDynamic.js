@@ -2,12 +2,19 @@ const path = require('path')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
 
-function vltBanner () {
+function armorBanner () {
   const lines = [
-    '                       [www.dotenvx.com/vlt]',
+    '                      [www.dotenvx.com/armor]',
     '–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––',
+    '                            __ ____ __ ',
+    '                           |    ||    |',
+    '                           |  __||__  |',
+    '                           |  ‾‾||‾‾  |',
+    '                           |    ||    |',
+    '                            \\   ||   /',
+    '                              \\ __ /',
     '',
-    '                          Dotenvx + VLT ⛨',
+    '                          Dotenvx Armor ⛨',
     '',
     '                           ARMORED KEYS',
     '               Private keys. Off device. Under guard.',
@@ -15,8 +22,8 @@ function vltBanner () {
     '                                -',
     '',
     '                            Install one',
-    '             [curl -sfS https://dotenvx.sh/vlt | sh]',
-    '                 [npm i @dotenvx/dotenvx --save]',
+    '            [curl -sfS https://dotenvx.sh/armor | sh]',
+    '              [npm i @dotenvx/dotenvx-armor --save]',
     '',
     '                                -',
     '',
@@ -32,6 +39,26 @@ function vltBanner () {
   const bottom = `|${'_'.repeat(innerWidth)}|`
 
   return `${top}\n${middle}\n${bottom}`
+}
+
+function dynamicAttempts (command, forwardedArgs) {
+  if (command === 'vlt') {
+    return [
+      ['dotenvx-armor', forwardedArgs],
+      ['dotenvx-vlt', forwardedArgs],
+      ['dotenvx-ops', forwardedArgs]
+    ]
+  }
+
+  if (command === 'ops') {
+    return [
+      ['dotenvx-armor', forwardedArgs],
+      ['dotenvx-ops', forwardedArgs],
+      ['dotenvx-vlt', forwardedArgs]
+    ]
+  }
+
+  return [[`dotenvx-${command}`, forwardedArgs]]
 }
 
 function executeDynamic (program, command, rawArgs) {
@@ -52,18 +79,20 @@ function executeDynamic (program, command, rawArgs) {
   const newPath = `${binPath}:${process.env.PATH}`
   const env = { ...process.env, PATH: newPath }
 
-  let spawnCommand = `dotenvx-${command}`
-  let result = childProcess.spawnSync(spawnCommand, forwardedArgs, { stdio: 'inherit', env })
-  if (command === 'ops' && result.error) {
-    spawnCommand = 'dotenvx-vlt'
-    result = childProcess.spawnSync(spawnCommand, forwardedArgs, { stdio: 'inherit', env })
+  const spawnOptions = { stdio: 'inherit', env }
+  let result
+  for (const [spawnCommand, spawnArgs] of dynamicAttempts(command, forwardedArgs)) {
+    result = childProcess.spawnSync(spawnCommand, spawnArgs, spawnOptions)
+    if (!result.error) break
   }
 
   if (result.error) {
     if (command === 'vlt') {
-      console.log(vltBanner())
+      console.log(armorBanner())
     } else if (command === 'ops') {
-      console.log(vltBanner())
+      console.log(armorBanner())
+    } else if (command === 'armor') {
+      console.log(armorBanner())
     } else {
       logger.info(`error: unknown command '${command}'`)
     }

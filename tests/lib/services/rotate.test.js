@@ -648,31 +648,31 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
     ct.end()
   })
 
-t.test('#run (finds .env file) with vltOn uses vlt keypair and does not append local keys file',
+t.test('#run (finds .env file) with armorOn uses armor keypair and does not append local keys file',
   async ct => {
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const cryptography = require('../../../src/lib/helpers/cryptography')
-    const vltKeypair = sinon.stub().returns({
+    const armorKeypair = sinon.stub().returns({
       publicKey: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
-      privateKey: 'new-private-key-from-vlt'
+      privateKey: 'new-private-key-from-armor'
     })
 
-    const RotateWithOpsStub = proxyquire('../../../src/lib/services/rotate', {
-      './../helpers/cryptography': { ...cryptography, vltKeypair }
+    const RotateWithArmorStub = proxyquire('../../../src/lib/services/rotate', {
+      './../helpers/cryptography': { ...cryptography, armorKeypair }
     })
 
     const envs = [
       { type: 'envFile', value: envFile }
     ]
 
-    const { processedEnvs } = await new RotateWithOpsStub(envs, [], [], null, false).run()
+    const { processedEnvs } = await new RotateWithArmorStub(envs, [], [], null, false).run()
 
     const p1 = processedEnvs[0]
-    ct.equal(vltKeypair.callCount, 1)
+    ct.equal(armorKeypair.callCount, 1)
     ct.equal(p1.localPrivateKeyAdded, false)
     ct.notOk(p1.envKeysSrc)
     ct.notOk(p1.envKeysFilepath)
-    ct.equal(p1.privateKey, 'new-private-key-from-vlt')
+    ct.equal(p1.privateKey, 'new-private-key-from-armor')
     ct.match(p1.envSrc, /DOTENV_PUBLIC_KEY=/)
     ct.end()
   })

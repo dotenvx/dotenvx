@@ -2,7 +2,7 @@ const path = require('path')
 
 const dotenvParse = require('./../dotenvParse')
 const readFileKeySync = require('./readFileKeySync')
-const vltKeypairSync = require('../cryptography/vltKeypairSync')
+const armorKeypairSync = require('../cryptography/armorKeypairSync')
 
 const PUBLIC_KEY_SCHEMA = 'DOTENV_PUBLIC_KEY'
 const PRIVATE_KEY_SCHEMA = 'DOTENV_PRIVATE_KEY'
@@ -25,7 +25,7 @@ function publicKeyNameFromEnvSrc (envParsed) {
 
 function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const noVlt = opts.noVlt === true
+  const noArmor = opts.noArmor === true
   const processEnv = opts.processEnv || process.env
   const envParsed = dotenvParse(src)
 
@@ -52,10 +52,10 @@ function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
     }
   }
 
-  if (!noVlt && !privateKeyValue && publicKeyValue && publicKeyValue.length > 0) {
-    const kp = vltKeypairSync(publicKeyValue)
+  if (!noArmor && !privateKeyValue && publicKeyValue && publicKeyValue.length > 0) {
+    const kp = armorKeypairSync(publicKeyValue)
     privateKeyValue = kp.privateKey
-    privateKeySource = 'vlt'
+    privateKeySource = 'armor'
   }
 
   const result = {

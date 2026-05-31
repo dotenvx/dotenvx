@@ -3,26 +3,26 @@ const Errors = require('./../helpers/errors')
 const { determine } = require('./../helpers/envResolution')
 
 class Get {
-  constructor (key, envs = [], overload = false, all = false, envKeysFilepath = null, noVlt = false) {
+  constructor (key, envs = [], overload = false, all = false, envKeysFilepath = null, noArmor = false) {
     this.key = key
     this.envs = envs
     this.overload = overload
     this.all = all
     this.envKeysFilepath = envKeysFilepath
-    this.noVlt = noVlt
+    this.noArmor = noArmor
   }
 
   runSync () {
     const processEnv = { ...process.env }
     const envs = determine(this.envs, processEnv)
-    const { processedEnvs } = new Run(envs, this.overload, processEnv, this.envKeysFilepath, this.noVlt).runSync()
+    const { processedEnvs } = new Run(envs, this.overload, processEnv, this.envKeysFilepath, this.noArmor).runSync()
     return this._result(processedEnvs, processEnv)
   }
 
   async run () {
     const processEnv = { ...process.env }
     const envs = determine(this.envs, processEnv)
-    const { processedEnvs } = await new Run(envs, this.overload, processEnv, this.envKeysFilepath, this.noVlt).run()
+    const { processedEnvs } = await new Run(envs, this.overload, processEnv, this.envKeysFilepath, this.noArmor).run()
     return this._result(processedEnvs, processEnv)
   }
 

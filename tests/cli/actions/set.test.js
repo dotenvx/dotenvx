@@ -7,7 +7,7 @@ const Sets = require('../../../src/lib/services/sets')
 const { logger } = require('../../../src/shared/logger')
 
 class SessionMock {
-  async noVlt () {
+  async noArmor () {
     return false
   }
 }
@@ -654,7 +654,7 @@ t.test('set - remotePrivateKeyAdded', async ct => {
   ct.end()
 })
 
-t.test('set - --no-ops passes noVlt true to Sets service', async ct => {
+t.test('set - --no-ops passes noArmor true to Sets service', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ ops: false })
   const fakeContext = { opts: optsStub }
@@ -667,12 +667,12 @@ t.test('set - --no-ops passes noVlt true to Sets service', async ct => {
   await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(runStub.calledOnce, 'Sets().run() called')
-  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
 
   ct.end()
 })
 
-t.test('set - --no-vlt passes noVlt true to Sets service', async ct => {
+t.test('set - --no-vlt passes noArmor true to Sets service', async ct => {
   sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({ vlt: false })
   const fakeContext = { opts: optsStub }
@@ -685,7 +685,7 @@ t.test('set - --no-vlt passes noVlt true to Sets service', async ct => {
   await set.call(fakeContext, 'HELLO', 'World')
 
   t.ok(runStub.calledOnce, 'Sets().run() called')
-  t.equal(runStub.thisValues[0].noVlt, true, 'noVlt true')
+  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
 
   ct.end()
 })
@@ -731,7 +731,7 @@ t.test('set - spinner stop called on success path when spinner exists', async ct
   const successStub = sinon.stub(logger, 'success')
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }
@@ -775,7 +775,7 @@ t.test('set - spinner stop called on catch path when spinner exists', async ct =
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }

@@ -4,9 +4,9 @@ const util = require('util')
 const { logger } = require('../../shared/logger')
 
 const execFile = util.promisify(childProcess.execFile)
-const BINARY_NAMES = ['dotenvx-vlt', 'dotenvx-ops']
+const BINARY_NAMES = ['dotenvx-armor', 'dotenvx-vlt', 'dotenvx-ops']
 
-class Vlt {
+class Armor {
   async status () {
     if (this._isForcedOff()) return 'off'
 
@@ -195,8 +195,8 @@ class Vlt {
   }
 
   _isForcedOff () {
-    return process.env.DOTENVX_NO_OPS === 'true' || process.env.DOTENVX_NO_VLT === 'true'
+    return process.env.DOTENVX_NO_ARMOR === 'true' || process.env.DOTENVX_NO_VLT === 'true' || process.env.DOTENVX_NO_OPS === 'true'
   }
 }
 
-module.exports = Vlt
+module.exports = Armor

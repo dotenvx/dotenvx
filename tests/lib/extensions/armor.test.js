@@ -23,14 +23,18 @@ function spawnResult (stdout, code = 0, stderr) {
 }
 
 t.beforeEach(() => {
+  process.env.DOTENVX_NO_ARMOR = 'false'
   process.env.DOTENVX_NO_VLT = 'false'
+  process.env.DOTENVX_NO_OPS = 'false'
 })
 
 t.afterEach(() => {
+  delete process.env.DOTENVX_NO_ARMOR
   delete process.env.DOTENVX_NO_VLT
+  delete process.env.DOTENVX_NO_OPS
 })
 
-t.test('statusSync and keypairSync use npm dotenvx-vlt binary when available', (ct) => {
+t.test('statusSync and keypairSync use npm dotenvx-armor binary when available', (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()
@@ -42,14 +46,14 @@ t.test('statusSync and keypairSync use npm dotenvx-vlt binary when available', (
     .onCall(2).returns(Buffer.from('{"public_key":"pub","private_key":"priv"}')) // keypair npm
     .onCall(3).returns(Buffer.from('{"public_key":"pub2","private_key":"priv2"}')) // keypair npm with arg
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.equal(vlt.statusSync(), 'on')
-  ct.same(vlt.keypairSync(), { public_key: 'pub', private_key: 'priv' })
-  ct.same(vlt.keypairSync('existing-public-key'), { public_key: 'pub2', private_key: 'priv2' })
+  const armor = new Armor()
+  ct.equal(armor.statusSync(), 'on')
+  ct.same(armor.keypairSync(), { public_key: 'pub', private_key: 'priv' })
+  ct.same(armor.keypairSync('existing-public-key'), { public_key: 'pub2', private_key: 'priv2' })
 
   ct.same(execFileSync.getCall(0).args[1], ['--version'])
   ct.same(execFileSync.getCall(1).args[1], ['status'])
@@ -68,17 +72,17 @@ t.test('keypairSync can disable child spinner', (ct) => {
     .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
     .onCall(1).returns(Buffer.from('{"public_key":"pub","private_key":"priv"}'))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(vlt.keypairSync('existing-public-key', { noSpinner: true }), { public_key: 'pub', private_key: 'priv' })
+  const armor = new Armor()
+  ct.same(armor.keypairSync('existing-public-key', { noSpinner: true }), { public_key: 'pub', private_key: 'priv' })
   ct.same(execFileSync.getCall(1).args[1], ['keypair', '--no-spinner', 'existing-public-key'])
   ct.end()
 })
 
-t.test('keypairSync forwards token to resolved vlt/ops binary', (ct) => {
+t.test('keypairSync forwards token to resolved armor/vlt/ops binary', (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()
@@ -88,17 +92,17 @@ t.test('keypairSync forwards token to resolved vlt/ops binary', (ct) => {
     .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
     .onCall(1).returns(Buffer.from('{"public_key":"pub","private_key":"priv"}'))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(vlt.keypairSync('existing-public-key', { token: 'token-123' }), { public_key: 'pub', private_key: 'priv' })
+  const armor = new Armor()
+  ct.same(armor.keypairSync('existing-public-key', { token: 'token-123' }), { public_key: 'pub', private_key: 'priv' })
   ct.same(execFileSync.getCall(1).args[1], ['keypair', '--token', 'token-123', 'existing-public-key'])
   ct.end()
 })
 
-t.test('keypairSync forwards env filepath to resolved vlt/ops binary', (ct) => {
+t.test('keypairSync forwards env filepath to resolved armor/vlt/ops binary', (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()
@@ -108,12 +112,12 @@ t.test('keypairSync forwards env filepath to resolved vlt/ops binary', (ct) => {
     .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
     .onCall(1).returns(Buffer.from('{"public_key":"pub","private_key":"priv"}'))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(vlt.keypairSync('existing-public-key', { envFilepath: '.env.production' }), { public_key: 'pub', private_key: 'priv' })
+  const armor = new Armor()
+  ct.same(armor.keypairSync('existing-public-key', { envFilepath: '.env.production' }), { public_key: 'pub', private_key: 'priv' })
   ct.same(execFileSync.getCall(1).args[1], ['keypair', '-f', '.env.production', 'existing-public-key'])
   ct.end()
 })
@@ -132,14 +136,14 @@ t.test('status uses execFile and keypair uses interactive spawn', async (ct) => 
     .onCall(0).returns(spawnResult('{"public_key":"pub","private_key":"priv"}'))
     .onCall(1).returns(spawnResult('{"public_key":"pub2","private_key":"priv2"}'))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.equal(await vlt.status(), 'on')
-  ct.same(await vlt.keypair(), { public_key: 'pub', private_key: 'priv' })
-  ct.same(await vlt.keypair('existing-public-key'), { public_key: 'pub2', private_key: 'priv2' })
+  const armor = new Armor()
+  ct.equal(await armor.status(), 'on')
+  ct.same(await armor.keypair(), { public_key: 'pub', private_key: 'priv' })
+  ct.same(await armor.keypair('existing-public-key'), { public_key: 'pub2', private_key: 'priv2' })
 
   ct.same(promisifiedExecFile.getCall(0).args[1], ['--version'])
   ct.same(promisifiedExecFile.getCall(1).args[1], ['status'])
@@ -152,7 +156,7 @@ t.test('status uses execFile and keypair uses interactive spawn', async (ct) => 
   ct.end()
 })
 
-t.test('keypair forwards env filepath to resolved vlt/ops binary', async (ct) => {
+t.test('keypair forwards env filepath to resolved armor/vlt/ops binary', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -164,12 +168,12 @@ t.test('keypair forwards env filepath to resolved vlt/ops binary', async (ct) =>
   spawn
     .onCall(0).returns(spawnResult('{"public_key":"pub","private_key":"priv"}'))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(await vlt.keypair('existing-public-key', { envFilepath: '.env.production' }), { public_key: 'pub', private_key: 'priv' })
+  const armor = new Armor()
+  ct.same(await armor.keypair('existing-public-key', { envFilepath: '.env.production' }), { public_key: 'pub', private_key: 'priv' })
   ct.same(spawn.getCall(0).args, [promisifiedExecFile.getCall(0).args[0], ['keypair', '-f', '.env.production', 'existing-public-key'], {
     stdio: ['inherit', 'pipe', 'pipe']
   }])
@@ -185,21 +189,23 @@ t.test('falls back to dotenvx-vlt cli binary and observe spawns detached process
   const spawn = sinon.stub().returns({ unref })
 
   execFileSync
-    .onCall(0).throws(new Error('npm binary missing')) // --version npm
-    .onCall(1).returns(Buffer.from('1.0.0\n')) // --version cli
-    .onCall(2).returns(Buffer.from('on\n')) // status cli
+    .onCall(0).throws(new Error('npm dotenvx-armor missing'))
+    .onCall(1).throws(new Error('cli dotenvx-armor missing'))
+    .onCall(2).throws(new Error('npm dotenvx-vlt missing'))
+    .onCall(3).returns(Buffer.from('1.0.0\n')) // --version cli
+    .onCall(4).returns(Buffer.from('on\n')) // status cli
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  vlt.observe({ event: 'rotated', ok: true })
+  const armor = new Armor()
+  armor.observe({ event: 'rotated', ok: true })
 
   ct.same(execFileSync.getCall(0).args[1], ['--version'])
-  ct.same(execFileSync.getCall(1).args[1], ['--version'])
-  ct.same(execFileSync.getCall(2).args[1], ['status'])
-  ct.equal(execFileSync.getCall(1).args[0], 'dotenvx-vlt')
+  ct.same(execFileSync.getCall(3).args[1], ['--version'])
+  ct.same(execFileSync.getCall(4).args[1], ['status'])
+  ct.equal(execFileSync.getCall(3).args[0], 'dotenvx-vlt')
 
   ct.equal(spawn.callCount, 1)
   const spawnArgs = spawn.getCall(0).args
@@ -210,7 +216,7 @@ t.test('falls back to dotenvx-vlt cli binary and observe spawns detached process
   ct.end()
 })
 
-t.test('falls back to dotenvx-ops when dotenvx-vlt is unavailable', async (ct) => {
+t.test('falls back to dotenvx-ops when dotenvx-armor and dotenvx-vlt are unavailable', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -218,28 +224,32 @@ t.test('falls back to dotenvx-ops when dotenvx-vlt is unavailable', async (ct) =
   const spawn = sinon.stub()
 
   execFileSync
-    .onCall(0).throws(new Error('npm dotenvx-vlt missing'))
-    .onCall(1).throws(new Error('cli dotenvx-vlt missing'))
-    .onCall(2).returns(Buffer.from('1.0.0\n'))
-    .onCall(3).returns(Buffer.from('on\n'))
+    .onCall(0).throws(new Error('npm dotenvx-armor missing'))
+    .onCall(1).throws(new Error('cli dotenvx-armor missing'))
+    .onCall(2).throws(new Error('npm dotenvx-vlt missing'))
+    .onCall(3).throws(new Error('cli dotenvx-vlt missing'))
+    .onCall(4).returns(Buffer.from('1.0.0\n'))
+    .onCall(5).returns(Buffer.from('on\n'))
 
   promisifiedExecFile
-    .onCall(0).rejects(new Error('npm dotenvx-vlt missing'))
-    .onCall(1).rejects(new Error('cli dotenvx-vlt missing'))
-    .onCall(2).resolves({ stdout: Buffer.from('1.0.0\n') })
-    .onCall(3).resolves({ stdout: Buffer.from('on\n') })
+    .onCall(0).rejects(new Error('npm dotenvx-armor missing'))
+    .onCall(1).rejects(new Error('cli dotenvx-armor missing'))
+    .onCall(2).rejects(new Error('npm dotenvx-vlt missing'))
+    .onCall(3).rejects(new Error('cli dotenvx-vlt missing'))
+    .onCall(4).resolves({ stdout: Buffer.from('1.0.0\n') })
+    .onCall(5).resolves({ stdout: Buffer.from('on\n') })
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vltSync = new Vlt()
-  ct.equal(vltSync.statusSync(), 'on')
-  ct.ok(execFileSync.getCall(2).args[0].endsWith('node_modules/.bin/dotenvx-ops'))
+  const armorSync = new Armor()
+  ct.equal(armorSync.statusSync(), 'on')
+  ct.ok(execFileSync.getCall(4).args[0].endsWith('node_modules/.bin/dotenvx-ops'))
 
-  const vltAsync = new Vlt()
-  ct.equal(await vltAsync.status(), 'on')
-  ct.ok(promisifiedExecFile.getCall(2).args[0].endsWith('node_modules/.bin/dotenvx-ops'))
+  const armorAsync = new Armor()
+  ct.equal(await armorAsync.status(), 'on')
+  ct.ok(promisifiedExecFile.getCall(4).args[0].endsWith('node_modules/.bin/dotenvx-ops'))
   ct.end()
 })
 
@@ -254,65 +264,67 @@ t.test('observe noops when spawn fails, status off, or forced off', async (ct) =
     .onCall(1).returns(Buffer.from('on\n')) // status for observe gate
     .onCall(2).returns(Buffer.from('off\n')) // status for observe gate
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.doesNotThrow(() => vlt.observe({ should: 'not throw' }))
+  const armor = new Armor()
+  ct.doesNotThrow(() => armor.observe({ should: 'not throw' }))
   ct.equal(spawn.callCount, 1)
 
-  vlt.observe({ should: 'skip when off' })
+  armor.observe({ should: 'skip when off' })
   ct.equal(spawn.callCount, 1)
 
   process.env.DOTENVX_NO_VLT = 'true'
-  ct.equal(vlt.statusSync(), 'off')
-  ct.same(vlt.keypairSync('ignored'), {})
-  ct.same(await vlt.keypair('ignored'), {})
-  vlt.observe({ should: 'skip when forced off' })
+  ct.equal(armor.statusSync(), 'off')
+  ct.same(armor.keypairSync('ignored'), {})
+  ct.same(await armor.keypair('ignored'), {})
+  armor.observe({ should: 'skip when forced off' })
   ct.equal(spawn.callCount, 1)
   ct.end()
 })
 
-t.test('forced off skips binary resolution with DOTENVX_NO_VLT', async (ct) => {
-  const execFileSync = sinon.stub()
-  const execFile = sinon.stub()
-  execFile[util.promisify.custom] = sinon.stub()
-  const spawn = sinon.stub()
+for (const envName of ['DOTENVX_NO_ARMOR', 'DOTENVX_NO_VLT', 'DOTENVX_NO_OPS']) {
+  t.test(`forced off skips binary resolution with ${envName}`, async (ct) => {
+    const execFileSync = sinon.stub()
+    const execFile = sinon.stub()
+    execFile[util.promisify.custom] = sinon.stub()
+    const spawn = sinon.stub()
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
-    child_process: { execFileSync, execFile, spawn }
+    const Armor = proxyquire('../../../src/lib/extensions/armor', {
+      child_process: { execFileSync, execFile, spawn }
+    })
+
+    process.env[envName] = 'true'
+    const armor = new Armor()
+    ct.equal(armor.statusSync(), 'off')
+    ct.same(armor.keypairSync('ignored'), {})
+    ct.same(await armor.keypair('ignored'), {})
+    armor.observe({ should: 'skip when forced off' })
+    ct.equal(execFileSync.callCount, 0)
+    ct.equal(spawn.callCount, 0)
+    ct.end()
   })
+}
 
-  process.env.DOTENVX_NO_VLT = 'true'
-  const vlt = new Vlt()
-  ct.equal(vlt.statusSync(), 'off')
-  ct.same(vlt.keypairSync('ignored'), {})
-  ct.same(await vlt.keypair('ignored'), {})
-  vlt.observe({ should: 'skip when forced off' })
-  ct.equal(execFileSync.callCount, 0)
-  ct.equal(spawn.callCount, 0)
-  ct.end()
-})
-
-t.test('status/statusSync are off when all vlt and ops binaries are unavailable', async (ct) => {
+t.test('status/statusSync are off when all armor, vlt, and ops binaries are unavailable', async (ct) => {
   const execFileSync = sinon.stub().throws(new Error('binary missing'))
   const promisifiedExecFile = sinon.stub().rejects(new Error('binary missing'))
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = promisifiedExecFile
   const spawn = sinon.stub()
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.equal(vlt.statusSync(), 'off')
-  ct.same(vlt.keypairSync('anything'), {})
-  ct.equal(await vlt.status(), 'off')
-  ct.same(await vlt.keypair('anything'), {})
-  ct.equal(execFileSync.callCount, 4)
-  ct.equal(promisifiedExecFile.callCount, 4)
+  const armor = new Armor()
+  ct.equal(armor.statusSync(), 'off')
+  ct.same(armor.keypairSync('anything'), {})
+  ct.equal(await armor.status(), 'off')
+  ct.same(await armor.keypair('anything'), {})
+  ct.equal(execFileSync.callCount, 6)
+  ct.equal(promisifiedExecFile.callCount, 6)
   ct.end()
 })
 
@@ -331,15 +343,15 @@ t.test('status/statusSync return off when status command fails after binary reso
     .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
     .onCall(1).rejects(new Error('status failed')) // status npm
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vltSync = new Vlt()
-  ct.equal(vltSync.statusSync(), 'off')
+  const armorSync = new Armor()
+  ct.equal(armorSync.statusSync(), 'off')
 
-  const vltAsync = new Vlt()
-  ct.equal(await vltAsync.status(), 'off')
+  const armorAsync = new Armor()
+  ct.equal(await armorAsync.status(), 'off')
   ct.end()
 })
 
@@ -358,15 +370,15 @@ t.test('keypair/keypairSync return empty object when parsing or exec fails', asy
     .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
   spawn.onCall(0).returns(spawnResult('not-json')) // keypair output
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vltSync = new Vlt()
-  ct.same(vltSync.keypairSync(), {})
+  const armorSync = new Armor()
+  ct.same(armorSync.keypairSync(), {})
 
-  const vltAsync = new Vlt()
-  ct.same(await vltAsync.keypair(), {})
+  const armorAsync = new Armor()
+  ct.same(await armorAsync.keypair(), {})
   ct.end()
 })
 
@@ -380,17 +392,17 @@ t.test('observe returns early when status check throws', (ct) => {
     .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
     .onCall(1).throws(new Error('status failed')) // status npm
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.doesNotThrow(() => vlt.observe({ event: 'x' }))
+  const armor = new Armor()
+  ct.doesNotThrow(() => armor.observe({ event: 'x' }))
   ct.equal(spawn.callCount, 0)
   ct.end()
 })
 
-t.test('status async falls back to dotenvx-vlt cli binary when npm binary is unavailable', async (ct) => {
+t.test('status async falls back to dotenvx-vlt cli binary when armor binaries are unavailable', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -398,17 +410,19 @@ t.test('status async falls back to dotenvx-vlt cli binary when npm binary is una
   const spawn = sinon.stub()
 
   promisifiedExecFile
-    .onCall(0).rejects(new Error('npm binary missing')) // npm --version
-    .onCall(1).resolves({ stdout: Buffer.from('1.0.0\n') }) // cli --version
-    .onCall(2).resolves({ stdout: Buffer.from('on\n') }) // cli status
+    .onCall(0).rejects(new Error('npm dotenvx-armor missing'))
+    .onCall(1).rejects(new Error('cli dotenvx-armor missing'))
+    .onCall(2).rejects(new Error('npm dotenvx-vlt missing'))
+    .onCall(3).resolves({ stdout: Buffer.from('1.0.0\n') }) // cli --version
+    .onCall(4).resolves({ stdout: Buffer.from('on\n') }) // cli status
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.equal(await vlt.status(), 'on')
-  ct.equal(promisifiedExecFile.getCall(1).args[0], 'dotenvx-vlt')
+  const armor = new Armor()
+  ct.equal(await armor.status(), 'on')
+  ct.equal(promisifiedExecFile.getCall(3).args[0], 'dotenvx-vlt')
   ct.end()
 })
 
@@ -418,12 +432,12 @@ t.test('observe returns early when no binary can be resolved', (ct) => {
   execFile[util.promisify.custom] = sinon.stub()
   const spawn = sinon.stub()
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.doesNotThrow(() => vlt.observe({ event: 'x' }))
+  const armor = new Armor()
+  ct.doesNotThrow(() => armor.observe({ event: 'x' }))
   ct.equal(spawn.callCount, 0)
   ct.end()
 })
@@ -439,12 +453,12 @@ t.test('keypair async inherits stdin and pipes stderr while parsing stdout json'
     .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
   spawn.onCall(0).returns(spawnResult('{"public_key":"pub","private_key":"priv"}'))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(await vlt.keypair(), { public_key: 'pub', private_key: 'priv' })
+  const armor = new Armor()
+  ct.same(await armor.keypair(), { public_key: 'pub', private_key: 'priv' })
   ct.same(spawn.firstCall.args[2], {
     stdio: ['inherit', 'pipe', 'pipe']
   })
@@ -465,12 +479,12 @@ t.test('keypair async forwards child stderr after onStderr hook', async (ct) => 
     .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
   spawn.onCall(0).returns(spawnResult('{"public_key":"pub","private_key":"priv"}', 0, ['Select team', '\n']))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(await vlt.keypair(undefined, { onStderr }), { public_key: 'pub', private_key: 'priv' })
+  const armor = new Armor()
+  ct.same(await armor.keypair(undefined, { onStderr }), { public_key: 'pub', private_key: 'priv' })
   ct.equal(onStderr.callCount, 1)
   ct.equal(stderrWrite.callCount, 2)
   ct.equal(stderrWrite.firstCall.args[0].toString(), 'Select team')
@@ -490,19 +504,19 @@ t.test('keypair async can disable child spinner', async (ct) => {
     .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
   spawn.onCall(0).returns(spawnResult('{"public_key":"pub","private_key":"priv"}'))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(await vlt.keypair('existing-public-key', { noSpinner: true }), { public_key: 'pub', private_key: 'priv' })
+  const armor = new Armor()
+  ct.same(await armor.keypair('existing-public-key', { noSpinner: true }), { public_key: 'pub', private_key: 'priv' })
   ct.same(spawn.firstCall.args[1], ['keypair', '--no-spinner', 'existing-public-key'])
   ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'pipe'])
   ct.notOk(spawn.firstCall.args[2].env)
   ct.end()
 })
 
-t.test('keypair async forwards token to resolved vlt/ops binary', async (ct) => {
+t.test('keypair async forwards token to resolved armor/vlt/ops binary', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -513,18 +527,18 @@ t.test('keypair async forwards token to resolved vlt/ops binary', async (ct) => 
     .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
   spawn.onCall(0).returns(spawnResult('{"public_key":"pub","private_key":"priv"}'))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(await vlt.keypair('existing-public-key', { token: 'token-123' }), { public_key: 'pub', private_key: 'priv' })
+  const armor = new Armor()
+  ct.same(await armor.keypair('existing-public-key', { token: 'token-123' }), { public_key: 'pub', private_key: 'priv' })
   ct.same(spawn.firstCall.args[1], ['keypair', '--token', 'token-123', 'existing-public-key'])
   ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'pipe'])
   ct.end()
 })
 
-t.test('status async writes stderr from vlt process', async (ct) => {
+t.test('status async writes stderr from armor process', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -537,12 +551,12 @@ t.test('status async writes stderr from vlt process', async (ct) => {
     .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
     .onCall(1).resolves({ stdout: Buffer.from('on\n'), stderr: Buffer.from('ops warning\n') })
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.equal(await vlt.status(), 'on')
+  const armor = new Armor()
+  ct.equal(await armor.status(), 'on')
   ct.equal(stderrWrite.callCount, 1)
   ct.equal(stderrWrite.firstCall.args[0], 'ops warning\n')
   ct.end()
@@ -559,11 +573,11 @@ t.test('keypair async returns empty object when interactive process exits non-ze
     .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
   spawn.onCall(0).returns(spawnResult(undefined, 23))
 
-  const Vlt = proxyquire('../../../src/lib/extensions/vlt', {
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
     child_process: { execFileSync, execFile, spawn }
   })
 
-  const vlt = new Vlt()
-  ct.same(await vlt.keypair(), {})
+  const armor = new Armor()
+  ct.same(await armor.keypair(), {})
   ct.end()
 })

@@ -25,7 +25,7 @@ function mutateKeysSrcSync ({ envFilepath, keysFilepath, privateKeyName, private
   keysSrc = keysSrc.length > 1 ? keysSrc : `${FIRST_TIME_KEYS_SRC}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
-  fsx.writeFileXSync(resolvedKeysFilepath, keysSrc) // TODO: don't write if ops
+  fsx.writeFileXSync(resolvedKeysFilepath, keysSrc) // TODO: don't write if armor
 
   const envKeysFilepath = keysFilepath || path.join(path.dirname(envFilepath), path.basename(resolvedKeysFilepath))
 

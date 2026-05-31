@@ -16,7 +16,7 @@ const {
 } = require('./../helpers/keyResolution')
 
 const {
-  vltKeypair,
+  armorKeypair,
   localKeypair,
   encryptValue,
   decryptKeyValue,
@@ -29,12 +29,12 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Rotate {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noVlt = false) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noArmor = false) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
-    this.noVlt = noVlt
+    this.noArmor = noArmor
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -83,15 +83,15 @@ class Rotate {
       const envParsed = dotenvParse(envSrc, false, false, true)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noVlt: this.noVlt })
+      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor })
 
       let newPublicKey
       let newPrivateKey
       let envKeysFilepath
       let envKeysSrc
 
-      if (!this.noVlt) {
-        const kp = await vltKeypair()
+      if (!this.noArmor) {
+        const kp = await armorKeypair()
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 
@@ -146,8 +146,8 @@ class Rotate {
       row.privateKeyName = privateKeyName
       row.privateKey = newPrivateKey
 
-      if (this.noVlt) {
-        // keys src only for vlt
+      if (this.noArmor) {
+        // keys src only for local key storage
         envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
         this.envKeysSources[envKeysFilepath] = envKeysSrc
         row.envKeysSrc = envKeysSrc
@@ -158,7 +158,7 @@ class Rotate {
       if (e.code === 'ENOENT') {
         const missingPath = e.path ? path.resolve(e.path) : null
         const expectedEnvKeysPath = row.envKeysFilepath ? path.resolve(row.envKeysFilepath) : null
-        if (this.noVlt && expectedEnvKeysPath && missingPath === expectedEnvKeysPath) {
+        if (this.noArmor && expectedEnvKeysPath && missingPath === expectedEnvKeysPath) {
           row.error = new Errors({ envKeysFilepath: row.envKeysFilepath }).missingEnvKeysFile()
         } else {
           row.error = new Errors({ envFilepath, filepath }).missingEnvFile()

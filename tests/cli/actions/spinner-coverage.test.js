@@ -29,7 +29,7 @@ t.test('get stops spinner on success path', async ct => {
       }
     },
     '../../../src/db/session': class {
-      async noVlt () {
+      async noArmor () {
         return true
       }
     },
@@ -58,7 +58,7 @@ t.test('get stops spinner on catch path', async ct => {
     },
     '../../../src/lib/helpers/catchAndLog': catchAndLogStub,
     '../../../src/db/session': class {
-      async noVlt () {
+      async noArmor () {
         return true
       }
     },
@@ -85,7 +85,7 @@ t.test('keypair stops spinner before output', async ct => {
       }
     },
     '../../../src/db/session': class {
-      async noVlt () {
+      async noArmor () {
         return true
       }
     },
@@ -119,7 +119,7 @@ t.test('run stops spinner when command missing', async ct => {
     },
     '../../../src/lib/helpers/executeCommand': async () => true,
     '../../../src/db/session': class {
-      async noVlt () {
+      async noArmor () {
         return true
       }
     },
@@ -152,7 +152,7 @@ t.test('run stops spinner on success path', async ct => {
     },
     '../../../src/lib/helpers/executeCommand': async () => true,
     '../../../src/db/session': class {
-      async noVlt () {
+      async noArmor () {
         return true
       }
     },
@@ -183,7 +183,7 @@ t.test('run stops spinner on catch path', async ct => {
     '../../../src/lib/helpers/catchAndLog': catchAndLogStub,
     '../../../src/lib/helpers/executeCommand': async () => true,
     '../../../src/db/session': class {
-      async noVlt () {
+      async noArmor () {
         return true
       }
     },
