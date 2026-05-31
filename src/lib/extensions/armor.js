@@ -195,7 +195,7 @@ class Armor {
   }
 
   _isForcedOff () {
-    return process.env.DOTENVX_NO_OPS === 'true' || process.env.DOTENVX_NO_VLT === 'true'
+    return process.env.DOTENVX_NO_ARMOR === 'true' || process.env.DOTENVX_NO_VLT === 'true' || process.env.DOTENVX_NO_OPS === 'true'
   }
 }
 

@@ -23,11 +23,15 @@ function spawnResult (stdout, code = 0, stderr) {
 }
 
 t.beforeEach(() => {
+  process.env.DOTENVX_NO_ARMOR = 'false'
   process.env.DOTENVX_NO_VLT = 'false'
+  process.env.DOTENVX_NO_OPS = 'false'
 })
 
 t.afterEach(() => {
+  delete process.env.DOTENVX_NO_ARMOR
   delete process.env.DOTENVX_NO_VLT
+  delete process.env.DOTENVX_NO_OPS
 })
 
 t.test('statusSync and keypairSync use npm dotenvx-armor binary when available', (ct) => {
@@ -280,26 +284,28 @@ t.test('observe noops when spawn fails, status off, or forced off', async (ct) =
   ct.end()
 })
 
-t.test('forced off skips binary resolution with DOTENVX_NO_VLT', async (ct) => {
-  const execFileSync = sinon.stub()
-  const execFile = sinon.stub()
-  execFile[util.promisify.custom] = sinon.stub()
-  const spawn = sinon.stub()
+for (const envName of ['DOTENVX_NO_ARMOR', 'DOTENVX_NO_VLT', 'DOTENVX_NO_OPS']) {
+  t.test(`forced off skips binary resolution with ${envName}`, async (ct) => {
+    const execFileSync = sinon.stub()
+    const execFile = sinon.stub()
+    execFile[util.promisify.custom] = sinon.stub()
+    const spawn = sinon.stub()
 
-  const Armor = proxyquire('../../../src/lib/extensions/armor', {
-    child_process: { execFileSync, execFile, spawn }
+    const Armor = proxyquire('../../../src/lib/extensions/armor', {
+      child_process: { execFileSync, execFile, spawn }
+    })
+
+    process.env[envName] = 'true'
+    const armor = new Armor()
+    ct.equal(armor.statusSync(), 'off')
+    ct.same(armor.keypairSync('ignored'), {})
+    ct.same(await armor.keypair('ignored'), {})
+    armor.observe({ should: 'skip when forced off' })
+    ct.equal(execFileSync.callCount, 0)
+    ct.equal(spawn.callCount, 0)
+    ct.end()
   })
-
-  process.env.DOTENVX_NO_VLT = 'true'
-  const armor = new Armor()
-  ct.equal(armor.statusSync(), 'off')
-  ct.same(armor.keypairSync('ignored'), {})
-  ct.same(await armor.keypair('ignored'), {})
-  armor.observe({ should: 'skip when forced off' })
-  ct.equal(execFileSync.callCount, 0)
-  ct.equal(spawn.callCount, 0)
-  ct.end()
-})
+}
 
 t.test('status/statusSync are off when all armor, vlt, and ops binaries are unavailable', async (ct) => {
   const execFileSync = sinon.stub().throws(new Error('binary missing'))
