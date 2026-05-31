@@ -34,6 +34,34 @@ function armorBanner () {
   return `${top}\n${middle}\n${bottom}`
 }
 
+function dynamicAttempts (command, forwardedArgs) {
+  if (command === 'armor') {
+    return [
+      ['dotenvx-armor', forwardedArgs],
+      ['dotenvx-vlt', ['armor', ...forwardedArgs]],
+      ['dotenvx-ops', ['armor', ...forwardedArgs]]
+    ]
+  }
+
+  if (command === 'vlt') {
+    return [
+      ['dotenvx-armor', forwardedArgs],
+      ['dotenvx-vlt', forwardedArgs],
+      ['dotenvx-ops', forwardedArgs]
+    ]
+  }
+
+  if (command === 'ops') {
+    return [
+      ['dotenvx-armor', forwardedArgs],
+      ['dotenvx-ops', forwardedArgs],
+      ['dotenvx-vlt', forwardedArgs]
+    ]
+  }
+
+  return [[`dotenvx-${command}`, forwardedArgs]]
+}
+
 function executeDynamic (program, command, rawArgs) {
   if (!command) {
     program.outputHelp()
@@ -53,20 +81,10 @@ function executeDynamic (program, command, rawArgs) {
   const env = { ...process.env, PATH: newPath }
 
   const spawnOptions = { stdio: 'inherit', env }
-  let spawnCommand = `dotenvx-${command}`
-  let result = childProcess.spawnSync(spawnCommand, forwardedArgs, spawnOptions)
-
-  if (command === 'armor' && result.error) {
-    spawnCommand = 'dotenvx-vlt'
-    result = childProcess.spawnSync(spawnCommand, ['armor', ...forwardedArgs], spawnOptions)
-
-    if (result.error) {
-      spawnCommand = 'dotenvx-ops'
-      result = childProcess.spawnSync(spawnCommand, ['armor', ...forwardedArgs], spawnOptions)
-    }
-  } else if (command === 'ops' && result.error) {
-    spawnCommand = 'dotenvx-vlt'
-    result = childProcess.spawnSync(spawnCommand, forwardedArgs, spawnOptions)
+  let result
+  for (const [spawnCommand, spawnArgs] of dynamicAttempts(command, forwardedArgs)) {
+    result = childProcess.spawnSync(spawnCommand, spawnArgs, spawnOptions)
+    if (!result.error) break
   }
 
   if (result.error) {
