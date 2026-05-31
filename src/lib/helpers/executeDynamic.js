@@ -42,14 +42,6 @@ function armorBanner () {
 }
 
 function dynamicAttempts (command, forwardedArgs) {
-  if (command === 'armor') {
-    return [
-      ['dotenvx-armor', forwardedArgs],
-      ['dotenvx-vlt', ['armor', ...forwardedArgs]],
-      ['dotenvx-ops', ['armor', ...forwardedArgs]]
-    ]
-  }
-
   if (command === 'vlt') {
     return [
       ['dotenvx-armor', forwardedArgs],

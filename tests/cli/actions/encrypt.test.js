@@ -681,13 +681,13 @@ t.test('encrypt - --no-vlt passes noArmor true to Encrypt service', async ct => 
   ct.end()
 })
 
-t.test('encrypt - --token uses Ops even when session status is off', async ct => {
+t.test('encrypt - --token uses Armor even when session status is off', async ct => {
   let constructorArgs
-  const sessionNoOpsStub = sinon.stub().resolves(true)
+  const sessionNoArmorStub = sinon.stub().resolves(true)
 
   class SessionMock {
     async noArmor () {
-      return sessionNoOpsStub()
+      return sessionNoArmorStub()
     }
   }
 
@@ -713,7 +713,7 @@ t.test('encrypt - --token uses Ops even when session status is off', async ct =>
   await encryptWithMock.call({ opts: () => ({ token: 'token-123' }), envs: [] })
 
   t.equal(constructorArgs[4], false, 'noArmor=false when token is explicitly provided')
-  t.equal(sessionNoOpsStub.callCount, 0, 'does not query ops status when token is explicit')
+  t.equal(sessionNoArmorStub.callCount, 0, 'does not query armor status when token is explicit')
 
   ct.end()
 })
@@ -756,14 +756,14 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
 
   await encryptWithMock.call({ opts: () => ({}), envs: [] })
 
-  ct.equal(spinner.stop.callCount, 2, 'stops on Ops stderr and before final output')
+  ct.equal(spinner.stop.callCount, 2, 'stops on Armor stderr and before final output')
   ct.equal(spinner.start.callCount, 1, 'restarts after Armor keypair')
   ct.equal(spinner.start.firstCall.args[0], 'encrypting')
 
   ct.end()
 })
 
-t.test('encrypt passes memoized key storage selector when Ops is enabled', async ct => {
+t.test('encrypt passes memoized key storage selector when Armor is enabled', async ct => {
   const spinner = {
     stop: sinon.stub(),
     start: sinon.stub()
@@ -825,7 +825,7 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
   ct.end()
 })
 
-t.test('encrypt does not pass key storage selector when Ops is disabled', async ct => {
+t.test('encrypt does not pass key storage selector when Armor is disabled', async ct => {
   let constructorArgs
 
   class EncryptMock {
@@ -893,7 +893,7 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
 
   await encryptWithMock.call({ opts: () => ({ stdout: true }), envs: [] })
 
-  ct.equal(spinner.stop.callCount, 2, 'stops on Ops stderr and before stdout exit')
+  ct.equal(spinner.stop.callCount, 2, 'stops on Armor stderr and before stdout exit')
   ct.equal(spinner.start.callCount, 1, 'restarts after Armor keypair')
   ct.equal(spinner.start.firstCall.args[0], 'encrypting')
   ct.ok(processExitStub.calledWith(0), 'process.exit(0) called')

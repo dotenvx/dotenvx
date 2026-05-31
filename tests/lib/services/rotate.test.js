@@ -657,7 +657,7 @@ t.test('#run (finds .env file) with armorOn uses armor keypair and does not appe
       privateKey: 'new-private-key-from-armor'
     })
 
-    const RotateWithOpsStub = proxyquire('../../../src/lib/services/rotate', {
+    const RotateWithArmorStub = proxyquire('../../../src/lib/services/rotate', {
       './../helpers/cryptography': { ...cryptography, armorKeypair }
     })
 
@@ -665,7 +665,7 @@ t.test('#run (finds .env file) with armorOn uses armor keypair and does not appe
       { type: 'envFile', value: envFile }
     ]
 
-    const { processedEnvs } = await new RotateWithOpsStub(envs, [], [], null, false).run()
+    const { processedEnvs } = await new RotateWithArmorStub(envs, [], [], null, false).run()
 
     const p1 = processedEnvs[0]
     ct.equal(armorKeypair.callCount, 1)

@@ -29,7 +29,7 @@ function hasValidBoxShape (output) {
 function assertArmorBanner (ct, output) {
   ct.match(output, /Install one/i, 'shows install-one heading')
   ct.match(output, /\[curl -sfS https:\/\/dotenvx.sh\/armor \| sh\]/, 'uses armor curl install command')
-  ct.match(output, /\[npm i @dotenvx\/dotenvx --save\]/, 'uses npm install command')
+  ct.match(output, /\[npm i @dotenvx\/dotenvx-armor --save\]/, 'uses npm install command')
   ct.match(output, /Then/i, 'shows then heading')
   ct.match(output, /\[dotenvx armor up\]/, 'uses armor up command')
   ct.match(output, /\(sign in when prompted\)/, 'notes sign-in prompt')
@@ -452,55 +452,6 @@ t.test('executeDynamic - armor found', ct => {
   executeDynamic(program, 'armor', ['armor', 'up'])
 
   ct.ok(spawnSyncStub.calledWith('dotenvx-armor', ['up'], sinon.match.object), 'spawnSync proxies to dotenvx-armor up')
-  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
-
-  ct.end()
-})
-
-t.test('executeDynamic - armor falls back to vlt armor when armor binary is missing', ct => {
-  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
-  spawnSyncStub.onFirstCall().returns({
-    status: 1,
-    error: new Error('spawn dotenvx-armor ENOENT')
-  })
-  spawnSyncStub.onSecondCall().returns({
-    status: 0
-  })
-  const processExitStub = sinon.stub(process, 'exit')
-  const consoleLogStub = sinon.stub(console, 'log')
-
-  executeDynamic(program, 'armor', ['armor', 'up'])
-
-  ct.ok(spawnSyncStub.firstCall.calledWith('dotenvx-armor', ['up'], sinon.match.object), 'tries dotenvx-armor first')
-  ct.ok(spawnSyncStub.secondCall.calledWith('dotenvx-vlt', ['armor', 'up'], sinon.match.object), 'falls back to dotenvx-vlt armor')
-  ct.ok(consoleLogStub.notCalled, 'does not show install banner')
-  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
-
-  ct.end()
-})
-
-t.test('executeDynamic - armor falls back to ops armor when armor and vlt binaries are missing', ct => {
-  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
-  spawnSyncStub.onFirstCall().returns({
-    status: 1,
-    error: new Error('spawn dotenvx-armor ENOENT')
-  })
-  spawnSyncStub.onSecondCall().returns({
-    status: 1,
-    error: new Error('spawn dotenvx-vlt ENOENT')
-  })
-  spawnSyncStub.onThirdCall().returns({
-    status: 0
-  })
-  const processExitStub = sinon.stub(process, 'exit')
-  const consoleLogStub = sinon.stub(console, 'log')
-
-  executeDynamic(program, 'armor', ['armor', 'up'])
-
-  ct.ok(spawnSyncStub.firstCall.calledWith('dotenvx-armor', ['up'], sinon.match.object), 'tries dotenvx-armor first')
-  ct.ok(spawnSyncStub.secondCall.calledWith('dotenvx-vlt', ['armor', 'up'], sinon.match.object), 'tries dotenvx-vlt armor second')
-  ct.ok(spawnSyncStub.thirdCall.calledWith('dotenvx-ops', ['armor', 'up'], sinon.match.object), 'falls back to dotenvx-ops armor')
-  ct.ok(consoleLogStub.notCalled, 'does not show install banner')
   ct.ok(processExitStub.notCalled, 'process.exit should not be called')
 
   ct.end()

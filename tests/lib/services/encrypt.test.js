@@ -69,7 +69,7 @@ t.test('#run (no arguments)',
     const parsed = dotenvParse(processedEnvs[0].envSrc)
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'provisions public key on first encrypt')
     ct.match(parsed.OPENAI_API_KEY, /^encrypted:/, 'encrypts sample kit values on first encrypt')
-    ct.ok(fs.existsSync(path.join(tmpdir, '.env.keys')), 'creates .env.keys on first encrypt (ops off)')
+    ct.ok(fs.existsSync(path.join(tmpdir, '.env.keys')), 'creates .env.keys on first encrypt (Armor off)')
 
     process.chdir(cwd)
     ct.end()
@@ -306,7 +306,7 @@ t.test('#run (finds .env file)',
     ct.end()
   })
 
-t.test('#run (finds .env file) with ops off and no existing keys still generates .env.keys',
+t.test('#run (finds .env file) with Armor off and no existing keys still generates .env.keys',
   async ct => {
     const envFile = 'tests/monorepo/apps/frontend/.env'
     const envs = [

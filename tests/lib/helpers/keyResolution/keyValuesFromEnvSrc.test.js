@@ -79,12 +79,12 @@ t.test('#keyValuesFromEnvSrc handles empty public key in src', ct => {
 
 t.test('#keyValuesFromEnvSrc loads private key from armor when noArmor is false and only public key exists', ct => {
   const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
-  const keyValuesFromEnvSrcWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
+  const keyValuesFromEnvSrcWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
     '../cryptography/armorKeypairSync': armorKeypairSync
   })
   const src = 'DOTENV_PUBLIC_KEY="03_public"\nHELLO=World'
 
-  const result = keyValuesFromEnvSrcWithOpsStub(src, null, { noArmor: false })
+  const result = keyValuesFromEnvSrcWithArmorStub(src, null, { noArmor: false })
 
   ct.same(result, { publicKeyValue: '03_public', privateKeyValue: 'from-armor', privateKeyName: 'DOTENV_PRIVATE_KEY', privateKeySource: 'armor' })
   ct.equal(armorKeypairSync.callCount, 1)
@@ -94,12 +94,12 @@ t.test('#keyValuesFromEnvSrc loads private key from armor when noArmor is false 
 
 t.test('#keyValuesFromEnvSrc does not load private key from armor when noArmor is true', ct => {
   const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
-  const keyValuesFromEnvSrcWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
+  const keyValuesFromEnvSrcWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
     '../cryptography/armorKeypairSync': armorKeypairSync
   })
   const src = 'DOTENV_PUBLIC_KEY="03_public"\nHELLO=World'
 
-  const result = keyValuesFromEnvSrcWithOpsStub(src, null, { noArmor: true })
+  const result = keyValuesFromEnvSrcWithArmorStub(src, null, { noArmor: true })
 
   ct.same(result, { publicKeyValue: '03_public', privateKeyValue: null, privateKeyName: 'DOTENV_PRIVATE_KEY' })
   ct.equal(armorKeypairSync.callCount, 0)

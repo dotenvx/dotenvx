@@ -122,7 +122,7 @@ t.test('run --convention', async ct => {
   ct.end()
 })
 
-t.test('run --no-ops normalizes vlt off', async ct => {
+t.test('run --no-ops normalizes Armor aliases off', async ct => {
   const options = { armor: true, ops: false, vlt: true }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
@@ -146,7 +146,7 @@ t.test('run --no-ops normalizes vlt off', async ct => {
   ct.end()
 })
 
-t.test('run --no-armor normalizes vlt off', async ct => {
+t.test('run --no-armor normalizes Armor aliases off', async ct => {
   const options = { armor: false, ops: true, vlt: true }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }

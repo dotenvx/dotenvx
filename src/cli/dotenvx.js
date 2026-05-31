@@ -213,8 +213,8 @@ program.command('login', { hidden: true })
   .description('')
   .allowUnknownOption()
   .action(() => {
-    const rawArgs = ['vlt', 'login', ...process.argv.slice(3)]
-    executeDynamic(program, 'vlt', rawArgs)
+    const rawArgs = ['armor', 'login', ...process.argv.slice(3)]
+    executeDynamic(program, 'armor', rawArgs)
   })
 
 // dotenvx logout
@@ -222,8 +222,8 @@ program.command('logout', { hidden: true })
   .description('log out of your dotenvx account')
   .allowUnknownOption()
   .action(() => {
-    const rawArgs = ['vlt', 'logout', ...process.argv.slice(3)]
-    executeDynamic(program, 'vlt', rawArgs)
+    const rawArgs = ['armor', 'logout', ...process.argv.slice(3)]
+    executeDynamic(program, 'armor', rawArgs)
   })
 
 // dotenvx help

@@ -13,7 +13,7 @@ const originalDir = process.cwd()
 const node = path.resolve(which.sync('node')) // /opt/homebrew/node
 const dotenvx = `${node} ${path.join(originalDir, 'src/cli/dotenvx.js')}`
 
-function stripOpsStatus (output) {
+function stripArmorStatus (output) {
   if (!output) {
     return output
   }
@@ -38,7 +38,7 @@ function execShell (commands) {
   })
 
   return {
-    stdout: result.stdout ? stripOpsStatus(result.stdout.trim()) : null,
+    stdout: result.stdout ? stripArmorStatus(result.stdout.trim()) : null,
     stderr: result.stderr ? result.stderr.trim() : null,
     exitCode: result.status // Exit code of the command
   }

@@ -71,13 +71,13 @@ t.test('#keyValuesSync inverts public key name for custom file and reads keys fi
 
 t.test('#keyValuesSync loads private key from armor when noArmor is false and only public key exists', async ct => {
   const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
-  const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
+  const keyValuesWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
     '../cryptography/armorKeypairSync': armorKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noArmor: false })
+  const result = await keyValuesWithArmorStub('.env', { noArmor: false })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
   ct.equal(armorKeypairSync.callCount, 1)
@@ -88,13 +88,13 @@ t.test('#keyValuesSync loads private key from armor when noArmor is false and on
 
 t.test('#keyValuesSync forwards noSpinner to armor', async ct => {
   const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
-  const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
+  const keyValuesWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
     '../cryptography/armorKeypairSync': armorKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noArmor: false, noSpinner: true })
+  const result = await keyValuesWithArmorStub('.env', { noArmor: false, noSpinner: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
   ct.equal(armorKeypairSync.callCount, 1)
@@ -104,13 +104,13 @@ t.test('#keyValuesSync forwards noSpinner to armor', async ct => {
 
 t.test('#keyValuesSync does not load private key from armor when noArmor is true', async ct => {
   const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
-  const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
+  const keyValuesWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesSync', {
     '../cryptography/armorKeypairSync': armorKeypairSync
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noArmor: true })
+  const result = await keyValuesWithArmorStub('.env', { noArmor: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: null })
   ct.equal(armorKeypairSync.callCount, 0)

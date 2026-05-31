@@ -147,7 +147,7 @@ export interface DotenvConfigOptions {
   quiet?: boolean;
 
   /**
-   * Disable spinner output from child Dotenvx Ops commands.
+   * Disable spinner output from child Dotenvx Armor commands.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').config({ noSpinner: true })
