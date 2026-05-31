@@ -77,7 +77,7 @@ t.test('#keyValuesSync loads private key from armor when noArmor is false and on
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: false })
+  const result = await keyValuesWithOpsStub('.env', { noArmor: false })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
   ct.equal(armorKeypairSync.callCount, 1)
@@ -94,7 +94,7 @@ t.test('#keyValuesSync forwards noSpinner to armor', async ct => {
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: false, noSpinner: true })
+  const result = await keyValuesWithOpsStub('.env', { noArmor: false, noSpinner: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
   ct.equal(armorKeypairSync.callCount, 1)
@@ -110,7 +110,7 @@ t.test('#keyValuesSync does not load private key from armor when noArmor is true
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: true })
+  const result = await keyValuesWithOpsStub('.env', { noArmor: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: null })
   ct.equal(armorKeypairSync.callCount, 0)

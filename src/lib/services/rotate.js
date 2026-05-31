@@ -147,7 +147,7 @@ class Rotate {
       row.privateKey = newPrivateKey
 
       if (this.noArmor) {
-        // keys src only for vlt
+        // keys src only for local key storage
         envKeysSrc = append(envKeysSrc, privateKeyName, newPrivateKey) // append privateKey
         this.envKeysSources[envKeysFilepath] = envKeysSrc
         row.envKeysSrc = envKeysSrc

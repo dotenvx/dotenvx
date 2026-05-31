@@ -77,7 +77,7 @@ t.test('#keyValues loads private key from armor when noArmor is false and only p
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: false })
+  const result = await keyValuesWithOpsStub('.env', { noArmor: false })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
   ct.equal(armorKeypair.callCount, 1)
@@ -98,7 +98,7 @@ t.test('#keyValues forwards armor keypair hooks', async ct => {
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: false, keypairHooks })
+  const result = await keyValuesWithOpsStub('.env', { noArmor: false, keypairHooks })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
   ct.equal(armorKeypair.callCount, 1)
@@ -115,7 +115,7 @@ t.test('#keyValues does not load private key from armor when noArmor is true', a
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
 
-  const result = await keyValuesWithOpsStub('.env', { noVlt: true })
+  const result = await keyValuesWithOpsStub('.env', { noArmor: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: null })
   ct.equal(armorKeypair.callCount, 0)

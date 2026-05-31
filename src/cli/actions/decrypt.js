@@ -15,7 +15,7 @@ async function decrypt () {
 
   const sesh = new Session()
   const envs = this.envs
-  const noArmor = options.vlt === false || (await sesh.noArmor())
+  const noArmor = options.armor === false || (await sesh.noArmor())
 
   let errorCount = 0
 

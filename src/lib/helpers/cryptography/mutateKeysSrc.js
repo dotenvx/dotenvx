@@ -25,7 +25,7 @@ async function mutateKeysSrc ({ envFilepath, keysFilepath, privateKeyName, priva
   keysSrc = keysSrc.length > 1 ? keysSrc : `${FIRST_TIME_KEYS_SRC}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
-  await fsx.writeFileX(resolvedKeysFilepath, keysSrc) // TODO: don't write if ops
+  await fsx.writeFileX(resolvedKeysFilepath, keysSrc) // TODO: don't write if armor
 
   const envKeysFilepath = keysFilepath || path.join(path.dirname(envFilepath), path.basename(resolvedKeysFilepath))
 

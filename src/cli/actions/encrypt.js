@@ -10,19 +10,19 @@ const Session = require('../../db/session')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 function keypairSpinnerHooks (spinner) {
-  let stoppedForVlt = false
+  let stoppedForArmor = false
 
   return {
     onStderr: () => {
-      if (spinner && !stoppedForVlt) {
+      if (spinner && !stoppedForArmor) {
         spinner.stop()
-        stoppedForVlt = true
+        stoppedForArmor = true
       }
     },
     after: () => {
-      if (spinner && stoppedForVlt) {
+      if (spinner && stoppedForArmor) {
         spinner.start('encrypting')
-        stoppedForVlt = false
+        stoppedForArmor = false
       }
     }
   }
@@ -39,7 +39,7 @@ function keyStorageSelector (spinner) {
       message: 'Choose private key storage',
       choices: [
         { name: '◫ File (.env.keys)', value: 'file' },
-        { name: '⛨ Armor (dotenvx.com/armor)', value: 'armored' }
+        { name: '⛨ Armor (armor.dotenvx.com)', value: 'armored' }
       ]
     }, {
       input: process.stdin,
@@ -71,7 +71,7 @@ async function encrypt () {
 
   const sesh = new Session()
   const envs = this.envs
-  const noArmor = options.vlt === false || (!options.token && (await sesh.noArmor()))
+  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout

@@ -27,7 +27,7 @@ async function set (key, value) {
     const sesh = new Session()
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const noArmor = options.vlt === false || (await sesh.noArmor())
+    const noArmor = options.armor === false || (await sesh.noArmor())
     const noCreate = options.create === false
 
     const {

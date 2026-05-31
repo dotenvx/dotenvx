@@ -206,7 +206,7 @@ t.test('#run does not prompt for key storage when existing public key is resolve
     ct.equal(keyValues.callCount, 1)
     ct.same(keyValues.firstCall.args[1], {
       keysFilepath: null,
-      noVlt: false,
+      noArmor: false,
       keypairHooks: undefined
     })
     ct.equal(selectKeyStorage.callCount, 0)

@@ -4,8 +4,8 @@ const armorKeypairSync = require('./armorKeypairSync')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-function provisionSync ({ envSrc, envFilepath, keysFilepath, noArmor, noVlt }) {
-  noArmor = noArmor !== undefined ? noArmor !== false : noVlt !== false
+function provisionSync ({ envSrc, envFilepath, keysFilepath, noArmor }) {
+  noArmor = noArmor !== false
   const { publicKeyName, privateKeyName } = keyNames(envFilepath)
 
   let publicKey

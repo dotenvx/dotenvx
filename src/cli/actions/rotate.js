@@ -16,7 +16,7 @@ async function rotate () {
 
   const envs = this.envs
   const sesh = new Session()
-  const noArmor = options.vlt === false || (await sesh.noArmor())
+  const noArmor = options.armor === false || (await sesh.noArmor())
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {

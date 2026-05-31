@@ -136,7 +136,7 @@ t.test('provision uses Armor keypair when noArmor is false', async (ct) => {
   })
 
   const envFilepath = path.join('apps', 'api', '.env')
-  const out = await provision({ envSrc: 'HELLO=world', envFilepath, noVlt: false })
+  const out = await provision({ envSrc: 'HELLO=world', envFilepath, noArmor: false })
 
   ct.equal(out.publicKey, 'armor_pub')
   ct.equal(out.privateKey, 'armor_priv')
@@ -166,7 +166,7 @@ t.test('provision forwards token to Armor keypair when noArmor is false', async 
     }
   })
 
-  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, token: 'token-123' })
+  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, token: 'token-123' })
 
   ct.equal(armorKeypair.callCount, 1)
   ct.same(armorKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env') }])
@@ -194,7 +194,7 @@ t.test('provision forwards armor keypair hooks when noArmor is false', async (ct
     }
   })
 
-  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, keypairHooks })
+  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, keypairHooks })
 
   ct.equal(armorKeypair.callCount, 1)
   ct.same(armorKeypair.firstCall.args, [undefined, { envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
@@ -202,7 +202,7 @@ t.test('provision forwards armor keypair hooks when noArmor is false', async (ct
   ct.end()
 })
 
-t.test('provision forwards token and vlt keypair hooks when noArmor is false', async (ct) => {
+t.test('provision forwards token and armor keypair hooks when noArmor is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
   const armorKeypair = sinon.stub().resolves({ publicKey: 'armor_pub', privateKey: 'armor_priv' })
@@ -222,7 +222,7 @@ t.test('provision forwards token and vlt keypair hooks when noArmor is false', a
     }
   })
 
-  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, token: 'token-123', keypairHooks })
+  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, token: 'token-123', keypairHooks })
 
   ct.equal(armorKeypair.callCount, 1)
   ct.same(armorKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
@@ -250,7 +250,7 @@ t.test('provision uses local keypair when storage selector chooses file', async 
     }
   })
 
-  const out = await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, selectKeyStorage })
+  const out = await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, selectKeyStorage })
 
   ct.equal(selectKeyStorage.callCount, 1)
   ct.equal(localKeypair.callCount, 1)
@@ -281,7 +281,7 @@ t.test('provision uses armor keypair when storage selector chooses armored', asy
     }
   })
 
-  const out = await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, selectKeyStorage })
+  const out = await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, selectKeyStorage })
 
   ct.equal(selectKeyStorage.callCount, 1)
   ct.equal(armorKeypair.callCount, 1)
@@ -314,7 +314,7 @@ t.test('provision does not select key storage when noArmor is true', async (ct) 
     }
   })
 
-  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: true, selectKeyStorage })
+  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: true, selectKeyStorage })
 
   ct.equal(selectKeyStorage.callCount, 0)
   ct.equal(localKeypair.callCount, 1)

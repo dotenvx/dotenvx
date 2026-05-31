@@ -34,7 +34,7 @@ async function invertForPrivateKeyName (filepath) {
 
 async function keyValues (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
-  const noArmor = opts.noArmor === true || opts.noVlt === true
+  const noArmor = opts.noArmor === true
   const names = keyNames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}

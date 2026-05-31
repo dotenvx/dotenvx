@@ -136,7 +136,7 @@ t.test('provisionSync uses Armor keypair when noArmor is false', async (ct) => {
   })
 
   const envFilepath = path.join('apps', 'api', '.env')
-  const out = await provisionSync({ envSrc: 'HELLO=world', envFilepath, noVlt: false })
+  const out = await provisionSync({ envSrc: 'HELLO=world', envFilepath, noArmor: false })
 
   ct.equal(out.publicKey, 'armor_pub')
   ct.equal(out.privateKey, 'armor_priv')

@@ -812,7 +812,7 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
     message: 'Choose private key storage',
     choices: [
       { name: '◫ File (.env.keys)', value: 'file' },
-      { name: '⛨ Armor (dotenvx.com/armor)', value: 'armored' }
+      { name: '⛨ Armor (armor.dotenvx.com)', value: 'armored' }
     ]
   }, {
     input: process.stdin,
@@ -848,7 +848,7 @@ t.test('encrypt does not pass key storage selector when Ops is disabled', async 
 
   await encryptWithMock.call({ opts: () => ({ ops: false }), envs: [] })
 
-  ct.equal(constructorArgs[4], true, 'noVlt=true')
+  ct.equal(constructorArgs[4], true, 'noArmor=true')
   ct.equal(constructorArgs[7].selectKeyStorage, undefined)
 
   ct.end()
