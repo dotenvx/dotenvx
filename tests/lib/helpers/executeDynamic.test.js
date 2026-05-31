@@ -391,6 +391,71 @@ t.test('executeDynamic - ops falls back to vlt when ops binary is missing', ct =
   ct.end()
 })
 
+t.test('executeDynamic - armor found', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  const mockResult = {
+    status: 0
+  }
+  spawnSyncStub.returns(mockResult)
+  const processExitStub = sinon.stub(process, 'exit')
+
+  executeDynamic(program, 'armor', ['armor', 'up'])
+
+  ct.ok(spawnSyncStub.calledWith('dotenvx-armor', ['up'], sinon.match.object), 'spawnSync proxies to dotenvx-armor up')
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
+t.test('executeDynamic - armor falls back to vlt armor when armor binary is missing', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  spawnSyncStub.onFirstCall().returns({
+    status: 1,
+    error: new Error('spawn dotenvx-armor ENOENT')
+  })
+  spawnSyncStub.onSecondCall().returns({
+    status: 0
+  })
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+
+  executeDynamic(program, 'armor', ['armor', 'up'])
+
+  ct.ok(spawnSyncStub.firstCall.calledWith('dotenvx-armor', ['up'], sinon.match.object), 'tries dotenvx-armor first')
+  ct.ok(spawnSyncStub.secondCall.calledWith('dotenvx-vlt', ['armor', 'up'], sinon.match.object), 'falls back to dotenvx-vlt armor')
+  ct.ok(consoleLogStub.notCalled, 'does not show install banner')
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
+t.test('executeDynamic - armor falls back to ops armor when armor and vlt binaries are missing', ct => {
+  const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
+  spawnSyncStub.onFirstCall().returns({
+    status: 1,
+    error: new Error('spawn dotenvx-armor ENOENT')
+  })
+  spawnSyncStub.onSecondCall().returns({
+    status: 1,
+    error: new Error('spawn dotenvx-vlt ENOENT')
+  })
+  spawnSyncStub.onThirdCall().returns({
+    status: 0
+  })
+  const processExitStub = sinon.stub(process, 'exit')
+  const consoleLogStub = sinon.stub(console, 'log')
+
+  executeDynamic(program, 'armor', ['armor', 'up'])
+
+  ct.ok(spawnSyncStub.firstCall.calledWith('dotenvx-armor', ['up'], sinon.match.object), 'tries dotenvx-armor first')
+  ct.ok(spawnSyncStub.secondCall.calledWith('dotenvx-vlt', ['armor', 'up'], sinon.match.object), 'tries dotenvx-vlt armor second')
+  ct.ok(spawnSyncStub.thirdCall.calledWith('dotenvx-ops', ['armor', 'up'], sinon.match.object), 'falls back to dotenvx-ops armor')
+  ct.ok(consoleLogStub.notCalled, 'does not show install banner')
+  ct.ok(processExitStub.notCalled, 'process.exit should not be called')
+
+  ct.end()
+})
+
 t.test('executeDynamic - ops found with logout arg', ct => {
   const spawnSyncStub = sinon.stub(childProcess, 'spawnSync')
   const mockResult = {

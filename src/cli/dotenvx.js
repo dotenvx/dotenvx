@@ -226,15 +226,6 @@ program.command('logout', { hidden: true })
     executeDynamic(program, 'vlt', rawArgs)
   })
 
-// dotenvx armor
-program.command('armor', { hidden: true })
-  .description('ARMORED KEYS ⛨')
-  .allowUnknownOption()
-  .action((args) => {
-    const rawArgs = ['vlt', 'armor', ...process.argv.slice(3)]
-    executeDynamic(program, 'vlt', rawArgs)
-  })
-
 // dotenvx help
 program.command('help [command]')
   .description('display help for command')

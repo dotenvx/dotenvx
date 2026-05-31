@@ -52,11 +52,21 @@ function executeDynamic (program, command, rawArgs) {
   const newPath = `${binPath}:${process.env.PATH}`
   const env = { ...process.env, PATH: newPath }
 
+  const spawnOptions = { stdio: 'inherit', env }
   let spawnCommand = `dotenvx-${command}`
-  let result = childProcess.spawnSync(spawnCommand, forwardedArgs, { stdio: 'inherit', env })
-  if (command === 'ops' && result.error) {
+  let result = childProcess.spawnSync(spawnCommand, forwardedArgs, spawnOptions)
+
+  if (command === 'armor' && result.error) {
     spawnCommand = 'dotenvx-vlt'
-    result = childProcess.spawnSync(spawnCommand, forwardedArgs, { stdio: 'inherit', env })
+    result = childProcess.spawnSync(spawnCommand, ['armor', ...forwardedArgs], spawnOptions)
+
+    if (result.error) {
+      spawnCommand = 'dotenvx-ops'
+      result = childProcess.spawnSync(spawnCommand, ['armor', ...forwardedArgs], spawnOptions)
+    }
+  } else if (command === 'ops' && result.error) {
+    spawnCommand = 'dotenvx-vlt'
+    result = childProcess.spawnSync(spawnCommand, forwardedArgs, spawnOptions)
   }
 
   if (result.error) {
