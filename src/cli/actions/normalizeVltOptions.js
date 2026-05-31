@@ -1,5 +1,6 @@
 function normalizeVltOptions (options) {
-  if (options.ops === false || options.vlt === false) {
+  if (options.armor === false || options.ops === false || options.vlt === false) {
+    options.armor = false
     options.ops = false
     options.vlt = false
   }

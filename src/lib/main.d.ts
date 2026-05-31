@@ -165,20 +165,28 @@ export interface DotenvConfigOptions {
     | 'debug';
 
   /**
-   * Turn off Dotenvx Armor features. Alias for `noVlt`.
+   * Turn off Dotenvx Armor features.
    *
    * @default false
-   * @example require('@dotenvx/dotenvx').config({ noOps: true })
+   * @example require('@dotenvx/dotenvx').config({ noArmor: true })
    */
-  noOps?: boolean;
+  noArmor?: boolean;
 
   /**
-   * Turn off Dotenvx Armor features.
+   * Turn off Dotenvx Armor features. Alias for `noArmor`.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').config({ noVlt: true })
    */
   noVlt?: boolean;
+
+  /**
+   * Turn off Dotenvx Armor features. Alias for `noArmor`.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').config({ noOps: true })
+   */
+  noOps?: boolean;
 
 }
 
@@ -248,20 +256,28 @@ export interface SetOptions {
   encrypt?: boolean;
 
   /**
-   * Turn off Dotenvx Armor features. Alias for `noVlt`.
+   * Turn off Dotenvx Armor features.
    *
    * @default false
-   * @example require('@dotenvx/dotenvx').set(key, value, { noOps: true })
+   * @example require('@dotenvx/dotenvx').set(key, value, { noArmor: true })
    */
-  noOps?: boolean;
+  noArmor?: boolean;
 
   /**
-   * Turn off Dotenvx Armor features.
+   * Turn off Dotenvx Armor features. Alias for `noArmor`.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').set(key, value, { noVlt: true })
    */
   noVlt?: boolean;
+
+  /**
+   * Turn off Dotenvx Armor features. Alias for `noArmor`.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').set(key, value, { noOps: true })
+   */
+  noOps?: boolean;
 
 }
 
@@ -333,20 +349,28 @@ export interface GetOptions {
   strict?: boolean;
 
   /**
-   * Turn off Dotenvx Armor features. Alias for `noVlt`.
+   * Turn off Dotenvx Armor features.
    *
    * @default false
-   * @example require('@dotenvx/dotenvx').get('KEY', { noOps: true })
+   * @example require('@dotenvx/dotenvx').get('KEY', { noArmor: true })
    */
-  noOps?: boolean;
+  noArmor?: boolean;
 
   /**
-   * Turn off Dotenvx Armor features.
+   * Turn off Dotenvx Armor features. Alias for `noArmor`.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').get('KEY', { noVlt: true })
    */
   noVlt?: boolean;
+
+  /**
+   * Turn off Dotenvx Armor features. Alias for `noArmor`.
+   *
+   * @default false
+   * @example require('@dotenvx/dotenvx').get('KEY', { noOps: true })
+   */
+  noOps?: boolean;
 
 }
 

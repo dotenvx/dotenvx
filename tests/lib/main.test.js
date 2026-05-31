@@ -74,6 +74,21 @@ t.test('config supports noVlt option',
     ct.end()
   })
 
+t.test('config supports noArmor option',
+  ct => {
+    const stub = sinon.stub(Run.prototype, 'runSync')
+    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+    main.config({ noArmor: true })
+
+    t.ok(stub.called, 'new Run().runSync() called')
+    t.equal(stub.thisValues[0].noVlt, true, 'Run was called with noVlt true')
+
+    stub.restore()
+
+    ct.end()
+  })
+
 t.test('config supports noSpinner option',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
@@ -824,6 +839,21 @@ t.test('set supports noVlt option',
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
     main.set('KEY', 'value', { noVlt: true })
+
+    t.ok(stub.called, 'new Sets().runSync() called')
+    t.equal(stub.thisValues[0].noVlt, true, 'Sets was called with noVlt true')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('set supports noArmor option',
+  ct => {
+    const stub = sinon.stub(Sets.prototype, 'runSync')
+    stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
+
+    main.set('KEY', 'value', { noArmor: true })
 
     t.ok(stub.called, 'new Sets().runSync() called')
     t.equal(stub.thisValues[0].noVlt, true, 'Sets was called with noVlt true')
@@ -1642,6 +1672,22 @@ t.test('get supports noVlt option',
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
     const result = main.get('KEY', { noVlt: true })
+    t.equal(result, 'value')
+
+    t.ok(stub.called, 'new Get().runSync() called')
+    t.equal(stub.thisValues[0].noVlt, true, 'Get was called with noVlt true')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('get supports noArmor option',
+  ct => {
+    const stub = sinon.stub(Get.prototype, 'runSync')
+    stub.returns({ parsed: { KEY: 'value' }, errors: [] })
+
+    const result = main.get('KEY', { noArmor: true })
     t.equal(result, 'value')
 
     t.ok(stub.called, 'new Get().runSync() called')

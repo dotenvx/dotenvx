@@ -48,3 +48,13 @@ t.test('#--help hides login command', ct => {
 
   ct.end()
 })
+
+t.test('#run --help shows no-armor and hides legacy no-vlt/no-ops flags', ct => {
+  const output = execShell(`${dotenvx} run --help`)
+
+  ct.match(output, /--no-armor\b/, 'no-armor is shown')
+  ct.notMatch(output, /--no-vlt\b/, 'no-vlt is hidden')
+  ct.notMatch(output, /--no-ops\b/, 'no-ops is hidden')
+
+  ct.end()
+})
