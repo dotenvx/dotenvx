@@ -757,7 +757,7 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
   await encryptWithMock.call({ opts: () => ({}), envs: [] })
 
   ct.equal(spinner.stop.callCount, 2, 'stops on Ops stderr and before final output')
-  ct.equal(spinner.start.callCount, 1, 'restarts after Vlt keypair')
+  ct.equal(spinner.start.callCount, 1, 'restarts after Armor keypair')
   ct.equal(spinner.start.firstCall.args[0], 'encrypting')
 
   ct.end()
@@ -894,7 +894,7 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
   await encryptWithMock.call({ opts: () => ({ stdout: true }), envs: [] })
 
   ct.equal(spinner.stop.callCount, 2, 'stops on Ops stderr and before stdout exit')
-  ct.equal(spinner.start.callCount, 1, 'restarts after Vlt keypair')
+  ct.equal(spinner.start.callCount, 1, 'restarts after Armor keypair')
   ct.equal(spinner.start.firstCall.args[0], 'encrypting')
   ct.ok(processExitStub.calledWith(0), 'process.exit(0) called')
 

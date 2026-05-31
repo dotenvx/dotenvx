@@ -2,21 +2,21 @@ const t = require('tap')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-t.test('vltKeypair returns normalized keys from Vlt keypair', async (ct) => {
+t.test('armorKeypair returns normalized keys from Armor keypair', async (ct) => {
   const keypair = sinon.stub().resolves({
     public_key: 'vlt_pub_123',
     private_key: 'vlt_priv_123'
   })
 
-  function VltMock () {
+  function ArmorMock () {
     this.keypair = keypair
   }
 
-  const vltKeypair = proxyquire('../../../../src/lib/helpers/cryptography/vltKeypair', {
-    './../../extensions/vlt': VltMock
+  const armorKeypair = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypair', {
+    './../../extensions/armor': ArmorMock
   })
 
-  const out = await vltKeypair()
+  const out = await armorKeypair()
 
   ct.equal(out.publicKey, 'vlt_pub_123')
   ct.equal(out.privateKey, 'vlt_priv_123')
@@ -26,21 +26,21 @@ t.test('vltKeypair returns normalized keys from Vlt keypair', async (ct) => {
   ct.end()
 })
 
-t.test('vltKeypair forwards provided public key to Vlt keypair', async (ct) => {
+t.test('armorKeypair forwards provided public key to Armor keypair', async (ct) => {
   const keypair = sinon.stub().resolves({
     public_key: 'vlt_pub_abc',
     private_key: 'vlt_priv_abc'
   })
 
-  function VltMock () {
+  function ArmorMock () {
     this.keypair = keypair
   }
 
-  const vltKeypair = proxyquire('../../../../src/lib/helpers/cryptography/vltKeypair', {
-    './../../extensions/vlt': VltMock
+  const armorKeypair = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypair', {
+    './../../extensions/armor': ArmorMock
   })
 
-  const out = await vltKeypair('existing_pub')
+  const out = await armorKeypair('existing_pub')
 
   ct.equal(out.publicKey, 'vlt_pub_abc')
   ct.equal(out.privateKey, 'vlt_priv_abc')
@@ -49,21 +49,21 @@ t.test('vltKeypair forwards provided public key to Vlt keypair', async (ct) => {
   ct.end()
 })
 
-t.test('vltKeypair forwards token to Vlt keypair', async (ct) => {
+t.test('armorKeypair forwards token to Armor keypair', async (ct) => {
   const keypair = sinon.stub().resolves({
     public_key: 'vlt_pub_abc',
     private_key: 'vlt_priv_abc'
   })
 
-  function VltMock () {
+  function ArmorMock () {
     this.keypair = keypair
   }
 
-  const vltKeypair = proxyquire('../../../../src/lib/helpers/cryptography/vltKeypair', {
-    './../../extensions/vlt': VltMock
+  const armorKeypair = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypair', {
+    './../../extensions/armor': ArmorMock
   })
 
-  const out = await vltKeypair(undefined, { token: 'token-123' })
+  const out = await armorKeypair(undefined, { token: 'token-123' })
 
   ct.equal(out.publicKey, 'vlt_pub_abc')
   ct.equal(out.privateKey, 'vlt_priv_abc')
@@ -72,21 +72,21 @@ t.test('vltKeypair forwards token to Vlt keypair', async (ct) => {
   ct.end()
 })
 
-t.test('vltKeypair forwards env filepath to Vlt keypair', async (ct) => {
+t.test('armorKeypair forwards env filepath to Armor keypair', async (ct) => {
   const keypair = sinon.stub().resolves({
     public_key: 'vlt_pub_abc',
     private_key: 'vlt_priv_abc'
   })
 
-  function VltMock () {
+  function ArmorMock () {
     this.keypair = keypair
   }
 
-  const vltKeypair = proxyquire('../../../../src/lib/helpers/cryptography/vltKeypair', {
-    './../../extensions/vlt': VltMock
+  const armorKeypair = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypair', {
+    './../../extensions/armor': ArmorMock
   })
 
-  const out = await vltKeypair(undefined, { envFilepath: '.env.production' })
+  const out = await armorKeypair(undefined, { envFilepath: '.env.production' })
 
   ct.equal(out.publicKey, 'vlt_pub_abc')
   ct.equal(out.privateKey, 'vlt_priv_abc')
@@ -95,7 +95,7 @@ t.test('vltKeypair forwards env filepath to Vlt keypair', async (ct) => {
   ct.end()
 })
 
-t.test('vltKeypair forwards stderr hook to Vlt keypair', async (ct) => {
+t.test('armorKeypair forwards stderr hook to Armor keypair', async (ct) => {
   const hooks = {
     onStderr: sinon.stub()
   }
@@ -104,15 +104,15 @@ t.test('vltKeypair forwards stderr hook to Vlt keypair', async (ct) => {
     private_key: 'vlt_priv_abc'
   })
 
-  function VltMock () {
+  function ArmorMock () {
     this.keypair = keypair
   }
 
-  const vltKeypair = proxyquire('../../../../src/lib/helpers/cryptography/vltKeypair', {
-    './../../extensions/vlt': VltMock
+  const armorKeypair = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypair', {
+    './../../extensions/armor': ArmorMock
   })
 
-  const out = await vltKeypair(undefined, { hooks })
+  const out = await armorKeypair(undefined, { hooks })
 
   ct.equal(out.publicKey, 'vlt_pub_abc')
   ct.equal(out.privateKey, 'vlt_priv_abc')
@@ -121,7 +121,7 @@ t.test('vltKeypair forwards stderr hook to Vlt keypair', async (ct) => {
   ct.end()
 })
 
-t.test('vltKeypair brackets Vlt keypair with spinner hooks', async (ct) => {
+t.test('armorKeypair brackets Armor keypair with spinner hooks', async (ct) => {
   const hooks = {
     before: sinon.stub().resolves(),
     after: sinon.stub().resolves()
@@ -131,15 +131,15 @@ t.test('vltKeypair brackets Vlt keypair with spinner hooks', async (ct) => {
     private_key: 'vlt_priv_abc'
   })
 
-  function VltMock () {
+  function ArmorMock () {
     this.keypair = keypair
   }
 
-  const vltKeypair = proxyquire('../../../../src/lib/helpers/cryptography/vltKeypair', {
-    './../../extensions/vlt': VltMock
+  const armorKeypair = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypair', {
+    './../../extensions/armor': ArmorMock
   })
 
-  const out = await vltKeypair('existing_pub', { hooks })
+  const out = await armorKeypair('existing_pub', { hooks })
 
   ct.equal(out.publicKey, 'vlt_pub_abc')
   ct.equal(hooks.before.callCount, 1)
@@ -151,22 +151,22 @@ t.test('vltKeypair brackets Vlt keypair with spinner hooks', async (ct) => {
   ct.end()
 })
 
-t.test('vltKeypair runs after hook when Vlt keypair fails', async (ct) => {
+t.test('armorKeypair runs after hook when Armor keypair fails', async (ct) => {
   const hooks = {
     before: sinon.stub().resolves(),
     after: sinon.stub().resolves()
   }
   const keypair = sinon.stub().rejects(new Error('vlt failed'))
 
-  function VltMock () {
+  function ArmorMock () {
     this.keypair = keypair
   }
 
-  const vltKeypair = proxyquire('../../../../src/lib/helpers/cryptography/vltKeypair', {
-    './../../extensions/vlt': VltMock
+  const armorKeypair = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypair', {
+    './../../extensions/armor': ArmorMock
   })
 
-  await ct.rejects(vltKeypair('existing_pub', { hooks }), /vlt failed/)
+  await ct.rejects(armorKeypair('existing_pub', { hooks }), /vlt failed/)
 
   ct.equal(hooks.before.callCount, 1)
   ct.equal(keypair.callCount, 1)

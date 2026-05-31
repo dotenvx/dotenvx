@@ -1,6 +1,6 @@
-const Vlt = require('../../extensions/vlt')
+const Armor = require('../../extensions/armor')
 
-async function vltKeypair (existingPublicKey, options = {}) {
+async function armorKeypair (existingPublicKey, options = {}) {
   const hooks = options.hooks || {}
   if (hooks.before) await hooks.before()
 
@@ -13,7 +13,7 @@ async function vltKeypair (existingPublicKey, options = {}) {
 
   let kp
   try {
-    kp = await new Vlt().keypair(existingPublicKey, keypairOptions)
+    kp = await new Armor().keypair(existingPublicKey, keypairOptions)
   } finally {
     if (hooks.after) await hooks.after()
   }
@@ -27,4 +27,4 @@ async function vltKeypair (existingPublicKey, options = {}) {
   }
 }
 
-module.exports = vltKeypair
+module.exports = armorKeypair

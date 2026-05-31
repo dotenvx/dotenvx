@@ -70,9 +70,9 @@ t.test('#keyValues inverts public key name for custom file and reads keys file p
 })
 
 t.test('#keyValues loads private key from vlt when noVlt is false and only public key exists', async ct => {
-  const vltKeypair = sinon.stub().resolves({ privateKey: 'from-vlt' })
+  const armorKeypair = sinon.stub().resolves({ privateKey: 'from-vlt' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
-    '../cryptography/vltKeypair': vltKeypair
+    '../cryptography/armorKeypair': armorKeypair
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
@@ -80,20 +80,20 @@ t.test('#keyValues loads private key from vlt when noVlt is false and only publi
   const result = await keyValuesWithOpsStub('.env', { noVlt: false })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt', privateKeySource: 'vlt' })
-  ct.equal(vltKeypair.callCount, 1)
-  ct.equal(vltKeypair.firstCall.args[0], '<publicKey>')
-  ct.same(vltKeypair.firstCall.args[1], { envFilepath: '.env', hooks: undefined })
+  ct.equal(armorKeypair.callCount, 1)
+  ct.equal(armorKeypair.firstCall.args[0], '<publicKey>')
+  ct.same(armorKeypair.firstCall.args[1], { envFilepath: '.env', hooks: undefined })
   ct.end()
 })
 
 t.test('#keyValues forwards vlt keypair hooks', async ct => {
-  const vltKeypair = sinon.stub().resolves({ privateKey: 'from-vlt' })
+  const armorKeypair = sinon.stub().resolves({ privateKey: 'from-vlt' })
   const keypairHooks = {
     before: sinon.stub(),
     after: sinon.stub()
   }
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
-    '../cryptography/vltKeypair': vltKeypair
+    '../cryptography/armorKeypair': armorKeypair
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
@@ -101,16 +101,16 @@ t.test('#keyValues forwards vlt keypair hooks', async ct => {
   const result = await keyValuesWithOpsStub('.env', { noVlt: false, keypairHooks })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-vlt', privateKeySource: 'vlt' })
-  ct.equal(vltKeypair.callCount, 1)
-  ct.equal(vltKeypair.firstCall.args[0], '<publicKey>')
-  ct.same(vltKeypair.firstCall.args[1], { envFilepath: '.env', hooks: keypairHooks })
+  ct.equal(armorKeypair.callCount, 1)
+  ct.equal(armorKeypair.firstCall.args[0], '<publicKey>')
+  ct.same(armorKeypair.firstCall.args[1], { envFilepath: '.env', hooks: keypairHooks })
   ct.end()
 })
 
 t.test('#keyValues does not load private key from vlt when noVlt is true', async ct => {
-  const vltKeypair = sinon.stub().resolves({ privateKey: 'from-vlt' })
+  const armorKeypair = sinon.stub().resolves({ privateKey: 'from-vlt' })
   const keyValuesWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
-    '../cryptography/vltKeypair': vltKeypair
+    '../cryptography/armorKeypair': armorKeypair
   })
 
   process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
@@ -118,6 +118,6 @@ t.test('#keyValues does not load private key from vlt when noVlt is true', async
   const result = await keyValuesWithOpsStub('.env', { noVlt: true })
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: null })
-  ct.equal(vltKeypair.callCount, 0)
+  ct.equal(armorKeypair.callCount, 0)
   ct.end()
 })

@@ -1,6 +1,6 @@
 const mutateSrc = require('./mutateSrc')
 const mutateKeysSrc = require('./mutateKeysSrc')
-const vltKeypair = require('./vltKeypair')
+const armorKeypair = require('./armorKeypair')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
@@ -24,7 +24,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noVlt, token, key
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {
-    const kp = await vltKeypair(undefined, { token, envFilepath, hooks: keypairHooks })
+    const kp = await armorKeypair(undefined, { token, envFilepath, hooks: keypairHooks })
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   }

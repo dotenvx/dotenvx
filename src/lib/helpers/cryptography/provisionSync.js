@@ -1,6 +1,6 @@
 const mutateSrc = require('./mutateSrc')
 const mutateKeysSrcSync = require('./mutateKeysSrcSync')
-const vltKeypairSync = require('./vltKeypairSync')
+const armorKeypairSync = require('./armorKeypairSync')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
@@ -20,7 +20,7 @@ function provisionSync ({ envSrc, envFilepath, keysFilepath, noVlt }) {
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {
-    const kp = vltKeypairSync(undefined, { envFilepath })
+    const kp = armorKeypairSync(undefined, { envFilepath })
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   }

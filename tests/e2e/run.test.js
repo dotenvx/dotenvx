@@ -20,8 +20,8 @@ function stripOpsStatus (output) {
 
   return output
     .split('\n')
-    .filter(line => !line.match(/^\[dotenvx@.+\] ⛨ (ops|vlt): (on|off)$/))
-    .filter(line => !line.match(/^(┆ )?(ops|vlt): (on|off)$/))
+    .filter(line => !line.match(/^\[dotenvx@.+\] ⛨ (armor|ops|vlt): (on|off)$/))
+    .filter(line => !line.match(/^(┆ )?(armor|ops|vlt): (on|off)$/))
     .join('\n')
 }
 

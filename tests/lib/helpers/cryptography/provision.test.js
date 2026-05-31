@@ -9,14 +9,14 @@ t.test('provision builds env and keys for first-time setup', async (ct) => {
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_123\n',
     envKeysFilepath: path.join('apps', 'backend', '.env.keys')
   })
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_123', privateKey: 'priv_123' })
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -43,7 +43,7 @@ t.test('provision builds env and keys for first-time setup', async (ct) => {
   ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
   ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_123')
   ct.equal(localKeypair.callCount, 1)
-  ct.equal(vltKeypair.callCount, 0)
+  ct.equal(armorKeypair.callCount, 0)
 
   ct.end()
 })
@@ -55,14 +55,14 @@ t.test('provision appends to existing keys file', async (ct) => {
     keysSrc,
     envKeysFilepath: path.join('apps', '.env.keys')
   })
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_abc', privateKey: 'priv_abc' })
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -78,7 +78,7 @@ t.test('provision appends to existing keys file', async (ct) => {
   ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
   ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_abc')
   ct.equal(localKeypair.callCount, 1)
-  ct.equal(vltKeypair.callCount, 0)
+  ct.equal(armorKeypair.callCount, 0)
   ct.end()
 })
 
@@ -88,14 +88,14 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_x\n',
     envKeysFilepath: path.join('apps', 'api', '.env.keys')
   })
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_x', privateKey: 'priv_x' })
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -112,24 +112,24 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
   ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyName, 'DOTENV_PRIVATE_KEY')
   ct.equal(mutateKeysSrc.firstCall.args[0].privateKeyValue, 'priv_x')
   ct.equal(localKeypair.callCount, 1)
-  ct.equal(vltKeypair.callCount, 0)
+  ct.equal(armorKeypair.callCount, 0)
   ct.end()
 })
 
-t.test('provision uses Vlt keypair when noVlt is false', async (ct) => {
+t.test('provision uses Armor keypair when noVlt is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub().resolves({
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=vlt_priv\n',
     envKeysFilepath: path.join('apps', 'api', '.env.keys')
   })
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -140,7 +140,7 @@ t.test('provision uses Vlt keypair when noVlt is false', async (ct) => {
 
   ct.equal(out.publicKey, 'vlt_pub')
   ct.equal(out.privateKey, 'vlt_priv')
-  ct.equal(vltKeypair.callCount, 1)
+  ct.equal(armorKeypair.callCount, 1)
   ct.equal(localKeypair.callCount, 0)
   ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'vlt_pub')
   ct.equal(mutateKeysSrc.callCount, 0)
@@ -150,17 +150,17 @@ t.test('provision uses Vlt keypair when noVlt is false', async (ct) => {
   ct.end()
 })
 
-t.test('provision forwards token to Vlt keypair when noVlt is false', async (ct) => {
+t.test('provision forwards token to Armor keypair when noVlt is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -168,8 +168,8 @@ t.test('provision forwards token to Vlt keypair when noVlt is false', async (ct)
 
   await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, token: 'token-123' })
 
-  ct.equal(vltKeypair.callCount, 1)
-  ct.same(vltKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env') }])
+  ct.equal(armorKeypair.callCount, 1)
+  ct.same(armorKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env') }])
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })
@@ -177,7 +177,7 @@ t.test('provision forwards token to Vlt keypair when noVlt is false', async (ct)
 t.test('provision forwards vlt keypair hooks when noVlt is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
   const keypairHooks = {
     onStderr: sinon.stub(),
@@ -188,7 +188,7 @@ t.test('provision forwards vlt keypair hooks when noVlt is false', async (ct) =>
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -196,8 +196,8 @@ t.test('provision forwards vlt keypair hooks when noVlt is false', async (ct) =>
 
   await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, keypairHooks })
 
-  ct.equal(vltKeypair.callCount, 1)
-  ct.same(vltKeypair.firstCall.args, [undefined, { envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
+  ct.equal(armorKeypair.callCount, 1)
+  ct.same(armorKeypair.firstCall.args, [undefined, { envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })
@@ -205,7 +205,7 @@ t.test('provision forwards vlt keypair hooks when noVlt is false', async (ct) =>
 t.test('provision forwards token and vlt keypair hooks when noVlt is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
   const keypairHooks = {
     before: sinon.stub(),
@@ -216,7 +216,7 @@ t.test('provision forwards token and vlt keypair hooks when noVlt is false', asy
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -224,8 +224,8 @@ t.test('provision forwards token and vlt keypair hooks when noVlt is false', asy
 
   await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, token: 'token-123', keypairHooks })
 
-  ct.equal(vltKeypair.callCount, 1)
-  ct.same(vltKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
+  ct.equal(armorKeypair.callCount, 1)
+  ct.same(armorKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })
@@ -236,7 +236,7 @@ t.test('provision uses local keypair when storage selector chooses file', async 
     keysSrc: '# .env\nDOTENV_PRIVATE_KEY=local_priv\n',
     envKeysFilepath: path.join('apps', 'api', '.env.keys')
   })
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub', privateKey: 'local_priv' })
   const selectKeyStorage = sinon.stub().resolves('file')
 
@@ -244,7 +244,7 @@ t.test('provision uses local keypair when storage selector chooses file', async 
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -254,7 +254,7 @@ t.test('provision uses local keypair when storage selector chooses file', async 
 
   ct.equal(selectKeyStorage.callCount, 1)
   ct.equal(localKeypair.callCount, 1)
-  ct.equal(vltKeypair.callCount, 0)
+  ct.equal(armorKeypair.callCount, 0)
   ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'local_pub')
   ct.equal(mutateKeysSrc.callCount, 1)
   ct.equal(out.localPrivateKeyAdded, true)
@@ -267,7 +267,7 @@ t.test('provision uses local keypair when storage selector chooses file', async 
 t.test('provision uses vlt keypair when storage selector chooses armored', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub', privateKey: 'local_priv' })
   const selectKeyStorage = sinon.stub().resolves('armored')
 
@@ -275,7 +275,7 @@ t.test('provision uses vlt keypair when storage selector chooses armored', async
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -284,7 +284,7 @@ t.test('provision uses vlt keypair when storage selector chooses armored', async
   const out = await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noVlt: false, selectKeyStorage })
 
   ct.equal(selectKeyStorage.callCount, 1)
-  ct.equal(vltKeypair.callCount, 1)
+  ct.equal(armorKeypair.callCount, 1)
   ct.equal(localKeypair.callCount, 0)
   ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'vlt_pub')
   ct.equal(mutateKeysSrc.callCount, 0)
@@ -300,7 +300,7 @@ t.test('provision does not select key storage when noVlt is true', async (ct) =>
     keysSrc: '# .env\nDOTENV_PRIVATE_KEY=local_priv\n',
     envKeysFilepath: path.join('apps', 'api', '.env.keys')
   })
-  const vltKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
+  const armorKeypair = sinon.stub().resolves({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub', privateKey: 'local_priv' })
   const selectKeyStorage = sinon.stub().resolves('armored')
 
@@ -308,7 +308,7 @@ t.test('provision does not select key storage when noVlt is true', async (ct) =>
     './mutateSrc': mutateSrc,
     './mutateKeysSrc': mutateKeysSrc,
     './localKeypair': localKeypair,
-    './vltKeypair': vltKeypair,
+    './armorKeypair': armorKeypair,
     '../keyResolution': {
       keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
@@ -318,7 +318,7 @@ t.test('provision does not select key storage when noVlt is true', async (ct) =>
 
   ct.equal(selectKeyStorage.callCount, 0)
   ct.equal(localKeypair.callCount, 1)
-  ct.equal(vltKeypair.callCount, 0)
+  ct.equal(armorKeypair.callCount, 0)
 
   ct.end()
 })

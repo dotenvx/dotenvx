@@ -16,7 +16,7 @@ const {
 } = require('./../helpers/keyResolution')
 
 const {
-  vltKeypair,
+  armorKeypair,
   localKeypair,
   encryptValue,
   decryptKeyValue,
@@ -91,7 +91,7 @@ class Rotate {
       let envKeysSrc
 
       if (!this.noVlt) {
-        const kp = await vltKeypair()
+        const kp = await armorKeypair()
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 

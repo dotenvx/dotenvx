@@ -1,23 +1,23 @@
-const Vlt = require('./../lib/extensions/vlt')
+const Armor = require('./../lib/extensions/armor')
 const { logger } = require('./../shared/logger')
 
 class Session {
   constructor () {
-    this.vlt = new Vlt()
+    this.armor = new Armor()
   }
 
   //
-  // vlt status helpers
+  // armor status helpers
   //
   async noVlt () {
-    const status = await this.vlt.status()
-    logger.debug(`vlt: ${status}`)
+    const status = await this.armor.status()
+    logger.debug(`armor: ${status}`)
     return status === 'off'
   }
 
   noVltSync () {
-    const status = this.vlt.statusSync()
-    logger.debug(`vlt: ${status}`)
+    const status = this.armor.statusSync()
+    logger.debug(`armor: ${status}`)
     return status === 'off'
   }
 }

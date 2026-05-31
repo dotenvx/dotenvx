@@ -165,7 +165,7 @@ export interface DotenvConfigOptions {
     | 'debug';
 
   /**
-   * Turn off Dotenvx Vlt Ops features. Alias for `noVlt`.
+   * Turn off Dotenvx Armor features. Alias for `noVlt`.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').config({ noOps: true })
@@ -173,7 +173,7 @@ export interface DotenvConfigOptions {
   noOps?: boolean;
 
   /**
-   * Turn off Dotenvx Vlt Ops features.
+   * Turn off Dotenvx Armor features.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').config({ noVlt: true })
@@ -248,7 +248,7 @@ export interface SetOptions {
   encrypt?: boolean;
 
   /**
-   * Turn off Dotenvx Vlt Ops features. Alias for `noVlt`.
+   * Turn off Dotenvx Armor features. Alias for `noVlt`.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').set(key, value, { noOps: true })
@@ -256,7 +256,7 @@ export interface SetOptions {
   noOps?: boolean;
 
   /**
-   * Turn off Dotenvx Vlt Ops features.
+   * Turn off Dotenvx Armor features.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').set(key, value, { noVlt: true })
@@ -333,7 +333,7 @@ export interface GetOptions {
   strict?: boolean;
 
   /**
-   * Turn off Dotenvx Vlt Ops features. Alias for `noVlt`.
+   * Turn off Dotenvx Armor features. Alias for `noVlt`.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').get('KEY', { noOps: true })
@@ -341,7 +341,7 @@ export interface GetOptions {
   noOps?: boolean;
 
   /**
-   * Turn off Dotenvx Vlt Ops features.
+   * Turn off Dotenvx Armor features.
    *
    * @default false
    * @example require('@dotenvx/dotenvx').get('KEY', { noVlt: true })
