@@ -39,7 +39,7 @@ function keyStorageSelector (spinner) {
       message: 'Choose private key storage',
       choices: [
         { name: '◫ File (.env.keys)', value: 'file' },
-        { name: '⛨ Armor (vlt.dotenvx.com)', value: 'armored' }
+        { name: '⛨ Armor (dotenvx.com/armor)', value: 'armored' }
       ]
     }, {
       input: process.stdin,

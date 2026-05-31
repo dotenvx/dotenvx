@@ -1,7 +1,7 @@
 {
   "version": "1.69.2",
   "name": "@dotenvx/dotenvx",
-  "description": "secrets for agents–from the creator of `dotenv`",
+  "description": "a secure dotenv–from the creator of `dotenv`",
   "author": "@motdotla",
   "keywords": [
     "dotenv",

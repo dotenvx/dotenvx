@@ -2,12 +2,12 @@ const path = require('path')
 const childProcess = require('child_process')
 const { logger } = require('../../shared/logger')
 
-function vltBanner () {
+function armorBanner () {
   const lines = [
-    '                       [www.dotenvx.com/vlt]',
+    '                      [www.dotenvx.com/armor]',
     '–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––',
     '',
-    '                          Dotenvx + VLT ⛨',
+    '                          Dotenvx Armor ⛨',
     '',
     '                           ARMORED KEYS',
     '               Private keys. Off device. Under guard.',
@@ -15,7 +15,7 @@ function vltBanner () {
     '                                -',
     '',
     '                            Install one',
-    '             [curl -sfS https://dotenvx.sh/vlt | sh]',
+    '            [curl -sfS https://dotenvx.sh/armor | sh]',
     '                 [npm i @dotenvx/dotenvx --save]',
     '',
     '                                -',
@@ -71,9 +71,11 @@ function executeDynamic (program, command, rawArgs) {
 
   if (result.error) {
     if (command === 'vlt') {
-      console.log(vltBanner())
+      console.log(armorBanner())
     } else if (command === 'ops') {
-      console.log(vltBanner())
+      console.log(armorBanner())
+    } else if (command === 'armor') {
+      console.log(armorBanner())
     } else {
       logger.info(`error: unknown command '${command}'`)
     }

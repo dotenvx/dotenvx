@@ -43,7 +43,7 @@ program
     setLogLevel(options)
   })
 
-// for dynamic loading of dotenvx-vlt, etc
+// for dynamic loading of dotenvx-armor, etc
 program
   .argument('[command]', 'dynamic command')
   .argument('[args...]', 'dynamic command arguments')
@@ -131,7 +131,7 @@ program.command('encrypt')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--stdout', 'send to stdout')
-  .option('--token <token>', 'set VLT ⛨ token')
+  .option('--token <token>', 'set Armor ⛨ token')
   .option('--no-create', 'do not create .env file(s) when missing')
   .option('--no-armor', 'disable dotenvx-armor features')
   .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
@@ -242,10 +242,10 @@ program.command('help [command]')
     }
   })
 
-// dotenvx vlt
+// dotenvx armor
 program.addHelpText('after', ' ')
 program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  vlt                      ⛨ ARMORED KEYS [www.dotenvx.com/vlt]')
+program.addHelpText('after', '  armor                    ⛨ ARMORED KEYS [www.dotenvx.com/armor]')
 program.addHelpText('after', '  ext                      ⊕ extensions')
 
 // dotenvx ext

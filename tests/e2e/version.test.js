@@ -24,19 +24,12 @@ t.test('#--version', ct => {
   ct.end()
 })
 
-t.test('#--help hides armor alias', ct => {
+t.test('#--help shows armor advanced command', ct => {
   const output = execShell(`${dotenvx} --help`)
 
-  ct.notMatch(output, /\barmor\b/, 'armor alias is hidden from help output')
-
-  ct.end()
-})
-
-t.test('#--help shows vlt advanced command', ct => {
-  const output = execShell(`${dotenvx} --help`)
-
-  ct.match(output, /vlt\s+⛨ ARMORED KEYS \[www\.dotenvx\.com\/vlt\]/, 'vlt advanced command is shown')
-  ct.notMatch(output, /ops\s+⛨ ARMORED KEYS \[www\.dotenvx\.com\/vlt\]/, 'ops advanced command is not shown')
+  ct.match(output, /armor\s+⛨ ARMORED KEYS \[www\.dotenvx\.com\/armor\]/, 'armor advanced command is shown')
+  ct.notMatch(output, /vlt\s+⛨ ARMORED KEYS/, 'vlt advanced command is not shown')
+  ct.notMatch(output, /ops\s+⛨ ARMORED KEYS/, 'ops advanced command is not shown')
 
   ct.end()
 })
