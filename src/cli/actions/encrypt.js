@@ -7,7 +7,7 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
-const normalizeVltOptions = require('./normalizeVltOptions')
+const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 function keypairSpinnerHooks (spinner) {
   let stoppedForVlt = false
@@ -64,14 +64,14 @@ function encryptOptions (spinner, noVlt) {
 }
 
 async function encrypt () {
-  const options = normalizeVltOptions(this.opts())
+  const options = normalizeArmorOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const sesh = new Session()
   const envs = this.envs
-  const noVlt = options.vlt === false || (!options.token && (await sesh.noVlt()))
+  const noVlt = options.vlt === false || (!options.token && (await sesh.noArmor()))
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout

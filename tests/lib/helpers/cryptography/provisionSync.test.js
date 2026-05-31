@@ -9,7 +9,7 @@ t.test('provisionSync builds env and keys for first-time setup', async (ct) => {
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_123\n',
     envKeysFilepath: path.join('apps', 'backend', '.env.keys')
   })
-  const armorKeypairSync = sinon.stub().returns({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
+  const armorKeypairSync = sinon.stub().returns({ publicKey: 'armor_pub_unused', privateKey: 'armor_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_123', privateKey: 'priv_123' })
 
   const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
@@ -55,7 +55,7 @@ t.test('provisionSync appends to existing keys file', async (ct) => {
     keysSrc,
     envKeysFilepath: path.join('apps', '.env.keys')
   })
-  const armorKeypairSync = sinon.stub().returns({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
+  const armorKeypairSync = sinon.stub().returns({ publicKey: 'armor_pub_unused', privateKey: 'armor_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_abc', privateKey: 'priv_abc' })
 
   const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
@@ -88,7 +88,7 @@ t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
     keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=priv_x\n',
     envKeysFilepath: path.join('apps', 'api', '.env.keys')
   })
-  const armorKeypairSync = sinon.stub().returns({ publicKey: 'vlt_pub_unused', privateKey: 'vlt_priv_unused' })
+  const armorKeypairSync = sinon.stub().returns({ publicKey: 'armor_pub_unused', privateKey: 'armor_priv_unused' })
   const localKeypair = sinon.stub().returns({ publicKey: 'pub_x', privateKey: 'priv_x' })
 
   const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
@@ -119,10 +119,10 @@ t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
 t.test('provisionSync uses Armor keypair when noVlt is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrcSync = sinon.stub().returns({
-    keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=vlt_priv\n',
+    keysSrc: '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/\n# .env\nDOTENV_PRIVATE_KEY=armor_priv\n',
     envKeysFilepath: path.join('apps', 'api', '.env.keys')
   })
-  const armorKeypairSync = sinon.stub().returns({ publicKey: 'vlt_pub', privateKey: 'vlt_priv' })
+  const armorKeypairSync = sinon.stub().returns({ publicKey: 'armor_pub', privateKey: 'armor_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
 
   const provisionSync = proxyquire('../../../../src/lib/helpers/cryptography/provisionSync', {
@@ -138,12 +138,12 @@ t.test('provisionSync uses Armor keypair when noVlt is false', async (ct) => {
   const envFilepath = path.join('apps', 'api', '.env')
   const out = await provisionSync({ envSrc: 'HELLO=world', envFilepath, noVlt: false })
 
-  ct.equal(out.publicKey, 'vlt_pub')
-  ct.equal(out.privateKey, 'vlt_priv')
+  ct.equal(out.publicKey, 'armor_pub')
+  ct.equal(out.privateKey, 'armor_priv')
   ct.equal(armorKeypairSync.callCount, 1)
   ct.same(armorKeypairSync.firstCall.args, [undefined, { envFilepath }])
   ct.equal(localKeypair.callCount, 0)
-  ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'vlt_pub')
+  ct.equal(mutateSrc.firstCall.args[0].publicKeyValue, 'armor_pub')
   ct.equal(mutateKeysSrcSync.callCount, 0)
   ct.equal(out.localPrivateKeyAdded, false)
   ct.equal(out.keysSrc, undefined)

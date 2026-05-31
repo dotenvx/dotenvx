@@ -9,13 +9,13 @@ class Session {
   //
   // armor status helpers
   //
-  async noVlt () {
+  async noArmor () {
     const status = await this.armor.status()
     logger.debug(`armor: ${status}`)
     return status === 'off'
   }
 
-  noVltSync () {
+  noArmorSync () {
     const status = this.armor.statusSync()
     logger.debug(`armor: ${status}`)
     return status === 'off'

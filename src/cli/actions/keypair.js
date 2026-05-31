@@ -3,10 +3,10 @@ const { logger } = require('./../../shared/logger')
 const Keypair = require('./../../lib/services/keypair')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const normalizeVltOptions = require('./normalizeVltOptions')
+const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 async function keypair (key) {
-  const options = normalizeVltOptions(this.opts())
+  const options = normalizeArmorOptions(this.opts())
   const spinner = await createSpinner({ ...options, text: 'retrieving' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -17,7 +17,7 @@ async function keypair (key) {
   const prettyPrint = options.prettyPrint || options.pp
 
   const sesh = new Session()
-  const noVlt = options.vlt === false || await sesh.noVlt()
+  const noVlt = options.vlt === false || await sesh.noArmor()
   const keypairs = await new Keypair(options.envFile, options.envKeysFile, noVlt).run()
   const results = key ? keypairs[key] : keypairs
 

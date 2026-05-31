@@ -55,7 +55,7 @@ function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
   if (!noVlt && !privateKeyValue && publicKeyValue && publicKeyValue.length > 0) {
     const kp = armorKeypairSync(publicKeyValue)
     privateKeyValue = kp.privateKey
-    privateKeySource = 'vlt'
+    privateKeySource = 'armor'
   }
 
   const result = {

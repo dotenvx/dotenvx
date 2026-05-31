@@ -4,8 +4,8 @@ const proxyquire = require('proxyquire')
 
 t.test('armorKeypairSync returns normalized keys from Armor keypair', async (ct) => {
   const keypairSync = sinon.stub().returns({
-    public_key: 'vlt_pub_123',
-    private_key: 'vlt_priv_123'
+    public_key: 'armor_pub_123',
+    private_key: 'armor_priv_123'
   })
 
   function ArmorMock () {
@@ -18,8 +18,8 @@ t.test('armorKeypairSync returns normalized keys from Armor keypair', async (ct)
 
   const out = armorKeypairSync()
 
-  ct.equal(out.publicKey, 'vlt_pub_123')
-  ct.equal(out.privateKey, 'vlt_priv_123')
+  ct.equal(out.publicKey, 'armor_pub_123')
+  ct.equal(out.privateKey, 'armor_priv_123')
   ct.equal(keypairSync.callCount, 1)
   ct.equal(keypairSync.firstCall.args.length, 2)
   ct.equal(keypairSync.firstCall.args[0], undefined)
@@ -28,8 +28,8 @@ t.test('armorKeypairSync returns normalized keys from Armor keypair', async (ct)
 
 t.test('armorKeypairSync forwards provided public key to Armor keypair', async (ct) => {
   const keypairSync = sinon.stub().returns({
-    public_key: 'vlt_pub_abc',
-    private_key: 'vlt_priv_abc'
+    public_key: 'armor_pub_abc',
+    private_key: 'armor_priv_abc'
   })
 
   function ArmorMock () {
@@ -42,8 +42,8 @@ t.test('armorKeypairSync forwards provided public key to Armor keypair', async (
 
   const out = armorKeypairSync('existing_pub')
 
-  ct.equal(out.publicKey, 'vlt_pub_abc')
-  ct.equal(out.privateKey, 'vlt_priv_abc')
+  ct.equal(out.publicKey, 'armor_pub_abc')
+  ct.equal(out.privateKey, 'armor_priv_abc')
   ct.equal(keypairSync.callCount, 1)
   ct.equal(keypairSync.firstCall.args[0], 'existing_pub')
   ct.end()
@@ -51,8 +51,8 @@ t.test('armorKeypairSync forwards provided public key to Armor keypair', async (
 
 t.test('armorKeypairSync forwards options to Armor keypair', async (ct) => {
   const keypairSync = sinon.stub().returns({
-    public_key: 'vlt_pub_abc',
-    private_key: 'vlt_priv_abc'
+    public_key: 'armor_pub_abc',
+    private_key: 'armor_priv_abc'
   })
 
   function ArmorMock () {
@@ -65,7 +65,7 @@ t.test('armorKeypairSync forwards options to Armor keypair', async (ct) => {
 
   const out = armorKeypairSync('existing_pub', { noSpinner: true })
 
-  ct.equal(out.publicKey, 'vlt_pub_abc')
+  ct.equal(out.publicKey, 'armor_pub_abc')
   ct.equal(keypairSync.callCount, 1)
   ct.same(keypairSync.firstCall.args, ['existing_pub', { noSpinner: true }])
   ct.end()

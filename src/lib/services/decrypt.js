@@ -81,7 +81,7 @@ class Decrypt {
 
       row.privateKey = privateKeyValue
       row.privateKeySource = privateKeySource
-      row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+      row.armoredPrivateKeyUsed = privateKeySource === 'armor'
       row.privateKeyName = privateKeyName
       row.changed = false // track possible changes
 

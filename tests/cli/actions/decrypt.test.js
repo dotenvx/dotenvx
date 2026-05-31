@@ -532,7 +532,7 @@ t.test('decrypt - spinner stop is called for stdout/success/catch flows', async 
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return sessionStub()
     }
   }

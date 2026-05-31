@@ -77,8 +77,8 @@ t.test('#keyValuesFromEnvSrc handles empty public key in src', ct => {
   ct.end()
 })
 
-t.test('#keyValuesFromEnvSrc loads private key from vlt when noVlt is false and only public key exists', ct => {
-  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
+t.test('#keyValuesFromEnvSrc loads private key from armor when noVlt is false and only public key exists', ct => {
+  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
   const keyValuesFromEnvSrcWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
     '../cryptography/armorKeypairSync': armorKeypairSync
   })
@@ -86,14 +86,14 @@ t.test('#keyValuesFromEnvSrc loads private key from vlt when noVlt is false and 
 
   const result = keyValuesFromEnvSrcWithOpsStub(src, null, { noVlt: false })
 
-  ct.same(result, { publicKeyValue: '03_public', privateKeyValue: 'from-vlt', privateKeyName: 'DOTENV_PRIVATE_KEY', privateKeySource: 'vlt' })
+  ct.same(result, { publicKeyValue: '03_public', privateKeyValue: 'from-armor', privateKeyName: 'DOTENV_PRIVATE_KEY', privateKeySource: 'armor' })
   ct.equal(armorKeypairSync.callCount, 1)
   ct.equal(armorKeypairSync.firstCall.args[0], '03_public')
   ct.end()
 })
 
-t.test('#keyValuesFromEnvSrc does not load private key from vlt when noVlt is true', ct => {
-  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-vlt' })
+t.test('#keyValuesFromEnvSrc does not load private key from armor when noVlt is true', ct => {
+  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
   const keyValuesFromEnvSrcWithOpsStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
     '../cryptography/armorKeypairSync': armorKeypairSync
   })

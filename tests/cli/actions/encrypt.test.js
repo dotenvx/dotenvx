@@ -686,7 +686,7 @@ t.test('encrypt - --token uses Ops even when session status is off', async ct =>
   const sessionNoOpsStub = sinon.stub().resolves(true)
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return sessionNoOpsStub()
     }
   }
@@ -727,7 +727,7 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
   let constructorArgs
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }
@@ -775,7 +775,7 @@ t.test('encrypt passes memoized key storage selector when Ops is enabled', async
   let secondSelected
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }
@@ -864,7 +864,7 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
   let constructorArgs
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }
@@ -909,7 +909,7 @@ t.test('encrypt - spinner stop is called for stdout/success/catch flows', async 
   const processExitStub = sinon.stub(process, 'exit')
 
   class SessionMock {
-    async noVlt () {
+    async noArmor () {
       return sessionStub()
     }
   }

@@ -324,7 +324,7 @@ const keypair = function (envFile, key, envKeysFile = null, noVlt = false) {
 
 function resolveNoVlt (options = {}) {
   const sesh = new Session()
-  return options.noArmor === true || options.noVlt === true || options.noOps === true || sesh.noVltSync()
+  return options.noArmor === true || options.noVlt === true || options.noOps === true || sesh.noArmorSync()
 }
 
 module.exports = {

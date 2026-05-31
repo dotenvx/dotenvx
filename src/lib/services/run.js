@@ -108,7 +108,7 @@ class Run {
       row.privateKey = privateKeyValue
       if (privateKeySource) {
         row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
       }
       row.parsed = parsed
       row.errors = errors
@@ -158,7 +158,7 @@ class Run {
       row.privateKey = privateKeyValue
       if (privateKeySource) {
         row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
       }
       row.src = src
       row.parsed = parsed
@@ -211,7 +211,7 @@ class Run {
       row.privateKey = privateKeyValue
       if (privateKeySource) {
         row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'vlt'
+        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
       }
       row.src = src
       row.parsed = parsed

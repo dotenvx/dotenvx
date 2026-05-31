@@ -75,7 +75,7 @@ async function keyValues (filepath, opts = {}) {
   if (!noVlt && !privateKey && publicKey && publicKey.length > 0) {
     const kp = await armorKeypair(publicKey, { envFilepath: filepath, hooks: opts.keypairHooks })
     privateKey = kp.privateKey
-    privateKeySource = 'vlt'
+    privateKeySource = 'armor'
   }
 
   const result = {

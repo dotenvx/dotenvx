@@ -78,7 +78,7 @@ t.test('run passes spinner text handoff hooks to Run service', async ct => {
     }
   }
   class SessionStub {
-    async noVlt () {
+    async noArmor () {
       return false
     }
   }

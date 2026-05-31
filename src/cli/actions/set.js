@@ -5,10 +5,10 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 const Sets = require('./../../lib/services/sets')
-const normalizeVltOptions = require('./normalizeVltOptions')
+const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 async function set (key, value) {
-  const options = normalizeVltOptions(this.opts())
+  const options = normalizeArmorOptions(this.opts())
 
   let encrypt = true
   let settingMessage = 'encrypting'
@@ -27,7 +27,7 @@ async function set (key, value) {
     const sesh = new Session()
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const noVlt = options.vlt === false || (await sesh.noVlt())
+    const noVlt = options.vlt === false || (await sesh.noArmor())
     const noCreate = options.create === false
 
     const {

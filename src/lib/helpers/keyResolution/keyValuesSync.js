@@ -80,7 +80,7 @@ function keyValuesSync (filepath, opts = {}) {
 
     const kp = armorKeypairSync(publicKey, armorOptions)
     privateKey = kp.privateKey
-    privateKeySource = 'vlt'
+    privateKeySource = 'armor'
   }
 
   const result = {

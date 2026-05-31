@@ -1,4 +1,4 @@
-function normalizeVltOptions (options) {
+function normalizeArmorOptions (options) {
   if (options.armor === false || options.ops === false || options.vlt === false) {
     options.armor = false
     options.ops = false
@@ -8,4 +8,4 @@ function normalizeVltOptions (options) {
   return options
 }
 
-module.exports = normalizeVltOptions
+module.exports = normalizeArmorOptions
