@@ -79,7 +79,7 @@ t.test('run passes spinner text handoff hooks to Run service', async ct => {
   }
   class SessionStub {
     async noArmor () {
-      return false
+      return true
     }
   }
   const runWithStubs = proxyquire('../../../src/cli/actions/run', {
@@ -97,6 +97,45 @@ t.test('run passes spinner text handoff hooks to Run service', async ct => {
   ct.equal(spinner.stop.callCount, 1)
   ct.equal(spinner.start.callCount, 1)
   ct.equal(spinner.start.firstCall.args[0], 'injecting')
+  ct.equal(loggerSuccessStub.callCount, 1)
+  ct.end()
+})
+
+t.test('run --token passes Armor token to Run service', async ct => {
+  let runArgs
+  class RunStub {
+    constructor (...args) {
+      runArgs = args
+    }
+
+    async run () {
+      return {
+        processedEnvs: [],
+        readableStrings: [],
+        readableFilepaths: [],
+        uniqueInjectedKeys: []
+      }
+    }
+  }
+  class SessionStub {
+    async noArmor () {
+      return false
+    }
+  }
+  const runWithStubs = proxyquire('../../../src/cli/actions/run', {
+    './../../lib/helpers/executeCommand': async () => true,
+    './../../lib/services/run': RunStub,
+    '../../lib/helpers/createSpinner': async () => null,
+    '../../db/session': SessionStub
+  })
+  const loggerSuccessStub = sinon.stub(logger, 'success')
+  const fakeContext = { opts: () => ({ token: 'token-123' }), args: ['echo', ''], envs: [] }
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--token', 'token-123', '--', 'echo', ''])
+
+  await runWithStubs.call(fakeContext)
+
+  ct.equal(runArgs[4], false)
+  ct.equal(runArgs[5].token, 'token-123')
   ct.equal(loggerSuccessStub.callCount, 1)
   ct.end()
 })

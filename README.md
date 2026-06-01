@@ -1287,6 +1287,15 @@ $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 ```
 
 </details>
+<details><summary>`run --token`</summary><br>
+
+Set Armor ⛨ token for retrieving armored private keys.
+
+```sh
+$ dotenvx run --token "$DOTENVX_ARMOR_TOKEN" -- yourcommand
+```
+
+</details>
 <details><summary>`run --no-armor`</summary><br>
 
 Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features.

@@ -73,7 +73,11 @@ async function keyValues (filepath, opts = {}) {
 
   // armor
   if (!noArmor && !privateKey && publicKey && publicKey.length > 0) {
-    const kp = await armorKeypair(publicKey, { envFilepath: filepath, hooks: opts.keypairHooks })
+    const armorOptions = { envFilepath: filepath, hooks: opts.keypairHooks }
+    if (opts.token) {
+      armorOptions.token = opts.token
+    }
+    const kp = await armorKeypair(publicKey, armorOptions)
     privateKey = kp.privateKey
     privateKeySource = 'armor'
   }

@@ -22,7 +22,7 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const noArmor = options.armor === false || (await sesh.noArmor())
+  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
@@ -55,6 +55,7 @@ async function run () {
       readableFilepaths,
       uniqueInjectedKeys
     } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
+      token: options.token,
       keypairHooks: {
         after: () => {
           if (spinner) spinner.start('injecting')
