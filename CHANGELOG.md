@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.70.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.71.0...main)
+
+## [1.71.0](https://github.com/dotenvx/dotenvx/compare/v1.70.0...v1.71.0) (2026-06-01)
+
+### Added
+
+* Add optional automation `--token` support for Armor ⛨ users ([#831](https://github.com/dotenvx/dotenvx/pull/831))
 
 ## [1.70.0](https://github.com/dotenvx/dotenvx/compare/v1.69.2...v1.70.0) (2026-05-31)
 
