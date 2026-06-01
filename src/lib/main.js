@@ -60,7 +60,8 @@ const config = function (options = {}) {
       readableFilepaths,
       uniqueInjectedKeys
     } = new Run(envs, overload, processEnv, envKeysFile, noArmor, {
-      noSpinner: options.noSpinner
+      noSpinner: options.noSpinner,
+      token: options.token
     }).runSync()
 
     let lastError
@@ -324,7 +325,7 @@ const keypair = function (envFile, key, envKeysFile = null, noArmor = false) {
 
 function resolveNoArmor (options = {}) {
   const sesh = new Session()
-  return options.noArmor === true || options.noVlt === true || options.noOps === true || sesh.noArmorSync()
+  return options.noArmor === true || options.noVlt === true || options.noOps === true || (!options.token && sesh.noArmorSync())
 }
 
 module.exports = {

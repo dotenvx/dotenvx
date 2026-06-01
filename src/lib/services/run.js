@@ -24,6 +24,7 @@ class Run {
     this.envKeysFilepath = envKeysFilepath
     this.noArmor = noArmor
     this.noSpinner = options.noSpinner
+    this.token = options.token
     this.keypairHooks = options.keypairHooks
 
     this.processedEnvs = []
@@ -95,7 +96,7 @@ class Run {
         privateKeyName: resolvedPrivateKeyName,
         privateKeyValue,
         privateKeySource
-      } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor, processEnv: this.processEnv })
+      } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor, processEnv: this.processEnv, token: this.token })
 
       const {
         parsed,
@@ -144,7 +145,8 @@ class Run {
       const { privateKeyValue, privateKeySource } = keyValuesSync(filepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
-        noSpinner: this.noSpinner
+        noSpinner: this.noSpinner,
+        token: this.token
       })
 
       const {
@@ -197,6 +199,7 @@ class Run {
       const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
+        token: this.token,
         keypairHooks: this.keypairHooks
       })
 

@@ -713,6 +713,55 @@ t.test('#run marks armored private key source for env string and env file paths'
   ct.end()
 })
 
+t.test('#run forwards Armor token to key resolution', async ct => {
+  const src = 'HELLO=world'
+  const calls = []
+  const keyResolution = {
+    keyNames: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+    keyValuesFromEnvSrc: (env, privateKeyName, opts) => {
+      calls.push(['env', opts])
+      return {
+        privateKeyName: 'DOTENV_PRIVATE_KEY',
+        privateKeyValue: null
+      }
+    },
+    keyValuesSync: (filepath, opts) => {
+      calls.push(['sync', opts])
+      return {
+        privateKeyValue: null
+      }
+    },
+    keyValues: async (filepath, opts) => {
+      calls.push(['async', opts])
+      return {
+        privateKeyValue: null
+      }
+    }
+  }
+  const RunWithToken = proxyquire('../../../src/lib/services/run', {
+    './../helpers/detectEncoding': async () => 'utf8',
+    './../helpers/detectEncodingSync': () => 'utf8',
+    './../helpers/fsx': {
+      readFileX: async () => src,
+      readFileXSync: () => src
+    },
+    './../helpers/keyResolution': keyResolution
+  })
+  const options = { token: 'token-123' }
+
+  await new RunWithToken([{ type: 'env', value: src }], false, {}, null, false, options).run()
+  new RunWithToken([{ type: 'envFile', value: '.env' }], false, {}, null, false, options).runSync()
+  await new RunWithToken([{ type: 'envFile', value: '.env' }], false, {}, null, false, options).run()
+
+  ct.equal(calls[0][0], 'env')
+  ct.equal(calls[0][1].token, 'token-123')
+  ct.equal(calls[1][0], 'sync')
+  ct.equal(calls[1][1].token, 'token-123')
+  ct.equal(calls[2][0], 'async')
+  ct.equal(calls[2][1].token, 'token-123')
+  ct.end()
+})
+
 t.test('#run (with envs as string and errors somehow from inject)',
   async ct => {
     const cwd = process.cwd()

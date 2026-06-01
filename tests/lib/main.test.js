@@ -13,6 +13,7 @@ const Get = require('../../src/lib/services/get')
 const Keypair = require('../../src/lib/services/keypair')
 const Doctor = require('../../src/lib/services/doctor')
 const Genexample = require('../../src/lib/services/genexample')
+const Session = require('../../src/db/session')
 const Errors = require('../../src/lib/helpers/errors')
 
 const fsx = require('../../src/lib/helpers/fsx')
@@ -98,6 +99,23 @@ t.test('config supports noSpinner option',
 
     t.ok(stub.called, 'new Run().runSync() called')
     t.equal(stub.thisValues[0].noSpinner, true, 'Run was called with noSpinner true')
+
+    stub.restore()
+
+    ct.end()
+  })
+
+t.test('config supports token option',
+  ct => {
+    const stub = sinon.stub(Run.prototype, 'runSync')
+    sinon.stub(Session.prototype, 'noArmorSync').returns(true)
+    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+
+    main.config({ token: 'token-123' })
+
+    t.ok(stub.called, 'new Run().runSync() called')
+    t.equal(stub.thisValues[0].noArmor, false, 'Run was called with Armor enabled')
+    t.equal(stub.thisValues[0].token, 'token-123', 'Run was called with Armor token')
 
     stub.restore()
 

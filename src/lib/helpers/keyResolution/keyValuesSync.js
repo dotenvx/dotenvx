@@ -74,6 +74,9 @@ function keyValuesSync (filepath, opts = {}) {
   // armor
   if (!noArmor && !privateKey && publicKey && publicKey.length > 0) {
     const armorOptions = { envFilepath: filepath }
+    if (opts.token) {
+      armorOptions.token = opts.token
+    }
     if (opts.noSpinner) {
       armorOptions.noSpinner = true
     }

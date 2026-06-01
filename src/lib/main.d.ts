@@ -154,6 +154,13 @@ export interface DotenvConfigOptions {
    */
   noSpinner?: boolean;
 
+  /**
+   * Set Armor token.
+   *
+   * @example require('@dotenvx/dotenvx').config({ token: process.env.DOTENVX_ARMOR_TOKEN })
+   */
+  token?: string;
+
   logLevel?:
     | 'error'
     | 'warn'
