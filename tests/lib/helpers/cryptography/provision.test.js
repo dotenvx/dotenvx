@@ -174,15 +174,11 @@ t.test('provision forwards token to Armor keypair when noArmor is false', async 
   ct.end()
 })
 
-t.test('provision forwards armor keypair hooks when noArmor is false', async (ct) => {
+t.test('provision forwards token when noArmor is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
   const armorKeypair = sinon.stub().resolves({ publicKey: 'armor_pub', privateKey: 'armor_priv' })
   const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
-  const keypairHooks = {
-    onStderr: sinon.stub(),
-    after: sinon.stub()
-  }
 
   const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
     './mutateSrc': mutateSrc,
@@ -194,38 +190,10 @@ t.test('provision forwards armor keypair hooks when noArmor is false', async (ct
     }
   })
 
-  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, keypairHooks })
+  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, token: 'token-123' })
 
   ct.equal(armorKeypair.callCount, 1)
-  ct.same(armorKeypair.firstCall.args, [undefined, { envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
-  ct.equal(localKeypair.callCount, 0)
-  ct.end()
-})
-
-t.test('provision forwards token and armor keypair hooks when noArmor is false', async (ct) => {
-  const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
-  const mutateKeysSrc = sinon.stub()
-  const armorKeypair = sinon.stub().resolves({ publicKey: 'armor_pub', privateKey: 'armor_priv' })
-  const localKeypair = sinon.stub().returns({ publicKey: 'local_pub_unused', privateKey: 'local_priv_unused' })
-  const keypairHooks = {
-    before: sinon.stub(),
-    after: sinon.stub()
-  }
-
-  const provision = proxyquire('../../../../src/lib/helpers/cryptography/provision', {
-    './mutateSrc': mutateSrc,
-    './mutateKeysSrc': mutateKeysSrc,
-    './localKeypair': localKeypair,
-    './armorKeypair': armorKeypair,
-    '../keyResolution': {
-      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
-    }
-  })
-
-  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, token: 'token-123', keypairHooks })
-
-  ct.equal(armorKeypair.callCount, 1)
-  ct.same(armorKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env'), hooks: keypairHooks }])
+  ct.same(armorKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env') }])
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })

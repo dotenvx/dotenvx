@@ -82,28 +82,7 @@ t.test('#keyValues loads private key from armor when noArmor is false and only p
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
   ct.equal(armorKeypair.callCount, 1)
   ct.equal(armorKeypair.firstCall.args[0], '<publicKey>')
-  ct.same(armorKeypair.firstCall.args[1], { envFilepath: '.env', hooks: undefined })
-  ct.end()
-})
-
-t.test('#keyValues forwards armor keypair hooks', async ct => {
-  const armorKeypair = sinon.stub().resolves({ privateKey: 'from-armor' })
-  const keypairHooks = {
-    before: sinon.stub(),
-    after: sinon.stub()
-  }
-  const keyValuesWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValues', {
-    '../cryptography/armorKeypair': armorKeypair
-  })
-
-  process.env.DOTENV_PUBLIC_KEY = '<publicKey>'
-
-  const result = await keyValuesWithArmorStub('.env', { noArmor: false, keypairHooks })
-
-  ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
-  ct.equal(armorKeypair.callCount, 1)
-  ct.equal(armorKeypair.firstCall.args[0], '<publicKey>')
-  ct.same(armorKeypair.firstCall.args[1], { envFilepath: '.env', hooks: keypairHooks })
+  ct.same(armorKeypair.firstCall.args[1], { envFilepath: '.env' })
   ct.end()
 })
 
@@ -119,7 +98,7 @@ t.test('#keyValues forwards token to armor keypair', async ct => {
 
   ct.same(result, { publicKeyValue: '<publicKey>', privateKeyValue: 'from-armor', privateKeySource: 'armor' })
   ct.equal(armorKeypair.callCount, 1)
-  ct.same(armorKeypair.firstCall.args[1], { envFilepath: '.env', hooks: undefined, token: 'token-123' })
+  ct.same(armorKeypair.firstCall.args[1], { envFilepath: '.env', token: 'token-123' })
   ct.end()
 })
 

@@ -73,7 +73,7 @@ async function keyValues (filepath, opts = {}) {
 
   // armor
   if (!noArmor && !privateKey && publicKey && publicKey.length > 0) {
-    const armorOptions = { envFilepath: filepath, hooks: opts.keypairHooks }
+    const armorOptions = { envFilepath: filepath }
     if (opts.token) {
       armorOptions.token = opts.token
     }

@@ -32,6 +32,9 @@ t.test('keypair', async ct => {
   const stub = sinon.stub(Keypair.prototype, 'run').returns({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' })
 
   const stdout = await captureStdout(async () => {
+    stub.callsFake(function keypairRunStub () {
+      return { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }
+    })
     await keypair.call(fakeContext, undefined)
   })
 

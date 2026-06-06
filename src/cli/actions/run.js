@@ -48,6 +48,7 @@ async function run () {
       envs = this.envs
     }
     envs = determine(envs, process.env)
+    if (spinner) spinner.stop()
 
     const {
       processedEnvs,
@@ -55,12 +56,7 @@ async function run () {
       readableFilepaths,
       uniqueInjectedKeys
     } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
-      token: options.token,
-      keypairHooks: {
-        after: () => {
-          if (spinner) spinner.start('injecting')
-        }
-      }
+      token: options.token
     }).run()
 
     for (const processedEnv of processedEnvs) {

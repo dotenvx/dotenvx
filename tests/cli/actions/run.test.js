@@ -56,19 +56,13 @@ t.test('run', async ct => {
   ct.end()
 })
 
-t.test('run passes spinner text handoff hooks to Run service', async ct => {
+t.test('run stops spinner before Run service', async ct => {
   const spinner = {
     stop: sinon.stub(),
     start: sinon.stub()
   }
-  let runArgs
   class RunStub {
-    constructor (...args) {
-      runArgs = args
-    }
-
     async run () {
-      await runArgs[5].keypairHooks.after()
       return {
         processedEnvs: [],
         readableStrings: [],
@@ -94,9 +88,8 @@ t.test('run passes spinner text handoff hooks to Run service', async ct => {
 
   await runWithStubs.call(fakeContext)
 
-  ct.equal(spinner.stop.callCount, 1)
-  ct.equal(spinner.start.callCount, 1)
-  ct.equal(spinner.start.firstCall.args[0], 'injecting')
+  ct.equal(spinner.stop.callCount, 2)
+  ct.equal(spinner.start.callCount, 0)
   ct.equal(loggerSuccessStub.callCount, 1)
   ct.end()
 })

@@ -46,9 +46,7 @@ class Armor {
     if (publicKey) args.push(publicKey)
 
     try {
-      return JSON.parse(await this._execInteractive(binary, args, {
-        onStderr: options.onStderr
-      }))
+      return JSON.parse(await this._execInteractive(binary, args))
     } catch (_e) {
       return {}
     }
@@ -113,25 +111,16 @@ class Armor {
     return childProcess.execFileSync(binary, args).toString().trim()
   }
 
-  _execInteractive (binary, args, options = {}) {
+  _execInteractive (binary, args) {
     return new Promise((resolve, reject) => {
       const spawnOptions = {
-        stdio: ['inherit', 'pipe', 'pipe']
+        stdio: ['inherit', 'pipe', 'inherit']
       }
       const subprocess = childProcess.spawn(binary, args, spawnOptions)
       let stdout = ''
-      let sawStderr = false
 
       subprocess.stdout.on('data', (data) => {
         stdout += data.toString()
-      })
-      subprocess.stderr.on('data', (data) => {
-        if (!sawStderr) {
-          sawStderr = true
-          if (options.onStderr) options.onStderr()
-        }
-
-        process.stderr.write(data)
       })
       subprocess.on('error', reject)
       subprocess.on('close', (code) => {
