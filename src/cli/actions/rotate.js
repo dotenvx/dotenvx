@@ -20,6 +20,7 @@ async function rotate () {
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
+    if (spinner) spinner.stop()
     const {
       processedEnvs
     } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noArmor).run()
@@ -34,6 +35,7 @@ async function rotate () {
     process.exit(0) // exit early
   } else {
     try {
+      if (spinner) spinner.stop()
       const {
         processedEnvs,
         changedFilepaths,
