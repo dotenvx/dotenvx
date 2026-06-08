@@ -9,32 +9,12 @@ const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
-function keypairSpinnerHooks (spinner) {
-  let stoppedForArmor = false
-
-  return {
-    onStderr: () => {
-      if (spinner && !stoppedForArmor) {
-        spinner.stop()
-        stoppedForArmor = true
-      }
-    },
-    after: () => {
-      if (spinner && stoppedForArmor) {
-        spinner.start('encrypting')
-        stoppedForArmor = false
-      }
-    }
-  }
-}
-
-function keyStorageSelector (spinner) {
+function keyStorageSelector () {
   let selected
 
   return async function selectKeyStorage () {
     if (selected) return selected
 
-    if (spinner) spinner.stop()
     selected = await prompts.select({
       message: 'Choose private key storage',
       choices: [
@@ -45,19 +25,16 @@ function keyStorageSelector (spinner) {
       input: process.stdin,
       output: process.stderr
     })
-    if (spinner) spinner.start('encrypting')
 
     return selected
   }
 }
 
-function encryptOptions (spinner, noArmor) {
-  const options = {
-    keypairHooks: keypairSpinnerHooks(spinner)
-  }
+function encryptOptions (noArmor) {
+  const options = {}
 
   if (!noArmor) {
-    options.selectKeyStorage = keyStorageSelector(spinner)
+    options.selectKeyStorage = keyStorageSelector()
   }
 
   return options
@@ -76,9 +53,10 @@ async function encrypt () {
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
+    if (spinner) spinner.stop()
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, encryptOptions(spinner, noArmor)).run()
+    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, encryptOptions(noArmor)).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -86,11 +64,12 @@ async function encrypt () {
     process.exit(0) // exit early
   } else {
     try {
+      if (spinner) spinner.stop()
       const {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, encryptOptions(spinner, noArmor)).run()
+      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, encryptOptions(noArmor)).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)

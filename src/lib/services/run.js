@@ -25,7 +25,6 @@ class Run {
     this.noArmor = noArmor
     this.noSpinner = options.noSpinner
     this.token = options.token
-    this.keypairHooks = options.keypairHooks
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
@@ -199,8 +198,7 @@ class Run {
       const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
-        token: this.token,
-        keypairHooks: this.keypairHooks
+        token: this.token
       })
 
       const {

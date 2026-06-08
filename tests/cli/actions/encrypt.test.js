@@ -718,13 +718,12 @@ t.test('encrypt - --token uses Armor even when session status is off', async ct 
   ct.end()
 })
 
-t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
+t.test('encrypt stops spinner before Encrypt service', async ct => {
   const spinner = {
     stop: sinon.stub(),
     start: sinon.stub()
   }
   const createSpinnerStub = sinon.stub().resolves(spinner)
-  let constructorArgs
 
   class SessionMock {
     async noArmor () {
@@ -733,13 +732,7 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
   }
 
   class EncryptMock {
-    constructor (...args) {
-      constructorArgs = args
-    }
-
     async run () {
-      await constructorArgs[7].keypairHooks.onStderr()
-      await constructorArgs[7].keypairHooks.after()
       return {
         processedEnvs: [],
         changedFilepaths: [],
@@ -756,9 +749,8 @@ t.test('encrypt passes spinner handoff hooks to Encrypt service', async ct => {
 
   await encryptWithMock.call({ opts: () => ({}), envs: [] })
 
-  ct.equal(spinner.stop.callCount, 2, 'stops on Armor stderr and before final output')
-  ct.equal(spinner.start.callCount, 1, 'restarts after Armor keypair')
-  ct.equal(spinner.start.firstCall.args[0], 'encrypting')
+  ct.equal(spinner.stop.callCount, 2, 'stops before service and before final output')
+  ct.equal(spinner.start.callCount, 0)
 
   ct.end()
 })
@@ -818,9 +810,8 @@ t.test('encrypt passes memoized key storage selector when Armor is enabled', asy
     input: process.stdin,
     output: process.stderr
   }])
-  ct.equal(spinner.stop.callCount, 2, 'stops before prompt and before final output')
-  ct.equal(spinner.start.callCount, 1, 'restarts after prompt')
-  ct.equal(spinner.start.firstCall.args[0], 'encrypting')
+  ct.equal(spinner.stop.callCount, 2, 'stops before service and before final output')
+  ct.equal(spinner.start.callCount, 0, 'does not restart stopped spinner after prompt')
 
   ct.end()
 })
@@ -854,14 +845,13 @@ t.test('encrypt does not pass key storage selector when Armor is disabled', asyn
   ct.end()
 })
 
-t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async ct => {
+t.test('encrypt --stdout stops spinner before Encrypt service', async ct => {
   const spinner = {
     stop: sinon.stub(),
     start: sinon.stub()
   }
   const createSpinnerStub = sinon.stub().resolves(spinner)
   const processExitStub = sinon.stub(process, 'exit')
-  let constructorArgs
 
   class SessionMock {
     async noArmor () {
@@ -870,13 +860,7 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
   }
 
   class EncryptMock {
-    constructor (...args) {
-      constructorArgs = args
-    }
-
     async run () {
-      await constructorArgs[7].keypairHooks.onStderr()
-      await constructorArgs[7].keypairHooks.after()
       return {
         processedEnvs: [],
         changedFilepaths: [],
@@ -893,9 +877,8 @@ t.test('encrypt --stdout passes spinner handoff hooks to Encrypt service', async
 
   await encryptWithMock.call({ opts: () => ({ stdout: true }), envs: [] })
 
-  ct.equal(spinner.stop.callCount, 2, 'stops on Armor stderr and before stdout exit')
-  ct.equal(spinner.start.callCount, 1, 'restarts after Armor keypair')
-  ct.equal(spinner.start.firstCall.args[0], 'encrypting')
+  ct.equal(spinner.stop.callCount, 2, 'stops before service and before stdout exit')
+  ct.equal(spinner.start.callCount, 0)
   ct.ok(processExitStub.calledWith(0), 'process.exit(0) called')
 
   ct.end()
@@ -932,10 +915,10 @@ t.test('encrypt - spinner stop is called for stdout/success/catch flows', async 
   })
 
   await encryptWithSpinner.call({ opts: () => ({ stdout: true }), envs: [] })
-  ct.equal(stopStub.callCount, 1, 'stops spinner in stdout flow')
+  ct.equal(stopStub.callCount, 2, 'stops spinner in stdout flow')
 
   await encryptWithSpinner.call({ opts: () => ({}), envs: [] })
-  ct.equal(stopStub.callCount, 2, 'stops spinner in success flow')
+  ct.equal(stopStub.callCount, 4, 'stops spinner in success flow')
 
   class EncryptThrowsMock {
     async run () {
@@ -951,7 +934,7 @@ t.test('encrypt - spinner stop is called for stdout/success/catch flows', async 
   })
 
   await encryptWithSpinnerAndError.call({ opts: () => ({}), envs: [] })
-  ct.equal(stopStub.callCount, 3, 'stops spinner in catch flow')
+  ct.equal(stopStub.callCount, 6, 'stops spinner in catch flow')
   ct.ok(catchAndLogStub.calledOnce, 'catchAndLog called in catch flow')
   ct.ok(processExitStub.calledWith(1), 'process.exit(1) called in catch flow')
   ct.end()
