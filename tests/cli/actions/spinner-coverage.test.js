@@ -94,7 +94,7 @@ t.test('keypair stops spinner before output', async ct => {
 
   await keypair.call({ opts: () => ({}), envs: [] }, 'DOTENV_PUBLIC_KEY')
 
-  t.ok(spinner.stop.calledOnce, 'spinner.stop called once')
+  t.equal(spinner.stop.callCount, 2, 'spinner.stop called before service and before output')
   t.ok(consoleLogStub.calledWith('<publicKey>'), 'prints selected keypair value')
   ct.end()
 })
@@ -163,7 +163,7 @@ t.test('run stops spinner on success path', async ct => {
 
   await run.call({ opts: () => ({}), args: ['echo', 'ok'], envs: [] })
 
-  t.ok(spinner.stop.calledOnce, 'spinner.stop called on success branch')
+  t.equal(spinner.stop.callCount, 2, 'spinner.stop called before service and on success branch')
   ct.end()
 })
 
@@ -194,7 +194,7 @@ t.test('run stops spinner on catch path', async ct => {
 
   await run.call({ opts: () => ({}), args: ['echo', 'ok'], envs: [] })
 
-  t.ok(spinner.stop.calledOnce, 'spinner.stop called in catch branch')
+  t.equal(spinner.stop.callCount, 2, 'spinner.stop called before service and in catch branch')
   t.ok(catchAndLogStub.calledWith(boom), 'error logged through catchAndLog')
   t.ok(processExitStub.calledWith(1), 'process.exit(1) called')
   ct.end()
