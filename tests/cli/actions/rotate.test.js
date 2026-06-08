@@ -615,10 +615,10 @@ t.test('rotate - spinner stop is called for stdout/success/catch flows', async c
   })
 
   await rotateWithSpinner.call({ opts: () => ({ stdout: true }), envs: [] })
-  ct.equal(stopStub.callCount, 1, 'stops spinner in stdout flow')
+  ct.equal(stopStub.callCount, 2, 'stops spinner before service and in stdout flow')
 
   await rotateWithSpinner.call({ opts: () => ({}), envs: [] })
-  ct.equal(stopStub.callCount, 2, 'stops spinner in success flow')
+  ct.equal(stopStub.callCount, 4, 'stops spinner before service and in success flow')
 
   class RotateThrowsMock {
     async run () {
@@ -634,7 +634,7 @@ t.test('rotate - spinner stop is called for stdout/success/catch flows', async c
   })
 
   await rotateWithSpinnerAndError.call({ opts: () => ({}), envs: [] })
-  ct.equal(stopStub.callCount, 3, 'stops spinner in catch flow')
+  ct.equal(stopStub.callCount, 6, 'stops spinner before service and in catch flow')
   ct.ok(catchAndLogStub.calledOnce, 'catchAndLog called in catch flow')
   ct.ok(processExitStub.calledWith(1), 'process.exit(1) called in catch flow')
   ct.end()

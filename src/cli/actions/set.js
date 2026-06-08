@@ -30,6 +30,7 @@ async function set (key, value) {
     const noArmor = options.armor === false || (await sesh.noArmor())
     const noCreate = options.create === false
 
+    if (spinner) spinner.stop()
     const {
       processedEnvs,
       changedFilepaths,

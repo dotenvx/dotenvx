@@ -764,7 +764,7 @@ t.test('set - spinner stop called on success path when spinner exists', async ct
 
   t.ok(writeStub.calledOnce, 'writes env file')
   t.ok(successStub.calledOnce, 'logs success')
-  t.ok(stopStub.calledOnce, 'spinner stopped on success')
+  t.equal(stopStub.callCount, 2, 'spinner stopped before service and on success')
   ct.end()
 })
 
@@ -796,7 +796,7 @@ t.test('set - spinner stop called on catch path when spinner exists', async ct =
   const fakeContext = { opts: sinon.stub().returns({}), envs: [] }
   await setWithSpinner.call(fakeContext, 'HELLO', 'World')
 
-  t.ok(stopStub.calledOnce, 'spinner stopped on catch')
+  t.equal(stopStub.callCount, 2, 'spinner stopped before service and on catch')
   t.ok(catchAndLogStub.calledOnce, 'catchAndLog called')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
   ct.end()
