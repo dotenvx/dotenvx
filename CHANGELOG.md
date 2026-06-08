@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.71.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.71.1...main)
+
+## [1.71.1](https://github.com/dotenvx/dotenvx/compare/v1.71.0...v1.71.1) (2026-06-08)
+
+### Changed
+
+* stderr changed to `inherit` for dotenvx-armor integration ([#833](https://github.com/dotenvx/dotenvx/pull/833))
 
 ## [1.71.0](https://github.com/dotenvx/dotenvx/compare/v1.70.0...v1.71.0) (2026-06-01)
 
