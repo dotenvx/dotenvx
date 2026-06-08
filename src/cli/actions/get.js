@@ -31,6 +31,7 @@ async function get (key) {
   try {
     const sesh = new Session()
     const noArmor = options.armor === false || (await sesh.noArmor())
+    if (spinner) spinner.stop()
     const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noArmor).run()
 
     for (const error of errors || []) {
