@@ -101,8 +101,13 @@ class Armor {
 
   _serializeMetadata (options) {
     return JSON.stringify({
-      command: options.command
+      command: this._serializeCommand(options.command)
     })
+  }
+
+  _serializeCommand (command) {
+    if (Array.isArray(command)) return command.map((arg) => `${arg}`).join(' ')
+    return `${command}`
   }
 
   async _exec (binary, args) {
