@@ -150,7 +150,7 @@ t.test('provision uses Armor keypair when noArmor is false', async (ct) => {
   ct.end()
 })
 
-t.test('provision forwards token to Armor keypair when noArmor is false', async (ct) => {
+t.test('provision forwards token and command to Armor keypair when noArmor is false', async (ct) => {
   const mutateSrc = sinon.stub().returns({ envSrc: 'PUBLIC_BLOCK\nHELLO=world' })
   const mutateKeysSrc = sinon.stub()
   const armorKeypair = sinon.stub().resolves({ publicKey: 'armor_pub', privateKey: 'armor_priv' })
@@ -166,10 +166,10 @@ t.test('provision forwards token to Armor keypair when noArmor is false', async 
     }
   })
 
-  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, token: 'token-123' })
+  await provision({ envSrc: 'HELLO=world', envFilepath: path.join('apps', 'api', '.env'), noArmor: false, token: 'token-123', command: ['get', 'HELLO'] })
 
   ct.equal(armorKeypair.callCount, 1)
-  ct.same(armorKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env') }])
+  ct.same(armorKeypair.firstCall.args, [undefined, { token: 'token-123', envFilepath: path.join('apps', 'api', '.env'), command: ['get', 'HELLO'] }])
   ct.equal(localKeypair.callCount, 0)
   ct.end()
 })
