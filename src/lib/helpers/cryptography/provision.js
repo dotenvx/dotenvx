@@ -4,7 +4,7 @@ const armorKeypair = require('./armorKeypair')
 const localKeypair = require('./localKeypair')
 const { keyNames } = require('../keyResolution')
 
-async function provision ({ envSrc, envFilepath, keysFilepath, noArmor, token, selectKeyStorage }) {
+async function provision ({ envSrc, envFilepath, keysFilepath, noArmor, token, selectKeyStorage, command }) {
   noArmor = noArmor !== false
   if (!noArmor && selectKeyStorage) {
     noArmor = await selectKeyStorage() !== 'armored'
@@ -24,7 +24,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noArmor, token, s
     publicKey = kp.publicKey
     privateKey = kp.privateKey
   } else {
-    const armorOptions = { token, envFilepath }
+    const armorOptions = { token, envFilepath, command }
     const kp = await armorKeypair(undefined, armorOptions)
     publicKey = kp.publicKey
     privateKey = kp.privateKey

@@ -29,12 +29,13 @@ const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Rotate {
-  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noArmor = false) {
+  constructor (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noArmor = false, options = {}) {
     this.envs = determine(envs, process.env)
     this.key = key
     this.excludeKey = excludeKey
     this.envKeysFilepath = envKeysFilepath
     this.noArmor = noArmor
+    this.command = options.command
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -83,7 +84,11 @@ class Rotate {
       const envParsed = dotenvParse(envSrc, false, false, true)
 
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
-      const { privateKeyValue } = await keyValues(envFilepath, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor })
+      const { privateKeyValue } = await keyValues(envFilepath, {
+        keysFilepath: this.envKeysFilepath,
+        noArmor: this.noArmor,
+        command: this.command
+      })
 
       let newPublicKey
       let newPrivateKey
@@ -91,7 +96,9 @@ class Rotate {
       let envKeysSrc
 
       if (!this.noArmor) {
-        const kp = await armorKeypair()
+        const kp = await armorKeypair(undefined, {
+          command: this.command
+        })
         newPublicKey = kp.publicKey
         newPrivateKey = kp.privateKey
 

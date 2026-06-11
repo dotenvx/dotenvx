@@ -122,7 +122,7 @@ t.test('keypairSync forwards env filepath to resolved armor/vlt/ops binary', (ct
   ct.end()
 })
 
-t.test('keypairSync forwards wrapped command as one argv value', (ct) => {
+t.test('keypairSync forwards command as metadata json', (ct) => {
   const execFileSync = sinon.stub()
   const execFile = sinon.stub()
   execFile[util.promisify.custom] = sinon.stub()
@@ -138,7 +138,7 @@ t.test('keypairSync forwards wrapped command as one argv value', (ct) => {
 
   const armor = new Armor()
   ct.same(armor.keypairSync('existing-public-key', { command: ['npm', 'run', 'build'] }), { public_key: 'pub', private_key: 'priv' })
-  ct.same(execFileSync.getCall(1).args[1], ['keypair', '--command', 'npm run build', 'existing-public-key'])
+  ct.same(execFileSync.getCall(1).args[1], ['keypair', '--metadata', '{"command":["npm","run","build"]}', 'existing-public-key'])
   ct.end()
 })
 
@@ -530,7 +530,7 @@ t.test('keypair async forwards token to resolved armor/vlt/ops binary', async (c
   ct.end()
 })
 
-t.test('keypair async forwards wrapped command as one argv value', async (ct) => {
+t.test('keypair async forwards command as metadata json', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
   const execFile = sinon.stub()
@@ -547,7 +547,7 @@ t.test('keypair async forwards wrapped command as one argv value', async (ct) =>
 
   const armor = new Armor()
   ct.same(await armor.keypair('existing-public-key', { command: ['node', '-e', 'console.log("hi; still data")'] }), { public_key: 'pub', private_key: 'priv' })
-  ct.same(spawn.firstCall.args[1], ['keypair', '--command', 'node -e console.log("hi; still data")', 'existing-public-key'])
+  ct.same(spawn.firstCall.args[1], ['keypair', '--metadata', '{"command":["node","-e","console.log(\\"hi; still data\\")"]}', 'existing-public-key'])
   ct.end()
 })
 

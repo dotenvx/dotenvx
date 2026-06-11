@@ -19,7 +19,9 @@ async function keypair (key) {
   const sesh = new Session()
   const noArmor = options.armor === false || await sesh.noArmor()
   if (spinner) spinner.stop()
-  const keypairs = await new Keypair(options.envFile, options.envKeysFile, noArmor).run()
+  const keypairs = await new Keypair(options.envFile, options.envKeysFile, noArmor, {
+    command: process.argv.slice(2)
+  }).run()
   const results = key ? keypairs[key] : keypairs
 
   if (spinner) spinner.stop()
