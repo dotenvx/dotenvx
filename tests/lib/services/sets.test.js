@@ -1223,13 +1223,20 @@ t.test('#run (finds .env file) with --encrypt and existing public key only',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envs = [{ type: 'envFile', value: envFile }]
 
-    const { processedEnvs, changedFilepaths } = await new SetsWithStub('KEY', 'value', envs, true).run()
+    const { processedEnvs, changedFilepaths } = await new SetsWithStub('KEY', 'value', envs, true, null, false, false, {
+      command: ['set', 'KEY', 'value']
+    }).run()
 
     ct.equal(processedEnvs[0].publicKey, '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba')
     ct.equal(processedEnvs[0].privateKey, undefined)
     ct.equal(processedEnvs[0].changed, true)
     ct.match(processedEnvs[0].encryptedValue, /^encrypted:/)
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
+    ct.same(keyValuesStub.firstCall.args[1], {
+      keysFilepath: null,
+      noArmor: false,
+      command: ['set', 'KEY', 'value']
+    })
 
     sandbox.restore()
     ct.end()
