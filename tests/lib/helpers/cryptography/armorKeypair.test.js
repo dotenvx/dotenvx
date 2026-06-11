@@ -94,3 +94,26 @@ t.test('armorKeypair forwards env filepath to Armor keypair', async (ct) => {
   ct.same(keypair.firstCall.args, [undefined, { envFilepath: '.env.production' }])
   ct.end()
 })
+
+t.test('armorKeypair forwards command to Armor keypair', async (ct) => {
+  const keypair = sinon.stub().resolves({
+    public_key: 'armor_pub_abc',
+    private_key: 'armor_priv_abc'
+  })
+
+  function ArmorMock () {
+    this.keypair = keypair
+  }
+
+  const armorKeypair = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypair', {
+    './../../extensions/armor': ArmorMock
+  })
+
+  const out = await armorKeypair(undefined, { command: ['bin/rails', 's'] })
+
+  ct.equal(out.publicKey, 'armor_pub_abc')
+  ct.equal(out.privateKey, 'armor_priv_abc')
+  ct.equal(keypair.callCount, 1)
+  ct.same(keypair.firstCall.args, [undefined, { token: undefined, envFilepath: undefined, command: ['bin/rails', 's'] }])
+  ct.end()
+})

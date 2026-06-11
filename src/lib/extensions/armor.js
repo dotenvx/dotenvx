@@ -43,6 +43,7 @@ class Armor {
     if (options.noSpinner) args.push('--no-spinner')
     if (options.token) args.push('--token', options.token)
     if (options.envFilepath) args.push('-f', options.envFilepath)
+    if (options.command) args.push('--command', this._serializeCommand(options.command))
     if (publicKey) args.push(publicKey)
 
     try {
@@ -62,6 +63,7 @@ class Armor {
     if (options.noSpinner) args.push('--no-spinner')
     if (options.token) args.push('--token', options.token)
     if (options.envFilepath) args.push('-f', options.envFilepath)
+    if (options.command) args.push('--command', this._serializeCommand(options.command))
     if (publicKey) args.push(publicKey)
 
     try {
@@ -95,6 +97,11 @@ class Armor {
     } catch (_e) {
       // noop
     }
+  }
+
+  _serializeCommand (command) {
+    if (Array.isArray(command)) return command.map((arg) => `${arg}`).join(' ')
+    return `${command}`
   }
 
   async _exec (binary, args) {

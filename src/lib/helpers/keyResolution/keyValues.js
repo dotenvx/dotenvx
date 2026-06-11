@@ -77,6 +77,9 @@ async function keyValues (filepath, opts = {}) {
     if (opts.token) {
       armorOptions.token = opts.token
     }
+    if (opts.command) {
+      armorOptions.command = opts.command
+    }
     const kp = await armorKeypair(publicKey, armorOptions)
     privateKey = kp.privateKey
     privateKeySource = 'armor'

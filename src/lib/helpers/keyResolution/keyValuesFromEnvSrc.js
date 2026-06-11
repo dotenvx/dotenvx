@@ -57,6 +57,9 @@ function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
     if (opts.token) {
       armorOptions.token = opts.token
     }
+    if (opts.command) {
+      armorOptions.command = opts.command
+    }
     const kp = armorKeypairSync(publicKeyValue, armorOptions)
     privateKeyValue = kp.privateKey
     privateKeySource = 'armor'

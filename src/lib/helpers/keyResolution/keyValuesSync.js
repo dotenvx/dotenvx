@@ -77,6 +77,9 @@ function keyValuesSync (filepath, opts = {}) {
     if (opts.token) {
       armorOptions.token = opts.token
     }
+    if (opts.command) {
+      armorOptions.command = opts.command
+    }
     if (opts.noSpinner) {
       armorOptions.noSpinner = true
     }
