@@ -56,7 +56,8 @@ async function run () {
       readableFilepaths,
       uniqueInjectedKeys
     } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
-      token: options.token
+      token: options.token,
+      command: commandArgs
     }).run()
 
     for (const processedEnv of processedEnvs) {

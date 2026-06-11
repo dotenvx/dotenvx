@@ -19,6 +19,22 @@ t.test('#run (missing key returns the entire processEnv as object)',
     ct.end()
   })
 
+t.test('#run forwards command metadata to Run',
+  async ct => {
+    const runStub = sinon.stub(Run.prototype, 'run')
+    runStub.returns({
+      processedEnvs: []
+    })
+
+    await new Get(null, [], false, false, null, false, {
+      command: ['get', 'HELLO']
+    }).run()
+
+    ct.equal(runStub.callCount, 1)
+    ct.same(runStub.thisValues[0].command, ['get', 'HELLO'])
+    ct.end()
+  })
+
 t.test('#run (all object) with preset process.env',
   async ct => {
     process.env.PRESET_ENV_EXAMPLE = 'something/on/machine'

@@ -32,7 +32,9 @@ async function get (key) {
     const sesh = new Session()
     const noArmor = options.armor === false || (await sesh.noArmor())
     if (spinner) spinner.stop()
-    const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noArmor).run()
+    const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noArmor, {
+      command: process.argv.slice(2)
+    }).run()
 
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict

@@ -38,6 +38,7 @@ class Encrypt {
     this.noCreate = noCreate
     this.token = token
     this.selectKeyStorage = options.selectKeyStorage
+    this.command = options.command
 
     this.processedEnvs = []
     this.changedFilepaths = new Set()
@@ -104,7 +105,8 @@ class Encrypt {
       const { publicKeyName, privateKeyName } = keyNames(envFilepath)
       const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, {
         keysFilepath: this.envKeysFilepath,
-        noArmor: this.noArmor
+        noArmor: this.noArmor,
+        command: this.command
       })
 
       // first pass - provision
@@ -115,7 +117,8 @@ class Encrypt {
           keysFilepath: this.envKeysFilepath,
           noArmor: this.noArmor,
           token: this.token,
-          selectKeyStorage: this.selectKeyStorage
+          selectKeyStorage: this.selectKeyStorage,
+          command: this.command
         })
         envSrc = prov.envSrc
         publicKey = prov.publicKey

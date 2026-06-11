@@ -155,7 +155,7 @@ t.test('#run forwards key storage selector to provision',
     const {
       processedEnvs,
       changedFilepaths
-    } = await new EncryptWithProvisionStub([], [], [], null, false, false, undefined, { selectKeyStorage }).run()
+    } = await new EncryptWithProvisionStub([], [], [], null, false, false, undefined, { selectKeyStorage, command: ['encrypt', '-f', '.env'] }).run()
 
     ct.equal(processedEnvs.length, 1)
     ct.notOk(processedEnvs[0].error)
@@ -163,6 +163,7 @@ t.test('#run forwards key storage selector to provision',
     ct.equal(provision.callCount, 1)
     ct.equal(provision.firstCall.args[0].selectKeyStorage, selectKeyStorage)
     ct.equal(provision.firstCall.args[0].envFilepath, '.env')
+    ct.same(provision.firstCall.args[0].command, ['encrypt', '-f', '.env'])
 
     process.chdir(cwd)
     ct.end()

@@ -107,6 +107,21 @@ t.test('#keyValuesFromEnvSrc forwards token to armor', ct => {
   ct.end()
 })
 
+t.test('#keyValuesFromEnvSrc forwards command to armor', ct => {
+  const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
+  const keyValuesFromEnvSrcWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {
+    '../cryptography/armorKeypairSync': armorKeypairSync
+  })
+  const src = 'DOTENV_PUBLIC_KEY="03_public"\nHELLO=World'
+
+  const result = keyValuesFromEnvSrcWithArmorStub(src, null, { noArmor: false, command: ['node', 'index.js'] })
+
+  ct.same(result, { publicKeyValue: '03_public', privateKeyValue: 'from-armor', privateKeyName: 'DOTENV_PRIVATE_KEY', privateKeySource: 'armor' })
+  ct.equal(armorKeypairSync.callCount, 1)
+  ct.same(armorKeypairSync.firstCall.args, ['03_public', { command: ['node', 'index.js'] }])
+  ct.end()
+})
+
 t.test('#keyValuesFromEnvSrc does not load private key from armor when noArmor is true', ct => {
   const armorKeypairSync = sinon.stub().returns({ privateKey: 'from-armor' })
   const keyValuesFromEnvSrcWithArmorStub = proxyquire('../../../../src/lib/helpers/keyResolution/keyValuesFromEnvSrc', {

@@ -30,6 +30,35 @@ t.afterEach((ct) => {
   writeFileXStub.restore()
 })
 
+t.test('#run forwards command to key resolution',
+  async ct => {
+    const keyValues = sinon.stub().resolves({
+      privateKeyValue: null
+    })
+    const DecryptWithStubs = proxyquire('../../../src/lib/services/decrypt', {
+      './../helpers/fsx': {
+        readFileX: async () => 'HELLO=world\n'
+      },
+      './../helpers/detectEncoding': async () => 'utf8',
+      './../helpers/keyResolution': {
+        keyNames: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+        keyValues
+      }
+    })
+
+    await new DecryptWithStubs([{ type: 'envFile', value: '.env' }], [], [], null, false, {
+      command: ['decrypt', '-f', '.env']
+    }).run()
+
+    ct.equal(keyValues.callCount, 1)
+    ct.same(keyValues.firstCall.args[1], {
+      keysFilepath: null,
+      noArmor: false,
+      command: ['decrypt', '-f', '.env']
+    })
+    ct.end()
+  })
+
 t.test('#run (no arguments)',
   async ct => {
     const cwd = process.cwd()

@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.71.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.71.3...main)
+
+## [1.71.3](https://github.com/dotenvx/dotenvx/compare/v1.71.2...v1.71.3) (2026-06-11)
+
+### Changed
+
+* Forward command to Dotenvx Armor Key Guard approvals ([#835](https://github.com/dotenvx/dotenvx/pull/835))
 
 ## [1.71.2](https://github.com/dotenvx/dotenvx/compare/v1.71.1...v1.71.2) (2026-06-08)
 

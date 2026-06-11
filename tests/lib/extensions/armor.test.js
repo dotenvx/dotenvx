@@ -122,6 +122,46 @@ t.test('keypairSync forwards env filepath to resolved armor/vlt/ops binary', (ct
   ct.end()
 })
 
+t.test('keypairSync forwards command as metadata json', (ct) => {
+  const execFileSync = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = sinon.stub()
+  const spawn = sinon.stub()
+
+  execFileSync
+    .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
+    .onCall(1).returns(Buffer.from('{"public_key":"pub","private_key":"priv"}'))
+
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const armor = new Armor()
+  ct.same(armor.keypairSync('existing-public-key', { command: ['npm', 'run', 'build'] }), { public_key: 'pub', private_key: 'priv' })
+  ct.same(execFileSync.getCall(1).args[1], ['keypair', '--metadata', '{"command":"npm run build"}', 'existing-public-key'])
+  ct.end()
+})
+
+t.test('keypairSync forwards string command as metadata json', (ct) => {
+  const execFileSync = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = sinon.stub()
+  const spawn = sinon.stub()
+
+  execFileSync
+    .onCall(0).returns(Buffer.from('1.0.0\n')) // --version npm
+    .onCall(1).returns(Buffer.from('{"public_key":"pub","private_key":"priv"}'))
+
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const armor = new Armor()
+  ct.same(armor.keypairSync('existing-public-key', { command: 'dotenvx get HELLO -f .env.production' }), { public_key: 'pub', private_key: 'priv' })
+  ct.same(execFileSync.getCall(1).args[1], ['keypair', '--metadata', '{"command":"dotenvx get HELLO -f .env.production"}', 'existing-public-key'])
+  ct.end()
+})
+
 t.test('status uses execFile and keypair uses interactive spawn', async (ct) => {
   const execFileSync = sinon.stub()
   const promisifiedExecFile = sinon.stub()
@@ -507,6 +547,27 @@ t.test('keypair async forwards token to resolved armor/vlt/ops binary', async (c
   ct.same(await armor.keypair('existing-public-key', { token: 'token-123' }), { public_key: 'pub', private_key: 'priv' })
   ct.same(spawn.firstCall.args[1], ['keypair', '--token', 'token-123', 'existing-public-key'])
   ct.same(spawn.firstCall.args[2].stdio, ['inherit', 'pipe', 'inherit'])
+  ct.end()
+})
+
+t.test('keypair async forwards command as metadata json', async (ct) => {
+  const execFileSync = sinon.stub()
+  const promisifiedExecFile = sinon.stub()
+  const execFile = sinon.stub()
+  execFile[util.promisify.custom] = promisifiedExecFile
+  const spawn = sinon.stub()
+
+  promisifiedExecFile
+    .onCall(0).resolves({ stdout: Buffer.from('1.0.0\n') }) // --version npm
+  spawn.onCall(0).returns(spawnResult('{"public_key":"pub","private_key":"priv"}'))
+
+  const Armor = proxyquire('../../../src/lib/extensions/armor', {
+    child_process: { execFileSync, execFile, spawn }
+  })
+
+  const armor = new Armor()
+  ct.same(await armor.keypair('existing-public-key', { command: ['node', '-e', 'console.log("hi; still data")'] }), { public_key: 'pub', private_key: 'priv' })
+  ct.same(spawn.firstCall.args[1], ['keypair', '--metadata', '{"command":"node -e console.log(\\"hi; still data\\")"}', 'existing-public-key'])
   ct.end()
 })
 

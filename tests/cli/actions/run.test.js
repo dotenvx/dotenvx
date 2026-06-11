@@ -94,7 +94,7 @@ t.test('run stops spinner before Run service', async ct => {
   ct.end()
 })
 
-t.test('run --token passes Armor token to Run service', async ct => {
+t.test('run passes Armor token and wrapped command to Run service', async ct => {
   let runArgs
   class RunStub {
     constructor (...args) {
@@ -129,6 +129,7 @@ t.test('run --token passes Armor token to Run service', async ct => {
 
   ct.equal(runArgs[4], false)
   ct.equal(runArgs[5].token, 'token-123')
+  ct.same(runArgs[5].command, ['echo', ''])
   ct.equal(loggerSuccessStub.callCount, 1)
   ct.end()
 })

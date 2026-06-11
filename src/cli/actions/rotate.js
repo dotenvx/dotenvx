@@ -23,7 +23,9 @@ async function rotate () {
     if (spinner) spinner.stop()
     const {
       processedEnvs
-    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noArmor).run()
+    } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, {
+      command: process.argv.slice(2)
+    }).run()
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -40,7 +42,9 @@ async function rotate () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noArmor).run()
+      } = await new Rotate(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, {
+        command: process.argv.slice(2)
+      }).run()
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`rotating ${processedEnv.envFilepath} (${processedEnv.filepath})`)

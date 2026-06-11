@@ -713,7 +713,7 @@ t.test('#run marks armored private key source for env string and env file paths'
   ct.end()
 })
 
-t.test('#run forwards Armor token to key resolution', async ct => {
+t.test('#run forwards Armor token and command to key resolution', async ct => {
   const src = 'HELLO=world'
   const calls = []
   const keyResolution = {
@@ -747,7 +747,7 @@ t.test('#run forwards Armor token to key resolution', async ct => {
     },
     './../helpers/keyResolution': keyResolution
   })
-  const options = { token: 'token-123' }
+  const options = { token: 'token-123', command: ['node', 'index.js'] }
 
   await new RunWithToken([{ type: 'env', value: src }], false, {}, null, false, options).run()
   new RunWithToken([{ type: 'envFile', value: '.env' }], false, {}, null, false, options).runSync()
@@ -755,10 +755,13 @@ t.test('#run forwards Armor token to key resolution', async ct => {
 
   ct.equal(calls[0][0], 'env')
   ct.equal(calls[0][1].token, 'token-123')
+  ct.same(calls[0][1].command, ['node', 'index.js'])
   ct.equal(calls[1][0], 'sync')
   ct.equal(calls[1][1].token, 'token-123')
+  ct.same(calls[1][1].command, ['node', 'index.js'])
   ct.equal(calls[2][0], 'async')
   ct.equal(calls[2][1].token, 'token-123')
+  ct.same(calls[2][1].command, ['node', 'index.js'])
   ct.end()
 })
 

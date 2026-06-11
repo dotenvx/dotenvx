@@ -94,12 +94,14 @@ t.test('get KEY', async ct => {
   const fakeContext = { opts: optsStub }
   const stub = sinon.stub(Get.prototype, 'run')
   stub.returns({ parsed: { HELLO: 'World' } })
+  sinon.stub(process, 'argv').value(['node', 'dotenvx', 'get', 'HELLO', '-f', '.env.production'])
 
   const stdout = await captureStdout(async () => {
     await get.call(fakeContext, 'HELLO')
   })
 
   t.ok(stub.called, 'Get().run() called')
+  t.same(stub.thisValues[0].command, ['get', 'HELLO', '-f', '.env.production'])
   t.equal(stdout, 'World\n')
 
   ct.end()

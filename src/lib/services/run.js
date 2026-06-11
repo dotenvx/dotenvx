@@ -25,6 +25,7 @@ class Run {
     this.noArmor = noArmor
     this.noSpinner = options.noSpinner
     this.token = options.token
+    this.command = options.command
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
@@ -95,7 +96,13 @@ class Run {
         privateKeyName: resolvedPrivateKeyName,
         privateKeyValue,
         privateKeySource
-      } = keyValuesFromEnvSrc(env, privateKeyName, { keysFilepath: this.envKeysFilepath, noArmor: this.noArmor, processEnv: this.processEnv, token: this.token })
+      } = keyValuesFromEnvSrc(env, privateKeyName, {
+        keysFilepath: this.envKeysFilepath,
+        noArmor: this.noArmor,
+        processEnv: this.processEnv,
+        token: this.token,
+        command: this.command
+      })
 
       const {
         parsed,
@@ -145,7 +152,8 @@ class Run {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
         noSpinner: this.noSpinner,
-        token: this.token
+        token: this.token,
+        command: this.command
       })
 
       const {
@@ -198,7 +206,8 @@ class Run {
       const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
-        token: this.token
+        token: this.token,
+        command: this.command
       })
 
       const {

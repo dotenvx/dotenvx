@@ -665,10 +665,11 @@ t.test('#run (finds .env file) with armorOn uses armor keypair and does not appe
       { type: 'envFile', value: envFile }
     ]
 
-    const { processedEnvs } = await new RotateWithArmorStub(envs, [], [], null, false).run()
+    const { processedEnvs } = await new RotateWithArmorStub(envs, [], [], null, false, { command: ['rotate', '-f', envFile] }).run()
 
     const p1 = processedEnvs[0]
     ct.equal(armorKeypair.callCount, 1)
+    ct.same(armorKeypair.firstCall.args, [undefined, { command: ['rotate', '-f', envFile] }])
     ct.equal(p1.localPrivateKeyAdded, false)
     ct.notOk(p1.envKeysSrc)
     ct.notOk(p1.envKeysFilepath)

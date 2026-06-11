@@ -1,6 +1,7 @@
 const t = require('tap')
 const fs = require('fs')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const Keypair = require('../../../src/lib/services/keypair')
 
@@ -70,5 +71,33 @@ t.test('#run (finds .env file as array)',
 
     ct.same(result, { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba', DOTENV_PRIVATE_KEY: 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1' })
 
+    ct.end()
+  })
+
+t.test('#run forwards command to key resolution',
+  async ct => {
+    const keyValues = sinon.stub().resolves({
+      publicKeyValue: 'public-key',
+      privateKeyValue: 'private-key'
+    })
+    const keyValuesSync = sinon.stub().returns({
+      publicKeyValue: 'public-key-sync',
+      privateKeyValue: 'private-key-sync'
+    })
+    const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
+      './../helpers/keyResolution': {
+        keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+        keyValues,
+        keyValuesSync
+      }
+    })
+
+    const out = await new KeypairWithStubs('.env', null, false, { command: ['keypair'] }).run()
+    const outSync = new KeypairWithStubs('.env', null, false, { command: ['keypair'] }).runSync()
+
+    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key-sync', DOTENV_PRIVATE_KEY: 'private-key-sync' })
+    ct.same(keyValues.firstCall.args[1], { keysFilepath: null, noArmor: false, command: ['keypair'] })
+    ct.same(keyValuesSync.firstCall.args[1], { keysFilepath: null, noArmor: false, command: ['keypair'] })
     ct.end()
   })
