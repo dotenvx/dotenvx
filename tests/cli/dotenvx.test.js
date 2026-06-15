@@ -1,9 +1,22 @@
 const t = require('tap')
+const fs = require('fs')
+const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
 
 t.beforeEach(() => {
   sinon.restore()
+})
+
+t.test('login and logout remain hidden from default command list', ct => {
+  const src = fs.readFileSync(path.join(__dirname, '../../src/cli/dotenvx.js'), 'utf8')
+
+  ct.match(src, /program\.command\('login', \{ hidden: true \}\)/)
+  ct.match(src, /program\.addHelpText\('after', '\s{2}login\s+log in to move keys off-device, share with your team, and audit access'\)/)
+  ct.match(src, /program\.command\('logout', \{ hidden: true \}\)/)
+  ct.match(src, /\.description\('log out of connected security features'\)/)
+  ct.match(src, /program\.addHelpText\('after', '\s{2}logout\s+log out of connected security features'\)/)
+  ct.end()
 })
 
 t.test('login resolves through native action', (ct) => {

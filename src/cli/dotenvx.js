@@ -123,7 +123,7 @@ program.command('set')
 
 // dotenvx encrypt
 program.command('encrypt')
-  .description('convert .env file(s) to encrypted .env file(s)')
+  .description('encrypt .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
@@ -140,7 +140,7 @@ program.command('encrypt')
 
 // dotenvx decrypt
 program.command('decrypt')
-  .description('convert encrypted .env file(s) to plain .env file(s)')
+  .description('decrypt .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
@@ -204,7 +204,7 @@ program.command('doctor', { hidden: true })
 
 // dotenvx login
 program.command('login', { hidden: true })
-  .description('log in to your dotenvx account')
+  .description('log in to move keys off-device, share with your team, and audit access')
   .allowUnknownOption()
   .option('--hostname <hostname>', 'set Armor ⛨ hostname')
   .action(function (...args) {
@@ -213,7 +213,7 @@ program.command('login', { hidden: true })
 
 // dotenvx logout
 program.command('logout', { hidden: true })
-  .description('log out of your dotenvx account')
+  .description('log out of connected security features')
   .allowUnknownOption()
   .option('--hostname <hostname>', 'set Armor ⛨ hostname')
   .action(function (...args) {
@@ -238,8 +238,10 @@ program.command('help [command]')
 
 // dotenvx armor
 program.addHelpText('after', ' ')
-program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  armor                    ⛨ ARMORED KEYS [www.dotenvx.com/armor]')
+program.addHelpText('after', 'Professional Security: ')
+program.addHelpText('after', '  login                    log in to move keys off-device, share with your team, and audit access')
+program.addHelpText('after', '  logout                   log out of connected security features')
+program.addHelpText('after', '  armor                    ⛨ move private keys off-device [www.dotenvx.com/armor]')
 program.addHelpText('after', '  ext                      ⊕ extensions')
 
 // dotenvx ext
