@@ -65,22 +65,34 @@ t.test('logout resolves through native action', (ct) => {
   ct.end()
 })
 
-t.test('armor resolves through dynamic sidecar command', (ct) => {
+t.test('armor resolves through native command', (ct) => {
+  const { Command } = require('commander')
+  const armorCommand = new Command('armor')
   const executeDynamicStub = sinon.stub()
+  const upStub = sinon.stub()
   const processExitStub = sinon.stub(process, 'exit')
   const originalArgv = process.argv
+
+  armorCommand
+    .command('up')
+    .allowUnknownOption()
+    .option('--hostname <hostname>', 'set hostname')
+    .action(function (...args) {
+      return upStub.apply(this, args)
+    })
 
   process.argv = ['node', 'dotenvx', 'armor', 'up', '--hostname', 'api.example.com']
 
   proxyquire('../../src/cli/dotenvx', {
+    './commands/armor': armorCommand,
     './../lib/helpers/executeDynamic': executeDynamicStub,
     './../lib/helpers/getCommanderVersion': () => '11.1.0'
   })
 
-  ct.equal(processExitStub.callCount, 0, 'process.exit is not called for armor dynamic command')
-  ct.equal(executeDynamicStub.callCount, 1, 'executeDynamic is called')
-  ct.equal(executeDynamicStub.firstCall.args[1], 'armor', 'dynamic command targets armor')
-  ct.same(executeDynamicStub.firstCall.args[2], ['up', '--hostname', 'api.example.com'], 'subcommands are forwarded to armor')
+  ct.equal(processExitStub.callCount, 0, 'process.exit is not called for native armor command')
+  ct.equal(executeDynamicStub.callCount, 0, 'executeDynamic is not called')
+  ct.equal(upStub.callCount, 1, 'armor up action is called')
+  ct.equal(upStub.firstCall.thisValue.opts().hostname, 'api.example.com', 'hostname option is parsed')
 
   process.argv = originalArgv
   ct.end()

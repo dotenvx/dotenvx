@@ -244,6 +244,9 @@ program.addHelpText('after', '  logout                   log out of connected se
 program.addHelpText('after', '  armor                    ⛨ move private keys off-device [www.dotenvx.com/armor]')
 program.addHelpText('after', '  ext                      ⊕ extensions')
 
+// dotenvx armor
+program.addCommand(require('./commands/armor'), { hidden: true })
+
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
 

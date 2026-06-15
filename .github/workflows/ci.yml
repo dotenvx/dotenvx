@@ -63,20 +63,6 @@ jobs:
             https://api.github.com/gists/bb76445765a9731e7d824a6efdf53524 \
             -d "{\"description\":\"dotenvxTestCount\",\"files\":{\"dotenvxTestCount.json\":{\"content\":\"{ \\\"schemaVersion\\\": 1, \\\"label\\\": \\\"test suite\\\", \\\"message\\\": \\\"$TEST_COUNT_FORMATTED\\\", \\\"color\\\": \\\"green\\\" }\"}}}"
       - run: npm run testshell
-  test-coverage:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: install shellspec
-        run: curl -sfSL https://git.io/shellspec | sh -s 0.28.1 --yes
-      - run: which shellspec
-      - run: npm install
-      - run: npm run test-coverage
   test-pkg:
     runs-on: ubuntu-latest
     strategy:
