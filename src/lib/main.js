@@ -324,7 +324,7 @@ const keypair = function (envFile, key, envKeysFile = null, noArmor = false) {
 }
 
 function resolveNoArmor (options = {}) {
-  return options.noArmor === true || options.noVlt === true || options.noOps === true || (!options.token && noArmorSync())
+  return options.noArmor === true || options.noOps === true || (!options.token && noArmorSync())
 }
 
 module.exports = {

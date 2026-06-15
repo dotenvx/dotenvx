@@ -251,22 +251,6 @@ t.test('get --no-ops passes noArmor true to Get service', async ct => {
   ct.end()
 })
 
-t.test('get --no-vlt passes noArmor true to Get service', async ct => {
-  const optsStub = sinon.stub().returns({ vlt: false })
-  const fakeContext = { opts: optsStub }
-  const stub = sinon.stub(Get.prototype, 'run').returns({ parsed: { HELLO: 'World' }, errors: [] })
-
-  const stdout = await captureStdout(async () => {
-    await get.call(fakeContext, 'HELLO')
-  })
-
-  t.ok(stub.called, 'Get().run() called')
-  t.equal(stub.thisValues[0].noArmor, true, 'noArmor true')
-  t.equal(stdout, 'World\n')
-
-  ct.end()
-})
-
 t.test('get KEY (not found)', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }

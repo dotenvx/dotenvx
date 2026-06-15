@@ -59,21 +59,6 @@ t.test('config calls Run.run',
     ct.end()
   })
 
-t.test('config supports noVlt option',
-  ct => {
-    const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
-
-    main.config({ noVlt: true })
-
-    t.ok(stub.called, 'new Run().runSync() called')
-    t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
-
-    stub.restore()
-
-    ct.end()
-  })
-
 t.test('config supports noArmor option',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
@@ -840,21 +825,6 @@ t.test('set calls Sets.run with noArmor true',
     stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
 
     main.set('KEY', 'value', { noOps: true })
-
-    t.ok(stub.called, 'new Sets().runSync() called')
-    t.equal(stub.thisValues[0].noArmor, true, 'Sets was called with noArmor true')
-
-    stub.restore()
-
-    ct.end()
-  })
-
-t.test('set supports noVlt option',
-  ct => {
-    const stub = sinon.stub(Sets.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], changedFilepaths: [], unchangedFilepaths: [] })
-
-    main.set('KEY', 'value', { noVlt: true })
 
     t.ok(stub.called, 'new Sets().runSync() called')
     t.equal(stub.thisValues[0].noArmor, true, 'Sets was called with noArmor true')
@@ -1672,22 +1642,6 @@ t.test('get calls Get.runSync with noArmor true',
     stub.returns({ parsed: { KEY: 'value' }, errors: [] })
 
     const result = main.get('KEY', { noOps: true })
-    t.equal(result, 'value')
-
-    t.ok(stub.called, 'new Get().runSync() called')
-    t.equal(stub.thisValues[0].noArmor, true, 'Get was called with noArmor true')
-
-    stub.restore()
-
-    ct.end()
-  })
-
-t.test('get supports noVlt option',
-  ct => {
-    const stub = sinon.stub(Get.prototype, 'runSync')
-    stub.returns({ parsed: { KEY: 'value' }, errors: [] })
-
-    const result = main.get('KEY', { noVlt: true })
     t.equal(result, 'value')
 
     t.ok(stub.called, 'new Get().runSync() called')

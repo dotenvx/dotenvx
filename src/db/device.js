@@ -1,8 +1,8 @@
 const Conf = require('conf')
 const { PrivateKey } = require('eciesjs')
 
-const encryptValue = require('./../lib/helpers/encryptValue')
-const decryptValue = require('./../lib/helpers/decryptValue')
+const encryptDeviceValue = require('./../lib/helpers/encryptDeviceValue')
+const decryptDeviceValue = require('./../lib/helpers/decryptDeviceValue')
 
 class Device {
   constructor () {
@@ -62,11 +62,11 @@ class Device {
   }
 
   encrypt (value) {
-    return encryptValue(value, this.publicKey())
+    return encryptDeviceValue(value, this.publicKey())
   }
 
   decrypt (value) {
-    return decryptValue(value, this.privateKey())
+    return decryptDeviceValue(value, this.privateKey())
   }
 }
 
