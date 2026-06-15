@@ -34,7 +34,7 @@ t.test('login action runs native oauth device flow', async ct => {
     '../../db/session': sinon.stub().returns(session),
     '../../lib/services/login': Login,
     '../../lib/services/loginPoll': LoginPoll,
-    '../../lib/helpers/createSpinner2': sinon.stub().resolves(spinner),
+    '../../lib/helpers/createSpinner': sinon.stub().resolves(spinner),
     '../../lib/helpers/listenForOpenKey': sinon.stub().returns(cleanup),
     '../../lib/helpers/openUrl': sinon.stub()
   })
@@ -67,7 +67,7 @@ t.test('login action falls back to saved hostname and reports errors', async ct 
     '../../db/session': sinon.stub().returns(session),
     '../../lib/services/login': Login,
     '../../lib/services/loginPoll': sinon.stub(),
-    '../../lib/helpers/createSpinner2': sinon.stub().resolves(spinner),
+    '../../lib/helpers/createSpinner': sinon.stub().resolves(spinner),
     '../../lib/helpers/listenForOpenKey': sinon.stub().returns(cleanup),
     '../../lib/helpers/openUrl': sinon.stub()
   })
@@ -97,7 +97,7 @@ t.test('login action reports non-error rejection values', async ct => {
     '../../db/session': sinon.stub().returns(session),
     '../../lib/services/login': Login,
     '../../lib/services/loginPoll': sinon.stub(),
-    '../../lib/helpers/createSpinner2': sinon.stub().resolves(spinner),
+    '../../lib/helpers/createSpinner': sinon.stub().resolves(spinner),
     '../../lib/helpers/listenForOpenKey': sinon.stub().returns(sinon.stub()),
     '../../lib/helpers/openUrl': sinon.stub()
   })

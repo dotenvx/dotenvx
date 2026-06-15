@@ -4,7 +4,7 @@ const Session = require('../../db/session')
 const Login = require('../../lib/services/login')
 const LoginPoll = require('../../lib/services/loginPoll')
 
-const createSpinner2 = require('../../lib/helpers/createSpinner2')
+const createSpinner = require('../../lib/helpers/createSpinner')
 const formatCode = require('../../lib/helpers/formatCode')
 const listenForOpenKey = require('../../lib/helpers/listenForOpenKey')
 const openUrl = require('../../lib/helpers/openUrl')
@@ -13,7 +13,7 @@ const FRAMES = ['◐', '◓', '◑', '◒']
 
 async function login () {
   const options = this.opts()
-  const spinner = await createSpinner2({ ...options, text: 'logging in', frames: FRAMES })
+  const spinner = await createSpinner({ ...options, text: 'logging in', frames: FRAMES })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 

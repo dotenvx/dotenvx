@@ -59,33 +59,6 @@ t.test('openUrl opens without waiting', async ct => {
   ct.same(open.firstCall.args, ['https://armor.dotenvx.com/device', { wait: false }])
 })
 
-t.test('createSpinner2 returns null when disabled', async ct => {
-  const createSpinner2 = require('../../../src/lib/helpers/createSpinner2')
-  const spinner = await createSpinner2({ quiet: true })
-
-  ct.equal(spinner, null)
-})
-
-t.test('createSpinner2 creates and starts spinner when enabled', async ct => {
-  const previousIsTTY = process.stderr.isTTY
-  const previousCursorTo = process.stderr.cursorTo
-  const previousClearLine = process.stderr.clearLine
-  process.stderr.isTTY = true
-  process.stderr.cursorTo = () => {}
-  process.stderr.clearLine = () => {}
-
-  const createSpinner2 = require('../../../src/lib/helpers/createSpinner2')
-  const spinner = await createSpinner2()
-
-  ct.type(spinner, 'object')
-  ct.type(spinner.stop, 'function')
-  spinner.stop()
-
-  process.stderr.isTTY = previousIsTTY
-  process.stderr.cursorTo = previousCursorTo
-  process.stderr.clearLine = previousClearLine
-})
-
 t.test('listenForOpenKey returns noop when stdin is not a tty', ct => {
   const originalDescriptor = Object.getOwnPropertyDescriptor(process, 'stdin')
   const fakeStdin = new EventEmitter()

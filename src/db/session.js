@@ -17,26 +17,6 @@ const ARMOR = {
   VERSION_LAST_CHECK: 'DOTENVX_ARMOR_VERSION_LAST_CHECK'
 }
 
-const VLT = {
-  HOSTNAME: 'DOTENVX_VLT_HOSTNAME',
-  USER: 'DOTENVX_VLT_USER',
-  USERNAME: 'DOTENVX_VLT_USERNAME',
-  TOKEN: 'DOTENVX_VLT_TOKEN',
-  ON: 'DOTENVX_VLT_ON',
-  VERSION: 'DOTENVX_VLT_VERSION',
-  VERSION_LAST_CHECK: 'DOTENVX_VLT_VERSION_LAST_CHECK'
-}
-
-const OPS = {
-  HOSTNAME: 'DOTENVX_OPS_HOSTNAME',
-  USER: 'DOTENVX_OPS_USER',
-  USERNAME: 'DOTENVX_OPS_USERNAME',
-  TOKEN: 'DOTENVX_OPS_TOKEN',
-  ON: 'DOTENVX_OPS_ON',
-  VERSION: 'DOTENVX_OPS_VERSION',
-  VERSION_LAST_CHECK: 'DOTENVX_OPS_VERSION_LAST_CHECK'
-}
-
 class Session {
   constructor () {
     this.armor = new Armor()
@@ -84,7 +64,7 @@ class Session {
   // Get
   //
   getSetting (key) {
-    return this.store.get(ARMOR[key]) || this.store.get(VLT[key]) || this.store.get(OPS[key])
+    return this.store.get(ARMOR[key])
   }
 
   hostname () {
@@ -179,20 +159,6 @@ class Session {
     this.store.delete(ARMOR.ON)
     this.store.delete(ARMOR.VERSION)
     this.store.delete(ARMOR.VERSION_LAST_CHECK)
-    this.store.delete(VLT.USER)
-    this.store.delete(VLT.USERNAME)
-    this.store.delete(VLT.TOKEN)
-    this.store.delete(VLT.HOSTNAME)
-    this.store.delete(VLT.ON)
-    this.store.delete(VLT.VERSION)
-    this.store.delete(VLT.VERSION_LAST_CHECK)
-    this.store.delete(OPS.USER)
-    this.store.delete(OPS.USERNAME)
-    this.store.delete(OPS.TOKEN)
-    this.store.delete(OPS.HOSTNAME)
-    this.store.delete(OPS.ON)
-    this.store.delete(OPS.VERSION)
-    this.store.delete(OPS.VERSION_LAST_CHECK)
     return true
   }
 
