@@ -211,11 +211,11 @@ program.command('doctor', { hidden: true })
 
 // dotenvx login
 program.command('login', { hidden: true })
-  .description('')
+  .description('log in to your dotenvx account')
   .allowUnknownOption()
-  .action(() => {
-    const rawArgs = ['armor', 'login', ...process.argv.slice(3)]
-    executeDynamic(program, 'armor', rawArgs)
+  .option('--hostname <hostname>', 'set Armor ⛨ hostname')
+  .action(function (...args) {
+    return require('./actions/login').apply(this, args)
   })
 
 // dotenvx logout
