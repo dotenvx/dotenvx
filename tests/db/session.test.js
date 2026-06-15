@@ -44,6 +44,48 @@ t.test('Session validates login settings before saving', ct => {
   ct.end()
 })
 
+t.test('Session logout clears login settings when config exists', ct => {
+  const Session = require('../../src/db/session')
+  const sesh = new Session()
+
+  sesh.login('https://armor.example.com', 'user-id', 'scott', 'token-123')
+  ct.equal(sesh.status(), 'on')
+  ct.equal(sesh.logout('https://armor.example.com', 'user-id', 'token-123'), true)
+  ct.equal(sesh.username(), undefined)
+  ct.equal(sesh.token(), undefined)
+  ct.equal(sesh.hostname(), 'https://armor.dotenvx.com')
+  ct.equal(sesh.status(), 'off')
+  ct.end()
+})
+
+t.test('Session validates logout settings before clearing', ct => {
+  const Session = require('../../src/db/session')
+  const sesh = new Session()
+
+  ct.throws(() => sesh.logout(), /DOTENVX_ARMOR_HOSTNAME/)
+  ct.throws(() => sesh.logout('https://armor.example.com'), /DOTENVX_ARMOR_USER/)
+  ct.throws(() => sesh.logout('https://armor.example.com', 'user-id'), /DOTENVX_ARMOR_TOKEN/)
+  ct.end()
+})
+
+t.test('Session logout does not create config when config is absent', ct => {
+  const configPath = path.join(process.env.DOTENVX_CONFIG, '.env')
+  class FakeConf {
+    constructor () {
+      throw new Error('Conf should not be constructed')
+    }
+  }
+
+  const Session = proxyquire('../../src/db/session', {
+    conf: FakeConf
+  })
+  const sesh = new Session()
+
+  ct.equal(sesh.logout('https://armor.example.com', 'user-id', 'token-123'), true)
+  ct.notOk(fs.existsSync(configPath), 'config file is not created')
+  ct.end()
+})
+
 t.test('Session does not open config for status helpers when config is absent', async ct => {
   const configPath = path.join(process.env.DOTENVX_CONFIG, '.env')
   class FakeConf {
@@ -74,6 +116,7 @@ t.test('Session does not open config for status helpers when config is absent', 
   ct.equal(sesh.token(), undefined)
   ct.equal(sesh.on(), true)
   ct.equal(sesh.off(), false)
+  ct.equal(sesh.store, null)
   ct.equal(sesh.path(), configPath)
   ct.equal(sesh.noArmorSync(), true)
   ct.equal(await sesh.noArmor(), true)
@@ -133,23 +176,6 @@ t.test('Session reads existing config without login', ct => {
   ct.equal(sesh.username(), 'scott')
   ct.equal(sesh.token(), 'token-123')
   ct.equal(sesh.status(), 'on')
-  ct.end()
-})
-
-t.test('Session logout and on/off mirror Armor session behavior', ct => {
-  const Session = require('../../src/db/session')
-  const sesh = new Session()
-
-  ct.equal(sesh.status(), 'off')
-  ct.equal(sesh.turnOff(), 'false')
-  ct.equal(sesh.off(), true)
-  ct.equal(sesh.turnOn(), 'true')
-  sesh.login('https://armor.example.com', 'user-id', 'scott', 'token-123')
-  ct.equal(sesh.logout('https://armor.example.com', 'user-id', 'token-123'), true)
-  ct.equal(sesh.status(), 'off')
-  ct.throws(() => sesh.logout(), /DOTENVX_ARMOR_HOSTNAME/)
-  ct.throws(() => sesh.logout('https://armor.example.com'), /DOTENVX_ARMOR_USER/)
-  ct.throws(() => sesh.logout('https://armor.example.com', 'user-id'), /DOTENVX_ARMOR_TOKEN/)
   ct.end()
 })
 

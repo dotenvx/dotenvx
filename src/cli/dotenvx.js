@@ -215,9 +215,9 @@ program.command('login', { hidden: true })
 program.command('logout', { hidden: true })
   .description('log out of your dotenvx account')
   .allowUnknownOption()
-  .action(() => {
-    const rawArgs = ['armor', 'logout', ...process.argv.slice(3)]
-    executeDynamic(program, 'armor', rawArgs)
+  .option('--hostname <hostname>', 'set Armor ⛨ hostname')
+  .action(function (...args) {
+    return require('./actions/logout').apply(this, args)
   })
 
 // dotenvx help

@@ -1,7 +1,11 @@
 const fs = require('fs')
 const path = require('path')
+const Conf = require('conf')
+const dotenv = require('dotenv')
+const envPaths = require('env-paths')
 
 const Armor = require('./../lib/extensions/armor')
+const jsonToEnv = require('./../lib/helpers/jsonToEnv')
 const { logger } = require('./../shared/logger')
 
 const ARMOR = {
@@ -26,7 +30,6 @@ class Session {
   }
 
   _defaultConfigCwd () {
-    const envPaths = require('env-paths')
     return envPaths('dotenvx', { suffix: '' }).config
   }
 
@@ -34,37 +37,39 @@ class Session {
     return fs.existsSync(this._configPath())
   }
 
-  _openStore (create = false) {
-    if (!create && !this._store && !this._configExists()) {
+  _newStore () {
+    return new Conf({
+      cwd: process.env.DOTENVX_CONFIG || undefined,
+      projectName: 'dotenvx',
+      configName: '.env',
+      projectSuffix: '',
+      fileExtension: '',
+      serialize: function (json) {
+        return jsonToEnv(json)
+      },
+      // Convert .env format to an object
+      deserialize: function (env) {
+        return dotenv.parse(env)
+      }
+    })
+  }
+
+  createStore () {
+    if (!this._store) this._store = this._newStore()
+    return this._store
+  }
+
+  openStore () {
+    if (!this._store && !this._configExists()) {
       return null
     }
 
-    if (!this._store) {
-      const Conf = require('conf')
-      const dotenv = require('dotenv')
-      const jsonToEnv = require('./../lib/helpers/jsonToEnv')
-
-      this._store = new Conf({
-        cwd: process.env.DOTENVX_CONFIG || undefined,
-        projectName: 'dotenvx',
-        configName: '.env',
-        projectSuffix: '',
-        fileExtension: '',
-        serialize: function (json) {
-          return jsonToEnv(json)
-        },
-        // Convert .env format to an object
-        deserialize: function (env) {
-          return dotenv.parse(env)
-        }
-      })
-    }
-
+    if (!this._store) this._store = this._newStore()
     return this._store
   }
 
   get store () {
-    return this._openStore(true)
+    return this.openStore()
   }
 
   status () {
@@ -79,23 +84,23 @@ class Session {
   //
   // Get
   //
-  getSetting (key) {
-    const store = this._openStore(false)
+  readSetting (key) {
+    const store = this.openStore()
     if (!store) return undefined
 
     return store.get(ARMOR[key])
   }
 
   hostname () {
-    return this.getSetting('HOSTNAME') || 'https://armor.dotenvx.com'
+    return this.readSetting('HOSTNAME') || 'https://armor.dotenvx.com'
   }
 
   username () {
-    return this.getSetting('USERNAME') || undefined
+    return this.readSetting('USERNAME') || undefined
   }
 
   token () {
-    return this.getSetting('TOKEN') || undefined
+    return this.readSetting('TOKEN') || undefined
   }
 
   devicePublicKey () {
@@ -108,11 +113,11 @@ class Session {
   }
 
   on () {
-    return (this.getSetting('ON') || 'true') === 'true'
+    return (this.readSetting('ON') || 'true') === 'true'
   }
 
   off () {
-    return (this.getSetting('ON') || 'true') === 'false'
+    return (this.readSetting('ON') || 'true') === 'false'
   }
 
   async systemInformation () {
@@ -166,11 +171,12 @@ class Session {
       throw new Error('DOTENVX_ARMOR_TOKEN not set. Run [dotenvx login]')
     }
 
-    this.store.set(ARMOR.USER, id)
-    this.store.set(ARMOR.USERNAME, username)
-    this.store.set(ARMOR.TOKEN, accessToken)
-    this.store.set(ARMOR.HOSTNAME, hostname)
-    this.store.set(ARMOR.ON, 'true')
+    const store = this.createStore()
+    store.set(ARMOR.USER, id)
+    store.set(ARMOR.USERNAME, username)
+    store.set(ARMOR.TOKEN, accessToken)
+    store.set(ARMOR.HOSTNAME, hostname)
+    store.set(ARMOR.ON, 'true')
 
     return accessToken
   }
@@ -188,30 +194,17 @@ class Session {
       throw new Error('DOTENVX_ARMOR_TOKEN not set. Run [dotenvx login]')
     }
 
-    this.store.delete(ARMOR.USER)
-    this.store.delete(ARMOR.USERNAME)
-    this.store.delete(ARMOR.TOKEN)
-    this.store.delete(ARMOR.HOSTNAME)
-    this.store.delete(ARMOR.ON)
-    this.store.delete(ARMOR.VERSION)
-    this.store.delete(ARMOR.VERSION_LAST_CHECK)
+    const store = this.openStore()
+    if (!store) return true
+
+    store.delete(ARMOR.USER)
+    store.delete(ARMOR.USERNAME)
+    store.delete(ARMOR.TOKEN)
+    store.delete(ARMOR.HOSTNAME)
+    store.delete(ARMOR.ON)
+    store.delete(ARMOR.VERSION)
+    store.delete(ARMOR.VERSION_LAST_CHECK)
     return true
-  }
-
-  //
-  // on
-  //
-  turnOn () {
-    this.store.set(ARMOR.ON, 'true')
-    return 'true'
-  }
-
-  //
-  // off
-  //
-  turnOff () {
-    this.store.set(ARMOR.ON, 'false')
-    return 'false'
   }
 }
 
