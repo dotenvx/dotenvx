@@ -4,7 +4,7 @@ const FRAME_INTERVAL_MS = 80
 async function createSpinner (options = {}) {
   const stream = process.stderr
   const hasCursorControls = typeof stream.cursorTo === 'function' && typeof stream.clearLine === 'function'
-  const enabled = Boolean(stream.isTTY && hasCursorControls && !options.quiet && !options.verbose && !options.debug)
+  const enabled = Boolean(stream.isTTY && hasCursorControls && options.spinner !== false && !options.quiet && !options.verbose && !options.debug)
   if (!enabled) return null
 
   const text = options.text || 'thinking'

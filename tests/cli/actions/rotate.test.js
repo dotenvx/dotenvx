@@ -567,23 +567,6 @@ t.test('rotate - --no-ops passes noArmor true to Rotate service', async ct => {
   ct.end()
 })
 
-t.test('rotate - --no-vlt passes noArmor true to Rotate service', async ct => {
-  const optsStub = sinon.stub().returns({ vlt: false })
-  const fakeContext = { opts: optsStub }
-  const runStub = sinon.stub(Rotate.prototype, 'run').returns({
-    processedEnvs: [],
-    changedFilepaths: [],
-    unchangedFilepaths: []
-  })
-
-  await rotate.call(fakeContext)
-
-  t.ok(runStub.calledOnce, 'Rotate().run() called')
-  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
-
-  ct.end()
-})
-
 t.test('rotate - spinner stop is called for stdout/success/catch flows', async ct => {
   const stopStub = sinon.stub()
   const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })

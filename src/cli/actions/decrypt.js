@@ -13,8 +13,8 @@ async function decrypt () {
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const sesh = new Session()
   const envs = this.envs
+  const sesh = new Session()
   const noArmor = options.armor === false || (await sesh.noArmor())
 
   let errorCount = 0

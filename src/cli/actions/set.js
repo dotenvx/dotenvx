@@ -24,9 +24,9 @@ async function set (key, value) {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    const sesh = new Session()
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
+    const sesh = new Session()
     const noArmor = options.armor === false || (await sesh.noArmor())
     const noCreate = options.create === false
 

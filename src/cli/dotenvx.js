@@ -72,7 +72,6 @@ program.command('run')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('--token <token>', 'set Armor ⛨ token')
   .option('--no-armor', 'disable dotenvx-armor features')
-  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
   .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .action(function (...args) {
     this.envs = envs
@@ -96,7 +95,6 @@ program.command('get')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, colon, eval)', 'json')
   .option('--no-armor', 'disable dotenvx-armor features')
-  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
   .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .action(function (...args) {
     this.envs = envs
@@ -117,7 +115,6 @@ program.command('set')
   .option('-p, --plain', 'store value as plain text', false)
   .option('--no-create', 'do not create .env file(s) when missing')
   .option('--no-armor', 'disable dotenvx-armor features')
-  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
   .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .action(function (...args) {
     this.envs = envs
@@ -126,7 +123,7 @@ program.command('set')
 
 // dotenvx encrypt
 program.command('encrypt')
-  .description('convert .env file(s) to encrypted .env file(s)')
+  .description('encrypt .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
@@ -135,7 +132,6 @@ program.command('encrypt')
   .option('--token <token>', 'set Armor ⛨ token')
   .option('--no-create', 'do not create .env file(s) when missing')
   .option('--no-armor', 'disable dotenvx-armor features')
-  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
   .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .action(function (...args) {
     this.envs = envs
@@ -144,13 +140,12 @@ program.command('encrypt')
 
 // dotenvx decrypt
 program.command('decrypt')
-  .description('convert encrypted .env file(s) to plain .env file(s)')
+  .description('decrypt .env file(s)')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
   .option('--no-armor', 'disable dotenvx-armor features')
-  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
   .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
@@ -166,7 +161,6 @@ program.command('rotate')
   .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
   .option('--no-armor', 'disable dotenvx-armor features')
-  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
   .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .option('--stdout', 'send to stdout')
   .action(function (...args) {
@@ -182,7 +176,6 @@ program.command('keypair')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
   .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
   .option('--no-armor', 'disable dotenvx-armor features')
-  .addOption(new Option('--no-vlt', 'disable dotenvx-vlt features (deprecated. use --no-armor)').hideHelp())
   .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
@@ -211,20 +204,20 @@ program.command('doctor', { hidden: true })
 
 // dotenvx login
 program.command('login', { hidden: true })
-  .description('')
+  .description('log in to move keys off-device, share with your team, and audit access')
   .allowUnknownOption()
-  .action(() => {
-    const rawArgs = ['armor', 'login', ...process.argv.slice(3)]
-    executeDynamic(program, 'armor', rawArgs)
+  .option('--hostname <hostname>', 'set Armor ⛨ hostname')
+  .action(function (...args) {
+    return require('./actions/login').apply(this, args)
   })
 
 // dotenvx logout
 program.command('logout', { hidden: true })
-  .description('log out of your dotenvx account')
+  .description('log out of connected security features')
   .allowUnknownOption()
-  .action(() => {
-    const rawArgs = ['armor', 'logout', ...process.argv.slice(3)]
-    executeDynamic(program, 'armor', rawArgs)
+  .option('--hostname <hostname>', 'set Armor ⛨ hostname')
+  .action(function (...args) {
+    return require('./actions/logout').apply(this, args)
   })
 
 // dotenvx help
@@ -245,8 +238,10 @@ program.command('help [command]')
 
 // dotenvx armor
 program.addHelpText('after', ' ')
-program.addHelpText('after', 'Advanced: ')
-program.addHelpText('after', '  armor                    ⛨ ARMORED KEYS [www.dotenvx.com/armor]')
+program.addHelpText('after', 'Professional Security: ')
+program.addHelpText('after', '  login                    log in to move keys off-device, share with your team, and audit access')
+program.addHelpText('after', '  logout                   log out of connected security features')
+program.addHelpText('after', '  armor                    ⛨ move private keys off-device [www.dotenvx.com/armor]')
 program.addHelpText('after', '  ext                      ⊕ extensions')
 
 // dotenvx ext

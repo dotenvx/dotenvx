@@ -505,25 +505,6 @@ t.test('decrypt - --no-ops passes noArmor true to Decrypt service', async ct => 
   ct.end()
 })
 
-t.test('decrypt - --no-vlt passes noArmor true to Decrypt service', async ct => {
-  sinon.stub(process, 'exit')
-  sinon.stub(fsx, 'writeFileX')
-  const optsStub = sinon.stub().returns({ vlt: false })
-  const fakeContext = { opts: optsStub }
-  const runStub = sinon.stub(Decrypt.prototype, 'run').returns({
-    processedEnvs: [],
-    changedFilepaths: [],
-    unchangedFilepaths: []
-  })
-
-  await decrypt.call(fakeContext)
-
-  t.ok(runStub.calledOnce, 'Decrypt().run() called')
-  t.equal(runStub.thisValues[0].noArmor, true, 'noArmor true')
-
-  ct.end()
-})
-
 t.test('decrypt - spinner stop is called for stdout/success/catch flows', async ct => {
   const stopStub = sinon.stub()
   const createSpinnerStub = sinon.stub().resolves({ stop: stopStub })

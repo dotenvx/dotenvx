@@ -2119,8 +2119,8 @@ Commands:
   run                inject env at runtime [dotenvx run -- yourcommand]
   get [KEY]          return a single environment variable
   set <KEY> <value>  set a single environment variable
-  encrypt            convert .env file(s) to encrypted .env file(s)
-  decrypt            convert encrypted .env file(s) to plain .env file(s)
+  encrypt            encrypt .env file(s)
+  decrypt            decrypt .env file(s)
   keypair [KEY]      print public/private keys for .env file(s)
   ls [directory]     print all .env files in a tree structure
  

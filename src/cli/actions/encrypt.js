@@ -46,8 +46,8 @@ async function encrypt () {
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const sesh = new Session()
   const envs = this.envs
+  const sesh = new Session()
   const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
   const noCreate = options.create === false
 

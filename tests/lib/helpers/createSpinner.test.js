@@ -13,6 +13,23 @@ t.test('createSpinner returns null when disabled', async (ct) => {
   ct.end()
 })
 
+t.test('createSpinner returns null when spinner option is false', async (ct) => {
+  const previousIsTTY = process.stderr.isTTY
+  const previousCursorTo = process.stderr.cursorTo
+  const previousClearLine = process.stderr.clearLine
+  process.stderr.isTTY = true
+  process.stderr.cursorTo = () => {}
+  process.stderr.clearLine = () => {}
+
+  const spinner = await createSpinner({ spinner: false })
+  ct.equal(spinner, null)
+
+  process.stderr.isTTY = previousIsTTY
+  process.stderr.cursorTo = previousCursorTo
+  process.stderr.clearLine = previousClearLine
+  ct.end()
+})
+
 t.test('createSpinner creates and starts spinner when enabled', async (ct) => {
   const previousIsTTY = process.stderr.isTTY
   const previousCursorTo = process.stderr.cursorTo

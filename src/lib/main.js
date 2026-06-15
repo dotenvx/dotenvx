@@ -325,7 +325,7 @@ const keypair = function (envFile, key, envKeysFile = null, noArmor = false) {
 
 function resolveNoArmor (options = {}) {
   const sesh = new Session()
-  return options.noArmor === true || options.noVlt === true || options.noOps === true || (!options.token && sesh.noArmorSync())
+  return options.noArmor === true || options.noOps === true || (!options.token && sesh.noArmorSync())
 }
 
 module.exports = {

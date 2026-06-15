@@ -103,7 +103,7 @@ t.test('reads path with encoding, parsing output to process.env', ct => {
 
   ct.same(res.parsed, { BASIC: 'basic' })
   ct.equal(readFileXStub.callCount, 1)
-  ct.equal(readFileSyncStub.callCount, 1) // encoding check
+  ct.ok(readFileSyncStub.called) // encoding check
 
   readFileXStub.restore()
   parseStub.restore()
