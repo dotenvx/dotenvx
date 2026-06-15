@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.71.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.72.0...main)
+
+## [1.72.0](https://github.com/dotenvx/dotenvx/compare/v1.71.3...v1.72.0) (2026-06-15)
+
+### Added
+
+* Move `armor login` command to first class `dotenvx login` command. ([#836](https://github.com/dotenvx/dotenvx/pull/836))
+* `dotenvx` remains local-first: login is optional and only needed when you want Armor features like moving keys off-device, team sharing, and audit access.
 
 ## [1.71.3](https://github.com/dotenvx/dotenvx/compare/v1.71.2...v1.71.3) (2026-06-11)
 
