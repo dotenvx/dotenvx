@@ -4,7 +4,7 @@ const { logger } = require('./../../shared/logger')
 const Decrypt = require('./../../lib/services/decrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
+const { noArmor: armorIsOff } = require('../../lib/helpers/armorStatus')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 async function decrypt () {
@@ -13,9 +13,8 @@ async function decrypt () {
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const sesh = new Session()
   const envs = this.envs
-  const noArmor = options.armor === false || (await sesh.noArmor())
+  const noArmor = options.armor === false || (await armorIsOff())
 
   let errorCount = 0
 

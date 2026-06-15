@@ -44,6 +44,26 @@ t.test('Session validates login settings before saving', ct => {
   ct.end()
 })
 
+t.test('Session supports default config path when DOTENVX_CONFIG is unset', ct => {
+  delete process.env.DOTENVX_CONFIG
+  let confOptions
+  class FakeConf {
+    constructor (options) {
+      confOptions = options
+      this.path = 'default-path'
+    }
+  }
+
+  const Session = proxyquire('../../src/db/session', {
+    conf: FakeConf
+  })
+  const sesh = new Session()
+
+  ct.equal(sesh.path(), 'default-path')
+  ct.equal(confOptions.cwd, undefined)
+  ct.end()
+})
+
 t.test('Session logout and on/off mirror Armor session behavior', ct => {
   const Session = require('../../src/db/session')
   const sesh = new Session()

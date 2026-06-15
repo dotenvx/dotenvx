@@ -5,7 +5,7 @@ const executeCommand = require('./../../lib/helpers/executeCommand')
 const Run = require('./../../lib/services/run')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
+const { noArmor: armorIsOff } = require('../../lib/helpers/armorStatus')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 const conventions = require('./../../lib/helpers/conventions')
@@ -21,8 +21,7 @@ async function run () {
 
   const ignore = options.ignore || []
 
-  const sesh = new Session()
-  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+  const noArmor = options.armor === false || (!options.token && (await armorIsOff()))
 
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()

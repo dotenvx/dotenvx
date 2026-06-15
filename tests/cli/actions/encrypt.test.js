@@ -707,7 +707,8 @@ t.test('encrypt - --token uses Armor even when session status is off', async ct 
 
   const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
     './../../lib/services/encrypt': EncryptMock,
-    '../../db/session': SessionMock
+    '../../db/session': SessionMock,
+    '../../lib/helpers/armorStatus': { noArmor: sessionNoArmorStub }
   })
 
   await encryptWithMock.call({ opts: () => ({ token: 'token-123' }), envs: [] })
@@ -744,7 +745,8 @@ t.test('encrypt stops spinner before Encrypt service', async ct => {
   const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
     './../../lib/services/encrypt': EncryptMock,
     '../../lib/helpers/createSpinner': createSpinnerStub,
-    '../../db/session': SessionMock
+    '../../db/session': SessionMock,
+    '../../lib/helpers/armorStatus': { noArmor: async () => false }
   })
 
   await encryptWithMock.call({ opts: () => ({}), envs: [] })
@@ -792,7 +794,8 @@ t.test('encrypt passes memoized key storage selector when Armor is enabled', asy
     './../../lib/services/encrypt': EncryptMock,
     '../../lib/helpers/createSpinner': createSpinnerStub,
     '../../lib/helpers/prompts': { select: selectStub },
-    '../../db/session': SessionMock
+    '../../db/session': SessionMock,
+    '../../lib/helpers/armorStatus': { noArmor: async () => false }
   })
 
   await encryptWithMock.call({ opts: () => ({}), envs: [] })
@@ -872,7 +875,8 @@ t.test('encrypt --stdout stops spinner before Encrypt service', async ct => {
   const encryptWithMock = proxyquire('../../../src/cli/actions/encrypt', {
     './../../lib/services/encrypt': EncryptMock,
     '../../lib/helpers/createSpinner': createSpinnerStub,
-    '../../db/session': SessionMock
+    '../../db/session': SessionMock,
+    '../../lib/helpers/armorStatus': { noArmor: async () => false }
   })
 
   await encryptWithMock.call({ opts: () => ({ stdout: true }), envs: [] })
@@ -911,7 +915,8 @@ t.test('encrypt - spinner stop is called for stdout/success/catch flows', async 
     './../../lib/services/encrypt': EncryptMock,
     '../../lib/helpers/createSpinner': createSpinnerStub,
     '../../lib/helpers/catchAndLog': catchAndLogStub,
-    '../../db/session': SessionMock
+    '../../db/session': SessionMock,
+    '../../lib/helpers/armorStatus': { noArmor: sessionStub }
   })
 
   await encryptWithSpinner.call({ opts: () => ({ stdout: true }), envs: [] })
@@ -930,7 +935,8 @@ t.test('encrypt - spinner stop is called for stdout/success/catch flows', async 
     './../../lib/services/encrypt': EncryptThrowsMock,
     '../../lib/helpers/createSpinner': createSpinnerStub,
     '../../lib/helpers/catchAndLog': catchAndLogStub,
-    '../../db/session': SessionMock
+    '../../db/session': SessionMock,
+    '../../lib/helpers/armorStatus': { noArmor: sessionStub }
   })
 
   await encryptWithSpinnerAndError.call({ opts: () => ({}), envs: [] })

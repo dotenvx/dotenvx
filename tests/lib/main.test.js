@@ -13,7 +13,6 @@ const Get = require('../../src/lib/services/get')
 const Keypair = require('../../src/lib/services/keypair')
 const Doctor = require('../../src/lib/services/doctor')
 const Genexample = require('../../src/lib/services/genexample')
-const Session = require('../../src/db/session')
 const Errors = require('../../src/lib/helpers/errors')
 
 const fsx = require('../../src/lib/helpers/fsx')
@@ -108,7 +107,6 @@ t.test('config supports noSpinner option',
 t.test('config supports token option',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
-    sinon.stub(Session.prototype, 'noArmorSync').returns(true)
     stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
 
     main.config({ token: 'token-123' })

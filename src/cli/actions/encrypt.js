@@ -6,7 +6,7 @@ const Encrypt = require('./../../lib/services/encrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prompts = require('../../lib/helpers/prompts')
-const Session = require('../../db/session')
+const { noArmor: armorIsOff } = require('../../lib/helpers/armorStatus')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 function keyStorageSelector () {
@@ -46,9 +46,8 @@ async function encrypt () {
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const sesh = new Session()
   const envs = this.envs
-  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+  const noArmor = options.armor === false || (!options.token && (await armorIsOff()))
   const noCreate = options.create === false
 
   // stdout - should not have a try so that exit codes can surface to stdout

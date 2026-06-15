@@ -2,7 +2,7 @@ const { logger } = require('./../../shared/logger')
 
 const Keypair = require('./../../lib/services/keypair')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
+const { noArmor: armorIsOff } = require('../../lib/helpers/armorStatus')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 async function keypair (key) {
@@ -16,8 +16,7 @@ async function keypair (key) {
 
   const prettyPrint = options.prettyPrint || options.pp
 
-  const sesh = new Session()
-  const noArmor = options.armor === false || await sesh.noArmor()
+  const noArmor = options.armor === false || await armorIsOff()
   if (spinner) spinner.stop()
   const keypairs = await new Keypair(options.envFile, options.envKeysFile, noArmor, {
     command: process.argv.slice(2)

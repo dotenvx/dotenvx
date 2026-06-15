@@ -1,12 +1,3 @@
-const Armor = require('./../lib/extensions/armor')
-const Conf = require('conf')
-const dotenv = require('dotenv')
-const si = require('systeminformation')
-
-const Device = require('./device')
-const jsonToEnv = require('./../lib/helpers/jsonToEnv')
-const { logger } = require('./../shared/logger')
-
 const ARMOR = {
   HOSTNAME: 'DOTENVX_ARMOR_HOSTNAME',
   USER: 'DOTENVX_ARMOR_USER',
@@ -19,36 +10,32 @@ const ARMOR = {
 
 class Session {
   constructor () {
-    this.armor = new Armor()
-    this.store = new Conf({
-      cwd: process.env.DOTENVX_CONFIG || undefined,
-      projectName: 'dotenvx',
-      configName: '.env',
-      projectSuffix: '',
-      fileExtension: '',
-      serialize: function (json) {
-        return jsonToEnv(json)
-      },
-      // Convert .env format to an object
-      deserialize: function (env) {
-        return dotenv.parse(env)
-      }
-    })
+    this._store = null
   }
 
-  //
-  // armor status helpers
-  //
-  async noArmor () {
-    const status = await this.armor.status()
-    logger.debug(`armor: ${status}`)
-    return status === 'off'
-  }
+  get store () {
+    if (!this._store) {
+      const Conf = require('conf')
+      const dotenv = require('dotenv')
+      const jsonToEnv = require('./../lib/helpers/jsonToEnv')
 
-  noArmorSync () {
-    const status = this.armor.statusSync()
-    logger.debug(`armor: ${status}`)
-    return status === 'off'
+      this._store = new Conf({
+        cwd: process.env.DOTENVX_CONFIG || undefined,
+        projectName: 'dotenvx',
+        configName: '.env',
+        projectSuffix: '',
+        fileExtension: '',
+        serialize: function (json) {
+          return jsonToEnv(json)
+        },
+        // Convert .env format to an object
+        deserialize: function (env) {
+          return dotenv.parse(env)
+        }
+      })
+    }
+
+    return this._store
   }
 
   status () {
@@ -80,6 +67,7 @@ class Session {
   }
 
   devicePublicKey () {
+    const Device = require('./device')
     return new Device().publicKey()
   }
 
@@ -96,6 +84,7 @@ class Session {
   }
 
   async systemInformation () {
+    const si = require('systeminformation')
     const system = await si.system()
     const osInfo = await si.osInfo()
 

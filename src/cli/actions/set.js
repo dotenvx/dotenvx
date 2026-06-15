@@ -3,7 +3,7 @@ const { logger } = require('./../../shared/logger')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
+const { noArmor: armorIsOff } = require('../../lib/helpers/armorStatus')
 const Sets = require('./../../lib/services/sets')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
@@ -24,10 +24,9 @@ async function set (key, value) {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    const sesh = new Session()
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const noArmor = options.armor === false || (await sesh.noArmor())
+    const noArmor = options.armor === false || (await armorIsOff())
     const noCreate = options.create === false
 
     if (spinner) spinner.stop()
