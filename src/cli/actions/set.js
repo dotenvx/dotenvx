@@ -3,7 +3,7 @@ const { logger } = require('./../../shared/logger')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const { noArmor: armorIsOff } = require('../../lib/helpers/armorStatus')
+const Session = require('../../db/session')
 const Sets = require('./../../lib/services/sets')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
@@ -26,7 +26,8 @@ async function set (key, value) {
   try {
     const envs = this.envs
     const envKeysFilepath = options.envKeysFile
-    const noArmor = options.armor === false || (await armorIsOff())
+    const sesh = new Session()
+    const noArmor = options.armor === false || (await sesh.noArmor())
     const noCreate = options.create === false
 
     if (spinner) spinner.stop()

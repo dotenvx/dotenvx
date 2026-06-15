@@ -13,7 +13,7 @@ const Sets = require('./services/sets')
 const Get = require('./services/get')
 const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
-const { noArmorSync } = require('./helpers/armorStatus')
+const Session = require('./../db/session')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
@@ -324,7 +324,8 @@ const keypair = function (envFile, key, envKeysFile = null, noArmor = false) {
 }
 
 function resolveNoArmor (options = {}) {
-  return options.noArmor === true || options.noOps === true || (!options.token && noArmorSync())
+  const sesh = new Session()
+  return options.noArmor === true || options.noOps === true || (!options.token && sesh.noArmorSync())
 }
 
 module.exports = {

@@ -1,3 +1,9 @@
+const fs = require('fs')
+const path = require('path')
+
+const Armor = require('./../lib/extensions/armor')
+const { logger } = require('./../shared/logger')
+
 const ARMOR = {
   HOSTNAME: 'DOTENVX_ARMOR_HOSTNAME',
   USER: 'DOTENVX_ARMOR_USER',
@@ -10,10 +16,29 @@ const ARMOR = {
 
 class Session {
   constructor () {
+    this.armor = new Armor()
     this._store = null
   }
 
-  get store () {
+  _configPath () {
+    const cwd = process.env.DOTENVX_CONFIG || this._defaultConfigCwd()
+    return path.resolve(cwd, '.env')
+  }
+
+  _defaultConfigCwd () {
+    const envPaths = require('env-paths')
+    return envPaths('dotenvx', { suffix: '' }).config
+  }
+
+  _configExists () {
+    return fs.existsSync(this._configPath())
+  }
+
+  _openStore (create = false) {
+    if (!create && !this._store && !this._configExists()) {
+      return null
+    }
+
     if (!this._store) {
       const Conf = require('conf')
       const dotenv = require('dotenv')
@@ -38,6 +63,10 @@ class Session {
     return this._store
   }
 
+  get store () {
+    return this._openStore(true)
+  }
+
   status () {
     // if logged in
     if (this.username() && this.token() && this.on()) {
@@ -51,7 +80,10 @@ class Session {
   // Get
   //
   getSetting (key) {
-    return this.store.get(ARMOR[key])
+    const store = this._openStore(false)
+    if (!store) return undefined
+
+    return store.get(ARMOR[key])
   }
 
   hostname () {
@@ -72,7 +104,7 @@ class Session {
   }
 
   path () {
-    return this.store.path
+    return this._store ? this._store.path : this._configPath()
   }
 
   on () {
@@ -97,6 +129,21 @@ class Session {
 
   async notifyUpdate () {
     // native login keeps this lightweight; sidecar commands still handle full update messaging
+  }
+
+  //
+  // armor status helpers
+  //
+  async noArmor () {
+    const status = await this.armor.status()
+    logger.debug(`armor: ${status}`)
+    return status === 'off'
+  }
+
+  noArmorSync () {
+    const status = this.armor.statusSync()
+    logger.debug(`armor: ${status}`)
+    return status === 'off'
   }
 
   //

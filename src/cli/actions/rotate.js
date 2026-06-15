@@ -5,7 +5,7 @@ const Rotate = require('./../../lib/services/rotate')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const { noArmor: armorIsOff } = require('../../lib/helpers/armorStatus')
+const Session = require('../../db/session')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
 async function rotate () {
@@ -15,7 +15,8 @@ async function rotate () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const envs = this.envs
-  const noArmor = options.armor === false || (await armorIsOff())
+  const sesh = new Session()
+  const noArmor = options.armor === false || (await sesh.noArmor())
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {

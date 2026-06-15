@@ -44,13 +44,70 @@ t.test('Session validates login settings before saving', ct => {
   ct.end()
 })
 
+t.test('Session does not open config for status helpers when config is absent', async ct => {
+  const configPath = path.join(process.env.DOTENVX_CONFIG, '.env')
+  class FakeConf {
+    constructor () {
+      throw new Error('Conf should not be constructed')
+    }
+  }
+
+  class ArmorMock {
+    async status () {
+      return 'off'
+    }
+
+    statusSync () {
+      return 'off'
+    }
+  }
+
+  const Session = proxyquire('../../src/db/session', {
+    conf: FakeConf,
+    './../lib/extensions/armor': ArmorMock
+  })
+  const sesh = new Session()
+
+  ct.equal(sesh.status(), 'off')
+  ct.equal(sesh.hostname(), 'https://armor.dotenvx.com')
+  ct.equal(sesh.username(), undefined)
+  ct.equal(sesh.token(), undefined)
+  ct.equal(sesh.on(), true)
+  ct.equal(sesh.off(), false)
+  ct.equal(sesh.path(), configPath)
+  ct.equal(sesh.noArmorSync(), true)
+  ct.equal(await sesh.noArmor(), true)
+  ct.notOk(fs.existsSync(configPath), 'config file is not created')
+})
+
 t.test('Session supports default config path when DOTENVX_CONFIG is unset', ct => {
+  delete process.env.DOTENVX_CONFIG
+  const Session = proxyquire('../../src/db/session', {
+    'env-paths': () => ({ config: '/tmp/default-dotenvx-config' })
+  })
+  const sesh = new Session()
+
+  ct.equal(sesh.path(), '/tmp/default-dotenvx-config/.env')
+  ct.equal(sesh.hostname(), 'https://armor.dotenvx.com')
+  ct.end()
+})
+
+t.test('Session creates default store on login when DOTENVX_CONFIG is unset', ct => {
   delete process.env.DOTENVX_CONFIG
   let confOptions
   class FakeConf {
     constructor (options) {
       confOptions = options
       this.path = 'default-path'
+      this.values = {}
+    }
+
+    get (key) {
+      return this.values[key]
+    }
+
+    set (key, value) {
+      this.values[key] = value
     }
   }
 
@@ -59,8 +116,23 @@ t.test('Session supports default config path when DOTENVX_CONFIG is unset', ct =
   })
   const sesh = new Session()
 
-  ct.equal(sesh.path(), 'default-path')
+  ct.equal(sesh.login('https://armor.example.com', 'user-id', 'scott', 'token-123'), 'token-123')
   ct.equal(confOptions.cwd, undefined)
+  ct.equal(sesh.path(), 'default-path')
+  ct.end()
+})
+
+t.test('Session reads existing config without login', ct => {
+  const configPath = path.join(process.env.DOTENVX_CONFIG, '.env')
+  fs.writeFileSync(configPath, 'DOTENVX_ARMOR_HOSTNAME="https://armor.example.com"\nDOTENVX_ARMOR_USERNAME="scott"\nDOTENVX_ARMOR_TOKEN="token-123"\n', 'utf8')
+
+  const Session = require('../../src/db/session')
+  const sesh = new Session()
+
+  ct.equal(sesh.hostname(), 'https://armor.example.com')
+  ct.equal(sesh.username(), 'scott')
+  ct.equal(sesh.token(), 'token-123')
+  ct.equal(sesh.status(), 'on')
   ct.end()
 })
 

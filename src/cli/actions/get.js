@@ -4,7 +4,7 @@ const conventions = require('./../../lib/helpers/conventions')
 const escape = require('./../../lib/helpers/escape')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const { noArmor: armorIsOff } = require('../../lib/helpers/armorStatus')
+const Session = require('../../db/session')
 const Get = require('./../../lib/services/get')
 const normalizeArmorOptions = require('./normalizeArmorOptions')
 
@@ -29,7 +29,8 @@ async function get (key) {
   }
 
   try {
-    const noArmor = options.armor === false || (await armorIsOff())
+    const sesh = new Session()
+    const noArmor = options.armor === false || (await sesh.noArmor())
     if (spinner) spinner.stop()
     const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noArmor, {
       command: process.argv.slice(2)
