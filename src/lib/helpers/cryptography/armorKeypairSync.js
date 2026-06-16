@@ -22,8 +22,8 @@ function armorKeypairSync (_existingPublicKey, options = {}) {
   const privateKeyName = Object.keys(keypairs).find((key) => key === 'DOTENV_PRIVATE_KEY' || key.startsWith('DOTENV_PRIVATE_KEY_'))
 
   return {
-    publicKey: publicKeyName ? keypairs[publicKeyName] : undefined,
-    privateKey: privateKeyName ? keypairs[privateKeyName] : undefined
+    publicKey: keypairs[publicKeyName],
+    privateKey: keypairs[privateKeyName]
   }
 }
 

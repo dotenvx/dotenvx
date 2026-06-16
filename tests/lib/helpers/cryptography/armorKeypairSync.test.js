@@ -92,3 +92,16 @@ t.test('armorKeypairSync returns empty keys when native command fails or returns
   })
   ct.end()
 })
+
+t.test('armorKeypairSync returns empty keys when native command returns no key names', ct => {
+  const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({})))
+  const armorKeypairSync = loadArmorKeypairSync(execFileSync)
+
+  const out = armorKeypairSync('existing_pub')
+
+  ct.same(out, {
+    publicKey: undefined,
+    privateKey: undefined
+  })
+  ct.end()
+})
