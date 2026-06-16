@@ -1,6 +1,8 @@
 const path = require('path')
 const childProcess = require('child_process')
 
+const EXEC_TIMEOUT = 5 * 60 * 1000
+
 function cliPath () {
   return path.resolve(__dirname, '../../../cli/dotenvx.js')
 }
@@ -12,7 +14,8 @@ function armorKeypairSync (_existingPublicKey, options = {}) {
   let keypairs = {}
   try {
     keypairs = JSON.parse(childProcess.execFileSync(process.execPath, args, {
-      stdio: ['inherit', 'pipe', 'inherit']
+      stdio: ['inherit', 'pipe', 'inherit'],
+      timeout: EXEC_TIMEOUT
     }).toString().trim())
   } catch (_error) {
     keypairs = {}

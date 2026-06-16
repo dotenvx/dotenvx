@@ -11,7 +11,7 @@ function loadArmorKeypairSync (execFileSync) {
   })
 }
 
-t.test('armorKeypairSync runs native dotenvx keypair command', ct => {
+t.test('armorKeypairSync runs dotenvx keypair command for blocking approval flow', ct => {
   const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
     DOTENV_PUBLIC_KEY: 'armor_pub_123',
     DOTENV_PRIVATE_KEY: 'armor_priv_123'
@@ -31,12 +31,13 @@ t.test('armorKeypairSync runs native dotenvx keypair command', ct => {
     '--format',
     'json'
   ], {
-    stdio: ['inherit', 'pipe', 'inherit']
+    stdio: ['inherit', 'pipe', 'inherit'],
+    timeout: 5 * 60 * 1000
   }])
   ct.end()
 })
 
-t.test('armorKeypairSync forwards env filepath to native read-only keypair command', ct => {
+t.test('armorKeypairSync forwards env filepath to read-only keypair command', ct => {
   const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
     DOTENV_PUBLIC_KEY_PRODUCTION: 'armor_pub_abc',
     DOTENV_PRIVATE_KEY_PRODUCTION: 'armor_priv_abc'
