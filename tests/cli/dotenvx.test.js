@@ -16,6 +16,8 @@ t.test('login and logout remain hidden from default command list', ct => {
   ct.match(src, /program\.command\('logout', \{ hidden: true \}\)/)
   ct.match(src, /\.description\('log out of connected security features'\)/)
   ct.match(src, /program\.addHelpText\('after', '\s{2}logout\s+log out of connected security features'\)/)
+  ct.match(src, /program\.command\('armor', \{ hidden: true \}\)/)
+  ct.notMatch(src, /program\.addCommand\(require\('\.\/commands\/armor'\), \{ hidden: true \}\)/)
   ct.end()
 })
 
@@ -66,31 +68,34 @@ t.test('logout resolves through native action', (ct) => {
 })
 
 t.test('armor resolves through native command', (ct) => {
-  const { Command } = require('commander')
-  const armorCommand = new Command('armor')
   const executeDynamicStub = sinon.stub()
+  const configureArmorCommandStub = sinon.stub().callsFake((armorCommand) => {
+    armorCommand
+      .command('up')
+      .allowUnknownOption()
+      .option('--hostname <hostname>', 'set hostname')
+      .action(function (...args) {
+        return upStub.apply(this, args)
+      })
+
+    return armorCommand
+  })
   const upStub = sinon.stub()
   const processExitStub = sinon.stub(process, 'exit')
   const originalArgv = process.argv
 
-  armorCommand
-    .command('up')
-    .allowUnknownOption()
-    .option('--hostname <hostname>', 'set hostname')
-    .action(function (...args) {
-      return upStub.apply(this, args)
-    })
-
   process.argv = ['node', 'dotenvx', 'armor', 'up', '--hostname', 'api.example.com']
 
   proxyquire('../../src/cli/dotenvx', {
-    './commands/armor': armorCommand,
+    './commands/armor': configureArmorCommandStub,
     './../lib/helpers/executeDynamic': executeDynamicStub,
     './../lib/helpers/getCommanderVersion': () => '11.1.0'
   })
 
   ct.equal(processExitStub.callCount, 0, 'process.exit is not called for native armor command')
   ct.equal(executeDynamicStub.callCount, 0, 'executeDynamic is not called')
+  ct.equal(configureArmorCommandStub.callCount, 1, 'armor command is configured')
+  ct.equal(configureArmorCommandStub.firstCall.args[0].name(), 'armor', 'configures native armor command')
   ct.equal(upStub.callCount, 1, 'armor up action is called')
   ct.equal(upStub.firstCall.thisValue.opts().hostname, 'api.example.com', 'hostname option is parsed')
 

@@ -1,10 +1,12 @@
 const t = require('tap')
 const { execFileSync } = require('child_process')
 const sinon = require('sinon')
+const { Command } = require('commander')
 
-const armor = require('../../../src/cli/commands/armor')
+const configureArmorCommand = require('../../../src/cli/commands/armor')
 const Session = require('../../../src/db/session')
 
+const armor = configureArmorCommand(new Command('armor'))
 const commandsWithToken = ['up', 'down', 'push', 'pull', 'move']
 
 t.test('armor subcommands accept explicit token option', async (ct) => {

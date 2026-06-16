@@ -245,7 +245,7 @@ program.addHelpText('after', '  armor                    ⛨ move private keys o
 program.addHelpText('after', '  ext                      ⊕ extensions')
 
 // dotenvx armor
-program.addCommand(require('./commands/armor'), { hidden: true })
+require('./commands/armor')(program.command('armor', { hidden: true }))
 
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
