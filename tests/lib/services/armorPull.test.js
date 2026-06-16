@@ -1,19 +1,19 @@
 const t = require('tap')
 const sinon = require('sinon')
 
-const dotenvxPath = require.resolve('../../../src/lib/main')
+const readEnvKeyPath = require.resolve('../../../src/lib/helpers/readEnvKey')
 const promptsPath = require.resolve('../../../src/lib/helpers/prompts')
 const postArmorPullPath = require.resolve('../../../src/lib/api/postArmorPull')
 const upsertEnvKeyPath = require.resolve('../../../src/lib/helpers/upsertEnvKey')
 const armorPullPath = require.resolve('../../../src/lib/services/armorPull')
 
-function loadArmorPullWithStubs ({ dotenvxExport, promptsExport, postArmorPullExport, upsertEnvKeyExport }) {
-  const originalDotenvx = require(dotenvxPath)
+function loadArmorPullWithStubs ({ readEnvKeyExport, promptsExport, postArmorPullExport, upsertEnvKeyExport }) {
+  const originalReadEnvKey = require(readEnvKeyPath)
   const originalPrompts = require(promptsPath)
   const originalPostArmorPull = require(postArmorPullPath)
   const originalUpsertEnvKey = require(upsertEnvKeyPath)
 
-  require.cache[dotenvxPath].exports = dotenvxExport
+  require.cache[readEnvKeyPath].exports = readEnvKeyExport
   require.cache[promptsPath].exports = promptsExport
   require.cache[postArmorPullPath].exports = postArmorPullExport
   require.cache[upsertEnvKeyPath].exports = upsertEnvKeyExport
@@ -21,7 +21,7 @@ function loadArmorPullWithStubs ({ dotenvxExport, promptsExport, postArmorPullEx
   require(armorPullPath)
 
   return () => {
-    require.cache[dotenvxPath].exports = originalDotenvx
+    require.cache[readEnvKeyPath].exports = originalReadEnvKey
     require.cache[promptsPath].exports = originalPrompts
     require.cache[postArmorPullPath].exports = originalPostArmorPull
     require.cache[upsertEnvKeyPath].exports = originalUpsertEnvKey
@@ -43,7 +43,7 @@ t.test('ArmorPull reads environment-specific public key and upserts private key'
     this.args = { hostname, token, devicePublicKey, publicKey, team }
   })
   const restore = loadArmorPullWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorPullExport: PostArmorPullStub,
     upsertEnvKeyExport: upsertStub
@@ -57,11 +57,9 @@ t.test('ArmorPull reads environment-specific public key and upserts private key'
 
   const result = await new ArmorPull('https://armor.dotenvx.com', 'token-1', 'device-pub-1', '.env.production').run()
 
-  ct.same(getStub.firstCall && getStub.firstCall.args, ['DOTENV_PUBLIC_KEY_PRODUCTION', {
-    path: '.env.production',
+  ct.same(getStub.firstCall && getStub.firstCall.args, ['DOTENV_PUBLIC_KEY_PRODUCTION', '.env.production', {
     strict: true,
-    ignore: ['MISSING_PRIVATE_KEY'],
-    noArmor: true
+    ignore: ['MISSING_PRIVATE_KEY']
   }], 'reads mapped public key name from env file')
   ct.equal(selectStub.callCount, 0, 'does not prompt before first api request')
   ct.same(PostArmorPullStub.firstCall && PostArmorPullStub.firstCall.args, ['https://armor.dotenvx.com', 'token-1', 'device-pub-1', 'pub-from-env', undefined], 'sends public key without team first')
@@ -89,7 +87,7 @@ t.test('ArmorPull returns unchanged when .env.keys already has the private key',
     this.args = { hostname, token, devicePublicKey, publicKey, team }
   })
   const restore = loadArmorPullWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: sandbox.stub() },
     postArmorPullExport: PostArmorPullStub,
     upsertEnvKeyExport: upsertStub
@@ -122,7 +120,7 @@ t.test('ArmorPull sends explicit team without prompt or retry', async (ct) => {
     this.args = { hostname, token, devicePublicKey, publicKey, team }
   })
   const restore = loadArmorPullWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorPullExport: PostArmorPullStub,
     upsertEnvKeyExport: upsertStub
@@ -176,7 +174,7 @@ t.test('ArmorPull prompts for team and retries when api requires team', async (c
     this.args = { hostname, token, devicePublicKey, publicKey, team }
   })
   const restore = loadArmorPullWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorPullExport: PostArmorPullStub,
     upsertEnvKeyExport: upsertStub
@@ -218,6 +216,7 @@ t.test('ArmorPull prompts for team and retries when api requires team', async (c
 
 t.test('ArmorPull uses only team from required error meta without prompting', async (ct) => {
   const sandbox = sinon.createSandbox()
+  const getStub = sandbox.stub().returns('pub-from-env')
   const requiredError = new Error('[DOTENVX_TEAM_REQUIRED] choose a team for armor pull')
   requiredError.code = 'DOTENVX_TEAM_REQUIRED'
   requiredError.meta = {
@@ -237,7 +236,7 @@ t.test('ArmorPull uses only team from required error meta without prompting', as
     this.args = { hostname, token, devicePublicKey, publicKey, team }
   })
   const restore = loadArmorPullWithStubs({
-    dotenvxExport: { get: sandbox.stub().returns('pub-from-env') },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorPullExport: PostArmorPullStub,
     upsertEnvKeyExport: upsertStub
@@ -258,13 +257,14 @@ t.test('ArmorPull uses only team from required error meta without prompting', as
 
 t.test('ArmorPull rethrows non-team-required api errors', async (ct) => {
   const sandbox = sinon.createSandbox()
+  const getStub = sandbox.stub().returns('pub-from-env')
   const expectedError = new Error('boom')
   expectedError.code = 'UNAUTHORIZED'
   const PostArmorPullStub = sandbox.stub().callsFake(function () {
     this.run = sandbox.stub().rejects(expectedError)
   })
   const restore = loadArmorPullWithStubs({
-    dotenvxExport: { get: sandbox.stub().returns('pub-from-env') },
+    readEnvKeyExport: getStub,
     promptsExport: { select: sandbox.stub() },
     postArmorPullExport: PostArmorPullStub,
     upsertEnvKeyExport: sandbox.stub()

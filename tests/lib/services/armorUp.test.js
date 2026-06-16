@@ -1,19 +1,19 @@
 const t = require('tap')
 const sinon = require('sinon')
 
-const dotenvxPath = require.resolve('../../../src/lib/main')
+const readEnvKeyPath = require.resolve('../../../src/lib/helpers/readEnvKey')
 const promptsPath = require.resolve('../../../src/lib/helpers/prompts')
 const postArmorUpPath = require.resolve('../../../src/lib/api/postArmorUp')
 const removeEnvKeyPath = require.resolve('../../../src/lib/helpers/removeEnvKey')
 const armorUpPath = require.resolve('../../../src/lib/services/armorUp')
 
-function loadArmorUpWithStubs ({ dotenvxExport, promptsExport, postArmorUpExport, removeEnvKeyExport }) {
-  const originalDotenvx = require(dotenvxPath)
+function loadArmorUpWithStubs ({ readEnvKeyExport, promptsExport, postArmorUpExport, removeEnvKeyExport }) {
+  const originalReadEnvKey = require(readEnvKeyPath)
   const originalPrompts = require(promptsPath)
   const originalPostArmorUp = require(postArmorUpPath)
   const originalRemoveEnvKey = require(removeEnvKeyPath)
 
-  require.cache[dotenvxPath].exports = dotenvxExport
+  require.cache[readEnvKeyPath].exports = readEnvKeyExport
   require.cache[promptsPath].exports = promptsExport
   require.cache[postArmorUpPath].exports = postArmorUpExport
   require.cache[removeEnvKeyPath].exports = removeEnvKeyExport
@@ -21,7 +21,7 @@ function loadArmorUpWithStubs ({ dotenvxExport, promptsExport, postArmorUpExport
   require(armorUpPath)
 
   return () => {
-    require.cache[dotenvxPath].exports = originalDotenvx
+    require.cache[readEnvKeyPath].exports = originalReadEnvKey
     require.cache[promptsPath].exports = originalPrompts
     require.cache[postArmorUpPath].exports = originalPostArmorUp
     require.cache[removeEnvKeyPath].exports = originalRemoveEnvKey
@@ -45,7 +45,7 @@ t.test('ArmorUp pushes private key and removes it from .env.keys', async (ct) =>
     this.args = { hostname, token, devicePublicKey, publicKey, privateKey, team }
   })
   const restore = loadArmorUpWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorUpExport: PostArmorUpStub,
     removeEnvKeyExport: removeStub
@@ -59,17 +59,13 @@ t.test('ArmorUp pushes private key and removes it from .env.keys', async (ct) =>
 
   const result = await new ArmorUp('https://armor.dotenvx.com', 'token-1', 'device-pub-1', '.env.production').run()
 
-  ct.same(getStub.firstCall && getStub.firstCall.args, ['DOTENV_PUBLIC_KEY_PRODUCTION', {
-    path: '.env.production',
+  ct.same(getStub.firstCall && getStub.firstCall.args, ['DOTENV_PUBLIC_KEY_PRODUCTION', '.env.production', {
     strict: true,
-    ignore: ['MISSING_PRIVATE_KEY'],
-    noArmor: true
+    ignore: ['MISSING_PRIVATE_KEY']
   }], 'reads public key from env file')
-  ct.same(getStub.secondCall && getStub.secondCall.args, ['DOTENV_PRIVATE_KEY_PRODUCTION', {
-    path: '.env.keys',
+  ct.same(getStub.secondCall && getStub.secondCall.args, ['DOTENV_PRIVATE_KEY_PRODUCTION', '.env.keys', {
     strict: true,
-    ignore: ['MISSING_KEY'],
-    noArmor: true
+    ignore: ['MISSING_KEY']
   }], 'reads private key from .env.keys')
   ct.equal(selectStub.callCount, 0, 'does not prompt when armor up succeeds without team')
   ct.same(PostArmorUpStub.firstCall && PostArmorUpStub.firstCall.args, ['https://armor.dotenvx.com', 'token-1', 'device-pub-1', 'pub-from-env', 'priv-from-env-keys', undefined], 'first tries armor up without team')
@@ -99,7 +95,7 @@ t.test('ArmorUp still calls api when local private key is already absent', async
     this.args = { hostname, token, devicePublicKey, publicKey, privateKey, team }
   })
   const restore = loadArmorUpWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorUpExport: PostArmorUpStub,
     removeEnvKeyExport: removeStub
@@ -136,7 +132,7 @@ t.test('ArmorUp sends explicit team without prompt or retry', async (ct) => {
     this.args = { hostname, token, devicePublicKey, publicKey, privateKey, team }
   })
   const restore = loadArmorUpWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorUpExport: PostArmorUpStub,
     removeEnvKeyExport: removeStub
@@ -191,7 +187,7 @@ t.test('ArmorUp retries with selected team when api requires team', async (ct) =
     this.args = { hostname, token, devicePublicKey, publicKey, privateKey, team }
   })
   const restore = loadArmorUpWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorUpExport: PostArmorUpStub,
     removeEnvKeyExport: removeStub
@@ -241,7 +237,7 @@ t.test('ArmorUp rethrows non-team-required api errors', async (ct) => {
     this.run = sandbox.stub().rejects(expectedError)
   })
   const restore = loadArmorUpWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: sandbox.stub() },
     postArmorUpExport: PostArmorUpStub,
     removeEnvKeyExport: sandbox.stub()

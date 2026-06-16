@@ -44,3 +44,25 @@ t.test('keypairMetadata omits command for invalid metadata json', ct => {
   ct.equal(result.environment, 'missing', 'still includes environment')
   ct.end()
 })
+
+t.test('keypairMetadata reads key names without decrypting env values', ct => {
+  const cwd = process.cwd()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-keypair-metadata-'))
+  const envFile = path.join(dir, '.env')
+
+  fs.writeFileSync(envFile, [
+    'DOTENV_PUBLIC_KEY="03abc"',
+    'HELLO="encrypted:abc123"'
+  ].join('\n'))
+
+  process.chdir(dir)
+  ct.teardown(() => {
+    process.chdir(cwd)
+    fs.rmSync(dir, { recursive: true, force: true })
+  })
+
+  const result = keypairMetadata('.env')
+
+  ct.same(result.keys, ['DOTENV_PUBLIC_KEY', 'HELLO'], 'returns keys without requiring main.parse/decryption')
+  ct.end()
+})

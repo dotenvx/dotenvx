@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const execa = require('execa')
-const dotenvx = require('../main')
+const dotenvParse = require('./dotenvParse')
 const canonicalEnvFilename = require('./canonicalEnvFilename')
 const environment = require('./envResolution/environment')
 
@@ -55,9 +55,7 @@ function envKeys (envFile) {
     return null
   }
 
-  const parsed = dotenvx.parse(src, {
-    ignore: ['MISSING_PRIVATE_KEY', 'WRONG_PRIVATE_KEY', 'INVALID_PRIVATE_KEY']
-  })
+  const parsed = dotenvParse(src)
 
   if (!parsed || Object.keys(parsed).length === 0) return null
 

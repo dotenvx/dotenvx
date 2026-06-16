@@ -1,25 +1,25 @@
 const t = require('tap')
 const sinon = require('sinon')
 
-const dotenvxPath = require.resolve('../../../src/lib/main')
+const readEnvKeyPath = require.resolve('../../../src/lib/helpers/readEnvKey')
 const promptsPath = require.resolve('../../../src/lib/helpers/prompts')
 const postArmorPushPath = require.resolve('../../../src/lib/api/postArmorPush')
 const armorPushPath = require.resolve('../../../src/lib/services/armorPush')
 const localKeypair = require('../../../src/lib/helpers/cryptography/localKeypair')
 
-function loadArmorPushWithStubs ({ dotenvxExport, promptsExport, postArmorPushExport }) {
-  const originalDotenvx = require(dotenvxPath)
+function loadArmorPushWithStubs ({ readEnvKeyExport, promptsExport, postArmorPushExport }) {
+  const originalReadEnvKey = require(readEnvKeyPath)
   const originalPrompts = require(promptsPath)
   const originalPostArmorPush = require(postArmorPushPath)
 
-  require.cache[dotenvxPath].exports = dotenvxExport
+  require.cache[readEnvKeyPath].exports = readEnvKeyExport
   require.cache[promptsPath].exports = promptsExport
   require.cache[postArmorPushPath].exports = postArmorPushExport
   delete require.cache[armorPushPath]
   require(armorPushPath)
 
   return () => {
-    require.cache[dotenvxPath].exports = originalDotenvx
+    require.cache[readEnvKeyPath].exports = originalReadEnvKey
     require.cache[promptsPath].exports = originalPrompts
     require.cache[postArmorPushPath].exports = originalPostArmorPush
     delete require.cache[armorPushPath]
@@ -41,7 +41,7 @@ t.test('ArmorPush reads private key and posts push request without prompting fir
     this.args = { hostname, token, devicePublicKey, privateKey, team }
   })
   const restore = loadArmorPushWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorPushExport: PostArmorPushStub
   })
@@ -54,10 +54,8 @@ t.test('ArmorPush reads private key and posts push request without prompting fir
 
   const result = await new ArmorPush('https://armor.dotenvx.com', 'token-1', 'device-pub-1', '.env.production').run()
 
-  ct.same(getStub.firstCall && getStub.firstCall.args, ['DOTENV_PRIVATE_KEY_PRODUCTION', {
-    path: '.env.keys',
-    strict: true,
-    noArmor: true
+  ct.same(getStub.firstCall && getStub.firstCall.args, ['DOTENV_PRIVATE_KEY_PRODUCTION', '.env.keys', {
+    strict: true
   }], 'reads mapped private key from .env.keys')
   ct.equal(selectStub.callCount, 0, 'does not prompt before first api request')
   ct.same(PostArmorPushStub.firstCall && PostArmorPushStub.firstCall.args, ['https://armor.dotenvx.com', 'token-1', 'device-pub-1', keypair.privateKey, undefined], 'sends private key without team first')
@@ -73,6 +71,7 @@ t.test('ArmorPush reads private key and posts push request without prompting fir
 
 t.test('ArmorPush prompts for team and retries when api requires team', async (ct) => {
   const sandbox = sinon.createSandbox()
+  const getStub = sandbox.stub().returns('priv-from-env-keys')
   const requiredError = new Error('[DOTENVX_TEAM_REQUIRED] choose a team for armor push')
   requiredError.code = 'DOTENVX_TEAM_REQUIRED'
   requiredError.meta = {
@@ -95,7 +94,7 @@ t.test('ArmorPush prompts for team and retries when api requires team', async (c
     this.args = { hostname, token, devicePublicKey, privateKey, team }
   })
   const restore = loadArmorPushWithStubs({
-    dotenvxExport: { get: sandbox.stub().returns('priv-from-env-keys') },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorPushExport: PostArmorPushStub
   })
@@ -134,6 +133,7 @@ t.test('ArmorPush prompts for team and retries when api requires team', async (c
 
 t.test('ArmorPush sends explicit team without prompt or retry', async (ct) => {
   const sandbox = sinon.createSandbox()
+  const getStub = sandbox.stub().returns('priv-from-env-keys')
   const selectStub = sandbox.stub().resolves('should-not-be-used')
   const postRunStub = sandbox.stub().resolves({
     private_key: 'priv-from-api',
@@ -145,7 +145,7 @@ t.test('ArmorPush sends explicit team without prompt or retry', async (ct) => {
     this.args = { hostname, token, devicePublicKey, privateKey, team }
   })
   const restore = loadArmorPushWithStubs({
-    dotenvxExport: { get: sandbox.stub().returns('priv-from-env-keys') },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorPushExport: PostArmorPushStub
   })
@@ -173,6 +173,7 @@ t.test('ArmorPush sends explicit team without prompt or retry', async (ct) => {
 
 t.test('ArmorPush uses only team from required error meta without prompting', async (ct) => {
   const sandbox = sinon.createSandbox()
+  const getStub = sandbox.stub().returns('priv-from-env-keys')
   const selectStub = sandbox.stub().resolves('should-not-be-used')
   const requiredError = new Error('[DOTENVX_TEAM_REQUIRED] choose a team for armor push')
   requiredError.code = 'DOTENVX_TEAM_REQUIRED'
@@ -187,7 +188,7 @@ t.test('ArmorPush uses only team from required error meta without prompting', as
     this.args = { hostname, token, devicePublicKey, privateKey, team }
   })
   const restore = loadArmorPushWithStubs({
-    dotenvxExport: { get: sandbox.stub().returns('priv-from-env-keys') },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     postArmorPushExport: PostArmorPushStub
   })
@@ -207,13 +208,14 @@ t.test('ArmorPush uses only team from required error meta without prompting', as
 
 t.test('ArmorPush rethrows non-team-required api errors', async (ct) => {
   const sandbox = sinon.createSandbox()
+  const getStub = sandbox.stub().returns('priv-from-env-keys')
   const expectedError = new Error('boom')
   expectedError.code = 'UNAUTHORIZED'
   const PostArmorPushStub = sandbox.stub().callsFake(function () {
     this.run = sandbox.stub().rejects(expectedError)
   })
   const restore = loadArmorPushWithStubs({
-    dotenvxExport: { get: sandbox.stub().returns('priv-from-env-keys') },
+    readEnvKeyExport: getStub,
     promptsExport: { select: sandbox.stub() },
     postArmorPushExport: PostArmorPushStub
   })

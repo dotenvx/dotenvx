@@ -1,8 +1,8 @@
-const dotenvx = require('../main')
 const { PrivateKey } = require('eciesjs')
 const prompts = require('../helpers/prompts')
 const PostArmorPush = require('../api/postArmorPush')
 const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
+const readEnvKey = require('../helpers/readEnvKey')
 
 function teamChoicesFromMeta (meta) {
   return meta.organizations.map(org => ({
@@ -37,7 +37,7 @@ class ArmorPush {
 
     const { privateKeyName } = keyNamesForEnvFile(envFile)
 
-    const privateKey = dotenvx.get(privateKeyName, { path: '.env.keys', strict: true, noArmor: true })
+    const privateKey = readEnvKey(privateKeyName, '.env.keys', { strict: true })
     const publicKey = publicKeyFromPrivateKey(privateKey)
 
     let json

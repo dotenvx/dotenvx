@@ -1,8 +1,8 @@
-const dotenvx = require('../main')
 const prompts = require('../helpers/prompts')
 const PostArmorUp = require('../api/postArmorUp')
 const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
 const removeEnvKey = require('../helpers/removeEnvKey')
+const readEnvKey = require('../helpers/readEnvKey')
 
 function teamChoicesFromMeta (meta) {
   return meta.organizations.map(org => ({
@@ -32,8 +32,8 @@ class ArmorUp {
       privateKeyName
     } = keyNamesForEnvFile(envFile)
 
-    const publicKey = dotenvx.get(publicKeyName, { path: envFile, strict: true, ignore: ['MISSING_PRIVATE_KEY'], noArmor: true })
-    const privateKey = dotenvx.get(privateKeyName, { path: '.env.keys', strict: true, ignore: ['MISSING_KEY'], noArmor: true })
+    const publicKey = readEnvKey(publicKeyName, envFile, { strict: true, ignore: ['MISSING_PRIVATE_KEY'] })
+    const privateKey = readEnvKey(privateKeyName, '.env.keys', { strict: true, ignore: ['MISSING_KEY'] })
 
     let json
 
