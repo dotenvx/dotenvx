@@ -8,7 +8,7 @@ const configureArmorCommand = require('../../../src/cli/commands/armor')
 const Session = require('../../../src/db/session')
 
 const armor = configureArmorCommand(new Command('armor'))
-const commandsWithToken = ['up', 'down', 'push', 'pull', 'move', 'keypair']
+const commandsWithToken = ['up', 'down', 'push', 'pull', 'move']
 
 t.test('armor subcommands accept explicit token option', async (ct) => {
   for (const commandName of commandsWithToken) {
@@ -38,6 +38,7 @@ t.test('armor commands are native cli subcommands without rotate conflict', asyn
     ct.match(armorHelp, new RegExp(`\\n  ${commandName} \\[options\\]`), `has armor ${commandName} subcommand`)
   }
 
+  ct.notMatch(armorHelp, /\n {2}keypair \[options\].*generate armored keypair/, 'does not register armor keypair')
   ct.notMatch(armorHelp, /\n {2}rotate \[options\].*rotate armored key/, 'does not register armor rotate')
 })
 
@@ -69,4 +70,27 @@ t.test('armor unknown subcommands fall back to dotenvx-armor', async (ct) => {
   ct.equal(executeDynamicStub.firstCall.args[0], armor, 'passes armor command for help fallback')
   ct.equal(executeDynamicStub.firstCall.args[1], 'armor', 'forwards armor command name')
   ct.same(executeDynamicStub.firstCall.args[2], ['settings', '--json'], 'forwards unknown armor args')
+})
+
+t.test('armor keypair is treated as an unknown armor command', async (ct) => {
+  const executeDynamicStub = sinon.stub()
+  const configureArmorCommand = proxyquire('../../../src/cli/commands/armor', {
+    './../../lib/helpers/executeDynamic': executeDynamicStub
+  })
+  const armor = configureArmorCommand(new Command('armor'))
+
+  await armor._actionHandler(['keypair', ['--token', 'token-123', '--team', 'acme', '-f', '.env.production']])
+
+  ct.equal(executeDynamicStub.callCount, 1, 'calls dynamic fallback')
+  ct.equal(executeDynamicStub.firstCall.args[0], armor, 'passes armor command for help fallback')
+  ct.equal(executeDynamicStub.firstCall.args[1], 'armor', 'forwards armor command name')
+  ct.same(executeDynamicStub.firstCall.args[2], [
+    'keypair',
+    '--token',
+    'token-123',
+    '--team',
+    'acme',
+    '-f',
+    '.env.production'
+  ], 'forwards keypair as an unknown armor command')
 })

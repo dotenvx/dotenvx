@@ -7,6 +7,7 @@ function serializeCommand (command) {
 }
 
 function metadataFromOptions (options) {
+  if (options.metadata) return options.metadata
   if (!options.command) return undefined
 
   return JSON.stringify({
@@ -19,27 +20,31 @@ function cliPath () {
 }
 
 function armorKeypairSync (existingPublicKey, options = {}) {
-  const args = [cliPath(), 'armor', 'keypair', '--no-spinner']
+  const args = [cliPath(), 'keypair', '--no-spinner', '--format', 'json']
+  if (options.hostname) args.push('--hostname', options.hostname)
   if (options.token) args.push('--token', options.token)
+  if (options.team) args.push('--team', options.team)
   if (options.envFilepath) args.push('-f', options.envFilepath)
+  if (existingPublicKey) args.push('--public-key', existingPublicKey)
 
   const metadata = metadataFromOptions(options)
   if (metadata) args.push('--metadata', metadata)
 
-  if (existingPublicKey) args.push(existingPublicKey)
-
-  let kp = {}
+  let keypairs = {}
   try {
-    kp = JSON.parse(childProcess.execFileSync(process.execPath, args, {
+    keypairs = JSON.parse(childProcess.execFileSync(process.execPath, args, {
       stdio: ['inherit', 'pipe', 'inherit']
     }).toString().trim())
   } catch (_error) {
-    kp = {}
+    keypairs = {}
   }
 
+  const publicKeyName = Object.keys(keypairs).find((key) => key === 'DOTENV_PUBLIC_KEY' || key.startsWith('DOTENV_PUBLIC_KEY_'))
+  const privateKeyName = Object.keys(keypairs).find((key) => key === 'DOTENV_PRIVATE_KEY' || key.startsWith('DOTENV_PRIVATE_KEY_'))
+
   return {
-    publicKey: kp.public_key,
-    privateKey: kp.private_key
+    publicKey: publicKeyName ? keypairs[publicKeyName] : undefined,
+    privateKey: privateKeyName ? keypairs[privateKeyName] : undefined
   }
 }
 

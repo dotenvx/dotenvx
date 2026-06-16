@@ -11,10 +11,10 @@ function loadArmorKeypairSync (execFileSync) {
   })
 }
 
-t.test('armorKeypairSync runs native dotenvx armor keypair command', ct => {
+t.test('armorKeypairSync runs native dotenvx keypair command', ct => {
   const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
-    public_key: 'armor_pub_123',
-    private_key: 'armor_priv_123'
+    DOTENV_PUBLIC_KEY: 'armor_pub_123',
+    DOTENV_PRIVATE_KEY: 'armor_priv_123'
   })))
   const armorKeypairSync = loadArmorKeypairSync(execFileSync)
 
@@ -27,9 +27,10 @@ t.test('armorKeypairSync runs native dotenvx armor keypair command', ct => {
   ct.equal(execFileSync.callCount, 1)
   ct.same(execFileSync.firstCall.args, [process.execPath, [
     expectedCliPath,
-    'armor',
     'keypair',
-    '--no-spinner'
+    '--no-spinner',
+    '--format',
+    'json'
   ], {
     stdio: ['inherit', 'pipe', 'inherit']
   }])
@@ -38,13 +39,15 @@ t.test('armorKeypairSync runs native dotenvx armor keypair command', ct => {
 
 t.test('armorKeypairSync forwards public key and options to native command', ct => {
   const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
-    public_key: 'armor_pub_abc',
-    private_key: 'armor_priv_abc'
+    DOTENV_PUBLIC_KEY_PRODUCTION: 'armor_pub_abc',
+    DOTENV_PRIVATE_KEY_PRODUCTION: 'armor_priv_abc'
   })))
   const armorKeypairSync = loadArmorKeypairSync(execFileSync)
 
   const out = armorKeypairSync('existing_pub', {
+    hostname: 'https://armor.example.com',
     token: 'token-123',
+    team: 'acme',
     envFilepath: '.env.production',
     command: ['dotenvx', 'run', '-f', '.env.production', '--', 'npm', 'start']
   })
@@ -55,24 +58,30 @@ t.test('armorKeypairSync forwards public key and options to native command', ct 
   })
   ct.same(execFileSync.firstCall.args[1], [
     expectedCliPath,
-    'armor',
     'keypair',
     '--no-spinner',
+    '--format',
+    'json',
+    '--hostname',
+    'https://armor.example.com',
     '--token',
     'token-123',
+    '--team',
+    'acme',
     '-f',
     '.env.production',
+    '--public-key',
+    'existing_pub',
     '--metadata',
-    '{"command":"dotenvx run -f .env.production -- npm start"}',
-    'existing_pub'
+    '{"command":"dotenvx run -f .env.production -- npm start"}'
   ])
   ct.end()
 })
 
 t.test('armorKeypairSync forwards string command as metadata json', ct => {
   const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
-    public_key: 'armor_pub_abc',
-    private_key: 'armor_priv_abc'
+    DOTENV_PUBLIC_KEY: 'armor_pub_abc',
+    DOTENV_PRIVATE_KEY: 'armor_priv_abc'
   })))
   const armorKeypairSync = loadArmorKeypairSync(execFileSync)
 
@@ -82,12 +91,14 @@ t.test('armorKeypairSync forwards string command as metadata json', ct => {
 
   ct.same(execFileSync.firstCall.args[1], [
     expectedCliPath,
-    'armor',
     'keypair',
     '--no-spinner',
+    '--format',
+    'json',
+    '--public-key',
+    'existing_pub',
     '--metadata',
-    '{"command":"dotenvx config"}',
-    'existing_pub'
+    '{"command":"dotenvx config"}'
   ])
   ct.end()
 })

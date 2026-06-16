@@ -20,7 +20,12 @@ async function keypair (key) {
   const noArmor = options.armor === false || await sesh.noArmor()
   if (spinner) spinner.stop()
   const keypairs = await new Keypair(options.envFile, options.envKeysFile, noArmor, {
-    command: process.argv.slice(2)
+    command: process.argv.slice(2),
+    hostname: options.hostname,
+    token: options.token,
+    team: options.team,
+    metadata: options.metadata,
+    publicKey: options.publicKey
   }).run()
   const results = key ? keypairs[key] : keypairs
 

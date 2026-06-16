@@ -7,6 +7,7 @@ function serializeCommand (command) {
 }
 
 function metadataFromOptions (options) {
+  if (options.metadata) return options.metadata
   if (!options.command) return undefined
 
   return JSON.stringify({
@@ -25,12 +26,13 @@ async function armorKeypair (existingPublicKey, options = {}) {
   }
 
   const json = await new ArmorKeypair(
-    sesh.hostname(),
+    options.hostname || sesh.hostname(),
     token,
     sesh.devicePublicKey(),
     existingPublicKey,
     {
       envFile: options.envFilepath,
+      team: options.team,
       metadata: metadataFromOptions(options)
     }
   ).run()

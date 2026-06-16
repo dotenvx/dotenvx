@@ -66,21 +66,6 @@ function configureArmorCommand (armor) {
     .option('--token <token>', 'set token')
     .action(moveAction)
 
-  // dotenvx armor keypair
-  const keypairAction = require('./../actions/armor/keypair')
-  armor
-    .command('keypair')
-    .description('generate armored keypair ⛨')
-    .argument('[publicKey]', 'existing public key')
-    .option('-h, --hostname <url>', 'set hostname')
-    .option('--token <token>', 'set token')
-    .option('--team <team>', 'team to generate keypair for')
-    .option('-f, --env-file <path>', 'path to your env file', '.env')
-    .option('--metadata <json>', 'json metadata')
-    .option('--no-spinner', 'disable spinner output')
-    .option('--pp, --pretty-print', 'pretty print output')
-    .action(keypairAction)
-
   return armor
 }
 
