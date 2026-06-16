@@ -3,13 +3,7 @@ const PostArmorUp = require('../api/postArmorUp')
 const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
 const removeEnvKey = require('../helpers/removeEnvKey')
 const readEnvKey = require('../helpers/readEnvKey')
-
-function teamChoicesFromMeta (meta) {
-  return meta.organizations.map(org => ({
-    name: org.provider_slug,
-    value: org.provider_slug
-  }))
-}
+const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 
 class ArmorUp {
   constructor (hostname, token, devicePublicKey, envFile = '.env', team = undefined) {

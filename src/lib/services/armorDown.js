@@ -3,13 +3,7 @@ const PostArmorDown = require('../api/postArmorDown')
 const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
 const upsertEnvKey = require('../helpers/upsertEnvKey')
 const readEnvKey = require('../helpers/readEnvKey')
-
-function teamChoicesFromMeta (meta) {
-  return meta.organizations.map(org => ({
-    name: org.provider_slug,
-    value: org.provider_slug
-  }))
-}
+const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 
 class ArmorDown {
   constructor (hostname, token, devicePublicKey, envFile = '.env', team = undefined) {

@@ -3,13 +3,7 @@ const prompts = require('../helpers/prompts')
 const PostArmorPush = require('../api/postArmorPush')
 const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
 const readEnvKey = require('../helpers/readEnvKey')
-
-function teamChoicesFromMeta (meta) {
-  return meta.organizations.map(org => ({
-    name: org.provider_slug,
-    value: org.provider_slug
-  }))
-}
+const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 
 function publicKeyFromPrivateKey (privateKey) {
   try {

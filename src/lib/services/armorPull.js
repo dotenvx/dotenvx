@@ -3,13 +3,7 @@ const PostArmorPull = require('../api/postArmorPull')
 const upsertEnvKey = require('../helpers/upsertEnvKey')
 const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
 const readEnvKey = require('../helpers/readEnvKey')
-
-function teamChoicesFromMeta (meta) {
-  return meta.organizations.map(org => ({
-    name: org.provider_slug,
-    value: org.provider_slug
-  }))
-}
+const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 
 class ArmorPull {
   constructor (hostname, token, devicePublicKey, envFile = '.env', team = undefined) {

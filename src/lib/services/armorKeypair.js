@@ -1,18 +1,12 @@
 const prompts = require('../helpers/prompts')
 const PostKeypair = require('../api/postKeypair')
 const keypairMetadata = require('../helpers/keypairMetadata')
+const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 
 const ACCESS_APPROVAL_REQUIRED = 'ACCESS_APPROVAL_REQUIRED'
 const ACCESS_APPROVAL_PENDING = 'ACCESS_APPROVAL_PENDING'
 const ACCESS_PENDING = 'ACCESS_PENDING'
 const POLL_INTERVAL = 1000
-
-function teamChoicesFromMeta (meta) {
-  return meta.organizations.map(org => ({
-    name: org.provider_slug,
-    value: org.provider_slug
-  }))
-}
 
 function grantTokenFromError (error) {
   return error.meta && error.meta.grant_token
