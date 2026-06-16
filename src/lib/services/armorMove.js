@@ -2,7 +2,7 @@ const dotenvx = require('../main')
 const prompts = require('../helpers/prompts')
 const PostArmorMove = require('../api/postArmorMove')
 const GetAccount = require('../api/getAccount')
-const keyNames = require('../helpers/keyResolution/keyNames')
+const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
 
 class ArmorMove {
   constructor (hostname, token, devicePublicKey, envFile = '.env') {
@@ -24,7 +24,7 @@ class ArmorMove {
     const {
       publicKeyName,
       privateKeyName
-    } = keyNames(envFile)
+    } = keyNamesForEnvFile(envFile)
     const publicKey = dotenvx.get(publicKeyName, { path: envFile, strict: true, ignore: ['MISSING_PRIVATE_KEY'], noArmor: true })
 
     const accountJson = await new GetAccount(hostname, token).run()

@@ -178,7 +178,7 @@ t.test('#run does not prompt for key storage when existing public key is resolve
 
     const cryptography = require('../../../src/lib/helpers/cryptography')
     const kp = cryptography.localKeypair()
-    const keyNames = require('../../../src/lib/helpers/keyResolution/keyNames')
+    const keyNamesForEnvFile = require('../../../src/lib/helpers/keyResolution/keyNamesForEnvFile')
     const keyValues = sinon.stub().resolves({
       publicKeyValue: kp.publicKey,
       privateKeyValue: null
@@ -187,7 +187,7 @@ t.test('#run does not prompt for key storage when existing public key is resolve
     const selectKeyStorage = sinon.stub().resolves('file')
     const EncryptWithStubs = proxyquire('../../../src/lib/services/encrypt', {
       './../helpers/keyResolution': {
-        keyNames,
+        keyNamesForEnvFile,
         keyValues
       },
       './../helpers/cryptography': {
@@ -888,12 +888,12 @@ t.test('#run (finds .env file only AND only the existing public key not the priv
       publicKeyValue: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       privateKeyValue: null
     })
-    const keyNames = require('../../../src/lib/helpers/keyResolution/keyNames')
+    const keyNamesForEnvFile = require('../../../src/lib/helpers/keyResolution/keyNamesForEnvFile')
 
     // Load Encrypt with the stub injected
     const Encrypt = proxyquire('../../../src/lib/services/encrypt', {
       './../helpers/keyResolution': {
-        keyNames,
+        keyNamesForEnvFile,
         keyValues: keyValuesStub
       }
     })

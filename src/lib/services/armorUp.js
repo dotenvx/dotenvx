@@ -1,7 +1,7 @@
 const dotenvx = require('../main')
 const prompts = require('../helpers/prompts')
 const PostArmorUp = require('../api/postArmorUp')
-const keyNames = require('../helpers/keyResolution/keyNames')
+const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
 const removeEnvKey = require('../helpers/removeEnvKey')
 
 function teamChoicesFromMeta (meta) {
@@ -30,7 +30,7 @@ class ArmorUp {
     const {
       publicKeyName,
       privateKeyName
-    } = keyNames(envFile)
+    } = keyNamesForEnvFile(envFile)
 
     const publicKey = dotenvx.get(publicKeyName, { path: envFile, strict: true, ignore: ['MISSING_PRIVATE_KEY'], noArmor: true })
     const privateKey = dotenvx.get(privateKeyName, { path: '.env.keys', strict: true, ignore: ['MISSING_KEY'], noArmor: true })

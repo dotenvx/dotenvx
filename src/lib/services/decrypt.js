@@ -11,7 +11,7 @@ const {
 } = require('./../helpers/envResolution')
 
 const {
-  keyNames,
+  keyNamesForEnvFile,
   keyValues
 } = require('./../helpers/keyResolution')
 
@@ -77,7 +77,7 @@ class Decrypt {
       let envSrc = await fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc, false, false, true)
 
-      const { privateKeyName } = keyNames(envFilepath)
+      const { privateKeyName } = keyNamesForEnvFile(envFilepath)
       const { privateKeyValue, privateKeySource } = await keyValues(envFilepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,

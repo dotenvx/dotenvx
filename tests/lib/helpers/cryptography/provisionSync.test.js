@@ -18,7 +18,7 @@ t.test('provisionSync builds env and keys for first-time setup', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypairSync': armorKeypairSync,
     '../keyResolution': {
-      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -64,7 +64,7 @@ t.test('provisionSync appends to existing keys file', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypairSync': armorKeypairSync,
     '../keyResolution': {
-      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -97,7 +97,7 @@ t.test('provisionSync defaults keys filepath when omitted', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypairSync': armorKeypairSync,
     '../keyResolution': {
-      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -131,7 +131,7 @@ t.test('provisionSync uses Armor keypair when noArmor is false', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypairSync': armorKeypairSync,
     '../keyResolution': {
-      keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 

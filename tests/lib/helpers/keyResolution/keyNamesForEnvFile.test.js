@@ -1,9 +1,9 @@
 const t = require('tap')
 
-const keyNames = require('../../../../src/lib/helpers/keyResolution/keyNames')
+const keyNamesForEnvFile = require('../../../../src/lib/helpers/keyResolution/keyNamesForEnvFile')
 
-t.test('#keyNames (.env)', ct => {
-  const result = keyNames('.env')
+t.test('#keyNamesForEnvFile (.env)', ct => {
+  const result = keyNamesForEnvFile('.env')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY',
@@ -13,8 +13,8 @@ t.test('#keyNames (.env)', ct => {
   ct.end()
 })
 
-t.test('#keyNames (.env.production)', ct => {
-  const result = keyNames('.env.production')
+t.test('#keyNamesForEnvFile (.env.production)', ct => {
+  const result = keyNamesForEnvFile('.env.production')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_PRODUCTION',
@@ -24,8 +24,8 @@ t.test('#keyNames (.env.production)', ct => {
   ct.end()
 })
 
-t.test('#keyNames (.env.ci.local)', ct => {
-  const result = keyNames('.env.ci.local')
+t.test('#keyNamesForEnvFile (.env.ci.local)', ct => {
+  const result = keyNamesForEnvFile('.env.ci.local')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_CI_LOCAL',
@@ -35,8 +35,8 @@ t.test('#keyNames (.env.ci.local)', ct => {
   ct.end()
 })
 
-t.test('#keyNames (.env1)', ct => {
-  const result = keyNames('.env1')
+t.test('#keyNamesForEnvFile (.env1)', ct => {
+  const result = keyNamesForEnvFile('.env1')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_DEVELOPMENT1',
@@ -46,8 +46,8 @@ t.test('#keyNames (.env1)', ct => {
   ct.end()
 })
 
-t.test('#keyNames truncates long environment suffixes', ct => {
-  const result = keyNames('.env.ci.local.extra')
+t.test('#keyNamesForEnvFile truncates long environment suffixes', ct => {
+  const result = keyNamesForEnvFile('.env.ci.local.extra')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_CI_LOCAL',
@@ -57,8 +57,8 @@ t.test('#keyNames truncates long environment suffixes', ct => {
   ct.end()
 })
 
-t.test('#keyNames (.env.txt)', ct => {
-  const result = keyNames('.env.txt')
+t.test('#keyNamesForEnvFile (.env.txt)', ct => {
+  const result = keyNamesForEnvFile('.env.txt')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY',
@@ -68,8 +68,8 @@ t.test('#keyNames (.env.txt)', ct => {
   ct.end()
 })
 
-t.test('#keyNames (.env.production.txt)', ct => {
-  const result = keyNames('.env.production.txt')
+t.test('#keyNamesForEnvFile (.env.production.txt)', ct => {
+  const result = keyNamesForEnvFile('.env.production.txt')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_PRODUCTION',
@@ -79,8 +79,8 @@ t.test('#keyNames (.env.production.txt)', ct => {
   ct.end()
 })
 
-t.test('#keyNames (.ENV.LOCAL)', ct => {
-  const result = keyNames('.ENV.LOCAL')
+t.test('#keyNamesForEnvFile (.ENV.LOCAL)', ct => {
+  const result = keyNamesForEnvFile('.ENV.LOCAL')
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_LOCAL',

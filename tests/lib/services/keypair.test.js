@@ -86,7 +86,7 @@ t.test('#run forwards command to key resolution',
     })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
       './../helpers/keyResolution': {
-        keyNames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+        keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
         keyValues,
         keyValuesSync
       }
