@@ -4,6 +4,7 @@ const execa = require('execa')
 const dotenvParse = require('./dotenvParse')
 const canonicalEnvFilename = require('./canonicalEnvFilename')
 const environment = require('./envResolution/environment')
+const sanitizeCommandForMetadata = require('./sanitizeCommandForMetadata')
 
 function compact (object) {
   return Object.entries(object).reduce((acc, [key, value]) => {
@@ -18,7 +19,7 @@ function compact (object) {
 function commandFromMetadata (metadata) {
   try {
     const parsed = JSON.parse(metadata)
-    return parsed && parsed.command
+    return parsed && parsed.command ? sanitizeCommandForMetadata(parsed.command) : parsed && parsed.command
   } catch (_error) {
     return null
   }

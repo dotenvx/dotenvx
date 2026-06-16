@@ -1,34 +1,13 @@
 const path = require('path')
 const childProcess = require('child_process')
 
-function serializeCommand (command) {
-  if (Array.isArray(command)) return command.map((arg) => `${arg}`).join(' ')
-  return `${command}`
-}
-
-function metadataFromOptions (options) {
-  if (options.metadata) return options.metadata
-  if (!options.command) return undefined
-
-  return JSON.stringify({
-    command: serializeCommand(options.command)
-  })
-}
-
 function cliPath () {
   return path.resolve(__dirname, '../../../cli/dotenvx.js')
 }
 
-function armorKeypairSync (existingPublicKey, options = {}) {
-  const args = [cliPath(), 'keypair', '--no-spinner', '--format', 'json']
-  if (options.hostname) args.push('--hostname', options.hostname)
-  if (options.token) args.push('--token', options.token)
-  if (options.team) args.push('--team', options.team)
+function armorKeypairSync (_existingPublicKey, options = {}) {
+  const args = [cliPath(), 'keypair', '--format', 'json']
   if (options.envFilepath) args.push('-f', options.envFilepath)
-  if (existingPublicKey) args.push('--public-key', existingPublicKey)
-
-  const metadata = metadataFromOptions(options)
-  if (metadata) args.push('--metadata', metadata)
 
   let keypairs = {}
   try {

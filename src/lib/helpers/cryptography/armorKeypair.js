@@ -1,17 +1,13 @@
 const Session = require('../../../db/session')
 const ArmorKeypair = require('../../services/armorKeypair')
-
-function serializeCommand (command) {
-  if (Array.isArray(command)) return command.map((arg) => `${arg}`).join(' ')
-  return `${command}`
-}
+const sanitizeCommandForMetadata = require('../sanitizeCommandForMetadata')
 
 function metadataFromOptions (options) {
   if (options.metadata) return options.metadata
   if (!options.command) return undefined
 
   return JSON.stringify({
-    command: serializeCommand(options.command)
+    command: sanitizeCommandForMetadata(options.command)
   })
 }
 

@@ -28,7 +28,6 @@ t.test('armorKeypairSync runs native dotenvx keypair command', ct => {
   ct.same(execFileSync.firstCall.args, [process.execPath, [
     expectedCliPath,
     'keypair',
-    '--no-spinner',
     '--format',
     'json'
   ], {
@@ -37,20 +36,14 @@ t.test('armorKeypairSync runs native dotenvx keypair command', ct => {
   ct.end()
 })
 
-t.test('armorKeypairSync forwards public key and options to native command', ct => {
+t.test('armorKeypairSync forwards env filepath to native read-only keypair command', ct => {
   const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
     DOTENV_PUBLIC_KEY_PRODUCTION: 'armor_pub_abc',
     DOTENV_PRIVATE_KEY_PRODUCTION: 'armor_priv_abc'
   })))
   const armorKeypairSync = loadArmorKeypairSync(execFileSync)
 
-  const out = armorKeypairSync('existing_pub', {
-    hostname: 'https://armor.example.com',
-    token: 'token-123',
-    team: 'acme',
-    envFilepath: '.env.production',
-    command: ['dotenvx', 'run', '-f', '.env.production', '--', 'npm', 'start']
-  })
+  const out = armorKeypairSync('existing_pub', { envFilepath: '.env.production' })
 
   ct.same(out, {
     publicKey: 'armor_pub_abc',
@@ -59,26 +52,15 @@ t.test('armorKeypairSync forwards public key and options to native command', ct 
   ct.same(execFileSync.firstCall.args[1], [
     expectedCliPath,
     'keypair',
-    '--no-spinner',
     '--format',
     'json',
-    '--hostname',
-    'https://armor.example.com',
-    '--token',
-    'token-123',
-    '--team',
-    'acme',
     '-f',
-    '.env.production',
-    '--public-key',
-    'existing_pub',
-    '--metadata',
-    '{"command":"dotenvx run -f .env.production -- npm start"}'
+    '.env.production'
   ])
   ct.end()
 })
 
-t.test('armorKeypairSync forwards string command as metadata json', ct => {
+t.test('armorKeypairSync does not pass command metadata through public keypair command', ct => {
   const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
     DOTENV_PUBLIC_KEY: 'armor_pub_abc',
     DOTENV_PRIVATE_KEY: 'armor_priv_abc'
@@ -92,13 +74,8 @@ t.test('armorKeypairSync forwards string command as metadata json', ct => {
   ct.same(execFileSync.firstCall.args[1], [
     expectedCliPath,
     'keypair',
-    '--no-spinner',
     '--format',
-    'json',
-    '--public-key',
-    'existing_pub',
-    '--metadata',
-    '{"command":"dotenvx config"}'
+    'json'
   ])
   ct.end()
 })

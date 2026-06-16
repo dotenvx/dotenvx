@@ -45,6 +45,15 @@ t.test('keypairMetadata omits command for invalid metadata json', ct => {
   ct.end()
 })
 
+t.test('keypairMetadata redacts token values from command metadata', ct => {
+  const result = keypairMetadata('.env.missing', JSON.stringify({
+    command: 'dotenvx keypair --token token-123 -f .env.production'
+  }))
+
+  ct.equal(result.command, 'dotenvx keypair --token [REDACTED] -f .env.production')
+  ct.end()
+})
+
 t.test('keypairMetadata reads key names without decrypting env values', ct => {
   const cwd = process.cwd()
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-keypair-metadata-'))

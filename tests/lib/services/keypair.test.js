@@ -100,7 +100,7 @@ t.test('#run forwards command to key resolution',
     ct.end()
   })
 
-t.test('#run uses remote keypair when token is provided and no local keys exist',
+t.test('#run does not create a remote keypair when no local keys exist',
   async ct => {
     const keyValues = sinon.stub().resolves({
       publicKeyValue: null,
@@ -110,59 +110,25 @@ t.test('#run uses remote keypair when token is provided and no local keys exist'
       publicKeyValue: null,
       privateKeyValue: null
     })
-    const armorKeypair = sinon.stub().resolves({
-      publicKey: 'remote-public-key',
-      privateKey: 'remote-private-key'
-    })
-    const armorKeypairSync = sinon.stub().returns({
-      publicKey: 'remote-public-key-sync',
-      privateKey: 'remote-private-key-sync'
-    })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
       './../helpers/keyResolution/keyNamesForEnvFile': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/keyResolution/keyValues': keyValues,
-      './../helpers/keyResolution/keyValuesSync': keyValuesSync,
-      './../helpers/cryptography/armorKeypair': armorKeypair,
-      './../helpers/cryptography/armorKeypairSync': armorKeypairSync
+      './../helpers/keyResolution/keyValuesSync': keyValuesSync
     })
 
     const out = await new KeypairWithStubs('.env', null, false, {
-      command: ['keypair'],
-      hostname: 'https://armor.example.com',
-      token: 'token-123',
-      team: 'acme',
-      metadata: '{"command":"dotenvx run -- npm start"}'
+      command: ['keypair']
     }).run()
     const outSync = new KeypairWithStubs('.env', null, false, {
-      command: ['keypair'],
-      hostname: 'https://armor.example.com',
-      token: 'token-123',
-      team: 'acme',
-      metadata: '{"command":"dotenvx run -- npm start"}'
+      command: ['keypair']
     }).runSync()
 
-    ct.same(out, { DOTENV_PUBLIC_KEY: 'remote-public-key', DOTENV_PRIVATE_KEY: 'remote-private-key' })
-    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'remote-public-key-sync', DOTENV_PRIVATE_KEY: 'remote-private-key-sync' })
-    ct.same(armorKeypair.firstCall.args, [undefined, {
-      envFilepath: '.env',
-      command: ['keypair'],
-      hostname: 'https://armor.example.com',
-      token: 'token-123',
-      team: 'acme',
-      metadata: '{"command":"dotenvx run -- npm start"}'
-    }])
-    ct.same(armorKeypairSync.firstCall.args, [undefined, {
-      envFilepath: '.env',
-      command: ['keypair'],
-      hostname: 'https://armor.example.com',
-      token: 'token-123',
-      team: 'acme',
-      metadata: '{"command":"dotenvx run -- npm start"}'
-    }])
+    ct.same(out, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
     ct.end()
   })
 
-t.test('#run uses remote keypair with explicit public key',
+t.test('#run returns values from key resolution without accepting explicit public key override',
   async ct => {
     const keyValues = sinon.stub().resolves({
       publicKeyValue: null,
@@ -172,18 +138,10 @@ t.test('#run uses remote keypair with explicit public key',
       publicKeyValue: null,
       privateKeyValue: null
     })
-    const armorKeypair = sinon.stub().resolves({
-      privateKey: 'remote-private-key'
-    })
-    const armorKeypairSync = sinon.stub().returns({
-      privateKey: 'remote-private-key-sync'
-    })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
       './../helpers/keyResolution/keyNamesForEnvFile': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/keyResolution/keyValues': keyValues,
-      './../helpers/keyResolution/keyValuesSync': keyValuesSync,
-      './../helpers/cryptography/armorKeypair': armorKeypair,
-      './../helpers/cryptography/armorKeypairSync': armorKeypairSync
+      './../helpers/keyResolution/keyValuesSync': keyValuesSync
     })
 
     const out = await new KeypairWithStubs('.env', null, false, {
@@ -193,9 +151,7 @@ t.test('#run uses remote keypair with explicit public key',
       publicKey: 'existing-public-key'
     }).runSync()
 
-    ct.same(out, { DOTENV_PUBLIC_KEY: 'existing-public-key', DOTENV_PRIVATE_KEY: 'remote-private-key' })
-    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'existing-public-key', DOTENV_PRIVATE_KEY: 'remote-private-key-sync' })
-    ct.same(armorKeypair.firstCall.args[0], 'existing-public-key')
-    ct.same(armorKeypairSync.firstCall.args[0], 'existing-public-key')
+    ct.same(out, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
     ct.end()
   })

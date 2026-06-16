@@ -119,12 +119,12 @@ t.test('armorKeypair forwards command as metadata json to native ArmorKeypair se
 
   await armorKeypair('existing_pub', {
     envFilepath: '.env.production',
-    command: ['dotenvx', 'run', '-f', '.env.production', '--', 'npm', 'start']
+    command: ['dotenvx', 'keypair', '--token', 'token-123', '-f', '.env.production']
   })
 
   ct.same(ArmorKeypairStub.firstCall.args, ['https://armor.example.com', 'token-from-session', 'device-pub', 'existing_pub', {
     envFile: '.env.production',
-    metadata: '{"command":"dotenvx run -f .env.production -- npm start"}'
+    metadata: '{"command":"dotenvx keypair --token [REDACTED] -f .env.production"}'
   }])
 })
 
