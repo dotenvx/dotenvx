@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.72.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.73.0...main)
+
+## [1.73.0](https://github.com/dotenvx/dotenvx/compare/v1.72.0...v1.73.0) (2026-06-16)
+
+### Added
+
+* Add `dotenvx armor` commands directly inside dotenvx ([#839](https://github.com/dotenvx/dotenvx/pull/839))
+
+> `dotenvx` remains local-first: `armor` commands are optional under professional security section
 
 ## [1.72.0](https://github.com/dotenvx/dotenvx/compare/v1.71.3...v1.72.0) (2026-06-15)
 
