@@ -5,6 +5,7 @@ const { Command } = require('commander')
 const proxyquire = require('proxyquire')
 
 const configureArmorCommand = require('../../../src/cli/commands/armor')
+const Session = require('../../../src/db/session')
 
 const armor = configureArmorCommand(new Command('armor'))
 const commandsWithToken = ['up', 'down', 'push', 'pull', 'move']
@@ -43,13 +44,16 @@ t.test('armor commands are native cli subcommands without rotate conflict', asyn
 
 t.test('armor default action shows help', async (ct) => {
   const helpStub = sinon.stub(armor, 'help')
+  const notifyUpdateStub = sinon.stub(Session.prototype, 'notifyUpdate').resolves()
 
   ct.teardown(() => {
+    notifyUpdateStub.restore()
     helpStub.restore()
   })
 
   await armor._actionHandler([])
 
+  ct.equal(notifyUpdateStub.callCount, 1, 'checks for dotenvx update')
   ct.equal(helpStub.callCount, 1, 'shows help')
 })
 

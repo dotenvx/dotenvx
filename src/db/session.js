@@ -5,13 +5,46 @@ const dotenv = require('dotenv')
 const envPaths = require('env-paths')
 
 const jsonToEnv = require('./../lib/helpers/jsonToEnv')
+const packageJson = require('./../lib/helpers/packageJson')
+const { http } = require('./../lib/helpers/http')
 const { logger } = require('./../shared/logger')
+
+const HOURS_24 = 60 * 60 * 24 * 1000
+const VERSION_URL = 'https://dotenvx.sh/VERSION'
 
 const ARMOR = {
   HOSTNAME: 'DOTENVX_ARMOR_HOSTNAME',
   USER: 'DOTENVX_ARMOR_USER',
   USERNAME: 'DOTENVX_ARMOR_USERNAME',
   TOKEN: 'DOTENVX_ARMOR_TOKEN'
+}
+
+const DOTENVX = {
+  VERSION: 'DOTENVX_VERSION',
+  VERSION_LAST_CHECK: 'DOTENVX_VERSION_LAST_CHECK'
+}
+
+function normalizeVersion (version) {
+  return String(version || '').trim().replace(/^v/, '')
+}
+
+function parseVersion (version) {
+  return normalizeVersion(version).split('.').map(part => Number.parseInt(part, 10) || 0)
+}
+
+function versionGreaterThan (left, right) {
+  const leftParts = parseVersion(left)
+  const rightParts = parseVersion(right)
+
+  for (let i = 0; i < Math.max(leftParts.length, rightParts.length); i++) {
+    const leftPart = leftParts[i] || 0
+    const rightPart = rightParts[i] || 0
+
+    if (leftPart > rightPart) return true
+    if (leftPart < rightPart) return false
+  }
+
+  return false
 }
 
 class Session {
@@ -86,6 +119,13 @@ class Session {
     return store.get(ARMOR[key])
   }
 
+  readDotenvxSetting (key) {
+    const store = this.openStore()
+    if (!store) return undefined
+
+    return store.get(DOTENVX[key])
+  }
+
   hostname () {
     return this.readSetting('HOSTNAME') || 'https://armor.dotenvx.com'
   }
@@ -116,6 +156,43 @@ class Session {
       system_uuid: system.uuid,
       os_platform: osInfo.platform,
       os_arch: osInfo.arch
+    }
+  }
+
+  //
+  // Notify Update
+  //
+  async notifyUpdate () {
+    try {
+      const store = this.openStore()
+      if (!store) return
+
+      logger.debug('checking if update available')
+
+      const lastCheck = Number(this.readDotenvxSetting('VERSION_LAST_CHECK') || 0)
+      const now = Date.now()
+
+      if ((lastCheck + HOURS_24) >= now) return
+
+      let remote = packageJson.version
+
+      try {
+        logger.debug('fetching latest available dotenvx version')
+        const response = await http(VERSION_URL)
+        remote = normalizeVersion(await response.body.text())
+        logger.debug(`latest dotenvx version: ${remote}`)
+        store.set(DOTENVX.VERSION, remote)
+      } catch (error) {
+        logger.debug(error.message)
+      }
+
+      store.set(DOTENVX.VERSION_LAST_CHECK, now)
+
+      if (versionGreaterThan(remote, packageJson.version)) {
+        console.error('⛆ update available [npm install @dotenvx/dotenvx@latest]')
+      }
+    } catch (error) {
+      logger.debug(error.message)
     }
   }
 
@@ -193,6 +270,8 @@ class Session {
     store.delete(ARMOR.USERNAME)
     store.delete(ARMOR.TOKEN)
     store.delete(ARMOR.HOSTNAME)
+    store.delete(DOTENVX.VERSION)
+    store.delete(DOTENVX.VERSION_LAST_CHECK)
     return true
   }
 }

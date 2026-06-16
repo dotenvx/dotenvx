@@ -11,6 +11,7 @@ async function down () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const sesh = new Session()
+  await sesh.notifyUpdate()
   const hostname = options.hostname || sesh.hostname()
   const token = options.token || sesh.token()
 

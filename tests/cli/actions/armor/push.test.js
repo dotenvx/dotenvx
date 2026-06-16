@@ -3,6 +3,14 @@ const sinon = require('sinon')
 
 const Session = require('../../../../src/db/session')
 
+t.beforeEach(() => {
+  sinon.stub(Session.prototype, 'notifyUpdate').resolves()
+})
+
+t.afterEach(() => {
+  sinon.restore()
+})
+
 const loggerPath = require.resolve('../../../../src/shared/logger')
 const createSpinnerPath = require.resolve('../../../../src/lib/helpers/createSpinner')
 const armorPushServicePath = require.resolve('../../../../src/lib/services/armorPush')
