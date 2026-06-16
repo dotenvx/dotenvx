@@ -27,7 +27,6 @@ t.test('Session stores login settings in dotenvx config', async ct => {
   ct.equal(sesh.status(), 'on')
   ct.type(sesh.path(), 'string')
   ct.match(fs.readFileSync(path.join(process.env.DOTENVX_CONFIG, '.env'), 'utf8'), /DOTENVX_ARMOR_TOKEN="token-123"/)
-  await ct.resolves(sesh.notifyUpdate())
 })
 
 t.test('Session validates login settings before saving', ct => {

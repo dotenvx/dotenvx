@@ -59,7 +59,6 @@ t.test('armor up passes explicit team option to ArmorUp service', async (ct) => 
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -104,7 +103,6 @@ t.test('armor up prints no changes message when remote armor is unchanged', asyn
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -147,7 +145,6 @@ t.test('armor up falls back to private key name when public key display is unava
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -185,7 +182,6 @@ t.test('armor up logs errors and exits', async (ct) => {
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')

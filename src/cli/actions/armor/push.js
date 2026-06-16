@@ -11,7 +11,6 @@ async function push () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const sesh = new Session()
-  await sesh.notifyUpdate()
   const hostname = options.hostname || sesh.hostname()
   const token = options.token || sesh.token()
 

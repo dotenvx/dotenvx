@@ -11,9 +11,7 @@ const ARMOR = {
   HOSTNAME: 'DOTENVX_ARMOR_HOSTNAME',
   USER: 'DOTENVX_ARMOR_USER',
   USERNAME: 'DOTENVX_ARMOR_USERNAME',
-  TOKEN: 'DOTENVX_ARMOR_TOKEN',
-  VERSION: 'DOTENVX_ARMOR_VERSION',
-  VERSION_LAST_CHECK: 'DOTENVX_ARMOR_VERSION_LAST_CHECK'
+  TOKEN: 'DOTENVX_ARMOR_TOKEN'
 }
 
 class Session {
@@ -121,10 +119,6 @@ class Session {
     }
   }
 
-  async notifyUpdate () {
-    // native login keeps this lightweight; sidecar commands still handle full update messaging
-  }
-
   //
   // armor status helpers
   //
@@ -199,8 +193,6 @@ class Session {
     store.delete(ARMOR.USERNAME)
     store.delete(ARMOR.TOKEN)
     store.delete(ARMOR.HOSTNAME)
-    store.delete(ARMOR.VERSION)
-    store.delete(ARMOR.VERSION_LAST_CHECK)
     return true
   }
 }

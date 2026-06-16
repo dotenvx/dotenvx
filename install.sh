@@ -188,6 +188,10 @@ is_windows() {
   [ "$(os)" = "windows" ]
 }
 
+print_next_run() {
+  echo "⮕ next run [dotenvx encrypt]"
+}
+
 is_installed() {
   if [ -n "$FORCE" ]; then
     return 1  # force install even if it's already installed
@@ -214,6 +218,7 @@ is_installed() {
   fi
 
   echo "◈ already installed (${current_version}:$(directory)/$(binary_name))"
+  print_next_run
 
   # return true since version already installed
   return 0
@@ -398,7 +403,7 @@ install_dotenvx() {
   # let user know
   local installed_version="${VERSION:-latest}"
   echo "◈ installed (${installed_version}:$(directory)/$(binary_name))"
-  echo "⮕ next run [dotenvx encrypt]"
+  print_next_run
 
   return 0
 }
@@ -447,6 +452,7 @@ run() {
     # Check if the specified version is already installed
     if is_installed "$VERSION"; then
       echo "◈ already installed (${VERSION}:$(directory)/$(binary_name))"
+      print_next_run
 
       return 0
     else
@@ -455,6 +461,7 @@ run() {
   else
     if is_installed; then
       echo "◈ already installed (${VERSION}:$(directory)/$(binary_name))"
+      print_next_run
 
       return 0
     else

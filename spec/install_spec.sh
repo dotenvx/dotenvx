@@ -374,7 +374,8 @@ Commands:
       It 'returns true and outputs a message'
         When call is_installed
         The status should equal 0
-        The output should equal "◈ already installed (0.44.2:./spec/tmp/dotenvx)"
+        The output should equal "◈ already installed (0.44.2:./spec/tmp/dotenvx)
+⮕ next run [dotenvx encrypt]"
       End
     End
   End
@@ -488,7 +489,8 @@ Commands:
       It 'says already installed'
         When call run
         The status should equal 0
-        The output should equal "◈ already installed (0.44.2:./spec/tmp/dotenvx)"
+        The output should equal "◈ already installed (0.44.2:./spec/tmp/dotenvx)
+⮕ next run [dotenvx encrypt]"
       End
     End
   End

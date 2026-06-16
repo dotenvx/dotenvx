@@ -1,4 +1,3 @@
-const Session = require('./../../db/session')
 const executeDynamic = require('./../../lib/helpers/executeDynamic')
 
 function configureArmorCommand (armor) {
@@ -12,8 +11,6 @@ function configureArmorCommand (armor) {
         return executeDynamic(armor, 'armor', [command, ...(args || [])])
       }
 
-      const sesh = new Session()
-      await sesh.notifyUpdate()
       this.help()
     })
 

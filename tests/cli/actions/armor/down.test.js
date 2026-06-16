@@ -63,7 +63,6 @@ t.test('armor down uses session values and calls ArmorDown service with default 
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -112,7 +111,6 @@ t.test('armor down passes explicit env file option to ArmorDown service', async 
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -157,7 +155,6 @@ t.test('armor down passes explicit team option to ArmorDown service', async (ct)
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -204,7 +201,6 @@ t.test('armor down prints no changes message when remote armor is unchanged', as
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -243,7 +239,6 @@ t.test('armor down logs errors and exits', async (ct) => {
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')

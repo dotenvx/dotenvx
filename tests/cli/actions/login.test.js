@@ -15,7 +15,6 @@ t.test('login action runs native oauth device flow', async ct => {
   const loggerSuccessStub = sinon.stub(logger, 'success')
   sinon.stub(logger, 'debug')
   const session = {
-    notifyUpdate: sinon.stub().resolves(),
     hostname: sinon.stub().returns('https://armor.dotenvx.com')
   }
   const Login = sinon.stub().callsFake(function () {
@@ -57,7 +56,6 @@ t.test('login action falls back to saved hostname and reports errors', async ct 
   const loggerErrorStub = sinon.stub(logger, 'error')
   sinon.stub(logger, 'debug')
   const session = {
-    notifyUpdate: sinon.stub().resolves(),
     hostname: sinon.stub().returns('https://saved.example.com')
   }
   const Login = sinon.stub().callsFake(function () {
@@ -87,7 +85,6 @@ t.test('login action reports non-error rejection values', async ct => {
   sinon.stub(logger, 'debug')
   const failure = { code: 'login_failed' }
   const session = {
-    notifyUpdate: sinon.stub().resolves(),
     hostname: sinon.stub().returns('https://saved.example.com')
   }
   const Login = sinon.stub().callsFake(function () {

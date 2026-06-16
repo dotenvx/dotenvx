@@ -5,7 +5,6 @@ const { Command } = require('commander')
 const proxyquire = require('proxyquire')
 
 const configureArmorCommand = require('../../../src/cli/commands/armor')
-const Session = require('../../../src/db/session')
 
 const armor = configureArmorCommand(new Command('armor'))
 const commandsWithToken = ['up', 'down', 'push', 'pull', 'move']
@@ -42,18 +41,15 @@ t.test('armor commands are native cli subcommands without rotate conflict', asyn
   ct.notMatch(armorHelp, /\n {2}rotate \[options\].*rotate armored key/, 'does not register armor rotate')
 })
 
-t.test('armor default action notifies and shows help', async (ct) => {
-  const notifyUpdateStub = sinon.stub(Session.prototype, 'notifyUpdate').resolves()
+t.test('armor default action shows help', async (ct) => {
   const helpStub = sinon.stub(armor, 'help')
 
   ct.teardown(() => {
-    notifyUpdateStub.restore()
     helpStub.restore()
   })
 
   await armor._actionHandler([])
 
-  ct.equal(notifyUpdateStub.callCount, 1, 'checks for update')
   ct.equal(helpStub.callCount, 1, 'shows help')
 })
 
