@@ -7,6 +7,7 @@ const ACCESS_APPROVAL_REQUIRED = 'ACCESS_APPROVAL_REQUIRED'
 const ACCESS_APPROVAL_PENDING = 'ACCESS_APPROVAL_PENDING'
 const ACCESS_PENDING = 'ACCESS_PENDING'
 const POLL_INTERVAL = 1000
+const POLL_TIMEOUT = 5 * 60 * 1000
 
 function grantTokenFromError (error) {
   return error.meta && error.meta.grant_token
@@ -30,6 +31,13 @@ function approvalUriFromError (error) {
 
 async function sleep (ms) {
   await new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function approvalTimeoutError () {
+  const code = 'ACCESS_APPROVAL_TIMEOUT'
+  const error = new Error(`[${code}] approval timed out after 5 minutes`)
+  error.code = code
+  return error
 }
 
 class ArmorKeypair {
@@ -94,12 +102,18 @@ class ArmorKeypair {
   }
 
   async poll (team, metadata, grantToken) {
+    const startedAt = Date.now()
+
     while (true) {
       try {
         return await this.request(team, metadata, grantToken)
       } catch (error) {
         if (!isAccessPending(error)) {
           throw error
+        }
+
+        if (Date.now() - startedAt >= POLL_TIMEOUT) {
+          throw approvalTimeoutError()
         }
 
         await sleep(POLL_INTERVAL)

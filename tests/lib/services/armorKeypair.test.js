@@ -176,3 +176,45 @@ t.test('ArmorKeypair polls with grant when access approval is required', async (
   ct.equal(PostKeypairStub.callCount, 4, 'polls until api succeeds')
   ct.same(result, approvedResponse, 'returns approved keypair response')
 })
+
+t.test('ArmorKeypair stops polling when approval times out', async (ct) => {
+  const sandbox = sinon.createSandbox()
+  const clock = sandbox.useFakeTimers()
+  const requiredError = new Error('[ACCESS_APPROVAL_REQUIRED] approval required')
+  requiredError.code = 'ACCESS_APPROVAL_REQUIRED'
+  requiredError.meta = {
+    grant_token: 'grant-token-123',
+    approval_uri: 'https://armor.dotenvx.com/grants/grant-token-123'
+  }
+  const pendingError = new Error('[ACCESS_PENDING] approval pending')
+  pendingError.code = 'ACCESS_PENDING'
+  const firstRunStub = sandbox.stub().rejects(requiredError)
+  const pendingRunStub = sandbox.stub().rejects(pendingError)
+  const PostKeypairStub = sandbox.stub().callsFake(function (hostname, token, devicePublicKey, publicKey, team, metadata, grantToken) {
+    this.run = PostKeypairStub.callCount === 1 ? firstRunStub : pendingRunStub
+    this.args = { hostname, token, devicePublicKey, publicKey, team, metadata, grantToken }
+  })
+  const restore = loadArmorKeypairWithStubs({
+    promptsExport: { select: sandbox.stub() },
+    postKeypairExport: PostKeypairStub
+  })
+  const ArmorKeypair = require(armorKeypairPath)
+
+  ct.teardown(() => {
+    restore()
+    sandbox.restore()
+  })
+
+  const promise = new ArmorKeypair('https://armor.example.com/', 'token-1', 'device-pub-1', 'existing-public-key').run()
+
+  await Promise.resolve()
+  await Promise.resolve()
+  const rejection = ct.rejects(promise, {
+    code: 'ACCESS_APPROVAL_TIMEOUT',
+    message: '[ACCESS_APPROVAL_TIMEOUT] approval timed out after 5 minutes'
+  })
+
+  await clock.tickAsync(5 * 60 * 1000)
+  await rejection
+  ct.ok(PostKeypairStub.callCount > 1, 'polls before timing out')
+})
