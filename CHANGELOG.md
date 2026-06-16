@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.73.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.73.1...main)
+
+## [1.73.1](https://github.com/dotenvx/dotenvx/compare/v1.73.0...v1.73.1) (2026-06-16)
+
+### Changed
+
+* Give update available notification only for armor commands ([#840](https://github.com/dotenvx/dotenvx/pull/840))
 
 ## [1.73.0](https://github.com/dotenvx/dotenvx/compare/v1.72.0...v1.73.0) (2026-06-16)
 
