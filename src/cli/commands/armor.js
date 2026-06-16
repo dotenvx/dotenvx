@@ -1,10 +1,17 @@
 const Session = require('./../../db/session')
+const executeDynamic = require('./../../lib/helpers/executeDynamic')
 
 function configureArmorCommand (armor) {
   armor
     .description('move private keys off-device')
     .allowUnknownOption()
-    .action(async function () {
+    .argument('[command]', 'dotenvx-armor command')
+    .argument('[args...]', 'dotenvx-armor command arguments')
+    .action(async function (command, args) {
+      if (command) {
+        return executeDynamic(armor, 'armor', [command, ...(args || [])])
+      }
+
       const sesh = new Session()
       await sesh.notifyUpdate()
       this.help()

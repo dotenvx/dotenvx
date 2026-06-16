@@ -85,11 +85,9 @@ t.test('#run forwards command to key resolution',
       privateKeyValue: 'private-key-sync'
     })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
-      './../helpers/keyResolution': {
-        keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-        keyValues,
-        keyValuesSync
-      }
+      './../helpers/keyResolution/keyNamesForEnvFile': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+      './../helpers/keyResolution/keyValues': keyValues,
+      './../helpers/keyResolution/keyValuesSync': keyValuesSync
     })
 
     const out = await new KeypairWithStubs('.env', null, false, { command: ['keypair'] }).run()
@@ -99,5 +97,61 @@ t.test('#run forwards command to key resolution',
     ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key-sync', DOTENV_PRIVATE_KEY: 'private-key-sync' })
     ct.same(keyValues.firstCall.args[1], { keysFilepath: null, noArmor: false, command: ['keypair'] })
     ct.same(keyValuesSync.firstCall.args[1], { keysFilepath: null, noArmor: false, command: ['keypair'] })
+    ct.end()
+  })
+
+t.test('#run does not create a remote keypair when no local keys exist',
+  async ct => {
+    const keyValues = sinon.stub().resolves({
+      publicKeyValue: null,
+      privateKeyValue: null
+    })
+    const keyValuesSync = sinon.stub().returns({
+      publicKeyValue: null,
+      privateKeyValue: null
+    })
+    const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
+      './../helpers/keyResolution/keyNamesForEnvFile': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+      './../helpers/keyResolution/keyValues': keyValues,
+      './../helpers/keyResolution/keyValuesSync': keyValuesSync
+    })
+
+    const out = await new KeypairWithStubs('.env', null, false, {
+      command: ['keypair']
+    }).run()
+    const outSync = new KeypairWithStubs('.env', null, false, {
+      command: ['keypair']
+    }).runSync()
+
+    ct.same(out, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    ct.end()
+  })
+
+t.test('#run returns values from key resolution without accepting explicit public key override',
+  async ct => {
+    const keyValues = sinon.stub().resolves({
+      publicKeyValue: null,
+      privateKeyValue: null
+    })
+    const keyValuesSync = sinon.stub().returns({
+      publicKeyValue: null,
+      privateKeyValue: null
+    })
+    const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
+      './../helpers/keyResolution/keyNamesForEnvFile': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+      './../helpers/keyResolution/keyValues': keyValues,
+      './../helpers/keyResolution/keyValuesSync': keyValuesSync
+    })
+
+    const out = await new KeypairWithStubs('.env', null, false, {
+      publicKey: 'existing-public-key'
+    }).run()
+    const outSync = new KeypairWithStubs('.env', null, false, {
+      publicKey: 'existing-public-key'
+    }).runSync()
+
+    ct.same(out, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
     ct.end()
   })

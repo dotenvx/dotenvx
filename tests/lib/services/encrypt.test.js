@@ -947,7 +947,7 @@ t.test('#run wraps invalid public key encryption errors',
     const envFile = 'tests/monorepo/apps/frontend/.env'
     const envs = [{ type: 'envFile', value: envFile }]
 
-    const { processedEnvs, changedFilepaths } = await new EncryptWithStub(envs).run()
+    const { processedEnvs, changedFilepaths } = await new EncryptWithStub(envs, [], [], null, true).run()
 
     ct.equal(processedEnvs[0].error.code, 'INVALID_PUBLIC_KEY')
     ct.match(processedEnvs[0].error.message, /^\[INVALID_PUBLIC_KEY\] could not encrypt using public key 'DOTENV_PUBLIC_KEY=/)

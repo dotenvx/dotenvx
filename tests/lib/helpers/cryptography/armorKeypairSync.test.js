@@ -1,94 +1,135 @@
+const path = require('path')
 const t = require('tap')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-t.test('armorKeypairSync returns normalized keys from Armor keypair', async (ct) => {
-  const keypairSync = sinon.stub().returns({
-    public_key: 'armor_pub_123',
-    private_key: 'armor_priv_123'
-  })
+const expectedCliPath = path.resolve(process.cwd(), 'src/cli/dotenvx.js')
 
-  function ArmorMock () {
-    this.keypairSync = keypairSync
-  }
-
-  const armorKeypairSync = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypairSync', {
-    './../../extensions/armor': ArmorMock
+function loadArmorKeypairSync (execFileSync) {
+  return proxyquire('../../../../src/lib/helpers/cryptography/armorKeypairSync', {
+    child_process: { execFileSync }
   })
+}
+
+t.test('armorKeypairSync runs dotenvx keypair command for blocking approval flow', ct => {
+  const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
+    DOTENV_PUBLIC_KEY: 'armor_pub_123',
+    DOTENV_PRIVATE_KEY: 'armor_priv_123'
+  })))
+  const armorKeypairSync = loadArmorKeypairSync(execFileSync)
 
   const out = armorKeypairSync()
 
-  ct.equal(out.publicKey, 'armor_pub_123')
-  ct.equal(out.privateKey, 'armor_priv_123')
-  ct.equal(keypairSync.callCount, 1)
-  ct.equal(keypairSync.firstCall.args.length, 2)
-  ct.equal(keypairSync.firstCall.args[0], undefined)
+  ct.same(out, {
+    publicKey: 'armor_pub_123',
+    privateKey: 'armor_priv_123'
+  })
+  ct.equal(execFileSync.callCount, 1)
+  ct.equal(execFileSync.firstCall.args[0], process.execPath)
+  ct.same(execFileSync.firstCall.args[1], [
+    expectedCliPath,
+    'keypair',
+    '--format',
+    'json'])
+  ct.same(execFileSync.firstCall.args[2], {
+    env: execFileSync.firstCall.args[2].env,
+    stdio: ['inherit', 'pipe', 'inherit'],
+    timeout: 5 * 60 * 1000
+  })
+  ct.equal(execFileSync.firstCall.args[2].env._TAPJS_PROCESSINFO_COVERAGE_, '0')
   ct.end()
 })
 
-t.test('armorKeypairSync forwards provided public key to Armor keypair', async (ct) => {
-  const keypairSync = sinon.stub().returns({
-    public_key: 'armor_pub_abc',
-    private_key: 'armor_priv_abc'
+t.test('armorKeypairSync does not pass tap processinfo NODE_OPTIONS to child command', ct => {
+  const originalNodeOptions = process.env.NODE_OPTIONS
+  ct.teardown(() => {
+    if (originalNodeOptions === undefined) {
+      delete process.env.NODE_OPTIONS
+    } else {
+      process.env.NODE_OPTIONS = originalNodeOptions
+    }
   })
 
-  function ArmorMock () {
-    this.keypairSync = keypairSync
-  }
+  process.env.NODE_OPTIONS = '--max-old-space-size=1024 --import=file:///repo/node_modules/@tapjs/processinfo/dist/esm/import.mjs'
 
-  const armorKeypairSync = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypairSync', {
-    './../../extensions/armor': ArmorMock
+  const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
+    DOTENV_PUBLIC_KEY: 'armor_pub_123',
+    DOTENV_PRIVATE_KEY: 'armor_priv_123'
+  })))
+  const armorKeypairSync = loadArmorKeypairSync(execFileSync)
+
+  armorKeypairSync()
+
+  ct.equal(execFileSync.firstCall.args[2].env.NODE_OPTIONS, '--max-old-space-size=1024')
+  ct.end()
+})
+
+t.test('armorKeypairSync forwards env filepath to read-only keypair command', ct => {
+  const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
+    DOTENV_PUBLIC_KEY_PRODUCTION: 'armor_pub_abc',
+    DOTENV_PRIVATE_KEY_PRODUCTION: 'armor_priv_abc'
+  })))
+  const armorKeypairSync = loadArmorKeypairSync(execFileSync)
+
+  const out = armorKeypairSync('existing_pub', { envFilepath: '.env.production' })
+
+  ct.same(out, {
+    publicKey: 'armor_pub_abc',
+    privateKey: 'armor_priv_abc'
   })
+  ct.same(execFileSync.firstCall.args[1], [
+    expectedCliPath,
+    'keypair',
+    '--format',
+    'json',
+    '-f',
+    '.env.production'
+  ])
+  ct.end()
+})
+
+t.test('armorKeypairSync does not pass command metadata through public keypair command', ct => {
+  const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
+    DOTENV_PUBLIC_KEY: 'armor_pub_abc',
+    DOTENV_PRIVATE_KEY: 'armor_priv_abc'
+  })))
+  const armorKeypairSync = loadArmorKeypairSync(execFileSync)
+
+  armorKeypairSync('existing_pub', {
+    command: 'dotenvx config'
+  })
+
+  ct.same(execFileSync.firstCall.args[1], [
+    expectedCliPath,
+    'keypair',
+    '--format',
+    'json'
+  ])
+  ct.end()
+})
+
+t.test('armorKeypairSync returns empty keys when native command fails or returns invalid json', ct => {
+  const execFileSync = sinon.stub().throws(new Error('nope'))
+  const armorKeypairSync = loadArmorKeypairSync(execFileSync)
 
   const out = armorKeypairSync('existing_pub')
 
-  ct.equal(out.publicKey, 'armor_pub_abc')
-  ct.equal(out.privateKey, 'armor_priv_abc')
-  ct.equal(keypairSync.callCount, 1)
-  ct.equal(keypairSync.firstCall.args[0], 'existing_pub')
+  ct.same(out, {
+    publicKey: undefined,
+    privateKey: undefined
+  })
   ct.end()
 })
 
-t.test('armorKeypairSync forwards options to Armor keypair', async (ct) => {
-  const keypairSync = sinon.stub().returns({
-    public_key: 'armor_pub_abc',
-    private_key: 'armor_priv_abc'
+t.test('armorKeypairSync returns empty keys when native command returns no key names', ct => {
+  const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({})))
+  const armorKeypairSync = loadArmorKeypairSync(execFileSync)
+
+  const out = armorKeypairSync('existing_pub')
+
+  ct.same(out, {
+    publicKey: undefined,
+    privateKey: undefined
   })
-
-  function ArmorMock () {
-    this.keypairSync = keypairSync
-  }
-
-  const armorKeypairSync = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypairSync', {
-    './../../extensions/armor': ArmorMock
-  })
-
-  const out = armorKeypairSync('existing_pub', { noSpinner: true })
-
-  ct.equal(out.publicKey, 'armor_pub_abc')
-  ct.equal(keypairSync.callCount, 1)
-  ct.same(keypairSync.firstCall.args, ['existing_pub', { noSpinner: true }])
-  ct.end()
-})
-
-t.test('armorKeypairSync forwards command to Armor keypair', async (ct) => {
-  const keypairSync = sinon.stub().returns({
-    public_key: 'armor_pub_abc',
-    private_key: 'armor_priv_abc'
-  })
-
-  function ArmorMock () {
-    this.keypairSync = keypairSync
-  }
-
-  const armorKeypairSync = proxyquire('../../../../src/lib/helpers/cryptography/armorKeypairSync', {
-    './../../extensions/armor': ArmorMock
-  })
-
-  const out = armorKeypairSync('existing_pub', { command: ['bin/rails', 's'] })
-
-  ct.equal(out.publicKey, 'armor_pub_abc')
-  ct.equal(keypairSync.callCount, 1)
-  ct.same(keypairSync.firstCall.args, ['existing_pub', { command: ['bin/rails', 's'] }])
   ct.end()
 })

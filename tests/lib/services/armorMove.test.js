@@ -1,19 +1,19 @@
 const t = require('tap')
 const sinon = require('sinon')
 
-const dotenvxPath = require.resolve('../../../src/lib/main')
+const readEnvKeyPath = require.resolve('../../../src/lib/helpers/readEnvKey')
 const promptsPath = require.resolve('../../../src/lib/helpers/prompts')
 const getAccountPath = require.resolve('../../../src/lib/api/getAccount')
 const postArmorMovePath = require.resolve('../../../src/lib/api/postArmorMove')
 const armorMovePath = require.resolve('../../../src/lib/services/armorMove')
 
-function loadArmorMoveWithStubs ({ dotenvxExport, promptsExport, getAccountExport, postArmorMoveExport }) {
-  const originalDotenvx = require(dotenvxPath)
+function loadArmorMoveWithStubs ({ readEnvKeyExport, promptsExport, getAccountExport, postArmorMoveExport }) {
+  const originalReadEnvKey = require(readEnvKeyPath)
   const originalPrompts = require(promptsPath)
   const originalGetAccount = require(getAccountPath)
   const originalPostArmorMove = require(postArmorMovePath)
 
-  require.cache[dotenvxPath].exports = dotenvxExport
+  require.cache[readEnvKeyPath].exports = readEnvKeyExport
   require.cache[promptsPath].exports = promptsExport
   require.cache[getAccountPath].exports = getAccountExport
   require.cache[postArmorMovePath].exports = postArmorMoveExport
@@ -21,7 +21,7 @@ function loadArmorMoveWithStubs ({ dotenvxExport, promptsExport, getAccountExpor
   require(armorMovePath)
 
   return () => {
-    require.cache[dotenvxPath].exports = originalDotenvx
+    require.cache[readEnvKeyPath].exports = originalReadEnvKey
     require.cache[promptsPath].exports = originalPrompts
     require.cache[getAccountPath].exports = originalGetAccount
     require.cache[postArmorMovePath].exports = originalPostArmorMove
@@ -50,7 +50,7 @@ t.test('ArmorMove reads public key, prompts for team, and posts move request', a
     this.args = { hostname, token, devicePublicKey, publicKey, team }
   })
   const restore = loadArmorMoveWithStubs({
-    dotenvxExport: { get: getStub },
+    readEnvKeyExport: getStub,
     promptsExport: { select: selectStub },
     getAccountExport: GetAccountStub,
     postArmorMoveExport: PostArmorMoveStub
@@ -64,11 +64,9 @@ t.test('ArmorMove reads public key, prompts for team, and posts move request', a
 
   const result = await new ArmorMove('https://armor.dotenvx.com', 'token-1', 'device-pub-1', '.env.production').run()
 
-  ct.same(getStub.firstCall && getStub.firstCall.args, ['DOTENV_PUBLIC_KEY_PRODUCTION', {
-    path: '.env.production',
+  ct.same(getStub.firstCall && getStub.firstCall.args, ['DOTENV_PUBLIC_KEY_PRODUCTION', '.env.production', {
     strict: true,
-    ignore: ['MISSING_PRIVATE_KEY'],
-    noArmor: true
+    ignore: ['MISSING_PRIVATE_KEY']
   }], 'reads mapped public key name from env file')
   ct.same(GetAccountStub.firstCall && GetAccountStub.firstCall.args, ['https://armor.dotenvx.com', 'token-1'], 'fetches account organizations')
   ct.same(selectStub.firstCall && selectStub.firstCall.args, [{
@@ -94,9 +92,10 @@ t.test('ArmorMove reads public key, prompts for team, and posts move request', a
 
 t.test('ArmorMove returns unchanged when api reports no change', async (ct) => {
   const sandbox = sinon.createSandbox()
+  const getStub = sandbox.stub().returns('pub-from-env')
   const postRunStub = sandbox.stub().resolves({ changed: false, team: 'dotenvx' })
   const restore = loadArmorMoveWithStubs({
-    dotenvxExport: { get: sandbox.stub().returns('pub-from-env') },
+    readEnvKeyExport: getStub,
     promptsExport: { select: sandbox.stub().resolves('dotenvx') },
     getAccountExport: sandbox.stub().callsFake(function () {
       this.run = sandbox.stub().resolves({

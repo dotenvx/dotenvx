@@ -1,8 +1,6 @@
-const {
-  keyNamesForEnvFile,
-  keyValues,
-  keyValuesSync
-} = require('./../helpers/keyResolution')
+const keyNamesForEnvFile = require('./../helpers/keyResolution/keyNamesForEnvFile')
+const keyValues = require('./../helpers/keyResolution/keyValues')
+const keyValuesSync = require('./../helpers/keyResolution/keyValuesSync')
 
 class Keypair {
   constructor (envFile = '.env', envKeysFilepath = null, noArmor = false, options = {}) {
