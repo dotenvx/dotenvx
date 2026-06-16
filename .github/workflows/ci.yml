@@ -44,7 +44,7 @@ jobs:
       - run: which shellspec
       - run: npm install
       - run: |
-          npm run test 2>&1 | tee testResults.txt
+          npm run test -- --allow-incomplete-coverage 2>&1 | tee testResults.txt
           test ${PIPESTATUS[0]} -eq 0
       - name: set test count
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

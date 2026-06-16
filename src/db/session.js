@@ -129,12 +129,22 @@ class Session {
   // armor status helpers
   //
   async noArmor () {
+    if (process.env.DOTENVX_NO_ARMOR === 'true') {
+      logger.debug('armor: off')
+      return true
+    }
+
     const status = this.status()
     logger.debug(`armor: ${status}`)
     return status === 'off'
   }
 
   noArmorSync () {
+    if (process.env.DOTENVX_NO_ARMOR === 'true') {
+      logger.debug('armor: off')
+      return true
+    }
+
     const status = this.status()
     logger.debug(`armor: ${status}`)
     return status === 'off'

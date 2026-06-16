@@ -10,6 +10,7 @@ t.beforeEach(() => {
 
 t.afterEach(() => {
   delete process.env.DOTENVX_CONFIG
+  delete process.env.DOTENVX_NO_ARMOR
 })
 
 t.test('Session stores login settings in dotenvx config', async ct => {
@@ -48,6 +49,17 @@ t.test('Session noArmor is false when native login is on', async ct => {
 
   ct.equal(sesh.noArmorSync(), false)
   ct.equal(await sesh.noArmor(), false)
+})
+
+t.test('Session noArmor is true when DOTENVX_NO_ARMOR is true', async ct => {
+  process.env.DOTENVX_NO_ARMOR = 'true'
+  const Session = require('../../src/db/session')
+  const sesh = new Session()
+
+  sesh.login('https://armor.example.com', 'user-id', 'scott', 'token-123')
+
+  ct.equal(sesh.noArmorSync(), true)
+  ct.equal(await sesh.noArmor(), true)
 })
 
 t.test('Session logout clears login settings when config exists', ct => {

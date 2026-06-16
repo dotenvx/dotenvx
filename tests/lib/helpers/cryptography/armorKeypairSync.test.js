@@ -25,15 +25,42 @@ t.test('armorKeypairSync runs dotenvx keypair command for blocking approval flow
     privateKey: 'armor_priv_123'
   })
   ct.equal(execFileSync.callCount, 1)
-  ct.same(execFileSync.firstCall.args, [process.execPath, [
+  ct.equal(execFileSync.firstCall.args[0], process.execPath)
+  ct.same(execFileSync.firstCall.args[1], [
     expectedCliPath,
     'keypair',
     '--format',
-    'json'
-  ], {
+    'json'])
+  ct.same(execFileSync.firstCall.args[2], {
+    env: execFileSync.firstCall.args[2].env,
     stdio: ['inherit', 'pipe', 'inherit'],
     timeout: 5 * 60 * 1000
-  }])
+  })
+  ct.equal(execFileSync.firstCall.args[2].env._TAPJS_PROCESSINFO_COVERAGE_, '0')
+  ct.end()
+})
+
+t.test('armorKeypairSync does not pass tap processinfo NODE_OPTIONS to child command', ct => {
+  const originalNodeOptions = process.env.NODE_OPTIONS
+  ct.teardown(() => {
+    if (originalNodeOptions === undefined) {
+      delete process.env.NODE_OPTIONS
+    } else {
+      process.env.NODE_OPTIONS = originalNodeOptions
+    }
+  })
+
+  process.env.NODE_OPTIONS = '--max-old-space-size=1024 --import=file:///repo/node_modules/@tapjs/processinfo/dist/esm/import.mjs'
+
+  const execFileSync = sinon.stub().returns(Buffer.from(JSON.stringify({
+    DOTENV_PUBLIC_KEY: 'armor_pub_123',
+    DOTENV_PRIVATE_KEY: 'armor_priv_123'
+  })))
+  const armorKeypairSync = loadArmorKeypairSync(execFileSync)
+
+  armorKeypairSync()
+
+  ct.equal(execFileSync.firstCall.args[2].env.NODE_OPTIONS, '--max-old-space-size=1024')
   ct.end()
 })
 
