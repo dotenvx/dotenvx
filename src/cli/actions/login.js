@@ -18,7 +18,6 @@ async function login () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   const sesh = new Session()
-  await sesh.notifyUpdate()
   const hostname = options.hostname || sesh.hostname()
   let cleanupOpenKeyListener = () => {}
 

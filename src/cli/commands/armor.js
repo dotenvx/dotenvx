@@ -1,5 +1,5 @@
-const Session = require('./../../db/session')
 const executeDynamic = require('./../../lib/helpers/executeDynamic')
+const Session = require('./../../db/session')
 
 function configureArmorCommand (armor) {
   armor

@@ -39,7 +39,8 @@ t.test('Login requests device code with device public key and system info', asyn
 
 t.test('LoginPoll saves token when access token is returned', async ct => {
   const session = {
-    login: sinon.stub()
+    login: sinon.stub(),
+    notifyUpdate: sinon.stub().resolves()
   }
   const PostOauthToken = sinon.stub().callsFake(function () {
     this.run = sinon.stub().resolves({
@@ -57,11 +58,13 @@ t.test('LoginPoll saves token when access token is returned', async ct => {
 
   ct.equal(out.access_token, 'token-123')
   ct.same(session.login.firstCall.args, ['https://armor.example.com', 'user-id', 'scott', 'token-123'])
+  ct.equal(session.notifyUpdate.callCount, 1)
 })
 
 t.test('LoginPoll continues on authorization_pending', async ct => {
   const session = {
-    login: sinon.stub()
+    login: sinon.stub(),
+    notifyUpdate: sinon.stub().resolves()
   }
   const pending = new Error('[authorization_pending] still waiting')
   pending.code = 'authorization_pending'
@@ -84,11 +87,13 @@ t.test('LoginPoll continues on authorization_pending', async ct => {
 
   ct.equal(out.access_token, 'token-123')
   ct.equal(run.callCount, 2)
+  ct.equal(session.notifyUpdate.callCount, 1)
 })
 
 t.test('LoginPoll waits when token response has no access token yet', async ct => {
   const session = {
-    login: sinon.stub()
+    login: sinon.stub(),
+    notifyUpdate: sinon.stub().resolves()
   }
   const run = sinon.stub()
     .onCall(0).resolves({})
@@ -109,6 +114,7 @@ t.test('LoginPoll waits when token response has no access token yet', async ct =
 
   ct.equal(out.access_token, 'token-123')
   ct.equal(run.callCount, 2)
+  ct.equal(session.notifyUpdate.callCount, 1)
 })
 
 t.test('LoginPoll throws non-pending errors', async ct => {

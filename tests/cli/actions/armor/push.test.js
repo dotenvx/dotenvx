@@ -3,6 +3,14 @@ const sinon = require('sinon')
 
 const Session = require('../../../../src/db/session')
 
+t.beforeEach(() => {
+  sinon.stub(Session.prototype, 'notifyUpdate').resolves()
+})
+
+t.afterEach(() => {
+  sinon.restore()
+})
+
 const loggerPath = require.resolve('../../../../src/shared/logger')
 const createSpinnerPath = require.resolve('../../../../src/lib/helpers/createSpinner')
 const armorPushServicePath = require.resolve('../../../../src/lib/services/armorPush')
@@ -59,7 +67,6 @@ t.test('armor push passes explicit team option to ArmorPush service', async (ct)
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -104,7 +111,6 @@ t.test('armor push prints no changes message when remote armor is unchanged', as
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -147,7 +153,6 @@ t.test('armor push falls back to private key name when public key display is una
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -185,7 +190,6 @@ t.test('armor push logs errors and exits', async (ct) => {
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')

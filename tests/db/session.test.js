@@ -3,12 +3,14 @@ const os = require('os')
 const path = require('path')
 const t = require('tap')
 const proxyquire = require('proxyquire')
+const sinon = require('sinon')
 
 t.beforeEach(() => {
   process.env.DOTENVX_CONFIG = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-session-'))
 })
 
 t.afterEach(() => {
+  sinon.restore()
   delete process.env.DOTENVX_CONFIG
   delete process.env.DOTENVX_NO_ARMOR
 })
@@ -27,7 +29,6 @@ t.test('Session stores login settings in dotenvx config', async ct => {
   ct.equal(sesh.status(), 'on')
   ct.type(sesh.path(), 'string')
   ct.match(fs.readFileSync(path.join(process.env.DOTENVX_CONFIG, '.env'), 'utf8'), /DOTENVX_ARMOR_TOKEN="token-123"/)
-  await ct.resolves(sesh.notifyUpdate())
 })
 
 t.test('Session validates login settings before saving', ct => {
@@ -126,6 +127,98 @@ t.test('Session does not open config for status helpers when config is absent', 
   ct.equal(sesh.noArmorSync(), true)
   ct.equal(await sesh.noArmor(), true)
   ct.notOk(fs.existsSync(configPath), 'config file is not created')
+})
+
+t.test('Session notifyUpdate does not create config when config is absent', async ct => {
+  const configPath = path.join(process.env.DOTENVX_CONFIG, '.env')
+  class FakeConf {
+    constructor () {
+      throw new Error('Conf should not be constructed')
+    }
+  }
+
+  const Session = proxyquire('../../src/db/session', {
+    conf: FakeConf
+  })
+  const sesh = new Session()
+
+  await sesh.notifyUpdate()
+
+  ct.notOk(fs.existsSync(configPath), 'config file is not created')
+})
+
+t.test('Session notifyUpdate checks dotenvx VERSION endpoint and stores dotenvx keys', async ct => {
+  fs.writeFileSync(path.join(process.env.DOTENVX_CONFIG, '.env'), 'DOTENVX_ARMOR_TOKEN="token-123"\n', 'utf8')
+  sinon.stub(Date, 'now').returns(1710000000000)
+  const consoleErrorStub = sinon.stub(console, 'error')
+  const values = {}
+  const httpStub = sinon.stub().resolves({
+    body: {
+      text: async () => '9.9.9\n'
+    }
+  })
+
+  class FakeConf {
+    constructor () {
+      this.path = path.join(process.env.DOTENVX_CONFIG, '.env')
+    }
+
+    get (key) {
+      return values[key]
+    }
+
+    set (key, value) {
+      values[key] = value
+    }
+  }
+
+  const Session = proxyquire('../../src/db/session', {
+    conf: FakeConf,
+    './../lib/helpers/http': { http: httpStub },
+    './../lib/helpers/packageJson': { version: '1.0.0' }
+  })
+  const sesh = new Session()
+
+  await sesh.notifyUpdate()
+
+  ct.same(httpStub.firstCall.args, ['https://dotenvx.sh/VERSION'])
+  ct.equal(values.DOTENVX_VERSION, '9.9.9')
+  ct.equal(values.DOTENVX_VERSION_LAST_CHECK, 1710000000000)
+  ct.ok(consoleErrorStub.calledWith('⛆ update available [npm install @dotenvx/dotenvx@latest]'))
+})
+
+t.test('Session notifyUpdate skips check when dotenvx version was checked recently', async ct => {
+  fs.writeFileSync(path.join(process.env.DOTENVX_CONFIG, '.env'), 'DOTENVX_VERSION_LAST_CHECK="1709999999999"\n', 'utf8')
+  sinon.stub(Date, 'now').returns(1710000000000)
+  const values = {
+    DOTENVX_VERSION_LAST_CHECK: 1709999999999
+  }
+  const httpStub = sinon.stub()
+
+  class FakeConf {
+    constructor () {
+      this.path = path.join(process.env.DOTENVX_CONFIG, '.env')
+    }
+
+    get (key) {
+      return values[key]
+    }
+
+    set (key, value) {
+      values[key] = value
+    }
+  }
+
+  const Session = proxyquire('../../src/db/session', {
+    conf: FakeConf,
+    './../lib/helpers/http': { http: httpStub },
+    './../lib/helpers/packageJson': { version: '1.0.0' }
+  })
+  const sesh = new Session()
+
+  await sesh.notifyUpdate()
+
+  ct.equal(httpStub.callCount, 0)
 })
 
 t.test('Session supports default config path when DOTENVX_CONFIG is unset', ct => {

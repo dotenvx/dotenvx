@@ -3,6 +3,14 @@ const sinon = require('sinon')
 
 const Session = require('../../../../src/db/session')
 
+t.beforeEach(() => {
+  sinon.stub(Session.prototype, 'notifyUpdate').resolves()
+})
+
+t.afterEach(() => {
+  sinon.restore()
+})
+
 const loggerPath = require.resolve('../../../../src/shared/logger')
 const createSpinnerPath = require.resolve('../../../../src/lib/helpers/createSpinner')
 const armorPullServicePath = require.resolve('../../../../src/lib/services/armorPull')
@@ -63,7 +71,6 @@ t.test('armor pull uses session values and calls ArmorPull service with default 
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -112,7 +119,6 @@ t.test('armor pull passes explicit env file option to ArmorPull service', async 
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -157,7 +163,6 @@ t.test('armor pull passes explicit team option to ArmorPull service', async (ct)
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -204,7 +209,6 @@ t.test('armor pull prints no changes message when .env.keys is unchanged', async
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
@@ -243,7 +247,6 @@ t.test('armor pull logs errors and exits', async (ct) => {
     sandbox.restore()
   })
 
-  sandbox.stub(Session.prototype, 'notifyUpdate').resolves()
   sandbox.stub(Session.prototype, 'hostname').returns('https://armor.dotenvx.com')
   sandbox.stub(Session.prototype, 'token').returns('session-token')
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')

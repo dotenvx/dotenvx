@@ -17,6 +17,7 @@ class LoginPoll {
 
         if (data.access_token) {
           sesh.login(this.hostname, data.id, data.username, data.access_token)
+          await sesh.notifyUpdate()
           return data
         }
 
