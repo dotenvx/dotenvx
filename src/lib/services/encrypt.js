@@ -11,7 +11,7 @@ const {
 } = require('./../helpers/envResolution')
 
 const {
-  keyNames,
+  keyNamesForEnvFile,
   keyValues
 } = require('./../helpers/keyResolution')
 
@@ -102,7 +102,7 @@ class Encrypt {
       let publicKey
       let privateKey
 
-      const { publicKeyName, privateKeyName } = keyNames(envFilepath)
+      const { publicKeyName, privateKeyName } = keyNamesForEnvFile(envFilepath)
       const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,

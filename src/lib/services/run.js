@@ -10,7 +10,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 const {
-  keyNames,
+  keyNamesForEnvFile,
   keyValues,
   keyValuesSync,
   keyValuesFromEnvSrc
@@ -147,7 +147,7 @@ class Run {
       const src = fsx.readFileXSync(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const { privateKeyName } = keyNames(filepath)
+      const { privateKeyName } = keyNamesForEnvFile(filepath)
       const { privateKeyValue, privateKeySource } = keyValuesSync(filepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
@@ -202,7 +202,7 @@ class Run {
       const src = await fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const { privateKeyName } = keyNames(filepath)
+      const { privateKeyName } = keyNamesForEnvFile(filepath)
       const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,

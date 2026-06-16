@@ -41,7 +41,7 @@ t.test('#run forwards command to key resolution',
       },
       './../helpers/detectEncoding': async () => 'utf8',
       './../helpers/keyResolution': {
-        keyNames: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+        keyNamesForEnvFile: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
         keyValues
       }
     })

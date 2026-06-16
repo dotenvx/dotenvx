@@ -11,7 +11,7 @@ const {
 } = require('./../helpers/envResolution')
 
 const {
-  keyNames,
+  keyNamesForEnvFile,
   keyValues
 } = require('./../helpers/keyResolution')
 
@@ -83,7 +83,7 @@ class Rotate {
       let envSrc = await fsx.readFileX(filepath, { encoding })
       const envParsed = dotenvParse(envSrc, false, false, true)
 
-      const { publicKeyName, privateKeyName } = keyNames(envFilepath)
+      const { publicKeyName, privateKeyName } = keyNamesForEnvFile(envFilepath)
       const { privateKeyValue } = await keyValues(envFilepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,

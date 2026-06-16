@@ -1,0 +1,37 @@
+const { logger } = require('../../../shared/logger')
+const Session = require('./../../../db/session')
+const ArmorPush = require('./../../../lib/services/armorPush')
+const createSpinner = require('../../../lib/helpers/createSpinner')
+const armoredKeyDisplay = require('../../../lib/helpers/armoredKeyDisplay')
+
+async function push () {
+  const options = this.opts()
+  const spinner = await createSpinner({ ...options, text: 'pushing' })
+
+  logger.debug(`options: ${JSON.stringify(options)}`)
+
+  const sesh = new Session()
+  await sesh.notifyUpdate()
+  const hostname = options.hostname || sesh.hostname()
+  const token = options.token || sesh.token()
+
+  try {
+    const devicePublicKey = sesh.devicePublicKey()
+
+    const { changed, privateKeyName, publicKeyValue } = await new ArmorPush(hostname, token, devicePublicKey, options.envFile, options.team).run()
+    const keyDisplay = armoredKeyDisplay(publicKeyValue) || privateKeyName
+
+    if (spinner) spinner.stop()
+    if (changed) {
+      logger.success(`⛨ pushed (${keyDisplay})`)
+    } else {
+      logger.info(`○ no change (${keyDisplay})`)
+    }
+  } catch (error) {
+    if (spinner) spinner.stop()
+    logger.error(error.message)
+    process.exit(1)
+  }
+}
+
+module.exports = push

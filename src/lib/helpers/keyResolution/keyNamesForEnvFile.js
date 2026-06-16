@@ -1,7 +1,7 @@
 const canonicalEnvFilename = require('./../canonicalEnvFilename')
 const environment = require('./../envResolution/environment')
 
-function keyNames (filepath) {
+function keyNamesForEnvFile (filepath) {
   const filename = canonicalEnvFilename(filepath)
 
   // .env
@@ -21,4 +21,4 @@ function keyNames (filepath) {
   }
 }
 
-module.exports = keyNames
+module.exports = keyNamesForEnvFile

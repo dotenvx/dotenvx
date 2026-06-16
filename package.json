@@ -36,7 +36,6 @@
     "standard": "standard",
     "standard:fix": "standard --fix",
     "test": "tap run --test-env=DOTENVX_NO_ARMOR=true --allow-empty-coverage --disable-coverage --timeout=60000",
-    "test-coverage": "tap run --test-env=DOTENVX_NO_ARMOR=true --show-full-coverage --timeout=60000",
     "testshell": "bash shellspec",
     "release:check": "npm test && npm run testshell",
     "prerelease": "npm run release:check",
