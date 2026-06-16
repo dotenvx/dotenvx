@@ -2,12 +2,13 @@ const t = require('tap')
 const { execFileSync } = require('child_process')
 const sinon = require('sinon')
 const { Command } = require('commander')
+const proxyquire = require('proxyquire')
 
 const configureArmorCommand = require('../../../src/cli/commands/armor')
 const Session = require('../../../src/db/session')
 
 const armor = configureArmorCommand(new Command('armor'))
-const commandsWithToken = ['up', 'down', 'push', 'pull', 'move']
+const commandsWithToken = ['up', 'down', 'push', 'pull', 'move', 'keypair']
 
 t.test('armor subcommands accept explicit token option', async (ct) => {
   for (const commandName of commandsWithToken) {
@@ -53,4 +54,19 @@ t.test('armor default action notifies and shows help', async (ct) => {
 
   ct.equal(notifyUpdateStub.callCount, 1, 'checks for update')
   ct.equal(helpStub.callCount, 1, 'shows help')
+})
+
+t.test('armor unknown subcommands fall back to dotenvx-armor', async (ct) => {
+  const executeDynamicStub = sinon.stub()
+  const configureArmorCommand = proxyquire('../../../src/cli/commands/armor', {
+    './../../lib/helpers/executeDynamic': executeDynamicStub
+  })
+  const armor = configureArmorCommand(new Command('armor'))
+
+  await armor._actionHandler(['settings', ['--json']])
+
+  ct.equal(executeDynamicStub.callCount, 1, 'calls dynamic fallback')
+  ct.equal(executeDynamicStub.firstCall.args[0], armor, 'passes armor command for help fallback')
+  ct.equal(executeDynamicStub.firstCall.args[1], 'armor', 'forwards armor command name')
+  ct.same(executeDynamicStub.firstCall.args[2], ['settings', '--json'], 'forwards unknown armor args')
 })

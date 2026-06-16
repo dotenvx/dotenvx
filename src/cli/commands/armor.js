@@ -1,10 +1,17 @@
 const Session = require('./../../db/session')
+const executeDynamic = require('./../../lib/helpers/executeDynamic')
 
 function configureArmorCommand (armor) {
   armor
     .description('move private keys off-device')
     .allowUnknownOption()
-    .action(async function () {
+    .argument('[command]', 'dotenvx-armor command')
+    .argument('[args...]', 'dotenvx-armor command arguments')
+    .action(async function (command, args) {
+      if (command) {
+        return executeDynamic(armor, 'armor', [command, ...(args || [])])
+      }
+
       const sesh = new Session()
       await sesh.notifyUpdate()
       this.help()
@@ -58,6 +65,21 @@ function configureArmorCommand (armor) {
     .option('-f, --env-file <path>', 'path to your env file')
     .option('--token <token>', 'set token')
     .action(moveAction)
+
+  // dotenvx armor keypair
+  const keypairAction = require('./../actions/armor/keypair')
+  armor
+    .command('keypair')
+    .description('generate armored keypair ⛨')
+    .argument('[publicKey]', 'existing public key')
+    .option('-h, --hostname <url>', 'set hostname')
+    .option('--token <token>', 'set token')
+    .option('--team <team>', 'team to generate keypair for')
+    .option('-f, --env-file <path>', 'path to your env file', '.env')
+    .option('--metadata <json>', 'json metadata')
+    .option('--no-spinner', 'disable spinner output')
+    .option('--pp, --pretty-print', 'pretty print output')
+    .action(keypairAction)
 
   return armor
 }

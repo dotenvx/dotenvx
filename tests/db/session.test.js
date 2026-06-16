@@ -19,15 +19,11 @@ t.test('Session stores login settings in dotenvx config', async ct => {
   ct.equal(sesh.hostname(), 'https://armor.dotenvx.com')
   ct.equal(sesh.username(), undefined)
   ct.equal(sesh.token(), undefined)
-  ct.equal(sesh.on(), true)
-  ct.equal(sesh.off(), false)
   ct.equal(sesh.login('https://armor.example.com', 'user-id', 'scott', 'token-123'), 'token-123')
   ct.equal(sesh.hostname(), 'https://armor.example.com')
   ct.equal(sesh.username(), 'scott')
   ct.equal(sesh.token(), 'token-123')
   ct.equal(sesh.status(), 'on')
-  ct.equal(sesh.on(), true)
-  ct.equal(sesh.off(), false)
   ct.type(sesh.path(), 'string')
   ct.match(fs.readFileSync(path.join(process.env.DOTENVX_CONFIG, '.env'), 'utf8'), /DOTENVX_ARMOR_TOKEN="token-123"/)
   await ct.resolves(sesh.notifyUpdate())
@@ -42,6 +38,16 @@ t.test('Session validates login settings before saving', ct => {
   ct.throws(() => sesh.login('https://armor.example.com', 'user-id'), /DOTENVX_ARMOR_USERNAME/)
   ct.throws(() => sesh.login('https://armor.example.com', 'user-id', 'scott'), /DOTENVX_ARMOR_TOKEN/)
   ct.end()
+})
+
+t.test('Session noArmor is false when native login is on', async ct => {
+  const Session = require('../../src/db/session')
+  const sesh = new Session()
+
+  sesh.login('https://armor.example.com', 'user-id', 'scott', 'token-123')
+
+  ct.equal(sesh.noArmorSync(), false)
+  ct.equal(await sesh.noArmor(), false)
 })
 
 t.test('Session logout clears login settings when config exists', ct => {
@@ -94,19 +100,8 @@ t.test('Session does not open config for status helpers when config is absent', 
     }
   }
 
-  class ArmorMock {
-    async status () {
-      return 'off'
-    }
-
-    statusSync () {
-      return 'off'
-    }
-  }
-
   const Session = proxyquire('../../src/db/session', {
-    conf: FakeConf,
-    './../lib/extensions/armor': ArmorMock
+    conf: FakeConf
   })
   const sesh = new Session()
 
@@ -114,8 +109,6 @@ t.test('Session does not open config for status helpers when config is absent', 
   ct.equal(sesh.hostname(), 'https://armor.dotenvx.com')
   ct.equal(sesh.username(), undefined)
   ct.equal(sesh.token(), undefined)
-  ct.equal(sesh.on(), true)
-  ct.equal(sesh.off(), false)
   ct.equal(sesh.store, null)
   ct.equal(sesh.path(), configPath)
   ct.equal(sesh.noArmorSync(), true)

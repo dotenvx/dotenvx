@@ -4,7 +4,6 @@ const Conf = require('conf')
 const dotenv = require('dotenv')
 const envPaths = require('env-paths')
 
-const Armor = require('./../lib/extensions/armor')
 const jsonToEnv = require('./../lib/helpers/jsonToEnv')
 const { logger } = require('./../shared/logger')
 
@@ -13,14 +12,12 @@ const ARMOR = {
   USER: 'DOTENVX_ARMOR_USER',
   USERNAME: 'DOTENVX_ARMOR_USERNAME',
   TOKEN: 'DOTENVX_ARMOR_TOKEN',
-  ON: 'DOTENVX_ARMOR_ON',
   VERSION: 'DOTENVX_ARMOR_VERSION',
   VERSION_LAST_CHECK: 'DOTENVX_ARMOR_VERSION_LAST_CHECK'
 }
 
 class Session {
   constructor () {
-    this.armor = new Armor()
     this._store = null
   }
 
@@ -74,7 +71,7 @@ class Session {
 
   status () {
     // if logged in
-    if (this.username() && this.token() && this.on()) {
+    if (this.username() && this.token()) {
       return 'on'
     }
 
@@ -112,14 +109,6 @@ class Session {
     return this._store ? this._store.path : this._configPath()
   }
 
-  on () {
-    return (this.readSetting('ON') || 'true') === 'true'
-  }
-
-  off () {
-    return (this.readSetting('ON') || 'true') === 'false'
-  }
-
   async systemInformation () {
     const si = require('systeminformation')
     const system = await si.system()
@@ -140,13 +129,13 @@ class Session {
   // armor status helpers
   //
   async noArmor () {
-    const status = await this.armor.status()
+    const status = this.status()
     logger.debug(`armor: ${status}`)
     return status === 'off'
   }
 
   noArmorSync () {
-    const status = this.armor.statusSync()
+    const status = this.status()
     logger.debug(`armor: ${status}`)
     return status === 'off'
   }
@@ -176,7 +165,6 @@ class Session {
     store.set(ARMOR.USERNAME, username)
     store.set(ARMOR.TOKEN, accessToken)
     store.set(ARMOR.HOSTNAME, hostname)
-    store.set(ARMOR.ON, 'true')
 
     return accessToken
   }
@@ -201,7 +189,6 @@ class Session {
     store.delete(ARMOR.USERNAME)
     store.delete(ARMOR.TOKEN)
     store.delete(ARMOR.HOSTNAME)
-    store.delete(ARMOR.ON)
     store.delete(ARMOR.VERSION)
     store.delete(ARMOR.VERSION_LAST_CHECK)
     return true

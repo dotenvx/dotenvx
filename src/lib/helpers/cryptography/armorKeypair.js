@@ -1,20 +1,43 @@
-const Armor = require('../../extensions/armor')
+const Session = require('../../../db/session')
+const ArmorKeypair = require('../../services/armorKeypair')
+
+function serializeCommand (command) {
+  if (Array.isArray(command)) return command.map((arg) => `${arg}`).join(' ')
+  return `${command}`
+}
+
+function metadataFromOptions (options) {
+  if (!options.command) return undefined
+
+  return JSON.stringify({
+    command: serializeCommand(options.command)
+  })
+}
 
 async function armorKeypair (existingPublicKey, options = {}) {
-  const keypairOptions = {
-    token: options.token,
-    envFilepath: options.envFilepath,
-    command: options.command
+  const sesh = new Session()
+  const token = options.token || sesh.token()
+  if (!token) {
+    return {
+      publicKey: undefined,
+      privateKey: undefined
+    }
   }
 
-  const kp = await new Armor().keypair(existingPublicKey, keypairOptions)
-
-  const publicKey = kp.public_key
-  const privateKey = kp.private_key
+  const json = await new ArmorKeypair(
+    sesh.hostname(),
+    token,
+    sesh.devicePublicKey(),
+    existingPublicKey,
+    {
+      envFile: options.envFilepath,
+      metadata: metadataFromOptions(options)
+    }
+  ).run()
 
   return {
-    publicKey,
-    privateKey
+    publicKey: json.public_key,
+    privateKey: json.private_key
   }
 }
 
