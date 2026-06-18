@@ -1,6 +1,6 @@
 [![dotenvx](https://dotenvx.com/banner.png?v2)](https://dotenvx.com)
 
-*a secure dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
+*an extreme dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
 * run anywhere (cross-platform)
 * multi-environment
