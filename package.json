@@ -27,6 +27,16 @@
     },
     "./config": "./src/lib/config.js",
     "./config.js": "./src/lib/config.js",
+    "./next": {
+      "types": "./src/lib/next.d.ts",
+      "require": "./src/lib/next.js",
+      "default": "./src/lib/next.js"
+    },
+    "./next-env": {
+      "types": "./src/lib/next/env.d.ts",
+      "require": "./src/lib/next/env.js",
+      "default": "./src/lib/next/env.js"
+    },
     "./package.json": "./package.json"
   },
   "bin": {
