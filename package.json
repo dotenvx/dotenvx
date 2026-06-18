@@ -1,7 +1,7 @@
 {
   "version": "1.73.1",
   "name": "@dotenvx/dotenvx",
-  "description": "a secure dotenv–from the creator of `dotenv`",
+  "description": "an extreme dotenv–from the creator of `dotenv`",
   "author": "@motdotla",
   "keywords": [
     "dotenv",
