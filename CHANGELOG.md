@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.74.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.74.4...main)
+
+## [1.74.4](https://github.com/dotenvx/dotenvx/compare/v1.74.3...v1.74.4) (2026-06-19)
+
+### Removed
+
+* Remove separately published `@dotenvx/next-env` from this repo ([#846](https://github.com/dotenvx/dotenvx/pull/846))
 
 ## [1.74.3](https://github.com/dotenvx/dotenvx/compare/v1.74.2...v1.74.3) (2026-06-19)
 
