@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.73.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.74.0...main)
+
+## [1.74.0](https://github.com/dotenvx/dotenvx/compare/v1.73.1...v1.74.0) (2026-06-18)
+
+### Added
+
+* Additionally publish [`@dotenvx/next-env`](https://www.npmjs.com/package/@dotenvx/next-env) override ([#841](https://github.com/dotenvx/dotenvx/pull/841))
 
 ## [1.73.1](https://github.com/dotenvx/dotenvx/compare/v1.73.0...v1.73.1) (2026-06-16)
 
