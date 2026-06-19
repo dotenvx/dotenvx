@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -50,7 +50,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -144,7 +144,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       # GITHUB_ENV operates like a .env file
       - name: extract version
@@ -253,7 +253,7 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: checkout dotenvx/releases repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: "dotenvx/releases"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -314,7 +314,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
@@ -331,7 +331,9 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
       - name: extract version
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
@@ -387,7 +389,7 @@ jobs:
           push: true
           tags: dotenv/dotenvx:${{ env.VERSION }}
           platforms: linux/amd64,linux/arm64
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v3
         with:
@@ -418,7 +420,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -434,7 +436,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -450,7 +452,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -466,7 +468,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -482,7 +484,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -498,7 +500,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -514,7 +516,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -530,7 +532,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -546,7 +548,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -562,7 +564,7 @@ jobs:
       fail-fast: true
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: commit binary to github
         uses: ./.github/actions/commit-binary-to-github
         with:
@@ -598,7 +600,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: extract version
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
@@ -610,7 +612,7 @@ jobs:
           mkdir -p dist
           sed "0,/^VERSION=\".*\"/s//VERSION=\"${{ env.CLEAN_VERSION }}\"/" install.sh > ./dist/install.sh
       - name: checkout dotenvx/dotenvx.sh repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: "dotenvx/dotenvx.sh"
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -662,7 +664,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -703,7 +705,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -754,7 +756,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -805,7 +807,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -861,7 +863,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
