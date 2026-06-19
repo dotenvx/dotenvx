@@ -355,6 +355,7 @@ jobs:
         run: |
           npm version "$CLEAN_VERSION" --no-git-tag-version
           npm pkg set "dependencies.@dotenvx/dotenvx=$CLEAN_VERSION"
+          npm install --omit=dev
       - name: publish @dotenvx/next-env
         working-directory: packages/next-env
         run: npm publish
