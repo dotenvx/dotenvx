@@ -15,6 +15,9 @@
   "dependencies": {
     "@dotenvx/dotenvx": "0.0.0"
   },
+  "bundledDependencies": [
+    "@dotenvx/dotenvx"
+  ],
   "publishConfig": {
     "access": "public",
     "provenance": true
