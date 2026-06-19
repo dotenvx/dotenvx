@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const dotenvx = require('@dotenvx/dotenvx')
 
 let initialEnv
 let combinedEnv
@@ -63,7 +64,7 @@ function processEnv (
       path.join(dir || '', envFile.path)
     )
 
-    const result = require('@dotenvx/dotenvx').config({
+    const result = dotenvx.config({
       path: filepaths,
       processEnv: Object.assign({}, origEnv),
       quiet: false
