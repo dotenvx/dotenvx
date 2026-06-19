@@ -311,6 +311,8 @@ jobs:
   npm:
     needs: release
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       # Setup .npmrc file to publish to npm
@@ -329,6 +331,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
