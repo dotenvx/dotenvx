@@ -1,0 +1,17 @@
+{
+  "name": "@dotenvx/next-env",
+  "version": "0.0.0",
+  "description": "dotenvx-powered @next/env compatibility package",
+  "license": "BSD-3-Clause",
+  "main": "index.cjs",
+  "files": [
+    "index.cjs"
+  ],
+  "dependencies": {
+    "@dotenvx/dotenvx": "0.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
