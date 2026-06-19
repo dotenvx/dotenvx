@@ -311,8 +311,6 @@ jobs:
   npm:
     needs: release
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       # Setup .npmrc file to publish to npm
@@ -325,11 +323,12 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN }}
-  next-env-npm:
+  npm-next-env:
+    name: npm:next-env
     needs: npm
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
+    strategy:
+      fail-fast: true
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
@@ -579,7 +578,7 @@ jobs:
     needs: 
       - homebrew
       - npm
-      - next-env-npm
+      - npm-next-env
       - dotenvx-darwin-amd64
       - dotenvx-darwin-arm64
       - dotenvx-darwin-x86_64
