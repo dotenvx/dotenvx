@@ -1,5 +1,5 @@
 {
-  "version": "1.73.1",
+  "version": "1.74.0",
   "name": "@dotenvx/dotenvx",
   "description": "a secure dotenv–from the creator of `dotenv`",
   "author": "@motdotla",
