@@ -4,6 +4,7 @@ const Errors = require('./../errors')
 
 const PREFIX = 'encrypted:'
 
+// TODO: replace with @dotenvx/primitives
 function decryptKeyValue (key, value, privateKeyName, privateKey) {
   let decryptedValue
   let decryptionError

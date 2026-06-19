@@ -4,29 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.74.3...main)
 
-## [1.74.3](https://github.com/dotenvx/dotenvx/compare/v1.74.2...v1.74.3) (2026-06-19)
-
 ### Changed
 
-* Bundle dotenvx with `@dotenvx/next-env` for user convenience ([#845](https://github.com/dotenvx/dotenvx/pull/845))
-
-## [1.74.2](https://github.com/dotenvx/dotenvx/compare/v1.74.1...v1.74.2) (2026-06-18)
-
-### Changed
-
-* Fix provenance for `@dotenvx/next-env` ([#844](https://github.com/dotenvx/dotenvx/pull/844))
-
-## [1.74.1](https://github.com/dotenvx/dotenvx/compare/v1.74.0...v1.74.1) (2026-06-18)
-
-### Added
-
-* Add README for `@dotenvx/next-env` ([#843](https://github.com/dotenvx/dotenvx/pull/843))
-
-## [1.74.0](https://github.com/dotenvx/dotenvx/compare/v1.73.1...v1.74.0) (2026-06-18)
-
-### Added
-
-* Additionally publish [`@dotenvx/next-env`](https://www.npmjs.com/package/@dotenvx/next-env) override ([#841](https://github.com/dotenvx/dotenvx/pull/841))
+* Remove separately published Next environment package scaffolding from this repo.
 
 ## [1.73.1](https://github.com/dotenvx/dotenvx/compare/v1.73.0...v1.73.1) (2026-06-16)
 

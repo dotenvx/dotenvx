@@ -325,42 +325,6 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN }}
-  npm-next-env:
-    name: npm:next-env
-    needs: npm
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-        with:
-          persist-credentials: false
-      - name: extract version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          CLEAN_VERSION=${VERSION#v}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
-      # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: |
-          echo "NODE_AUTH_TOKEN=$(npx @dotenvx/dotenvx-ops get dotenvx://rot_71321cf34570a5db681b07d1e4078d93 --token '${{ secrets.DOTENVX_OPS_TOKEN }}')" >> $GITHUB_ENV
-      - name: prepare @dotenvx/next-env
-        working-directory: packages/next-env
-        run: |
-          npm version "$CLEAN_VERSION" --no-git-tag-version
-          npm pkg set "dependencies.@dotenvx/dotenvx=$CLEAN_VERSION"
-          npm install --omit=dev --ignore-scripts
-      - name: publish @dotenvx/next-env
-        working-directory: packages/next-env
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN }}
   docker:
     needs: release
     runs-on: ubuntu-latest
@@ -583,7 +547,6 @@ jobs:
     needs: 
       - homebrew
       - npm
-      - npm-next-env
       - dotenvx-darwin-amd64
       - dotenvx-darwin-arm64
       - dotenvx-darwin-x86_64
