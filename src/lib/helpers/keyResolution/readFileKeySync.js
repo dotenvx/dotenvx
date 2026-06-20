@@ -8,7 +8,8 @@ function readFileKeySync (keyName, filepath) {
     const values = parsed[keyName]
 
     if (values && values.length > 0) {
-      return values[values.length - 1]
+      const value = values[values.length - 1]
+      return value || undefined
     }
   }
 }

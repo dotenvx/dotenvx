@@ -5,9 +5,8 @@ const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
-const { encrypted } = require('@dotenvx/primitives')
+const { encrypted, scan } = require('@dotenvx/primitives')
 
-const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
 const { encryptValue, decryptKeyValue } = require('../../../src/lib/helpers/cryptography')
 
 const Rotate = require('../../../src/lib/services/rotate')
@@ -18,7 +17,12 @@ const PUBLIC_KEY = '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f
 const PRIVATE_KEY = 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1'
 
 function helloValues (envSrc) {
-  return dotenvParse(envSrc, false, false, true).HELLO || []
+  return scan(envSrc).parsed.HELLO || []
+}
+
+function parseEnv (envSrc) {
+  const { parsed } = scan(envSrc)
+  return Object.fromEntries(Object.entries(parsed).map(([key, values]) => [key, values.at(-1)]))
 }
 
 function decryptHelloValues (envSrc, privateKeyName, privateKey) {
@@ -169,8 +173,8 @@ t.test('#run (finds .env file)',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-    const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
-    const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
+    const originalParsed = parseEnv(fsx.readFileXSync(envFile))
+    const originalKeysParsed = parseEnv(fsx.readFileXSync(envKeysFile))
 
     const envs = [
       { type: 'envFile', value: envFile }
@@ -188,13 +192,13 @@ t.test('#run (finds .env file)',
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(unchangedFilepaths, [])
 
-    const parsed = dotenvParse(p1.envSrc)
+    const parsed = parseEnv(p1.envSrc)
 
     ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
 
-    const parsedKeys = dotenvParse(p1.envKeysSrc)
+    const parsedKeys = parseEnv(p1.envKeysSrc)
     ct.same(Object.keys(parsedKeys), ['DOTENV_PRIVATE_KEY'])
 
     ct.not(parsed.HELLO, originalParsed.HELLO, 'HELLO should differ after rotation')
@@ -209,8 +213,8 @@ t.test('#run (finds .env file with specified key)',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-    const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
-    const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
+    const originalParsed = parseEnv(fsx.readFileXSync(envFile))
+    const originalKeysParsed = parseEnv(fsx.readFileXSync(envKeysFile))
 
     const envs = [
       { type: 'envFile', value: envFile }
@@ -228,13 +232,13 @@ t.test('#run (finds .env file with specified key)',
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(unchangedFilepaths, [])
 
-    const parsed = dotenvParse(p1.envSrc)
+    const parsed = parseEnv(p1.envSrc)
 
     ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
 
-    const parsedKeys = dotenvParse(p1.envKeysSrc)
+    const parsedKeys = parseEnv(p1.envKeysSrc)
     ct.same(Object.keys(parsedKeys), ['DOTENV_PRIVATE_KEY'])
 
     ct.not(parsed.HELLO, originalParsed.HELLO, 'HELLO should differ after rotation')
@@ -249,8 +253,8 @@ t.test('#run (finds .env file with specified key as string)',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-    const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
-    const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
+    const originalParsed = parseEnv(fsx.readFileXSync(envFile))
+    const originalKeysParsed = parseEnv(fsx.readFileXSync(envKeysFile))
 
     const envs = [
       { type: 'envFile', value: envFile }
@@ -268,13 +272,13 @@ t.test('#run (finds .env file with specified key as string)',
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(unchangedFilepaths, [])
 
-    const parsed = dotenvParse(p1.envSrc)
+    const parsed = parseEnv(p1.envSrc)
 
     ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
 
-    const parsedKeys = dotenvParse(p1.envKeysSrc)
+    const parsedKeys = parseEnv(p1.envKeysSrc)
     ct.same(Object.keys(parsedKeys), ['DOTENV_PRIVATE_KEY'])
 
     ct.not(parsed.HELLO, originalParsed.HELLO, 'HELLO should differ after rotation')
@@ -289,8 +293,8 @@ t.test('#run (finds .env file with specified glob string)',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-    const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
-    const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
+    const originalParsed = parseEnv(fsx.readFileXSync(envFile))
+    const originalKeysParsed = parseEnv(fsx.readFileXSync(envKeysFile))
 
     const envs = [
       { type: 'envFile', value: envFile }
@@ -308,13 +312,13 @@ t.test('#run (finds .env file with specified glob string)',
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(unchangedFilepaths, [])
 
-    const parsed = dotenvParse(p1.envSrc)
+    const parsed = parseEnv(p1.envSrc)
 
     ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
 
-    const parsedKeys = dotenvParse(p1.envKeysSrc)
+    const parsedKeys = parseEnv(p1.envKeysSrc)
     ct.same(Object.keys(parsedKeys), ['DOTENV_PRIVATE_KEY'])
 
     ct.not(parsed.HELLO, originalParsed.HELLO, 'HELLO should differ after rotation')
@@ -329,8 +333,8 @@ t.test('#run (finds .env file excluding specified key)',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-    const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
-    const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
+    const originalParsed = parseEnv(fsx.readFileXSync(envFile))
+    const originalKeysParsed = parseEnv(fsx.readFileXSync(envKeysFile))
 
     const envs = [
       { type: 'envFile', value: envFile }
@@ -348,13 +352,13 @@ t.test('#run (finds .env file excluding specified key)',
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(unchangedFilepaths, [])
 
-    const parsed = dotenvParse(p1.envSrc)
+    const parsed = parseEnv(p1.envSrc)
 
     ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
 
-    const parsedKeys = dotenvParse(p1.envKeysSrc)
+    const parsedKeys = parseEnv(p1.envKeysSrc)
     ct.same(Object.keys(parsedKeys), ['DOTENV_PRIVATE_KEY'])
 
     ct.same(parsed.HELLO, originalParsed.HELLO, 'HELLO should be same after rotation because it was excluded')
@@ -369,8 +373,8 @@ t.test('#run (finds .env file excluding specified key as string)',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-    const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
-    const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
+    const originalParsed = parseEnv(fsx.readFileXSync(envFile))
+    const originalKeysParsed = parseEnv(fsx.readFileXSync(envKeysFile))
 
     const envs = [
       { type: 'envFile', value: envFile }
@@ -388,13 +392,13 @@ t.test('#run (finds .env file excluding specified key as string)',
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(unchangedFilepaths, [])
 
-    const parsed = dotenvParse(p1.envSrc)
+    const parsed = parseEnv(p1.envSrc)
 
     ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
 
-    const parsedKeys = dotenvParse(p1.envKeysSrc)
+    const parsedKeys = parseEnv(p1.envKeysSrc)
     ct.same(Object.keys(parsedKeys), ['DOTENV_PRIVATE_KEY'])
 
     ct.same(parsed.HELLO, originalParsed.HELLO, 'HELLO should be same after rotation because it was excluded')
@@ -409,8 +413,8 @@ t.test('#run (finds .env file excluding specified key globbed)',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-    const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
-    const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
+    const originalParsed = parseEnv(fsx.readFileXSync(envFile))
+    const originalKeysParsed = parseEnv(fsx.readFileXSync(envKeysFile))
 
     const envs = [
       { type: 'envFile', value: envFile }
@@ -428,13 +432,13 @@ t.test('#run (finds .env file excluding specified key globbed)',
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(unchangedFilepaths, [])
 
-    const parsed = dotenvParse(p1.envSrc)
+    const parsed = parseEnv(p1.envSrc)
 
     ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
 
-    const parsedKeys = dotenvParse(p1.envKeysSrc)
+    const parsedKeys = parseEnv(p1.envKeysSrc)
     ct.same(Object.keys(parsedKeys), ['DOTENV_PRIVATE_KEY'])
 
     ct.same(parsed.HELLO, originalParsed.HELLO, 'HELLO should be same after rotation because it was excluded')
@@ -519,7 +523,7 @@ t.test('#run rotates duplicate encrypted HELLO using the last encrypted duplicat
 //   ct.same(changedFilepaths, ['tests/.env.export'])
 //   ct.same(unchangedFilepaths, [])
 //
-//   const parsed = dotenvParse(p1.envSrc)
+//   const parsed = parseEnv(p1.envSrc)
 //
 //   ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY_EXPORT', 'KEY'])
 //   ct.ok(parsed.DOTENV_PUBLIC_KEY_EXPORT, 'DOTENV_PUBLIC_KEY should not be empty')
@@ -614,8 +618,8 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envKeysFile = 'tests/monorepo/apps/encrypted/.env.keys'
 
-    const originalParsed = dotenvParse(fsx.readFileXSync(envFile))
-    const originalKeysParsed = dotenvParse(fsx.readFileXSync(envKeysFile))
+    const originalParsed = parseEnv(fsx.readFileXSync(envFile))
+    const originalKeysParsed = parseEnv(fsx.readFileXSync(envKeysFile))
 
     const envs = [
       { type: 'envFile', value: envFile }
@@ -633,13 +637,13 @@ t.test('#run (finds .env file) and custom envKeysFilepath',
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(unchangedFilepaths, [])
 
-    const parsed = dotenvParse(p1.envSrc)
+    const parsed = parseEnv(p1.envSrc)
 
     ct.same(Object.keys(parsed), ['DOTENV_PUBLIC_KEY', 'HELLO'])
     ct.ok(parsed.DOTENV_PUBLIC_KEY, 'DOTENV_PUBLIC_KEY should not be empty')
     ct.match(parsed.HELLO, /^encrypted:/, 'HELLO should start with "encrypted:"')
 
-    const parsedKeys = dotenvParse(p1.envKeysSrc)
+    const parsedKeys = parseEnv(p1.envKeysSrc)
     ct.same(Object.keys(parsedKeys), ['DOTENV_PRIVATE_KEY'])
 
     ct.not(parsed.HELLO, originalParsed.HELLO, 'HELLO should differ after rotation')
