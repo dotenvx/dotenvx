@@ -38,14 +38,14 @@ tap.test('precommit function returns expected string', (t) => {
 Examples:
 
   \`\`\`
-  $ dotenvx ext precommit
-  $ dotenvx ext precommit --install
+  $ dotenvx precommit
+  $ dotenvx precommit --install
   \`\`\`
 
 Try it:
 
   \`\`\`
-  $ dotenvx ext precommit
+  $ dotenvx precommit
   [dotenvx@0.45.0][precommit] success
   \`\`\`
   `
@@ -58,13 +58,13 @@ tap.test('prebuild function returns expected string', (t) => {
 Examples:
 
   \`\`\`
-  $ dotenvx ext prebuild
+  $ dotenvx prebuild
   \`\`\`
 
 Try it:
 
   \`\`\`
-  $ dotenvx ext prebuild
+  $ dotenvx prebuild
   [dotenvx@0.10.0][prebuild] success
   \`\`\`
   `
@@ -77,14 +77,14 @@ tap.test('gitignore function returns expected string', (t) => {
 Examples:
 
   \`\`\`
-  $ dotenvx ext gitignore
-  $ dotenvx ext gitignore --pattern .env.keys
+  $ dotenvx gitignore
+  $ dotenvx gitignore --pattern .env.keys
   \`\`\`
 
   Try it:
 
   \`\`\`
-  $ dotenvx ext gitignore
+  $ dotenvx gitignore
   ▣ ignored .env* (.gitignore)
   \`\`\`
   `

@@ -194,6 +194,34 @@ program.command('ls')
     return require('./actions/ls').apply(this, args)
   })
 
+// dotenvx gitignore
+program.command('gitignore')
+  .description('append to .gitignore')
+  .addHelpText('after', examples.gitignore)
+  .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
+  .action(function (...args) {
+    return require('./actions/ext/gitignore').apply(this, args)
+  })
+
+// dotenvx precommit
+program.command('precommit')
+  .description('prevent committing .env files to code')
+  .addHelpText('after', examples.precommit)
+  .argument('[directory]', 'directory to prevent committing .env files from', '.')
+  .option('-i, --install', 'install to .git/hooks/pre-commit')
+  .action(function (...args) {
+    return require('./actions/ext/precommit').apply(this, args)
+  })
+
+// dotenvx prebuild
+program.command('prebuild')
+  .description('prevent including .env files in docker')
+  .addHelpText('after', examples.prebuild)
+  .argument('[directory]', 'directory to prevent including .env files from', '.')
+  .action(function (...args) {
+    return require('./actions/ext/prebuild').apply(this, args)
+  })
+
 // dotenvx doctor
 program.command('doctor', { hidden: true })
   .description('scan for dotenv loaders')
@@ -242,37 +270,12 @@ program.addHelpText('after', 'Professional Security: ')
 program.addHelpText('after', '  login                    log in to move keys off-device, share with your team, and audit access')
 program.addHelpText('after', '  logout                   log out of connected security features')
 program.addHelpText('after', '  armor                    ⛨ move private keys off-device [www.dotenvx.com/armor]')
-program.addHelpText('after', '  ext                      ⊕ extensions')
 
 // dotenvx armor
 require('./commands/armor')(program.command('armor', { hidden: true }))
 
 // dotenvx ext
 program.addCommand(require('./commands/ext'))
-
-//
-// MOVED
-//
-program.command('prebuild')
-  .description('DEPRECATED: moved to [dotenvx ext prebuild]')
-  .addHelpText('after', examples.prebuild)
-  .argument('[directory]', 'directory to prevent including .env files from', '.')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [prebuild] has moved to [dotenvx ext prebuild]')
-
-    require('./actions/ext/prebuild').apply(this, args)
-  })
-
-program.command('precommit')
-  .description('DEPRECATED: moved to [dotenvx ext precommit]')
-  .addHelpText('after', examples.precommit)
-  .argument('[directory]', 'directory to prevent committing .env files from', '.')
-  .option('-i, --install', 'install to .git/hooks/pre-commit')
-  .action(function (...args) {
-    logger.warn('DEPRECATION NOTICE: [precommit] has moved to [dotenvx ext precommit]')
-
-    require('./actions/ext/precommit').apply(this, args)
-  })
 
 // override helpInformation to hide DEPRECATED and 'ext' commands
 program.helpInformation = function () {
@@ -286,8 +289,7 @@ program.helpInformation = function () {
   const filteredLines = lines.filter(line =>
     !line.includes('DEPRECATED') &&
     !line.includes('help [command]') &&
-    !line.includes('🔌 extensions') &&
-    !/^\s*ls\b/.test(line)
+    !line.includes('🔌 extensions')
   )
 
   return filteredLines.join('\n')

@@ -47,7 +47,7 @@ class Prebuild {
         if (file === '.env.example' || file === '.env.x') {
           const warning = new Errors({
             message: `${file} ignored (should not be)`,
-            help: `fix: [dotenvx ext gitignore --pattern !${file}]`
+            help: `fix: [dotenvx gitignore --pattern !${file}]`
           }).custom()
           warnings.push(warning)
         }
@@ -59,10 +59,10 @@ class Prebuild {
           // if contents are encrypted don't raise an error
           if (!encrypted) {
             let errorMsg = `${file} not encrypted/dockerignored`
-            let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx ext gitignore --pattern ${file}]`
+            let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx gitignore --pattern ${file}]`
             if (file.includes('.env.keys')) {
               errorMsg = `${file} not dockerignored`
-              errorHelp = `fix: [dotenvx ext gitignore --pattern ${file}]`
+              errorHelp = `fix: [dotenvx gitignore --pattern ${file}]`
             }
 
             throw new Errors({ message: errorMsg, help: errorHelp }).custom()

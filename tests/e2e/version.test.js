@@ -29,8 +29,9 @@ t.test('#--help shows armor advanced command', ct => {
 
   ct.match(output, /Professional Security:/, 'professional security section is shown')
   ct.notMatch(output, /Advanced:/, 'advanced section is not shown')
-  ct.match(output, /Professional Security:\s+login\s+log in to move keys off-device, share with your team, and audit access\s+logout\s+log out of connected security features\s+armor\s+⛨ move private keys off-device \[www\.dotenvx\.com\/armor\]\s+ext\s+⊕ extensions/, 'professional security commands are ordered')
+  ct.match(output, /Professional Security:\s+login\s+log in to move keys off-device, share with your team, and audit access\s+logout\s+log out of connected security features\s+armor\s+⛨ move private keys off-device \[www\.dotenvx\.com\/armor\]/, 'professional security commands are ordered')
   ct.match(output, /armor\s+⛨ move private keys off-device \[www\.dotenvx\.com\/armor\]/, 'armor advanced command is shown')
+  ct.notMatch(output, /ext\s+⊕ extensions/, 'ext command is not shown')
   ct.notMatch(output, /vlt\s+⛨ ARMORED KEYS/, 'vlt advanced command is not shown')
   ct.notMatch(output, /ops\s+⛨ ARMORED KEYS/, 'ops advanced command is not shown')
 

@@ -39,7 +39,7 @@ ext.command('genexample')
 
 // dotenvx ext gitignore
 ext.command('gitignore')
-  .description('append to .gitignore file (and if existing, .dockerignore, .npmignore, and .vercelignore)')
+  .description('append to .gitignore')
   .addHelpText('after', examples.gitignore)
   .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
   .action(function (...args) {
@@ -48,7 +48,7 @@ ext.command('gitignore')
 
 // dotenvx ext prebuild
 ext.command('prebuild')
-  .description('prevent including .env files in docker builds')
+  .description('prevent including .env files in docker')
   .addHelpText('after', examples.prebuild)
   .argument('[directory]', 'directory to prevent including .env files from', '.')
   .action(function (...args) {

@@ -1,4 +1,5 @@
 const t = require('tap')
+const childProcess = require('child_process')
 const fs = require('fs')
 const path = require('path')
 const sinon = require('sinon')
@@ -18,6 +19,24 @@ t.test('login and logout remain hidden from default command list', ct => {
   ct.match(src, /program\.addHelpText\('after', '\s{2}logout\s+log out of connected security features'\)/)
   ct.match(src, /program\.command\('armor', \{ hidden: true \}\)/)
   ct.notMatch(src, /program\.addCommand\(require\('\.\/commands\/armor'\), \{ hidden: true \}\)/)
+  ct.end()
+})
+
+t.test('default help lists direct utility commands with ls first after keypair', ct => {
+  const help = childProcess.execFileSync(process.execPath, [path.join(__dirname, '../../src/cli/dotenvx.js'), '--help'], { encoding: 'utf8' })
+  const commands = help.slice(help.indexOf('Commands:'), help.indexOf('Professional Security:'))
+
+  ct.match(commands, /gitignore\s+append to \.gitignore/)
+  ct.match(commands, /prebuild \[directory\]\s+prevent including \.env files/)
+  ct.match(commands, /precommit \[directory\]\s+prevent committing \.env files/)
+  ct.match(commands, /ls \[directory\]\s+print all \.env files/)
+  ct.notMatch(commands, /genexample \[directory\]/)
+  ct.notMatch(commands, /scan\s+scan for leaked secrets/)
+  ct.notMatch(commands, /ext\s+.*extensions/)
+  ct.ok(commands.indexOf('keypair [KEY]') < commands.indexOf('ls [directory]'), 'ls is listed after keypair')
+  ct.ok(commands.indexOf('ls [directory]') < commands.indexOf('gitignore'), 'ls is listed before other utility commands')
+  ct.ok(commands.indexOf('precommit [directory]') < commands.indexOf('prebuild [directory]'), 'precommit is listed before prebuild')
+
   ct.end()
 })
 

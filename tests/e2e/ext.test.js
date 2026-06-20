@@ -59,7 +59,7 @@ t.test('ext vault', ct => {
   ct.end()
 })
 
-t.test('deprecated precommit forwards a string directory to ext action', ct => {
+t.test('precommit forwards a string directory to action', ct => {
   const tempDir = fs.mkdtempSync(path.join(osTempDir, 'dotenvx-ext-precommit-'))
   fs.writeFileSync(path.join(tempDir, '.gitignore'), '')
 
@@ -67,12 +67,12 @@ t.test('deprecated precommit forwards a string directory to ext action', ct => {
 
   ct.equal(result.exitCode, 0, 'precommit exits successfully')
   ct.notMatch(result.output, /paths\[0\]/, 'does not fail with paths[0] type error')
-  ct.match(result.output, /DEPRECATION NOTICE: \[precommit\]/, 'shows deprecation notice')
+  ct.notMatch(result.output, /DEPRECATION NOTICE: \[precommit\]/, 'does not show deprecation notice')
 
   ct.end()
 })
 
-t.test('deprecated prebuild forwards a string directory to ext action', ct => {
+t.test('prebuild forwards a string directory to action', ct => {
   const tempDir = fs.mkdtempSync(path.join(osTempDir, 'dotenvx-ext-prebuild-'))
   fs.writeFileSync(path.join(tempDir, '.dockerignore'), '')
 
@@ -80,7 +80,7 @@ t.test('deprecated prebuild forwards a string directory to ext action', ct => {
 
   ct.equal(result.exitCode, 0, 'prebuild exits successfully')
   ct.notMatch(result.output, /paths\[0\]/, 'does not fail with paths[0] type error')
-  ct.match(result.output, /DEPRECATION NOTICE: \[prebuild\]/, 'shows deprecation notice')
+  ct.notMatch(result.output, /DEPRECATION NOTICE: \[prebuild\]/, 'does not show deprecation notice')
 
   ct.end()
 })
