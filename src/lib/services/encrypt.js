@@ -1,7 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
-const { encrypted } = require('@dotenvx/primitives')
+const { encrypted, scan } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -24,7 +24,6 @@ const {
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
-const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
@@ -97,7 +96,7 @@ class Encrypt {
         row.kitCreated = 'sample'
         row.changed = true
       }
-      const envParsed = dotenvParse(envSrc, false, false, true)
+      const envParsed = scan(envSrc).parsed
 
       let publicKey
       let privateKey

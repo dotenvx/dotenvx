@@ -1,7 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
-const { encrypted } = require('@dotenvx/primitives')
+const { encrypted, scan } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -21,7 +21,6 @@ const {
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
-const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Decrypt {
@@ -75,7 +74,7 @@ class Decrypt {
     try {
       const encoding = await detectEncoding(filepath)
       let envSrc = await fsx.readFileX(filepath, { encoding })
-      const envParsed = dotenvParse(envSrc, false, false, true)
+      const envParsed = scan(envSrc).parsed
 
       const { privateKeyName } = keyNamesForEnvFile(envFilepath)
       const { privateKeyValue, privateKeySource } = await keyValues(envFilepath, {

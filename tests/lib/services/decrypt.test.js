@@ -7,7 +7,7 @@ const sinon = require('sinon')
 const dotenv = require('dotenv')
 const proxyquire = require('proxyquire')
 
-const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
+const { scan } = require('@dotenvx/primitives')
 const encryptValue = require('../../../src/lib/helpers/cryptography/encryptValue')
 const Decrypt = require('../../../src/lib/services/decrypt')
 const keyResolution = require('../../../src/lib/helpers/keyResolution')
@@ -17,7 +17,7 @@ const PUBLIC_KEY = '02b106c30579baf896ae1fddf077cbcb4fef5e7d457932974878dcb51f42
 const PRIVATE_KEY = '1fc1cafa954a7a2bf0a6fbff46189c9e03e3a66b4d1133108ab9fcdb9e154b70'
 
 function helloValues (envSrc) {
-  return dotenvParse(envSrc, false, false, true).HELLO || []
+  return scan(envSrc).parsed.HELLO || []
 }
 
 t.beforeEach((ct) => {

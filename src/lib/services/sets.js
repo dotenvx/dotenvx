@@ -1,6 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypted } = require('@dotenvx/primitives')
+const { encrypted, scan } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -30,7 +30,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 function allValuesForKey (envSrc, key) {
-  return dotenvParse(envSrc, false, false, true)[key] || []
+  return scan(envSrc).parsed[key] || []
 }
 
 class Sets {
