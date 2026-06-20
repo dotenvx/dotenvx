@@ -43,10 +43,10 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
+    "@dotenvx/primitives": "^0.7.1",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
     "dotenv": "^17.2.1",
-    "eciesjs": "^0.4.10",
     "enquirer": "^2.4.1",
     "env-paths": "^2.2.1",
     "execa": "^5.1.1",

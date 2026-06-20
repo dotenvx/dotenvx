@@ -1,21 +1,14 @@
-const { PrivateKey } = require('eciesjs')
+const { derive, keypair } = require('@dotenvx/primitives')
 
 function localKeypair (existingPrivateKey) {
-  let kp
-
   if (existingPrivateKey) {
-    kp = new PrivateKey(Buffer.from(existingPrivateKey, 'hex'))
-  } else {
-    kp = new PrivateKey()
+    return {
+      publicKey: derive(existingPrivateKey),
+      privateKey: existingPrivateKey
+    }
   }
 
-  const publicKey = kp.publicKey.toHex()
-  const privateKey = kp.secret.toString('hex')
-
-  return {
-    publicKey,
-    privateKey
-  }
+  return keypair()
 }
 
 module.exports = localKeypair

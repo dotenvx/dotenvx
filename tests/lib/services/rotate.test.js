@@ -5,9 +5,10 @@ const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
+const { encrypted } = require('@dotenvx/primitives')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
-const { encryptValue, decryptKeyValue, isEncrypted } = require('../../../src/lib/helpers/cryptography')
+const { encryptValue, decryptKeyValue } = require('../../../src/lib/helpers/cryptography')
 
 const Rotate = require('../../../src/lib/services/rotate')
 
@@ -465,7 +466,7 @@ t.test('#run rotates duplicate HELLO when plaintext duplicate is last',
     ct.same(changedFilepaths, [envFile])
     ct.same(unchangedFilepaths, [])
     ct.equal(values.length, 2, 'preserves both duplicate HELLO entries')
-    ct.ok(values.every(isEncrypted), 'encrypts every duplicate HELLO entry')
+    ct.ok(values.every(encrypted), 'encrypts every duplicate HELLO entry')
     ct.same(decryptHelloValues(row.envSrc, row.privateKeyName, row.privateKey), ['one', 'one'])
 
     ct.end()
@@ -493,7 +494,7 @@ t.test('#run rotates duplicate encrypted HELLO using the last encrypted duplicat
     ct.same(changedFilepaths, [envFile])
     ct.same(unchangedFilepaths, [])
     ct.equal(values.length, 2, 'preserves both duplicate HELLO entries')
-    ct.ok(values.every(isEncrypted), 'encrypts every duplicate HELLO entry')
+    ct.ok(values.every(encrypted), 'encrypts every duplicate HELLO entry')
     ct.same(decryptHelloValues(row.envSrc, row.privateKeyName, row.privateKey), ['two', 'two'])
 
     ct.end()

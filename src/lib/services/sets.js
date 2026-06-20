@@ -1,5 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
+const { encrypted } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -18,7 +19,6 @@ const {
 const {
   encryptValue,
   decryptKeyValue,
-  isEncrypted,
   provision,
   provisionSync,
   provisionWithPrivateKey
@@ -124,7 +124,7 @@ class Sets {
       if (seededWithInitialKey) {
         row.originalValue = null
       }
-      const wasPlainText = !isEncrypted(row.originalValue)
+      const wasPlainText = !encrypted(row.originalValue)
       this.readableFilepaths.add(envFilepath)
 
       if (this.encrypt) {
@@ -241,7 +241,7 @@ class Sets {
       if (seededWithInitialKey) {
         row.originalValue = null
       }
-      const wasPlainText = !isEncrypted(row.originalValue)
+      const wasPlainText = !encrypted(row.originalValue)
       this.readableFilepaths.add(envFilepath)
 
       if (this.encrypt) {

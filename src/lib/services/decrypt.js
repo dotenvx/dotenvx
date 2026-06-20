@@ -1,6 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
+const { encrypted } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -16,8 +17,7 @@ const {
 } = require('./../helpers/keyResolution')
 
 const {
-  decryptKeyValue,
-  isEncrypted
+  decryptKeyValue
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
@@ -101,12 +101,12 @@ class Decrypt {
           continue
         }
 
-        const encrypted = values.some(value => isEncrypted(value))
-        if (encrypted) {
+        const hasEncrypted = values.some(value => encrypted(value))
+        if (hasEncrypted) {
           row.keys.push(key) // track key(s)
 
           const decryptedValues = values.map(value => {
-            if (!isEncrypted(value)) {
+            if (!encrypted(value)) {
               return value
             }
 

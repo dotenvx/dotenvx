@@ -1,4 +1,4 @@
-const { PrivateKey } = require('eciesjs')
+const { derive } = require('@dotenvx/primitives')
 const prompts = require('../helpers/prompts')
 const PostArmorPush = require('../api/postArmorPush')
 const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
@@ -7,7 +7,7 @@ const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 
 function publicKeyFromPrivateKey (privateKey) {
   try {
-    return new PrivateKey(Buffer.from(privateKey, 'hex')).publicKey.toHex()
+    return derive(privateKey)
   } catch {
     return ''
   }

@@ -1,4 +1,5 @@
 const t = require('tap')
+const { derive } = require('@dotenvx/primitives')
 const localKeypair = require('../../../../src/lib/helpers/cryptography/localKeypair')
 
 t.test('#keypair', ct => {
@@ -20,10 +21,7 @@ t.test('keypair uses provided private key to generate public key', (t) => {
   t.ok(publicKey, 'Public key should be defined')
   t.equal(publicKey.length, 66, 'Public key should be 66 characters long')
 
-  // Generate the public key from the provided private key for comparison
-  const { PrivateKey } = require('eciesjs')
-  const kp = new PrivateKey(Buffer.from(existingPrivateKey, 'hex'))
-  const expectedPublicKey = kp.publicKey.toHex()
+  const expectedPublicKey = derive(existingPrivateKey)
 
   t.equal(publicKey, expectedPublicKey, 'Public key should match the expected public key generated from the provided private key')
 

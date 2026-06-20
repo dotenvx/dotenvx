@@ -4,7 +4,6 @@ module.exports = {
   localKeypair: require('./localKeypair'),
   encryptValue: require('./encryptValue'),
   decryptKeyValue: require('./decryptKeyValue'),
-  isEncrypted: require('./isEncrypted'),
   isPublicKey: require('./isPublicKey'),
   mutateKeysSrc: require('./mutateKeysSrc'),
   mutateKeysSrcSync: require('./mutateKeysSrcSync'),
