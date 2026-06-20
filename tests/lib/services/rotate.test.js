@@ -5,7 +5,7 @@ const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
-const { encrypted, scan } = require('@dotenvx/primitives')
+const { encrypted } = require('@dotenvx/primitives')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
 const { encryptValue, decryptKeyValue } = require('../../../src/lib/helpers/cryptography')
@@ -18,7 +18,7 @@ const PUBLIC_KEY = '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f
 const PRIVATE_KEY = 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1'
 
 function helloValues (envSrc) {
-  return scan(envSrc).parsed.HELLO || []
+  return dotenvParse(envSrc, false, false, true).HELLO || []
 }
 
 function decryptHelloValues (envSrc, privateKeyName, privateKey) {

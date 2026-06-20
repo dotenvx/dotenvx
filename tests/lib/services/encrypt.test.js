@@ -5,7 +5,6 @@ const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
-const { scan } = require('@dotenvx/primitives')
 
 const dotenvParse = require('../../../src/lib/helpers/dotenvParse')
 const decryptKeyValue = require('../../../src/lib/helpers/cryptography/decryptKeyValue')
@@ -27,7 +26,7 @@ function cleanupRootEnvFiles () {
 }
 
 function helloValues (envSrc) {
-  return scan(envSrc).parsed.HELLO || []
+  return dotenvParse(envSrc, false, false, true).HELLO || []
 }
 
 function decryptHelloValues (envSrc, privateKeyName, privateKey) {
