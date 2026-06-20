@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.75.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.75.1...main)
+
+## [1.75.1](https://github.com/dotenvx/dotenvx/compare/v1.75.0...v1.75.1) (2026-06-20)
+
+### Changed
+
+* Publish as named binaries ([#851](https://github.com/dotenvx/dotenvx/pull/851))
 
 ### Removed
 
