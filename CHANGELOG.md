@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.74.4...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.75.0...main)
+
+## [1.75.0](https://github.com/dotenvx/dotenvx/compare/v1.74.4...v1.75.0) (2026-06-19)
+
+### Changed
+
+* Swap in `@dotenvx/primitives` ([#848](https://github.com/dotenvx/dotenvx/pull/848))
+* `ext` commands become first-class([#847](https://github.com/dotenvx/dotenvx/pull/847))
 
 ## [1.74.4](https://github.com/dotenvx/dotenvx/compare/v1.74.3...v1.74.4) (2026-06-19)
 
