@@ -180,6 +180,47 @@ export default {
 ```
 
 </details>
+<details><summary>Next.js ▲</summary><br>
+
+Install Dotenvx and `@dotenvx/next-env`.
+
+```sh
+$ npm install @dotenvx/dotenvx
+$ npm install @dotenvx/next-env
+```
+
+Override `@next/env` in your `package.json`.
+
+```json
+{
+  "overrides": {
+    "@next/env": "npm:@dotenvx/next-env"
+  }
+}
+```
+
+Encrypt your `.env` file.
+
+```sh
+$ npx dotenvx encrypt
+◈ encrypted (.env)
+```
+
+Your encrypted secrets are automatically injected and readable in Next.js.
+
+```ts
+import { NextResponse } from 'next/server'
+
+export async function GET() {
+  return NextResponse.json({
+    HELLO: process.env.HELLO
+  })
+}
+```
+
+Set `DOTENV_PRIVATE_KEY` in production before deploying.
+
+</details>
 <details><summary>Deno 🦕</summary><br>
 
 ```sh
