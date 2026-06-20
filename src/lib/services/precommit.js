@@ -4,8 +4,8 @@ const path = require('path')
 const ignore = require('ignore')
 
 const Ls = require('../services/ls')
+const { sealed } = require('@dotenvx/primitives')
 
-const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 const Errors = require('./../helpers/errors')
 const childProcess = require('child_process')
@@ -70,7 +70,7 @@ class Precommit {
           } else {
             if (file !== '.env.example' && file !== '.env.x') {
               const src = fsx.readFileXSync(file)
-              const encrypted = isFullyEncrypted(src)
+              const encrypted = sealed(src)
 
               // if contents are encrypted don't raise an error
               if (!encrypted) {

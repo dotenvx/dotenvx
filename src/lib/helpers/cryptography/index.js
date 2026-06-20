@@ -10,8 +10,5 @@ module.exports = {
   provision: require('./provision'),
   provisionSync: require('./provisionSync'),
   provisionWithPrivateKey: require('./provisionWithPrivateKey'),
-  mutateSrc: require('./mutateSrc'),
-
-  // other
-  isFullyEncrypted: require('./../isFullyEncrypted')
+  mutateSrc: require('./mutateSrc')
 }

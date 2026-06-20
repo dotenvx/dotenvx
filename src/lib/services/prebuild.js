@@ -5,8 +5,8 @@ const ignore = require('ignore')
 
 const Ls = require('../services/ls')
 const Errors = require('../helpers/errors')
+const { sealed } = require('@dotenvx/primitives')
 
-const isFullyEncrypted = require('./../helpers/isFullyEncrypted')
 const MISSING_DOCKERIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
 class Prebuild {
@@ -54,7 +54,7 @@ class Prebuild {
       } else {
         if (file !== '.env.example' && file !== '.env.x') {
           const src = fsx.readFileXSync(file)
-          const encrypted = isFullyEncrypted(src)
+          const encrypted = sealed(src)
 
           // if contents are encrypted don't raise an error
           if (!encrypted) {
