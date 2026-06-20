@@ -45,7 +45,6 @@ function dynamicAttempts (command, forwardedArgs) {
   if (command === 'vlt') {
     return [
       ['dotenvx-armor', forwardedArgs],
-      ['dotenvx-vlt', forwardedArgs],
       ['dotenvx-ops', forwardedArgs]
     ]
   }
@@ -53,8 +52,7 @@ function dynamicAttempts (command, forwardedArgs) {
   if (command === 'ops') {
     return [
       ['dotenvx-armor', forwardedArgs],
-      ['dotenvx-ops', forwardedArgs],
-      ['dotenvx-vlt', forwardedArgs]
+      ['dotenvx-ops', forwardedArgs]
     ]
   }
 
