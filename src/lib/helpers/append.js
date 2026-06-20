@@ -1,5 +1,5 @@
 const quotes = require('./quotes')
-const dotenvParse = require('./dotenvParse')
+const { scan } = require('@dotenvx/primitives')
 const escapeForRegex = require('./escapeForRegex')
 const escapeDollarSigns = require('./escapeDollarSigns')
 
@@ -7,11 +7,12 @@ function append (src, key, appendValue) {
   let output
   let newPart = ''
 
-  const parsed = dotenvParse(src, true, true) // skip expanding \n and skip converting \r\n
+  const { parsed } = scan(src, { expandDoubleQuotedNewlines: false, convertWindowsNewlines: false })
   const _quotes = quotes(src)
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
     const quote = _quotes[key]
-    const originalValue = parsed[key]
+    const values = parsed[key]
+    const originalValue = values[values.length - 1]
 
     newPart += `${key}=${quote}${originalValue},${appendValue}${quote}`
 

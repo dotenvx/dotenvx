@@ -1,5 +1,5 @@
 const fs = require('fs')
-const dotenvParse = require('./dotenvParse')
+const { scan } = require('@dotenvx/primitives')
 const Errors = require('./errors')
 
 function ignored (error, options) {
@@ -17,8 +17,9 @@ function readEnvKey (key, filepath, options = {}) {
     return undefined
   }
 
-  const parsed = dotenvParse(src)
-  const value = parsed[key]
+  const { parsed } = scan(src)
+  const values = parsed[key]
+  const value = values ? values[values.length - 1] : undefined
   if (value === undefined) {
     const error = new Errors({ key }).missingKey()
     if (ignored(error, options)) return undefined

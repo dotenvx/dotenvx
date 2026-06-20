@@ -1,13 +1,14 @@
 const fsx = require('./../fsx')
-const dotenvParse = require('./../dotenvParse')
+const { scan } = require('@dotenvx/primitives')
 
 function readFileKeySync (keyName, filepath) {
   if (fsx.existsSync(filepath)) {
     const src = fsx.readFileXSync(filepath)
-    const parsed = dotenvParse(src)
+    const { parsed } = scan(src)
+    const values = parsed[keyName]
 
-    if (parsed[keyName] && parsed[keyName].length > 0) {
-      return parsed[keyName]
+    if (values && values.length > 0) {
+      return values[values.length - 1]
     }
   }
 }

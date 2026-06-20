@@ -1,4 +1,4 @@
-const dotenvParse = require('./dotenvParse')
+const { scan } = require('@dotenvx/primitives')
 const escapeForRegex = require('./escapeForRegex')
 
 function replaceExistingValue (src, key, originalValue, replaceValue) {
@@ -45,7 +45,7 @@ function replace (src, key, replaceValue) {
   let output
   let newPart = ''
 
-  const parsed = dotenvParse(src, true, true, true) // skip expanding \n and skip converting \r\n
+  const { parsed } = scan(src, { expandDoubleQuotedNewlines: false, convertWindowsNewlines: false })
   if (Object.prototype.hasOwnProperty.call(parsed, key)) {
     const allValues = parsed[key]
     let duplicateOutput = src
