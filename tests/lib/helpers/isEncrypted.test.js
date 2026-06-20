@@ -13,6 +13,12 @@ t.test('#isEncrypted real world', ct => {
   ct.end()
 })
 
+t.test('#isEncrypted empty encrypted value', ct => {
+  const result = isEncrypted('encrypted:')
+  ct.same(result, true)
+  ct.end()
+})
+
 t.test('#isEncrypted not encrypted', ct => {
   const result = isEncrypted('1234')
   ct.same(result, false)

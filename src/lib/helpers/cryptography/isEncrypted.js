@@ -1,7 +1,11 @@
-const ENCRYPTION_PATTERN = /^encrypted:.+/
+const { encrypted } = require('@dotenvx/primitives')
 
 function isEncrypted (value) {
-  return ENCRYPTION_PATTERN.test(value)
+  if (!value) {
+    return false
+  }
+
+  return encrypted(value)
 }
 
 module.exports = isEncrypted
