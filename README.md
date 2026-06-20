@@ -151,35 +151,6 @@ Hello Dotenvx
 ```
 
 </details>
-<details><summary>Cloudflare Workers ⛅️</summary><br>
-
-```sh
-$ dotenvx encrypt -f .env.txt
-```
-
-```js
-// src/index.js
-import envSrc from '../.env.txt'
-import dotenvx from '@dotenvx/dotenvx'
-
-const config = dotenvx.config({ envs: [{ type: 'env', value: envSrc, privateKeyName: 'DOTENV_PRIVATE_KEY' }] })
-const envx = config.parsed
-
-export default {
-  async fetch(request, env, ctx) {
-    return new Response(`Hello ${envx.HELLO}`)
-  }
-}
-```
-```json
-"scripts": {
-  "deploy": "wrangler deploy",
-  "dev": "wrangler dev --var $(dotenvx keypair -f .env.txt --format=colon)",
-  "start": "wrangler dev --var $(dotenvx keypair -f .env.txt --format=colon)",
-}
-```
-
-</details>
 <details><summary>Next.js ▲</summary><br>
 
 Install Dotenvx and `@dotenvx/next-env`.
@@ -219,6 +190,35 @@ export async function GET() {
 ```
 
 Set `DOTENV_PRIVATE_KEY` in production before deploying.
+
+</details>
+<details><summary>Cloudflare Workers ⛅️</summary><br>
+
+```sh
+$ dotenvx encrypt -f .env.txt
+```
+
+```js
+// src/index.js
+import envSrc from '../.env.txt'
+import dotenvx from '@dotenvx/dotenvx'
+
+const config = dotenvx.config({ envs: [{ type: 'env', value: envSrc, privateKeyName: 'DOTENV_PRIVATE_KEY' }] })
+const envx = config.parsed
+
+export default {
+  async fetch(request, env, ctx) {
+    return new Response(`Hello ${envx.HELLO}`)
+  }
+}
+```
+```json
+"scripts": {
+  "deploy": "wrangler deploy",
+  "dev": "wrangler dev --var $(dotenvx keypair -f .env.txt --format=colon)",
+  "start": "wrangler dev --var $(dotenvx keypair -f .env.txt --format=colon)",
+}
+```
 
 </details>
 <details><summary>Deno 🦕</summary><br>
