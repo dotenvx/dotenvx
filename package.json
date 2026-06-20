@@ -43,7 +43,7 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
-    "@dotenvx/primitives": "^0.5.0",
+    "@dotenvx/primitives": "^0.6.0",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
     "dotenv": "^17.2.1",

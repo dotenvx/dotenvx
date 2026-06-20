@@ -1,4 +1,5 @@
 const Conf = require('conf')
+const { derive } = require('@dotenvx/primitives')
 const { PrivateKey } = require('eciesjs')
 
 const encryptDeviceValue = require('./../lib/helpers/encryptDeviceValue')
@@ -54,11 +55,7 @@ class Device {
       return ''
     }
 
-    // create keyPair object from hex string
-    const _privateKey = new PrivateKey(Buffer.from(privateKeyHex, 'hex'))
-
-    // compute publicKey from privateKey
-    return _privateKey.publicKey.toHex()
+    return derive(privateKeyHex)
   }
 
   encrypt (value) {

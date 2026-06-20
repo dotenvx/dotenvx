@@ -1,10 +1,7 @@
-const { decrypt } = require('eciesjs')
+const { decrypt, encrypted } = require('@dotenvx/primitives')
 
 function decryptDeviceValue (value, privateKey) {
-  const secret = Buffer.from(privateKey, 'hex')
-  const ciphertext = Buffer.from(value, 'base64')
-
-  return decrypt(secret, ciphertext).toString()
+  return decrypt(privateKey, `${encrypted.PREFIX}${value}`)
 }
 
 module.exports = decryptDeviceValue
