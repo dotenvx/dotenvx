@@ -1,6 +1,6 @@
 const path = require('path')
+const { scan } = require('@dotenvx/primitives')
 
-const dotenvParse = require('./../dotenvParse')
 const readFileKeySync = require('./readFileKeySync')
 const armorKeypairSync = require('../cryptography/armorKeypairSync')
 
@@ -23,14 +23,19 @@ function publicKeyNameFromEnvSrc (envParsed) {
   return null
 }
 
+function finalValue (parsed, keyName) {
+  const values = parsed[keyName]
+  return values ? values[values.length - 1] : undefined
+}
+
 function keyValuesFromEnvSrc (src, privateKeyName = null, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
   const noArmor = opts.noArmor === true
   const processEnv = opts.processEnv || process.env
-  const envParsed = dotenvParse(src)
+  const { parsed: envParsed } = scan(src)
 
   const publicKeyName = publicKeyNameFromEnvSrc(envParsed)
-  const publicKeyValue = publicKeyName ? readProcessKey(processEnv, publicKeyName) || envParsed[publicKeyName] || null : null
+  const publicKeyValue = publicKeyName ? readProcessKey(processEnv, publicKeyName) || finalValue(envParsed, publicKeyName) || null : null
 
   if (!privateKeyName && publicKeyName) {
     privateKeyName = publicKeyName.replace(PUBLIC_KEY_SCHEMA, PRIVATE_KEY_SCHEMA)

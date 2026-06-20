@@ -25,12 +25,16 @@ const {
 } = require('./../helpers/cryptography')
 
 const replace = require('./../helpers/replace')
-const dotenvParse = require('./../helpers/dotenvParse')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
 function allValuesForKey (envSrc, key) {
   return scan(envSrc).parsed[key] || []
+}
+
+function finalValueForKey (envSrc, key) {
+  const values = allValuesForKey(envSrc, key)
+  return values.length > 0 ? values[values.length - 1] : null
 }
 
 class Sets {
@@ -119,8 +123,7 @@ class Sets {
         seededWithInitialKey = true
       }
 
-      const envParsed = dotenvParse(envSrc)
-      row.originalValue = envParsed[row.key] || null
+      row.originalValue = finalValueForKey(envSrc, row.key)
       if (seededWithInitialKey) {
         row.originalValue = null
       }
@@ -236,8 +239,7 @@ class Sets {
         seededWithInitialKey = true
       }
 
-      const envParsed = dotenvParse(envSrc)
-      row.originalValue = envParsed[row.key] || null
+      row.originalValue = finalValueForKey(envSrc, row.key)
       if (seededWithInitialKey) {
         row.originalValue = null
       }

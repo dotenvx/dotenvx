@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const execa = require('execa')
-const dotenvParse = require('./dotenvParse')
+const { scan } = require('@dotenvx/primitives')
 const canonicalEnvFilename = require('./canonicalEnvFilename')
 const environment = require('./envResolution/environment')
 const sanitizeCommandForMetadata = require('./sanitizeCommandForMetadata')
@@ -56,7 +56,7 @@ function envKeys (envFile) {
     return null
   }
 
-  const parsed = dotenvParse(src)
+  const { parsed } = scan(src)
 
   if (!parsed || Object.keys(parsed).length === 0) return null
 

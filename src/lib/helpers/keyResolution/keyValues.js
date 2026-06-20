@@ -1,7 +1,7 @@
 const path = require('path')
+const { scan } = require('@dotenvx/primitives')
 
 const fsx = require('./../fsx')
-const dotenvParse = require('./../dotenvParse')
 const keyNamesForEnvFile = require('./keyNamesForEnvFile')
 const readProcessKey = require('./readProcessKey')
 const readFileKey = require('./readFileKey')
@@ -16,7 +16,7 @@ async function invertForPrivateKeyName (filepath) {
   }
 
   const envSrc = await fsx.readFileX(filepath)
-  const envParsed = dotenvParse(envSrc)
+  const { parsed: envParsed } = scan(envSrc)
 
   let publicKeyName
   for (const keyName of Object.keys(envParsed)) {
