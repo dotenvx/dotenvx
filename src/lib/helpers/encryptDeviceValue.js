@@ -1,9 +1,7 @@
-const { encrypt, encrypted } = require('@dotenvx/primitives')
+const { encrypt } = require('@dotenvx/primitives')
 
 function encryptDeviceValue (value, publicKey) {
-  const encryptedValue = encrypt(publicKey, value)
-
-  return encryptedValue.substring(encrypted.PREFIX.length)
+  return encrypt(publicKey, value, { prefix: false })
 }
 
 module.exports = encryptDeviceValue

@@ -1,7 +1,7 @@
-const { decrypt, encrypted } = require('@dotenvx/primitives')
+const { decrypt } = require('@dotenvx/primitives')
 
 function decryptDeviceValue (value, privateKey) {
-  return decrypt(privateKey, `${encrypted.PREFIX}${value}`)
+  return decrypt(privateKey, value, { prefix: false })
 }
 
 module.exports = decryptDeviceValue
