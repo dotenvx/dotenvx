@@ -6,10 +6,10 @@ const HOOK_SCRIPT = `#!/bin/sh
 
 if command -v dotenvx 2>&1 >/dev/null
 then
-  dotenvx ext precommit
+  dotenvx precommit
 elif npx dotenvx -V >/dev/null 2>&1
 then
-  npx dotenvx ext precommit
+  npx dotenvx precommit
 else
   if [ -t 2 ]; then
     RED="$(printf '\\033[31m')"
@@ -19,7 +19,7 @@ else
     RESET=""
   fi
 
-  printf "%s☠ 'dotenvx ext precommit' command not found (.git/hooks/precommit) fix: [curl -sfS https://dotenvx.sh | sh]%s\n" "$RED" "$RESET" >&2
+  printf "%s☠ 'dotenvx precommit' command not found (.git/hooks/precommit) fix: [curl -sfS https://dotenvx.sh | sh]%s\n" "$RED" "$RESET" >&2
   exit 1
 fi
 `
@@ -35,17 +35,19 @@ class InstallPrecommitHook {
     try {
       // Check if the pre-commit file already exists
       if (this._exists()) {
+        const currentHook = this._currentHook()
+
         // Check if 'dotenvx precommit' already exists in the file
-        if (this._currentHook().includes('dotenvx ext precommit')) {
+        if (currentHook.includes('dotenvx precommit') || currentHook.includes('dotenvx ext precommit')) {
           // do nothing
-          successMessage = `▣ dotenvx ext precommit exists [${this.hookPath}]`
+          successMessage = `▣ dotenvx precommit exists [${this.hookPath}]`
         } else {
           this._appendHook()
-          successMessage = `▣ dotenvx ext precommit appended [${this.hookPath}]`
+          successMessage = `▣ dotenvx precommit appended [${this.hookPath}]`
         }
       } else {
         this._createHook()
-        successMessage = `▣ dotenvx ext precommit installed [${this.hookPath}]`
+        successMessage = `▣ dotenvx precommit installed [${this.hookPath}]`
       }
 
       return {

@@ -1613,7 +1613,7 @@ $ echo "HELLO=Dotenvx" > .env
 
 $ dotenvx encrypt
 ◈ encrypted (.env) + local key (.env.keys)
-⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
+⮕  next run [dotenvx gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='122...0b8' dotenvx run -- yourcommand] to test decryption locally
 ```
 
@@ -1628,7 +1628,7 @@ $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
 ◈ encrypted (.env.production) + local key (.env.keys)
-⮕  next run [dotenvx ext gitignore --pattern .env.keys] to gitignore .env.keys
+⮕  next run [dotenvx gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='bff...bc4' dotenvx run -- yourcommand] to test decryption locally
 ```
 
@@ -2121,12 +2121,19 @@ Commands:
   set <KEY> <value>  set a single environment variable
   encrypt            encrypt .env file(s)
   decrypt            decrypt .env file(s)
+  rotate             rotate keypair(s) and re-encrypt .env file(s)
   keypair [KEY]      print public/private keys for .env file(s)
   ls [directory]     print all .env files in a tree structure
+  gitignore          append to .gitignore
+  precommit [directory]
+                     prevent committing .env files to code
+  prebuild [directory]
+                     prevent including .env files in docker
  
-Advanced: 
-  pro                          🏆 pro
-  ext                          🔌 extensions
+Professional Security: 
+  login                    log in to move keys off-device, share with your team, and audit access
+  logout                   log out of connected security features
+  armor                    ⛨ move private keys off-device [www.dotenvx.com/armor]
 ```
 
 You can get more detailed help per command with `dotenvx help COMMAND`.
@@ -2174,9 +2181,9 @@ X.X.X
 
 </details>
 
-### Extensions 🔌
+### Utilities
 
-CLI extensions.
+Additional workflow helpers.
 
 <details><summary>`ext genexample`</summary><br>
 
@@ -2233,47 +2240,47 @@ HELLO=""
 ```
 
 </details>
-<details><summary>`ext gitignore`</summary><br>
+<details><summary>`gitignore`</summary><br>
 
 Gitignore your `.env` files.
 
 ```sh
-$ dotenvx ext gitignore
+$ dotenvx gitignore
 ▣ ignored .env* (.gitignore)
 ```
 
 </details>
-<details><summary>`ext gitignore --pattern`</summary><br>
+<details><summary>`gitignore --pattern`</summary><br>
 
 Gitignore specific pattern(s) of `.env` files.
 
 ```sh
-$ dotenvx ext gitignore --pattern .env.keys
+$ dotenvx gitignore --pattern .env.keys
 ▣ ignored .env.keys (.gitignore)
 ```
 
 </details>
-<details><summary>`ext precommit`</summary><br>
+<details><summary>`precommit`</summary><br>
 
 Prevent `.env` files from being committed to code.
 
 ```sh
-$ dotenvx ext precommit
+$ dotenvx precommit
 ▣ .env files (1) protected (encrypted or gitignored)
 ```
 
 </details>
-<details><summary>`ext precommit --install`</summary><br>
+<details><summary>`precommit --install`</summary><br>
 
 Install a shell script to `.git/hooks/pre-commit` to prevent accidentally committing any `.env` files to source control.
 
 ```sh
-$ dotenvx ext precommit --install
-▣ dotenvx ext precommit installed [.git/hooks/pre-commit]
+$ dotenvx precommit --install
+▣ dotenvx precommit installed [.git/hooks/pre-commit]
 ```
 
 </details>
-<details><summary>`ext precommit directory`</summary><br>
+<details><summary>`precommit directory`</summary><br>
 
 Prevent `.env` files from being committed to code inside a specified path to a directory.
 
@@ -2282,12 +2289,12 @@ $ echo "HELLO=Dotenvx" > .env
 $ mkdir -p apps/backend
 $ echo "HELLO=Backend" > apps/backend/.env
 
-$ dotenvx ext precommit apps/backend
+$ dotenvx precommit apps/backend
 ▣ apps/backend/.env not protected (encrypted or gitignored)
 ```
 
 </details>
-<details><summary>`ext prebuild`</summary><br>
+<details><summary>`prebuild`</summary><br>
 
 Prevent `.env` files from being built into your docker containers.
 
@@ -2302,12 +2309,12 @@ COPY --from=dotenv/dotenvx:latest /usr/local/bin/dotenvx /bin/local/bin
 
 # ... orther container commands
 
-RUN dotenvx ext prebuild
+RUN dotenvx prebuild
 CMD ["/usr/local/bin/dotenvx", "run", "--", "node", "index.js"]
 ```
 
 </details>
-<details><summary>`ext prebuild directory`</summary><br>
+<details><summary>`prebuild directory`</summary><br>
 
 Prevent `.env` files from being built into your docker containers inside a specified path to a directory.
 
@@ -2322,7 +2329,7 @@ COPY --from=dotenv/dotenvx:latest /usr/local/bin/dotenvx /bin/local/bin
 
 # ... orther container commands
 
-RUN dotenvx ext prebuild apps/backend
+RUN dotenvx prebuild apps/backend
 CMD ["/usr/local/bin/dotenvx", "run", "--", "node", "apps/backend/index.js"]
 ```
 

@@ -34,7 +34,7 @@ class Genexample {
       const filepath = path.resolve(this.directory, envFilepath)
       if (!fsx.existsSync(filepath)) {
         const error = new Errors({ envFilepath, filepath }).missingEnvFile()
-        error.help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx genexample]`
+        error.help = `? add it with [echo "HELLO=World" > ${envFilepath}] and then run [dotenvx ext genexample]`
         throw error
       }
 

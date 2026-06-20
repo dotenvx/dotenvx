@@ -129,7 +129,7 @@ t.test('#run (non-existent .env file)', ct => {
   } catch (error) {
     ct.equal(error.code, 'MISSING_ENV_FILE')
     ct.equal(error.message, '[MISSING_ENV_FILE] missing file (.env.nonexistent)')
-    ct.equal(error.help, '? add it with [echo "HELLO=World" > .env.nonexistent] and then run [dotenvx genexample]')
+    ct.equal(error.help, '? add it with [echo "HELLO=World" > .env.nonexistent] and then run [dotenvx ext genexample]')
   }
 
   ct.end()
