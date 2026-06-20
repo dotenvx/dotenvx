@@ -1,6 +1,5 @@
 const Conf = require('conf')
-const { derive } = require('@dotenvx/primitives')
-const { PrivateKey } = require('eciesjs')
+const { derive, keypair } = require('@dotenvx/primitives')
 
 const encryptDeviceValue = require('./../lib/helpers/encryptDeviceValue')
 const decryptDeviceValue = require('./../lib/helpers/decryptDeviceValue')
@@ -39,9 +38,7 @@ class Device {
       return currentPrivateKey
     }
 
-    // generate privateKey for the first time
-    const kp = new PrivateKey()
-    const _privateKey = kp.secret.toString('hex')
+    const _privateKey = keypair().privateKey
 
     this.store.set('private_key/1', _privateKey)
 
