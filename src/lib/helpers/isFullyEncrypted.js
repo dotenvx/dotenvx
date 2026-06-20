@@ -1,5 +1,5 @@
+const { encrypted } = require('@dotenvx/primitives')
 const dotenvParse = require('./dotenvParse')
-const isEncrypted = require('./cryptography/isEncrypted')
 const isPublicKey = require('./cryptography/isPublicKey')
 
 function isFullyEncrypted (src) {
@@ -14,7 +14,7 @@ function isFullyEncrypted (src) {
     //
     // key => [value1, ...]
     for (const value of values) {
-      const result = isEncrypted(value) || isPublicKey(key)
+      const result = encrypted(value) || isPublicKey(key)
       if (!result) {
         return false
       }

@@ -1,5 +1,5 @@
 const decryptKeyValue = require('./cryptography/decryptKeyValue')
-const isEncrypted = require('./cryptography/isEncrypted')
+const { encrypted } = require('@dotenvx/primitives')
 const evalKeyValue = require('./evalKeyValue')
 const resolveEscapeSequences = require('./resolveEscapeSequences')
 
@@ -45,7 +45,7 @@ class Parse {
         this.errors.push(e)
       }
 
-      const encryptedPrefixed = isEncrypted(this.parsed[key]) // do not eval encrypted prefix
+      const encryptedPrefixed = encrypted(this.parsed[key]) // do not eval encrypted prefix
 
       // eval empty, double, or backticks
       let evaled = false

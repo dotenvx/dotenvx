@@ -1,6 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
+const { encrypted } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -19,8 +20,7 @@ const {
   armorKeypair,
   localKeypair,
   encryptValue,
-  decryptKeyValue,
-  isEncrypted
+  decryptKeyValue
 } = require('./../helpers/cryptography')
 
 const append = require('./../helpers/append')
@@ -134,7 +134,7 @@ class Rotate {
           continue
         }
 
-        const value = [...values].reverse().find(value => isEncrypted(value))
+        const value = [...values].reverse().find(value => encrypted(value))
         if (value) { // only re-encrypt those already encrypted
           row.keys.push(key) // track key(s)
 

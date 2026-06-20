@@ -1,6 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
+const { encrypted } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -17,7 +18,6 @@ const {
 
 const {
   encryptValue,
-  isEncrypted,
   isPublicKey,
   provision,
   provisionWithPrivateKey
@@ -151,12 +151,12 @@ class Encrypt {
           continue
         }
 
-        const encrypted = values.every(value => isEncrypted(value) || isPublicKey(key))
-        if (!encrypted) {
+        const fullyEncrypted = values.every(value => encrypted(value) || isPublicKey(key))
+        if (!fullyEncrypted) {
           row.keys.push(key) // track key(s)
 
           const encryptedValues = values.map(value => {
-            if (isEncrypted(value) || isPublicKey(key)) {
+            if (encrypted(value) || isPublicKey(key)) {
               return value
             }
 
