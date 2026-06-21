@@ -46,7 +46,7 @@
     "@dotenvx/primitives": "^0.8.0",
     "commander": "^11.1.0",
     "conf": "^10.2.0",
-    "dotenv": "^17.2.1",
+    "dotenv": "^17.4.2",
     "enquirer": "^2.4.1",
     "env-paths": "^2.2.1",
     "execa": "^5.1.1",
@@ -55,10 +55,10 @@
     "object-treeify": "1.1.33",
     "open": "^8.4.2",
     "picomatch": "^4.0.4",
-    "systeminformation": "^5.22.11",
+    "systeminformation": "^5.31.8",
     "undici": "^7.11.0",
     "which": "^4.0.0",
-    "yocto-spinner": "^1.1.0"
+    "yocto-spinner": "^1.2.0"
   },
   "devDependencies": {
     "@yao-pkg/pkg": "^6.12.0",
