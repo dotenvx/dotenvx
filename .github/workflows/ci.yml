@@ -645,11 +645,15 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20.x
+      - name: extract version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: sleep
         run: sleep 60
       - name: install dotenvx
         run: |
-          curl -L -o dotenvx-windows-x86_64.zip https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip
+          curl -L -o dotenvx-windows-x86_64.zip https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-windows-x86_64.zip
           Expand-Archive -Path dotenvx-windows-x86_64.zip -DestinationPath .\dotenvx
       - name: verify version
         run: |
