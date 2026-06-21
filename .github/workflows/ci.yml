@@ -646,9 +646,10 @@ jobs:
         with:
           node-version: 20.x
       - name: extract version
+        shell: pwsh
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          $VERSION = $env:GITHUB_REF -replace 'refs/tags/', ''
+          echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: sleep
         run: sleep 60
       - name: install dotenvx
