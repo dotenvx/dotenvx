@@ -8,9 +8,10 @@ const Parse = require('./../helpers/parse')
 const Errors = require('./../helpers/errors')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
+const keynames = require('./../conventions/keynames')
+const parseconv = require('./../conventions/parse')
 
 const {
-  keyNamesForEnvFile,
   keyValues,
   keyValuesSync,
   keyValuesFromEnvSrc
@@ -147,39 +148,45 @@ class Run {
       const src = fsx.readFileXSync(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const { privateKeyName } = keyNamesForEnvFile(filepath)
-      const { privateKeyValue, privateKeySource } = keyValuesSync(filepath, {
-        keysFilepath: this.envKeysFilepath,
-        noArmor: this.noArmor,
-        noSpinner: this.noSpinner,
-        token: this.token,
-        command: this.command
-      })
-
-      const {
-        parsed,
-        errors,
-        injected,
-        preExisted
-      } = new Parse(src, privateKeyValue, this.processEnv, this.overload, privateKeyName).run()
-
-      row.privateKeyName = privateKeyName
-      row.privateKey = privateKeyValue
-      if (privateKeySource) {
-        row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
-      }
-      row.src = src
-      row.parsed = parsed
-      row.errors = errors
-      row.injected = injected
-      row.preExisted = preExisted
-
-      this.inject(row.parsed) // inject
-
-      for (const key of Object.keys(injected)) {
+      const { parsed } = parseconv(src, { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath })
+      this.inject(parsed) // inject
+      for (const key of Object.keys(parsed)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
+
+      // const { privateKeyName } = keynames(filepath)
+      // const { privateKeyValue, privateKeySource } = keyValuesSync(filepath, {
+      //   keysFilepath: this.envKeysFilepath,
+      //   noArmor: this.noArmor,
+      //   noSpinner: this.noSpinner,
+      //   token: this.token,
+      //   command: this.command
+      // })
+
+      // const {
+      //   parsed,
+      //   errors,
+      //   injected,
+      //   preExisted
+      // } = new Parse(src, privateKeyValue, this.processEnv, this.overload, privateKeyName).run()
+
+      // row.privateKeyName = privateKeyName
+      // row.privateKey = privateKeyValue
+      // if (privateKeySource) {
+      //   row.privateKeySource = privateKeySource
+      //   row.armoredPrivateKeyUsed = privateKeySource === 'armor'
+      // }
+      // row.src = src
+      // row.parsed = parsed
+      // row.errors = errors
+      // row.injected = injected
+      // row.preExisted = preExisted
+
+      // this.inject(row.parsed) // inject
+
+      // for (const key of Object.keys(injected)) {
+      //   this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
+      // }
     } catch (e) {
       if (e.code === 'ENOENT' || e.code === 'EISDIR') {
         row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]
@@ -202,38 +209,45 @@ class Run {
       const src = await fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const { privateKeyName } = keyNamesForEnvFile(filepath)
-      const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
-        keysFilepath: this.envKeysFilepath,
-        noArmor: this.noArmor,
-        token: this.token,
-        command: this.command
-      })
-
-      const {
-        parsed,
-        errors,
-        injected,
-        preExisted
-      } = new Parse(src, privateKeyValue, this.processEnv, this.overload, privateKeyName).run()
-
-      row.privateKeyName = privateKeyName
-      row.privateKey = privateKeyValue
-      if (privateKeySource) {
-        row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
-      }
-      row.src = src
-      row.parsed = parsed
-      row.errors = errors
-      row.injected = injected
-      row.preExisted = preExisted
-
-      this.inject(row.parsed) // inject
-
-      for (const key of Object.keys(injected)) {
+      const { parsed } = parseconv(src, { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath })
+      this.inject(parsed) // inject
+      for (const key of Object.keys(parsed)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
+
+      // old version
+      // const { privateKeyName } = keynames(filepath)
+      // const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
+      //   keysFilepath: this.envKeysFilepath,
+      //   noArmor: this.noArmor,
+      //   token: this.token,
+      //   command: this.command
+      // })
+
+      // const {
+      //   parsed,
+      //   errors,
+      //   injected,
+      //   preExisted
+      // } = new Parse(src, privateKeyValue, this.processEnv, this.overload, privateKeyName).run()
+
+      // row.privateKeyName = privateKeyName
+      // row.privateKey = privateKeyValue
+      // if (privateKeySource) {
+      //   row.privateKeySource = privateKeySource
+      //   row.armoredPrivateKeyUsed = privateKeySource === 'armor'
+      // }
+      // row.src = src
+      // row.parsed = parsed
+      // row.errors = errors
+      // row.injected = injected
+      // row.preExisted = preExisted
+
+      // this.inject(row.parsed) // inject
+
+      // for (const key of Object.keys(injected)) {
+      //   this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
+      // }
     } catch (e) {
       if (e.code === 'ENOENT' || e.code === 'EISDIR') {
         row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]

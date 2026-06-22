@@ -1,5 +1,4 @@
 module.exports = {
-  keyNamesForEnvFile: require('./keyNamesForEnvFile'),
   keyValues: require('./keyValues'),
   keyValuesSync: require('./keyValuesSync'),
   keyValuesFromEnvSrc: require('./keyValuesFromEnvSrc'),

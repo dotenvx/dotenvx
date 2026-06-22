@@ -7,7 +7,7 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
-const normalizeArmorOptions = require('./normalizeArmorOptions')
+const normalizeArmorAliases = require('./normalizeArmorAliases')
 
 function keyStorageSelector () {
   let selected
@@ -41,7 +41,7 @@ function encryptOptions (noArmor) {
 }
 
 async function encrypt () {
-  const options = normalizeArmorOptions(this.opts())
+  const options = normalizeArmorAliases(this.opts())
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)

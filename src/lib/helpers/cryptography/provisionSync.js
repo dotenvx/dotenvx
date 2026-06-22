@@ -2,11 +2,11 @@ const mutateSrc = require('./mutateSrc')
 const mutateKeysSrcSync = require('./mutateKeysSrcSync')
 const armorKeypairSync = require('./armorKeypairSync')
 const localKeypair = require('./localKeypair')
-const { keyNamesForEnvFile } = require('../keyResolution')
+const keynames = require('../../conventions/keynames')
 
 function provisionSync ({ envSrc, envFilepath, keysFilepath, noArmor, command }) {
   noArmor = noArmor !== false
-  const { publicKeyName, privateKeyName } = keyNamesForEnvFile(envFilepath)
+  const { publicKeyName, privateKeyName } = keynames(envFilepath)
 
   let publicKey
   let privateKey

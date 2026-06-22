@@ -1,4 +1,4 @@
-const canonicalEnvFilename = require('./../canonicalEnvFilename')
+const canonicalEnvFilename = require('../helpers/canonicalEnvFilename')
 
 function environment (filepath) {
   const filename = canonicalEnvFilename(filepath)

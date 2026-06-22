@@ -622,7 +622,7 @@ t.test('#run (with encrypted env string and missing privateKeyName value)',
 t.test('#run marks armored private key source for env string and env file paths', async ct => {
   const src = 'HELLO=world'
   const keyResolution = {
-    keyNamesForEnvFile: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+    keynames: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
     keyValuesFromEnvSrc: () => ({
       privateKeyName: 'DOTENV_PRIVATE_KEY',
       privateKeyValue: 'private',
@@ -717,7 +717,7 @@ t.test('#run forwards Armor token and command to key resolution', async ct => {
   const src = 'HELLO=world'
   const calls = []
   const keyResolution = {
-    keyNamesForEnvFile: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+    keynames: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
     keyValuesFromEnvSrc: (env, privateKeyName, opts) => {
       calls.push(['env', opts])
       return {

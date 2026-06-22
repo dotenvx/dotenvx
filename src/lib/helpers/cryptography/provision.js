@@ -2,7 +2,7 @@ const mutateSrc = require('./mutateSrc')
 const mutateKeysSrc = require('./mutateKeysSrc')
 const armorKeypair = require('./armorKeypair')
 const localKeypair = require('./localKeypair')
-const { keyNamesForEnvFile } = require('../keyResolution')
+const keynames = require('../../conventions/keynames')
 
 async function provision ({ envSrc, envFilepath, keysFilepath, noArmor, token, selectKeyStorage, command }) {
   noArmor = noArmor !== false
@@ -10,7 +10,7 @@ async function provision ({ envSrc, envFilepath, keysFilepath, noArmor, token, s
     noArmor = await selectKeyStorage() !== 'armored'
   }
 
-  const { publicKeyName, privateKeyName } = keyNamesForEnvFile(envFilepath)
+  const { publicKeyName, privateKeyName } = keynames(envFilepath)
 
   let publicKey
   let privateKey

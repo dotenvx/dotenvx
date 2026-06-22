@@ -1,4 +1,4 @@
-const keyNamesForEnvFile = require('./../helpers/keyResolution/keyNamesForEnvFile')
+const keynames = require('./../conventions/keynames')
 const keyValues = require('./../helpers/keyResolution/keyValues')
 const keyValuesSync = require('./../helpers/keyResolution/keyValuesSync')
 
@@ -15,7 +15,7 @@ class Keypair {
 
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
-      const { publicKeyName, privateKeyName } = keyNamesForEnvFile(filepath)
+      const { publicKeyName, privateKeyName } = keynames(filepath)
       const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
@@ -34,7 +34,7 @@ class Keypair {
 
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
-      const { publicKeyName, privateKeyName } = keyNamesForEnvFile(filepath)
+      const { publicKeyName, privateKeyName } = keynames(filepath)
       const { publicKeyValue, privateKeyValue } = await keyValues(filepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,

@@ -9,9 +9,9 @@ const Errors = require('./../helpers/errors')
 const {
   determine
 } = require('./../helpers/envResolution')
+const keynames = require('./../conventions/keynames')
 
 const {
-  keyNamesForEnvFile,
   keyValues,
   keyValuesSync
 } = require('./../helpers/keyResolution')
@@ -134,7 +134,7 @@ class Sets {
         let publicKey
         let privateKey
 
-        const { publicKeyName, privateKeyName } = keyNamesForEnvFile(filepath)
+        const { publicKeyName, privateKeyName } = keynames(filepath)
         const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, {
           keysFilepath: this.envKeysFilepath,
           noArmor: this.noArmor,
@@ -250,7 +250,7 @@ class Sets {
         let publicKey
         let privateKey
 
-        const { publicKeyName, privateKeyName } = keyNamesForEnvFile(filepath)
+        const { publicKeyName, privateKeyName } = keynames(filepath)
         const { publicKeyValue, privateKeyValue } = await keyValues(filepath, {
           keysFilepath: this.envKeysFilepath,
           noArmor: this.noArmor,

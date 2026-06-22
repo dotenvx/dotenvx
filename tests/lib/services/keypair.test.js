@@ -85,7 +85,7 @@ t.test('#run forwards command to key resolution',
       privateKeyValue: 'private-key-sync'
     })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
-      './../helpers/keyResolution/keyNamesForEnvFile': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+      './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/keyResolution/keyValues': keyValues,
       './../helpers/keyResolution/keyValuesSync': keyValuesSync
     })
@@ -111,7 +111,7 @@ t.test('#run does not create a remote keypair when no local keys exist',
       privateKeyValue: null
     })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
-      './../helpers/keyResolution/keyNamesForEnvFile': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+      './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/keyResolution/keyValues': keyValues,
       './../helpers/keyResolution/keyValuesSync': keyValuesSync
     })
@@ -139,7 +139,7 @@ t.test('#run returns values from key resolution without accepting explicit publi
       privateKeyValue: null
     })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
-      './../helpers/keyResolution/keyNamesForEnvFile': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+      './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/keyResolution/keyValues': keyValues,
       './../helpers/keyResolution/keyValuesSync': keyValuesSync
     })

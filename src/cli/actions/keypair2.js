@@ -1,30 +1,11 @@
-const { logger } = require('./../../shared/logger')
+const Keypair2 = require('./../../lib/services/keypair2')
 
-const Keypair = require('./../../lib/services/keypair')
-const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
-const normalizeArmorAliases = require('./normalizeArmorAliases')
-
-async function keypair (key) {
-  const options = normalizeArmorAliases(this.opts())
-  const spinner = await createSpinner({ ...options, text: 'retrieving' })
-
-  logger.debug(`options: ${JSON.stringify(options)}`)
-  if (key) {
-    logger.debug(`key: ${key}`)
-  }
-
+async function keypair2 (key) {
+  const options = this.opts()
   const prettyPrint = options.prettyPrint || options.pp
-
-  const sesh = new Session()
-  const noArmor = options.armor === false || await sesh.noArmor()
-  if (spinner) spinner.stop()
-  const keypairs = await new Keypair(options.envFile, options.envKeysFile, noArmor, {
-    command: process.argv.slice(2)
-  }).run()
+  const keypairs = await new Keypair2(options.envFile, options.envKeysFile).run()
   const results = key ? keypairs[key] : keypairs
 
-  if (spinner) spinner.stop()
   if (typeof results === 'object' && results !== null) {
     if (options.format === 'shell') {
       let inline = ''
@@ -42,7 +23,6 @@ async function keypair (key) {
       inline = inline.trim()
 
       console.log(inline)
-    // json format
     } else {
       let space = 0
       if (prettyPrint) {
@@ -63,4 +43,4 @@ async function keypair (key) {
   }
 }
 
-module.exports = keypair
+module.exports = keypair2

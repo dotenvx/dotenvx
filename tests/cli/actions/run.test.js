@@ -155,7 +155,7 @@ t.test('run --convention', async ct => {
   ct.end()
 })
 
-t.test('run --no-ops normalizes Armor aliases off', async ct => {
+t.test('run --no-ops normalizes armor off', async ct => {
   const options = { armor: true, ops: false, vlt: true }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
@@ -173,12 +173,12 @@ t.test('run --no-ops normalizes Armor aliases off', async ct => {
   t.ok(stub.called, 'new Run().run() called')
   t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
   t.equal(options.armor, false, 'armor false')
-  t.equal(options.ops, false, 'ops false')
+  t.equal(options.ops, false, 'ops stays as parsed')
 
   ct.end()
 })
 
-t.test('run --no-armor normalizes Armor aliases off', async ct => {
+t.test('run --no-armor uses armor off', async ct => {
   const options = { armor: false, ops: true, vlt: true }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
@@ -196,7 +196,7 @@ t.test('run --no-armor normalizes Armor aliases off', async ct => {
   t.ok(stub.called, 'new Run().run() called')
   t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
   t.equal(options.armor, false, 'armor false')
-  t.equal(options.ops, false, 'ops false')
+  t.equal(options.ops, true, 'ops stays as parsed')
 
   ct.end()
 })

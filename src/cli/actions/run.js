@@ -6,13 +6,13 @@ const Run = require('./../../lib/services/run')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const normalizeArmorOptions = require('./normalizeArmorOptions')
+const normalizeArmorAliases = require('./normalizeArmorAliases')
 
 const conventions = require('./../../lib/helpers/conventions')
 const { determine } = require('./../../lib/helpers/envResolution')
 
 async function run () {
-  const options = normalizeArmorOptions(this.opts())
+  const options = normalizeArmorAliases(this.opts())
   const commandArgs = this.args
   const spinner = await createSpinner({ ...options, text: 'injecting' })
 

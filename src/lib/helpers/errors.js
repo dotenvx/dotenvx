@@ -18,6 +18,7 @@ const ISSUE_BY_CODE = {
   MISSING_KEY: 'https://github.com/dotenvx/dotenvx/issues/759',
   MISSING_LOG_LEVEL: 'must be valid log level',
   MISSING_PRIVATE_KEY: 'https://github.com/dotenvx/dotenvx/issues/464',
+  MISSING_PUBLIC_KEY: 'https://github.com/dotenvx/dotenvx/issues/new',
   PRECOMMIT_HOOK_MODIFY_FAILED: 'try again or report error',
   WRONG_PRIVATE_KEY: 'https://github.com/dotenvx/dotenvx/issues/466'
 }
@@ -256,6 +257,18 @@ class Errors {
   missingPrivateKey () {
     const code = 'MISSING_PRIVATE_KEY'
     const message = `[${code}] could not decrypt ${this.key} using private key '${this.privateKeyName}=${truncate(this.privateKey)}'`
+    const help = `fix: [${ISSUE_BY_CODE[code]}]`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    e.messageWithHelp = `${message}. ${help}`
+    return e
+  }
+
+  missingPublicKey () {
+    const code = 'MISSING_PUBLIC_KEY'
+    const message = `[${code}] missing public key`
     const help = `fix: [${ISSUE_BY_CODE[code]}]`
 
     const e = new Error(message)

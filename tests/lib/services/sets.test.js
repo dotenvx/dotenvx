@@ -1210,11 +1210,11 @@ t.test('#run (finds .env file) with --encrypt and existing public key only',
       publicKeyValue: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
       privateKeyValue: null
     })
-    const keyNamesForEnvFile = require('../../../src/lib/helpers/keyResolution/keyNamesForEnvFile')
+    const keynames = require('../../../src/lib/conventions/keynames')
 
     const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
       './../helpers/keyResolution': {
-        keyNamesForEnvFile,
+        keynames,
         keyValues: keyValuesStub,
         keyValuesSync: keyValuesStub
       }
@@ -1300,11 +1300,11 @@ t.test('#run wraps invalid public key encryption errors',
 
 t.test('#runSync (existing public key only) uses public key without provisioning private key',
   async ct => {
-    const keyNamesForEnvFile = require('../../../src/lib/helpers/keyResolution/keyNamesForEnvFile')
+    const keynames = require('../../../src/lib/conventions/keynames')
     const cryptography = require('../../../src/lib/helpers/cryptography')
     const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
       './../helpers/keyResolution': {
-        keyNamesForEnvFile,
+        keynames,
         keyValuesSync: () => ({ publicKeyValue: 'public-only-key', privateKeyValue: null }),
         keyValues: async () => ({ publicKeyValue: 'public-only-key', privateKeyValue: null })
       },
@@ -1356,7 +1356,7 @@ t.test('#run async decrypts original encrypted value when private key is availab
     })
     const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
       './../helpers/keyResolution': {
-        keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+        keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
         keyValues: async () => ({ publicKeyValue: 'public-key', privateKeyValue: 'private-key' }),
         keyValuesSync: () => ({ publicKeyValue: 'public-key', privateKeyValue: 'private-key' })
       },

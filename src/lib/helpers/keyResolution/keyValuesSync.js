@@ -2,7 +2,7 @@ const path = require('path')
 const { scan } = require('@dotenvx/primitives')
 
 const fsx = require('./../fsx')
-const keyNamesForEnvFile = require('./keyNamesForEnvFile')
+const keynames = require('../../conventions/keynames')
 const readProcessKey = require('./readProcessKey')
 const readFileKeySync = require('./readFileKeySync')
 const armorKeypairSync = require('../cryptography/armorKeypairSync')
@@ -35,7 +35,7 @@ function invertForPrivateKeyName (filepath) {
 function keyValuesSync (filepath, opts = {}) {
   let keysFilepath = opts.keysFilepath || null
   const noArmor = opts.noArmor === true
-  const names = keyNamesForEnvFile(filepath)
+  const names = keynames(filepath)
   const publicKeyName = names.publicKeyName // DOTENV_PUBLIC_KEY_${ENVIRONMENT}
   let privateKeyName = names.privateKeyName // DOTENV_PRIVATE_KEY_${ENVIRONMENT}
 

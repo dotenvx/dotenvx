@@ -18,7 +18,7 @@ t.test('provision builds env and keys for first-time setup', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -64,7 +64,7 @@ t.test('provision appends to existing keys file', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -97,7 +97,7 @@ t.test('provision defaults keys filepath when omitted', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -131,7 +131,7 @@ t.test('provision uses Armor keypair when noArmor is false', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -162,7 +162,7 @@ t.test('provision forwards token and command to Armor keypair when noArmor is fa
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -186,7 +186,7 @@ t.test('provision forwards token when noArmor is false', async (ct) => {
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -214,7 +214,7 @@ t.test('provision uses local keypair when storage selector chooses file', async 
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -245,7 +245,7 @@ t.test('provision uses armor keypair when storage selector chooses armored', asy
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 
@@ -278,7 +278,7 @@ t.test('provision does not select key storage when noArmor is true', async (ct) 
     './localKeypair': localKeypair,
     './armorKeypair': armorKeypair,
     '../keyResolution': {
-      keyNamesForEnvFile: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
+      keynames: () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' })
     }
   })
 

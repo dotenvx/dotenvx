@@ -1,6 +1,6 @@
 const t = require('tap')
 
-const environment = require('../../../../src/lib/helpers/envResolution/environment')
+const environment = require('../../../src/lib/conventions/environment')
 
 t.test('#environment (.env)', ct => {
   const filepath = '.env'

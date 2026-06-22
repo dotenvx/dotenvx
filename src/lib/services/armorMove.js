@@ -1,7 +1,7 @@
 const prompts = require('../helpers/prompts')
 const PostArmorMove = require('../api/postArmorMove')
 const GetAccount = require('../api/getAccount')
-const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
+const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 
 class ArmorMove {
@@ -24,7 +24,7 @@ class ArmorMove {
     const {
       publicKeyName,
       privateKeyName
-    } = keyNamesForEnvFile(envFile)
+    } = keynames(envFile)
     const publicKey = readEnvKey(publicKeyName, envFile, { strict: true, ignore: ['MISSING_PRIVATE_KEY'] })
 
     const accountJson = await new GetAccount(hostname, token).run()
