@@ -57,7 +57,7 @@
     "picomatch": "^4.0.4",
     "systeminformation": "^5.31.8",
     "undici": "^7.11.0",
-    "which": "^4.0.0",
+    "which": "^6.0.1",
     "yocto-spinner": "^1.2.0"
   },
   "devDependencies": {
