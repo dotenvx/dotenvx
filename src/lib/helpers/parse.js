@@ -167,23 +167,33 @@ class Parse {
 
       const r = expression.split(splitter)
 
-      let defaultValue
-      let value
+      let replacementValue
       const key = r.shift()
+      const rest = r.join(splitter)
 
-      if ([':+', '+'].includes(splitter)) {
-        defaultValue = env[key] ? r.join(splitter) : ''
-        value = null
+      // Handle operators:
+      // :- use default if unset OR empty
+      // - use default only if unset (empty is valid)
+      // :+ use alternate if set AND non-empty, otherwise empty
+      // + use alternate if set (even if empty), otherwise empty
+      if (splitter === ':-') {
+        // Use default if unset or empty
+        replacementValue = env[key] || rest
+      } else if (splitter === '-') {
+        // Use default only if unset (check if key exists in env)
+        replacementValue = (key in env) ? env[key] : rest
+      } else if (splitter === ':+') {
+        // Use alternate only if set AND non-empty
+        replacementValue = env[key] ? rest : ''
+      } else if (splitter === '+') {
+        // Use alternate if set (even if empty)
+        replacementValue = (key in env) ? rest : ''
       } else {
-        defaultValue = r.join(splitter)
-        value = env[key]
+        // No operator - simple expansion
+        replacementValue = env[key] || ''
       }
 
-      if (value) {
-        result = result.replace(template, value)
-      } else {
-        result = result.replace(template, defaultValue)
-      }
+      result = result.replace(template, replacementValue)
 
       // if the result equaled what was in env then stop expanding - handle self-referential check as well
       if (result === env[key]) {
