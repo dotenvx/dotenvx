@@ -45,6 +45,28 @@ jobs:
       - run: npm install
       - run: npm test
       - run: npm run testshell
+  test-powershell:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20.x
+      - run: npm install
+      - name: verify powershell dotenvx run
+        shell: pwsh
+        run: |
+          "HELLO=PowerShell" | Out-File -FilePath .env.testing
+          "console.log(process.env.HELLO)" | Out-File -FilePath index.js
+          Get-Command .\node_modules\.bin\dotenvx
+          $OUTPUT = .\node_modules\.bin\dotenvx run -f .env.testing -- node index.js
+          Write-Output $OUTPUT
+          if ($OUTPUT -ne "PowerShell") {
+            Write-Output "expected PowerShell, got '$OUTPUT'"
+            exit 1
+          }
   test-pkg:
     runs-on: ubuntu-latest
     strategy:
