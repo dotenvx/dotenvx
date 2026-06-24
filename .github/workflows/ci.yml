@@ -68,7 +68,7 @@ jobs:
           Get-ChildItem .\node_modules\.bin\dotenvx*
           Get-Command .\node_modules\.bin\dotenvx.ps1
 
-          $OUTPUT = .\node_modules\.bin\dotenvx.ps1 run -f .env.testing -- node index.js
+          $OUTPUT = .\node_modules\.bin\dotenvx.ps1 run --quiet -f .env.testing -- node index.js
 
           Write-Output $OUTPUT
 
