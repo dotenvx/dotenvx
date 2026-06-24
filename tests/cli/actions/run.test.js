@@ -1062,8 +1062,6 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const loggerErrorStub = sinon.stub(logger, 'error')
-  const processExitStub = sinon.stub(process, 'exit')
 
   await run.call(fakeContext)
 
@@ -1100,8 +1098,6 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
   const loggerDebugStub = sinon.stub(logger, 'debug')
-  const loggerErrorStub = sinon.stub(logger, 'error')
-  const processExitStub = sinon.stub(process, 'exit')
 
   await run.call(fakeContext)
 
