@@ -60,8 +60,8 @@ jobs:
         run: |
           "HELLO=PowerShell" | Out-File -FilePath .env.testing
           "console.log(process.env.HELLO)" | Out-File -FilePath index.js
-          Get-Command .\node_modules\.bin\dotenvx
-          $OUTPUT = .\node_modules\.bin\dotenvx run -f .env.testing -- node index.js
+          Get-Command .\node_modules\.bin\dotenvx.ps1
+          $OUTPUT = .\node_modules\.bin\dotenvx.ps1 run -f .env.testing -- node index.js
           Write-Output $OUTPUT
           if ($OUTPUT -ne "PowerShell") {
             Write-Output "expected PowerShell, got '$OUTPUT'"
