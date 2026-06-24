@@ -50,28 +50,25 @@ jobs:
     strategy:
       fail-fast: true
     steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20.x
       - name: verify npm powershell shim
         shell: pwsh
         run: |
+          npm install
+          $TARBALL = npm pack
           mkdir fixture
           cd fixture
-
           npm init -y
-          npm install @dotenvx/dotenvx
-
+          npm install "..\$TARBALL"
           "HELLO=PowerShell" | Out-File -FilePath .env.testing -Encoding utf8
           "console.log(process.env.HELLO)" | Out-File -FilePath index.js -Encoding utf8
-
           Get-ChildItem .\node_modules\.bin\dotenvx*
           Get-Command .\node_modules\.bin\dotenvx.ps1
-
           $OUTPUT = .\node_modules\.bin\dotenvx.ps1 run -f .env.testing -- node index.js
-
           Write-Output $OUTPUT
-
           if ($OUTPUT -ne "PowerShell") {
             Write-Output "expected PowerShell, got '$OUTPUT'"
             exit 1
