@@ -11,9 +11,37 @@ const normalizeArmorOptions = require('./normalizeArmorOptions')
 const conventions = require('./../../lib/helpers/conventions')
 const { determine } = require('./../../lib/helpers/envResolution')
 
+function inferCommandArgsFromProcessArgv (argv) {
+  const runIndex = argv.indexOf('run')
+  if (runIndex === -1) return []
+
+  const args = argv.slice(runIndex + 1)
+
+  const separatorIndex = args.indexOf('--')
+  if (separatorIndex !== -1) return args.slice(separatorIndex + 1)
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '-f' || args[i] === '--env-file') {
+      i++
+      continue
+    }
+
+    if (args[i].startsWith('-')) continue
+
+    return args.slice(i)
+  }
+
+  return []
+}
+
 async function run () {
   const options = normalizeArmorOptions(this.opts())
-  const commandArgs = this.args
+
+  let commandArgs = this.args
+  if (commandArgs.length < 1) {
+    commandArgs = inferCommandArgsFromProcessArgv(process.argv)
+  }
+
   const spinner = await createSpinner({ ...options, text: 'injecting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
