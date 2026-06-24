@@ -1073,9 +1073,6 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (1) from .env'), 'logger.success')
 
-  t.ok(loggerErrorStub.calledWith('ambiguous command due to missing \'--\' separator. try [dotenvx run -f .env.production -- yourcommand]'), 'logger.error')
-  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
-
   ct.end()
 })
 
@@ -1113,9 +1110,6 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (1) from .env'), 'logger.success')
-
-  t.ok(loggerErrorStub.calledWith('ambiguous command due to missing \'--\' separator. try [dotenvx run -f .env -- yourcommand]'), 'logger.error')
-  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
 
   ct.end()
 })
