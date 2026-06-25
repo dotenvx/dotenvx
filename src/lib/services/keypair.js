@@ -1,4 +1,5 @@
 const fsx = require('./../helpers/fsx')
+const path = require('path')
 const keynames = require('./../conventions/keynames')
 
 const { createSyncFn } = require('synckit')
@@ -31,7 +32,7 @@ class Keypair {
       }
       ring = keyring({
         processEnv: this.processEnv,
-        fk: this.envKeysFilepath,
+        fk: this.envKeysFilepath || path.resolve(path.dirname(filepath), '.env.keys'),
         ring,
         provider: this.noArmor ? null : provider
       })

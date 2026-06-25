@@ -20,8 +20,8 @@ async function keypair (key) {
   const noArmor = options.armor === false || await sesh.noArmor()
   const keypairs = await new Keypair({
     envFile: options.envFile,
-    envKeysFile: options.envKeysFile,
-    noArmor: noArmor,
+    envKeysFilepath: options.envKeysFile,
+    noArmor,
     command: process.argv.slice(2)
   }).run()
   const results = key ? keypairs[key] : keypairs

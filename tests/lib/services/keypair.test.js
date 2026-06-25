@@ -1,26 +1,20 @@
 const t = require('tap')
-const fs = require('fs')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
 const Keypair = require('../../../src/lib/services/keypair')
 
-let writeFileSyncStub
-
 t.beforeEach((ct) => {
   process.env = {}
-  writeFileSyncStub = sinon.stub(fs, 'writeFileSync')
 })
 
 t.afterEach((ct) => {
-  writeFileSyncStub.restore()
+  sinon.restore()
 })
 
 t.test('#runSync (no arguments)',
   async ct => {
-    const result = new Keypair().runSync()
-
-    ct.same(result, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    ct.throws(() => new Keypair().runSync(), { code: 'ENOENT' })
 
     ct.end()
   })
@@ -28,7 +22,7 @@ t.test('#runSync (no arguments)',
 t.test('#runSync (finds .env file)',
   async ct => {
     const envFile = 'tests/monorepo/apps/encrypted/.env'
-    const result = new Keypair(envFile).runSync()
+    const result = new Keypair({ envFile }).runSync()
 
     ct.same(result, { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba', DOTENV_PRIVATE_KEY: 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1' })
 
@@ -38,7 +32,7 @@ t.test('#runSync (finds .env file)',
 t.test('#runSync (finds .env file as array)',
   async ct => {
     const envFile = 'tests/monorepo/apps/encrypted/.env'
-    const result = new Keypair([envFile]).runSync()
+    const result = new Keypair({ envFile: [envFile] }).runSync()
 
     ct.same(result, { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba', DOTENV_PRIVATE_KEY: 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1' })
 
@@ -47,9 +41,7 @@ t.test('#runSync (finds .env file as array)',
 
 t.test('#run (no arguments)',
   async ct => {
-    const result = await new Keypair().run()
-
-    ct.same(result, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    await ct.rejects(new Keypair().run(), { code: 'ENOENT' })
 
     ct.end()
   })
@@ -57,7 +49,7 @@ t.test('#run (no arguments)',
 t.test('#run (finds .env file)',
   async ct => {
     const envFile = 'tests/monorepo/apps/encrypted/.env'
-    const result = await new Keypair(envFile).run()
+    const result = await new Keypair({ envFile }).run()
 
     ct.same(result, { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba', DOTENV_PRIVATE_KEY: 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1' })
 
@@ -67,91 +59,95 @@ t.test('#run (finds .env file)',
 t.test('#run (finds .env file as array)',
   async ct => {
     const envFile = 'tests/monorepo/apps/encrypted/.env'
-    const result = await new Keypair([envFile]).run()
+    const result = await new Keypair({ envFile: [envFile] }).run()
 
     ct.same(result, { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba', DOTENV_PRIVATE_KEY: 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1' })
 
     ct.end()
   })
 
-t.test('#run forwards command to key resolution',
+t.test('#run forwards envKeysFilepath to primitive keyring',
   async ct => {
-    const keyValues = sinon.stub().resolves({
-      publicKeyValue: 'public-key',
-      privateKeyValue: 'private-key'
-    })
-    const keyValuesSync = sinon.stub().returns({
-      publicKeyValue: 'public-key-sync',
-      privateKeyValue: 'private-key-sync'
+    const keyring = sinon.stub().returns({
+      'public-key': 'private-key'
     })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
       './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-      './../helpers/keyResolution/keyValues': keyValues,
-      './../helpers/keyResolution/keyValuesSync': keyValuesSync
+      './../helpers/fsx': {
+        readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
+      },
+      '@dotenvx/primitives': {
+        publickeys: () => ['public-key'],
+        keyring
+      }
     })
 
-    const out = await new KeypairWithStubs('.env', null, false, { command: ['keypair'] }).run()
-    const outSync = new KeypairWithStubs('.env', null, false, { command: ['keypair'] }).runSync()
+    const out = await new KeypairWithStubs({
+      envFile: '.env',
+      envKeysFilepath: '.env.custom.keys'
+    }).run()
+    const outSync = new KeypairWithStubs({
+      envFile: '.env',
+      envKeysFilepath: '.env.custom.keys'
+    }).runSync()
 
     ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
-    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key-sync', DOTENV_PRIVATE_KEY: 'private-key-sync' })
-    ct.same(keyValues.firstCall.args[1], { keysFilepath: null, noArmor: false, command: ['keypair'] })
-    ct.same(keyValuesSync.firstCall.args[1], { keysFilepath: null, noArmor: false, command: ['keypair'] })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
+    ct.equal(keyring.firstCall.args[0].fk, '.env.custom.keys')
+    ct.equal(keyring.secondCall.args[0].fk, '.env.custom.keys')
     ct.end()
   })
 
-t.test('#run does not create a remote keypair when no local keys exist',
+t.test('#run passes no provider when noArmor is true',
   async ct => {
-    const keyValues = sinon.stub().resolves({
-      publicKeyValue: null,
-      privateKeyValue: null
-    })
-    const keyValuesSync = sinon.stub().returns({
-      publicKeyValue: null,
-      privateKeyValue: null
-    })
+    const keyring = sinon.stub().callsFake(({ ring }) => ring)
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
       './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-      './../helpers/keyResolution/keyValues': keyValues,
-      './../helpers/keyResolution/keyValuesSync': keyValuesSync
+      './../helpers/fsx': {
+        readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
+      },
+      '@dotenvx/primitives': {
+        publickeys: () => ['public-key'],
+        keyring
+      }
     })
 
-    const out = await new KeypairWithStubs('.env', null, false, {
-      command: ['keypair']
+    const out = await new KeypairWithStubs({
+      envFile: '.env',
+      noArmor: true
     }).run()
-    const outSync = new KeypairWithStubs('.env', null, false, {
-      command: ['keypair']
+    const outSync = new KeypairWithStubs({
+      envFile: '.env',
+      noArmor: true
     }).runSync()
 
-    ct.same(out, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
-    ct.same(outSync, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
+    ct.equal(keyring.firstCall.args[0].provider, null)
+    ct.equal(keyring.secondCall.args[0].provider, null)
     ct.end()
   })
 
-t.test('#run returns values from key resolution without accepting explicit public key override',
+t.test('#run passes provider by default',
   async ct => {
-    const keyValues = sinon.stub().resolves({
-      publicKeyValue: null,
-      privateKeyValue: null
-    })
-    const keyValuesSync = sinon.stub().returns({
-      publicKeyValue: null,
-      privateKeyValue: null
-    })
+    const keyring = sinon.stub().callsFake(({ ring }) => ring)
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
       './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-      './../helpers/keyResolution/keyValues': keyValues,
-      './../helpers/keyResolution/keyValuesSync': keyValuesSync
+      './../helpers/fsx': {
+        readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
+      },
+      '@dotenvx/primitives': {
+        publickeys: () => ['public-key'],
+        keyring
+      }
     })
 
-    const out = await new KeypairWithStubs('.env', null, false, {
-      publicKey: 'existing-public-key'
-    }).run()
-    const outSync = new KeypairWithStubs('.env', null, false, {
-      publicKey: 'existing-public-key'
-    }).runSync()
+    const out = await new KeypairWithStubs({ envFile: '.env' }).run()
+    const outSync = new KeypairWithStubs({ envFile: '.env' }).runSync()
 
-    ct.same(out, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
-    ct.same(outSync, { DOTENV_PUBLIC_KEY: null, DOTENV_PRIVATE_KEY: null })
+    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
+    ct.equal(typeof keyring.firstCall.args[0].provider, 'function')
+    ct.equal(typeof keyring.secondCall.args[0].provider, 'function')
     ct.end()
   })
