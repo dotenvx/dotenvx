@@ -15,7 +15,7 @@ async function index (publicKeyHex) {
     publicKeyHex
   ).run()
 
-  return json['private_key']
+  return json.private_key
 }
 
 module.exports = index

@@ -765,6 +765,36 @@ t.test('#run forwards Armor token and command to key resolution', async ct => {
   ct.end()
 })
 
+t.test('#run disables parse provider when noArmor is true for env file paths', async ct => {
+  const src = 'HELLO=world'
+  const calls = []
+  const parseconv = (envSrc, opts) => {
+    calls.push(opts)
+    return {
+      parsed: {
+        HELLO: 'world'
+      }
+    }
+  }
+  const RunWithParse = proxyquire('../../../src/lib/services/run', {
+    './../helpers/detectEncoding': async () => 'utf8',
+    './../helpers/detectEncodingSync': () => 'utf8',
+    './../helpers/fsx': {
+      readFileX: async () => src,
+      readFileXSync: () => src
+    },
+    './../conventions/parse': parseconv
+  })
+
+  new RunWithParse([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', true).runSync()
+  await new RunWithParse([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', true).run()
+
+  ct.equal(calls.length, 2)
+  ct.equal(calls[0].provider, null)
+  ct.equal(calls[1].provider, null)
+  ct.end()
+})
+
 t.test('#run (with envs as string and errors somehow from inject)',
   async ct => {
     const cwd = process.cwd()

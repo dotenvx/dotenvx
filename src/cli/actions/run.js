@@ -35,13 +35,13 @@ function inferCommandArgsFromProcessArgv (argv) {
 }
 
 async function run () {
-  const options = normalizeArmorOptions(this.opts())
+  const options = normalizeArmorAliases(this.opts())
 
   let commandArgs = this.args
   if (commandArgs.length < 1) {
     commandArgs = inferCommandArgsFromProcessArgv(process.argv)
   }
-  
+
   const spinner = await createSpinner({ ...options, text: 'injecting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)

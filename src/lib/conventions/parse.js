@@ -9,7 +9,9 @@ function provider (publicKeyHex) {
 const { parse: parseprim } = require('@dotenvx/primitives')
 
 function parse (src, options = {}) {
-  options.provider = provider
+  if (!Object.prototype.hasOwnProperty.call(options, 'provider')) {
+    options.provider = provider
+  }
   return parseprim(src, options)
 }
 

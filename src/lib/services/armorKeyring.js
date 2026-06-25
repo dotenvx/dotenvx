@@ -1,4 +1,3 @@
-const prompts = require('../helpers/prompts')
 const PostArmorKeyring = require('../api/postArmorKeyring')
 
 const ACCESS_APPROVAL_REQUIRED = 'ACCESS_APPROVAL_REQUIRED'
@@ -113,11 +112,7 @@ class ArmorKeyring {
   }
 
   async run () {
-    try {
-      return await this.requestWithApprovalPolling()
-    } catch (error) {
-      throw error
-    }
+    return await this.requestWithApprovalPolling()
   }
 }
 

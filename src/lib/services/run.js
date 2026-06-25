@@ -8,12 +8,9 @@ const Parse = require('./../helpers/parse')
 const Errors = require('./../helpers/errors')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
-const keynames = require('./../conventions/keynames')
 const parseconv = require('./../conventions/parse')
 
 const {
-  keyValues,
-  keyValuesSync,
   keyValuesFromEnvSrc
 } = require('./../helpers/keyResolution')
 
@@ -148,7 +145,11 @@ class Run {
       const src = fsx.readFileXSync(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const { parsed } = parseconv(src, { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath })
+      const parseOptions = { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath }
+      if (this.noArmor) {
+        parseOptions.provider = null
+      }
+      const { parsed } = parseconv(src, parseOptions)
       this.inject(parsed) // inject
       for (const key of Object.keys(parsed)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
@@ -209,7 +210,11 @@ class Run {
       const src = await fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const { parsed } = parseconv(src, { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath })
+      const parseOptions = { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath }
+      if (this.noArmor) {
+        parseOptions.provider = null
+      }
+      const { parsed } = parseconv(src, parseOptions)
       this.inject(parsed) // inject
       for (const key of Object.keys(parsed)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
