@@ -9,11 +9,11 @@ function provider (publicKeyHex) {
 }
 
 class Keypair {
-  constructor (envFile = '.env', envKeysFilepath = null, noArmor = false, options = {}) {
-    this.envFile = envFile
-    this.envKeysFilepath = envKeysFilepath
+  constructor (options = {}) {
+    this.envFile = options.envFile || '.env'
+    this.envKeysFilepath = options.envKeysFilepath
     this.processEnv = options.processEnv || process.env
-    this.noArmor = noArmor
+    this.noArmor = options.noArmor || false
     this.command = options.command
   }
 
