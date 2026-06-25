@@ -4,7 +4,7 @@ const keynames = require('./../conventions/keynames')
 
 const { createSyncFn } = require('synckit')
 const { keyring, keyringSync, publickeys } = require('@dotenvx/primitives')
-const provider = require('./../providers/armor/index')
+const armorProvider = require('./../providers/armor/index')
 const runProviderSync = createSyncFn(require.resolve('./../providers/worker.js'))
 function providerSync (publicKeyHex) {
   return runProviderSync(require.resolve('./../providers/armor/index'), publicKeyHex)
@@ -17,6 +17,7 @@ class Keypair {
     this.processEnv = options.processEnv || process.env
     this.noArmor = options.noArmor || false
     this.command = options.command
+    this.onStatus = options.onStatus
   }
 
   runSync () {
@@ -59,7 +60,11 @@ class Keypair {
         processEnv: this.processEnv,
         fk: this.envKeysFilepath || path.resolve(path.dirname(filepath), '.env.keys'),
         ring,
-        provider: this.noArmor ? null : provider
+        provider: this.noArmor
+          ? null
+          : (publicKeyHex) => armorProvider(publicKeyHex, {
+              onStatus: this.onStatus
+            })
       })
 
       out[publicKeyName] = publicKey || null

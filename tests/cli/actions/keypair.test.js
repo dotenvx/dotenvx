@@ -1,5 +1,6 @@
 const t = require('tap')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire')
 
 const Keypair = require('./../../../src/lib/services/keypair')
 const keypair = require('./../../../src/cli/actions/keypair')
@@ -191,5 +192,80 @@ t.test('keypair --no-ops passes noArmor true to Keypair service', async ct => {
   t.ok(stub.calledOnce, 'new Keypair().run() called')
   t.equal(stub.thisValues[0].noArmor, true, 'noArmor true')
 
+  ct.end()
+})
+
+t.test('keypair updates spinner text while waiting for approval', async ct => {
+  const fakeSpinner = {
+    text: 'retrieving',
+    stop: sinon.stub()
+  }
+  const runStub = sinon.stub().callsFake(async function () {
+    this.options.onStatus('[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+    return { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }
+  })
+  class KeypairStub {
+    constructor (options) {
+      this.options = options
+    }
+
+    async run () {
+      return runStub.call(this)
+    }
+  }
+  class SessionStub {
+    async noArmor () {
+      return false
+    }
+  }
+  const keypairWithStubs = proxyquire('./../../../src/cli/actions/keypair', {
+    './../../lib/services/keypair': KeypairStub,
+    '../../lib/helpers/createSpinner': sinon.stub().resolves(fakeSpinner),
+    '../../db/session': SessionStub
+  })
+  const fakeContext = { opts: sinon.stub().returns({}) }
+
+  await captureStdout(async () => {
+    await keypairWithStubs.call(fakeContext, undefined)
+  })
+
+  ct.ok(runStub.calledOnce, 'new Keypair().run() called')
+  ct.equal(fakeSpinner.text, '[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+  ct.ok(fakeSpinner.stop.calledOnce, 'spinner stopped')
+  ct.end()
+})
+
+t.test('keypair logs provider errors without an uncaught stack', async ct => {
+  const error = new Error('[ACCESS_APPROVAL_EXPIRED] approval expired')
+  error.code = 'ACCESS_APPROVAL_EXPIRED'
+  const fakeSpinner = {
+    text: 'retrieving',
+    stop: sinon.stub()
+  }
+  const catchAndLogStub = sinon.stub()
+  class KeypairStub {
+    async run () {
+      throw error
+    }
+  }
+  class SessionStub {
+    async noArmor () {
+      return false
+    }
+  }
+  const processExitStub = sinon.stub(process, 'exit')
+  const keypairWithStubs = proxyquire('./../../../src/cli/actions/keypair', {
+    './../../lib/services/keypair': KeypairStub,
+    './../../lib/helpers/catchAndLog': catchAndLogStub,
+    '../../lib/helpers/createSpinner': sinon.stub().resolves(fakeSpinner),
+    '../../db/session': SessionStub
+  })
+  const fakeContext = { opts: sinon.stub().returns({}) }
+
+  await keypairWithStubs.call(fakeContext, undefined)
+
+  ct.same(catchAndLogStub.firstCall && catchAndLogStub.firstCall.args, [error])
+  ct.ok(fakeSpinner.stop.calledOnce, 'spinner stopped')
+  ct.ok(processExitStub.calledWith(1), 'process.exit(1)')
   ct.end()
 })

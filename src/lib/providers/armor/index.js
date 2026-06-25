@@ -1,19 +1,29 @@
 const Session = require('../../../db/session')
 const ArmorKeyring = require('../../services/armorKeyring')
+const armoredKeyDisplay = require('../../helpers/armoredKeyDisplay')
 
-async function index (publicKeyHex) {
+async function index (publicKeyHex, options = {}) {
   const sesh = new Session()
 
   const hostname = sesh.hostname()
   const token = sesh.token()
   const devicePublicKey = sesh.devicePublicKey()
 
-  const json = await new ArmorKeyring(
+  const keyring = new ArmorKeyring(
     hostname,
     token,
     devicePublicKey,
     publicKeyHex
-  ).run()
+  )
+  if (options.onStatus) {
+    keyring.onApprovalRequired = ({ approvalUri, code }) => {
+      const keyDisplay = armoredKeyDisplay(publicKeyHex)
+      const keySuffix = keyDisplay ? ` (${keyDisplay})` : ''
+      options.onStatus(`[${code}] visit [${approvalUri}] and approve${keySuffix}`)
+    }
+  }
+
+  const json = await keyring.run()
 
   return json.private_key
 }
