@@ -3,7 +3,7 @@ const path = require('path')
 const keynames = require('./../conventions/keynames')
 
 const { createSyncFn } = require('synckit')
-const { keyring, publickeys } = require('@dotenvx/primitives')
+const { keyringSync, publickeys } = require('@dotenvx/primitives')
 const runProvider = createSyncFn(require.resolve('./../providers/worker'))
 function provider (publicKeyHex) {
   return runProvider(require.resolve('./../providers/armor/index'), publicKeyHex)
@@ -30,7 +30,7 @@ class Keypair {
       if (publicKey) {
         ring[publicKey] = ''
       }
-      ring = keyring({
+      ring = keyringSync({
         processEnv: this.processEnv,
         fk: this.envKeysFilepath || path.resolve(path.dirname(filepath), '.env.keys'),
         ring,

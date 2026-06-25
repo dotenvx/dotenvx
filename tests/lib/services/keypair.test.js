@@ -68,7 +68,7 @@ t.test('#run (finds .env file as array)',
 
 t.test('#run forwards envKeysFilepath to primitive keyring',
   async ct => {
-    const keyring = sinon.stub().returns({
+    const keyringSync = sinon.stub().returns({
       'public-key': 'private-key'
     })
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
@@ -78,7 +78,7 @@ t.test('#run forwards envKeysFilepath to primitive keyring',
       },
       '@dotenvx/primitives': {
         publickeys: () => ['public-key'],
-        keyring
+        keyringSync
       }
     })
 
@@ -93,14 +93,14 @@ t.test('#run forwards envKeysFilepath to primitive keyring',
 
     ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
     ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
-    ct.equal(keyring.firstCall.args[0].fk, '.env.custom.keys')
-    ct.equal(keyring.secondCall.args[0].fk, '.env.custom.keys')
+    ct.equal(keyringSync.firstCall.args[0].fk, '.env.custom.keys')
+    ct.equal(keyringSync.secondCall.args[0].fk, '.env.custom.keys')
     ct.end()
   })
 
 t.test('#run passes no provider when noArmor is true',
   async ct => {
-    const keyring = sinon.stub().callsFake(({ ring }) => ring)
+    const keyringSync = sinon.stub().callsFake(({ ring }) => ring)
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
       './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/fsx': {
@@ -108,7 +108,7 @@ t.test('#run passes no provider when noArmor is true',
       },
       '@dotenvx/primitives': {
         publickeys: () => ['public-key'],
-        keyring
+        keyringSync
       }
     })
 
@@ -123,14 +123,14 @@ t.test('#run passes no provider when noArmor is true',
 
     ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
     ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
-    ct.equal(keyring.firstCall.args[0].provider, null)
-    ct.equal(keyring.secondCall.args[0].provider, null)
+    ct.equal(keyringSync.firstCall.args[0].provider, null)
+    ct.equal(keyringSync.secondCall.args[0].provider, null)
     ct.end()
   })
 
 t.test('#run passes provider by default',
   async ct => {
-    const keyring = sinon.stub().callsFake(({ ring }) => ring)
+    const keyringSync = sinon.stub().callsFake(({ ring }) => ring)
     const KeypairWithStubs = proxyquire('../../../src/lib/services/keypair', {
       './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/fsx': {
@@ -138,7 +138,7 @@ t.test('#run passes provider by default',
       },
       '@dotenvx/primitives': {
         publickeys: () => ['public-key'],
-        keyring
+        keyringSync
       }
     })
 
@@ -147,7 +147,7 @@ t.test('#run passes provider by default',
 
     ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
     ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
-    ct.equal(typeof keyring.firstCall.args[0].provider, 'function')
-    ct.equal(typeof keyring.secondCall.args[0].provider, 'function')
+    ct.equal(typeof keyringSync.firstCall.args[0].provider, 'function')
+    ct.equal(typeof keyringSync.secondCall.args[0].provider, 'function')
     ct.end()
   })

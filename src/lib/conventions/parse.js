@@ -6,7 +6,7 @@ function provider (publicKeyHex) {
   return runProvider(require.resolve('./../providers/armor/index'), publicKeyHex)
 }
 
-const { parse: parseprim } = require('@dotenvx/primitives')
+const { parseSync: parseprim } = require('@dotenvx/primitives')
 
 function parse (src, options = {}) {
   if (!Object.prototype.hasOwnProperty.call(options, 'provider')) {
