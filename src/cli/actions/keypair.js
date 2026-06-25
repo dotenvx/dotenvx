@@ -9,14 +9,6 @@ const normalizeArmorAliases = require('./normalizeArmorAliases')
 async function keypair (key) {
   const options = normalizeArmorAliases(this.opts())
   const spinner = await createSpinner({ ...options, text: 'retrieving' })
-  let spinnerStopped = false
-
-  function stopSpinner () {
-    if (spinner && !spinnerStopped) {
-      spinner.stop()
-      spinnerStopped = true
-    }
-  }
 
   logger.debug(`options: ${JSON.stringify(options)}`)
   if (key) {
@@ -41,7 +33,7 @@ async function keypair (key) {
     }).run()
     const results = key ? keypairs[key] : keypairs
 
-    stopSpinner()
+    if (spinner) spinner.stop()
     if (typeof results === 'object' && results !== null) {
       if (options.format === 'shell') {
         let inline = ''
@@ -79,11 +71,9 @@ async function keypair (key) {
       }
     }
   } catch (error) {
-    stopSpinner()
+    if (spinner) spinner.stop()
     catchAndLog(error)
     process.exit(1)
-  } finally {
-    stopSpinner()
   }
 }
 

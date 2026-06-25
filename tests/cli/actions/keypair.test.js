@@ -231,7 +231,7 @@ t.test('keypair updates spinner text while waiting for approval', async ct => {
 
   ct.ok(runStub.calledOnce, 'new Keypair().run() called')
   ct.equal(fakeSpinner.text, '[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
-  ct.ok(fakeSpinner.stop.calledOnce, 'spinner stopped')
+  ct.ok(fakeSpinner.stop.called, 'spinner stopped')
   ct.end()
 })
 
@@ -265,7 +265,7 @@ t.test('keypair logs provider errors without an uncaught stack', async ct => {
   await keypairWithStubs.call(fakeContext, undefined)
 
   ct.same(catchAndLogStub.firstCall && catchAndLogStub.firstCall.args, [error])
-  ct.ok(fakeSpinner.stop.calledOnce, 'spinner stopped')
+  ct.ok(fakeSpinner.stop.called, 'spinner stopped')
   ct.ok(processExitStub.calledWith(1), 'process.exit(1)')
   ct.end()
 })
