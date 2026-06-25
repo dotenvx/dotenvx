@@ -3,7 +3,7 @@ const path = require('path')
 const keynames = require('./../conventions/keynames')
 
 const { createSyncFn } = require('synckit')
-const { keyring, publickeys } = require('@dotenvx/primitives')
+const { keyring, keyringSync, publickeys } = require('@dotenvx/primitives')
 const provider = require('./../providers/armor/index')
 const runProviderSync = createSyncFn(require.resolve('./../providers/worker.js'))
 function providerSync (publicKeyHex) {
