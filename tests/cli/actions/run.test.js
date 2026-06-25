@@ -42,7 +42,6 @@ t.test('run', async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -71,7 +70,6 @@ t.test('run updates spinner from Run service status', async ct => {
       this.options.onStatus('[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
       return {
         processedEnvs: [],
-        readableStrings: [],
         readableFilepaths: [],
         uniqueInjectedKeys: []
       }
@@ -111,7 +109,6 @@ t.test('run passes Armor token and wrapped command to Run service', async ct => 
     async run () {
       return {
         processedEnvs: [],
-        readableStrings: [],
         readableFilepaths: [],
         uniqueInjectedKeys: []
       }
@@ -148,7 +145,6 @@ t.test('run --convention', async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -170,7 +166,6 @@ t.test('run --no-ops normalizes armor off', async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -193,7 +188,6 @@ t.test('run --no-armor uses armor off', async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -215,7 +209,6 @@ t.test('run --convention', async ct => {
   const stub = sinon.stub(Run.prototype, 'run')
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -246,7 +239,6 @@ t.test('run - envFile', async ct => {
       },
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -282,7 +274,6 @@ t.test('run - envFile omits armor suffix', async ct => {
       },
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -317,7 +308,6 @@ t.test('run - envFile (with errors)', async ct => {
       errors: [error],
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -356,7 +346,6 @@ t.test('run - env', async ct => {
       },
       existed: {}
     }],
-    readableStrings: ['HELLO=World'],
     readableFilepaths: [],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -403,7 +392,6 @@ t.test('run - envFile AND env', async ct => {
       },
       existed: {}
     }],
-    readableStrings: ['HELLO=World'],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -461,7 +449,6 @@ t.test('run - envFile AND two envs', async ct => {
       },
       existed: {}
     }],
-    readableStrings: ['HELLO=World', 'HOLA=amigo'],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO', 'HOLA']
   })
@@ -511,7 +498,6 @@ t.test('run - env (two strings)', async ct => {
       },
       existed: {}
     }],
-    readableStrings: ['HELLO=World', 'HEY=there'],
     readableFilepaths: [],
     uniqueInjectedKeys: ['HELLO', 'HEY']
   })
@@ -551,7 +537,6 @@ t.test('run - MISSING_ENV_FILE', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -587,7 +572,6 @@ t.test('run - MISSING_ENV_FILE fallback filepath', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -615,7 +599,6 @@ t.test('run - MISSING_ENV_FILE with --convention stays quiet', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -650,7 +633,6 @@ t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -688,7 +670,6 @@ t.test('run - MISSING_ENV_FILE --ignore flag', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -724,7 +705,6 @@ t.test('run - MISSING_ENV_FILE --strict flag and MISSING_ENV_FILE --ignore flag'
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -759,7 +739,6 @@ t.test('run - OTHER_ERROR', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -794,7 +773,6 @@ t.test('run - WRONG_PRIVATE_KEY', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -828,7 +806,6 @@ t.test('run - MISSING_PRIVATE_KEY', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -863,7 +840,6 @@ t.test('run - preserves punctuated private key messages', async ct => {
       injected: {},
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: [],
     uniqueInjectedKeys: []
   })
@@ -892,7 +868,6 @@ t.test('run - envFile (prexists)', async ct => {
         HELLO: 'World'
       }
     }],
-    readableStrings: [],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -1021,7 +996,6 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
       },
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -1061,7 +1035,6 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
       },
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -1097,7 +1070,6 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
       },
       existed: {}
     }],
-    readableStrings: [],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: ['HELLO']
   })
@@ -1126,7 +1098,6 @@ t.test('run - envFile - parsed, injected, and existed missing for some reason up
       type: 'envFile',
       filepath: '.env'
     }],
-    readableStrings: [],
     readableFilepaths: ['.env'],
     uniqueInjectedKeys: []
   })

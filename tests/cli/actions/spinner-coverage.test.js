@@ -111,7 +111,6 @@ t.test('run stops spinner when command missing', async ct => {
       async run () {
         return {
           processedEnvs: [],
-          readableStrings: [],
           readableFilepaths: [],
           uniqueInjectedKeys: []
         }
@@ -144,7 +143,6 @@ t.test('run stops spinner on success path', async ct => {
       async run () {
         return {
           processedEnvs: [],
-          readableStrings: [],
           readableFilepaths: [],
           uniqueInjectedKeys: []
         }

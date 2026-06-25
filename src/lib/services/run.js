@@ -29,7 +29,6 @@ class Run {
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
-    this.readableStrings = new Set()
     this.uniqueInjectedKeys = new Set()
     this.beforeEnv = { ...this.processEnv }
   }
@@ -52,7 +51,6 @@ class Run {
 
     return {
       processedEnvs: this.processedEnvs,
-      readableStrings: [...this.readableStrings],
       readableFilepaths: [...this.readableFilepaths],
       uniqueInjectedKeys: [...this.uniqueInjectedKeys],
       beforeEnv: this.beforeEnv,
@@ -78,7 +76,6 @@ class Run {
 
     return {
       processedEnvs: this.processedEnvs,
-      readableStrings: [...this.readableStrings],
       readableFilepaths: [...this.readableFilepaths],
       uniqueInjectedKeys: [...this.uniqueInjectedKeys],
       beforeEnv: this.beforeEnv,
@@ -121,8 +118,6 @@ class Run {
       row.existed = existed
 
       this.inject(row.parsed) // inject
-
-      this.readableStrings.add(env)
 
       for (const key of Object.keys(injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
@@ -173,8 +168,6 @@ class Run {
       row.existed = existed || {}
 
       this.inject(row.parsed) // inject
-
-      this.readableStrings.add(env)
 
       for (const key of Object.keys(row.injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files

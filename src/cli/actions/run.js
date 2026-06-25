@@ -79,7 +79,6 @@ async function run () {
 
     const {
       processedEnvs,
-      readableStrings,
       readableFilepaths,
       uniqueInjectedKeys
     } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
@@ -133,12 +132,13 @@ async function run () {
     }
 
     let msg = `injected env (${uniqueInjectedKeys.length})`
-    if (readableFilepaths.length > 0 && readableStrings.length > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}, and --env flag${readableStrings.length > 1 ? 's' : ''}`
+    const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
+    if (readableFilepaths.length > 0 && envStringCount > 0) {
+      msg += ` from ${readableFilepaths.join(', ')}, and --env flag${envStringCount > 1 ? 's' : ''}`
     } else if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
-    } else if (readableStrings.length > 0) {
-      msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
+    } else if (envStringCount > 0) {
+      msg += ` from --env flag${envStringCount > 1 ? 's' : ''}`
     }
 
     if (spinner) spinner.stop()
