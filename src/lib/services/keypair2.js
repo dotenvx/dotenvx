@@ -1,17 +1,9 @@
-const fs = require('fs')
 const path = require('path')
 const { createSyncFn } = require('synckit')
 const { keyring, publickeys } = require('@dotenvx/primitives')
 const keynames = require('./../conventions/keynames')
 const runProvider = createSyncFn(require.resolve('./../providers/worker'))
-
-function readSrc (filepath) {
-  try {
-    return fs.readFileSync(filepath, 'utf8')
-  } catch (_e) {
-    return ''
-  }
-}
+const fsx = require('./../helpers/fsx')
 
 class Keypair2 {
   constructor (envFile = '.env', envKeysFilepath = null, options = {}) {
@@ -30,7 +22,7 @@ class Keypair2 {
     const out = {}
 
     for (const filepath of this._filepaths()) {
-      const src = readSrc(filepath)
+      const src = fsx.readFileXSync(filepath)
       const { publicKeyName, privateKeyName } = keynames(filepath, src)
       const publicKey = publickeys(src)[0] // edge case: if user placed two DOTENV_PUBLIC_KEY*. not a convention so [0] here reasonably safe.
       const ring = {}

@@ -1,11 +1,18 @@
+const fsx = require('./../helpers/fsx')
 const keynames = require('./../conventions/keynames')
-const keyValues = require('./../helpers/keyResolution/keyValues')
-const keyValuesSync = require('./../helpers/keyResolution/keyValuesSync')
+
+const { createSyncFn } = require('synckit')
+const { keyring, publickeys } = require('@dotenvx/primitives')
+const runProvider = createSyncFn(require.resolve('./../providers/worker'))
+function provider (publicKeyHex) {
+  return runProvider(require.resolve('./../providers/armor/index'), publicKeyHex)
+}
 
 class Keypair {
   constructor (envFile = '.env', envKeysFilepath = null, noArmor = false, options = {}) {
     this.envFile = envFile
     this.envKeysFilepath = envKeysFilepath
+    this.processEnv = options.processEnv || process.env
     this.noArmor = noArmor
     this.command = options.command
   }
@@ -15,37 +22,29 @@ class Keypair {
 
     const filepaths = this._filepaths()
     for (const filepath of filepaths) {
+      const src = fsx.readFileXSync(filepath)
       const { publicKeyName, privateKeyName } = keynames(filepath)
-      const { publicKeyValue, privateKeyValue } = keyValuesSync(filepath, {
-        keysFilepath: this.envKeysFilepath,
-        noArmor: this.noArmor,
-        command: this.command
+      const publicKey = publickeys(src)[0] // edge case: if user placed two DOTENV_PUBLIC_KEY*. not a convention so [0] here reasonably safe.
+      let ring = {}
+      if (publicKey) {
+        ring[publicKey] = ''
+      }
+      ring = keyring({
+        processEnv: this.processEnv,
+        fk: this.envKeysFilepath,
+        ring,
+        provider: this.noArmor ? null : provider
       })
 
-      out[publicKeyName] = publicKeyValue
-      out[privateKeyName] = privateKeyValue
+      out[publicKeyName] = publicKey || null
+      out[privateKeyName] = publicKey ? ring[publicKey] || null : null
     }
 
     return out
   }
 
   async run () {
-    const out = {}
-
-    const filepaths = this._filepaths()
-    for (const filepath of filepaths) {
-      const { publicKeyName, privateKeyName } = keynames(filepath)
-      const { publicKeyValue, privateKeyValue } = await keyValues(filepath, {
-        keysFilepath: this.envKeysFilepath,
-        noArmor: this.noArmor,
-        command: this.command
-      })
-
-      out[publicKeyName] = publicKeyValue
-      out[privateKeyName] = privateKeyValue
-    }
-
-    return out
+    return this.runSync()
   }
 
   _filepaths () {
