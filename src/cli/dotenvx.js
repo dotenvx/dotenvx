@@ -184,20 +184,6 @@ program.command('keypair')
     return require('./actions/keypair').apply(this, args)
   })
 
-// dotenvx keypair2
-program.command('keypair2', { hidden: true })
-  .usage('[KEY] [options]')
-  .description('print public/private keys for .env file(s)')
-  .argument('[KEY]', 'environment variable key name')
-  .option('-f, --env-file <paths...>', 'path(s) to your env file(s)')
-  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('-pp, --pretty-print', 'pretty print output')
-  .option('--pp', 'pretty print output (alias)')
-  .option('--format <type>', 'format of the output (json, shell, colon)', 'json')
-  .action(function (...args) {
-    return require('./actions/keypair2').apply(this, args)
-  })
-
 // dotenvx ls
 program.command('ls')
   .description('print all .env files in a tree structure')
