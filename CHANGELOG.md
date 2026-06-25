@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.75.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.76.0...main)
+
+## [1.76.0](https://github.com/dotenvx/dotenvx/compare/v1.75.1...v1.76.0) (2026-06-24)
+
+### Changed
+
+* Support dotenvx across powershell ([#856](https://github.com/dotenvx/dotenvx/pull/856))
+* BREAKING: Remove variadic `-f`. You can still do `dotenvx run -f .env1 -f .env2` but ambiguos variadic like `dotenvx run -f .env1 .env2 ...` is removed ([#856](https://github.com/dotenvx/dotenvx/pull/856))
 
 ## [1.75.1](https://github.com/dotenvx/dotenvx/compare/v1.75.0...v1.75.1) (2026-06-20)
 

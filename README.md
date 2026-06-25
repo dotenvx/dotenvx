@@ -58,7 +58,9 @@ dotenvx encrypt
 <details><summary>with brew 🍺</summary><br>
 
 ```sh
-brew install dotenvx/brew/dotenvx
+brew tap dotenvx/brew
+brew trust dotenvx/brew
+brew install dotenvx
 dotenvx encrypt
 ```
 
