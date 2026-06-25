@@ -7,12 +7,29 @@ const TYPE_ENV_FILE = 'envFile'
 const Errors = require('./../helpers/errors')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
-const { parse: parseprim } = require('@dotenvx/primitives')
+const { encrypted, parse, parseSync } = require('@dotenvx/primitives')
 const armorProvider = require('./../providers/armor/index')
 const keynames = require('./../conventions/keynames')
 
-function encryptedValue (value) {
-  return typeof value === 'string' && value.startsWith('encrypted:')
+function unresolvedEncryptedErrors (parsed, privateKeyName, processEnv) {
+  const keys = []
+  for (const [key, value] of Object.entries(parsed)) {
+    if (encrypted(value)) {
+      keys.push(key)
+    }
+  }
+
+  if (keys.length < 1) {
+    return []
+  }
+
+  return [new Errors({ key: keys.join(', '), privateKeyName: privateKeyName || 'DOTENV_PRIVATE_KEY', privateKey: processEnv[privateKeyName] || null }).missingPrivateKey()]
+}
+
+function armorProviderSync (publicKeyHex) {
+  const { createSyncFn } = require('synckit')
+  const runProvider = createSyncFn(require.resolve('./../providers/worker'))
+  return runProvider(require.resolve('./../providers/armor/index'), publicKeyHex)
 }
 
 class Run {
@@ -29,8 +46,6 @@ class Run {
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
-    this.uniqueInjectedKeys = new Set()
-    this.beforeEnv = { ...this.processEnv }
   }
 
   runSync () {
@@ -51,10 +66,7 @@ class Run {
 
     return {
       processedEnvs: this.processedEnvs,
-      readableFilepaths: [...this.readableFilepaths],
-      uniqueInjectedKeys: [...this.uniqueInjectedKeys],
-      beforeEnv: this.beforeEnv,
-      afterEnv: { ...this.processEnv }
+      readableFilepaths: [...this.readableFilepaths]
     }
   }
 
@@ -76,10 +88,7 @@ class Run {
 
     return {
       processedEnvs: this.processedEnvs,
-      readableFilepaths: [...this.readableFilepaths],
-      uniqueInjectedKeys: [...this.uniqueInjectedKeys],
-      beforeEnv: this.beforeEnv,
-      afterEnv: { ...this.processEnv }
+      readableFilepaths: [...this.readableFilepaths]
     }
   }
 
@@ -89,39 +98,31 @@ class Run {
     row.string = env
 
     try {
-      const Parse = require('./../helpers/parse')
-      const {
-        keyValuesFromEnvSrc
-      } = require('./../helpers/keyResolution')
-      const {
-        privateKeyName: resolvedPrivateKeyName,
-        privateKeyValue
-      } = keyValuesFromEnvSrc(env, privateKeyName, {
-        keysFilepath: this.envKeysFilepath,
-        noArmor: this.noArmor,
-        processEnv: this.processEnv,
-        token: this.token,
-        command: this.command
-      })
-
+      const processEnv = { ...this.processEnv }
+      if (privateKeyName && Object.prototype.hasOwnProperty.call(this.processEnv, privateKeyName)) {
+        processEnv[privateKeyName] = this.processEnv[privateKeyName]
+      }
+      const parseOptions = {
+        processEnv,
+        overload: this.overload,
+        fk: this.envKeysFilepath
+      }
+      if (this.noArmor) {
+        parseOptions.provider = null
+      }
       const {
         parsed,
-        errors,
         injected,
         existed
-      } = new Parse(env, privateKeyValue, this.processEnv, this.overload, resolvedPrivateKeyName).run()
+      } = parseSync(env, parseOptions)
 
-      row.privateKeyName = resolvedPrivateKeyName
+      row.privateKeyName = privateKeyName
       row.parsed = parsed
-      row.errors = errors
-      row.injected = injected
-      row.existed = existed
+      row.errors = unresolvedEncryptedErrors(parsed, privateKeyName, processEnv)
+      row.injected = injected || {}
+      row.existed = existed || {}
 
       this.inject(row.parsed) // inject
-
-      for (const key of Object.keys(injected)) {
-        this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
-      }
     } catch (e) {
       row.errors = [e]
     }
@@ -139,39 +140,31 @@ class Run {
       if (privateKeyName && Object.prototype.hasOwnProperty.call(this.processEnv, privateKeyName)) {
         processEnv[privateKeyName] = this.processEnv[privateKeyName]
       }
+      const parseOptions = {
+        processEnv,
+        overload: this.overload,
+        fk: this.envKeysFilepath
+      }
+      if (this.noArmor) {
+        parseOptions.provider = null
+      } else {
+        parseOptions.provider = (publicKeyHex) => armorProvider(publicKeyHex, {
+          onStatus: this.onStatus
+        })
+      }
       const {
         parsed,
         injected,
         existed
-      } = await parseprim(env, {
-        processEnv,
-        overload: this.overload,
-        fk: this.envKeysFilepath,
-        provider: this.noArmor
-          ? null
-          : (publicKeyHex) => armorProvider(publicKeyHex, {
-              onStatus: this.onStatus
-            })
-      })
+      } = await parse(env, parseOptions)
 
       row.privateKeyName = privateKeyName
       row.parsed = parsed
-      row.errors = []
-      if (privateKeyName && !processEnv[privateKeyName]) {
-        for (const [key, value] of Object.entries(parsed)) {
-          if (encryptedValue(value)) {
-            row.errors.push(new Errors({ key, privateKeyName, privateKey: null }).missingPrivateKey())
-          }
-        }
-      }
+      row.errors = unresolvedEncryptedErrors(parsed, privateKeyName, processEnv)
       row.injected = injected || {}
       row.existed = existed || {}
 
       this.inject(row.parsed) // inject
-
-      for (const key of Object.keys(row.injected)) {
-        this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
-      }
     } catch (e) {
       row.errors = [e]
     }
@@ -194,24 +187,22 @@ class Run {
       const parseOptions = { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath }
       if (this.noArmor) {
         parseOptions.provider = null
+      } else {
+        parseOptions.provider = armorProviderSync
       }
-      const parseconv = require('./../conventions/parse')
       const {
         parsed,
         errors,
         injected,
         existed
-      } = parseconv(src, parseOptions)
+      } = parseSync(src, parseOptions)
       row.privateKeyName = privateKeyName
       row.src = src
       row.parsed = parsed
       row.injected = injected || {}
-      row.errors = errors || []
+      row.errors = (errors || []).concat(unresolvedEncryptedErrors(parsed, privateKeyName, parseOptions.processEnv))
       row.existed = existed || {}
       this.inject(parsed) // inject
-      for (const key of Object.keys(row.injected)) {
-        this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
-      }
     } catch (e) {
       if (e.code === 'ENOENT' || e.code === 'EISDIR') {
         row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]
@@ -238,29 +229,28 @@ class Run {
       const parseOptions = {
         processEnv: this.processEnv,
         overload: this.overload,
-        fk: this.envKeysFilepath,
-        provider: this.noArmor
-          ? null
-          : (publicKeyHex) => armorProvider(publicKeyHex, {
-              onStatus: this.onStatus
-            })
+        fk: this.envKeysFilepath
+      }
+      if (this.noArmor) {
+        parseOptions.provider = null
+      } else {
+        parseOptions.provider = (publicKeyHex) => armorProvider(publicKeyHex, {
+          onStatus: this.onStatus
+        })
       }
       const {
         parsed,
         errors,
         injected,
         existed
-      } = await parseprim(src, parseOptions)
+      } = await parse(src, parseOptions)
       row.privateKeyName = privateKeyName
       row.src = src
       row.parsed = parsed
       row.injected = injected || {}
-      row.errors = errors || []
+      row.errors = (errors || []).concat(unresolvedEncryptedErrors(parsed, privateKeyName, parseOptions.processEnv))
       row.existed = existed || {}
       this.inject(parsed) // inject
-      for (const key of Object.keys(row.injected)) {
-        this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
-      }
     } catch (e) {
       if (e.code === 'ENOENT' || e.code === 'EISDIR') {
         row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]

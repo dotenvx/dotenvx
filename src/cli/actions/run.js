@@ -34,6 +34,16 @@ function inferCommandArgsFromProcessArgv (argv) {
   return []
 }
 
+function uniqueInjectedKeys (processedEnvs) {
+  const result = new Set()
+  for (const processedEnv of processedEnvs) {
+    for (const key of Object.keys(processedEnv.injected || {})) {
+      result.add(key)
+    }
+  }
+  return result
+}
+
 async function run () {
   const options = normalizeArmorAliases(this.opts())
 
@@ -79,8 +89,7 @@ async function run () {
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
       token: options.token,
       command: commandArgs,
@@ -131,7 +140,7 @@ async function run () {
       }
     }
 
-    let msg = `injected env (${uniqueInjectedKeys.length})`
+    let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
     const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
     if (readableFilepaths.length > 0 && envStringCount > 0) {
       msg += ` from ${readableFilepaths.join(', ')}, and --env flag${envStringCount > 1 ? 's' : ''}`

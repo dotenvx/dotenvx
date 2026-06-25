@@ -48,7 +48,7 @@ t.beforeEach((ct) => {
 t.test('config calls Run.run',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [], readableFilepaths: [] })
 
     main.config()
 
@@ -62,7 +62,7 @@ t.test('config calls Run.run',
 t.test('config supports noArmor option',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [], readableFilepaths: [] })
 
     main.config({ noArmor: true })
 
@@ -77,7 +77,7 @@ t.test('config supports noArmor option',
 t.test('config supports noSpinner option',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [], readableFilepaths: [] })
 
     main.config({ noSpinner: true })
 
@@ -92,7 +92,7 @@ t.test('config supports noSpinner option',
 t.test('config supports token option',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [], readableFilepaths: [] })
 
     main.config({ token: 'token-123' })
 
@@ -108,7 +108,7 @@ t.test('config supports token option',
 t.test('config with convention - calls Run.run with proper envs',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [], readableFilepaths: [] })
 
     main.config({ convention: 'nextjs' })
 
@@ -122,7 +122,7 @@ t.test('config with convention - calls Run.run with proper envs',
 t.test('config with convention flow - calls Run.run with proper envs',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [], readableFilepaths: [] })
 
     main.config({ convention: 'flow' })
 
@@ -137,7 +137,7 @@ t.test('config with envs ignores path and convention',
   ct => {
     const envs = [{ type: 'env', value: 'HELLO=envs' }]
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [], readableFilepaths: [] })
 
     main.config({ path: 'tests/.env', convention: 'nextjs', envs })
 
@@ -158,7 +158,7 @@ t.test('config with Run.run errors',
     error.messageWithHelp = 'some error'
     const errors = [error]
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [] })
 
     main.config()
 
@@ -181,7 +181,7 @@ t.test('config with Run.run WRONG_PRIVATE_KEY errors',
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
     const errors = [error]
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [] })
 
     main.config()
 
@@ -204,7 +204,7 @@ t.test('config with Run.run MISSING_PRIVATE_KEY errors',
     error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/464]'
     const errors = [error]
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [] })
 
     main.config()
 
@@ -226,7 +226,7 @@ t.test('config with Run.run punctuated private-key errors',
     const missing = new Error('[MISSING_PRIVATE_KEY] punctuated')
     setCode(missing, 'MISSING_PRIVATE_KEY')
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [{ errors: [wrong, missing] }], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [{ errors: [wrong, missing] }], readableFilepaths: [] })
 
     main.config()
 
@@ -249,7 +249,7 @@ t.test('config with Run.run errors and ignore',
     error.help = 'some help'
     const errors = [error]
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [{ errors }], readableFilepaths: [] })
 
     main.config({ ignore: ['SOME_ERROR'] })
 
@@ -265,7 +265,7 @@ t.test('config with Run.run errors and ignore',
 t.test('config with Run.run processedEnv with undefined processedEnv.errors',
   ct => {
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [{}], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [{}], readableFilepaths: [] })
 
     main.config()
 
@@ -679,7 +679,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
     const stub = sinon.stub(Run.prototype, 'runSync')
-    stub.returns({ processedEnvs: [], readableFilepaths: [], uniqueInjectedKeys: [] })
+    stub.returns({ processedEnvs: [], readableFilepaths: [] })
 
     const processEnv = {}
     const options = {

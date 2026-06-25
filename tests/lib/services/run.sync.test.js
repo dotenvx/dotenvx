@@ -27,7 +27,6 @@ t.test('#runSync processes inline env strings', ct => {
     injected: { HELLO: 'sync' },
     existed: {}
   })
-  t.same(result.uniqueInjectedKeys, ['HELLO'])
 
   process.chdir(cwd)
   ct.end()

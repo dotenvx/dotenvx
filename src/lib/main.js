@@ -1,6 +1,6 @@
 // @ts-check
 const path = require('path')
-const { parseSync: parseprim } = require('@dotenvx/primitives')
+const { encrypted, parseSync } = require('@dotenvx/primitives')
 
 // shared
 const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/logger')
@@ -23,8 +23,14 @@ const fsx = require('./helpers/fsx')
 const decryptKeyValue = require('./helpers/cryptography/decryptKeyValue')
 const Errors = require('./helpers/errors')
 
-function encryptedValue (value) {
-  return typeof value === 'string' && value.startsWith('encrypted:')
+function uniqueInjectedKeys (processedEnvs) {
+  const result = new Set()
+  for (const processedEnv of processedEnvs) {
+    for (const key of Object.keys(processedEnv.injected || {})) {
+      result.add(key)
+    }
+  }
+  return result
 }
 
 /** @type {import('./main').config} */
@@ -63,8 +69,7 @@ const config = function (options = {}) {
     }
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = new Run(envs, overload, processEnv, envKeysFile, noArmor, {
       noSpinner: options.noSpinner,
       token: options.token
@@ -116,7 +121,7 @@ const config = function (options = {}) {
       }
     }
 
-    let msg = `injected env (${uniqueInjectedKeys.length})`
+    let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
     if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
     }
@@ -157,11 +162,11 @@ const parse = function (src, options = {}) {
     processEnv = Object.assign({}, processEnv, { DOTENV_PRIVATE_KEY: privateKey })
   }
 
-  const { parsed } = parseprim(src, { processEnv, overload })
+  const { parsed } = parseSync(src, { processEnv, overload })
   const errors = []
 
   for (const key of Object.keys(parsed)) {
-    if (!encryptedValue(parsed[key])) {
+    if (!encrypted(parsed[key])) {
       continue
     }
 

@@ -25,8 +25,7 @@ t.test('#run (no arguments)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults().run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
@@ -40,7 +39,6 @@ t.test('#run (no arguments)',
       errors: [exampleError]
     }])
     ct.same(readableFilepaths, [])
-    ct.same(uniqueInjectedKeys, [])
 
     process.chdir(cwd)
     ct.end()
@@ -57,8 +55,7 @@ t.test('#run (no arguments and some other error)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults().run()
 
     const exampleError = new Error('Mock Error')
@@ -69,7 +66,6 @@ t.test('#run (no arguments and some other error)',
       errors: [exampleError]
     }])
     ct.same(readableFilepaths, [])
-    ct.same(uniqueInjectedKeys, [])
 
     readFileStub.restore()
     process.chdir(cwd)
@@ -94,8 +90,7 @@ t.test('#run (no arguments and fsx readFileX throws)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await new RunWithReadError(determine([], process.env)).run()
 
     const exampleError = new Error('Mock Error')
@@ -106,7 +101,6 @@ t.test('#run (no arguments and fsx readFileX throws)',
       errors: [exampleError]
     }])
     ct.same(readableFilepaths, [])
-    ct.same(uniqueInjectedKeys, [])
 
     process.chdir(cwd)
     ct.end()
@@ -120,8 +114,7 @@ t.test('#run (finds .env file)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
@@ -139,7 +132,6 @@ t.test('#run (finds .env file)',
       existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
 
     ct.end()
   })
@@ -152,8 +144,7 @@ t.test('#run (encrypted .env finds .env.keys next to itself)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
@@ -173,7 +164,6 @@ t.test('#run (encrypted .env finds .env.keys next to itself)',
       existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
-    ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
 
     ct.end()
   })
@@ -188,8 +178,7 @@ t.test('#run (encrypted .env with bad private key)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     const error = new Error('[INVALID_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=bad-pri…\'')
@@ -214,7 +203,6 @@ t.test('#run (encrypted .env with bad private key)',
       existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
-    ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
 
     ct.end()
   })
@@ -230,8 +218,7 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults().run()
 
     ct.same(processedEnvs, [{
@@ -251,7 +238,6 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set',
       existed: {}
     }])
     ct.same(readableFilepaths, ['.env'])
-    ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
 
     process.chdir(originalDirectory)
 
@@ -268,8 +254,7 @@ t.test('#run (finds .env file) with already falsy value',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
@@ -287,7 +272,6 @@ t.test('#run (finds .env file) with already falsy value',
       }
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-    ct.same(uniqueInjectedKeys, [])
 
     ct.end()
   })
@@ -299,8 +283,7 @@ t.test('#run (finds .env file as array)',
     ]
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
@@ -318,7 +301,6 @@ t.test('#run (finds .env file as array)',
       existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
 
     ct.end()
   })
@@ -333,8 +315,7 @@ t.test('#run (finds .env file but HELLO already exists)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
@@ -352,7 +333,6 @@ t.test('#run (finds .env file but HELLO already exists)',
       }
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-    ct.same(uniqueInjectedKeys, [])
 
     ct.end()
   })
@@ -367,8 +347,7 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs, true).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
@@ -391,7 +370,6 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)',
       existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
 
     ct.end()
   })
@@ -404,8 +382,7 @@ t.test('#run (command substitution)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [{
@@ -423,7 +400,6 @@ t.test('#run (command substitution)',
       existed: {}
     }])
     ct.same(readableFilepaths, ['tests/.env.eval'])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
 
     ct.end()
   })
@@ -441,8 +417,7 @@ t.test('#run (with envs as string)',
     // it should still prepend a type 'envFile': value: '.env'
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
@@ -470,7 +445,6 @@ t.test('#run (with envs as string)',
       }
     ])
     ct.same(readableFilepaths, [])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
 
     process.chdir(cwd)
     ct.end()
@@ -490,8 +464,7 @@ t.test('#run (with encrypted env string and privateKeyName)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
@@ -519,7 +492,6 @@ t.test('#run (with encrypted env string and privateKeyName)',
       }
     ])
     ct.same(readableFilepaths, [])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
     ct.equal(process.env.HELLO, 'World')
 
     process.chdir(cwd)
@@ -540,8 +512,7 @@ t.test('#run (with encrypted env string and privateKeyName reads .env.keys)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await new Run(envs).run()
 
     ct.same(processedEnvs, [
@@ -560,7 +531,6 @@ t.test('#run (with encrypted env string and privateKeyName reads .env.keys)',
       }
     ])
     ct.same(readableFilepaths, [])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
     ct.equal(process.env.HELLO, 'World')
 
     process.chdir(cwd)
@@ -576,8 +546,7 @@ t.test('#run (with encrypted env string and missing privateKeyName value)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await new Run(envs).run()
 
     const error = new Error('[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY_PRODUCTION=\'')
@@ -601,7 +570,47 @@ t.test('#run (with encrypted env string and missing privateKeyName value)',
       }
     ])
     ct.same(readableFilepaths, [])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
+
+    ct.end()
+  })
+
+t.test('#run reports missing privateKeyName value once for multiple encrypted values',
+  async ct => {
+    const encrypted = 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l'
+    const src = `HELLO="${encrypted}"
+GOODBYE="${encrypted}"`
+    const envs = [
+      { type: 'env', value: src, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' }
+    ]
+
+    const {
+      processedEnvs
+    } = await new Run(envs).run()
+
+    ct.equal(processedEnvs[0].errors.length, 1)
+    ct.equal(processedEnvs[0].errors[0].code, 'MISSING_PRIVATE_KEY')
+    ct.match(processedEnvs[0].errors[0].message, 'HELLO, GOODBYE')
+
+    ct.end()
+  })
+
+t.test('#run reports encrypted values left unresolved when privateKeyName value exists',
+  async ct => {
+    const src = 'HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"'
+    const processEnv = {
+      DOTENV_PRIVATE_KEY_PRODUCTION: 'bad-private-key'
+    }
+    const envs = [
+      { type: 'env', value: src, privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION' }
+    ]
+
+    const {
+      processedEnvs
+    } = await new Run(envs, false, processEnv).run()
+
+    ct.equal(processedEnvs[0].errors.length, 1)
+    ct.equal(processedEnvs[0].errors[0].code, 'MISSING_PRIVATE_KEY')
+    ct.match(processedEnvs[0].errors[0].message, 'HELLO')
 
     ct.end()
   })
@@ -623,16 +632,18 @@ t.test('#run forwards onStatus to async armor provider for env strings', async c
     }
   }
   const armorProvider = sinon.stub().resolves('private-key')
-  const RunWithParse = proxyquire('../../../src/lib/services/run', {
+  const RunWithPrimitives = proxyquire('../../../src/lib/services/run', {
     './../providers/armor/index': armorProvider,
     '@dotenvx/primitives': {
+      encrypted: (value) => typeof value === 'string' && value.startsWith('encrypted:'),
       parse
     }
   })
 
-  const result = await new RunWithParse([{ type: 'env', value: src }], false, {}, '.env.keys', false, { onStatus }).run()
+  const processEnv = {}
+  await new RunWithPrimitives([{ type: 'env', value: src }], false, processEnv, '.env.keys', false, { onStatus }).run()
 
-  ct.same(result.afterEnv, {
+  ct.same(processEnv, {
     DOTENV_PUBLIC_KEY: 'public-key',
     DOTENV_PRIVATE_KEY: 'private-key'
   })
@@ -643,7 +654,7 @@ t.test('#run forwards onStatus to async armor provider for env strings', async c
 t.test('#run disables parse provider when noArmor is true for env file paths', async ct => {
   const src = 'HELLO=world'
   const calls = []
-  const parseconv = (envSrc, opts) => {
+  const parseSync = (envSrc, opts) => {
     calls.push(opts)
     return {
       parsed: {
@@ -659,25 +670,66 @@ t.test('#run disables parse provider when noArmor is true for env file paths', a
       }
     }
   }
-  const RunWithParse = proxyquire('../../../src/lib/services/run', {
+  const RunWithPrimitives = proxyquire('../../../src/lib/services/run', {
     './../helpers/detectEncoding': async () => 'utf8',
     './../helpers/detectEncodingSync': () => 'utf8',
     './../helpers/fsx': {
       readFileX: async () => src,
       readFileXSync: () => src
     },
-    './../conventions/parse': parseconv,
     '@dotenvx/primitives': {
+      encrypted: (value) => typeof value === 'string' && value.startsWith('encrypted:'),
+      parseSync,
       parse
     }
   })
 
-  new RunWithParse([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', true).runSync()
-  await new RunWithParse([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', true).run()
+  new RunWithPrimitives([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', true).runSync()
+  await new RunWithPrimitives([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', true).run()
 
   ct.equal(calls.length, 2)
   ct.equal(calls[0].provider, null)
   ct.equal(calls[1].provider, null)
+  ct.end()
+})
+
+t.test('#run reports missing private key once for multiple encrypted env file values', async ct => {
+  const src = 'HELLO="encrypted:one"\nGOODBYE="encrypted:two"'
+  const parse = async () => {
+    return {
+      parsed: {
+        HELLO: 'encrypted:one',
+        GOODBYE: 'encrypted:two'
+      },
+      injected: {
+        HELLO: 'encrypted:one',
+        GOODBYE: 'encrypted:two'
+      },
+      existed: {}
+    }
+  }
+  const RunWithPrimitives = proxyquire('../../../src/lib/services/run', {
+    './../helpers/detectEncoding': async () => 'utf8',
+    './../helpers/fsx': {
+      readFileX: async () => src
+    },
+    './../conventions/keynames': () => {
+      return { privateKeyName: 'DOTENV_PRIVATE_KEY' }
+    },
+    '@dotenvx/primitives': {
+      encrypted: (value) => typeof value === 'string' && value.startsWith('encrypted:'),
+      parse
+    }
+  })
+
+  const {
+    processedEnvs
+  } = await new RunWithPrimitives([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', true).run()
+
+  ct.equal(processedEnvs[0].errors.length, 1)
+  ct.equal(processedEnvs[0].errors[0].code, 'MISSING_PRIVATE_KEY')
+  ct.match(processedEnvs[0].errors[0].message, 'HELLO, GOODBYE')
+
   ct.end()
 })
 
@@ -693,7 +745,7 @@ t.test('#run forwards onStatus to async armor provider for env file paths', asyn
     }
   }
   const armorProvider = sinon.stub().resolves('private-key')
-  const RunWithParse = proxyquire('../../../src/lib/services/run', {
+  const RunWithPrimitives = proxyquire('../../../src/lib/services/run', {
     './../helpers/detectEncoding': async () => 'utf8',
     './../helpers/detectEncodingSync': () => 'utf8',
     './../helpers/fsx': {
@@ -702,13 +754,15 @@ t.test('#run forwards onStatus to async armor provider for env file paths', asyn
     },
     './../providers/armor/index': armorProvider,
     '@dotenvx/primitives': {
+      encrypted: (value) => typeof value === 'string' && value.startsWith('encrypted:'),
       parse
     }
   })
 
-  const result = await new RunWithParse([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', false, { onStatus }).run()
+  const processEnv = {}
+  await new RunWithPrimitives([{ type: 'envFile', value: '.env' }], false, processEnv, '.env.keys', false, { onStatus }).run()
 
-  ct.same(result.afterEnv, {
+  ct.same(processEnv, {
     DOTENV_PUBLIC_KEY: 'public-key',
     DOTENV_PRIVATE_KEY: 'private-key'
   })
@@ -774,8 +828,7 @@ t.test('#run (mixed string and file)',
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     ct.same(processedEnvs, [
@@ -801,7 +854,6 @@ t.test('#run (mixed string and file)',
     ])
 
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
-    ct.same(uniqueInjectedKeys, ['HELLO'])
 
     ct.end()
   })
@@ -827,8 +879,7 @@ options="$\{options} optD"`
 
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
+      readableFilepaths
     } = await runWithDefaults(envs).run()
 
     const exampleError = new Error('[MISSING_ENV_FILE] missing file (.env)')
@@ -853,7 +904,6 @@ options="$\{options} optD"`
       }
     ])
     ct.same(readableFilepaths, [])
-    ct.same(uniqueInjectedKeys, ['options', 'configX'])
 
     process.chdir(cwd)
     ct.end()
