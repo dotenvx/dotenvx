@@ -265,7 +265,7 @@ t.test('run - envFile', async ct => {
   ct.end()
 })
 
-t.test('run - envFile with armored private key', async ct => {
+t.test('run - envFile omits armor suffix', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
@@ -280,8 +280,7 @@ t.test('run - envFile with armored private key', async ct => {
       injected: {
         HELLO: 'World'
       },
-      existed: {},
-      armoredPrivateKeyUsed: true
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: ['.env'],
@@ -292,7 +291,7 @@ t.test('run - envFile with armored private key', async ct => {
   await run.call(fakeContext)
 
   t.ok(stub.called, 'new Run().run() called')
-  t.ok(loggerSuccessStub.calledWith('⟐ injected env (1) from .env · armored ⛨'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('⟐ injected env (1) from .env'), 'logger.success')
 
   ct.end()
 })

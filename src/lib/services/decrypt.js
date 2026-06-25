@@ -77,15 +77,13 @@ class Decrypt {
       const envParsed = scan(envSrc).parsed
 
       const { privateKeyName } = keynames(envFilepath)
-      const { privateKeyValue, privateKeySource } = await keyValues(envFilepath, {
+      const { privateKeyValue } = await keyValues(envFilepath, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
         command: this.command
       })
 
       row.privateKey = privateKeyValue
-      row.privateKeySource = privateKeySource
-      row.armoredPrivateKeyUsed = privateKeySource === 'armor'
       row.privateKeyName = privateKeyName
       row.changed = false // track possible changes
 

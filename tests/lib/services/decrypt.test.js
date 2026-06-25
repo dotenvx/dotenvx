@@ -199,8 +199,8 @@ t.test('#run marks armored private key usage',
     const row = processedEnvs[0]
 
     ct.equal(keyValues.callCount, 1)
-    ct.equal(row.privateKeySource, 'armor')
-    ct.equal(row.armoredPrivateKeyUsed, true)
+    ct.notOk(Object.prototype.hasOwnProperty.call(row, 'privateKeySource'))
+    ct.notOk(Object.prototype.hasOwnProperty.call(row, 'armoredPrivateKeyUsed'))
     ct.same(helloValues(row.envSrc), ['encrypted'])
 
     fs.rmSync(tmpdir, { recursive: true, force: true })

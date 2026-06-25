@@ -69,10 +69,8 @@ async function decrypt () {
       }
 
       if (spinner) spinner.stop()
-      const armoredPrivateKeyUsed = processedEnvs.some((processedEnv) => processedEnv.armoredPrivateKeyUsed)
-      const keyUsedSuffix = armoredPrivateKeyUsed ? ' · armored ⛨' : ''
       if (changedFilepaths.length > 0) {
-        logger.success(`◇ decrypted (${changedFilepaths.join(',')})${keyUsedSuffix}`)
+        logger.success(`◇ decrypted (${changedFilepaths.join(',')})`)
       } else if (unchangedFilepaths.length > 0) {
         logger.info(`○ no change (${unchangedFilepaths})`)
       } else {

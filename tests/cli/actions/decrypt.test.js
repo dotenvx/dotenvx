@@ -184,7 +184,7 @@ t.test('decrypt - .env with changes', async ct => {
   ct.end()
 })
 
-t.test('decrypt - .env with changes with armored metadata', async ct => {
+t.test('decrypt - .env with changes omits armor suffix', async ct => {
   sinon.stub(process, 'exit')
   const writeStub = sinon.stub(fsx, 'writeFileX')
   const optsStub = sinon.stub().returns({})
@@ -195,8 +195,7 @@ t.test('decrypt - .env with changes with armored metadata', async ct => {
       filepath: '.env',
       error: null,
       changed: true,
-      envSrc: 'HELLO="World"',
-      armoredPrivateKeyUsed: true
+      envSrc: 'HELLO="World"'
     }],
     changedFilepaths: ['.env'],
     unchangedFilepaths: []
@@ -207,7 +206,7 @@ t.test('decrypt - .env with changes with armored metadata', async ct => {
 
   t.ok(stub.called, 'Decrypt().run() called')
   t.ok(writeStub.calledWith('.env', 'HELLO="World"'), 'fsx.writeFileX')
-  t.ok(loggerSuccessStub.calledWith('◇ decrypted (.env) · armored ⛨'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('◇ decrypted (.env)'), 'logger.success')
 
   ct.end()
 })
