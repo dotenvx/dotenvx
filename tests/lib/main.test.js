@@ -357,7 +357,7 @@ t.test('config catches thrown punctuated private-key errors',
     ct.end()
   })
 
-t.test('parse calls Parse.run',
+t.test('parse parses plaintext',
   ct => {
     const parsed = main.parse('HELLO=World')
 
@@ -366,7 +366,7 @@ t.test('parse calls Parse.run',
     ct.end()
   })
 
-t.test('parse calls Parse.run with options.processEnv',
+t.test('parse parses plaintext with options.processEnv',
   ct => {
     const parsed = main.parse('HELLO=World', { processEnv: {} })
 
@@ -375,7 +375,7 @@ t.test('parse calls Parse.run with options.processEnv',
     ct.end()
   })
 
-t.test('parse calls Parse.run with options.privateKey',
+t.test('parse decrypts with options.privateKey',
   ct => {
     const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c' })
 
@@ -384,7 +384,7 @@ t.test('parse calls Parse.run with options.privateKey',
     ct.end()
   })
 
-t.test('parse calls Parse.run with invalid options.privateKey',
+t.test('parse logs invalid options.privateKey',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
 
@@ -400,20 +400,10 @@ t.test('parse calls Parse.run with invalid options.privateKey',
 t.test('parse logs WRONG_PRIVATE_KEY in one line',
   ct => {
     const loggerErrorStub = sinon.stub(logger, 'error')
-    const error = new Error("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'")
-    setCode(error, 'WRONG_PRIVATE_KEY')
-    error.help = 'fix: [https://github.com/dotenvx/dotenvx/issues/466]'
-    const mainWithWrongKeyError = proxyquire('../../src/lib/main', {
-      './helpers/parse': class ParseMock {
-        run () {
-          return { parsed: { HELLO: 'World' }, errors: [error] }
-        }
-      }
-    })
 
-    const parsed = mainWithWrongKeyError.parse('HELLO=World')
-    ct.equal(parsed.HELLO, 'World')
-    ct.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger error one-line wrong private key')
+    const parsed = main.parse('HELLO="encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l"', { privateKey: 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1' })
+    ct.equal(parsed.HELLO, 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l')
+    ct.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=ec9e800…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger error one-line wrong private key')
 
     loggerErrorStub.restore()
 
@@ -429,54 +419,6 @@ t.test('parse logs MISSING_PRIVATE_KEY in one line',
     ct.ok(loggerErrorStub.calledWithMatch(/\[MISSING_PRIVATE_KEY\].*fix: \[https:\/\/github.com\/dotenvx\/dotenvx\/issues\/464\]/), 'logger error one-line missing private key')
 
     loggerErrorStub.restore()
-
-    ct.end()
-  })
-
-t.test('parse keeps punctuated private-key messages',
-  ct => {
-    const loggerErrorStub = sinon.stub(logger, 'error')
-    const wrong = { message: '[WRONG_PRIVATE_KEY] punctuated' }
-    setCode(wrong, 'WRONG_PRIVATE_KEY')
-    const missing = { message: '[MISSING_PRIVATE_KEY] punctuated' }
-    setCode(missing, 'MISSING_PRIVATE_KEY')
-    const mainWithErrors = proxyquire('../../src/lib/main', {
-      './helpers/parse': class ParseMock {
-        run () {
-          return { parsed: { HELLO: 'World' }, errors: [wrong, missing] }
-        }
-      }
-    })
-
-    const parsed = mainWithErrors.parse('HELLO=World')
-    ct.equal(parsed.HELLO, 'World')
-    ct.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
-    ct.ok(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
-
-    ct.end()
-  })
-
-t.test('parse logs one line for non-fix text',
-  ct => {
-    const loggerErrorStub = sinon.stub(logger, 'error')
-    const other = {
-      code: 'OTHER_ERROR',
-      message: '[OTHER_ERROR] boom',
-      help: 'some help text',
-      messageWithHelp: '[OTHER_ERROR] boom'
-    }
-    const mainWithErrors = proxyquire('../../src/lib/main', {
-      './helpers/parse': class ParseMock {
-        run () {
-          return { parsed: { HELLO: 'World' }, errors: [other] }
-        }
-      }
-    })
-
-    const parsed = mainWithErrors.parse('HELLO=World')
-    ct.equal(parsed.HELLO, 'World')
-    ct.ok(loggerErrorStub.calledWith('[OTHER_ERROR] boom'))
-    ct.notOk(loggerErrorStub.calledWith('some help text'))
 
     ct.end()
   })

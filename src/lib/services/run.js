@@ -4,7 +4,6 @@ const path = require('path')
 const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
 
-const Parse = require('./../helpers/parse')
 const Errors = require('./../helpers/errors')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
@@ -12,9 +11,9 @@ const { parse: parseprim } = require('@dotenvx/primitives')
 const armorProvider = require('./../providers/armor/index')
 const keynames = require('./../conventions/keynames')
 
-const {
-  keyValuesFromEnvSrc
-} = require('./../helpers/keyResolution')
+function encryptedValue (value) {
+  return typeof value === 'string' && value.startsWith('encrypted:')
+}
 
 class Run {
   constructor (envs = [], overload = false, processEnv = process.env, envKeysFilepath = null, noArmor = false, options = {}) {
@@ -47,7 +46,7 @@ class Run {
       if (env.type === TYPE_ENV_FILE) {
         this._injectEnvFileSync(env.value)
       } else if (env.type === TYPE_ENV) {
-        this._injectEnv(env.value, env.privateKeyName)
+        this._injectEnvSync(env.value, env.privateKeyName)
       }
     }
 
@@ -73,7 +72,7 @@ class Run {
       if (env.type === TYPE_ENV_FILE) {
         await this._injectEnvFile(env.value)
       } else if (env.type === TYPE_ENV) {
-        this._injectEnv(env.value, env.privateKeyName)
+        await this._injectEnv(env.value, env.privateKeyName)
       }
     }
 
@@ -87,16 +86,19 @@ class Run {
     }
   }
 
-  _injectEnv (env, privateKeyName = null) {
+  _injectEnvSync (env, privateKeyName = null) {
     const row = {}
     row.type = TYPE_ENV
     row.string = env
 
     try {
+      const Parse = require('./../helpers/parse')
+      const {
+        keyValuesFromEnvSrc
+      } = require('./../helpers/keyResolution')
       const {
         privateKeyName: resolvedPrivateKeyName,
-        privateKeyValue,
-        privateKeySource
+        privateKeyValue
       } = keyValuesFromEnvSrc(env, privateKeyName, {
         keysFilepath: this.envKeysFilepath,
         noArmor: this.noArmor,
@@ -109,25 +111,72 @@ class Run {
         parsed,
         errors,
         injected,
-        preExisted
+        existed
       } = new Parse(env, privateKeyValue, this.processEnv, this.overload, resolvedPrivateKeyName).run()
 
       row.privateKeyName = resolvedPrivateKeyName
-      row.privateKey = privateKeyValue
-      if (privateKeySource) {
-        row.privateKeySource = privateKeySource
-        row.armoredPrivateKeyUsed = privateKeySource === 'armor'
-      }
       row.parsed = parsed
       row.errors = errors
       row.injected = injected
-      row.preExisted = preExisted
+      row.existed = existed
 
       this.inject(row.parsed) // inject
 
       this.readableStrings.add(env)
 
       for (const key of Object.keys(injected)) {
+        this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
+      }
+    } catch (e) {
+      row.errors = [e]
+    }
+
+    this.processedEnvs.push(row)
+  }
+
+  async _injectEnv (env, privateKeyName = null) {
+    const row = {}
+    row.type = TYPE_ENV
+    row.string = env
+
+    try {
+      const processEnv = { ...this.processEnv }
+      if (privateKeyName && Object.prototype.hasOwnProperty.call(this.processEnv, privateKeyName)) {
+        processEnv[privateKeyName] = this.processEnv[privateKeyName]
+      }
+      const {
+        parsed,
+        injected,
+        existed
+      } = await parseprim(env, {
+        processEnv,
+        overload: this.overload,
+        fk: this.envKeysFilepath,
+        provider: this.noArmor
+          ? null
+          : (publicKeyHex) => armorProvider(publicKeyHex, {
+              onStatus: this.onStatus
+            })
+      })
+
+      row.privateKeyName = privateKeyName
+      row.parsed = parsed
+      row.errors = []
+      if (privateKeyName && !processEnv[privateKeyName]) {
+        for (const [key, value] of Object.entries(parsed)) {
+          if (encryptedValue(value)) {
+            row.errors.push(new Errors({ key, privateKeyName, privateKey: null }).missingPrivateKey())
+          }
+        }
+      }
+      row.injected = injected || {}
+      row.existed = existed || {}
+
+      this.inject(row.parsed) // inject
+
+      this.readableStrings.add(env)
+
+      for (const key of Object.keys(row.injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
     } catch (e) {
@@ -161,50 +210,15 @@ class Run {
         existed
       } = parseconv(src, parseOptions)
       row.privateKeyName = privateKeyName
-      row.privateKey = null
       row.src = src
       row.parsed = parsed
       row.injected = injected || {}
       row.errors = errors || []
-      row.preExisted = existed || {}
+      row.existed = existed || {}
       this.inject(parsed) // inject
       for (const key of Object.keys(row.injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
-
-      // const { privateKeyName } = keynames(filepath)
-      // const { privateKeyValue, privateKeySource } = keyValuesSync(filepath, {
-      //   keysFilepath: this.envKeysFilepath,
-      //   noArmor: this.noArmor,
-      //   noSpinner: this.noSpinner,
-      //   token: this.token,
-      //   command: this.command
-      // })
-
-      // const {
-      //   parsed,
-      //   errors,
-      //   injected,
-      //   preExisted
-      // } = new Parse(src, privateKeyValue, this.processEnv, this.overload, privateKeyName).run()
-
-      // row.privateKeyName = privateKeyName
-      // row.privateKey = privateKeyValue
-      // if (privateKeySource) {
-      //   row.privateKeySource = privateKeySource
-      //   row.armoredPrivateKeyUsed = privateKeySource === 'armor'
-      // }
-      // row.src = src
-      // row.parsed = parsed
-      // row.errors = errors
-      // row.injected = injected
-      // row.preExisted = preExisted
-
-      // this.inject(row.parsed) // inject
-
-      // for (const key of Object.keys(injected)) {
-      //   this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
-      // }
     } catch (e) {
       if (e.code === 'ENOENT' || e.code === 'EISDIR') {
         row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]
@@ -245,50 +259,15 @@ class Run {
         existed
       } = await parseprim(src, parseOptions)
       row.privateKeyName = privateKeyName
-      row.privateKey = null
       row.src = src
       row.parsed = parsed
       row.injected = injected || {}
       row.errors = errors || []
-      row.preExisted = existed || {}
+      row.existed = existed || {}
       this.inject(parsed) // inject
       for (const key of Object.keys(row.injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
-
-      // old version
-      // const { privateKeyName } = keynames(filepath)
-      // const { privateKeyValue, privateKeySource } = await keyValues(filepath, {
-      //   keysFilepath: this.envKeysFilepath,
-      //   noArmor: this.noArmor,
-      //   token: this.token,
-      //   command: this.command
-      // })
-
-      // const {
-      //   parsed,
-      //   errors,
-      //   injected,
-      //   preExisted
-      // } = new Parse(src, privateKeyValue, this.processEnv, this.overload, privateKeyName).run()
-
-      // row.privateKeyName = privateKeyName
-      // row.privateKey = privateKeyValue
-      // if (privateKeySource) {
-      //   row.privateKeySource = privateKeySource
-      //   row.armoredPrivateKeyUsed = privateKeySource === 'armor'
-      // }
-      // row.src = src
-      // row.parsed = parsed
-      // row.errors = errors
-      // row.injected = injected
-      // row.preExisted = preExisted
-
-      // this.inject(row.parsed) // inject
-
-      // for (const key of Object.keys(injected)) {
-      //   this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
-      // }
     } catch (e) {
       if (e.code === 'ENOENT' || e.code === 'EISDIR') {
         row.errors = [new Errors({ envFilepath, filepath }).missingEnvFile()]

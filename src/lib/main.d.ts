@@ -405,7 +405,7 @@ export type GenExampleOutput = {
   exampleFilepath: string;
   addedKeys: string[];
   injected: Record<string, string>;
-  preExisted: Record<string, string>;
+  existed: Record<string, string>;
 };
 
 /**

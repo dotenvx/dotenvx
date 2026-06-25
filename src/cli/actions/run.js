@@ -125,8 +125,8 @@ async function run () {
         logger.debug(`${key} set to ${value}`)
       }
 
-      // verbose/debug preExisted key/value
-      for (const [key, value] of Object.entries(processedEnv.preExisted || {})) {
+      // verbose/debug existed key/value
+      for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
         logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
@@ -141,11 +141,8 @@ async function run () {
       msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
     }
 
-    const armoredPrivateKeyUsed = processedEnvs.some((processedEnv) => processedEnv.armoredPrivateKeyUsed)
-    const keyUsedSuffix = armoredPrivateKeyUsed ? ' · armored ⛨' : ''
-
     if (spinner) spinner.stop()
-    logger.success(`⟐ ${msg}${keyUsedSuffix}`)
+    logger.success(`⟐ ${msg}`)
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

@@ -26,7 +26,7 @@ t.test('#runSync processes inline env strings', ct => {
     parsed: { HELLO: 'sync' },
     errors: [],
     injected: { HELLO: 'sync' },
-    preExisted: {}
+    existed: {}
   })
   t.same(result.uniqueInjectedKeys, ['HELLO'])
 
@@ -61,7 +61,7 @@ t.test('#runSync runs exact env list', ct => {
     parsed: { HELLO: 'sync' },
     errors: [],
     injected: { HELLO: 'sync' },
-    preExisted: {}
+    existed: {}
   }])
 
   ct.end()

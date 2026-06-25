@@ -128,7 +128,6 @@ t.test('#run (finds .env file)',
       type: 'envFile',
       filepath: 'tests/monorepo/apps/frontend/.env',
       privateKeyName: 'DOTENV_PRIVATE_KEY',
-      privateKey: null,
       src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
       parsed: {
         HELLO: 'frontend'
@@ -137,7 +136,7 @@ t.test('#run (finds .env file)',
         HELLO: 'frontend'
       },
       errors: [],
-      preExisted: {}
+      existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
     ct.same(uniqueInjectedKeys, ['HELLO'])
@@ -161,7 +160,6 @@ t.test('#run (encrypted .env finds .env.keys next to itself)',
       type: 'envFile',
       filepath: 'tests/monorepo/apps/encrypted/.env',
       privateKeyName: 'DOTENV_PRIVATE_KEY',
-      privateKey: 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1',
       src: fs.readFileSync('tests/monorepo/apps/encrypted/.env').toString(),
       parsed: {
         DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
@@ -172,7 +170,7 @@ t.test('#run (encrypted .env finds .env.keys next to itself)',
         HELLO: 'encrypted'
       },
       errors: [],
-      preExisted: {}
+      existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
@@ -203,7 +201,6 @@ t.test('#run (encrypted .env with bad private key)',
       type: 'envFile',
       filepath: 'tests/monorepo/apps/encrypted/.env',
       privateKeyName: 'DOTENV_PRIVATE_KEY',
-      privateKey: 'bad-private-key',
       src: fs.readFileSync('tests/monorepo/apps/encrypted/.env').toString(),
       parsed: {
         DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
@@ -214,7 +211,7 @@ t.test('#run (encrypted .env with bad private key)',
         DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
         HELLO: 'encrypted:BG8M6U+GKJGwpGA42ml2erb9+T2NBX6Z2JkBLynDy21poz0UfF5aPxCgRbIyhnQFdWKd0C9GZ7lM5PeL86xghoMcWvvPpkyQ0yaD2pZ64RzoxFGB1lTZYlEgQOxTDJnWxODHfuQcFY10uA=='
       },
-      preExisted: {}
+      existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/encrypted/.env'])
     ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
@@ -241,7 +238,6 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set',
       type: 'envFile',
       filepath: '.env',
       privateKeyName: 'DOTENV_PRIVATE_KEY',
-      privateKey: 'ec9e80073d7ace817d35acb8b7293cbf8e5981b4d2f5708ee5be405122993cd1',
       src: fs.readFileSync('.env').toString(),
       parsed: {
         DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba',
@@ -252,7 +248,7 @@ t.test('#run when DOTENV_PRIVATE_KEY set but envs is not set',
         HELLO: 'encrypted'
       },
       errors: [],
-      preExisted: {}
+      existed: {}
     }])
     ct.same(readableFilepaths, ['.env'])
     ct.same(uniqueInjectedKeys, ['DOTENV_PUBLIC_KEY', 'HELLO'])
@@ -280,14 +276,13 @@ t.test('#run (finds .env file) with already falsy value',
       type: 'envFile',
       filepath: 'tests/monorepo/apps/frontend/.env',
       privateKeyName: 'DOTENV_PRIVATE_KEY',
-      privateKey: null,
       src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
       parsed: {
         HELLO: ''
       },
       injected: {},
       errors: [],
-      preExisted: {
+      existed: {
         HELLO: ''
       }
     }])
@@ -312,7 +307,6 @@ t.test('#run (finds .env file as array)',
       type: 'envFile',
       filepath: 'tests/monorepo/apps/frontend/.env',
       privateKeyName: 'DOTENV_PRIVATE_KEY',
-      privateKey: null,
       src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
       parsed: {
         HELLO: 'frontend'
@@ -321,7 +315,7 @@ t.test('#run (finds .env file as array)',
         HELLO: 'frontend'
       },
       errors: [],
-      preExisted: {}
+      existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
     ct.same(uniqueInjectedKeys, ['HELLO'])
@@ -347,14 +341,13 @@ t.test('#run (finds .env file but HELLO already exists)',
       type: 'envFile',
       filepath: 'tests/monorepo/apps/frontend/.env',
       privateKeyName: 'DOTENV_PRIVATE_KEY',
-      privateKey: null,
       src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
       parsed: {
         HELLO: 'World'
       },
       injected: {},
       errors: [],
-      preExisted: {
+      existed: {
         HELLO: 'World'
       }
     }])
@@ -387,7 +380,6 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)',
       type: 'envFile',
       filepath: 'tests/monorepo/apps/frontend/.env',
       privateKeyName: 'DOTENV_PRIVATE_KEY',
-      privateKey: null,
       src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
       parsed: {
         HELLO: 'frontend'
@@ -396,7 +388,7 @@ t.test('#run (finds .env file but HELLO already exists but overload is on)',
         HELLO: 'frontend'
       },
       errors: [],
-      preExisted: {}
+      existed: {}
     }])
     ct.same(readableFilepaths, ['tests/monorepo/apps/frontend/.env'])
     ct.same(uniqueInjectedKeys, ['HELLO'])
@@ -420,7 +412,6 @@ t.test('#run (command substitution)',
       type: 'envFile',
       filepath: 'tests/.env.eval',
       privateKeyName: 'DOTENV_PRIVATE_KEY_EVAL',
-      privateKey: null,
       src: fs.readFileSync('tests/.env.eval').toString(),
       parsed: {
         HELLO: 'world'
@@ -429,7 +420,7 @@ t.test('#run (command substitution)',
         HELLO: 'world'
       },
       errors: [],
-      preExisted: {}
+      existed: {}
     }])
     ct.same(readableFilepaths, ['tests/.env.eval'])
     ct.same(uniqueInjectedKeys, ['HELLO'])
@@ -468,7 +459,6 @@ t.test('#run (with envs as string)',
         type: 'env',
         string: 'HELLO=string',
         privateKeyName: null,
-        privateKey: null,
         parsed: {
           HELLO: 'string'
         },
@@ -476,7 +466,7 @@ t.test('#run (with envs as string)',
         injected: {
           HELLO: 'string'
         },
-        preExisted: {}
+        existed: {}
       }
     ])
     ct.same(readableFilepaths, [])
@@ -518,7 +508,6 @@ t.test('#run (with encrypted env string and privateKeyName)',
         type: 'env',
         string: src,
         privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
-        privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c',
         parsed: {
           HELLO: 'World'
         },
@@ -526,7 +515,7 @@ t.test('#run (with encrypted env string and privateKeyName)',
         injected: {
           HELLO: 'World'
         },
-        preExisted: {}
+        existed: {}
       }
     ])
     ct.same(readableFilepaths, [])
@@ -560,7 +549,6 @@ t.test('#run (with encrypted env string and privateKeyName reads .env.keys)',
         type: 'env',
         string: src,
         privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
-        privateKey: 'a4547dcd9d3429615a3649bb79e87edb62ee6a74b007075e9141ae44f5fb412c',
         parsed: {
           HELLO: 'World'
         },
@@ -568,7 +556,7 @@ t.test('#run (with encrypted env string and privateKeyName reads .env.keys)',
         injected: {
           HELLO: 'World'
         },
-        preExisted: {}
+        existed: {}
       }
     ])
     ct.same(readableFilepaths, [])
@@ -602,7 +590,6 @@ t.test('#run (with encrypted env string and missing privateKeyName value)',
         type: 'env',
         string: src,
         privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
-        privateKey: null,
         parsed: {
           HELLO: 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l'
         },
@@ -610,7 +597,7 @@ t.test('#run (with encrypted env string and missing privateKeyName value)',
         injected: {
           HELLO: 'encrypted:BE9Y7LKANx77X1pv1HnEoil93fPa5c9rpL/1ps48uaRT9zM8VR6mHx9yM+HktKdsPGIZELuZ7rr2mn1gScsmWitppAgE/1lVprNYBCqiYeaTcKXjDUXU5LfsEsflnAsDhT/kWG1l'
         },
-        preExisted: {}
+        existed: {}
       }
     ])
     ct.same(readableFilepaths, [])
@@ -661,7 +648,6 @@ t.test('#run marks armored private key source for env string and env file paths'
     type: 'env',
     string: src,
     privateKeyName: 'DOTENV_PRIVATE_KEY',
-    privateKey: 'private',
     privateKeySource: 'armor',
     armoredPrivateKeyUsed: true,
     parsed: {
@@ -671,13 +657,12 @@ t.test('#run marks armored private key source for env string and env file paths'
     injected: {
       HELLO: 'world'
     },
-    preExisted: {}
+    existed: {}
   })
   ct.same(syncResult.processedEnvs[0], {
     type: 'envFile',
     filepath: '.env',
     privateKeyName: 'DOTENV_PRIVATE_KEY',
-    privateKey: 'private',
     privateKeySource: 'armor',
     armoredPrivateKeyUsed: true,
     src,
@@ -688,13 +673,12 @@ t.test('#run marks armored private key source for env string and env file paths'
     injected: {
       HELLO: 'world'
     },
-    preExisted: {}
+    existed: {}
   })
   ct.same(asyncResult.processedEnvs[0], {
     type: 'envFile',
     filepath: '.env',
     privateKeyName: 'DOTENV_PRIVATE_KEY',
-    privateKey: 'private',
     privateKeySource: 'armor',
     armoredPrivateKeyUsed: true,
     src,
@@ -705,7 +689,7 @@ t.test('#run marks armored private key source for env string and env file paths'
     injected: {
       HELLO: 'world'
     },
-    preExisted: {}
+    existed: {}
   })
   ct.same(envResult.uniqueInjectedKeys, ['HELLO'])
   ct.same(syncResult.uniqueInjectedKeys, ['HELLO'])
@@ -713,47 +697,37 @@ t.test('#run marks armored private key source for env string and env file paths'
   ct.end()
 })
 
-t.test('#run forwards Armor token and command to env string key resolution', async ct => {
-  const src = 'HELLO=world'
-  const calls = []
-  const keyResolution = {
-    keynames: () => ({ privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-    keyValuesFromEnvSrc: (env, privateKeyName, opts) => {
-      calls.push(['env', opts])
-      return {
-        privateKeyName: 'DOTENV_PRIVATE_KEY',
-        privateKeyValue: null
-      }
-    },
-    keyValuesSync: (filepath, opts) => {
-      calls.push(['sync', opts])
-      return {
-        privateKeyValue: null
-      }
-    },
-    keyValues: async (filepath, opts) => {
-      calls.push(['async', opts])
-      return {
-        privateKeyValue: null
-      }
+t.test('#run forwards onStatus to async armor provider for env strings', async ct => {
+  const src = 'DOTENV_PUBLIC_KEY="public-key"'
+  const onStatus = sinon.stub()
+  const parse = async (envSrc, opts) => {
+    return {
+      parsed: {
+        DOTENV_PUBLIC_KEY: 'public-key',
+        DOTENV_PRIVATE_KEY: await opts.provider('public-key')
+      },
+      injected: {
+        DOTENV_PUBLIC_KEY: 'public-key',
+        DOTENV_PRIVATE_KEY: 'private-key'
+      },
+      existed: {}
     }
   }
-  const RunWithToken = proxyquire('../../../src/lib/services/run', {
-    './../helpers/detectEncoding': async () => 'utf8',
-    './../helpers/detectEncodingSync': () => 'utf8',
-    './../helpers/fsx': {
-      readFileX: async () => src,
-      readFileXSync: () => src
-    },
-    './../helpers/keyResolution': keyResolution
+  const armorProvider = sinon.stub().resolves('private-key')
+  const RunWithParse = proxyquire('../../../src/lib/services/run', {
+    './../providers/armor/index': armorProvider,
+    '@dotenvx/primitives': {
+      parse
+    }
   })
-  const options = { token: 'token-123', command: ['node', 'index.js'] }
 
-  await new RunWithToken([{ type: 'env', value: src }], false, {}, null, false, options).run()
+  const result = await new RunWithParse([{ type: 'env', value: src }], false, {}, '.env.keys', false, { onStatus }).run()
 
-  ct.equal(calls[0][0], 'env')
-  ct.equal(calls[0][1].token, 'token-123')
-  ct.same(calls[0][1].command, ['node', 'index.js'])
+  ct.same(result.afterEnv, {
+    DOTENV_PUBLIC_KEY: 'public-key',
+    DOTENV_PRIVATE_KEY: 'private-key'
+  })
+  ct.same(armorProvider.firstCall.args, ['public-key', { onStatus }])
   ct.end()
 })
 
@@ -865,7 +839,6 @@ t.test('#run (with envs as string and errors somehow from inject)',
         type: 'env',
         string: 'HELLO=string',
         privateKeyName: null,
-        privateKey: null,
         parsed: {
           HELLO: 'string'
         },
@@ -873,7 +846,7 @@ t.test('#run (with envs as string and errors somehow from inject)',
         injected: {
           HELLO: 'string'
         },
-        preExisted: {}
+        existed: {}
       }
     ])
 
@@ -901,22 +874,20 @@ t.test('#run (mixed string and file)',
         type: 'env',
         string: 'HELLO=string',
         privateKeyName: null,
-        privateKey: null,
         parsed: { HELLO: 'string' },
         injected: { HELLO: 'string' },
         errors: [],
-        preExisted: {}
+        existed: {}
       },
       {
         type: 'envFile',
         filepath: 'tests/monorepo/apps/frontend/.env',
         privateKeyName: 'DOTENV_PRIVATE_KEY',
-        privateKey: null,
         src: fs.readFileSync('tests/monorepo/apps/frontend/.env').toString(),
         parsed: { HELLO: 'string' },
         injected: {},
         errors: [],
-        preExisted: { HELLO: 'string' }
+        existed: { HELLO: 'string' }
       }
     ])
 
@@ -966,11 +937,10 @@ options="$\{options} optD"`
         type: 'env',
         string: src,
         privateKeyName: null,
-        privateKey: null,
         parsed: { options: ' optA optB optC optX optD', configX: 'blah' },
         errors: [],
         injected: { options: ' optA optB optC optX optD', configX: 'blah' },
-        preExisted: {}
+        existed: {}
       }
     ])
     ct.same(readableFilepaths, [])

@@ -38,7 +38,7 @@ class Genexample {
     /** @type {Record<string, string>} */
     const injected = {}
     /** @type {Record<string, string>} */
-    const preExisted = {}
+    const existed = {}
 
     let exampleSrc = `# ${this.exampleFilename} - generated with dotenvx\n`
 
@@ -80,7 +80,7 @@ class Genexample {
       const parsed = finalValues(exampleSrc)
       for (const key of [...keys]) {
         if (key in parsed) {
-          preExisted[key] = parsed[key]
+          existed[key] = parsed[key]
         } else {
           exampleSrc += `${key}=''\n`
 
@@ -97,7 +97,7 @@ class Genexample {
       exampleFilepath: this.exampleFilepath,
       addedKeys: [...addedKeys],
       injected,
-      preExisted
+      existed
     }
   }
 

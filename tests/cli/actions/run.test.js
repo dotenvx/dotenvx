@@ -244,7 +244,7 @@ t.test('run - envFile', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: ['.env'],
@@ -280,7 +280,7 @@ t.test('run - envFile with armored private key', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {},
+      existed: {},
       armoredPrivateKeyUsed: true
     }],
     readableStrings: [],
@@ -316,7 +316,7 @@ t.test('run - envFile (with errors)', async ct => {
         HELLO: 'World'
       },
       errors: [error],
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: ['.env'],
@@ -355,7 +355,7 @@ t.test('run - env', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: ['HELLO=World'],
     readableFilepaths: [],
@@ -391,7 +391,7 @@ t.test('run - envFile AND env', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     },
     {
       type: 'envFile',
@@ -402,7 +402,7 @@ t.test('run - envFile AND env', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: ['HELLO=World'],
     readableFilepaths: ['.env'],
@@ -438,7 +438,7 @@ t.test('run - envFile AND two envs', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     },
     {
       type: 'env',
@@ -449,7 +449,7 @@ t.test('run - envFile AND two envs', async ct => {
       injected: {
         HOLA: 'amigo'
       },
-      preExisted: {}
+      existed: {}
     },
     {
       type: 'envFile',
@@ -460,7 +460,7 @@ t.test('run - envFile AND two envs', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: ['HELLO=World', 'HOLA=amigo'],
     readableFilepaths: ['.env'],
@@ -499,7 +499,7 @@ t.test('run - env (two strings)', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     },
     {
       type: 'env',
@@ -510,7 +510,7 @@ t.test('run - env (two strings)', async ct => {
       injected: {
         HEY: 'there'
       },
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: ['HELLO=World', 'HEY=there'],
     readableFilepaths: [],
@@ -550,7 +550,7 @@ t.test('run - MISSING_ENV_FILE', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -586,7 +586,7 @@ t.test('run - MISSING_ENV_FILE fallback filepath', async ct => {
       filepath: undefined,
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -614,7 +614,7 @@ t.test('run - MISSING_ENV_FILE with --convention stays quiet', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -649,7 +649,7 @@ t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -687,7 +687,7 @@ t.test('run - MISSING_ENV_FILE --ignore flag', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -723,7 +723,7 @@ t.test('run - MISSING_ENV_FILE --strict flag and MISSING_ENV_FILE --ignore flag'
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -758,7 +758,7 @@ t.test('run - OTHER_ERROR', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -793,7 +793,7 @@ t.test('run - WRONG_PRIVATE_KEY', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -827,7 +827,7 @@ t.test('run - MISSING_PRIVATE_KEY', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -862,7 +862,7 @@ t.test('run - preserves punctuated private key messages', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: [],
@@ -889,7 +889,7 @@ t.test('run - envFile (prexists)', async ct => {
         HELLO: 'World'
       },
       injected: {},
-      preExisted: {
+      existed: {
         HELLO: 'World'
       }
     }],
@@ -1020,7 +1020,7 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: ['.env'],
@@ -1060,7 +1060,7 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: ['.env'],
@@ -1096,7 +1096,7 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
     readableStrings: [],
     readableFilepaths: ['.env'],
@@ -1117,7 +1117,7 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
   ct.end()
 })
 
-t.test('run - envFile - parsed, injected, and preExisted missing for some reason upstream - it doesn\'t choke', async ct => {
+t.test('run - envFile - parsed, injected, and existed missing for some reason upstream - it doesn\'t choke', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])

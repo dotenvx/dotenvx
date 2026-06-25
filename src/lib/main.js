@@ -1,5 +1,6 @@
 // @ts-check
 const path = require('path')
+const { parseSync: parseprim } = require('@dotenvx/primitives')
 
 // shared
 const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/logger')
@@ -18,8 +19,13 @@ const Session = require('./../db/session')
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
 const { determine } = require('./helpers/envResolution')
-const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
+const decryptKeyValue = require('./helpers/cryptography/decryptKeyValue')
+const Errors = require('./helpers/errors')
+
+function encryptedValue (value) {
+  return typeof value === 'string' && value.startsWith('encrypted:')
+}
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -92,7 +98,7 @@ const config = function (options = {}) {
       }
 
       Object.assign(parsedAll, processedEnv.injected || {})
-      Object.assign(parsedAll, processedEnv.preExisted || {}) // preExisted 'wins'
+      Object.assign(parsedAll, processedEnv.existed || {}) // existed 'wins'
 
       // debug parsed
       logger.debug(processedEnv.parsed)
@@ -103,8 +109,8 @@ const config = function (options = {}) {
         logger.debug(`${key} set to ${value}`)
       }
 
-      // verbose/debug preExisted key/value
-      for (const [key, value] of Object.entries(processedEnv.preExisted || {})) {
+      // verbose/debug existed key/value
+      for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
         logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
@@ -147,7 +153,29 @@ const parse = function (src, options = {}) {
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Parse(src, privateKey, processEnv, overload).run()
+  if (privateKey) {
+    processEnv = Object.assign({}, processEnv, { DOTENV_PRIVATE_KEY: privateKey })
+  }
+
+  const { parsed } = parseprim(src, { processEnv, overload })
+  const errors = []
+
+  for (const key of Object.keys(parsed)) {
+    if (!encryptedValue(parsed[key])) {
+      continue
+    }
+
+    if (!privateKey) {
+      errors.push(new Errors({ key, privateKeyName: 'DOTENV_PRIVATE_KEY', privateKey }).missingPrivateKey())
+      continue
+    }
+
+    try {
+      parsed[key] = decryptKeyValue(key, parsed[key], 'DOTENV_PRIVATE_KEY', privateKey)
+    } catch (error) {
+      errors.push(error)
+    }
+  }
 
   // display any errors
   for (const error of errors) {

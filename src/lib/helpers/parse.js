@@ -14,7 +14,7 @@ class Parse {
     this.overload = overload
 
     this.parsed = {}
-    this.preExisted = {}
+    this.existed = {}
     this.injected = {}
     this.errors = []
 
@@ -75,7 +75,7 @@ class Parse {
       this.runningParsed[key] = this.parsed[key]
 
       if (Object.prototype.hasOwnProperty.call(this.processEnv, key) && !this.overload) {
-        this.preExisted[key] = this.processEnv[key] // track preExisted
+        this.existed[key] = this.processEnv[key] // track existed
       } else {
         this.injected[key] = this.parsed[key] // track injected
       }
@@ -85,7 +85,7 @@ class Parse {
       parsed: this.parsed,
       processEnv: this.processEnv,
       injected: this.injected,
-      preExisted: this.preExisted,
+      existed: this.existed,
       errors: this.errors
     }
   }
