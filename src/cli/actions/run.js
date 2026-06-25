@@ -76,7 +76,6 @@ async function run () {
       envs = this.envs
     }
     envs = determine(envs, process.env)
-    if (spinner) spinner.stop()
 
     const {
       processedEnvs,
@@ -85,7 +84,12 @@ async function run () {
       uniqueInjectedKeys
     } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
       token: options.token,
-      command: commandArgs
+      command: commandArgs,
+      onStatus: (text) => {
+        if (spinner && text) {
+          spinner.text = text
+        }
+      }
     }).run()
 
     for (const processedEnv of processedEnvs) {

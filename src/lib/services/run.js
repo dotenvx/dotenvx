@@ -8,7 +8,9 @@ const Parse = require('./../helpers/parse')
 const Errors = require('./../helpers/errors')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
-const parseconv = require('./../conventions/parse')
+const { parse: parseprim } = require('@dotenvx/primitives')
+const armorProvider = require('./../providers/armor/index')
+const keynames = require('./../conventions/keynames')
 
 const {
   keyValuesFromEnvSrc
@@ -24,6 +26,7 @@ class Run {
     this.noSpinner = options.noSpinner
     this.token = options.token
     this.command = options.command
+    this.onStatus = options.onStatus
 
     this.processedEnvs = []
     this.readableFilepaths = new Set()
@@ -145,13 +148,27 @@ class Run {
       const src = fsx.readFileXSync(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
+      const { privateKeyName } = keynames(filepath)
       const parseOptions = { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath }
       if (this.noArmor) {
         parseOptions.provider = null
       }
-      const { parsed } = parseconv(src, parseOptions)
+      const parseconv = require('./../conventions/parse')
+      const {
+        parsed,
+        errors,
+        injected,
+        existed
+      } = parseconv(src, parseOptions)
+      row.privateKeyName = privateKeyName
+      row.privateKey = null
+      row.src = src
+      row.parsed = parsed
+      row.injected = injected || {}
+      row.errors = errors || []
+      row.preExisted = existed || {}
       this.inject(parsed) // inject
-      for (const key of Object.keys(parsed)) {
+      for (const key of Object.keys(row.injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
 
@@ -210,13 +227,32 @@ class Run {
       const src = await fsx.readFileX(filepath, { encoding })
       this.readableFilepaths.add(envFilepath)
 
-      const parseOptions = { processEnv: this.processEnv, overload: this.overload, fk: this.envKeysFilepath }
-      if (this.noArmor) {
-        parseOptions.provider = null
+      const { privateKeyName } = keynames(filepath)
+      const parseOptions = {
+        processEnv: this.processEnv,
+        overload: this.overload,
+        fk: this.envKeysFilepath,
+        provider: this.noArmor
+          ? null
+          : (publicKeyHex) => armorProvider(publicKeyHex, {
+              onStatus: this.onStatus
+            })
       }
-      const { parsed } = parseconv(src, parseOptions)
+      const {
+        parsed,
+        errors,
+        injected,
+        existed
+      } = await parseprim(src, parseOptions)
+      row.privateKeyName = privateKeyName
+      row.privateKey = null
+      row.src = src
+      row.parsed = parsed
+      row.injected = injected || {}
+      row.errors = errors || []
+      row.preExisted = existed || {}
       this.inject(parsed) // inject
-      for (const key of Object.keys(parsed)) {
+      for (const key of Object.keys(row.injected)) {
         this.uniqueInjectedKeys.add(key) // track uniqueInjectedKeys across multiple files
       }
 

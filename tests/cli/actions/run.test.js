@@ -56,13 +56,19 @@ t.test('run', async ct => {
   ct.end()
 })
 
-t.test('run stops spinner before Run service', async ct => {
+t.test('run updates spinner from Run service status', async ct => {
   const spinner = {
+    text: 'injecting',
     stop: sinon.stub(),
     start: sinon.stub()
   }
   class RunStub {
+    constructor (envs, overload, processEnv, envKeysFilepath, noArmor, options) {
+      this.options = options
+    }
+
     async run () {
+      this.options.onStatus('[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
       return {
         processedEnvs: [],
         readableStrings: [],
@@ -88,7 +94,8 @@ t.test('run stops spinner before Run service', async ct => {
 
   await runWithStubs.call(fakeContext)
 
-  ct.equal(spinner.stop.callCount, 2)
+  ct.equal(spinner.text, '[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+  ct.equal(spinner.stop.callCount, 1)
   ct.equal(spinner.start.callCount, 0)
   ct.equal(loggerSuccessStub.callCount, 1)
   ct.end()

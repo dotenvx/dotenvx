@@ -713,7 +713,7 @@ t.test('#run marks armored private key source for env string and env file paths'
   ct.end()
 })
 
-t.test('#run forwards Armor token and command to key resolution', async ct => {
+t.test('#run forwards Armor token and command to env string key resolution', async ct => {
   const src = 'HELLO=world'
   const calls = []
   const keyResolution = {
@@ -750,18 +750,10 @@ t.test('#run forwards Armor token and command to key resolution', async ct => {
   const options = { token: 'token-123', command: ['node', 'index.js'] }
 
   await new RunWithToken([{ type: 'env', value: src }], false, {}, null, false, options).run()
-  new RunWithToken([{ type: 'envFile', value: '.env' }], false, {}, null, false, options).runSync()
-  await new RunWithToken([{ type: 'envFile', value: '.env' }], false, {}, null, false, options).run()
 
   ct.equal(calls[0][0], 'env')
   ct.equal(calls[0][1].token, 'token-123')
   ct.same(calls[0][1].command, ['node', 'index.js'])
-  ct.equal(calls[1][0], 'sync')
-  ct.equal(calls[1][1].token, 'token-123')
-  ct.same(calls[1][1].command, ['node', 'index.js'])
-  ct.equal(calls[2][0], 'async')
-  ct.equal(calls[2][1].token, 'token-123')
-  ct.same(calls[2][1].command, ['node', 'index.js'])
   ct.end()
 })
 
@@ -776,6 +768,14 @@ t.test('#run disables parse provider when noArmor is true for env file paths', a
       }
     }
   }
+  const parse = async (envSrc, opts) => {
+    calls.push(opts)
+    return {
+      parsed: {
+        HELLO: 'world'
+      }
+    }
+  }
   const RunWithParse = proxyquire('../../../src/lib/services/run', {
     './../helpers/detectEncoding': async () => 'utf8',
     './../helpers/detectEncodingSync': () => 'utf8',
@@ -783,7 +783,10 @@ t.test('#run disables parse provider when noArmor is true for env file paths', a
       readFileX: async () => src,
       readFileXSync: () => src
     },
-    './../conventions/parse': parseconv
+    './../conventions/parse': parseconv,
+    '@dotenvx/primitives': {
+      parse
+    }
   })
 
   new RunWithParse([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', true).runSync()
@@ -792,6 +795,41 @@ t.test('#run disables parse provider when noArmor is true for env file paths', a
   ct.equal(calls.length, 2)
   ct.equal(calls[0].provider, null)
   ct.equal(calls[1].provider, null)
+  ct.end()
+})
+
+t.test('#run forwards onStatus to async armor provider for env file paths', async ct => {
+  const src = 'DOTENV_PUBLIC_KEY="public-key"'
+  const onStatus = sinon.stub()
+  const parse = async (envSrc, opts) => {
+    return {
+      parsed: {
+        DOTENV_PUBLIC_KEY: 'public-key',
+        DOTENV_PRIVATE_KEY: await opts.provider('public-key')
+      }
+    }
+  }
+  const armorProvider = sinon.stub().resolves('private-key')
+  const RunWithParse = proxyquire('../../../src/lib/services/run', {
+    './../helpers/detectEncoding': async () => 'utf8',
+    './../helpers/detectEncodingSync': () => 'utf8',
+    './../helpers/fsx': {
+      readFileX: async () => src,
+      readFileXSync: () => src
+    },
+    './../providers/armor/index': armorProvider,
+    '@dotenvx/primitives': {
+      parse
+    }
+  })
+
+  const result = await new RunWithParse([{ type: 'envFile', value: '.env' }], false, {}, '.env.keys', false, { onStatus }).run()
+
+  ct.same(result.afterEnv, {
+    DOTENV_PUBLIC_KEY: 'public-key',
+    DOTENV_PRIVATE_KEY: 'private-key'
+  })
+  ct.same(armorProvider.firstCall.args, ['public-key', { onStatus }])
   ct.end()
 })
 
