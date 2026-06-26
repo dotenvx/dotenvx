@@ -1,43 +1,23 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const keynames = require('./../conventions/keynames')
+const filepaths = require('./../conventions/filepaths')
 
 const { keyring, keyringSync, publickeys } = require('@dotenvx/primitives')
-const armorProvider = require('./../providers/armor/index')
+const providers = require('./../providers')
 
-function filepaths (envFile = '.env') {
-  if (!Array.isArray(envFile)) {
-    return [envFile]
-  }
-
-  return envFile
-}
-
-function providerSync (publicKeyHex) {
-  const { createSyncFn } = require('synckit')
-  const runProviderSync = createSyncFn(require.resolve('./../providers/worker.js'))
-  return runProviderSync(require.resolve('./../providers/armor/index'), publicKeyHex)
-}
-
-function initialRing (publicKey) {
+function buildOptions ({ publicKey, processEnv, fk }) {
   const ring = {}
   if (publicKey) {
     ring[publicKey] = ''
   }
-  return ring
-}
 
-function keyringOptions ({ filepath, publicKey, processEnv, envKeysFilepath, noArmor, provider }) {
   const options = {
     processEnv,
-    fk: envKeysFilepath || path.resolve(path.dirname(filepath), '.env.keys'),
-    ring: initialRing(publicKey)
+    fk,
+    ring
   }
-  if (noArmor) {
-    options.provider = null
-  } else {
-    options.provider = provider
-  }
+
   return options
 }
 
@@ -51,21 +31,23 @@ function outputKeypair ({ out, filepath, publicKey, ring }) {
 async function keypair (options = {}) {
   const out = {}
   const processEnv = options.processEnv || process.env
-  const noArmor = options.noArmor || false
 
   for (const filepath of filepaths(options.envFile)) {
     const src = await fsx.readFileX(filepath)
     const publicKey = publickeys(src)[0]
-    const ring = await keyring(keyringOptions({
-      filepath,
+
+    const keyringOptions = buildOptions({
       publicKey,
       processEnv,
-      envKeysFilepath: options.envKeysFilepath,
-      noArmor,
-      provider: (publicKeyHex) => armorProvider(publicKeyHex, {
-        onStatus: options.onStatus
-      })
-    }))
+      fk: options.envKeysFilepath || options.envKeysFile || path.resolve(path.dirname(filepath), '.env.keys')
+    })
+
+    const provider = await providers(options)
+    if (provider) {
+      keyringOptions.provider = provider
+    }
+
+    const ring = await keyring(keyringOptions)
 
     outputKeypair({ out, filepath, publicKey, ring })
   }
@@ -76,19 +58,22 @@ async function keypair (options = {}) {
 function keypairSync (options = {}) {
   const out = {}
   const processEnv = options.processEnv || process.env
-  const noArmor = options.noArmor || false
 
   for (const filepath of filepaths(options.envFile)) {
     const src = fsx.readFileXSync(filepath)
     const publicKey = publickeys(src)[0]
-    const ring = keyringSync(keyringOptions({
-      filepath,
+
+    const keyringOptions = buildOptions({
       publicKey,
       processEnv,
-      envKeysFilepath: options.envKeysFilepath,
-      noArmor,
-      provider: providerSync
-    }))
+      fk: options.envKeysFilepath || options.envKeysFile || path.resolve(path.dirname(filepath), '.env.keys')
+    })
+    const provider = providers.sync(options)
+    if (provider) {
+      keyringOptions.provider = provider
+    }
+
+    const ring = keyringSync(keyringOptions)
 
     outputKeypair({ out, filepath, publicKey, ring })
   }

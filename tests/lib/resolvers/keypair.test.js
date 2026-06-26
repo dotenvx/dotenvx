@@ -14,12 +14,15 @@ t.test('keypair forwards envKeysFilepath to primitive keyring',
     const keyringSync = sinon.stub().returns({
       'public-key': 'private-key'
     })
+    const providers = sinon.stub().resolves(null)
+    providers.sync = sinon.stub().returns(null)
     const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
       './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/fsx': {
         readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
         readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
       },
+      './../providers': providers,
       '@dotenvx/primitives': {
         publickeys: () => ['public-key'],
         keyring,
@@ -47,12 +50,15 @@ t.test('keypair passes no provider when noArmor is true',
   async ct => {
     const keyring = sinon.stub().callsFake(async ({ ring }) => ring)
     const keyringSync = sinon.stub().callsFake(({ ring }) => ring)
+    const providers = sinon.stub().resolves(null)
+    providers.sync = sinon.stub().returns(null)
     const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
       './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/fsx': {
         readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
         readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
       },
+      './../providers': providers,
       '@dotenvx/primitives': {
         publickeys: () => ['public-key'],
         keyring,
@@ -78,6 +84,10 @@ t.test('keypair passes no provider when noArmor is true',
 
 t.test('keypair passes provider by default',
   async ct => {
+    const provider = sinon.stub()
+    const providerSync = sinon.stub()
+    const providers = sinon.stub().resolves(provider)
+    providers.sync = sinon.stub().returns(providerSync)
     const keyring = sinon.stub().callsFake(async ({ ring }) => ring)
     const keyringSync = sinon.stub().callsFake(({ ring }) => ring)
     const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
@@ -86,6 +96,7 @@ t.test('keypair passes provider by default',
         readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
         readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
       },
+      './../providers': providers,
       '@dotenvx/primitives': {
         publickeys: () => ['public-key'],
         keyring,
@@ -98,24 +109,26 @@ t.test('keypair passes provider by default',
 
     ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
     ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
-    ct.equal(typeof keyring.firstCall.args[0].provider, 'function')
-    ct.equal(typeof keyringSync.firstCall.args[0].provider, 'function')
+    ct.equal(keyring.firstCall.args[0].provider, provider)
+    ct.equal(keyringSync.firstCall.args[0].provider, providerSync)
     ct.end()
   })
 
-t.test('keypair forwards onStatus to armor provider',
+t.test('keypair forwards onStatus to providers',
   async ct => {
     const onStatus = sinon.stub()
     const keyring = sinon.stub().callsFake(async ({ provider }) => ({
       'public-key': await provider('public-key')
     }))
-    const armorProvider = sinon.stub().resolves('private-key')
+    const provider = sinon.stub().resolves('private-key')
+    const providers = sinon.stub().resolves(provider)
+    providers.sync = sinon.stub()
     const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
       './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
       './../helpers/fsx': {
         readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"'
       },
-      './../providers/armor/index': armorProvider,
+      './../providers': providers,
       '@dotenvx/primitives': {
         publickeys: () => ['public-key'],
         keyring,
@@ -129,6 +142,6 @@ t.test('keypair forwards onStatus to armor provider',
     })
 
     ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
-    ct.same(armorProvider.firstCall.args, ['public-key', { onStatus }])
+    ct.same(providers.firstCall.args, [{ envFile: '.env', onStatus }])
     ct.end()
   })

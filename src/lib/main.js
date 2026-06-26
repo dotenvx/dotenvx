@@ -6,13 +6,15 @@ const { encrypted, parseSync } = require('@dotenvx/primitives')
 const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/logger')
 const { getColor, bold } = require('./../shared/colors')
 
+// resolvers
+const keypairResolver = require('./resolvers/keypair')
+
 // services
 const Ls = require('./services/ls')
 const Doctor = require('./services/doctor')
 const Run = require('./services/run')
 const Sets = require('./services/sets')
 const Get = require('./services/get')
-const Keypair = require('./services/keypair')
 const Genexample = require('./services/genexample')
 const Session = require('./../db/session')
 
@@ -348,11 +350,8 @@ const genexample = function (directory, envFile) {
 
 /** @type {import('./main').keypair} */
 const keypair = function (envFile, key, envKeysFile = null, noArmor = false) {
-  const keypairs = new Keypair({
-    envFile,
-    envKeysFilepath: envKeysFile,
-    noArmor
-  }).runSync()
+  const keypairs = keypairResolver.sync({ envFile, envKeysFile, noArmor })
+
   if (key) {
     return keypairs[key]
   } else {

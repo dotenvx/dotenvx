@@ -1,9 +1,8 @@
 const { logger } = require('./../../shared/logger')
 
-const Keypair = require('./../../lib/services/keypair')
+const keypairResolver = require('./../../lib/resolvers/keypair')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
 const normalizeArmorAliases = require('./normalizeArmorAliases')
 
 async function keypair (key) {
@@ -18,19 +17,19 @@ async function keypair (key) {
   const prettyPrint = options.prettyPrint || options.pp
 
   try {
-    const sesh = new Session()
-    const noArmor = options.armor === false || await sesh.noArmor()
-    const keypairs = await new Keypair({
+    const keypairs = await keypairResolver({
       envFile: options.envFile,
-      envKeysFilepath: options.envKeysFile,
-      noArmor,
+      envKeysFile: options.envKeysFile,
+      armor: options.armor,
+      token: options.token,
       command: process.argv.slice(2),
       onStatus: (text) => {
         if (spinner && text) {
           spinner.text = text
         }
       }
-    }).run()
+    })
+
     const results = key ? keypairs[key] : keypairs
 
     if (spinner) spinner.stop()
