@@ -2,7 +2,6 @@ module.exports = {
   armorKeypair: require('./armorKeypair'),
   armorKeypairSync: require('./armorKeypairSync'),
   localKeypair: require('./localKeypair'),
-  encryptValue: require('./encryptValue'),
   decryptKeyValue: require('./decryptKeyValue'),
   isPublicKey: require('./isPublicKey'),
   mutateKeysSrc: require('./mutateKeysSrc'),

@@ -1,7 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
-const { encrypted, scan } = require('@dotenvx/primitives')
+const { encrypted, encrypt, scan } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -19,7 +19,6 @@ const {
 const {
   armorKeypair,
   localKeypair,
-  encryptValue,
   decryptKeyValue
 } = require('./../helpers/cryptography')
 
@@ -140,7 +139,7 @@ class Rotate {
           const decryptedValue = decryptKeyValue(key, value, privateKeyName, privateKeyValue) // get decrypted value
           let encryptedValue
           try {
-            encryptedValue = encryptValue(decryptedValue, newPublicKey) // encrypt with the new publicKey
+            encryptedValue = encrypt(newPublicKey, decryptedValue) // encrypt with the new publicKey
           } catch {
             throw new Errors({ publicKeyName, publicKey: newPublicKey }).invalidPublicKey()
           }

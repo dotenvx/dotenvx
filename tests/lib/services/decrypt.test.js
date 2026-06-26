@@ -6,9 +6,8 @@ const path = require('path')
 const sinon = require('sinon')
 const dotenv = require('dotenv')
 const proxyquire = require('proxyquire')
-const { scan } = require('@dotenvx/primitives')
+const { encrypt, scan } = require('@dotenvx/primitives')
 
-const encryptValue = require('../../../src/lib/helpers/cryptography/encryptValue')
 const Decrypt = require('../../../src/lib/services/decrypt')
 const keyResolution = require('../../../src/lib/helpers/keyResolution')
 
@@ -184,7 +183,7 @@ t.test('#run marks armored private key usage',
   async ct => {
     const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-decrypt-armored-'))
     const envFile = path.join(tmpdir, '.env')
-    const encrypted = encryptValue('encrypted', PUBLIC_KEY)
+    const encrypted = encrypt(PUBLIC_KEY, 'encrypted')
     fs.writeFileSync(envFile, `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"\nHELLO="${encrypted}"\n`, 'utf8')
 
     const keyValues = sinon.stub().resolves({
@@ -211,8 +210,8 @@ t.test('#run decrypts duplicate HELLO entries while preserving plaintext duplica
   async ct => {
     const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-decrypt-duplicate-'))
     const envFile = path.join(tmpdir, '.env')
-    const encryptedOne = encryptValue('one', PUBLIC_KEY)
-    const encryptedThree = encryptValue('three', PUBLIC_KEY)
+    const encryptedOne = encrypt(PUBLIC_KEY, 'one')
+    const encryptedThree = encrypt(PUBLIC_KEY, 'three')
     const envSrc = [
       `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"`,
       `HELLO="${encryptedOne}"`,

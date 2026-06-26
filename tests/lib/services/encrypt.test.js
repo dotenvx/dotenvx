@@ -5,7 +5,8 @@ const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
-const { scan } = require('@dotenvx/primitives')
+const primitives = require('@dotenvx/primitives')
+const { scan } = primitives
 
 const decryptKeyValue = require('../../../src/lib/helpers/cryptography/decryptKeyValue')
 
@@ -933,11 +934,14 @@ t.test('#run wraps invalid public key encryption errors',
     const sandbox = sinon.createSandbox()
     const cryptography = require('../../../src/lib/helpers/cryptography')
     const EncryptWithStub = proxyquire('../../../src/lib/services/encrypt', {
-      './../helpers/cryptography': {
-        ...cryptography,
-        encryptValue: () => {
+      '@dotenvx/primitives': {
+        ...primitives,
+        encrypt: () => {
           throw new Error('padded hex string expected, got unpadded hex of length 67')
         }
+      },
+      './../helpers/cryptography': {
+        ...cryptography
       }
     })
 

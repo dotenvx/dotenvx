@@ -1,6 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypted, scan } = require('@dotenvx/primitives')
+const { encrypted, encrypt, scan } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -17,7 +17,6 @@ const {
 } = require('./../helpers/keyResolution')
 
 const {
-  encryptValue,
   decryptKeyValue,
   provision,
   provisionSync,
@@ -172,7 +171,7 @@ class Sets {
         row.publicKey = publicKey
         row.privateKey = privateKey
         try {
-          row.encryptedValue = encryptValue(this.value, publicKey)
+          row.encryptedValue = encrypt(publicKey, this.value)
         } catch {
           throw new Errors({ publicKeyName, publicKey }).invalidPublicKey()
         }
@@ -288,7 +287,7 @@ class Sets {
         row.publicKey = publicKey
         row.privateKey = privateKey
         try {
-          row.encryptedValue = encryptValue(this.value, publicKey)
+          row.encryptedValue = encrypt(publicKey, this.value)
         } catch {
           throw new Errors({ publicKeyName, publicKey }).invalidPublicKey()
         }

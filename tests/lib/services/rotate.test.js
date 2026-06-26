@@ -5,9 +5,10 @@ const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
-const { encrypted, scan } = require('@dotenvx/primitives')
+const primitives = require('@dotenvx/primitives')
+const { encrypted, encrypt, scan } = primitives
 
-const { encryptValue, decryptKeyValue } = require('../../../src/lib/helpers/cryptography')
+const { decryptKeyValue } = require('../../../src/lib/helpers/cryptography')
 
 const Rotate = require('../../../src/lib/services/rotate')
 
@@ -452,7 +453,7 @@ t.test('#run rotates duplicate HELLO when plaintext duplicate is last',
   async ct => {
     const { envFile, envKeysFile } = writeDuplicateRotateFiles([
       `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"`,
-      `HELLO="${encryptValue('one', PUBLIC_KEY)}"`,
+      `HELLO="${encrypt(PUBLIC_KEY, 'one')}"`,
       'HELLO=two'
     ].join('\n') + '\n')
     const envs = [{ type: 'envFile', value: envFile }]
@@ -480,8 +481,8 @@ t.test('#run rotates duplicate encrypted HELLO using the last encrypted duplicat
   async ct => {
     const { envFile, envKeysFile } = writeDuplicateRotateFiles([
       `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"`,
-      `HELLO="${encryptValue('one', PUBLIC_KEY)}"`,
-      `HELLO="${encryptValue('two', PUBLIC_KEY)}"`
+      `HELLO="${encrypt(PUBLIC_KEY, 'one')}"`,
+      `HELLO="${encrypt(PUBLIC_KEY, 'two')}"`
     ].join('\n') + '\n')
     const envs = [{ type: 'envFile', value: envFile }]
 
@@ -646,11 +647,14 @@ t.test('#run wraps invalid public key re-encryption errors',
   async ct => {
     const cryptography = require('../../../src/lib/helpers/cryptography')
     const RotateWithStub = proxyquire('../../../src/lib/services/rotate', {
-      './../helpers/cryptography': {
-        ...cryptography,
-        encryptValue: () => {
+      '@dotenvx/primitives': {
+        ...primitives,
+        encrypt: () => {
           throw new Error('padded hex string expected, got unpadded hex of length 67')
         }
+      },
+      './../helpers/cryptography': {
+        ...cryptography
       }
     })
 

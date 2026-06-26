@@ -1,7 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
-const { encrypted, scan } = require('@dotenvx/primitives')
+const { encrypted, encrypt, scan } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -17,7 +17,6 @@ const {
 } = require('./../helpers/keyResolution')
 
 const {
-  encryptValue,
   isPublicKey,
   provision,
   provisionWithPrivateKey
@@ -160,7 +159,7 @@ class Encrypt {
             }
 
             try {
-              return encryptValue(value, publicKey)
+              return encrypt(publicKey, value)
             } catch {
               throw new Errors({ publicKeyName, publicKey }).invalidPublicKey()
             }

@@ -1,13 +1,13 @@
 const t = require('tap')
+const { encrypt } = require('@dotenvx/primitives')
 
-const encryptValue = require('../../../src/lib/helpers/cryptography/encryptValue')
 const decryptKeyValue = require('../../../src/lib/helpers/cryptography/decryptKeyValue')
 
 const publicKey = '02b106c30579baf896ae1fddf077cbcb4fef5e7d457932974878dcb51f42b45498'
 const privateKey = '1fc1cafa954a7a2bf0a6fbff46189c9e03e3a66b4d1133108ab9fcdb9e154b70'
 
 t.test('#decryptKeyValue', ct => {
-  const encryptedString = encryptValue('hello', publicKey)
+  const encryptedString = encrypt(publicKey, 'hello')
   const decrypted = decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', privateKey)
   ct.same(decrypted, 'hello')
 
@@ -15,7 +15,7 @@ t.test('#decryptKeyValue', ct => {
 })
 
 t.test('#decryptKeyValue - privateKey null', ct => {
-  const encryptedString = encryptValue('hello', publicKey)
+  const encryptedString = encrypt(publicKey, 'hello')
 
   try {
     decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY_PRODUCTION', null)
@@ -73,7 +73,7 @@ t.test('#decryptKeyValue invalid empty encrypted value raises error', ct => {
 })
 
 t.test('#decryptKeyValue invalid privateKey', ct => {
-  const encryptedString = encryptValue('hello', publicKey)
+  const encryptedString = encrypt(publicKey, 'hello')
 
   try {
     decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', 'invalid-private-key')
@@ -87,7 +87,7 @@ t.test('#decryptKeyValue invalid privateKey', ct => {
 })
 
 t.test('#decryptKeyValue empty privateKey', ct => {
-  const encryptedString = encryptValue('hello', publicKey)
+  const encryptedString = encrypt(publicKey, 'hello')
 
   try {
     decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', '')
@@ -102,7 +102,7 @@ t.test('#decryptKeyValue empty privateKey', ct => {
 })
 
 t.test('#decryptKeyValue wrong privateKey', ct => {
-  const encryptedString = encryptValue('hello', publicKey)
+  const encryptedString = encrypt(publicKey, 'hello')
 
   try {
     decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', '9c1ab41477004e68066129a8866887d316ba5d7177593dbc5e3026d6f64d32f8')
@@ -116,7 +116,7 @@ t.test('#decryptKeyValue wrong privateKey', ct => {
 })
 
 t.test('#decryptKeyValue when empty string', ct => {
-  const encryptedString = encryptValue('', publicKey)
+  const encryptedString = encrypt(publicKey, '')
   const decrypted = decryptKeyValue('KEY', encryptedString, 'DOTENV_PRIVATE_KEY', privateKey)
   ct.same(decrypted, '')
 

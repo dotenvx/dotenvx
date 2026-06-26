@@ -5,10 +5,10 @@ const os = require('os')
 const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
-const { scan } = require('@dotenvx/primitives')
+const primitives = require('@dotenvx/primitives')
+const { encrypt, scan } = primitives
 
 const decryptKeyValue = require('../../../src/lib/helpers/cryptography/decryptKeyValue')
-const encryptValue = require('../../../src/lib/helpers/cryptography/encryptValue')
 const Sets = require('../../../src/lib/services/sets')
 
 let writeFileXStub
@@ -301,7 +301,7 @@ t.test('#runSync (encrypt on) encrypts appended plaintext duplicate HELLO when a
   async ct => {
     const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-duplicate-'))
     const envFile = path.join(tmpdir, '.env')
-    const encryptedOne = encryptValue('one', PUBLIC_KEY)
+    const encryptedOne = encrypt(PUBLIC_KEY, 'one')
     const envSrc = [
       `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"`,
       `HELLO="${encryptedOne}"`,
@@ -334,7 +334,7 @@ t.test('#runSync (encrypt on) encrypts prepended plaintext duplicate HELLO when 
   async ct => {
     const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-duplicate-'))
     const envFile = path.join(tmpdir, '.env')
-    const encryptedOne = encryptValue('one', PUBLIC_KEY)
+    const encryptedOne = encrypt(PUBLIC_KEY, 'one')
     const envSrc = [
       `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"`,
       'HELLO=two',
@@ -413,7 +413,7 @@ t.test('#runSync (encrypt on) updates duplicate HELLO when target equals last en
   async ct => {
     const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'dotenvx-sets-duplicate-'))
     const envFile = path.join(tmpdir, '.env')
-    const encryptedTwo = encryptValue('two', PUBLIC_KEY)
+    const encryptedTwo = encrypt(PUBLIC_KEY, 'two')
     const envSrc = [
       `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"`,
       'HELLO=one',
@@ -1228,8 +1228,8 @@ t.test('#runSync (encrypt on) replaces duplicate encrypted HELLO entries with pu
     const envFile = path.join(tmpdir, '.env')
     const envSrc = [
       `DOTENV_PUBLIC_KEY="${PUBLIC_KEY}"`,
-      `HELLO="${encryptValue('one', PUBLIC_KEY)}"`,
-      `HELLO="${encryptValue('two', PUBLIC_KEY)}"`
+      `HELLO="${encrypt(PUBLIC_KEY, 'one')}"`,
+      `HELLO="${encrypt(PUBLIC_KEY, 'two')}"`
     ].join('\n') + '\n'
     fs.writeFileSync(envFile, envSrc, 'utf8')
     const envs = [{ type: 'envFile', value: envFile }]
@@ -1257,11 +1257,14 @@ t.test('#run wraps invalid public key encryption errors',
   async ct => {
     const cryptography = require('../../../src/lib/helpers/cryptography')
     const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
-      './../helpers/cryptography': {
-        ...cryptography,
-        encryptValue: () => {
+      '@dotenvx/primitives': {
+        ...primitives,
+        encrypt: () => {
           throw new Error('padded hex string expected, got unpadded hex of length 67')
         }
+      },
+      './../helpers/cryptography': {
+        ...cryptography
       }
     })
 
@@ -1289,8 +1292,11 @@ t.test('#runSync (existing public key only) uses public key without provisioning
         keyValues: async () => ({ publicKeyValue: 'public-only-key', privateKeyValue: null })
       },
       './../helpers/cryptography': {
-        ...cryptography,
-        encryptValue: () => 'encrypted:abc'
+        ...cryptography
+      },
+      '@dotenvx/primitives': {
+        ...primitives,
+        encrypt: () => 'encrypted:abc'
       }
     })
 
@@ -1308,11 +1314,14 @@ t.test('#runSync wraps invalid public key encryption errors',
   async ct => {
     const cryptography = require('../../../src/lib/helpers/cryptography')
     const SetsWithStub = proxyquire('../../../src/lib/services/sets', {
-      './../helpers/cryptography': {
-        ...cryptography,
-        encryptValue: () => {
+      '@dotenvx/primitives': {
+        ...primitives,
+        encrypt: () => {
           throw new Error('bad public key')
         }
+      },
+      './../helpers/cryptography': {
+        ...cryptography
       }
     })
 
@@ -1343,8 +1352,11 @@ t.test('#run async decrypts original encrypted value when private key is availab
       './../helpers/cryptography': {
         ...cryptography,
         decryptKeyValue: decryptKeyValueStub,
-        provisionWithPrivateKey: provisionWithPrivateKeyStub,
-        encryptValue: () => 'encrypted:new'
+        provisionWithPrivateKey: provisionWithPrivateKeyStub
+      },
+      '@dotenvx/primitives': {
+        ...primitives,
+        encrypt: () => 'encrypted:new'
       },
       './../helpers/fsx': {
         exists: async () => true,
