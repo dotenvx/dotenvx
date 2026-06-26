@@ -1,13 +1,23 @@
 const fsx = require('./../../lib/helpers/fsx')
+const path = require('path')
 const { logger } = require('./../../shared/logger')
 
-const Encrypt = require('./../../lib/services/encrypt')
+const encryptTransform = require('./../../lib/transforms/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
 const normalizeArmorAliases = require('./normalizeArmorAliases')
+const detectEncoding = require('../../lib/helpers/detectEncoding')
+const Errors = require('../../lib/helpers/errors')
+const keynames = require('../../lib/conventions/keynames')
+const { determine } = require('../../lib/helpers/envResolution')
+const { keyValues } = require('../../lib/helpers/keyResolution')
+const { provision, provisionWithPrivateKey } = require('../../lib/helpers/cryptography')
+const SAMPLE_ENV_KIT = require('../../lib/helpers/kits/sample')
+
+const TYPE_ENV_FILE = 'envFile'
 
 function keyStorageSelector () {
   let selected
@@ -40,7 +50,126 @@ function encryptOptions (noArmor) {
   return options
 }
 
-async function encrypt () {
+async function encrypt (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noArmor = false, noCreate = false, token = undefined, options = {}) {
+  const inputs = []
+
+  for (const env of determine(envs, process.env)) {
+    if (env.type !== TYPE_ENV_FILE) {
+      continue
+    }
+
+    const envFilepath = env.value
+    const filepath = path.resolve(envFilepath)
+    const row = {
+      keys: [],
+      type: TYPE_ENV_FILE,
+      filepath,
+      envFilepath,
+      changed: false
+    }
+
+    try {
+      const fileExists = await fsx.exists(filepath)
+      if (!fileExists && !noCreate) {
+        row.envSrc = SAMPLE_ENV_KIT
+        row.kitCreated = 'sample'
+        row.changed = true
+      } else {
+        const encoding = await detectEncoding(filepath)
+        row.envSrc = await fsx.readFileX(filepath, { encoding })
+      }
+
+      if (row.envSrc.trim().length === 0) {
+        row.envSrc = SAMPLE_ENV_KIT
+        row.kitCreated = 'sample'
+        row.changed = true
+      }
+
+      const { publicKeyName, privateKeyName } = keynames(envFilepath)
+      const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, {
+        keysFilepath: envKeysFilepath,
+        noArmor,
+        command: options.command
+      })
+
+      let publicKey
+      let privateKey
+
+      if (!privateKeyValue && !publicKeyValue) {
+        const prov = await provision({
+          envSrc: row.envSrc,
+          envFilepath,
+          keysFilepath: envKeysFilepath,
+          noArmor,
+          token,
+          selectKeyStorage: options.selectKeyStorage,
+          command: options.command
+        })
+        row.envSrc = prov.envSrc
+        publicKey = prov.publicKey
+        privateKey = prov.privateKey
+        row.localPrivateKeyAdded = prov.localPrivateKeyAdded
+        row.remotePrivateKeyAdded = prov.remotePrivateKeyAdded
+        row.envKeysFilepath = prov.envKeysFilepath
+        row.changed = true
+      } else if (privateKeyValue) {
+        const prov = provisionWithPrivateKey({
+          envSrc: row.envSrc,
+          envFilepath,
+          keysFilepath: envKeysFilepath,
+          privateKeyValue,
+          publicKeyValue,
+          publicKeyName
+        })
+        row.envSrc = prov.envSrc
+        publicKey = prov.publicKey
+        privateKey = prov.privateKey
+      } else if (publicKeyValue) {
+        publicKey = publicKeyValue
+      }
+
+      row.publicKeyName = publicKeyName
+      row.publicKeyValue = publicKey
+      row.privateKeyName = privateKeyName
+      row.privateKeyValue = privateKey
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+      } else {
+        row.error = error
+      }
+    }
+
+    inputs.push(row)
+  }
+
+  const ready = inputs.filter(input => !input.error)
+  const result = await encryptTransform({
+    envs: ready,
+    key,
+    excludeKey
+  })
+
+  return {
+    processedEnvs: inputs.map(input => {
+      if (input.error) {
+        return {
+          keys: [],
+          type: input.type,
+          filepath: input.filepath,
+          envFilepath: input.envFilepath,
+          error: input.error
+        }
+      }
+
+      return result.processedEnvs.shift()
+    }),
+    changedFilepaths: result.changedFilepaths,
+    unchangedFilepaths: result.unchangedFilepaths
+  }
+}
+
+async function encryptAction () {
   const options = normalizeArmorAliases(this.opts())
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
 
@@ -56,10 +185,10 @@ async function encrypt () {
     if (spinner) spinner.stop()
     const {
       processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, {
+    } = await encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, {
       ...encryptOptions(noArmor),
       command: process.argv.slice(2)
-    }).run()
+    })
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       console.log(processedEnv.envSrc)
@@ -72,10 +201,10 @@ async function encrypt () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, {
+      } = await encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, {
         ...encryptOptions(noArmor),
         command: process.argv.slice(2)
-      }).run()
+      })
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -111,4 +240,4 @@ async function encrypt () {
   }
 }
 
-module.exports = encrypt
+module.exports = encryptAction
