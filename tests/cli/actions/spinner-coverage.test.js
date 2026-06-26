@@ -103,14 +103,10 @@ t.test('run stops spinner when command missing', async ct => {
 
   const run = proxyquire('../../../src/cli/actions/run', {
     '../../../src/lib/helpers/createSpinner': async () => spinner,
-    '../../../src/lib/services/run': class {
-      async run () {
-        return {
-          processedEnvs: [],
-          readableFilepaths: []
-        }
-      }
-    },
+    '../../../src/lib/resolvers/envs': async () => ({
+      processedEnvs: [],
+      readableFilepaths: []
+    }),
     '../../../src/lib/helpers/executeCommand': async () => true,
     '../../../src/db/session': class {
       async noArmor () {
@@ -134,14 +130,10 @@ t.test('run stops spinner on success path', async ct => {
 
   const run = proxyquire('../../../src/cli/actions/run', {
     '../../../src/lib/helpers/createSpinner': async () => spinner,
-    '../../../src/lib/services/run': class {
-      async run () {
-        return {
-          processedEnvs: [],
-          readableFilepaths: []
-        }
-      }
-    },
+    '../../../src/lib/resolvers/envs': async () => ({
+      processedEnvs: [],
+      readableFilepaths: []
+    }),
     '../../../src/lib/helpers/executeCommand': async () => true,
     '../../../src/db/session': class {
       async noArmor () {
@@ -167,10 +159,8 @@ t.test('run stops spinner on catch path', async ct => {
 
   const run = proxyquire('../../../src/cli/actions/run', {
     '../../../src/lib/helpers/createSpinner': async () => spinner,
-    '../../../src/lib/services/run': class {
-      async run () {
-        throw boom
-      }
+    '../../../src/lib/resolvers/envs': async () => {
+      throw boom
     },
     '../../../src/lib/helpers/catchAndLog': catchAndLogStub,
     '../../../src/lib/helpers/executeCommand': async () => true,

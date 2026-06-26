@@ -7,12 +7,12 @@ const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/
 const { getColor, bold } = require('./../shared/colors')
 
 // resolvers
+const envsResolver = require('./resolvers/envs')
 const keypairResolver = require('./resolvers/keypair')
 
 // services
 const Ls = require('./services/ls')
 const Doctor = require('./services/doctor')
-const Run = require('./services/run')
 const Sets = require('./services/sets')
 const Get = require('./services/get')
 const Genexample = require('./services/genexample')
@@ -72,10 +72,15 @@ const config = function (options = {}) {
     const {
       processedEnvs,
       readableFilepaths
-    } = new Run(envs, overload, processEnv, envKeysFile, noArmor, {
+    } = envsResolver.sync({
+      envs,
+      overload,
+      processEnv,
+      envKeysFile,
+      noArmor,
       noSpinner: options.noSpinner,
       token: options.token
-    }).runSync()
+    })
 
     let lastError
     /** @type {Record<string, string>} */

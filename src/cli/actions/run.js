@@ -2,7 +2,7 @@ const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
-const Run = require('./../../lib/services/run')
+const envsResolver = require('./../../lib/resolvers/envs')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
@@ -90,7 +90,12 @@ async function run () {
     const {
       processedEnvs,
       readableFilepaths
-    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
+    } = await envsResolver({
+      envs,
+      overload: options.overload,
+      processEnv: process.env,
+      envKeysFile: options.envKeysFile,
+      noArmor,
       token: options.token,
       command: commandArgs,
       onStatus: (text) => {
@@ -98,7 +103,7 @@ async function run () {
           spinner.text = text
         }
       }
-    }).run()
+    })
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envFile') {

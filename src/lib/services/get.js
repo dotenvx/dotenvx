@@ -1,4 +1,4 @@
-const Run = require('./run')
+const envsResolver = require('./../resolvers/envs')
 const Errors = require('./../helpers/errors')
 const { determine } = require('./../helpers/envResolution')
 
@@ -16,18 +16,28 @@ class Get {
   runSync () {
     const processEnv = { ...process.env }
     const envs = determine(this.envs, processEnv)
-    const { processedEnvs } = new Run(envs, this.overload, processEnv, this.envKeysFilepath, this.noArmor, {
+    const { processedEnvs } = envsResolver.sync({
+      envs,
+      overload: this.overload,
+      processEnv,
+      envKeysFilepath: this.envKeysFilepath,
+      noArmor: this.noArmor,
       command: this.command
-    }).runSync()
+    })
     return this._result(processedEnvs, processEnv)
   }
 
   async run () {
     const processEnv = { ...process.env }
     const envs = determine(this.envs, processEnv)
-    const { processedEnvs } = await new Run(envs, this.overload, processEnv, this.envKeysFilepath, this.noArmor, {
+    const { processedEnvs } = await envsResolver({
+      envs,
+      overload: this.overload,
+      processEnv,
+      envKeysFilepath: this.envKeysFilepath,
+      noArmor: this.noArmor,
       command: this.command
-    }).run()
+    })
     return this._result(processedEnvs, processEnv)
   }
 

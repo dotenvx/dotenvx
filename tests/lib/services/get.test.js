@@ -1,13 +1,18 @@
 const t = require('tap')
 const sinon = require('sinon')
+const proxyquire = require('proxyquire').noCallThru()
 
-const Get = require('../../../src/lib/services/get')
-const Run = require('../../../src/lib/services/run')
+const actualEnvsResolver = require('../../../src/lib/resolvers/envs')
+let envsResolverStub
+const Get = proxyquire('../../../src/lib/services/get', {
+  './../resolvers/envs': (...args) => envsResolverStub ? envsResolverStub(...args) : actualEnvsResolver(...args)
+})
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
   sinon.restore()
+  envsResolverStub = null
 })
 
 t.test('#run (missing key returns the entire processEnv as object)',
@@ -19,19 +24,16 @@ t.test('#run (missing key returns the entire processEnv as object)',
     ct.end()
   })
 
-t.test('#run forwards command metadata to Run',
+t.test('#run forwards command metadata to envs resolver',
   async ct => {
-    const runStub = sinon.stub(Run.prototype, 'run')
-    runStub.returns({
-      processedEnvs: []
-    })
+    envsResolverStub = sinon.stub().resolves({ processedEnvs: [] })
 
     await new Get(null, [], false, false, null, false, {
       command: ['get', 'HELLO']
     }).run()
 
-    ct.equal(runStub.callCount, 1)
-    ct.same(runStub.thisValues[0].command, ['get', 'HELLO'])
+    ct.equal(envsResolverStub.callCount, 1)
+    ct.same(envsResolverStub.firstCall.args[0].command, ['get', 'HELLO'])
     ct.end()
   })
 
@@ -182,16 +184,16 @@ t.test('#run expansion',
     ct.end()
   })
 
-t.test('#run passes noArmor to Run service',
+t.test('#run passes noArmor to envs resolver',
   async ct => {
-    const runStub = sinon.stub(Run.prototype, 'run').resolves({ processedEnvs: [] })
+    envsResolverStub = sinon.stub().resolves({ processedEnvs: [] })
 
     await new Get('KEY').run()
-    t.equal(runStub.firstCall.thisValue.noArmor, false, 'noArmor defaults to false')
+    t.equal(envsResolverStub.firstCall.args[0].noArmor, false, 'noArmor defaults to false')
 
-    runStub.resetHistory()
+    envsResolverStub.resetHistory()
     await new Get('KEY', [], false, false, null, true).run()
-    t.equal(runStub.firstCall.thisValue.noArmor, true, 'noArmor true when provided')
+    t.equal(envsResolverStub.firstCall.args[0].noArmor, true, 'noArmor true when provided')
 
     ct.end()
   })
