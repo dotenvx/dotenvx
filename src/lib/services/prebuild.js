@@ -3,7 +3,7 @@ const fsx = require('./../helpers/fsx')
 const path = require('path')
 const ignore = require('ignore')
 
-const Ls = require('../services/ls')
+const ls = require('../resolvers/ls')
 const Errors = require('../helpers/errors')
 const { sealed } = require('@dotenvx/primitives')
 
@@ -35,8 +35,7 @@ class Prebuild {
 
     // 2. check .env* files against .dockerignore file
     const ig = ignore().add(dockerignore)
-    const lsService = new Ls(this.directory, undefined, this.excludeEnvFile)
-    const dotenvFiles = lsService.run()
+    const dotenvFiles = this._filepaths()
     dotenvFiles.forEach(_file => {
       count += 1
 
@@ -80,6 +79,13 @@ class Prebuild {
       successMessage,
       warnings
     }
+  }
+
+  _filepaths () {
+    return ls({
+      directory: this.directory,
+      excludeEnvFile: this.excludeEnvFile
+    })
   }
 }
 

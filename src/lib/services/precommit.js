@@ -3,7 +3,7 @@ const fsx = require('./../helpers/fsx')
 const path = require('path')
 const ignore = require('ignore')
 
-const Ls = require('../services/ls')
+const ls = require('../resolvers/ls')
 const { sealed } = require('@dotenvx/primitives')
 
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
@@ -49,8 +49,7 @@ class Precommit {
       // 2. check .env* files against .gitignore file
       const ig = ignore().add(gitignore)
 
-      const lsService = new Ls(this.directory, undefined, this.excludeEnvFile)
-      const dotenvFiles = lsService.run()
+      const dotenvFiles = this._filepaths()
       dotenvFiles.forEach(_file => {
         count += 1
 
@@ -98,6 +97,13 @@ class Precommit {
         warnings
       }
     }
+  }
+
+  _filepaths () {
+    return ls({
+      directory: this.directory,
+      excludeEnvFile: this.excludeEnvFile
+    })
   }
 
   _isInGitRepo () {
