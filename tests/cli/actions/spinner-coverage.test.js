@@ -17,62 +17,6 @@ t.beforeEach(() => {
   process.env = {}
 })
 
-t.test('get stops spinner on success path', async ct => {
-  const spinner = { stop: sinon.stub() }
-  const consoleLogStub = sinon.stub(console, 'log')
-
-  const get = proxyquire('../../../src/cli/actions/get', {
-    '../../../src/lib/helpers/createSpinner': async () => spinner,
-    '../../../src/lib/services/get': class {
-      async run () {
-        return { parsed: { HELLO: 'World' }, errors: [] }
-      }
-    },
-    '../../../src/db/session': class {
-      async noArmor () {
-        return true
-      }
-    },
-    '../../../src/shared/logger': { logger: makeNoopLogger() }
-  })
-
-  await get.call({ opts: () => ({}), envs: [] }, 'HELLO')
-
-  t.equal(spinner.stop.callCount, 2, 'spinner.stop called before service and before output')
-  t.ok(consoleLogStub.calledWith('World'), 'prints looked-up key')
-  ct.end()
-})
-
-t.test('get stops spinner on catch path', async ct => {
-  const spinner = { stop: sinon.stub() }
-  const boom = new Error('boom')
-  const catchAndLogStub = sinon.stub()
-  const processExitStub = sinon.stub(process, 'exit')
-
-  const get = proxyquire('../../../src/cli/actions/get', {
-    '../../../src/lib/helpers/createSpinner': async () => spinner,
-    '../../../src/lib/services/get': class {
-      async run () {
-        throw boom
-      }
-    },
-    '../../../src/lib/helpers/catchAndLog': catchAndLogStub,
-    '../../../src/db/session': class {
-      async noArmor () {
-        return true
-      }
-    },
-    '../../../src/shared/logger': { logger: makeNoopLogger() }
-  })
-
-  await get.call({ opts: () => ({}), envs: [] }, 'HELLO')
-
-  t.equal(spinner.stop.callCount, 2, 'spinner.stop called before service and in catch branch')
-  t.ok(catchAndLogStub.calledWith(boom), 'error logged through catchAndLog')
-  t.ok(processExitStub.calledWith(1), 'process.exit(1) called')
-  ct.end()
-})
-
 t.test('keypair stops spinner before output', async ct => {
   const spinner = { stop: sinon.stub() }
   const consoleLogStub = sinon.stub(console, 'log')

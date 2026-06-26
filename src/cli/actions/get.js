@@ -5,7 +5,7 @@ const escape = require('./../../lib/helpers/escape')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const Get = require('./../../lib/services/get')
+const getResolver = require('./../../lib/resolvers/get')
 const normalizeArmorAliases = require('./normalizeArmorAliases')
 
 async function get (key) {
@@ -32,9 +32,15 @@ async function get (key) {
     const sesh = new Session()
     const noArmor = options.armor === false || (await sesh.noArmor())
     if (spinner) spinner.stop()
-    const { parsed, errors } = await new Get(key, envs, options.overload, options.all, options.envKeysFile, noArmor, {
+    const { parsed, errors } = await getResolver({
+      key,
+      envs,
+      overload: options.overload,
+      all: options.all,
+      envKeysFile: options.envKeysFile,
+      noArmor,
       command: process.argv.slice(2)
-    }).run()
+    })
 
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict

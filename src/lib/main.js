@@ -8,13 +8,13 @@ const { getColor, bold } = require('./../shared/colors')
 
 // resolvers
 const envsResolver = require('./resolvers/envs')
+const getResolver = require('./resolvers/get')
 const keypairResolver = require('./resolvers/keypair')
 
 // services
 const Ls = require('./services/ls')
 const Doctor = require('./services/doctor')
 const Sets = require('./services/sets')
-const Get = require('./services/get')
 const Genexample = require('./services/genexample')
 const Session = require('./../db/session')
 
@@ -289,7 +289,14 @@ const get = function (key, options = {}) {
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noArmor).runSync()
+  const { parsed, errors } = getResolver.sync({
+    key,
+    envs,
+    overload: options.overload,
+    all: options.all,
+    envKeysFile: options.envKeysFile,
+    noArmor
+  })
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
