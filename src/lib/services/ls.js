@@ -1,6 +1,5 @@
-const { fdir: Fdir } = require('fdir')
 const path = require('path')
-const picomatch = require('picomatch')
+const lsResolver = require('./../resolvers/ls')
 
 class Ls {
   constructor (directory = './', envFile = ['.env*'], excludeEnvFile = []) {
@@ -16,17 +15,11 @@ class Ls {
   }
 
   _filepaths () {
-    const exclude = picomatch(this._exclude())
-    const include = picomatch(this._patterns(), {
-      ignore: this._exclude()
+    return lsResolver({
+      directory: this.cwd,
+      envFile: this.envFile,
+      excludeEnvFile: this.excludeEnvFile
     })
-
-    return new Fdir()
-      .withRelativePaths()
-      .exclude((dir, path) => exclude(path))
-      .filter((path) => include(path))
-      .crawl(this.cwd)
-      .sync()
   }
 
   _patterns () {

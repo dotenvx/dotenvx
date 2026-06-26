@@ -10,9 +10,9 @@ const { getColor, bold } = require('./../shared/colors')
 const envsResolver = require('./resolvers/envs')
 const getResolver = require('./resolvers/get')
 const keypairResolver = require('./resolvers/keypair')
+const lsResolver = require('./resolvers/ls')
 
 // services
-const Ls = require('./services/ls')
 const Doctor = require('./services/doctor')
 const Sets = require('./services/sets')
 const Genexample = require('./services/genexample')
@@ -348,7 +348,7 @@ const get = function (key, options = {}) {
 
 /** @type {import('./main').ls} */
 const ls = function (directory, envFile, excludeEnvFile) {
-  return new Ls(directory, envFile, excludeEnvFile).run()
+  return lsResolver({ directory, envFile, excludeEnvFile })
 }
 
 const doctor = function (directory) {

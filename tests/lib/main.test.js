@@ -6,7 +6,6 @@ const main = proxyquire('../../src/lib/main', {
   '../../src/lib/helpers/isIgnoringDotenvKeys': () => true
 })
 
-const Ls = require('../../src/lib/services/ls')
 const envsResolver = require('../../src/lib/resolvers/envs')
 const Sets = require('../../src/lib/services/sets')
 const keypairResolver = require('../../src/lib/resolvers/keypair')
@@ -435,16 +434,24 @@ t.test('parse ignores configured error codes',
     ct.end()
   })
 
-t.test('ls calls Ls.run',
+t.test('ls finds env files',
   ct => {
-    const stub = sinon.stub(Ls.prototype, 'run')
-    stub.returns({})
+    const dir = ct.testdir({
+      '.env': '',
+      '.env.local': '',
+      nested: {
+        '.env.production': '',
+        'not-env.txt': ''
+      }
+    })
 
-    main.ls()
+    const files = main.ls(dir).sort()
 
-    t.ok(stub.called, 'new Ls().run() called')
-
-    stub.restore()
+    ct.same(files, [
+      '.env',
+      '.env.local',
+      'nested/.env.production'
+    ].sort())
 
     ct.end()
   })
