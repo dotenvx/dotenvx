@@ -4,7 +4,8 @@ const { logger } = require('./../../shared/logger')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const Sets = require('./../../lib/services/sets')
+const buildSetTransformInputs = require('./../../lib/helpers/setTransformInputs')
+const setTransform = require('./../../lib/transforms/set')
 const normalizeArmorAliases = require('./normalizeArmorAliases')
 
 async function set (key, value) {
@@ -31,13 +32,21 @@ async function set (key, value) {
     const noCreate = options.create === false
 
     if (spinner) spinner.stop()
+    const setEnvs = await buildSetTransformInputs({
+      key,
+      value,
+      envs,
+      encrypt,
+      envKeysFilepath,
+      noArmor,
+      noCreate,
+      command: process.argv.slice(2)
+    })
     const {
       processedEnvs,
       changedFilepaths,
       unchangedFilepaths
-    } = await new Sets(key, value, envs, encrypt, envKeysFilepath, noArmor, noCreate, {
-      command: process.argv.slice(2)
-    }).run()
+    } = setTransform({ envs: setEnvs, key, value, encrypt })
 
     let withEncryption = ''
 

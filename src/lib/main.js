@@ -14,9 +14,12 @@ const lsResolver = require('./resolvers/ls')
 
 // services
 const Doctor = require('./services/doctor')
-const Sets = require('./services/sets')
 const Genexample = require('./services/genexample')
 const Session = require('./../db/session')
+
+// transforms
+const buildSetTransformInputs = require('./helpers/setTransformInputs')
+const setTransform = require('./transforms/set')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
@@ -226,7 +229,12 @@ const set = function (key, value, options = {}) {
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noArmor).runSync()
+  } = setTransform({
+    envs: buildSetTransformInputs.sync({ key, value, envs, encrypt, envKeysFilepath, noArmor }),
+    key,
+    value,
+    encrypt
+  })
 
   let withEncryption = ''
 
