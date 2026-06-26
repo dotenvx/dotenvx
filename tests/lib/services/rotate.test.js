@@ -572,47 +572,6 @@ t.test('#run rotates duplicate encrypted HELLO using the last encrypted duplicat
 //   ct.end()
 // })
 //
-// t.test('#run (finds .env file only)',
-// async ct => {
-//   const Keypair = require('../../../src/lib/services/keypair')
-//   const sandbox = sinon.createSandbox()
-//   sandbox.stub(Keypair.prototype, 'runSync').callsFake(function () {
-//     return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
-//   })
-//
-//   const envFile = 'tests/monorepo/apps/encrypted/.env'
-//   const envs = [
-//     { type: 'envFile', value: envFile }
-//   ]
-//
-//   const {
-//     processedEnvs,
-//     unchangedFilepaths
-//   } = await new Rotate(envs).run()
-//
-//   const row = processedEnvs[0]
-//   const publicKey = row.publicKey
-//   const privateKey = row.privateKey
-//   const privateKeyName = row.privateKeyName
-//   const envSrc = row.envSrc
-//
-//   ct.same(processedEnvs, [{
-//     keys: [],
-//     type: 'envFile',
-//     filepath: path.resolve('tests/monorepo/apps/encrypted/.env'),
-//     envFilepath: 'tests/monorepo/apps/encrypted/.env',
-//     publicKey,
-//     privateKey,
-//     privateKeyName,
-//     envSrc
-//   }])
-//   ct.same(unchangedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
-//
-//   sandbox.restore()
-//
-//   ct.end()
-// })
-//
 t.test('#run (finds .env file) and custom envKeysFilepath',
   async ct => {
     const envFile = 'tests/monorepo/apps/encrypted/.env'

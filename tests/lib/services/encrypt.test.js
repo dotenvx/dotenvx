@@ -771,12 +771,6 @@ t.test('#run (finds .env and .env.keys file) but derived public key does not mat
 
 t.test('#run (finds .env file only)',
   async ct => {
-    const Keypair = require('../../../src/lib/services/keypair')
-    const sandbox = sinon.createSandbox()
-    sandbox.stub(Keypair.prototype, 'runSync').callsFake(function () {
-      return { DOTENV_PUBLIC_KEY: '03eaf2142ab3d55bdf108962334e06696db798e7412cfc51d75e74b4f87f299bba' }
-    })
-
     const envFile = 'tests/monorepo/apps/encrypted/.env'
     const envs = [
       { type: 'envFile', value: envFile }
@@ -804,8 +798,6 @@ t.test('#run (finds .env file only)',
       envSrc
     }])
     ct.same(unchangedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
-
-    sandbox.restore()
 
     ct.end()
   })

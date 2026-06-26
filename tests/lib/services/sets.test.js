@@ -870,11 +870,6 @@ t.test('#run (finds .env file only) with --encrypt',
 
 t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
   async ct => {
-    const Keypair = require('../../../src/lib/services/keypair')
-    const sandbox = sinon.createSandbox()
-    sandbox.stub(Keypair.prototype, 'runSync').callsFake(function () {
-      return {}
-    })
     const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('')
 
     const envFile = 'tests/monorepo/apps/encrypted/.env'
@@ -922,7 +917,6 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
     }])
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
 
-    sandbox.restore()
     readFileXStub.restore()
 
     ct.end()
@@ -930,11 +924,6 @@ t.test('#run (finds .env and .env.keys file but they are blank) with --encrypt',
 
 t.test('#run (finds .env and .env.keys file but they are not quite blank) with --encrypt',
   async ct => {
-    const Keypair = require('../../../src/lib/services/keypair')
-    const sandbox = sinon.createSandbox()
-    sandbox.stub(Keypair.prototype, 'runSync').callsFake(function () {
-      return {}
-    })
     const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('## hi')
 
     const envFile = 'tests/monorepo/apps/encrypted/.env'
@@ -983,7 +972,6 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
     }])
     ct.same(changedFilepaths, ['tests/monorepo/apps/encrypted/.env'])
 
-    sandbox.restore()
     readFileXStub.restore()
 
     ct.end()
@@ -991,12 +979,6 @@ t.test('#run (finds .env and .env.keys file but they are not quite blank) with -
 
 t.test('#run (finds .env with a shebang) with --encrypt',
   async ct => {
-    const Keypair = require('../../../src/lib/services/keypair')
-    const sandbox = sinon.createSandbox()
-    sandbox.stub(Keypair.prototype, 'runSync').callsFake(function () {
-      return {}
-    })
-
     const envFile = 'tests/monorepo/apps/shebang/.env'
     const envs = [
       { type: 'envFile', value: envFile }
@@ -1042,8 +1024,6 @@ t.test('#run (finds .env with a shebang) with --encrypt',
       envSrc
     }])
     ct.same(changedFilepaths, ['tests/monorepo/apps/shebang/.env'])
-
-    sandbox.restore()
 
     ct.end()
   })

@@ -10,7 +10,7 @@ const Ls = require('../../src/lib/services/ls')
 const Run = require('../../src/lib/services/run')
 const Sets = require('../../src/lib/services/sets')
 const Get = require('../../src/lib/services/get')
-const Keypair = require('../../src/lib/services/keypair')
+const keypairResolver = require('../../src/lib/resolvers/keypair')
 const Doctor = require('../../src/lib/services/doctor')
 const Genexample = require('../../src/lib/services/genexample')
 const Errors = require('../../src/lib/helpers/errors')
@@ -464,28 +464,28 @@ t.test('doctor calls Doctor.run',
     ct.end()
   })
 
-t.test('keypair calls Keypair.runSync',
+t.test('keypair calls keypairResolver.sync',
   ct => {
-    const stub = sinon.stub(Keypair.prototype, 'runSync')
+    const stub = sinon.stub(keypairResolver, 'sync')
     stub.returns({})
 
     main.keypair()
 
-    t.ok(stub.called, 'new Keypair().runSync() called')
+    t.ok(stub.called, 'keypairResolver.sync() called')
 
     stub.restore()
 
     ct.end()
   })
 
-t.test('keypair calls Keypair.runSync with key specified',
+t.test('keypair calls keypairResolver.sync with key specified',
   ct => {
-    const stub = sinon.stub(Keypair.prototype, 'runSync')
+    const stub = sinon.stub(keypairResolver, 'sync')
     stub.returns({ KEY: 'value' })
 
     const result = main.keypair('.env', 'KEY')
 
-    t.ok(stub.called, 'new Keypair().runSync() called')
+    t.ok(stub.called, 'keypairResolver.sync() called')
     t.equal(result, 'value')
 
     stub.restore()
@@ -493,15 +493,15 @@ t.test('keypair calls Keypair.runSync with key specified',
     ct.end()
   })
 
-t.test('keypair calls Keypair.runSync with noArmor true',
+t.test('keypair calls keypairResolver.sync with noArmor true',
   ct => {
-    const stub = sinon.stub(Keypair.prototype, 'runSync')
+    const stub = sinon.stub(keypairResolver, 'sync')
     stub.returns({ KEY: 'value' })
 
     const result = main.keypair('.env', 'KEY', null, true)
 
-    t.ok(stub.called, 'new Keypair().runSync() called')
-    t.equal(stub.thisValues[0].noArmor, true, 'Keypair was called with noArmor true')
+    t.ok(stub.called, 'keypairResolver.sync() called')
+    t.equal(stub.firstCall.args[0].noArmor, true, 'noArmor true')
     t.equal(result, 'value')
 
     stub.restore()
