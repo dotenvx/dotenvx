@@ -37,7 +37,7 @@ t.test('Login requests device code with device public key and system info', asyn
   })
 })
 
-t.test('LoginPoll saves token when access token is returned', async ct => {
+t.test('Login poll saves token when access token is returned', async ct => {
   const session = {
     login: sinon.stub(),
     notifyUpdate: sinon.stub().resolves()
@@ -49,19 +49,20 @@ t.test('LoginPoll saves token when access token is returned', async ct => {
       username: 'scott'
     })
   })
-  const LoginPoll = proxyquire('../../../src/lib/services/loginPoll', {
+  const Login = proxyquire('../../../src/lib/services/login', {
     '../../db/session': sinon.stub().returns(session),
+    '../api/postOauthDeviceCode': sinon.stub(),
     '../api/postOauthToken': PostOauthToken
   })
 
-  const out = await new LoginPoll('https://armor.example.com', 'device-code', 0).run()
+  const out = await new Login('https://armor.example.com').poll('device-code', 0)
 
   ct.equal(out.access_token, 'token-123')
   ct.same(session.login.firstCall.args, ['https://armor.example.com', 'user-id', 'scott', 'token-123'])
   ct.equal(session.notifyUpdate.callCount, 1)
 })
 
-t.test('LoginPoll continues on authorization_pending', async ct => {
+t.test('Login poll continues on authorization_pending', async ct => {
   const session = {
     login: sinon.stub(),
     notifyUpdate: sinon.stub().resolves()
@@ -78,19 +79,20 @@ t.test('LoginPoll continues on authorization_pending', async ct => {
   const PostOauthToken = sinon.stub().callsFake(function () {
     this.run = run
   })
-  const LoginPoll = proxyquire('../../../src/lib/services/loginPoll', {
+  const Login = proxyquire('../../../src/lib/services/login', {
     '../../db/session': sinon.stub().returns(session),
+    '../api/postOauthDeviceCode': sinon.stub(),
     '../api/postOauthToken': PostOauthToken
   })
 
-  const out = await new LoginPoll('https://armor.example.com', 'device-code', 0).run()
+  const out = await new Login('https://armor.example.com').poll('device-code', 0)
 
   ct.equal(out.access_token, 'token-123')
   ct.equal(run.callCount, 2)
   ct.equal(session.notifyUpdate.callCount, 1)
 })
 
-t.test('LoginPoll waits when token response has no access token yet', async ct => {
+t.test('Login poll waits when token response has no access token yet', async ct => {
   const session = {
     login: sinon.stub(),
     notifyUpdate: sinon.stub().resolves()
@@ -105,28 +107,30 @@ t.test('LoginPoll waits when token response has no access token yet', async ct =
   const PostOauthToken = sinon.stub().callsFake(function () {
     this.run = run
   })
-  const LoginPoll = proxyquire('../../../src/lib/services/loginPoll', {
+  const Login = proxyquire('../../../src/lib/services/login', {
     '../../db/session': sinon.stub().returns(session),
+    '../api/postOauthDeviceCode': sinon.stub(),
     '../api/postOauthToken': PostOauthToken
   })
 
-  const out = await new LoginPoll('https://armor.example.com', 'device-code', 0).run()
+  const out = await new Login('https://armor.example.com').poll('device-code', 0)
 
   ct.equal(out.access_token, 'token-123')
   ct.equal(run.callCount, 2)
   ct.equal(session.notifyUpdate.callCount, 1)
 })
 
-t.test('LoginPoll throws non-pending errors', async ct => {
+t.test('Login poll throws non-pending errors', async ct => {
   const boom = new Error('boom')
   boom.code = 'server_error'
   const PostOauthToken = sinon.stub().callsFake(function () {
     this.run = sinon.stub().rejects(boom)
   })
-  const LoginPoll = proxyquire('../../../src/lib/services/loginPoll', {
+  const Login = proxyquire('../../../src/lib/services/login', {
     '../../db/session': sinon.stub().returns({}),
+    '../api/postOauthDeviceCode': sinon.stub(),
     '../api/postOauthToken': PostOauthToken
   })
 
-  await ct.rejects(new LoginPoll('https://armor.example.com', 'device-code', 0).run(), boom)
+  await ct.rejects(new Login('https://armor.example.com').poll('device-code', 0), boom)
 })
