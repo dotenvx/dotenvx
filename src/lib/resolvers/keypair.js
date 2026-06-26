@@ -43,9 +43,7 @@ async function keypair (options = {}) {
     })
 
     const provider = await providers(options)
-    if (provider) {
-      keyringOptions.provider = provider
-    }
+    keyringOptions.provider = provider
 
     const ring = await keyring(keyringOptions)
 
@@ -69,9 +67,7 @@ function keypairSync (options = {}) {
       fk: options.envKeysFilepath || options.envKeysFile || path.resolve(path.dirname(filepath), '.env.keys')
     })
     const provider = providers.sync(options)
-    if (provider) {
-      keyringOptions.provider = provider
-    }
+    keyringOptions.provider = provider
 
     const ring = keyringSync(keyringOptions)
 

@@ -8,8 +8,16 @@ function syncArmorProvider (publicKeyHex) {
 }
 
 async function providers (options = {}) {
+  if (Object.prototype.hasOwnProperty.call(options, 'provider')) {
+    return options.provider
+  }
+
+  if (options.noArmor || options.armor === false) {
+    return null
+  }
+
   const sesh = new Session()
-  const noArmor = options.armor === false || (!options.token && await sesh.noArmor())
+  const noArmor = !options.token && await sesh.noArmor()
   if (noArmor) return null
 
   return (publicKeyHex) => armorProvider(publicKeyHex, {
@@ -20,8 +28,16 @@ async function providers (options = {}) {
 }
 
 providers.sync = function providersSync (options = {}) {
+  if (Object.prototype.hasOwnProperty.call(options, 'provider')) {
+    return options.provider
+  }
+
+  if (options.noArmor || options.armor === false) {
+    return null
+  }
+
   const sesh = new Session()
-  const noArmor = options.armor === false || (!options.token && sesh.noArmorSync())
+  const noArmor = !options.token && sesh.noArmorSync()
   if (noArmor) return null
 
   return syncArmorProvider
