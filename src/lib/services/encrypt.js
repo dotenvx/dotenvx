@@ -1,7 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
-const { encrypted, encrypt, scan } = require('@dotenvx/primitives')
+const { encrypted, encrypt, scan, upsert } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -22,7 +22,6 @@ const {
   provisionWithPrivateKey
 } = require('./../helpers/cryptography')
 
-const replace = require('./../helpers/replace')
 const detectEncoding = require('./../helpers/detectEncoding')
 const SAMPLE_ENV_KIT = require('./../helpers/kits/sample')
 
@@ -166,7 +165,7 @@ class Encrypt {
           })
 
           // once newSrc is built write it out
-          envSrc = replace(envSrc, key, encryptedValues)
+          envSrc = upsert(envSrc, key, encryptedValues)
 
           row.changed = true // track change
         }

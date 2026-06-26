@@ -1,7 +1,7 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const picomatch = require('picomatch')
-const { encrypted, encrypt, scan } = require('@dotenvx/primitives')
+const { encrypted, encrypt, scan, upsert } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -23,7 +23,6 @@ const {
 } = require('./../helpers/cryptography')
 
 const append = require('./../helpers/append')
-const replace = require('./../helpers/replace')
 const detectEncoding = require('./../helpers/detectEncoding')
 
 class Rotate {
@@ -118,7 +117,7 @@ class Rotate {
       }
 
       // .env
-      envSrc = replace(envSrc, publicKeyName, newPublicKey) // replace publicKey
+      envSrc = upsert(envSrc, publicKeyName, newPublicKey) // replace publicKey
       row.changed = true // track change
 
       for (const [key, values] of Object.entries(envParsed)) { // re-encrypt each individual key
@@ -144,7 +143,7 @@ class Rotate {
             throw new Errors({ publicKeyName, publicKey: newPublicKey }).invalidPublicKey()
           }
 
-          envSrc = replace(envSrc, key, encryptedValue)
+          envSrc = upsert(envSrc, key, encryptedValue)
         }
       }
       row.envSrc = envSrc

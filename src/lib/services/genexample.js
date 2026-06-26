@@ -3,8 +3,7 @@ const path = require('path')
 
 const Errors = require('../helpers/errors')
 const findEnvFiles = require('../helpers/findEnvFiles')
-const replace = require('../helpers/replace')
-const { scan } = require('@dotenvx/primitives')
+const { scan, upsert } = require('@dotenvx/primitives')
 
 function finalValues (src) {
   const { parsed } = scan(src)
@@ -58,7 +57,7 @@ class Genexample {
         keys.add(key)
 
         // once newSrc is built write it out
-        src = replace(src, key, '') // empty value
+        src = upsert(src, key, '') // empty value
       }
 
       exampleSrc += `\n${src}`

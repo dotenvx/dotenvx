@@ -1,6 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypted, encrypt, scan } = require('@dotenvx/primitives')
+const { encrypted, encrypt, scan, upsert } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -23,7 +23,6 @@ const {
   provisionWithPrivateKey
 } = require('./../helpers/cryptography')
 
-const replace = require('./../helpers/replace')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
 
@@ -188,7 +187,7 @@ class Sets {
         this.changedFilepaths.add(envFilepath)
         row.changed = true
       } else if (goingFromPlainTextToEncrypted || valueChanged || duplicateKey) {
-        row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
+        row.envSrc = upsert(envSrc, this.key, row.encryptedValue || this.value)
         this.changedFilepaths.add(envFilepath)
         row.changed = true
       } else {
@@ -304,7 +303,7 @@ class Sets {
         this.changedFilepaths.add(envFilepath)
         row.changed = true
       } else if (goingFromPlainTextToEncrypted || valueChanged || duplicateKey) {
-        row.envSrc = replace(envSrc, this.key, row.encryptedValue || this.value)
+        row.envSrc = upsert(envSrc, this.key, row.encryptedValue || this.value)
         this.changedFilepaths.add(envFilepath)
         row.changed = true
       } else {
