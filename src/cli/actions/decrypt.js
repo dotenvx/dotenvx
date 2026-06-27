@@ -1,5 +1,4 @@
 const fsx = require('./../../lib/helpers/fsx')
-const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
@@ -58,7 +57,9 @@ async function decrypt () {
         if (processedEnv.error) {
           errorCount += 1
           logger.error(processedEnv.error.messageWithHelp)
-        } else if (processedEnv.changed) {
+        }
+
+        if (processedEnv.changed) {
           await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
           logger.verbose(`decrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
