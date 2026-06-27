@@ -11,7 +11,7 @@ const detectEncodingSync = require('./../helpers/detectEncodingSync')
 const keynames = require('./../conventions/keynames')
 const providers = require('./../providers')
 
-function unresolvedEncryptedErrors (parsed, privateKeyName, processEnv) {
+function unresolvedEncryptedErrors (parsed) {
   const keys = []
   for (const [key, value] of Object.entries(parsed)) {
     if (encrypted(value)) {
@@ -23,7 +23,23 @@ function unresolvedEncryptedErrors (parsed, privateKeyName, processEnv) {
     return []
   }
 
-  return [new Errors({ key: keys.join(', '), privateKeyName: privateKeyName || 'DOTENV_PRIVATE_KEY', privateKey: processEnv[privateKeyName] || null }).missingPrivateKey()]
+  return [new Errors({ message: `could not decrypt ${keys.join(', ')}` }).decryptionFailed()]
+}
+
+function decryptErrors (parsed, errors) {
+  const mappedErrors = (errors || []).map(error => {
+    return new Errors({
+      code: error.code,
+      message: error.message,
+      help: error.help
+    }).custom()
+  })
+
+  if (mappedErrors.length > 0) {
+    return mappedErrors
+  }
+
+  return unresolvedEncryptedErrors(parsed)
 }
 
 function inject (processEnv, parsed) {
@@ -68,13 +84,13 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
 
     const {
       parsed,
+      errors,
       injected,
       existed
     } = await parse(env.value, parseOptions)
 
-    row.privateKeyName = env.privateKeyName || null
     row.parsed = parsed
-    row.errors = unresolvedEncryptedErrors(parsed, env.privateKeyName, parseProcessEnv)
+    row.errors = decryptErrors(parsed, errors)
     row.injected = injected || {}
     row.existed = existed || {}
 
@@ -106,13 +122,13 @@ function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider }
 
     const {
       parsed,
+      errors,
       injected,
       existed
     } = parseSync(env.value, parseOptions)
 
-    row.privateKeyName = env.privateKeyName || null
     row.parsed = parsed
-    row.errors = unresolvedEncryptedErrors(parsed, env.privateKeyName, parseProcessEnv)
+    row.errors = decryptErrors(parsed, errors)
     row.injected = injected || {}
     row.existed = existed || {}
 
@@ -151,11 +167,10 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
       existed
     } = await parse(src, parseOptions)
 
-    row.privateKeyName = privateKeyName
     row.src = src
     row.parsed = parsed
     row.injected = injected || {}
-    row.errors = (errors || []).concat(unresolvedEncryptedErrors(parsed, privateKeyName, parseOptions.processEnv))
+    row.errors = decryptErrors(parsed, errors)
     row.existed = existed || {}
 
     inject(processEnv, parsed)
@@ -197,11 +212,10 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
       existed
     } = parseSync(src, parseOptions)
 
-    row.privateKeyName = privateKeyName
     row.src = src
     row.parsed = parsed
     row.injected = injected || {}
-    row.errors = (errors || []).concat(unresolvedEncryptedErrors(parsed, privateKeyName, parseOptions.processEnv))
+    row.errors = decryptErrors(parsed, errors)
     row.existed = existed || {}
 
     inject(processEnv, parsed)

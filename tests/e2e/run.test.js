@@ -244,15 +244,15 @@ t.test('#run - encrypted .env with no .env.keys', ct => {
   const command = `${node} index.js`
 
   let o = execShell(`${dotenvx} run -- ${command}`)
-  ct.equal(o.stderr, '☠ [MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]')
+  ct.equal(o.stderr, '☠ [DECRYPTION_FAILED] could not decrypt HELLO. fix: [https://github.com/dotenvx/dotenvx/issues/757]')
   ct.equal(o.stdout, `⟐ injected env (2) from .env\nHello ${encrypted}`)
 
   o = execShell(`${dotenvx} run --quiet -- ${command}`)
-  ct.equal(o.stderr, '☠ [MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]')
+  ct.equal(o.stderr, '☠ [DECRYPTION_FAILED] could not decrypt HELLO. fix: [https://github.com/dotenvx/dotenvx/issues/757]')
   ct.equal(o.stdout, `Hello ${encrypted}`) // --quiet
 
   o = execShell(`${dotenvx} run --debug -- ${command}`)
-  ct.equal(o.stderr, '☠ [MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]')
+  ct.equal(o.stderr, '☠ [DECRYPTION_FAILED] could not decrypt HELLO. fix: [https://github.com/dotenvx/dotenvx/issues/757]')
   ct.equal(o.stdout, modernizeDebugOutput(`Setting log level to debug
 options: {"env":[],"envFile":[],"strict":false,"armor":true,"ops":true}
 process command [${node} index.js]

@@ -1,6 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypted, parse, scan, upsert } = require('@dotenvx/primitives')
+const { parse, upsert } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -8,6 +8,14 @@ const Errors = require('./../helpers/errors')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
 const providers = require('./../providers')
+
+function parseError (error) {
+  return new Errors({
+    code: error.code,
+    message: error.message,
+    help: error.help
+  }).custom()
+}
 
 async function decrypt (options = {}) {
   const envs = options.envs || []
@@ -33,7 +41,11 @@ async function decrypt (options = {}) {
       const encoding = await detectEncoding(filepath)
       row.envSrc = await fsx.readFileX(filepath, { encoding })
 
-      const { parsed } = await parse(row.envSrc, { fk, ik, ek, array: true, provider })
+      const { parsed, errors } = await parse(row.envSrc, { fk, ik, ek, array: true, provider })
+
+      if (errors.length > 0) {
+        row.error = parseError(errors[0])
+      }
 
       for (const [key, values] of Object.entries(parsed)) {
         const before = row.envSrc
