@@ -2,86 +2,14 @@ const fsx = require('./../../lib/helpers/fsx')
 const path = require('path')
 const { logger } = require('./../../shared/logger')
 
-const decryptTransform = require('./../../lib/transforms/decrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 const normalizeArmorAliases = require('./normalizeArmorAliases')
-const detectEncoding = require('../../lib/helpers/detectEncoding')
-const Errors = require('../../lib/helpers/errors')
-const keynames = require('../../lib/conventions/keynames')
-const { determine } = require('../../lib/helpers/envResolution')
-const { keyValues } = require('../../lib/helpers/keyResolution')
 
-const TYPE_ENV_FILE = 'envFile'
+const decryptTransform = require('./../../lib/transforms/decrypt')
 
-async function decrypt (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noArmor = false, options = {}) {
-  const inputs = []
-
-  for (const env of determine(envs, process.env)) {
-    if (env.type !== TYPE_ENV_FILE) {
-      continue
-    }
-
-    const envFilepath = env.value
-    const filepath = path.resolve(envFilepath)
-    const row = {
-      type: TYPE_ENV_FILE,
-      filepath,
-      envFilepath
-    }
-
-    try {
-      const encoding = await detectEncoding(filepath)
-      row.envSrc = await fsx.readFileX(filepath, { encoding })
-
-      const { privateKeyName } = keynames(envFilepath)
-      const { privateKeyValue } = await keyValues(envFilepath, {
-        keysFilepath: envKeysFilepath,
-        noArmor,
-        command: options.command
-      })
-
-      row.privateKeyName = privateKeyName
-      row.privateKeyValue = privateKeyValue
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
-      } else {
-        row.error = error
-      }
-    }
-
-    inputs.push(row)
-  }
-
-  const ready = inputs.filter(input => !input.error)
-  const result = await decryptTransform({
-    envs: ready,
-    key,
-    excludeKey
-  })
-
-  return {
-    processedEnvs: inputs.map(input => {
-      if (input.error) {
-        return {
-          keys: [],
-          type: input.type,
-          filepath: input.filepath,
-          envFilepath: input.envFilepath,
-          error: input.error
-        }
-      }
-
-      return result.processedEnvs.shift()
-    }),
-    changedFilepaths: result.changedFilepaths,
-    unchangedFilepaths: result.unchangedFilepaths
-  }
-}
-
-async function decryptAction () {
+async function decrypt () {
   const options = normalizeArmorAliases(this.opts())
   const spinner = await createSpinner({ ...options, text: 'decrypting' })
 
@@ -98,9 +26,8 @@ async function decryptAction () {
     if (spinner) spinner.stop()
     const {
       processedEnvs
-    } = await decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, {
-      command: process.argv.slice(2)
-    })
+    } = await decryptTransform({ envs, ik: options.key, ek: options.excludeKey, fk: options.envKeysFile, noArmor, command: process.argv.slice(2) })
+
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
@@ -123,9 +50,7 @@ async function decryptAction () {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, {
-        command: process.argv.slice(2)
-      })
+      } = await decryptTransform({ envs, ik: options.key, ek: options.excludeKey, fk: options.envKeysFile, noArmor, command: process.argv.slice(2) })
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -162,4 +87,4 @@ async function decryptAction () {
   }
 }
 
-module.exports = decryptAction
+module.exports = decrypt

@@ -1,75 +1,48 @@
+const fsx = require('./../helpers/fsx')
 const path = require('path')
-const picomatch = require('picomatch')
-const { encrypted, scan, upsert } = require('@dotenvx/primitives')
-
-const decryptKeyValue = require('../helpers/cryptography/decryptKeyValue')
+const { encrypted, parse, scan, upsert } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
-function list (value) {
-  if (!Array.isArray(value)) {
-    return [value]
-  }
+const Errors = require('./../helpers/errors')
+const { determine } = require('./../helpers/envResolution')
+const detectEncoding = require('./../helpers/detectEncoding')
+const providers = require('./../providers')
 
-  return value
-}
+async function decrypt (options = {}) {
+  const envs = options.envs || []
+  const ik = options.ik
+  const ek = options.ek
+  const fk = options.fk
+  const provider = options.noArmor ? null : await providers(options)
 
-async function decrypt ({ envs = [], key = [], excludeKey = [] } = {}) {
   const processedEnvs = []
   const changedFilepaths = []
   const unchangedFilepaths = []
-  const keys = list(key)
-  const excludeKeys = list(excludeKey)
-  const exclude = picomatch(excludeKeys)
-  const include = picomatch(keys, { ignore: excludeKeys })
 
-  for (const env of envs) {
+  for (const env of determine(envs, process.env)) {
     if (env.type !== TYPE_ENV_FILE) {
       continue
     }
 
     const envFilepath = env.envFilepath || env.value
     const filepath = env.filepath || path.resolve(envFilepath)
-    const row = {
-      keys: [],
-      type: TYPE_ENV_FILE,
-      filepath,
-      envFilepath,
-      privateKey: env.privateKeyValue,
-      privateKeyName: env.privateKeyName,
-      changed: false,
-      envSrc: env.envSrc
-    }
+    const row = { keys: [], type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
-      const envParsed = scan(row.envSrc).parsed
+      const encoding = await detectEncoding(filepath)
+      row.envSrc = await fsx.readFileX(filepath, { encoding })
 
-      for (const [key, values] of Object.entries(envParsed)) {
-        if (exclude(key)) {
-          continue
+      const { parsed } = await parse(row.envSrc, { fk, ik, ek, array: true, provider })
+
+      for (const [key, values] of Object.entries(parsed)) {
+        const before = row.envSrc
+        const after = upsert(before, key, values)
+        if (after !== before) {
+          row.envSrc = after
+          row.changed = true
+          row.keys.push(key)
         }
-
-        if (keys.length > 0 && !include(key)) {
-          continue
-        }
-
-        const hasEncrypted = values.some(value => encrypted(value))
-        if (!hasEncrypted) {
-          continue
-        }
-
-        row.keys.push(key)
-
-        const decryptedValues = values.map(value => {
-          if (!encrypted(value)) {
-            return value
-          }
-
-          return decryptKeyValue(key, value, row.privateKeyName, row.privateKey)
-        })
-
-        row.envSrc = upsert(row.envSrc, key, decryptedValues)
-        row.changed = true
       }
 
       if (row.changed) {
@@ -78,7 +51,11 @@ async function decrypt ({ envs = [], key = [], excludeKey = [] } = {}) {
         unchangedFilepaths.push(envFilepath)
       }
     } catch (error) {
-      row.error = error
+      if (error.code === 'ENOENT') {
+        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+      } else {
+        row.error = error
+      }
     }
 
     processedEnvs.push(row)

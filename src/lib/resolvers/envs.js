@@ -1,5 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
+const { encrypted, parse, parseSync } = require('@dotenvx/primitives')
 
 const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
@@ -7,7 +8,6 @@ const TYPE_ENV_FILE = 'envFile'
 const Errors = require('./../helpers/errors')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
-const { encrypted, parse, parseSync } = require('@dotenvx/primitives')
 const keynames = require('./../conventions/keynames')
 const providers = require('./../providers')
 
