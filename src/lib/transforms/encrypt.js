@@ -1,6 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypted, encrypt, scan, upsert, publickeys, keyring, keypair } = require('@dotenvx/primitives')
+const { encrypted, encrypt, scan, upsert, publickeys, keypair } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -35,9 +35,8 @@ async function encryptTransform (options = {}) {
   const ik = options.ik
   const ek = options.ek
   const fk = options.fk || '.env.keys'
-  const noArmor = options.noArmor
+  let noArmor = options.noArmor // key storage selector below
   const noCreate = options.noCreate
-
 
   const processedEnvs = []
   const changedFilepaths = []
@@ -95,15 +94,13 @@ async function encryptTransform (options = {}) {
           const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
           keysSrc = mutated.keysSrc
         } else {
-          let json
-
           const sesh = new Session()
           const hostname = sesh.hostname()
           const token = sesh.token()
           const devicePublicKey = sesh.devicePublicKey()
 
           try {
-            json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined).run()
+            await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined).run()
           } catch (error) {
             if (error.code !== 'DOTENVX_TEAM_REQUIRED') {
               throw error
@@ -122,7 +119,7 @@ async function encryptTransform (options = {}) {
               })
             }
 
-            json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team).run()
+            await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team).run()
           }
 
           // don't set keysSrc (in armor)

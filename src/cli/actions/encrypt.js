@@ -1,5 +1,4 @@
 const fsx = require('./../../lib/helpers/fsx')
-const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const encryptTransform = require('./../../lib/transforms/encrypt')
@@ -21,18 +20,13 @@ async function encryptAction () {
   const ek = options.excludeKey
   const fk = options.envKeysFile || '.env.keys'
   const noCreate = options.create === false
-  let noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
 
   let errorCount = 0
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    const {
-      keysSrc,
-      processedEnvs,
-      changedFilepaths,
-      unchangedFilepaths
-    } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
+    const { processedEnvs } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
 
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
@@ -52,21 +46,7 @@ async function encryptAction () {
     }
   } else {
     try {
-      // const {
-      //   keysSrc,
-      //   processedEnvs,
-      //   changedFilepaths,
-      //   unchangedFilepaths
-      // } = await encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, {
-      //   ...encryptOptions(noArmor),
-      //   command: process.argv.slice(2)
-      // })
-      const {
-        keysSrc,
-        processedEnvs,
-        changedFilepaths,
-        unchangedFilepaths
-      } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
+      const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
 
       if (keysSrc) {
         await fsx.writeFileX(fk, keysSrc)
@@ -88,7 +68,7 @@ async function encryptAction () {
 
       if (changedFilepaths.length > 0) {
         // const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
-        let msg = `◈ encrypted (${changedFilepaths.join(',')})`
+        const msg = `◈ encrypted (${changedFilepaths.join(',')})`
         // if (remoteKeyAddedEnv) {
         //   msg += ' · armored ⛨'
         // }
