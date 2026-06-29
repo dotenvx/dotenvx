@@ -50,134 +50,6 @@ function encryptOptions (noArmor) {
   return options
 }
 
-async function encrypt (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noArmor = false, noCreate = false, token = undefined, options = {}) {
-  const {
-    keysSrc,
-    processedEnvs,
-    changedFilepaths,
-    unchangedFilepaths
-  } = await encryptTransform({ envs, ik: key, ek: excludeKey, fk: envKeysFilepath, noArmor, noCreate })
-
-  console.log(result)
-
-  // const inputs = []
-  //for (const env of determine(envs, process.env)) {
-  //  if (env.type !== TYPE_ENV_FILE) {
-  //    continue
-  //  }
-
-  //  const envFilepath = env.value
-  //  const filepath = path.resolve(envFilepath)
-  //  const row = {
-  //    keys: [],
-  //    type: TYPE_ENV_FILE,
-  //    filepath,
-  //    envFilepath,
-  //    changed: false
-  //  }
-
-  //  try {
-  //    const fileExists = await fsx.exists(filepath)
-  //    if (!fileExists && !noCreate) {
-  //      row.envSrc = SAMPLE_ENV_KIT
-  //      row.kitCreated = 'sample'
-  //      row.changed = true
-  //    } else {
-  //      const encoding = await detectEncoding(filepath)
-  //      row.envSrc = await fsx.readFileX(filepath, { encoding })
-  //    }
-
-  //    if (row.envSrc.trim().length === 0) {
-  //      row.envSrc = SAMPLE_ENV_KIT
-  //      row.kitCreated = 'sample'
-  //      row.changed = true
-  //    }
-
-  //    const { publicKeyName, privateKeyName } = keynames(envFilepath)
-  //    const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, {
-  //      keysFilepath: envKeysFilepath,
-  //      noArmor,
-  //      command: options.command
-  //    })
-
-  //    let publicKey
-  //    let privateKey
-
-  //    if (!privateKeyValue && !publicKeyValue) {
-  //      const prov = await provision({
-  //        envSrc: row.envSrc,
-  //        envFilepath,
-  //        keysFilepath: envKeysFilepath,
-  //        noArmor,
-  //        token,
-  //        selectKeyStorage: options.selectKeyStorage,
-  //        command: options.command
-  //      })
-  //      row.envSrc = prov.envSrc
-  //      publicKey = prov.publicKey
-  //      privateKey = prov.privateKey
-  //      row.localPrivateKeyAdded = prov.localPrivateKeyAdded
-  //      row.remotePrivateKeyAdded = prov.remotePrivateKeyAdded
-  //      row.envKeysFilepath = prov.envKeysFilepath
-  //      row.changed = true
-  //    } else if (privateKeyValue) {
-  //      const prov = provisionWithPrivateKey({
-  //        envSrc: row.envSrc,
-  //        envFilepath,
-  //        keysFilepath: envKeysFilepath,
-  //        privateKeyValue,
-  //        publicKeyValue,
-  //        publicKeyName
-  //      })
-  //      row.envSrc = prov.envSrc
-  //      publicKey = prov.publicKey
-  //      privateKey = prov.privateKey
-  //    } else if (publicKeyValue) {
-  //      publicKey = publicKeyValue
-  //    }
-
-  //    row.publicKeyName = publicKeyName
-  //    row.publicKeyValue = publicKey
-  //    row.privateKeyName = privateKeyName
-  //    row.privateKeyValue = privateKey
-  //  } catch (error) {
-  //    if (error.code === 'ENOENT') {
-  //      row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
-  //    } else {
-  //      row.error = error
-  //    }
-  //  }
-
-  //  inputs.push(row)
-  //}
-
-  //const ready = inputs.filter(input => !input.error)
-  //const result = await encryptTransform({
-  //  envs: ready,
-  //  ik: key,
-  //  ek: excludeKey,
-  //  noArmor
-  //})
-
-  //return {
-  //  processedEnvs: inputs.map(input => {
-  //    if (input.error) {
-  //      return {
-  //        keys: [],
-  //        type: input.type,
-  //        filepath: input.filepath,
-  //        envFilepath: input.envFilepath,
-  //        error: input.error
-  //      }
-  //    }
-
-  //    return result.processedEnvs.shift()
-  //  }),
-  //  changedFilepaths: result.changedFilepaths,
-  //  unchangedFilepaths: result.unchangedFilepaths
-  //}
-}
-
 async function encryptAction () {
   const options = normalizeArmorAliases(this.opts())
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
@@ -194,7 +66,6 @@ async function encryptAction () {
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    if (spinner) spinner.stop()
     // const {
     //   processedEnvs
     // } = await encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, {
@@ -208,14 +79,20 @@ async function encryptAction () {
       unchangedFilepaths
     } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
 
+    let exitCode = 0
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
-      console.log(processedEnv.envSrc)
+      if (processedEnv.error) {
+        exitCode = 1
+        logger.warn(processedEnv.error.messageWithHelp)
+      }
+      if (processedEnv.envSrc) {
+        console.log(processedEnv.envSrc)
+      }
     }
-    process.exit(0) // exit early
+    process.exit(exitCode) // exit early
   } else {
     try {
-      if (spinner) spinner.stop()
       // const {
       //   keysSrc,
       //   processedEnvs,
@@ -232,8 +109,11 @@ async function encryptAction () {
         unchangedFilepaths
       } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
 
-      await fsx.writeFileX(fk, keysSrc)
+      if (keysSrc) {
+        await fsx.writeFileX(fk, keysSrc)
+      }
 
+      if (spinner) spinner.stop()
       for (const processedEnv of processedEnvs) {
         logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         if (processedEnv.error) {
@@ -246,7 +126,6 @@ async function encryptAction () {
         }
       }
 
-      if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
         // const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
         let msg = `◈ encrypted (${changedFilepaths.join(',')})`
@@ -266,5 +145,131 @@ async function encryptAction () {
     }
   }
 }
+
+// async function encrypt (envs = [], key = [], excludeKey = [], envKeysFilepath = null, noArmor = false, noCreate = false, token = undefined, options = {}) {
+//   const {
+//     keysSrc,
+//     processedEnvs,
+//     changedFilepaths,
+//     unchangedFilepaths
+//   } = await encryptTransform({ envs, ik: key, ek: excludeKey, fk: envKeysFilepath, noArmor, noCreate })
+//
+//   // const inputs = []
+//   //for (const env of determine(envs, process.env)) {
+//   //  if (env.type !== TYPE_ENV_FILE) {
+//   //    continue
+//   //  }
+//
+//   //  const envFilepath = env.value
+//   //  const filepath = path.resolve(envFilepath)
+//   //  const row = {
+//   //    keys: [],
+//   //    type: TYPE_ENV_FILE,
+//   //    filepath,
+//   //    envFilepath,
+//   //    changed: false
+//   //  }
+//
+//   //  try {
+//   //    const fileExists = await fsx.exists(filepath)
+//   //    if (!fileExists && !noCreate) {
+//   //      row.envSrc = SAMPLE_ENV_KIT
+//   //      row.kitCreated = 'sample'
+//   //      row.changed = true
+//   //    } else {
+//   //      const encoding = await detectEncoding(filepath)
+//   //      row.envSrc = await fsx.readFileX(filepath, { encoding })
+//   //    }
+//
+//   //    if (row.envSrc.trim().length === 0) {
+//   //      row.envSrc = SAMPLE_ENV_KIT
+//   //      row.kitCreated = 'sample'
+//   //      row.changed = true
+//   //    }
+//
+//   //    const { publicKeyName, privateKeyName } = keynames(envFilepath)
+//   //    const { publicKeyValue, privateKeyValue } = await keyValues(envFilepath, {
+//   //      keysFilepath: envKeysFilepath,
+//   //      noArmor,
+//   //      command: options.command
+//   //    })
+//
+//   //    let publicKey
+//   //    let privateKey
+//
+//   //    if (!privateKeyValue && !publicKeyValue) {
+//   //      const prov = await provision({
+//   //        envSrc: row.envSrc,
+//   //        envFilepath,
+//   //        keysFilepath: envKeysFilepath,
+//   //        noArmor,
+//   //        token,
+//   //        selectKeyStorage: options.selectKeyStorage,
+//   //        command: options.command
+//   //      })
+//   //      row.envSrc = prov.envSrc
+//   //      publicKey = prov.publicKey
+//   //      privateKey = prov.privateKey
+//   //      row.localPrivateKeyAdded = prov.localPrivateKeyAdded
+//   //      row.remotePrivateKeyAdded = prov.remotePrivateKeyAdded
+//   //      row.envKeysFilepath = prov.envKeysFilepath
+//   //      row.changed = true
+//   //    } else if (privateKeyValue) {
+//   //      const prov = provisionWithPrivateKey({
+//   //        envSrc: row.envSrc,
+//   //        envFilepath,
+//   //        keysFilepath: envKeysFilepath,
+//   //        privateKeyValue,
+//   //        publicKeyValue,
+//   //        publicKeyName
+//   //      })
+//   //      row.envSrc = prov.envSrc
+//   //      publicKey = prov.publicKey
+//   //      privateKey = prov.privateKey
+//   //    } else if (publicKeyValue) {
+//   //      publicKey = publicKeyValue
+//   //    }
+//
+//   //    row.publicKeyName = publicKeyName
+//   //    row.publicKeyValue = publicKey
+//   //    row.privateKeyName = privateKeyName
+//   //    row.privateKeyValue = privateKey
+//   //  } catch (error) {
+//   //    if (error.code === 'ENOENT') {
+//   //      row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+//   //    } else {
+//   //      row.error = error
+//   //    }
+//   //  }
+//
+//   //  inputs.push(row)
+//   //}
+//
+//   //const ready = inputs.filter(input => !input.error)
+//   //const result = await encryptTransform({
+//   //  envs: ready,
+//   //  ik: key,
+//   //  ek: excludeKey,
+//   //  noArmor
+//   //})
+//
+//   //return {
+//   //  processedEnvs: inputs.map(input => {
+//   //    if (input.error) {
+//   //      return {
+//   //        keys: [],
+//   //        type: input.type,
+//   //        filepath: input.filepath,
+//   //        envFilepath: input.envFilepath,
+//   //        error: input.error
+//   //      }
+//   //    }
+//
+//   //    return result.processedEnvs.shift()
+//   //  }),
+//   //  changedFilepaths: result.changedFilepaths,
+//   //  unchangedFilepaths: result.unchangedFilepaths
+//   //}
+// }
 
 module.exports = encryptAction

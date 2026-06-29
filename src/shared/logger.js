@@ -85,7 +85,7 @@ const logger = {
   error: (msg) => stderr('error', msg),
   infoerror: (msg) => stderr('infoerror', msg),
   // warns
-  warn: (msg) => stdout('warn', msg),
+  warn: (msg) => stderr('warn', msg),
   // success
   success: (msg) => stdout('success', msg),
   successv: (msg) => stdout('successv', msg),

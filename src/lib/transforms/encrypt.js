@@ -26,7 +26,7 @@ async function encryptTransform (options = {}) {
   const unchangedFilepaths = []
 
   // set up keysSrc
-  let keysSrc = ''
+  let keysSrc
   if (await fsx.exists(fk)) {
     const encoding = await detectEncoding(fk)
     keysSrc = await fsx.readFileX(fk, { encoding })
@@ -67,11 +67,12 @@ async function encryptTransform (options = {}) {
         const { envSrc } = mutateSrc({ envSrc: row.envSrc, envFilepath, keysFilepath: fk, publicKeyName, publicKeyValue: publicKey })
         row.envSrc = envSrc
 
+        const comment = path.basename(envFilepath)
         if (noArmor) {
-          const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey })
+          const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
           keysSrc = mutated.keysSrc
         } else {
-          const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey })
+          const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
           keysSrc = mutated.keysSrc
           console.error('coming soon: armor')
           // throw new Error('implement!')
@@ -110,7 +111,11 @@ async function encryptTransform (options = {}) {
         unchangedFilepaths.push(envFilepath)
       }
     } catch (error) {
-      row.error = error
+      if (error.code === 'ENOENT') {
+        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+      } else {
+        row.error = error
+      }
     }
 
     processedEnvs.push(row)
