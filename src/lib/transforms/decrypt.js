@@ -63,7 +63,6 @@ async function decrypt (options = {}) {
         unchangedFilepaths.push(envFilepath)
       }
     } catch (error) {
-      console.log(error)
       if (error.code === 'ENOENT') {
         row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
       } else {

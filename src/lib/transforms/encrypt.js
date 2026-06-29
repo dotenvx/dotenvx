@@ -7,10 +7,28 @@ const TYPE_ENV_FILE = 'envFile'
 const Errors = require('../helpers/errors')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
-// const providers = require('./../providers')
 const { isPublicKey, mutateSrc, mutateKeysSrc2 } = require('../helpers/cryptography')
 const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 const keynames = require('../conventions/keynames')
+const PostArmorUp = require('../api/postArmorUp')
+const prompts = require('../helpers/prompts')
+const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
+const Session = require('../../db/session')
+
+async function selectKeyStorage () {
+  const selected = await prompts.select({
+    message: 'Choose private key storage',
+    choices: [
+      { name: '◫ File (.env.keys)', value: 'file' },
+      { name: '⛨ Armor (armor.dotenvx.com)', value: 'armored' }
+    ]
+  }, {
+    input: process.stdin,
+    output: process.stderr
+  })
+
+  return selected
+}
 
 async function encryptTransform (options = {}) {
   const envs = options.envs || []
@@ -19,7 +37,7 @@ async function encryptTransform (options = {}) {
   const fk = options.fk || '.env.keys'
   const noArmor = options.noArmor
   const noCreate = options.noCreate
-  // const provider = options.noArmor ? null : await providers(options)
+
 
   const processedEnvs = []
   const changedFilepaths = []
@@ -59,6 +77,10 @@ async function encryptTransform (options = {}) {
       let publicKey = publickeys(row.envSrc)[0]
 
       if (!publicKey) {
+        if (!noCreate && !noArmor && selectKeyStorage) {
+          noArmor = await selectKeyStorage() !== 'armored'
+        }
+
         // upsert public key to .env file
         const kp = keypair() // local
         publicKey = kp.publicKey
@@ -68,14 +90,42 @@ async function encryptTransform (options = {}) {
         row.envSrc = envSrc
 
         const comment = path.basename(envFilepath)
+
         if (noArmor) {
           const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
           keysSrc = mutated.keysSrc
         } else {
-          const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
-          keysSrc = mutated.keysSrc
-          console.error('coming soon: armor')
-          // throw new Error('implement!')
+          let json
+
+          const sesh = new Session()
+          const hostname = sesh.hostname()
+          const token = sesh.token()
+          const devicePublicKey = sesh.devicePublicKey()
+
+          try {
+            json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined).run()
+          } catch (error) {
+            if (error.code !== 'DOTENVX_TEAM_REQUIRED') {
+              throw error
+            }
+
+            const choices = teamChoicesFromMeta(error.meta)
+
+            let team = choices[0].value
+            if (choices.length > 1) {
+              team = await prompts.select({
+                message: 'Select team',
+                choices
+              }, {
+                input: process.stdin,
+                output: process.stderr
+              })
+            }
+
+            json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team).run()
+          }
+
+          // don't set keysSrc (in armor)
         }
       }
 

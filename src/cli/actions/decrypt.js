@@ -31,7 +31,7 @@ async function decrypt () {
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
         errorCount += 1
-        logger.error(processedEnv.error.messageWithHelp)
+        logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
       } else {
         console.log(processedEnv.envSrc)
       }
@@ -56,7 +56,7 @@ async function decrypt () {
 
         if (processedEnv.error) {
           errorCount += 1
-          logger.error(processedEnv.error.messageWithHelp)
+          logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
         }
 
         if (processedEnv.changed) {
