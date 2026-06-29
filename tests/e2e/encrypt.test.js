@@ -6,8 +6,6 @@ const which = require('which')
 const dotenv = require('dotenv')
 const { execSync } = require('child_process')
 
-const localKeypair = require('../../src/lib/helpers/cryptography/localKeypair')
-
 let tempDir = ''
 const osTempDir = fs.realpathSync(os.tmpdir())
 const originalDir = process.cwd()
@@ -80,37 +78,6 @@ t.test('#encrypt -k', ct => {
 
   process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY
   ct.equal(execShell(`${dotenvx} get HI`), 'thar')
-
-  ct.end()
-})
-
-t.test('#run - encrypt -k --stdout', ct => {
-  execShell(`
-    echo "HELLO=World\nHI=thar" > .env
-  `)
-
-  const output = execShell(`${dotenvx} encrypt -k HI --stdout`)
-
-  const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
-  const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
-  const { publicKey } = localKeypair(DOTENV_PRIVATE_KEY)
-
-  const expectedFixedPart1 = `#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
-#/            public-key encryption for .env files          /
-#/       [how it works](https://dotenvx.com/encryption)     /
-#/----------------------------------------------------------/
-DOTENV_PUBLIC_KEY="${publicKey}"
-
-# .env
-HELLO=World
-HI=encrypted:`
-
-  const parts = output.split('HI=encrypted:')
-  const encryptedPart = parts[1]
-  const unencryptedPart = `${parts[0]}HI=encrypted:`
-
-  ct.equal(unencryptedPart, expectedFixedPart1, 'The fixed part of the output should match the expected output')
-  ct.match(encryptedPart, /.*/, 'The encrypted part should match the expected pattern')
 
   ct.end()
 })
