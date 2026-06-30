@@ -1,15 +1,13 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypted, encrypt, scan, upsert, publickeys, keypair } = require('@dotenvx/primitives')
+const { encrypt, upsert, publickeys, keypair } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
-const Errors = require('../helpers/errors')
 const getResolver = require('./../resolvers/get')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
-const { isPublicKey, mutateSrc, mutateKeysSrc2 } = require('../helpers/cryptography')
-const decryptKeyValue = require('../helpers/cryptography/decryptKeyValue')
+const { mutateSrc, mutateKeysSrc2 } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const PostArmorUp = require('../api/postArmorUp')
 const prompts = require('../helpers/prompts')

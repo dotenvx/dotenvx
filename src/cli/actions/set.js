@@ -58,8 +58,8 @@ async function set (key, value) {
       }
     }
 
-    //const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
-    //const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+    // const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+    // const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
     // let keyAddedSuffix = ''
     // if (remoteKeyAddedEnv) {
     //   keyAddedSuffix = ' · armored ⛨'

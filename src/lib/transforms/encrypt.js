@@ -15,7 +15,6 @@ const prompts = require('../helpers/prompts')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 const Session = require('../../db/session')
 
-
 async function selectKeyStorage () {
   const selected = await prompts.select({
     message: 'Choose private key storage',

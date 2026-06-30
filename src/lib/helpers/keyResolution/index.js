@@ -1,12 +1,4 @@
 module.exports = {
-  keyValues: require('./keyValues'),
-  keyValuesSync: require('./keyValuesSync'),
-  keyValuesFromEnvSrc: require('./keyValuesFromEnvSrc'),
-
-  // private
-  // private keys are resolved via keyValuesSync()
-
-  // other
   readProcessKey: require('./readProcessKey'),
   readFileKey: require('./readFileKey'),
   readFileKeySync: require('./readFileKeySync'),
