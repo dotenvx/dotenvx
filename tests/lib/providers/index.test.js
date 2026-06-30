@@ -74,3 +74,25 @@ t.test('providers returns armor provider when armor session is on', async ct => 
   ct.equal(typeof providers.sync(), 'function')
   ct.end()
 })
+
+t.test('providers returns armor provider results even when keyring is empty', async ct => {
+  const armor = sinon.stub().resolves({})
+  const session = {
+    noArmor: sinon.stub().resolves(false),
+    noArmorSync: sinon.stub().returns(false)
+  }
+  const providers = proxyquire('../../../src/lib/providers', {
+    './../../db/session': function Session () {
+      return session
+    },
+    './armor/index': armor
+  })
+
+  const provider = await providers()
+  const value = await provider('public-key')
+
+  ct.same(value, {})
+  ct.equal(typeof provider, 'function')
+  ct.equal(typeof providers.sync(), 'function')
+  ct.end()
+})

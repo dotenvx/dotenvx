@@ -59,3 +59,33 @@ t.test('armor provider forwards approval instructions to onStatus', async ct => 
   ct.same(onStatus.firstCall.args, ['[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)'])
   ct.end()
 })
+
+t.test('armor provider returns an empty keyring when armor has no matching keys', async ct => {
+  class SessionStub {
+    hostname () {
+      return 'https://armor.example.com'
+    }
+
+    token () {
+      return 'token-1'
+    }
+
+    devicePublicKey () {
+      return 'device-public-key'
+    }
+  }
+  class ArmorKeyringStub {
+    async run () {
+      return {}
+    }
+  }
+  const provider = proxyquire('../../../src/lib/providers/armor/index', {
+    '../../../db/session': SessionStub,
+    '../../services/armorKeyring': ArmorKeyringStub
+  })
+
+  const ring = await provider('027c9c5579cce25013e1e5ae8b4bde6d93bad14457babf5b3e055572ae4931f71')
+
+  ct.same(ring, {})
+  ct.end()
+})
