@@ -66,17 +66,4 @@ async function get (options = {}) {
   })
 }
 
-function getSync (options = {}) {
-  const processEnv = { ...(options.processEnv || process.env) }
-  const { processedEnvs } = envsResolver.sync(buildOptions(options, processEnv))
-
-  return result({
-    key: options.key,
-    all: options.all,
-    processedEnvs,
-    processEnv
-  })
-}
-
 module.exports = get
-module.exports.sync = getSync
