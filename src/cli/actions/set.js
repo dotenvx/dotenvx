@@ -28,7 +28,7 @@ async function set (key, value) {
   const envs = this.envs || []
   const fk = options.envKeysFile || '.env.keys'
   const noCreate = options.create === false
-  const noArmor = options.armor === false || (await sesh.noArmor())
+  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
 
   let errorCount = 0
 
@@ -47,7 +47,6 @@ async function set (key, value) {
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       logger.verbose(`setting for ${processedEnv.envFilepath}`)
-
       if (processedEnv.error) {
         errorCount += 1
         logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
