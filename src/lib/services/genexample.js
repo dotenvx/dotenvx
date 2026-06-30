@@ -3,8 +3,7 @@ const path = require('path')
 
 const Errors = require('../helpers/errors')
 const findEnvFiles = require('../helpers/findEnvFiles')
-const replace = require('../helpers/replace')
-const { scan } = require('@dotenvx/primitives')
+const { scan, upsert } = require('@dotenvx/primitives')
 
 function finalValues (src) {
   const { parsed } = scan(src)
@@ -38,7 +37,7 @@ class Genexample {
     /** @type {Record<string, string>} */
     const injected = {}
     /** @type {Record<string, string>} */
-    const preExisted = {}
+    const existed = {}
 
     let exampleSrc = `# ${this.exampleFilename} - generated with dotenvx\n`
 
@@ -58,7 +57,7 @@ class Genexample {
         keys.add(key)
 
         // once newSrc is built write it out
-        src = replace(src, key, '') // empty value
+        src = upsert(src, key, '') // empty value
       }
 
       exampleSrc += `\n${src}`
@@ -80,7 +79,7 @@ class Genexample {
       const parsed = finalValues(exampleSrc)
       for (const key of [...keys]) {
         if (key in parsed) {
-          preExisted[key] = parsed[key]
+          existed[key] = parsed[key]
         } else {
           exampleSrc += `${key}=''\n`
 
@@ -97,7 +96,7 @@ class Genexample {
       exampleFilepath: this.exampleFilepath,
       addedKeys: [...addedKeys],
       injected,
-      preExisted
+      existed
     }
   }
 

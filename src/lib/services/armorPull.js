@@ -1,7 +1,7 @@
 const prompts = require('../helpers/prompts')
 const PostArmorPull = require('../api/postArmorPull')
 const upsertEnvKey = require('../helpers/upsertEnvKey')
-const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
+const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 
@@ -24,7 +24,7 @@ class ArmorPull {
     const {
       publicKeyName,
       privateKeyName
-    } = keyNamesForEnvFile(envFile)
+    } = keynames(envFile)
 
     const publicKey = readEnvKey(publicKeyName, envFile, { strict: true, ignore: ['MISSING_PRIVATE_KEY'] })
     let json

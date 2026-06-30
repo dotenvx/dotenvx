@@ -2,11 +2,11 @@ const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
-const Run = require('./../../lib/services/run')
+const envsResolver = require('./../../lib/resolvers/envs')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const normalizeArmorOptions = require('./normalizeArmorOptions')
+const normalizeArmorAliases = require('./normalizeArmorAliases')
 
 const conventions = require('./../../lib/helpers/conventions')
 const { determine } = require('./../../lib/helpers/envResolution')
@@ -34,8 +34,18 @@ function inferCommandArgsFromProcessArgv (argv) {
   return []
 }
 
+function uniqueInjectedKeys (processedEnvs) {
+  const result = new Set()
+  for (const processedEnv of processedEnvs) {
+    for (const key of Object.keys(processedEnv.injected || {})) {
+      result.add(key)
+    }
+  }
+  return result
+}
+
 async function run () {
-  const options = normalizeArmorOptions(this.opts())
+  const options = normalizeArmorAliases(this.opts())
 
   let commandArgs = this.args
   if (commandArgs.length < 1) {
@@ -76,17 +86,24 @@ async function run () {
       envs = this.envs
     }
     envs = determine(envs, process.env)
-    if (spinner) spinner.stop()
 
     const {
       processedEnvs,
-      readableStrings,
-      readableFilepaths,
-      uniqueInjectedKeys
-    } = await new Run(envs, options.overload, process.env, options.envKeysFile, noArmor, {
+      readableFilepaths
+    } = await envsResolver({
+      envs,
+      overload: options.overload,
+      processEnv: process.env,
+      envKeysFile: options.envKeysFile,
+      noArmor,
       token: options.token,
-      command: commandArgs
-    }).run()
+      command: commandArgs,
+      onStatus: (text) => {
+        if (spinner && text) {
+          spinner.text = text
+        }
+      }
+    })
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envFile') {
@@ -121,27 +138,25 @@ async function run () {
         logger.debug(`${key} set to ${value}`)
       }
 
-      // verbose/debug preExisted key/value
-      for (const [key, value] of Object.entries(processedEnv.preExisted || {})) {
+      // verbose/debug existed key/value
+      for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
         logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
     }
 
-    let msg = `injected env (${uniqueInjectedKeys.length})`
-    if (readableFilepaths.length > 0 && readableStrings.length > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}, and --env flag${readableStrings.length > 1 ? 's' : ''}`
+    let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
+    const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
+    if (readableFilepaths.length > 0 && envStringCount > 0) {
+      msg += ` from ${readableFilepaths.join(', ')}, and --env flag${envStringCount > 1 ? 's' : ''}`
     } else if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
-    } else if (readableStrings.length > 0) {
-      msg += ` from --env flag${readableStrings.length > 1 ? 's' : ''}`
+    } else if (envStringCount > 0) {
+      msg += ` from --env flag${envStringCount > 1 ? 's' : ''}`
     }
 
-    const armoredPrivateKeyUsed = processedEnvs.some((processedEnv) => processedEnv.armoredPrivateKeyUsed)
-    const keyUsedSuffix = armoredPrivateKeyUsed ? ' · armored ⛨' : ''
-
     if (spinner) spinner.stop()
-    logger.success(`⟐ ${msg}${keyUsedSuffix}`)
+    logger.success(`⟐ ${msg}`)
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

@@ -1,7 +1,7 @@
 const { derive } = require('@dotenvx/primitives')
 const prompts = require('../helpers/prompts')
 const PostArmorPush = require('../api/postArmorPush')
-const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
+const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 
@@ -29,7 +29,7 @@ class ArmorPush {
     const envFile = this.envFile
     const team = this.team
 
-    const { privateKeyName } = keyNamesForEnvFile(envFile)
+    const { privateKeyName } = keynames(envFile)
 
     const privateKey = readEnvKey(privateKeyName, '.env.keys', { strict: true })
     const publicKey = publicKeyFromPrivateKey(privateKey)

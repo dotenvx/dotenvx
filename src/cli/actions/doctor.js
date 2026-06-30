@@ -1,10 +1,10 @@
 const { logger } = require('./../../shared/logger')
-const main = require('./../../lib/main')
+const Doctor = require('./../../lib/services/doctor')
 
 function doctor (directory = '.') {
   logger.debug(`directory: ${directory}`)
 
-  const findings = main.doctor(directory)
+  const findings = new Doctor(directory).run()
   logger.debug(`findings: ${JSON.stringify(findings)}`)
 
   if (findings.length === 0) {

@@ -3,7 +3,7 @@ const fs = require('fs')
 const execa = require('execa')
 const { scan } = require('@dotenvx/primitives')
 const canonicalEnvFilename = require('./canonicalEnvFilename')
-const environment = require('./envResolution/environment')
+const environment = require('../conventions/environment')
 const sanitizeCommandForMetadata = require('./sanitizeCommandForMetadata')
 
 function compact (object) {

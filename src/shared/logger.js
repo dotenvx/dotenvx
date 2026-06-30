@@ -4,6 +4,7 @@ const { getColor, bold } = require('./colors')
 
 const levels = {
   error: 0,
+  infoerror: 0,
   warn: 1,
   success: 2,
   successv: 2,
@@ -15,6 +16,7 @@ const levels = {
 }
 
 const error = (m) => bold(getColor('red')(`☠ ${m}`))
+const infoerror = getColor('gray') // actually an error
 const warn = (m) => getColor('orangered')(`⚠ ${m}`)
 const success = getColor('amber')
 const successv = (m) => getColor('amber')(`⟐ ${m}`)
@@ -50,6 +52,8 @@ function formatMessage (level, message) {
     // errors
     case 'error':
       return error(formattedMessage)
+    case 'infoerror':
+      return infoerror(formattedMessage)
     // warns
     case 'warn':
       return warn(formattedMessage)
@@ -79,6 +83,7 @@ const logger = {
 
   // errors
   error: (msg) => stderr('error', msg),
+  infoerror: (msg) => stderr('infoerror', msg),
   // warns
   warn: (msg) => stdout('warn', msg),
   // success

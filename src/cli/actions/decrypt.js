@@ -1,14 +1,15 @@
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
-const Decrypt = require('./../../lib/services/decrypt')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const normalizeArmorOptions = require('./normalizeArmorOptions')
+const normalizeArmorAliases = require('./normalizeArmorAliases')
+
+const decryptTransform = require('./../../lib/transforms/decrypt')
 
 async function decrypt () {
-  const options = normalizeArmorOptions(this.opts())
+  const options = normalizeArmorAliases(this.opts())
   const spinner = await createSpinner({ ...options, text: 'decrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
@@ -21,17 +22,26 @@ async function decrypt () {
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    if (spinner) spinner.stop()
     const {
       processedEnvs
-    } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, {
-      command: process.argv.slice(2)
-    }).run()
+    } = await decryptTransform({
+      envs,
+      ik: options.key,
+      ek: options.excludeKey,
+      fk: options.envKeysFile,
+      noArmor,
+      onStatus: (text) => {
+        if (spinner && text) {
+          spinner.text = text
+        }
+      }
+    })
+
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       if (processedEnv.error) {
         errorCount += 1
-        logger.error(processedEnv.error.messageWithHelp)
+        logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
       } else {
         console.log(processedEnv.envSrc)
       }
@@ -44,22 +54,32 @@ async function decrypt () {
     }
   } else {
     try {
-      if (spinner) spinner.stop()
       const {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await new Decrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, {
-        command: process.argv.slice(2)
-      }).run()
+      } = await decryptTransform({
+        envs,
+        ik: options.key,
+        ek: options.excludeKey,
+        fk: options.envKeysFile,
+        noArmor,
+        onStatus: (text) => {
+          if (spinner && text) {
+            spinner.text = text
+          }
+        }
+      })
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
 
         if (processedEnv.error) {
           errorCount += 1
-          logger.error(processedEnv.error.messageWithHelp)
-        } else if (processedEnv.changed) {
+          logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
+        }
+
+        if (processedEnv.changed) {
           await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
 
           logger.verbose(`decrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
@@ -69,10 +89,8 @@ async function decrypt () {
       }
 
       if (spinner) spinner.stop()
-      const armoredPrivateKeyUsed = processedEnvs.some((processedEnv) => processedEnv.armoredPrivateKeyUsed)
-      const keyUsedSuffix = armoredPrivateKeyUsed ? ' · armored ⛨' : ''
       if (changedFilepaths.length > 0) {
-        logger.success(`◇ decrypted (${changedFilepaths.join(',')})${keyUsedSuffix}`)
+        logger.success(`◇ decrypted (${changedFilepaths.join(',')})`)
       } else if (unchangedFilepaths.length > 0) {
         logger.info(`○ no change (${unchangedFilepaths})`)
       } else {

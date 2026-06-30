@@ -2,7 +2,6 @@ const { logger } = require('../../shared/logger')
 
 const Session = require('../../db/session')
 const Login = require('../../lib/services/login')
-const LoginPoll = require('../../lib/services/loginPoll')
 
 const createSpinner = require('../../lib/helpers/createSpinner')
 const formatCode = require('../../lib/helpers/formatCode')
@@ -20,15 +19,17 @@ async function login () {
   const sesh = new Session()
   const hostname = options.hostname || sesh.hostname()
   let cleanupOpenKeyListener = () => {}
+  let loginService
 
   try {
+    loginService = new Login(hostname)
     const {
       deviceCode,
       userCode,
       verificationUri,
       verificationUriComplete,
       interval
-    } = await new Login(hostname).run()
+    } = await loginService.run()
 
     const promptMessage = `◌ press Enter to open [${verificationUri}] and enter code [${formatCode(userCode)}]...`
 
@@ -36,7 +37,7 @@ async function login () {
     logger.info(promptMessage)
 
     // begin polling
-    const pollPromise = new LoginPoll(hostname, deviceCode, interval).run()
+    const pollPromise = loginService.poll(deviceCode, interval)
     cleanupOpenKeyListener = listenForOpenKey(() => openUrl(verificationUriComplete))
     const data = await pollPromise
 

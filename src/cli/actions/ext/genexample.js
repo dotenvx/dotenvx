@@ -1,6 +1,6 @@
 const fsx = require('./../../../lib/helpers/fsx')
 const path = require('path')
-const main = require('./../../../lib/main')
+const Genexample = require('./../../../lib/services/genexample')
 const { logger } = require('./../../../shared/logger')
 const catchAndLog = require('./../../../lib/helpers/catchAndLog')
 
@@ -16,7 +16,7 @@ function genexample (directory) {
       envFile,
       exampleFilepath,
       addedKeys
-    } = main.genexample(directory, options.envFile)
+    } = new Genexample(directory, options.envFile).run()
 
     logger.verbose(`loading env from ${envFile}`)
 

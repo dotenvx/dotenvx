@@ -78,8 +78,39 @@ t.test('#decrypt - missing DOTENV_PRIVATE_KEY', ct => {
   }
 
   ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
-  ct.equal(stdout, '')
-  ct.equal(stderr, '☠ [MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]\n')
+  ct.equal(stdout, '○ no change (.env)\n')
+  ct.equal(stderr, '☠ [DECRYPTION_FAILED] could not decrypt HELLO. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n')
+
+  ct.end()
+})
+
+t.test('#decrypt - partially decrypts when another encrypted value is bad', ct => {
+  execShell(`
+    echo "HELLO=World" > .env
+  `)
+
+  execShell(`${dotenvx} encrypt`)
+  fs.appendFileSync(path.join(tempDir, '.env'), 'FAKE="encrypted:fake123345343434"\n')
+
+  let stdout
+  let stderr
+  let exitCode
+  try {
+    execShell(`${dotenvx} decrypt`)
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    stdout = error.stdout
+    stderr = error.stderr
+    exitCode = error.status
+  }
+
+  const envSrc = fs.readFileSync(path.join(tempDir, '.env'), 'utf8')
+
+  ct.equal(exitCode, 1, 'should exit with code 1 when one encrypted value cannot be decrypted')
+  ct.equal(stdout, '◇ decrypted (.env)\n')
+  ct.equal(stderr, '☠ [DECRYPTION_FAILED] could not decrypt FAKE. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n')
+  ct.match(envSrc, /HELLO=World/)
+  ct.match(envSrc, /FAKE="encrypted:fake123345343434"/)
 
   ct.end()
 })
@@ -127,7 +158,7 @@ t.test('#decrypt --stdout - missing DOTENV_PRIVATE_KEY', ct => {
   }
 
   ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
-  ct.equal(stderr, '☠ [MISSING_PRIVATE_KEY] could not decrypt HELLO using private key \'DOTENV_PRIVATE_KEY=\'. fix: [https://github.com/dotenvx/dotenvx/issues/464]\n')
+  ct.equal(stderr, '☠ [DECRYPTION_FAILED] could not decrypt HELLO. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n')
 
   ct.end()
 })

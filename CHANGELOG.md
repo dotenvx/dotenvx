@@ -2,7 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.76.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.0.0...main)
+
+## [2.0.0](https://github.com/dotenvx/dotenvx/compare/v1.76.0...v2.0.0) (2026-06-30)
+
+### Changed
+
+* BREAKING: lib/main#`set` async only ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* BREAKING: lib/main#`get` async only ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* New keyring support - for local and armor providers and to unlock future providers ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* Route `run`, `config`, and `get` through shared env and keypair resolvers backed by `@dotenvx/primitives` ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* Route `set`, `encrypt`, and `decrypt` through shared transforms that operate on primitive scan, parse, encrypt, and upsert results ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* Update library `parse` to use primitive parsing while preserving dotenvx-style encrypted value errors ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+
+### Removed
+
+* BREAKING: Remove the `rotate` command (it will return in 2.1 or 2.2 soon with a more complete implementation for local and armored keys) ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* BREAKING: Remove the library `doctor`, `keypair`, and `genexample` exports from `lib/main` ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 
 ## [1.76.0](https://github.com/dotenvx/dotenvx/compare/v1.75.1...v1.76.0) (2026-06-24)
 

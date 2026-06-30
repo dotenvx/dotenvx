@@ -6,32 +6,16 @@ const FIRST_TIME_KEYS_SRC = [
   '#/----------------------------------------------------------/'
 ].join('\n')
 
-const path = require('path')
-const fsx = require('./../fsx')
+function mutateKeysSrc ({ keysSrc, privateKeyName, privateKeyValue, comment }) {
+  const appendPrivateKey = [`# ${comment}`, `${privateKeyName}=${privateKeyValue}`, ''].join('\n')
 
-async function mutateKeysSrc ({ envFilepath, keysFilepath, privateKeyName, privateKeyValue }) {
-  const filename = path.basename(envFilepath)
-  const filepath = path.resolve(envFilepath)
-  let resolvedKeysFilepath = path.join(path.dirname(filepath), '.env.keys')
-  if (keysFilepath) {
-    resolvedKeysFilepath = path.resolve(keysFilepath)
+  if (!keysSrc || keysSrc.length < 1) {
+    keysSrc = `${FIRST_TIME_KEYS_SRC}\n`
   }
-  const appendPrivateKey = [`# ${filename}`, `${privateKeyName}=${privateKeyValue}`, ''].join('\n')
-
-  let keysSrc = ''
-  if (await fsx.exists(resolvedKeysFilepath)) {
-    keysSrc = await fsx.readFileX(resolvedKeysFilepath)
-  }
-  keysSrc = keysSrc.length > 1 ? keysSrc : `${FIRST_TIME_KEYS_SRC}\n`
   keysSrc = `${keysSrc}\n${appendPrivateKey}`
 
-  await fsx.writeFileX(resolvedKeysFilepath, keysSrc) // TODO: don't write if armor
-
-  const envKeysFilepath = keysFilepath || path.join(path.dirname(envFilepath), path.basename(resolvedKeysFilepath))
-
   return {
-    keysSrc,
-    envKeysFilepath
+    keysSrc
   }
 }
 

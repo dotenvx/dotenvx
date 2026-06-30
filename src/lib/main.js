@@ -1,25 +1,37 @@
 // @ts-check
 const path = require('path')
+const { encrypted, parseSync } = require('@dotenvx/primitives')
 
 // shared
 const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/logger')
 const { getColor, bold } = require('./../shared/colors')
 
-// services
-const Ls = require('./services/ls')
-const Doctor = require('./services/doctor')
-const Run = require('./services/run')
-const Sets = require('./services/sets')
-const Get = require('./services/get')
-const Keypair = require('./services/keypair')
-const Genexample = require('./services/genexample')
+// resolvers
+const envsResolver = require('./resolvers/envs')
+const getResolver = require('./resolvers/get')
+const lsResolver = require('./resolvers/ls')
+
 const Session = require('./../db/session')
+
+// transforms
+const setTransform = require('./transforms/set')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
 const { determine } = require('./helpers/envResolution')
-const Parse = require('./helpers/parse')
 const fsx = require('./helpers/fsx')
+const decryptKeyValue = require('./helpers/cryptography/decryptKeyValue')
+const Errors = require('./helpers/errors')
+
+function uniqueInjectedKeys (processedEnvs) {
+  const result = new Set()
+  for (const processedEnv of processedEnvs) {
+    for (const key of Object.keys(processedEnv.injected || {})) {
+      result.add(key)
+    }
+  }
+  return result
+}
 
 /** @type {import('./main').config} */
 const config = function (options = {}) {
@@ -57,12 +69,16 @@ const config = function (options = {}) {
     }
     const {
       processedEnvs,
-      readableFilepaths,
-      uniqueInjectedKeys
-    } = new Run(envs, overload, processEnv, envKeysFile, noArmor, {
+      readableFilepaths
+    } = envsResolver.sync({
+      envs,
+      overload,
+      processEnv,
+      envKeysFile,
+      noArmor,
       noSpinner: options.noSpinner,
       token: options.token
-    }).runSync()
+    })
 
     let lastError
     /** @type {Record<string, string>} */
@@ -92,7 +108,7 @@ const config = function (options = {}) {
       }
 
       Object.assign(parsedAll, processedEnv.injected || {})
-      Object.assign(parsedAll, processedEnv.preExisted || {}) // preExisted 'wins'
+      Object.assign(parsedAll, processedEnv.existed || {}) // existed 'wins'
 
       // debug parsed
       logger.debug(processedEnv.parsed)
@@ -103,14 +119,14 @@ const config = function (options = {}) {
         logger.debug(`${key} set to ${value}`)
       }
 
-      // verbose/debug preExisted key/value
-      for (const [key, value] of Object.entries(processedEnv.preExisted || {})) {
+      // verbose/debug existed key/value
+      for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
         logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
     }
 
-    let msg = `injected env (${uniqueInjectedKeys.length})`
+    let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
     if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
     }
@@ -147,7 +163,29 @@ const parse = function (src, options = {}) {
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Parse(src, privateKey, processEnv, overload).run()
+  if (privateKey) {
+    processEnv = Object.assign({}, processEnv, { DOTENV_PRIVATE_KEY: privateKey })
+  }
+
+  const { parsed } = parseSync(src, { processEnv, overload })
+  const errors = []
+
+  for (const key of Object.keys(parsed)) {
+    if (!encrypted(parsed[key])) {
+      continue
+    }
+
+    if (!privateKey) {
+      errors.push(new Errors({ key, privateKeyName: 'DOTENV_PRIVATE_KEY', privateKey }).missingPrivateKey())
+      continue
+    }
+
+    try {
+      parsed[key] = decryptKeyValue(key, parsed[key], 'DOTENV_PRIVATE_KEY', privateKey)
+    } catch (error) {
+      errors.push(error)
+    }
+  }
 
   // display any errors
   for (const error of errors) {
@@ -163,7 +201,7 @@ const parse = function (src, options = {}) {
 }
 
 /* @type {import('./main').set} */
-const set = function (key, value, options = {}) {
+const set = async function (key, value, options = {}) {
   // encrypt
   let encrypt = true
   if (options.plain) {
@@ -180,13 +218,27 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
+  const noCreate = options.create === false
   const noArmor = resolveNoArmor(options)
 
   const {
+    keysSrc,
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = new Sets(key, value, envs, encrypt, envKeysFilepath, noArmor).runSync()
+  } = await setTransform({
+    envs,
+    key,
+    value,
+    fk: envKeysFilepath,
+    noArmor,
+    noCreate,
+    encrypt
+  })
+
+  if (keysSrc) {
+    fsx.writeFileXSync(envKeysFilepath || '.env.keys', keysSrc)
+  }
 
   let withEncryption = ''
 
@@ -242,14 +294,21 @@ const set = function (key, value, options = {}) {
 }
 
 /* @type {import('./main').get} */
-const get = function (key, options = {}) {
+const get = async function (key, options = {}) {
   const envs = buildEnvs(options)
   const noArmor = resolveNoArmor(options)
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = new Get(key, envs, options.overload, options.all, options.envKeysFile, noArmor).runSync()
+  const { parsed, errors } = await getResolver({
+    key,
+    envs,
+    overload: options.overload,
+    all: options.all,
+    envKeysFile: options.envKeysFile,
+    noArmor
+  })
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
@@ -301,26 +360,7 @@ const get = function (key, options = {}) {
 
 /** @type {import('./main').ls} */
 const ls = function (directory, envFile, excludeEnvFile) {
-  return new Ls(directory, envFile, excludeEnvFile).run()
-}
-
-const doctor = function (directory) {
-  return new Doctor(directory).run()
-}
-
-/** @type {import('./main').genexample} */
-const genexample = function (directory, envFile) {
-  return new Genexample(directory, envFile).run()
-}
-
-/** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null, noArmor = false) {
-  const keypairs = new Keypair(envFile, envKeysFile, noArmor).runSync()
-  if (key) {
-    return keypairs[key]
-  } else {
-    return keypairs
-  }
+  return lsResolver({ directory, envFile, excludeEnvFile })
 }
 
 function resolveNoArmor (options = {}) {
@@ -336,9 +376,6 @@ module.exports = {
   set,
   get,
   ls,
-  doctor,
-  keypair,
-  genexample,
   // expose for libs depending on @dotenvx/dotenvx - like dotenvx-ops
   setLogLevel,
   logger,

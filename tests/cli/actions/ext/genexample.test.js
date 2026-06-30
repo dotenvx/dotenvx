@@ -2,12 +2,12 @@ const t = require('tap')
 const fsx = require('../../../../src/lib/helpers/fsx')
 const sinon = require('sinon')
 
-const main = require('../../../../src/lib/main')
+const Genexample = require('../../../../src/lib/services/genexample')
 const genexample = require('../../../../src/cli/actions/ext/genexample')
 const { logger } = require('../../../../src/shared/logger')
 
-t.test('genexample calls main.genexample', ct => {
-  const stub = sinon.stub(main, 'genexample')
+t.test('genexample calls Genexample.run', ct => {
+  const stub = sinon.stub(Genexample.prototype, 'run')
   stub.returns({
     envExampleFile: 'HELLO=""',
     envFile: '.env.example',
@@ -26,7 +26,7 @@ t.test('genexample calls main.genexample', ct => {
   // Call the genexample function with the fake context
   genexample.call(fakeContext, '.')
 
-  t.ok(stub.called, 'main.genexample() called')
+  t.ok(stub.called, 'Genexample.run() called')
   t.ok(fsStub.called, 'fs.writeFileXSync() called')
   t.ok(loggerSuccessStub.calledWith('▣ generated (.env.example)'), 'logger.success')
   stub.restore()
@@ -36,8 +36,8 @@ t.test('genexample calls main.genexample', ct => {
   ct.end()
 })
 
-t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
-  const stub = sinon.stub(main, 'genexample')
+t.test('genexample calls Genexample.run (no addedKeys changes)', ct => {
+  const stub = sinon.stub(Genexample.prototype, 'run')
   stub.returns({
     envExampleFile: '',
     envFile: '.env.example',
@@ -56,7 +56,7 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
   // Call the genexample function with the fake context
   genexample.call(fakeContext, '.')
 
-  t.ok(stub.called, 'main.genexample() called')
+  t.ok(stub.called, 'Genexample.run() called')
   t.ok(fsStub.called, 'fsx.writeFileXSync() called')
   t.ok(loggerNeutralStub.calledWith('○ no change (.env.example)'), 'logger.info')
   stub.restore()
@@ -66,8 +66,8 @@ t.test('genexample calls main.genexample (no addedKeys changes)', ct => {
   ct.end()
 })
 
-t.test('genexample calls main.genexample (other error)', ct => {
-  const stub = sinon.stub(main, 'genexample').throws(new Error('other error'))
+t.test('genexample calls Genexample.run (other error)', ct => {
+  const stub = sinon.stub(Genexample.prototype, 'run').throws(new Error('other error'))
   const exitStub = sinon.stub(process, 'exit')
 
   const optsStub = sinon.stub().returns({})
@@ -86,12 +86,12 @@ t.test('genexample calls main.genexample (other error)', ct => {
   ct.end()
 })
 
-t.test('genexample calls main.genexample (error with code and help message)', ct => {
+t.test('genexample calls Genexample.run (error with code and help message)', ct => {
   const error = new Error('message')
   error.help = 'help message'
   error.code = 'CODE'
 
-  const stub = sinon.stub(main, 'genexample').throws(error)
+  const stub = sinon.stub(Genexample.prototype, 'run').throws(error)
   const exitStub = sinon.stub(process, 'exit')
 
   const optsStub = sinon.stub().returns({})

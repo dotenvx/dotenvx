@@ -17,6 +17,7 @@ t.test('login action runs native oauth device flow', async ct => {
   const session = {
     hostname: sinon.stub().returns('https://armor.dotenvx.com')
   }
+  const poll = sinon.stub().resolves({ username: 'scott' })
   const Login = sinon.stub().callsFake(function () {
     this.run = sinon.stub().resolves({
       deviceCode: 'device-code',
@@ -25,14 +26,11 @@ t.test('login action runs native oauth device flow', async ct => {
       verificationUriComplete: 'https://armor.example.com/device?code=ABCD1234',
       interval: 3
     })
-  })
-  const LoginPoll = sinon.stub().callsFake(function () {
-    this.run = sinon.stub().resolves({ username: 'scott' })
+    this.poll = poll
   })
   const login = proxyquire('../../../src/cli/actions/login', {
     '../../db/session': sinon.stub().returns(session),
     '../../lib/services/login': Login,
-    '../../lib/services/loginPoll': LoginPoll,
     '../../lib/helpers/createSpinner': sinon.stub().resolves(spinner),
     '../../lib/helpers/listenForOpenKey': sinon.stub().returns(cleanup),
     '../../lib/helpers/openUrl': sinon.stub()
@@ -41,7 +39,7 @@ t.test('login action runs native oauth device flow', async ct => {
   await login.call({ opts: () => ({ hostname: 'https://armor.example.com' }) })
 
   ct.same(Login.firstCall.args, ['https://armor.example.com'])
-  ct.same(LoginPoll.firstCall.args, ['https://armor.example.com', 'device-code', 3])
+  ct.same(poll.firstCall.args, ['device-code', 3])
   ct.ok(loggerInfoStub.calledWith('◌ press Enter to open [https://armor.example.com/device] and enter code [ABCD-1234]...'))
   ct.ok(loggerSuccessStub.calledWith('◉ logged in (scott)'))
   ct.equal(cleanup.callCount, 1)
@@ -64,7 +62,6 @@ t.test('login action falls back to saved hostname and reports errors', async ct 
   const login = proxyquire('../../../src/cli/actions/login', {
     '../../db/session': sinon.stub().returns(session),
     '../../lib/services/login': Login,
-    '../../lib/services/loginPoll': sinon.stub(),
     '../../lib/helpers/createSpinner': sinon.stub().resolves(spinner),
     '../../lib/helpers/listenForOpenKey': sinon.stub().returns(cleanup),
     '../../lib/helpers/openUrl': sinon.stub()
@@ -93,7 +90,6 @@ t.test('login action reports non-error rejection values', async ct => {
   const login = proxyquire('../../../src/cli/actions/login', {
     '../../db/session': sinon.stub().returns(session),
     '../../lib/services/login': Login,
-    '../../lib/services/loginPoll': sinon.stub(),
     '../../lib/helpers/createSpinner': sinon.stub().resolves(spinner),
     '../../lib/helpers/listenForOpenKey': sinon.stub().returns(sinon.stub()),
     '../../lib/helpers/openUrl': sinon.stub()

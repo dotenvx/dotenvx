@@ -153,21 +153,6 @@ program.command('decrypt')
     return require('./actions/decrypt').apply(this, args)
   })
 
-// dotenvx rotate
-program.command('rotate')
-  .description('rotate keypair(s) and re-encrypt .env file(s)')
-  .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
-  .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
-  .option('--no-armor', 'disable dotenvx-armor features')
-  .addOption(new Option('--no-ops', 'disable dotenvx-ops features (deprecated. use --no-armor)').hideHelp())
-  .option('--stdout', 'send to stdout')
-  .action(function (...args) {
-    this.envs = envs
-    return require('./actions/rotate').apply(this, args)
-  })
-
 // dotenvx keypair
 program.command('keypair')
   .usage('[KEY] [options]')

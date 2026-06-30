@@ -1,114 +1,93 @@
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
-const Encrypt = require('./../../lib/services/encrypt')
+const encryptTransform = require('./../../lib/transforms/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
-const normalizeArmorOptions = require('./normalizeArmorOptions')
+const normalizeArmorAliases = require('./normalizeArmorAliases')
 
-function keyStorageSelector () {
-  let selected
-
-  return async function selectKeyStorage () {
-    if (selected) return selected
-
-    selected = await prompts.select({
-      message: 'Choose private key storage',
-      choices: [
-        { name: '◫ File (.env.keys)', value: 'file' },
-        { name: '⛨ Armor (armor.dotenvx.com)', value: 'armored' }
-      ]
-    }, {
-      input: process.stdin,
-      output: process.stderr
-    })
-
-    return selected
-  }
-}
-
-function encryptOptions (noArmor) {
-  const options = {}
-
-  if (!noArmor) {
-    options.selectKeyStorage = keyStorageSelector()
-  }
-
-  return options
-}
-
-async function encrypt () {
-  const options = normalizeArmorOptions(this.opts())
+async function encryptAction () {
+  const options = normalizeArmorAliases(this.opts())
   const spinner = await createSpinner({ ...options, text: 'encrypting' })
+  const sesh = new Session()
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  const envs = this.envs
-  const sesh = new Session()
-  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+  const envs = this.envs || []
+  const ik = options.key
+  const ek = options.excludeKey
+  const fk = options.envKeysFile || '.env.keys'
   const noCreate = options.create === false
+  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+
+  let errorCount = 0
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    if (spinner) spinner.stop()
-    const {
-      processedEnvs
-    } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, {
-      ...encryptOptions(noArmor),
-      command: process.argv.slice(2)
-    }).run()
+    const { processedEnvs } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
+
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
-      console.log(processedEnv.envSrc)
+      if (processedEnv.error) {
+        errorCount += 1
+        logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
+      }
+      if (processedEnv.envSrc) {
+        console.log(processedEnv.envSrc)
+      }
     }
-    process.exit(0) // exit early
-  } else {
-    try {
-      if (spinner) spinner.stop()
-      const {
-        processedEnvs,
-        changedFilepaths,
-        unchangedFilepaths
-      } = await new Encrypt(envs, options.key, options.excludeKey, options.envKeysFile, noArmor, noCreate, options.token, {
-        ...encryptOptions(noArmor),
-        command: process.argv.slice(2)
-      }).run()
 
-      for (const processedEnv of processedEnvs) {
-        logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
-        if (processedEnv.error) {
-          logger.warn(processedEnv.error.messageWithHelp)
-        } else if (processedEnv.changed) {
-          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+    if (errorCount > 0) {
+      process.exit(1)
+    } else {
+      process.exit(0) // exit early
+    }
+  }
 
-          logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
-        } else {
-          logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
-        }
-      }
+  try {
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
 
-      if (spinner) spinner.stop()
-      if (changedFilepaths.length > 0) {
-        const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
-        let msg = `◈ encrypted (${changedFilepaths.join(',')})`
-        if (remoteKeyAddedEnv) {
-          msg += ' · armored ⛨'
-        }
-        logger.success(msg)
-      } else if (unchangedFilepaths.length > 0) {
-        logger.info(`○ no change (${unchangedFilepaths})`)
+    if (keysSrc) {
+      await fsx.writeFileX(fk, keysSrc)
+    }
+
+    if (spinner) spinner.stop()
+    for (const processedEnv of processedEnvs) {
+      logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+      if (processedEnv.error) {
+        errorCount += 1
+        logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
+      } else if (processedEnv.changed) {
+        await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+        logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       } else {
-        // do nothing - scenario when no .env files found
+        logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
-    } catch (error) {
-      if (spinner) spinner.stop()
-      catchAndLog(error)
+    }
+
+    if (changedFilepaths.length > 0) {
+      // const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+      const msg = `◈ encrypted (${changedFilepaths.join(',')})`
+      // if (remoteKeyAddedEnv) {
+      //   msg += ' · armored ⛨'
+      // }
+      logger.success(msg)
+    } else if (unchangedFilepaths.length > 0) {
+      logger.info(`○ no change (${unchangedFilepaths})`)
+    } else {
+      // do nothing - scenario when no .env files found
+    }
+
+    if (errorCount > 0) {
       process.exit(1)
     }
+  } catch (error) {
+    if (spinner) spinner.stop()
+    catchAndLog(error)
+    process.exit(1)
   }
 }
 
-module.exports = encrypt
+module.exports = encryptAction

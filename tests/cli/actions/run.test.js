@@ -3,12 +3,13 @@ const path = require('path')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire').noCallThru()
 
-const Run = require('./../../../src/lib/services/run')
 const Errors = require('./../../../src/lib/helpers/errors')
 const { logger } = require('../../../src/shared/logger')
 
+let envsResolverStub
 const run = proxyquire('../../../src/cli/actions/run', {
-  '../../../src/lib/helpers/executeCommand': async () => true
+  './../../lib/helpers/executeCommand': async () => true,
+  './../../lib/resolvers/envs': (...args) => envsResolverStub(...args)
 })
 
 function setCode (error, code) {
@@ -32,6 +33,10 @@ function setCode (error, code) {
 
 t.beforeEach((ct) => {
   sinon.restore()
+  envsResolverStub = sinon.stub().resolves({
+    processedEnvs: [],
+    readableFilepaths: []
+  })
   process.env = {}
 })
 
@@ -39,36 +44,32 @@ t.test('run', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
 
   ct.end()
 })
 
-t.test('run stops spinner before Run service', async ct => {
+t.test('run updates spinner from envs resolver status', async ct => {
   const spinner = {
+    text: 'injecting',
     stop: sinon.stub(),
     start: sinon.stub()
   }
-  class RunStub {
-    async run () {
-      return {
-        processedEnvs: [],
-        readableStrings: [],
-        readableFilepaths: [],
-        uniqueInjectedKeys: []
-      }
+  async function resolverStub (options) {
+    options.onStatus('[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+    return {
+      processedEnvs: [],
+      readableFilepaths: []
     }
   }
   class SessionStub {
@@ -78,7 +79,7 @@ t.test('run stops spinner before Run service', async ct => {
   }
   const runWithStubs = proxyquire('../../../src/cli/actions/run', {
     './../../lib/helpers/executeCommand': async () => true,
-    './../../lib/services/run': RunStub,
+    './../../lib/resolvers/envs': resolverStub,
     '../../lib/helpers/createSpinner': async () => spinner,
     '../../db/session': SessionStub
   })
@@ -88,26 +89,20 @@ t.test('run stops spinner before Run service', async ct => {
 
   await runWithStubs.call(fakeContext)
 
-  ct.equal(spinner.stop.callCount, 2)
+  ct.equal(spinner.text, '[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+  ct.equal(spinner.stop.callCount, 1)
   ct.equal(spinner.start.callCount, 0)
   ct.equal(loggerSuccessStub.callCount, 1)
   ct.end()
 })
 
-t.test('run passes Armor token and wrapped command to Run service', async ct => {
+t.test('run passes Armor token and wrapped command to envs resolver', async ct => {
   let runArgs
-  class RunStub {
-    constructor (...args) {
-      runArgs = args
-    }
-
-    async run () {
-      return {
-        processedEnvs: [],
-        readableStrings: [],
-        readableFilepaths: [],
-        uniqueInjectedKeys: []
-      }
+  async function resolverStub (options) {
+    runArgs = options
+    return {
+      processedEnvs: [],
+      readableFilepaths: []
     }
   }
   class SessionStub {
@@ -117,7 +112,7 @@ t.test('run passes Armor token and wrapped command to Run service', async ct => 
   }
   const runWithStubs = proxyquire('../../../src/cli/actions/run', {
     './../../lib/helpers/executeCommand': async () => true,
-    './../../lib/services/run': RunStub,
+    './../../lib/resolvers/envs': resolverStub,
     '../../lib/helpers/createSpinner': async () => null,
     '../../db/session': SessionStub
   })
@@ -127,9 +122,9 @@ t.test('run passes Armor token and wrapped command to Run service', async ct => 
 
   await runWithStubs.call(fakeContext)
 
-  ct.equal(runArgs[4], false)
-  ct.equal(runArgs[5].token, 'token-123')
-  ct.same(runArgs[5].command, ['echo', ''])
+  ct.equal(runArgs.noArmor, false)
+  ct.equal(runArgs.token, 'token-123')
+  ct.same(runArgs.command, ['echo', ''])
   ct.equal(loggerSuccessStub.callCount, 1)
   ct.end()
 })
@@ -138,65 +133,59 @@ t.test('run --convention', async ct => {
   const optsStub = sinon.stub().returns({ convention: 'nextjs' })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
 
   ct.end()
 })
 
-t.test('run --no-ops normalizes Armor aliases off', async ct => {
+t.test('run --no-ops normalizes armor off', async ct => {
   const options = { armor: true, ops: false, vlt: true }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--no-ops', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
-  t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
+  t.ok(stub.called, 'envsResolver() called')
+  t.equal(stub.firstCall.args[0].noArmor, true, 'envs resolver was called with noArmor true')
   t.equal(options.armor, false, 'armor false')
-  t.equal(options.ops, false, 'ops false')
+  t.equal(options.ops, false, 'ops stays as parsed')
 
   ct.end()
 })
 
-t.test('run --no-armor normalizes Armor aliases off', async ct => {
+t.test('run --no-armor uses armor off', async ct => {
   const options = { armor: false, ops: true, vlt: true }
   const optsStub = sinon.stub().returns(options)
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--no-armor', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
-  t.equal(stub.thisValues[0].noArmor, true, 'Run was called with noArmor true')
+  t.ok(stub.called, 'envsResolver() called')
+  t.equal(stub.firstCall.args[0].noArmor, true, 'envs resolver was called with noArmor true')
   t.equal(options.armor, false, 'armor false')
-  t.equal(options.ops, false, 'ops false')
+  t.equal(options.ops, true, 'ops stays as parsed')
 
   ct.end()
 })
@@ -205,18 +194,16 @@ t.test('run --convention', async ct => {
   const optsStub = sinon.stub().returns({ convention: 'flow' })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
 
   ct.end()
@@ -226,7 +213,7 @@ t.test('run - envFile', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'envFile',
@@ -237,11 +224,9 @@ t.test('run - envFile', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -249,7 +234,7 @@ t.test('run - envFile', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
@@ -258,11 +243,11 @@ t.test('run - envFile', async ct => {
   ct.end()
 })
 
-t.test('run - envFile with armored private key', async ct => {
+t.test('run - envFile omits armor suffix', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'envFile',
@@ -273,19 +258,16 @@ t.test('run - envFile with armored private key', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {},
-      armoredPrivateKeyUsed: true
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
-  t.ok(loggerSuccessStub.calledWith('⟐ injected env (1) from .env · armored ⛨'), 'logger.success')
+  t.ok(stub.called, 'envsResolver() called')
+  t.ok(loggerSuccessStub.calledWith('⟐ injected env (1) from .env'), 'logger.success')
 
   ct.end()
 })
@@ -297,7 +279,7 @@ t.test('run - envFile (with errors)', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'envFile',
@@ -309,11 +291,9 @@ t.test('run - envFile (with errors)', async ct => {
         HELLO: 'World'
       },
       errors: [error],
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -322,7 +302,7 @@ t.test('run - envFile (with errors)', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
@@ -337,7 +317,7 @@ t.test('run - env', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'env',
@@ -348,11 +328,9 @@ t.test('run - env', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: ['HELLO=World'],
-    readableFilepaths: [],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -360,7 +338,7 @@ t.test('run - env', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith('loading env from string (HELLO=World)'), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
@@ -373,7 +351,7 @@ t.test('run - envFile AND env', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'env',
@@ -384,7 +362,7 @@ t.test('run - envFile AND env', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     },
     {
       type: 'envFile',
@@ -395,11 +373,9 @@ t.test('run - envFile AND env', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: ['HELLO=World'],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -407,7 +383,7 @@ t.test('run - envFile AND env', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith('loading env from string (HELLO=World)'), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
@@ -420,7 +396,7 @@ t.test('run - envFile AND two envs', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'env',
@@ -431,7 +407,7 @@ t.test('run - envFile AND two envs', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     },
     {
       type: 'env',
@@ -442,7 +418,7 @@ t.test('run - envFile AND two envs', async ct => {
       injected: {
         HOLA: 'amigo'
       },
-      preExisted: {}
+      existed: {}
     },
     {
       type: 'envFile',
@@ -453,11 +429,9 @@ t.test('run - envFile AND two envs', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: ['HELLO=World', 'HOLA=amigo'],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO', 'HOLA']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -465,7 +439,7 @@ t.test('run - envFile AND two envs', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith('loading env from string (HELLO=World)'), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('loading env from string (HOLA=amigo)'), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
@@ -481,7 +455,7 @@ t.test('run - env (two strings)', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'env',
@@ -492,7 +466,7 @@ t.test('run - env (two strings)', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     },
     {
       type: 'env',
@@ -503,11 +477,9 @@ t.test('run - env (two strings)', async ct => {
       injected: {
         HEY: 'there'
       },
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: ['HELLO=World', 'HEY=there'],
-    readableFilepaths: [],
-    uniqueInjectedKeys: ['HELLO', 'HEY']
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -515,7 +487,7 @@ t.test('run - env (two strings)', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith('loading env from string (HELLO=World)'), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('loading env from string (HEY=there)'), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
@@ -535,7 +507,7 @@ t.test('run - MISSING_ENV_FILE', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       errors: [error],
@@ -543,11 +515,9 @@ t.test('run - MISSING_ENV_FILE', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -555,7 +525,7 @@ t.test('run - MISSING_ENV_FILE', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerErrorStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [echo "HELLO=World" > .env]'), 'logger.error')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
@@ -572,18 +542,16 @@ t.test('run - MISSING_ENV_FILE fallback filepath', async ct => {
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
   const loggerErrorStub = sinon.stub(logger, 'error')
-  sinon.stub(Run.prototype, 'run').returns({
+  envsResolverStub.returns({
     processedEnvs: [{
       errors: [error],
       type: 'env',
       filepath: undefined,
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
 
   await run.call(fakeContext)
@@ -599,7 +567,7 @@ t.test('run - MISSING_ENV_FILE with --convention stays quiet', async ct => {
   const optsStub = sinon.stub().returns({ convention: 'nextjs' })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--convention=nextjs', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       errors: [error],
@@ -607,18 +575,16 @@ t.test('run - MISSING_ENV_FILE with --convention stays quiet', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerSuccessStub = sinon.stub(logger, 'success')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.notOk(loggerErrorStub.called, 'logger.error stays quiet for convention missing env file')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
 
@@ -634,7 +600,7 @@ t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
   const optsStub = sinon.stub().returns({ strict: true })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--strict', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       errors: [error],
@@ -642,11 +608,9 @@ t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -654,7 +618,7 @@ t.test('run - MISSING_ENV_FILE --strict flag', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerErrorStub.calledWith('[MISSING_ENV_FILE] missing file (.env). fix: [echo "HELLO=World" > .env]'), 'logger.error')
   t.notOk(loggerErrorStub.calledWith('[MISSING_ENV_FILE]. fix: [echo "HELLO=World" > .env]'), 'does not print separate help line')
@@ -672,7 +636,7 @@ t.test('run - MISSING_ENV_FILE --ignore flag', async ct => {
   const optsStub = sinon.stub().returns({ ignore: ['MISSING_ENV_FILE'] })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--ignore=MISSING_ENV_FILE', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       errors: [error],
@@ -680,11 +644,9 @@ t.test('run - MISSING_ENV_FILE --ignore flag', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -692,7 +654,7 @@ t.test('run - MISSING_ENV_FILE --ignore flag', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerErrorStub.notCalled, 'logger.error')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
@@ -708,7 +670,7 @@ t.test('run - MISSING_ENV_FILE --strict flag and MISSING_ENV_FILE --ignore flag'
   const optsStub = sinon.stub().returns({ strict: true, ignore: ['MISSING_ENV_FILE'] })
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--strict', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       errors: [error],
@@ -716,11 +678,9 @@ t.test('run - MISSING_ENV_FILE --strict flag and MISSING_ENV_FILE --ignore flag'
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -728,7 +688,7 @@ t.test('run - MISSING_ENV_FILE --strict flag and MISSING_ENV_FILE --ignore flag'
 
   await run.call(fakeContext)
 
-  ct.ok(stub.called, 'new Run().run() called')
+  ct.ok(stub.called, 'envsResolver() called')
   ct.ok(loggerErrorStub.notCalled, 'logger.error')
   ct.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   ct.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
@@ -743,7 +703,7 @@ t.test('run - OTHER_ERROR', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       errors: [error],
@@ -751,11 +711,9 @@ t.test('run - OTHER_ERROR', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -763,7 +721,7 @@ t.test('run - OTHER_ERROR', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
@@ -778,7 +736,7 @@ t.test('run - WRONG_PRIVATE_KEY', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       errors: [error],
@@ -786,18 +744,16 @@ t.test('run - WRONG_PRIVATE_KEY', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.error one-line')
   t.notOk(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/466'), 'logger.error does not print separate help line')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
@@ -812,7 +768,7 @@ t.test('run - MISSING_PRIVATE_KEY', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       errors: [error],
@@ -820,18 +776,16 @@ t.test('run - MISSING_PRIVATE_KEY', async ct => {
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerErrorStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.error one-line')
   t.notOk(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464'), 'logger.error does not print separate help line')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0)'), 'logger.success')
@@ -848,18 +802,16 @@ t.test('run - preserves punctuated private key messages', async ct => {
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
   const loggerErrorStub = sinon.stub(logger, 'error')
-  sinon.stub(Run.prototype, 'run').returns({
+  envsResolverStub.returns({
     processedEnvs: [{
       errors: [wrongError, missingError],
       type: 'envFile',
       filepath: '.env',
       parsed: {},
       injected: {},
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: [],
-    uniqueInjectedKeys: []
+    readableFilepaths: []
   })
 
   await run.call(fakeContext)
@@ -873,7 +825,7 @@ t.test('run - envFile (prexists)', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'envFile',
@@ -882,13 +834,11 @@ t.test('run - envFile (prexists)', async ct => {
         HELLO: 'World'
       },
       injected: {},
-      preExisted: {
+      existed: {
         HELLO: 'World'
       }
     }],
-    readableStrings: [],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -896,11 +846,11 @@ t.test('run - envFile (prexists)', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO pre-exists (protip: use --overload to override)'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO pre-exists as World (protip: use --overload to override)'), 'logger.debug')
-  t.ok(loggerSuccessStub.calledWith('⟐ injected env (1) from .env'), 'logger.success')
+  t.ok(loggerSuccessStub.calledWith('⟐ injected env (0) from .env'), 'logger.success')
 
   ct.end()
 })
@@ -914,13 +864,13 @@ t.test('run - throws error', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.throws(error)
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerErrorStub.calledWith('Mock Error'), 'logger.error')
   t.notOk(loggerErrorStub.calledWith('Mock Help'), 'logger.error')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
@@ -937,13 +887,13 @@ t.test('run - throws WRONG_PRIVATE_KEY', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.throws(error)
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerErrorStub.calledWith("[WRONG_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY=199bdd6…'. fix: [https://github.com/dotenvx/dotenvx/issues/466]"), 'logger.error one-line')
   t.notOk(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/466'), 'logger.error does not print separate help line')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
@@ -960,13 +910,13 @@ t.test('run - throws MISSING_PRIVATE_KEY', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.throws(error)
   const loggerErrorStub = sinon.stub(logger, 'error')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerErrorStub.calledWith("[MISSING_PRIVATE_KEY] could not decrypt HELLO using private key 'DOTENV_PRIVATE_KEY='. fix: [https://github.com/dotenvx/dotenvx/issues/464]"), 'logger.error one-line')
   t.notOk(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] https://github.com/dotenvx/dotenvx/issues/464'), 'logger.error does not print separate help line')
   t.ok(processExitStub.calledWith(1), 'process.exit(1)')
@@ -983,14 +933,15 @@ t.test('run - throws punctuated private key errors', async ct => {
 
   const wrongError = new Error('[WRONG_PRIVATE_KEY] punctuated')
   setCode(wrongError, 'WRONG_PRIVATE_KEY')
-  sinon.stub(Run.prototype, 'run').throws(wrongError)
+  envsResolverStub.throws(wrongError)
   await run.call(fakeContext)
   t.ok(loggerErrorStub.calledWith('[WRONG_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/466]'))
 
-  Run.prototype.run.restore()
+  envsResolverStub.resetBehavior()
+  envsResolverStub.resetHistory()
   const missingError = new Error('[MISSING_PRIVATE_KEY] punctuated')
   setCode(missingError, 'MISSING_PRIVATE_KEY')
-  sinon.stub(Run.prototype, 'run').throws(missingError)
+  envsResolverStub.throws(missingError)
   await run.call(fakeContext)
   t.ok(loggerErrorStub.calledWith('[MISSING_PRIVATE_KEY] punctuated. fix: [https://github.com/dotenvx/dotenvx/issues/464]'))
 
@@ -1002,7 +953,7 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: [], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--'])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'envFile',
@@ -1013,11 +964,9 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -1027,7 +976,7 @@ t.test('run - envFile (missing command arguments after --)', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
@@ -1042,7 +991,7 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
   const optsStub = sinon.stub().returns({ envFile: ['.env.production'] })
   const fakeContext = { opts: optsStub, args: [], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '-f', '.env.production', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'envFile',
@@ -1053,11 +1002,9 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -1065,7 +1012,7 @@ t.test('run - envFile (ambiguous arguments, missing --)', async ct => {
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
@@ -1078,7 +1025,7 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
   const optsStub = sinon.stub().returns({ envFile: [] })
   const fakeContext = { opts: optsStub, args: [], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '-f', '.env', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'envFile',
@@ -1089,11 +1036,9 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
       injected: {
         HELLO: 'World'
       },
-      preExisted: {}
+      existed: {}
     }],
-    readableStrings: [],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: ['HELLO']
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
@@ -1101,7 +1046,7 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerVerboseStub.calledWith('HELLO set'), 'logger.verbose')
   t.ok(loggerDebugStub.calledWith('HELLO set to World'), 'logger.debug')
@@ -1110,26 +1055,24 @@ t.test('run - envFile (ambiguous arguments, missing -- and envFile is empty)', a
   ct.end()
 })
 
-t.test('run - envFile - parsed, injected, and preExisted missing for some reason upstream - it doesn\'t choke', async ct => {
+t.test('run - envFile - parsed, injected, and existed missing for some reason upstream - it doesn\'t choke', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub, args: ['echo', ''], envs: [] }
   sinon.stub(process, 'argv').value(['node', 'dotenvx', 'run', '--', 'echo', ''])
-  const stub = sinon.stub(Run.prototype, 'run')
+  const stub = envsResolverStub
   stub.returns({
     processedEnvs: [{
       type: 'envFile',
       filepath: '.env'
     }],
-    readableStrings: [],
-    readableFilepaths: ['.env'],
-    uniqueInjectedKeys: []
+    readableFilepaths: ['.env']
   })
   const loggerSuccessStub = sinon.stub(logger, 'success')
   const loggerVerboseStub = sinon.stub(logger, 'verbose')
 
   await run.call(fakeContext)
 
-  t.ok(stub.called, 'new Run().run() called')
+  t.ok(stub.called, 'envsResolver() called')
   t.ok(loggerVerboseStub.calledWith(`loading env from .env (${path.resolve('.env')})`), 'logger.verbose')
   t.ok(loggerSuccessStub.calledWith('⟐ injected env (0) from .env'), 'logger.success')
 

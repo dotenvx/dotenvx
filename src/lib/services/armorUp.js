@@ -1,6 +1,6 @@
 const prompts = require('../helpers/prompts')
 const PostArmorUp = require('../api/postArmorUp')
-const keyNamesForEnvFile = require('../helpers/keyResolution/keyNamesForEnvFile')
+const keynames = require('../conventions/keynames')
 const removeEnvKey = require('../helpers/removeEnvKey')
 const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
@@ -24,7 +24,7 @@ class ArmorUp {
     const {
       publicKeyName,
       privateKeyName
-    } = keyNamesForEnvFile(envFile)
+    } = keynames(envFile)
 
     const publicKey = readEnvKey(publicKeyName, envFile, { strict: true, ignore: ['MISSING_PRIVATE_KEY'] })
     const privateKey = readEnvKey(privateKeyName, '.env.keys', { strict: true, ignore: ['MISSING_KEY'] })

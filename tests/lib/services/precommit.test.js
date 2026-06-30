@@ -5,7 +5,6 @@ const childProcess = require('child_process')
 
 const Precommit = require('../../../src/lib/services/precommit')
 const InstallPrecommitHook = require('../../../src/lib/helpers/installPrecommitHook')
-const Ls = require('../../../src/lib/services/ls')
 
 const originalExecSync = childProcess.execSync
 
@@ -19,7 +18,7 @@ t.afterEach((ct) => {
 })
 
 t.test('#run', ct => {
-  sinon.stub(Ls.prototype, 'run').returns([])
+  sinon.stub(Precommit.prototype, '_filepaths').returns([])
   const precommit = new Precommit()
   const installPrecommitHookStub = sinon.stub(precommit, '_installPrecommitHook')
 
@@ -44,7 +43,7 @@ t.test('#run (install: true)', ct => {
 
 t.test('#run (no gitignore file)', ct => {
   sinon.stub(fsx, 'existsSync').returns(false)
-  sinon.stub(Ls.prototype, 'run').returns([])
+  sinon.stub(Precommit.prototype, '_filepaths').returns([])
 
   const { warnings } = new Precommit().run()
   ct.same(warnings[0].message, '.gitignore missing')
@@ -55,7 +54,7 @@ t.test('#run (no gitignore file)', ct => {
 t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
   sinon.stub(fsx, 'readFileXSync').returns('.env*')
   sinon.stub(fsx, 'readdirSync').returns(['.env.example'])
-  sinon.stub(Ls.prototype, 'run').returns(['.env.example'])
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.example'])
   childProcess.execSync.returns(Buffer.from('.env.example'))
 
   const { warnings } = new Precommit().run()
@@ -68,7 +67,7 @@ t.test('#run (gitignore is ignoring .env.example file and shouldn\'t)', ct => {
 t.test('#run (gitignore is ignoring .env.x file and shouldn\'t)', ct => {
   sinon.stub(fsx, 'readFileXSync').returns('.env*')
   sinon.stub(fsx, 'readdirSync').returns(['.env.x'])
-  sinon.stub(Ls.prototype, 'run').returns(['.env.x'])
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.x'])
   childProcess.execSync.returns(Buffer.from('.env.x'))
 
   const { warnings } = new Precommit().run()
@@ -78,7 +77,7 @@ t.test('#run (gitignore is ignoring .env.x file and shouldn\'t)', ct => {
 })
 
 t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
-  sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.production'])
   childProcess.execSync.returns(Buffer.from('.env.production'))
   const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   // Stub different return values based on the file path
@@ -102,7 +101,7 @@ t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
 })
 
 t.test('#run (gitignore is not ignore .env.keys file and should)', ct => {
-  sinon.stub(Ls.prototype, 'run').returns(['.env.keys'])
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.keys'])
   childProcess.execSync.returns(Buffer.from('.env.keys'))
   const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   // Stub different return values based on the file path
@@ -126,7 +125,7 @@ t.test('#run (gitignore is not ignore .env.keys file and should)', ct => {
 })
 
 t.test('#run (gitignore is not ignore .env.production file and should) AND isFileToBeCommited raises an error (should default to true on the filename)', ct => {
-  sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.production'])
   sinon.stub(Precommit.prototype, '_isInGitRepo').returns(true)
   childProcess.execSync.throws(new Error('Mock Error'))
   const readFileXStub = sinon.stub(fsx, 'readFileXSync')
@@ -151,7 +150,7 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isFil
 })
 
 t.test('#run (gitignore is not ignore .env.production file and should) AND isInGitRepo raises an error (should default to true on the filename)', ct => {
-  sinon.stub(Ls.prototype, 'run').returns(['.env.production'])
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.production'])
   childProcess.execSync.throws(new Error('Mock Error'))
   const readFileXStub = sinon.stub(fsx, 'readFileXSync')
   // Stub different return values based on the file path
@@ -175,7 +174,7 @@ t.test('#run (gitignore is not ignore .env.production file and should) AND isInG
 })
 
 t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
-  sinon.stub(Ls.prototype, 'run').returns(['packages/app/.env.production'])
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['packages/app/.env.production'])
   childProcess.execSync.returns(Buffer.from('packages/app/.env.production'))
 
   const readFileXStub = sinon.stub(fsx, 'readFileXSync')

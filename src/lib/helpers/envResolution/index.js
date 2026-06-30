@@ -3,6 +3,6 @@ module.exports = {
   determine: require('./determine'),
   findEnvFiles: require('./../findEnvFiles'),
   dotenvOptionPaths: require('./../dotenvOptionPaths'),
-  environment: require('./environment'),
+  environment: require('./../../conventions/environment'),
   conventions: require('./../conventions')
 }

@@ -11,7 +11,7 @@ t.test('#run', ct => {
   const {
     envExampleFile,
     injected,
-    preExisted
+    existed
   } = genexample.run()
 
   const output = `# .env.example - generated with dotenvx
@@ -21,7 +21,7 @@ HELLO="" # this is a comment
 `
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })
-  ct.same(preExisted, {})
+  ct.same(existed, {})
 
   ct.end()
 })
@@ -32,7 +32,7 @@ t.test('#run (.env.example already exists)', ct => {
   const {
     envExampleFile,
     injected,
-    preExisted
+    existed
   } = genexample.run()
 
   const output = `# .env.example - generated with dotenvx
@@ -40,7 +40,7 @@ HELLO=''
 `
   ct.same(envExampleFile, output)
   ct.same(injected, {})
-  ct.same(preExisted, { HELLO: '' })
+  ct.same(existed, { HELLO: '' })
 
   ct.end()
 })
@@ -61,7 +61,7 @@ t.test('#run (.env.example already exists but with different keys)', ct => {
   const {
     envExampleFile,
     injected,
-    preExisted
+    existed
   } = genexample.run()
 
   const output = `# .env.example - generated with dotenvx
@@ -71,7 +71,7 @@ HELLO2=''
 
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO2: '' })
-  ct.same(preExisted, { HELLO: '' })
+  ct.same(existed, { HELLO: '' })
 
   ct.end()
 })
@@ -82,7 +82,7 @@ t.test('#run (string envFile)', ct => {
   const {
     envExampleFile,
     injected,
-    preExisted
+    existed
   } = genexample.run()
 
   const output = `# .env.example - generated with dotenvx
@@ -92,7 +92,7 @@ HELLO="" # this is a comment
 `
   ct.same(envExampleFile, output)
   ct.same(injected, { HELLO: '' })
-  ct.same(preExisted, {})
+  ct.same(existed, {})
 
   ct.end()
 })

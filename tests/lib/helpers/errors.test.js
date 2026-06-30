@@ -61,3 +61,14 @@ t.test('#errors missingEnvKeysFile falls back to .env.keys', ct => {
 
   ct.end()
 })
+
+t.test('#errors missingPublicKey', ct => {
+  const result = new Errors({}).missingPublicKey()
+
+  t.equal(result.code, 'MISSING_PUBLIC_KEY')
+  t.equal(result.message, '[MISSING_PUBLIC_KEY] missing public key')
+  t.equal(result.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/new]')
+  t.equal(result.messageWithHelp, '[MISSING_PUBLIC_KEY] missing public key. fix: [https://github.com/dotenvx/dotenvx/issues/new]')
+
+  ct.end()
+})
