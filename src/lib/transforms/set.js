@@ -9,6 +9,7 @@ const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
 const { mutateSrc, mutateKeysSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
+const Errors = require('../helpers/errors')
 const PostArmorUp = require('../api/postArmorUp')
 const prompts = require('../helpers/prompts')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
@@ -157,7 +158,11 @@ async function setTransform (options = {}) {
         unchangedFilepaths.push(envFilepath)
       }
     } catch (error) {
-      row.error = error
+      if (error.code === 'ENOENT') {
+        row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
+      } else {
+        row.error = error
+      }
     }
 
     processedEnvs.push(row)
