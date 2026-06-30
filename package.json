@@ -56,7 +56,7 @@
     "open": "^8.4.2",
     "picomatch": "^4.0.4",
     "synckit": "0.11.13",
-    "systeminformation": "^5.31.8",
+    "systeminformation": "^5.31.11",
     "undici": "^7.11.0",
     "which": "^6.0.1",
     "yocto-spinner": "^1.2.0"
