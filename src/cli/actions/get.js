@@ -31,7 +31,6 @@ async function get (key) {
   try {
     const sesh = new Session()
     const noArmor = options.armor === false || (await sesh.noArmor())
-    if (spinner) spinner.stop()
     const { parsed, errors } = await getResolver({
       key,
       envs,
@@ -39,7 +38,11 @@ async function get (key) {
       all: options.all,
       envKeysFile: options.envKeysFile,
       noArmor,
-      command: process.argv.slice(2)
+      onStatus: (text) => {
+        if (spinner && text) {
+          spinner.text = text
+        }
+      }
     })
 
     for (const error of errors || []) {

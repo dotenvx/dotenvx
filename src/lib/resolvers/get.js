@@ -50,7 +50,7 @@ function buildOptions (options, processEnv) {
     processEnv,
     envKeysFilepath: options.envKeysFilepath || options.envKeysFile || null,
     noArmor: options.noArmor,
-    command: options.command
+    onStatus: options.onStatus
   }
 }
 
