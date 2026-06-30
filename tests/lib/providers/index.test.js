@@ -54,7 +54,7 @@ t.test('providers returns null when armor session is off', async ct => {
 })
 
 t.test('providers returns armor provider when armor session is on', async ct => {
-  const armor = sinon.stub().resolves('private-key')
+  const armor = sinon.stub().resolves({ 'public-key': 'private-key' })
   const session = {
     noArmor: sinon.stub().resolves(false),
     noArmorSync: sinon.stub().returns(false)
@@ -69,7 +69,7 @@ t.test('providers returns armor provider when armor session is on', async ct => 
   const provider = await providers({ onStatus: 'status' })
   const value = await provider('public-key')
 
-  ct.equal(value, 'private-key')
+  ct.same(value, { 'public-key': 'private-key' })
   ct.same(armor.firstCall.args, ['public-key', { onStatus: 'status', token: undefined, command: undefined }])
   ct.equal(typeof providers.sync(), 'function')
   ct.end()

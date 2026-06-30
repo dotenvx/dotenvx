@@ -4,7 +4,7 @@ const proxyquire = require('proxyquire')
 
 t.test('armor provider forwards approval instructions to onStatus', async ct => {
   const onStatus = sinon.stub()
-  const runStub = sinon.stub().resolves({ private_key: 'private-key' })
+  const runStub = sinon.stub().resolves({ 'public-key': 'private-key' })
   class SessionStub {
     hostname () {
       return 'https://armor.example.com'
@@ -37,13 +37,13 @@ t.test('armor provider forwards approval instructions to onStatus', async ct => 
     '../../services/armorKeyring': ArmorKeyringStub
   })
 
-  const privateKey = await provider('027c9c5579cce25013e1e5ae8b4bde6d93bad14457babf5b3e055572ae4931f71', { onStatus })
+  const ring = await provider('027c9c5579cce25013e1e5ae8b4bde6d93bad14457babf5b3e055572ae4931f71', { onStatus })
   instances[0].onApprovalRequired({
     approvalUri: 'https://armor.dotenvx.com/grants/grant-token-123',
     code: 'ACCESS_APPROVAL_REQUIRED'
   })
 
-  ct.equal(privateKey, 'private-key')
+  ct.same(ring, { 'public-key': 'private-key' })
   ct.equal(instances.length, 1)
   ct.same({
     hostname: instances[0].hostname,

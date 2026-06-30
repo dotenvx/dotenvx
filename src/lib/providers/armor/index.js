@@ -23,9 +23,7 @@ async function index (publicKeyHex, options = {}) {
     }
   }
 
-  const json = await keyring.run()
-
-  return json.private_key
+  return await keyring.run() // { "publicKey": "privateKey" }
 }
 
 module.exports = index

@@ -117,10 +117,8 @@ t.test('keypair passes provider by default',
 t.test('keypair forwards onStatus to providers',
   async ct => {
     const onStatus = sinon.stub()
-    const keyring = sinon.stub().callsFake(async ({ provider }) => ({
-      'public-key': await provider('public-key')
-    }))
-    const provider = sinon.stub().resolves('private-key')
+    const keyring = sinon.stub().callsFake(async ({ provider }) => provider('public-key'))
+    const provider = sinon.stub().resolves({ 'public-key': 'private-key' })
     const providers = sinon.stub().resolves(provider)
     providers.sync = sinon.stub()
     const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
