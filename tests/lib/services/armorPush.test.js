@@ -1,11 +1,11 @@
 const t = require('tap')
 const sinon = require('sinon')
+const { keypair } = require('@dotenvx/primitives')
 
 const readEnvKeyPath = require.resolve('../../../src/lib/helpers/readEnvKey')
 const promptsPath = require.resolve('../../../src/lib/helpers/prompts')
 const postArmorPushPath = require.resolve('../../../src/lib/api/postArmorPush')
 const armorPushPath = require.resolve('../../../src/lib/services/armorPush')
-const localKeypair = require('../../../src/lib/helpers/cryptography/localKeypair')
 
 function loadArmorPushWithStubs ({ readEnvKeyExport, promptsExport, postArmorPushExport }) {
   const originalReadEnvKey = require(readEnvKeyPath)
@@ -28,8 +28,8 @@ function loadArmorPushWithStubs ({ readEnvKeyExport, promptsExport, postArmorPus
 
 t.test('ArmorPush reads private key and posts push request without prompting first', async (ct) => {
   const sandbox = sinon.createSandbox()
-  const keypair = localKeypair()
-  const getStub = sandbox.stub().returns(keypair.privateKey)
+  const kp = keypair()
+  const getStub = sandbox.stub().returns(kp.privateKey)
   const selectStub = sandbox.stub().resolves('should-not-be-used')
   const postRunStub = sandbox.stub().resolves({
     private_key: 'priv-from-api',
@@ -58,14 +58,14 @@ t.test('ArmorPush reads private key and posts push request without prompting fir
     strict: true
   }], 'reads mapped private key from .env.keys')
   ct.equal(selectStub.callCount, 0, 'does not prompt before first api request')
-  ct.same(PostArmorPushStub.firstCall && PostArmorPushStub.firstCall.args, ['https://armor.dotenvx.com', 'token-1', 'device-pub-1', keypair.privateKey, undefined], 'sends private key without team first')
+  ct.same(PostArmorPushStub.firstCall && PostArmorPushStub.firstCall.args, ['https://armor.dotenvx.com', 'token-1', 'device-pub-1', kp.privateKey, undefined], 'sends private key without team first')
   ct.same(result, {
     private_key: 'priv-from-api',
     changed: true,
     team: null,
     privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
     privateKeyValue: 'priv-from-api',
-    publicKeyValue: keypair.publicKey
+    publicKeyValue: kp.publicKey
   }, 'returns api json plus private key metadata')
 })
 

@@ -322,11 +322,7 @@ t.test('Device supports default config path and empty private key branch', ct =>
   }
 
   const Device = proxyquire('../../src/db/device', {
-    conf: FakeConf,
-    '../lib/helpers/cryptography/localKeypair': () => ({
-      publicKey: 'public-key',
-      privateKey: 'private-key'
-    })
+    conf: FakeConf
   })
   const device = new Device()
 

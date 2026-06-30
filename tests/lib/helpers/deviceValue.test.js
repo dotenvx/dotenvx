@@ -1,11 +1,11 @@
 const t = require('tap')
+const { keypair } = require('@dotenvx/primitives')
 
-const localKeypair = require('../../../src/lib/helpers/cryptography/localKeypair')
 const encryptDeviceValue = require('../../../src/lib/helpers/encryptDeviceValue')
 const decryptDeviceValue = require('../../../src/lib/helpers/decryptDeviceValue')
 
 t.test('device value encryption stores prefixless ciphertext', ct => {
-  const { publicKey, privateKey } = localKeypair()
+  const { publicKey, privateKey } = keypair()
   const encrypted = encryptDeviceValue('hello', publicKey)
 
   ct.notMatch(encrypted, /^encrypted:/)
@@ -14,7 +14,7 @@ t.test('device value encryption stores prefixless ciphertext', ct => {
 })
 
 t.test('device value encryption round trips multiline values', ct => {
-  const { publicKey, privateKey } = localKeypair()
+  const { publicKey, privateKey } = keypair()
   const value = 'line 1\nline 2\nline 3'
   const encrypted = encryptDeviceValue(value, publicKey)
 
