@@ -44,49 +44,49 @@ async function encryptAction () {
     } else {
       process.exit(0) // exit early
     }
-  } else {
-    try {
-      const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
+  }
 
-      if (keysSrc) {
-        await fsx.writeFileX(fk, keysSrc)
-      }
+  try {
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate })
 
-      if (spinner) spinner.stop()
-      for (const processedEnv of processedEnvs) {
-        logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
-        if (processedEnv.error) {
-          errorCount += 1
-          logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
-        } else if (processedEnv.changed) {
-          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
-          logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
-        } else {
-          logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
-        }
-      }
+    if (keysSrc) {
+      await fsx.writeFileX(fk, keysSrc)
+    }
 
-      if (changedFilepaths.length > 0) {
-        // const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
-        const msg = `◈ encrypted (${changedFilepaths.join(',')})`
-        // if (remoteKeyAddedEnv) {
-        //   msg += ' · armored ⛨'
-        // }
-        logger.success(msg)
-      } else if (unchangedFilepaths.length > 0) {
-        logger.info(`○ no change (${unchangedFilepaths})`)
+    if (spinner) spinner.stop()
+    for (const processedEnv of processedEnvs) {
+      logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+      if (processedEnv.error) {
+        errorCount += 1
+        logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
+      } else if (processedEnv.changed) {
+        await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+        logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       } else {
-        // do nothing - scenario when no .env files found
+        logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
+    }
 
-      if (errorCount > 0) {
-        process.exit(1)
-      }
-    } catch (error) {
-      if (spinner) spinner.stop()
-      catchAndLog(error)
+    if (changedFilepaths.length > 0) {
+      // const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+      const msg = `◈ encrypted (${changedFilepaths.join(',')})`
+      // if (remoteKeyAddedEnv) {
+      //   msg += ' · armored ⛨'
+      // }
+      logger.success(msg)
+    } else if (unchangedFilepaths.length > 0) {
+      logger.info(`○ no change (${unchangedFilepaths})`)
+    } else {
+      // do nothing - scenario when no .env files found
+    }
+
+    if (errorCount > 0) {
       process.exit(1)
     }
+  } catch (error) {
+    if (spinner) spinner.stop()
+    catchAndLog(error)
+    process.exit(1)
   }
 }
 

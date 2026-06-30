@@ -3,17 +3,18 @@ const path = require('path')
 const { encrypted, encrypt, scan, upsert, publickeys, keypair } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
+const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 
 const Errors = require('../helpers/errors')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
 const { isPublicKey, mutateSrc, mutateKeysSrc2 } = require('../helpers/cryptography')
-const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 const keynames = require('../conventions/keynames')
 const PostArmorUp = require('../api/postArmorUp')
 const prompts = require('../helpers/prompts')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 const Session = require('../../db/session')
+
 
 async function selectKeyStorage () {
   const selected = await prompts.select({

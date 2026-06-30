@@ -1,11 +1,11 @@
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
+const setTransform = require('./../../lib/transforms/set')
+
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const buildSetTransformInputs = require('./../../lib/helpers/setTransformInputs')
-const setTransform = require('./../../lib/transforms/set')
 const normalizeArmorAliases = require('./normalizeArmorAliases')
 
 async function set (key, value) {
@@ -19,78 +19,84 @@ async function set (key, value) {
   }
 
   const spinner = await createSpinner({ ...options, text: settingMessage })
+  const sesh = new Session()
 
   logger.debug(`key: ${key}`)
   logger.debug(`value: ${value}`)
   logger.debug(`options: ${JSON.stringify(options)}`)
 
-  try {
-    const envs = this.envs
-    const envKeysFilepath = options.envKeysFile
-    const sesh = new Session()
-    const noArmor = options.armor === false || (await sesh.noArmor())
-    const noCreate = options.create === false
+  const envs = this.envs || []
+  const fk = options.envKeysFile || '.env.keys'
+  const noCreate = options.create === false
+  const noArmor = options.armor === false || (await sesh.noArmor())
 
-    if (spinner) spinner.stop()
-    const setEnvs = await buildSetTransformInputs({
-      key,
-      value,
-      envs,
-      encrypt,
-      envKeysFilepath,
-      noArmor,
-      noCreate,
-      command: process.argv.slice(2)
-    })
-    const {
-      processedEnvs,
-      changedFilepaths,
-      unchangedFilepaths
-    } = setTransform({ envs: setEnvs, key, value, encrypt })
+  let errorCount = 0
+
+  try {
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await setTransform({ envs, key, value, fk, noArmor, noCreate, encrypt })
+
+    if (keysSrc) {
+      await fsx.writeFileX(fk, keysSrc)
+    }
 
     let withEncryption = ''
-
     if (encrypt) {
       withEncryption = ' with encryption'
     }
 
+    if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       logger.verbose(`setting for ${processedEnv.envFilepath}`)
 
       if (processedEnv.error) {
-        logger.warn(processedEnv.error.messageWithHelp)
-      } else {
+        errorCount += 1
+        logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
+      } else if (processedEnv.changed) {
         await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
-
         logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
-        logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)
-      }
-    }
-
-    const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
-    const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
-    let keyAddedSuffix = ''
-    if (remoteKeyAddedEnv) {
-      keyAddedSuffix = ' · armored ⛨'
-    }
-
-    if (spinner) spinner.stop()
-    if (changedFilepaths.length > 0) {
-      if (encrypt) {
-        logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
       } else {
-        logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
+        logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
-    } else if (encrypt && localKeyAddedEnv) {
-      const localKeyAddedEnvFilepath = localKeyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
-      logger.success(`◈ encrypted ${key} (${localKeyAddedEnvFilepath})${keyAddedSuffix}`)
+    }
+
+    //const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
+    //const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
+    // let keyAddedSuffix = ''
+    // if (remoteKeyAddedEnv) {
+    //   keyAddedSuffix = ' · armored ⛨'
+    // }
+
+    if (changedFilepaths.length > 0) {
+      let msg = `◇ set ${key} (${changedFilepaths.join(',')})`
+      if (encrypt) {
+        msg = `◈ encrypted ${key} (${changedFilepaths.join(',')})`
+      }
+
+      logger.success(msg)
+
+      // if (encrypt) {
+      //   logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
+      // } else {
+      //   logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
+      // }
     } else if (unchangedFilepaths.length > 0) {
       logger.info(`○ no change (${unchangedFilepaths})`)
     } else {
-      // do nothing
+      // do nothing - scenario when no .env files found
     }
 
-    // intentionally quiet: success line communicates key creation
+    // } else if (encrypt && localKeyAddedEnv) {
+    //   const localKeyAddedEnvFilepath = localKeyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
+    //   logger.success(`◈ encrypted ${key} (${localKeyAddedEnvFilepath})${keyAddedSuffix}`)
+    // } else if (unchangedFilepaths.length > 0) {
+    //   logger.info(`○ no change (${unchangedFilepaths})`)
+    // } else {
+    //   // do nothing
+    // }
+
+    if (errorCount > 0) {
+      process.exit(1)
+    }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
