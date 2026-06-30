@@ -22,10 +22,20 @@ async function decrypt () {
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    if (spinner) spinner.stop()
     const {
       processedEnvs
-    } = await decryptTransform({ envs, ik: options.key, ek: options.excludeKey, fk: options.envKeysFile, noArmor, command: process.argv.slice(2) })
+    } = await decryptTransform({
+      envs,
+      ik: options.key,
+      ek: options.excludeKey,
+      fk: options.envKeysFile,
+      noArmor,
+      onStatus: (text) => {
+        if (spinner && text) {
+          spinner.text = text
+        }
+      }
+    })
 
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
@@ -44,12 +54,22 @@ async function decrypt () {
     }
   } else {
     try {
-      if (spinner) spinner.stop()
       const {
         processedEnvs,
         changedFilepaths,
         unchangedFilepaths
-      } = await decryptTransform({ envs, ik: options.key, ek: options.excludeKey, fk: options.envKeysFile, noArmor, command: process.argv.slice(2) })
+      } = await decryptTransform({
+        envs,
+        ik: options.key,
+        ek: options.excludeKey,
+        fk: options.envKeysFile,
+        noArmor,
+        onStatus: (text) => {
+          if (spinner && text) {
+            spinner.text = text
+          }
+        }
+      })
 
       for (const processedEnv of processedEnvs) {
         logger.verbose(`decrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
