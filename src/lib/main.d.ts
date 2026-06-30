@@ -367,7 +367,7 @@ export interface GetOptions {
 export function get(
   key: string,
   options?: GetOptions
-): string;
+): Promise<string>;
 
 /**
  * List all env files in the current working directory
@@ -381,40 +381,3 @@ export function ls(
   envFile: string | string[],
   excludeEnvFile: string | string[]
 ): string[];
-
-export type DoctorFinding = {
-  lang: string;
-  filepath: string;
-  line: number;
-  code: string;
-  msg: string;
-};
-
-/**
- * Scan code for dotenv loaders that can conflict with dotenvx.
- *
- * @param directory - directory to scan
- */
-export function doctor(
-  directory: string
-): DoctorFinding[];
-
-export type GenExampleOutput = {
-  envExampleFile: string;
-  envFile: string | string[];
-  exampleFilepath: string;
-  addedKeys: string[];
-  injected: Record<string, string>;
-  existed: Record<string, string>;
-};
-
-/**
- * Generate an example .env file
- *
- * @param directory - current working directory
- * @param envFile - path to the .env file(s)
- */
-export function genexample(
-  directory: string,
-  envFile: string
-): GenExampleOutput;

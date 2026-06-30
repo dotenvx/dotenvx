@@ -1,15 +1,9 @@
 const t = require('tap')
 const sinon = require('sinon')
-const proxyquire = require('proxyquire').noCallThru()
 
-const main = proxyquire('../../src/lib/main', {
-  '../../src/lib/helpers/isIgnoringDotenvKeys': () => true
-})
+const main = require('../../src/lib/main')
 
 const envsResolver = require('../../src/lib/resolvers/envs')
-const keypairResolver = require('../../src/lib/resolvers/keypair')
-const Doctor = require('../../src/lib/services/doctor')
-const Genexample = require('../../src/lib/services/genexample')
 const Errors = require('../../src/lib/helpers/errors')
 
 const { logger } = require('../../src/shared/logger')
@@ -451,79 +445,6 @@ t.test('ls finds env files',
     ct.end()
   })
 
-t.test('doctor calls Doctor.run',
-  ct => {
-    const stub = sinon.stub(Doctor.prototype, 'run')
-    stub.returns([])
-
-    main.doctor()
-
-    t.ok(stub.called, 'new Doctor().run() called')
-
-    stub.restore()
-
-    ct.end()
-  })
-
-t.test('keypair calls keypairResolver.sync',
-  ct => {
-    const stub = sinon.stub(keypairResolver, 'sync')
-    stub.returns({})
-
-    main.keypair()
-
-    t.ok(stub.called, 'keypairResolver.sync() called')
-
-    stub.restore()
-
-    ct.end()
-  })
-
-t.test('keypair calls keypairResolver.sync with key specified',
-  ct => {
-    const stub = sinon.stub(keypairResolver, 'sync')
-    stub.returns({ KEY: 'value' })
-
-    const result = main.keypair('.env', 'KEY')
-
-    t.ok(stub.called, 'keypairResolver.sync() called')
-    t.equal(result, 'value')
-
-    stub.restore()
-
-    ct.end()
-  })
-
-t.test('keypair calls keypairResolver.sync with noArmor true',
-  ct => {
-    const stub = sinon.stub(keypairResolver, 'sync')
-    stub.returns({ KEY: 'value' })
-
-    const result = main.keypair('.env', 'KEY', null, true)
-
-    t.ok(stub.called, 'keypairResolver.sync() called')
-    t.equal(stub.firstCall.args[0].noArmor, true, 'noArmor true')
-    t.equal(result, 'value')
-
-    stub.restore()
-
-    ct.end()
-  })
-
-t.test('genexample calls Genexample.run',
-  ct => {
-    const stub = sinon.stub(Genexample.prototype, 'run')
-    stub.returns({})
-
-    main.genexample()
-
-    t.ok(stub.called, 'new Genexample().run() called')
-
-    stub.restore()
-
-    ct.end()
-  })
-
 t.test('config monorepo/apps/backend/.env',
   ct => {
     const processEnv = {}
@@ -702,7 +623,7 @@ t.test('config monorepo/apps/backend/.env AND attempt on directory frontend --st
   })
 
 t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --strict it throws',
-  ct => {
+  async ct => {
     const processEnv = {}
 
     const options = {
@@ -711,12 +632,7 @@ t.test('get monorepo/apps/backend/.env AND attempt on directory frontend --stric
       strict: true
     }
 
-    try {
-      main.get('HELLO', options)
-      ct.fail('should have raised an error but did not')
-    } catch (error) {
-      ct.equal(error.code, 'MISSING_ENV_FILE')
-    }
+    await ct.rejects(main.get('HELLO', options), { code: 'MISSING_ENV_FILE' })
 
     ct.end()
   })

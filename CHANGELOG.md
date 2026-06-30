@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Changed
 
 * BREAKING: Make the library `set` API async-only so encrypted set can resolve existing values before deciding whether a file changed.
+* BREAKING: Make the library `get` API async-only so Armor-backed key resolution does not depend on sync provider behavior.
 * Improve key lookup and decryption flows across `run`, `get`, and `keypair` ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 * Better support Armor-backed private keys when loading encrypted env files ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 

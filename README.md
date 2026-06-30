@@ -2593,7 +2593,7 @@ Programmatically get an environment variable at access/runtime.
 ```js
 // index.js
 const dotenvx = require('@dotenvx/dotenvx')
-const decryptedValue = dotenvx.get('HELLO')
+const decryptedValue = await dotenvx.get('HELLO')
 console.log(decryptedValue)
 ```
 

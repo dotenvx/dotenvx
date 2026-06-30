@@ -9,12 +9,8 @@ const { getColor, bold } = require('./../shared/colors')
 // resolvers
 const envsResolver = require('./resolvers/envs')
 const getResolver = require('./resolvers/get')
-const keypairResolver = require('./resolvers/keypair')
 const lsResolver = require('./resolvers/ls')
 
-// services
-const Doctor = require('./services/doctor')
-const Genexample = require('./services/genexample')
 const Session = require('./../db/session')
 
 // transforms
@@ -298,14 +294,14 @@ const set = async function (key, value, options = {}) {
 }
 
 /* @type {import('./main').get} */
-const get = function (key, options = {}) {
+const get = async function (key, options = {}) {
   const envs = buildEnvs(options)
   const noArmor = resolveNoArmor(options)
 
   // ignore
   const ignore = options.ignore || []
 
-  const { parsed, errors } = getResolver.sync({
+  const { parsed, errors } = await getResolver({
     key,
     envs,
     overload: options.overload,
@@ -367,26 +363,6 @@ const ls = function (directory, envFile, excludeEnvFile) {
   return lsResolver({ directory, envFile, excludeEnvFile })
 }
 
-const doctor = function (directory) {
-  return new Doctor(directory).run()
-}
-
-/** @type {import('./main').genexample} */
-const genexample = function (directory, envFile) {
-  return new Genexample(directory, envFile).run()
-}
-
-/** @type {import('./main').keypair} */
-const keypair = function (envFile, key, envKeysFile = null, noArmor = false) {
-  const keypairs = keypairResolver.sync({ envFile, envKeysFile, noArmor })
-
-  if (key) {
-    return keypairs[key]
-  } else {
-    return keypairs
-  }
-}
-
 function resolveNoArmor (options = {}) {
   const sesh = new Session()
   return options.noArmor === true || options.noOps === true || (!options.token && sesh.noArmorSync())
@@ -400,9 +376,6 @@ module.exports = {
   set,
   get,
   ls,
-  doctor,
-  keypair,
-  genexample,
   // expose for libs depending on @dotenvx/dotenvx - like dotenvx-ops
   setLogLevel,
   logger,
