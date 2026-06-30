@@ -8,7 +8,7 @@ const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 const Errors = require('../helpers/errors')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
-const { isPublicKey, mutateSrc, mutateKeysSrc2 } = require('../helpers/cryptography')
+const { isPublicKey, mutateSrc, mutateKeysSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const PostArmorUp = require('../api/postArmorUp')
 const prompts = require('../helpers/prompts')
@@ -91,7 +91,7 @@ async function encryptTransform (options = {}) {
         const comment = path.basename(envFilepath)
 
         if (noArmor) {
-          const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
+          const mutated = mutateKeysSrc({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
           keysSrc = mutated.keysSrc
         } else {
           const sesh = new Session()

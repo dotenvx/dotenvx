@@ -7,7 +7,7 @@ const TYPE_ENV_FILE = 'envFile'
 const getResolver = require('./../resolvers/get')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
-const { mutateSrc, mutateKeysSrc2 } = require('../helpers/cryptography')
+const { mutateSrc, mutateKeysSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const PostArmorUp = require('../api/postArmorUp')
 const prompts = require('../helpers/prompts')
@@ -92,7 +92,7 @@ async function setTransform (options = {}) {
         const comment = path.basename(envFilepath)
 
         if (noArmor) {
-          const mutated = mutateKeysSrc2({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
+          const mutated = mutateKeysSrc({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
           keysSrc = mutated.keysSrc
         } else {
           const sesh = new Session()

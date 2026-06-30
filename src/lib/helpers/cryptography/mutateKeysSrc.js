@@ -6,7 +6,7 @@ const FIRST_TIME_KEYS_SRC = [
   '#/----------------------------------------------------------/'
 ].join('\n')
 
-function mutateKeysSrc2 ({ keysSrc, privateKeyName, privateKeyValue, comment }) {
+function mutateKeysSrc ({ keysSrc, privateKeyName, privateKeyValue, comment }) {
   const appendPrivateKey = [`# ${comment}`, `${privateKeyName}=${privateKeyValue}`, ''].join('\n')
 
   if (!keysSrc || keysSrc.length < 1) {
@@ -19,4 +19,4 @@ function mutateKeysSrc2 ({ keysSrc, privateKeyName, privateKeyValue, comment }) 
   }
 }
 
-module.exports = mutateKeysSrc2
+module.exports = mutateKeysSrc
