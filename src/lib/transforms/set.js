@@ -5,6 +5,7 @@ const { encrypted, encrypt, scan, upsert, publickeys, keypair } = require('@dote
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('../helpers/errors')
+const getResolver = require('./../resolvers/get')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
 const { isPublicKey, mutateSrc, mutateKeysSrc2 } = require('../helpers/cryptography')
@@ -30,15 +31,6 @@ async function selectKeyStorage () {
   return selected
 }
 
-function allValuesForKey (envSrc, key) {
-  return scan(envSrc).parsed[key] || []
-}
-
-function finalValueForKey (envSrc, key) {
-  const values = allValuesForKey(envSrc, key)
-  return values.length > 0 ? values[values.length - 1] : null
-}
-
 async function setTransform (options = {}) {
   const envs = options.envs || []
   const key = options.key
@@ -47,8 +39,6 @@ async function setTransform (options = {}) {
   let noArmor = options.noArmor // key storage selector below
   const noCreate = options.noCreate
   const noEncrypt = !options.encrypt
-
-  // function setTransform ({ envs = [], key = null, value = null, encrypt: shouldEncrypt = true } = {}) {
 
   const processedEnvs = []
   const changedFilepaths = []
@@ -139,17 +129,28 @@ async function setTransform (options = {}) {
         }
       }
 
-      // TODO: encrypted value
-      if (!!noEncrypt) {
+      if (noEncrypt) {
         const before = row.envSrc
         row.envSrc = upsert(row.envSrc, key, value)
         if (row.envSrc !== before) {
           row.changed = true
         }
       } else {
-        const encryptedValue = encrypt(publicKey, value)
-        row.envSrc = upsert(row.envSrc, key, encryptedValue)
-        row.changed = true
+        // expensive additional loop
+        const { parsed } = await getResolver({
+          key,
+          envs: [env],
+          all: true,
+          envKeysFile: fk,
+          noArmor
+        })
+
+        const before = parsed[key]
+        if (value !== before) {
+          const encryptedValue = encrypt(publicKey, value)
+          row.envSrc = upsert(row.envSrc, key, encryptedValue)
+          row.changed = true
+        }
       }
 
       if (row.changed) {
@@ -170,52 +171,6 @@ async function setTransform (options = {}) {
     changedFilepaths,
     unchangedFilepaths
   }
-
-  //if (env.error) {
-  //  row.error = env.error
-  //  processedEnvs.push(row)
-  //  continue
-  //}
-
-  //try {
-  //  row.originalValue = finalValueForKey(row.envSrc, row.key)
-  //  if (env.seededWithInitialKey) {
-  //    row.originalValue = null
-  //  }
-
-  //  const wasPlainText = !encrypted(row.originalValue)
-
-  //  if (shouldEncrypt) {
-  //    if (env.privateKeyValue && row.originalValue) {
-  //      row.originalValue = decryptKeyValue(row.key, row.originalValue, env.privateKeyName, env.privateKeyValue)
-  //    }
-
-  //    row.publicKey = env.publicKeyValue
-  //    row.privateKey = env.privateKeyValue
-  //    row.privateKeyName = env.privateKeyName
-
-  //    try {
-  //      row.encryptedValue = encrypt(row.publicKey, row.value)
-  //    } catch {
-  //      throw new Errors({ publicKeyName: env.publicKeyName, publicKey: row.publicKey }).invalidPublicKey()
-  //    }
-  //  }
-
-  //  const goingFromPlainTextToEncrypted = wasPlainText && shouldEncrypt
-  //  const valueChanged = row.value !== row.originalValue
-  //  const duplicateKey = allValuesForKey(row.envSrc, row.key).length > 1
-  //  const shouldPersistSeededPlainValue = env.seededWithInitialKey && !shouldEncrypt
-
-  //  if (shouldPersistSeededPlainValue) {
-  //    row.changed = true
-  //    changedFilepaths.push(envFilepath)
-  //  } else if (goingFromPlainTextToEncrypted || valueChanged || duplicateKey) {
-  //    row.envSrc = upsert(row.envSrc, row.key, row.encryptedValue || row.value)
-  //    row.changed = true
-  //    changedFilepaths.push(envFilepath)
-  //  } else {
-  //    unchangedFilepaths.push(envFilepath)
-  //  }
 }
 
 module.exports = setTransform
