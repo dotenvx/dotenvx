@@ -2,33 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v1.76.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.0.0...main)
+
+## [2.0.0](https://github.com/dotenvx/dotenvx/compare/v1.76.0...v2.0.0) (2026-06-30)
 
 ### Changed
 
-* BREAKING: Make the library `set` API async-only so encrypted set can resolve existing values before deciding whether a file changed ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* BREAKING: Make the library `get` API async-only so Armor-backed key resolution does not depend on sync provider behavior ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Improve key lookup and decryption flows across `run`, `get`, and `keypair` ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Better support Armor-backed private keys when loading encrypted env files ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* BREAKING: lib/main#`set` async only ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* BREAKING: lib/main#`get` async only ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* New keyring support - for local and armor providers and to unlock future providers ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 * Route `run`, `config`, and `get` through shared env and keypair resolvers backed by `@dotenvx/primitives` ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 * Route `set`, `encrypt`, and `decrypt` through shared transforms that operate on primitive scan, parse, encrypt, and upsert results ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Keep encrypted `set` operations unchanged when the decrypted current value already matches the requested value ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Add provider-based Armor keyring resolution for private keys stored outside local `.env.keys` files ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Allow `encrypt` and encrypted `set` to create new key material in either local `.env.keys` files or Armor-backed storage ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Move env file path and key naming rules into shared convention helpers ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Rename Armor keypair internals to Armor keyring internals for the new private-key lookup flow ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Normalize deprecated `--no-ops` and current `--no-armor` CLI aliases through a shared Armor alias helper ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 * Update library `parse` to use primitive parsing while preserving dotenvx-style encrypted value errors ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Simplify CLI actions for `doctor` and `ext genexample` to call their services directly instead of going through `lib/main` ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 
 ### Removed
 
-* BREAKING: Remove the `rotate` command from dotenvx ([#855](https://github.com/dotenvx/dotenvx/pull/855))
+* BREAKING: Remove the `rotate` command (it will return in 2.1 or 2.2 soon with a more complete implementation for local and armored keys) ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 * BREAKING: Remove the library `doctor`, `keypair`, and `genexample` exports from `lib/main` ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Remove legacy service wrappers for `run`, `get`, `ls`, `keypair`, `encrypt`, `decrypt`, and `set` in favor of resolvers and transforms ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Remove legacy key provisioning, key resolution, local keypair, mutation, parser, and replacement helpers now handled by primitives and the provider/keyring flow ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Remove the old `postKeypair` API helper in favor of the Armor keyring API helper ([#855](https://github.com/dotenvx/dotenvx/pull/855))
-* Remove direct internal tests for deleted helper and service layers after moving coverage to resolver, transform, provider, CLI, and integration behavior ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 
 ## [1.76.0](https://github.com/dotenvx/dotenvx/compare/v1.75.1...v1.76.0) (2026-06-24)
 
