@@ -18,7 +18,6 @@ const Genexample = require('./services/genexample')
 const Session = require('./../db/session')
 
 // transforms
-const buildSetTransformInputs = require('./helpers/setTransformInputs')
 const setTransform = require('./transforms/set')
 
 // helpers
@@ -206,7 +205,7 @@ const parse = function (src, options = {}) {
 }
 
 /* @type {import('./main').set} */
-const set = function (key, value, options = {}) {
+const set = async function (key, value, options = {}) {
   // encrypt
   let encrypt = true
   if (options.plain) {
@@ -223,18 +222,27 @@ const set = function (key, value, options = {}) {
 
   const envs = buildEnvs(options)
   const envKeysFilepath = options.envKeysFile
+  const noCreate = options.create === false
   const noArmor = resolveNoArmor(options)
 
   const {
+    keysSrc,
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
-  } = setTransform({
-    envs: buildSetTransformInputs.sync({ key, value, envs, encrypt, envKeysFilepath, noArmor }),
+  } = await setTransform({
+    envs,
     key,
     value,
+    fk: envKeysFilepath,
+    noArmor,
+    noCreate,
     encrypt
   })
+
+  if (keysSrc) {
+    fsx.writeFileXSync(envKeysFilepath || '.env.keys', keysSrc)
+  }
 
   let withEncryption = ''
 

@@ -306,7 +306,7 @@ export function set(
   key: string,
   value: string,
   options?: SetOptions
-): SetOutput;
+): Promise<SetOutput>;
 
 export interface GetOptions {
   /**
