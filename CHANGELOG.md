@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file. See [standa
 * Improve key lookup and decryption flows across `run`, `get`, and `keypair` ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 * Better support Armor-backed private keys when loading encrypted env files ([#855](https://github.com/dotenvx/dotenvx/pull/855))
 
+### Removed
+
+* BREAKING: Remove the `rotate` command from dotenvx.
+
 ## [1.76.0](https://github.com/dotenvx/dotenvx/compare/v1.75.1...v1.76.0) (2026-06-24)
 
 ### Changed

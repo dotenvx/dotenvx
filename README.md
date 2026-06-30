@@ -2029,117 +2029,6 @@ $ dotenvx ls -ef '**/.env.prod*'
 ```
 
 </details>
-<details><summary>`rotate`</summary><br>
-
-Rotate public/private keys for `.env` file and re-encrypt all encrypted values.
-
-```sh
-$ echo "HELLO=Dotenvx" > .env
-$ dotenvx encrypt
-◈ encrypted (.env)
-$ dotenvx rotate
-⟳ rotated (.env)
-```
-
-</details>
-<details><summary>`rotate -f`</summary><br>
-
-Rotate public/private keys for a specified encrypted `.env` file and re-encrypt all encrypted values.
-
-```sh
-$ echo "HELLO=Dotenvx" > .env
-$ echo "HELLO=Production" > .env.production
-
-$ dotenvx encrypt -f .env.production
-◈ encrypted (.env.production)
-$ dotenvx rotate -f .env.production
-⟳ rotated (.env.production)
-```
-
-</details>
-<details><summary>`rotate -fk`</summary><br>
-
-Specify path to `.env.keys`. This is useful with monorepos.
-
-```sh
-$ mkdir -p apps/app1
-$ echo "HELLO=Dotenvx" > apps/app1/.env
-
-$ dotenvx encrypt -fk .env.keys -f apps/app1/.env
-◈ encrypted (apps/app1/.env)
-$ dotenvx rotate -fk .env.keys -f apps/app1/.env
-⟳ rotated (apps/app1/.env)
-```
-
-</details>
-<details><summary>`rotate -k`</summary><br>
-
-Rotate the contents of a specified key inside an encrypted `.env` file.
-
-```sh
-$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
-$ dotenvx encrypt
-◈ encrypted (.env)
-$ dotenvx rotate -k HELLO
-⟳ rotated (.env)
-```
-
-Even specify a glob pattern.
-
-```sh
-$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
-$ dotenvx encrypt
-◈ encrypted (.env)
-$ dotenvx rotate -k "HE*"
-⟳ rotated (.env)
-```
-
-</details>
-<details><summary>`rotate -ek`</summary><br>
-
-Rotate the encrypted contents inside an encrypted `.env` file except for an excluded key.
-
-```sh
-$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
-$ dotenvx encrypt
-◈ encrypted (.env)
-$ dotenvx rotate -ek HOLA
-⟳ rotated (.env)
-```
-
-Even specify a glob pattern.
-
-```sh
-$ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
-$ dotenvx encrypt
-◈ encrypted (.env)
-$ dotenvx rotate -ek "HO*"
-⟳ rotated (.env)
-```
-
-</details>
-<details><summary>`rotate --stdout`</summary><br>
-
-Rotate the contents of an encrypted `.env` file and send to stdout.
-
-```sh
-$ dotenvx rotate --stdout
-#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
-#/            public-key encryption for .env files          /
-#/       [how it works](https://dotenvx.com/encryption)     /
-#/----------------------------------------------------------/
-DOTENV_PUBLIC_KEY="034af93e93708b994c10f236c96ef88e47291066946cce2e8d98c9e02c741ced45"
-# .env
-HELLO="encrypted:12345"
-```
-
-or send to a file:
-
-```sh
-$ dotenvx rotate --stdout > somefile.txt
-```
-
-</details>
 <details><summary>`help`</summary><br>
 
 Output help for `dotenvx`.
@@ -2164,7 +2053,6 @@ Commands:
   set <KEY> <value>  set a single environment variable
   encrypt            encrypt .env file(s)
   decrypt            decrypt .env file(s)
-  rotate             rotate keypair(s) and re-encrypt .env file(s)
   keypair [KEY]      print public/private keys for .env file(s)
   ls [directory]     print all .env files in a tree structure
   gitignore          append to .gitignore

@@ -17,11 +17,9 @@ t.test('armor subcommands accept explicit token option', async (ct) => {
     ct.ok(command, `has armor ${commandName} command`)
     ct.ok(command.options.some(option => option.long === '--token'), `armor ${commandName} declares --token`)
   }
-
-  ct.notOk(armor.commands.find(command => command.name() === 'rotate'), 'does not have armor rotate command')
 })
 
-t.test('armor commands are native cli subcommands without rotate conflict', async (ct) => {
+t.test('armor commands are native cli subcommands', async (ct) => {
   const rootHelp = execFileSync(process.execPath, ['src/cli/dotenvx.js', '--help'], {
     cwd: process.cwd(),
     encoding: 'utf8'
@@ -39,7 +37,6 @@ t.test('armor commands are native cli subcommands without rotate conflict', asyn
   }
 
   ct.notMatch(armorHelp, /\n {2}keypair \[options\].*generate armored keypair/, 'does not register armor keypair')
-  ct.notMatch(armorHelp, /\n {2}rotate \[options\].*rotate armored key/, 'does not register armor rotate')
 })
 
 t.test('armor default action shows help', async (ct) => {
