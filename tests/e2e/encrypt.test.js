@@ -29,6 +29,18 @@ function execShell (commands) {
   return stripArmorStatus(output)
 }
 
+function execShellFailure (commands) {
+  try {
+    execShell(commands)
+  } catch (error) {
+    return {
+      status: error.status,
+      stdout: stripArmorStatus(error.stdout.toString().trim()),
+      stderr: error.stderr.toString()
+    }
+  }
+}
+
 t.beforeEach((ct) => {
   // important, clear process.env before each test
   process.env = {}
@@ -58,7 +70,7 @@ t.test('#encrypt', ct => {
 })
 
 t.test('#encrypt -k', ct => {
-  ct.plan(4)
+  ct.plan(7)
 
   execShell(`
     echo "HELLO=World\nHI=thar" > .env
@@ -73,8 +85,14 @@ t.test('#encrypt -k', ct => {
 
   execShell('rm .env.keys')
 
-  ct.equal(execShell(`${dotenvx} get HELLO`), 'World') // unencrypted still
-  ct.match(execShell(`${dotenvx} get HI`), /^encrypted:/, 'HI should be encrypted')
+  const helloResult = execShellFailure(`${dotenvx} get HELLO`)
+  ct.equal(helloResult.status, 1, 'get exits when another key cannot be decrypted')
+  ct.equal(helloResult.stdout, 'World') // unencrypted still
+  ct.match(helloResult.stderr, /DECRYPTION_FAILED/)
+
+  const hiResult = execShellFailure(`${dotenvx} get HI`)
+  ct.equal(hiResult.status, 1, 'get exits when requested encrypted key cannot be decrypted')
+  ct.match(hiResult.stdout, /^encrypted:/, 'HI should be encrypted')
 
   process.env.DOTENV_PRIVATE_KEY = DOTENV_PRIVATE_KEY
   ct.equal(execShell(`${dotenvx} get HI`), 'thar')
