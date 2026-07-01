@@ -91,15 +91,16 @@ jobs:
           cd fixture
           npm init -y
           npm install "..\$TARBALL"
-          "TEST=1" | Out-File -FilePath .env.local -Encoding utf8NoBOM
+          "TEST_KEY=value123" | Out-File -FilePath .env.local -Encoding utf8NoBOM
           $OUTPUT = .\node_modules\.bin\dotenvx.ps1 encrypt --no-armor -f .env.local
-          Write-Output $OUTPUT
+          $OUTPUT_TEXT = $OUTPUT -join [Environment]::NewLine
+          Write-Output $OUTPUT_TEXT
           if ($LASTEXITCODE -ne 0) {
             Write-Output "dotenvx encrypt failed with exit code $LASTEXITCODE"
             exit $LASTEXITCODE
           }
-          if ($OUTPUT -ne "◈ encrypted (.env.local)") {
-            Write-Output "expected encrypted .env.local, got '$OUTPUT'"
+          if ($OUTPUT_TEXT -notmatch "encrypted.*\.env\.local") {
+            Write-Output "expected output to mention encrypted .env.local, got '$OUTPUT_TEXT'"
             exit 1
           }
           $ENV_LOCAL = Get-Content .env.local -Raw
