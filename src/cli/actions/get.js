@@ -19,6 +19,7 @@ async function get (key) {
 
   const prettyPrint = options.prettyPrint || options.pp
   const ignore = options.ignore || []
+  let errorCount = 0
 
   let envs = []
   // handle shorthand conventions - like --convention=nextjs
@@ -52,6 +53,7 @@ async function get (key) {
         continue // ignore error
       }
 
+      errorCount += 1
       logger.error(error.messageWithHelp)
     }
 
@@ -96,6 +98,10 @@ async function get (key) {
 
         console.log(JSON.stringify(parsed, null, space))
       }
+    }
+
+    if (errorCount > 0) {
+      process.exit(1)
     }
   } catch (error) {
     if (spinner) spinner.stop()
