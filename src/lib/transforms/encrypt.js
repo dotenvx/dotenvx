@@ -8,7 +8,7 @@ const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 const Errors = require('../helpers/errors')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
-const { isDotenvPublicKey, isPublicKey, mutateSrc, mutateKeysSrc } = require('../helpers/cryptography')
+const { isDotenvPublicKey, isPlainKey, mutateSrc, mutateKeysSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const PostArmorUp = require('../api/postArmorUp')
 const prompts = require('../helpers/prompts')
@@ -129,7 +129,7 @@ async function encryptTransform (options = {}) {
       const { parsed } = scan(row.envSrc, { ik, ek })
 
       for (const [key, values] of Object.entries(parsed)) {
-        if (isDotenvPublicKey(key) || isPublicKey(key)) {
+        if (isDotenvPublicKey(key) || isPlainKey(key)) {
           continue
         }
 
