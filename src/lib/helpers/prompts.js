@@ -38,6 +38,25 @@ async function select ({ message, choices }, context) {
   return answer.value
 }
 
+async function password ({ message, separator }, context) {
+  const answer = await enquirer.prompt({
+    type: 'password',
+    name: 'value',
+    message,
+    symbols: {
+      separator: {
+        pending: separator,
+        submitted: separator,
+        cancelled: separator
+      }
+    },
+    ...enquirerOptions(context)
+  })
+
+  return answer.value
+}
+
 module.exports = {
+  password,
   select
 }
