@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.0.0...main)
 
+### Changed
+
+* Support leaving `_PLAIN` suffixed keys unencrypted during `set` and `encrypt`
+* Return exit code 1 from `get` when decryption errors are reported
+
+### Fixed
+
+* Add Windows PowerShell coverage for npm shim encryption of `.env.local` files
+
 ## [2.0.0](https://github.com/dotenvx/dotenvx/compare/v1.76.0...v2.0.0) (2026-06-30)
 
 ### Changed
