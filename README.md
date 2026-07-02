@@ -672,6 +672,13 @@ $ dotenvx run -f .env.production --quiet -- node index.js
 Hello production
 ```
 
+You can also set `DOTENV_CONFIG_QUIET=true`.
+
+```sh
+$ DOTENV_CONFIG_QUIET=true dotenvx run -f .env.production -- node index.js
+Hello production
+```
+
 </details>
 <details><summary>`--log-level` flag</summary><br>
 
@@ -1228,6 +1235,13 @@ $ echo "HELLO=production" > .env.production
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
 $ dotenvx run -f .env.production --quiet -- node index.js
+Hello production
+```
+
+You can also set `DOTENV_CONFIG_QUIET=true`.
+
+```sh
+$ DOTENV_CONFIG_QUIET=true dotenvx run -f .env.production -- node index.js
 Hello production
 ```
 
@@ -2394,6 +2408,14 @@ console.log(`Hello ${process.env.HELLO}`)
 
 ```sh
 $ node index.js
+Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
+Hello Dotenvx
+```
+
+You can also set `DOTENV_CONFIG_QUIET=true`.
+
+```sh
+$ DOTENV_CONFIG_QUIET=true node index.js
 Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
 Hello Dotenvx
 ```
