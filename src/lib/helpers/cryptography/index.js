@@ -1,6 +1,6 @@
 module.exports = {
   decryptKeyValue: require('./decryptKeyValue'),
-  isPublicKey: require('./isPublicKey'),
+  isDotenvPublicKey: require('./isDotenvPublicKey'),
   mutateKeysSrc: require('./mutateKeysSrc'),
   mutateSrc: require('./mutateSrc')
 }
