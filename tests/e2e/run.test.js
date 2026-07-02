@@ -70,6 +70,7 @@ t.test('#run', ct => {
   ct.equal(execShell(`${node} index.js`).stdout, 'Hello undefined')
   ct.equal(execShell(`${dotenvx} run -- ${command}`).stdout, '⟐ injected env (1) from .env\nHello World')
   ct.equal(execShell(`${dotenvx} run --quiet -- ${command}`).stdout, 'Hello World') // --quiet
+  ct.equal(execShell(`DOTENV_CONFIG_QUIET=true ${dotenvx} run -- ${command}`).stdout, 'Hello World') // DOTENV_CONFIG_QUIET=true
   ct.equal(execShell(`${dotenvx} run --debug -- ${command}`).stdout, modernizeDebugOutput(`Setting log level to debug
 options: {"env":[],"envFile":[],"strict":false,"armor":true,"ops":true}
 process command [${node} index.js]

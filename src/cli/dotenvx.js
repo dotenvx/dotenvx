@@ -12,6 +12,7 @@ const getCommanderVersion = require('./../lib/helpers/getCommanderVersion')
 const executeDynamic = require('./../lib/helpers/executeDynamic')
 const removeDynamicHelpSection = require('./../lib/helpers/removeDynamicHelpSection')
 const removeOptionsHelpParts = require('./../lib/helpers/removeOptionsHelpParts')
+const normalizeDotenvConfigQuiet = require('./actions/normalizeDotenvConfigQuiet')
 
 // for use with run
 const envs = []
@@ -38,7 +39,7 @@ program
   .option('-v, --verbose', 'sets log level to verbose')
   .option('-d, --debug', 'sets log level to debug')
   .hook('preAction', (thisCommand, actionCommand) => {
-    const options = thisCommand.opts()
+    const options = normalizeDotenvConfigQuiet(thisCommand.opts())
 
     setLogLevel(options)
   })
