@@ -1661,6 +1661,20 @@ set HELLO (.env)
 ```
 
 </details>
+<details><summary>`set KEY_PLAIN value`</summary><br>
+
+Set a plaintext key/value inside an encrypted `.env` file by ending the key with `_PLAIN`.
+
+```sh
+$ touch .env
+
+$ dotenvx set HELLO_PLAIN Dotenvx
+set HELLO_PLAIN (.env)
+```
+
+Keys ending in `_PLAIN` are not encrypted by `dotenvx set` or `dotenvx encrypt`.
+
+</details>
 <details><summary>`encrypt`</summary><br>
 
 Encrypt the contents of a `.env` file to an encrypted `.env` file.
@@ -1768,6 +1782,20 @@ $ echo "HELLO=Dotenvx\nHOLA=Mundo" > .env
 $ dotenvx encrypt -ek "HO*"
 ◈ encrypted (.env)
 ```
+
+</details>
+<details><summary>`encrypt KEY_PLAIN`</summary><br>
+
+Skip encryption for keys ending in `_PLAIN`.
+
+```sh
+$ echo "HELLO=Dotenvx\nHELLO_PLAIN=visible" > .env
+
+$ dotenvx encrypt
+◈ encrypted (.env)
+```
+
+`HELLO` is encrypted. `HELLO_PLAIN` stays plaintext.
 
 </details>
 <details><summary>`encrypt --stdout`</summary><br>
