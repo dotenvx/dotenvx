@@ -15,9 +15,11 @@ async function set (key, value) {
 
   let encrypt = true
   let settingMessage = 'encrypting'
+  let settingSymbol = '◈'
   if (options.plain) {
     encrypt = false
     settingMessage = 'setting'
+    settingSymbol = '◇'
   }
 
   if (typeof value === 'undefined') {
@@ -27,13 +29,23 @@ async function set (key, value) {
       return
     }
 
-    value = await prompts.password({
-      message: key,
-      separator: '='
-    }, {
-      input: process.stdin,
-      output: process.stderr
-    })
+    try {
+      value = await prompts.password({
+        message: key,
+        prefix: settingSymbol,
+        separator: '='
+      }, {
+        input: process.stdin,
+        output: process.stderr
+      })
+    } catch (error) {
+      if (error.code === 'PROMPT_CANCELLED') {
+        process.exit(130)
+        return
+      }
+
+      throw error
+    }
   }
 
   if (value === '') {
