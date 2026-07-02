@@ -46,8 +46,16 @@ async function setTransform (options = {}) {
   // set up keysSrc
   let keysSrc
   if (await fsx.exists(fk)) {
-    const encoding = await detectEncoding(fk)
-    keysSrc = await fsx.readFileX(fk, { encoding })
+    try {
+      const encoding = await detectEncoding(fk)
+      keysSrc = await fsx.readFileX(fk, { encoding })
+    } catch (err) {
+      if (err.code === 'EACCES' || err.code === 'EPERM') {
+        // do nothing (scenario: chmod a-r .env.keys)
+      } else {
+        throw err
+      }
+    }
   }
 
   for (const env of determine(envs, process.env)) {

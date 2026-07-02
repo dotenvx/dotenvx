@@ -730,6 +730,22 @@ $ dotenvx encrypt
 
 > A `DOTENV_PUBLIC_KEY` (encryption key) and a `DOTENV_PRIVATE_KEY` (decryption key) are generated using the same public-key cryptography as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1).
 
+### Protect `.env.keys` from agents
+
+After encryption, `DOTENV_PUBLIC_KEY` lives in your encrypted `.env` file. This means agents and automation can keep running `dotenvx set` and `dotenvx encrypt` without reading `.env.keys`.
+
+```sh
+$ chmod a-r .env.keys
+
+$ dotenvx set HELLO World
+◈ encrypted HELLO (.env)
+
+$ dotenvx encrypt
+◈ encrypted (.env)
+```
+
+Keep `.env.keys` unreadable by agents, while still letting them safely update encrypted values.
+
 More examples
 
 <details><summary>`.env`</summary><br>
@@ -1586,6 +1602,8 @@ $ dotenvx set HELLO Dotenvx
 set HELLO with encryption (.env)
 ```
 
+Works with unreadable `.env.keys` when `.env` already contains `DOTENV_PUBLIC_KEY`.
+
 </details>
 <details><summary>`set KEY value -f`</summary><br>
 
@@ -1687,6 +1705,8 @@ $ dotenvx encrypt
 ⮕  next run [dotenvx gitignore --pattern .env.keys] to gitignore .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='122...0b8' dotenvx run -- yourcommand] to test decryption locally
 ```
+
+Works with unreadable `.env.keys` when `.env` already contains `DOTENV_PUBLIC_KEY`.
 
 </details>
 <details><summary>`encrypt -f`</summary><br>
