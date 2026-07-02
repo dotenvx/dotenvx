@@ -17,13 +17,16 @@ function envsFromDotenvPrivateKey (privateKeyNames) {
 
 function determine (envs = [], processEnv) {
   const privateKeyNames = dotenvPrivateKeyNames(processEnv)
-  if (!envs || envs.length <= 0) {
-    // if process.env.DOTENV_PRIVATE_KEY or process.env.DOTENV_PRIVATE_KEY_${environment} is set, assume inline encryption methodology
-    if (privateKeyNames.length > 0) {
-      return envsFromDotenvPrivateKey(privateKeyNames)
-    }
 
-    return DEFAULT_ENVS // default to .env file expectation
+  // https://github.com/dotenvx/dotenvx/issues/670
+  let defaults = DEFAULT_ENVS // default to .env file expectation
+  // if process.env.DOTENV_PRIVATE_KEY or process.env.DOTENV_PRIVATE_KEY_${environment} is set, assume inline encryption methodology
+  if (privateKeyNames.length > 0) {
+    defaults = envsFromDotenvPrivateKey(privateKeyNames)
+  }
+
+  if (!envs || envs.length <= 0) {
+    return defaults
   } else {
     let fileAlreadySpecified = false
 
@@ -39,7 +42,7 @@ function determine (envs = [], processEnv) {
     }
 
     // no .env file specified as a flag so default to .env
-    return [...DEFAULT_ENVS, ...envs]
+    return [...defaults, ...envs]
   }
 }
 

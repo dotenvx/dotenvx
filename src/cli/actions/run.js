@@ -86,6 +86,7 @@ async function run () {
     } else {
       envs = this.envs
     }
+
     envs = determine(envs, process.env)
 
     const {
