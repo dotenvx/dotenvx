@@ -231,6 +231,16 @@ t.test('logs only errors in quiet mode', ct => {
   ct.end()
 })
 
+t.test('logs only errors when DOTENV_CONFIG_QUIET=true', ct => {
+  process.env.DOTENV_CONFIG_QUIET = 'true'
+
+  dotenvx.config({ quiet: false })
+
+  ct.equal(logger.level, 'error')
+
+  ct.end()
+})
+
 t.test('logs in verbose mode', ct => {
   ct.plan(2)
 
