@@ -2,7 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.0.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.1.0...main)
+
+## [2.1.0](https://github.com/dotenvx/dotenvx/compare/v2.0.0...v2.1.0) (2026-07-02)
+
+### Added
+
+* Add interactive input mode for `set` ([#862](https://github.com/dotenvx/dotenvx/pull/862))
+* Support leaving `_PLAIN` suffixed keys unencrypted during `set` and `encrypt` ([#862](https://github.com/dotenvx/dotenvx/pull/862))
+
+### Changed
+
+* Return exit code 1 from `get` when decryption errors are reported ([#862](https://github.com/dotenvx/dotenvx/pull/862))
+
+### Fixed
+
+* Add Windows PowerShell coverage for npm shim encryption of `.env.local` files
 
 ## [2.0.0](https://github.com/dotenvx/dotenvx/compare/v1.76.0...v2.0.0) (2026-06-30)
 

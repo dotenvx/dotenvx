@@ -67,8 +67,8 @@ t.test('#errors missingPublicKey', ct => {
 
   t.equal(result.code, 'MISSING_PUBLIC_KEY')
   t.equal(result.message, '[MISSING_PUBLIC_KEY] missing public key')
-  t.equal(result.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/new]')
-  t.equal(result.messageWithHelp, '[MISSING_PUBLIC_KEY] missing public key. fix: [https://github.com/dotenvx/dotenvx/issues/new]')
+  t.equal(result.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/865]')
+  t.equal(result.messageWithHelp, '[MISSING_PUBLIC_KEY] missing public key. fix: [https://github.com/dotenvx/dotenvx/issues/865]')
 
   ct.end()
 })

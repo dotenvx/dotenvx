@@ -7,7 +7,7 @@ const TYPE_ENV_FILE = 'envFile'
 const getResolver = require('./../resolvers/get')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
-const { mutateSrc, mutateKeysSrc } = require('../helpers/cryptography')
+const { isPlainKey, mutateSrc, mutateKeysSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const Errors = require('../helpers/errors')
 const PostArmorUp = require('../api/postArmorUp')
@@ -37,7 +37,7 @@ async function setTransform (options = {}) {
   const fk = options.fk || '.env.keys'
   let noArmor = options.noArmor // key storage selector below
   const noCreate = options.noCreate
-  const noEncrypt = !options.encrypt
+  const noEncrypt = !options.encrypt || isPlainKey(key)
 
   const processedEnvs = []
   const changedFilepaths = []

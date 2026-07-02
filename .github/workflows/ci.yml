@@ -73,6 +73,41 @@ jobs:
             Write-Output "expected PowerShell, got '$OUTPUT'"
             exit 1
           }
+  test-npm-powershell-env-local-encrypt:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20.x
+      - name: verify npm powershell .env.local encrypt
+        shell: pwsh
+        run: |
+          npm install
+          $TARBALL = npm pack
+          mkdir fixture
+          cd fixture
+          npm init -y
+          npm install "..\$TARBALL"
+          "TEST_KEY=value123" | Out-File -FilePath .env.local -Encoding utf8NoBOM
+          $OUTPUT = .\node_modules\.bin\dotenvx.ps1 encrypt --no-armor -f .env.local
+          $OUTPUT_TEXT = $OUTPUT -join [Environment]::NewLine
+          Write-Output $OUTPUT_TEXT
+          if ($LASTEXITCODE -ne 0) {
+            Write-Output "dotenvx encrypt failed with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+          }
+          if ($OUTPUT_TEXT -notmatch "encrypted.*\.env\.local") {
+            Write-Output "expected output to mention encrypted .env.local, got '$OUTPUT_TEXT'"
+            exit 1
+          }
+          $ENV_LOCAL = Get-Content .env.local -Raw
+          if ($ENV_LOCAL -notmatch "encrypted:") {
+            Write-Output "expected .env.local to contain encrypted value"
+            exit 1
+          }
   test-pkg:
     runs-on: ubuntu-latest
     strategy:

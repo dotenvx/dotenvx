@@ -5,6 +5,8 @@ const setTransform = require('./../../lib/transforms/set')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
+const Errors = require('../../lib/helpers/errors')
+const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
 const normalizeArmorAliases = require('./normalizeArmorAliases')
 
@@ -13,9 +15,43 @@ async function set (key, value) {
 
   let encrypt = true
   let settingMessage = 'encrypting'
+  let settingSymbol = '◈'
   if (options.plain) {
     encrypt = false
     settingMessage = 'setting'
+    settingSymbol = '◇'
+  }
+
+  if (typeof value === 'undefined') {
+    if (!process.stdin.isTTY) {
+      catchAndLog(new Errors({ key }).missingValue())
+      process.exit(1)
+      return
+    }
+
+    try {
+      value = await prompts.password({
+        message: key,
+        prefix: settingSymbol,
+        separator: '='
+      }, {
+        input: process.stdin,
+        output: process.stderr
+      })
+    } catch (error) {
+      if (error.code === 'PROMPT_CANCELLED') {
+        process.exit(130)
+        return
+      }
+
+      throw error
+    }
+  }
+
+  if (value === '') {
+    catchAndLog(new Errors({ key }).missingValue())
+    process.exit(1)
+    return
   }
 
   const spinner = await createSpinner({ ...options, text: settingMessage })
