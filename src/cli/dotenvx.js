@@ -12,7 +12,7 @@ const getCommanderVersion = require('./../lib/helpers/getCommanderVersion')
 const executeDynamic = require('./../lib/helpers/executeDynamic')
 const removeDynamicHelpSection = require('./../lib/helpers/removeDynamicHelpSection')
 const removeOptionsHelpParts = require('./../lib/helpers/removeOptionsHelpParts')
-const normalizeDotenvConfigQuiet = require('./actions/normalizeDotenvConfigQuiet')
+const normalizeDotenvConfigQuiet = require('./../lib/helpers/normalizeDotenvConfigQuiet')
 
 // for use with run
 const envs = []
