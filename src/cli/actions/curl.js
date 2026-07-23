@@ -48,7 +48,8 @@ async function curl () {
     const url = requestUrl(this.args[0], session.hostname())
     const headers = {
       Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
+      Accept: 'application/json',
+      'dotenvx-device-public-key': session.devicePublicKey()
     }
     if (body !== undefined) headers['Content-Type'] = 'application/json'
 

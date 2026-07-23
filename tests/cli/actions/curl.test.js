@@ -16,7 +16,8 @@ function loadAction ({ response = { statusCode: 200, body: { text: async () => '
   const http = sinon.stub().resolves(response)
   const session = {
     token: sinon.stub().returns('token-123'),
-    hostname: sinon.stub().returns('https://armor.dotenvx.com')
+    hostname: sinon.stub().returns('https://armor.dotenvx.com'),
+    devicePublicKey: sinon.stub().returns('device-public-key')
   }
   const action = proxyquire('../../../src/cli/actions/curl', {
     '../../db/session': sinon.stub().returns(session),
@@ -41,7 +42,8 @@ t.test('makes an authenticated GET request and pretty prints JSON', async ct => 
       method: 'GET',
       headers: {
         Authorization: 'Bearer token-123',
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'dotenvx-device-public-key': 'device-public-key'
       },
       body: undefined
     }
@@ -63,6 +65,7 @@ t.test('defaults to POST when JSON data is supplied', async ct => {
     headers: {
       Authorization: 'Bearer token-123',
       Accept: 'application/json',
+      'dotenvx-device-public-key': 'device-public-key',
       'Content-Type': 'application/json'
     },
     body: '{"value":true}'
