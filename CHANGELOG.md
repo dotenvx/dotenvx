@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.17.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.17.4...main)
+
+## [2.17.4](https://github.com/dotenvx/dotenvx/compare/v2.17.3...v2.17.4) (2026-07-24)
+
+### Changed
+
+* Send device identifier along with curl requests ([#922](https://github.com/dotenvx/dotenvx/pull/922))
 
 ## [2.17.3](https://github.com/dotenvx/dotenvx/compare/v2.17.2...v2.17.3) (2026-07-23)
 
