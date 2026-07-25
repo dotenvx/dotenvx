@@ -3525,19 +3525,14 @@ BW_SESSION= # set to bitwarden session token to bypass password prompt
 
 &nbsp;
 
-### Error codes 🚨
+### Error Codes 🚨
 
-dotenvx errors begin with a stable code in square brackets. Use the code to handle an error programmatically or pass supported codes to `--ignore` or `DOTENV_CONFIG_IGNORE`.
-
-```text
-[MISSING_ENV_FILE] missing file (.env.production)
-```
-
-When using the library, the same value is available as `error.code`.
+Dotenvx errors begin with a stable code in square brackets like `MISSING_ENV_FILE`.
 
 | Code | Meaning |
 |---|---|
 | `1PASSWORD_FAILED` | A value could not be resolved with the 1Password CLI. |
+| `ACCESS_APPROVAL_TIMEOUT` | An Armor access-approval request timed out. |
 | `BITWARDEN_FAILED` | A value could not be resolved with the Bitwarden CLI. |
 | `COMMAND_EXITED_WITH_CODE` | The command run by dotenvx exited with a non-zero status. |
 | `COMMAND_SUBSTITUTION_FAILED` | A `$(command)` expression in an environment value could not be evaluated. |
@@ -3559,23 +3554,12 @@ When using the library, the same value is available as `error.code`.
 | `MISSING_LOG_LEVEL` | The requested log level is not supported. |
 | `MISSING_PRIVATE_KEY` | The private key required to decrypt a value is missing. |
 | `MISSING_PUBLIC_KEY` | The public key required to encrypt a value is missing. |
+| `MISSING_REQUIRED` | Validation detail indicating which required variables are missing; surfaced by the top-level `VALIDATION_FAILED` error. |
 | `MISSING_VALUE` | No value was supplied for a key. |
+| `NOT_FOUND` | A private key was not found in the native secret store. |
 | `PRECOMMIT_HOOK_MODIFY_FAILED` | dotenvx could not update the pre-commit hook. |
 | `VALIDATION_FAILED` | One or more required variables declared by `.env.example` are missing. |
 | `WRONG_PRIVATE_KEY` | The supplied private key cannot decrypt the value. |
-
-Some optional integrations also emit these operation-specific codes:
-
-| Code | Meaning |
-|---|---|
-| `ACCESS_APPROVAL_TIMEOUT` | An Armor access-approval request timed out. |
-| `INSTALLATION_NEEDED` | A requested dotenvx extension is not installed. |
-| `MISSING_REQUIRED` | Validation detail indicating which required variables are missing; surfaced by the top-level `VALIDATION_FAILED` error. |
-| `NOT_FOUND` | A private key was not found in the native secret store. |
-
-API and OAuth failures can additionally expose the error code returned by the remote service. Those codes are service-defined and are not part of the stable list above.
-
-> `--ignore` only affects errors handled by commands that support that option; it does not change a child command's exit status.
 
 &nbsp;
 
