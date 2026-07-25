@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.17.4...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.18.0...main)
+
+## [2.18.0](https://github.com/dotenvx/dotenvx/compare/v2.17.4...v2.18.0) (2026-07-25)
+
+### Added
+
+* Make authenticated API calls to the Dotenvx Armor API with `dotenvx curl`. Allows you to control your Dotenvx Armor account directly from your agent inside Codex, Claude, etc. ([#923](https://github.com/dotenvx/dotenvx/pull/923))
 
 ## [2.17.4](https://github.com/dotenvx/dotenvx/compare/v2.17.3...v2.17.4) (2026-07-24)
 
