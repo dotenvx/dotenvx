@@ -32,7 +32,7 @@ t.test('#--help shows armor advanced command', ct => {
   ct.match(output, /Professional Security:[\s\S]*native\s+⌥ move private keys into your OS secret store[\s\S]*armor\s+⛨ move private keys into Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'professional security commands include armor')
   ct.notMatch(output, /\n\s+login\s+log in to move keys off-device/, 'root help does not show login')
   ct.notMatch(output, /\n\s+logout\s+log out of connected security features/, 'root help does not show logout')
-  ct.notMatch(output, /\n\s+curl\s+make an authenticated dotenvx API request/, 'root help does not show curl')
+  ct.match(output, /\n\s+curl\s+⛨ call authenticated api to Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'root help shows curl')
   ct.match(output, /armor\s+⛨ move private keys into Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'armor advanced command is shown')
   ct.notMatch(output, /ext\s+⊕ extensions/, 'ext command is not shown')
 
