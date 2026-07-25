@@ -3525,6 +3525,44 @@ BW_SESSION= # set to bitwarden session token to bypass password prompt
 
 &nbsp;
 
+### Error Codes 🚨
+
+Dotenvx errors begin with a stable code in square brackets like `MISSING_ENV_FILE`.
+
+| Code | Meaning |
+|---|---|
+| `1PASSWORD_FAILED` | A value could not be resolved with the 1Password CLI. |
+| `ACCESS_APPROVAL_TIMEOUT` | An Armor access-approval request timed out. |
+| `BITWARDEN_FAILED` | A value could not be resolved with the Bitwarden CLI. |
+| `COMMAND_EXITED_WITH_CODE` | The command run by dotenvx exited with a non-zero status. |
+| `COMMAND_SUBSTITUTION_FAILED` | A `$(command)` expression in an environment value could not be evaluated. |
+| `DECRYPTION_FAILED` | An encrypted value could not be decrypted. |
+| `FILE_NOT_WRITABLE` | dotenvx could not write to the target file. |
+| `INVALID_COLOR` | The requested terminal color is invalid. |
+| `INVALID_CONVENTION` | The requested environment-file convention is invalid. |
+| `INVALID_PASSPHRASE` | A locked private key could not be unlocked with the supplied passphrase. |
+| `INVALID_PRIVATE_KEY` | A private key is malformed or otherwise invalid. |
+| `INVALID_PUBLIC_KEY` | A public key is malformed or otherwise invalid. |
+| `MALFORMED_ENCRYPTED_DATA` | The encrypted value is malformed. |
+| `MISPAIRED_PRIVATE_KEY` | A private key does not match the existing public key. |
+| `MISSING_DIRECTORY` | The requested directory does not exist. |
+| `MISSING_ENV_EXAMPLE` | The required `.env.example` file does not exist. |
+| `MISSING_ENV_FILE` | A requested environment file does not exist. |
+| `MISSING_ENV_FILES` | No `.env*` files were found. |
+| `MISSING_ENV_KEYS_FILE` | The requested `.env.keys` file does not exist. |
+| `MISSING_KEY` | A requested environment key does not exist. |
+| `MISSING_LOG_LEVEL` | The requested log level is not supported. |
+| `MISSING_PRIVATE_KEY` | The private key required to decrypt a value is missing. |
+| `MISSING_PUBLIC_KEY` | The public key required to encrypt a value is missing. |
+| `MISSING_REQUIRED` | Validation detail indicating which required variables are missing; surfaced by the top-level `VALIDATION_FAILED` error. |
+| `MISSING_VALUE` | No value was supplied for a key. |
+| `NOT_FOUND` | A private key was not found in the native secret store. |
+| `PRECOMMIT_HOOK_MODIFY_FAILED` | dotenvx could not update the pre-commit hook. |
+| `VALIDATION_FAILED` | One or more required variables declared by `.env.example` are missing. |
+| `WRONG_PRIVATE_KEY` | The supplied private key cannot decrypt the value. |
+
+&nbsp;
+
 ## Armor ⛨
 
 [![dotenvx-armor](https://dotenvx.com/dotenvx-armor-banner.png?v2)](https://dotenvx.com/armor)

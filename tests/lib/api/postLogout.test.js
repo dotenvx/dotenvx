@@ -55,7 +55,7 @@ t.test('PostLogout throws api errors', async ct => {
 
   await ct.rejects(new PostLogout('https://armor.example.com', 'token-123').run(), {
     code: 'UNAUTHORIZED',
-    help: '[UNAUTHORIZED] login again',
+    help: 'fix: [login again]',
     json
   })
 })
