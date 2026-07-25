@@ -4,8 +4,9 @@ const {
   precommit,
   prebuild,
   gitignore,
-  set
-} = require('../../src/cli/examples') // Adjust the path as needed
+  set,
+  curl
+} = require('../../src/cli/help')
 
 tap.test('run function returns expected string', (t) => {
   const expected = `
@@ -106,5 +107,16 @@ Examples:
   \`\`\`
   `
   t.equal(set(), expected)
+  t.end()
+})
+
+tap.test('curl function returns API endpoints and examples', (t) => {
+  const output = curl()
+
+  t.match(output, /Endpoints:\s+GET\s+\/api\/account/)
+  t.match(output, /POST\s+\/api\/armor\/keypairs\/:public_key\/settings\/guard/)
+  t.match(output, /DELETE \/api\/teams\/:team\/invitations\/:id/)
+  t.match(output, /dotenvx curl https:\/\/armor\.dotenvx\.com\/api\/account/)
+  t.match(output, /--request DELETE/)
   t.end()
 })

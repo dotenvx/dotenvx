@@ -31,6 +31,7 @@ t.test('armor commands are native cli subcommands', async (ct) => {
   })
 
   ct.match(rootHelp, /\n\s{2}armor\s+⛨ move private keys into Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'root help shows curated armor line')
+  ct.match(rootHelp, /\n\s{2}curl\s+⛨ call authenticated api to Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'root help shows curated curl line')
   ct.notMatch(rootHelp, /\n {2}armor {2,}move private keys off-device/, 'hides native armor command from root command list')
 
   for (const commandName of nativeCommands) {

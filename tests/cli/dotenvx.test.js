@@ -23,6 +23,7 @@ t.test('login and logout remain hidden from default command list', ct => {
   ct.notMatch(professionalSecurity, /\n\s+login\s+/, 'root help does not advertise login')
   ct.notMatch(professionalSecurity, /\n\s+logout\s+/, 'root help does not advertise logout')
   ct.match(professionalSecurity, /\n\s+armor\s+⛨ move private keys into Dotenvx Armor/, 'root help advertises armor')
+  ct.match(professionalSecurity, /\n\s+curl\s+⛨ call authenticated api to Dotenvx Armor/, 'root help advertises curl')
   ct.end()
 })
 

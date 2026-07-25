@@ -5,7 +5,7 @@ const { Command } = require('@dotenvx/tooling')
 const program = new Command()
 
 const { setLogLevel } = require('../shared/logger')
-const examples = require('./examples')
+const help = require('./help')
 const packageJson = require('./../lib/helpers/packageJson')
 const executeDynamic = require('./../lib/helpers/executeDynamic')
 const removeDynamicHelpSection = require('./../lib/helpers/removeDynamicHelpSection')
@@ -60,7 +60,7 @@ program
 // dotenvx run -- node index.js
 program.command('run')
   .description('inject env at runtime [dotenvx run -- yourcommand]')
-  .addHelpText('after', examples.run)
+  .addHelpText('after', help.run)
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
@@ -113,7 +113,7 @@ program.command('get')
 program.command('set')
   .usage('<KEY> [value] [options]')
   .description('encrypt a single environment variable')
-  .addHelpText('after', examples.set)
+  .addHelpText('after', help.set)
   .allowUnknownOption()
   .argument('KEY', 'KEY')
   .argument('[value]', 'value')
@@ -211,7 +211,7 @@ program.command('validate')
 // dotenvx gitignore
 program.command('gitignore')
   .description('append to .gitignore')
-  .addHelpText('after', examples.gitignore)
+  .addHelpText('after', help.gitignore)
   .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
   .action(function (...args) {
     return require('./actions/ext/gitignore').apply(this, args)
@@ -229,7 +229,7 @@ program.command('genexample')
 // dotenvx precommit
 program.command('precommit')
   .description('prevent committing .env files to code')
-  .addHelpText('after', examples.precommit)
+  .addHelpText('after', help.precommit)
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
   .option('-i, --install', 'install to .git/hooks/pre-commit')
   .action(function (...args) {
@@ -239,7 +239,7 @@ program.command('precommit')
 // dotenvx prebuild
 program.command('prebuild')
   .description('prevent including .env files in docker')
-  .addHelpText('after', examples.prebuild)
+  .addHelpText('after', help.prebuild)
   .argument('[directory]', 'directory to prevent including .env files from', '.')
   .action(function (...args) {
     return require('./actions/ext/prebuild').apply(this, args)
@@ -260,17 +260,6 @@ program.command('update')
     return require('./actions/update').apply(this, args)
   })
 
-// dotenvx curl
-program.command('curl', { hidden: true })
-  .description('make an authenticated dotenvx API request')
-  .argument('<url>', 'dotenvx API URL')
-  .option('-X, --request <method>', 'HTTP request method')
-  .option('--data <json>', 'JSON request body')
-  .option('--token <token>', 'set Armor ⛨ token')
-  .action(function (...args) {
-    return require('./actions/curl').apply(this, args)
-  })
-
 // dotenvx login (compatibility alias for dotenvx armor login)
 program.command('login', { hidden: true })
   .description('log in to move keys off-device, share with your team, and audit access')
@@ -287,6 +276,18 @@ program.command('logout', { hidden: true })
   .option('--hostname <hostname>', 'set Armor ⛨ hostname')
   .action(function (...args) {
     return require('./actions/logout').apply(this, args)
+  })
+
+// dotenvx curl
+program.command('curl', { hidden: true })
+  .description('Dotenvx Armor API')
+  .addHelpText('after', help.curl)
+  .argument('<url>', '(run dotenvx run --help for list of urls)')
+  .option('-X, --request <method>', 'HTTP request method')
+  .option('--data <json>', 'JSON request body')
+  .option('--token <token>', 'set token')
+  .action(function (...args) {
+    return require('./actions/curl').apply(this, args)
   })
 
 // dotenvx help
@@ -311,6 +312,7 @@ program.addHelpText('after', 'Professional Security: ')
 program.addHelpText('after', '  lock                     ⊡ lock private keys with a local passphrase')
 program.addHelpText('after', '  native                   ⌥ move private keys into your OS secret store')
 program.addHelpText('after', '  armor                    ⛨ move private keys into Dotenvx Armor [www.dotenvx.com/armor]')
+program.addHelpText('after', '  curl                     ⛨ call authenticated api to Dotenvx Armor [www.dotenvx.com/armor]')
 
 // dotenvx native
 require('./commands/native')(program.command('native', { hidden: true }))
