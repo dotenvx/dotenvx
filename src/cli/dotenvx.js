@@ -260,17 +260,6 @@ program.command('update')
     return require('./actions/update').apply(this, args)
   })
 
-// dotenvx curl
-program.command('curl', { hidden: true })
-  .description('make an authenticated dotenvx API request')
-  .argument('<url>', 'dotenvx API URL')
-  .option('-X, --request <method>', 'HTTP request method')
-  .option('--data <json>', 'JSON request body')
-  .option('--token <token>', 'set Armor ⛨ token')
-  .action(function (...args) {
-    return require('./actions/curl').apply(this, args)
-  })
-
 // dotenvx login (compatibility alias for dotenvx armor login)
 program.command('login', { hidden: true })
   .description('log in to move keys off-device, share with your team, and audit access')
@@ -287,6 +276,18 @@ program.command('logout', { hidden: true })
   .option('--hostname <hostname>', 'set Armor ⛨ hostname')
   .action(function (...args) {
     return require('./actions/logout').apply(this, args)
+  })
+
+// dotenvx curl
+program.command('curl', { hidden: true })
+  .description('Dotenvx Armor API')
+  .addHelpText('after', help.curl)
+  .argument('<url>', '(run dotenvx run --help for list of urls)')
+  .option('-X, --request <method>', 'HTTP request method')
+  .option('--data <json>', 'JSON request body')
+  .option('--token <token>', 'set token')
+  .action(function (...args) {
+    return require('./actions/curl').apply(this, args)
   })
 
 // dotenvx help
@@ -311,6 +312,7 @@ program.addHelpText('after', 'Professional Security: ')
 program.addHelpText('after', '  lock                     ⊡ lock private keys with a local passphrase')
 program.addHelpText('after', '  native                   ⌥ move private keys into your OS secret store')
 program.addHelpText('after', '  armor                    ⛨ move private keys into Dotenvx Armor [www.dotenvx.com/armor]')
+program.addHelpText('after', '  curl                     ⛨ call authenticated api to Dotenvx Armor [www.dotenvx.com/armor]')
 
 // dotenvx native
 require('./commands/native')(program.command('native', { hidden: true }))
