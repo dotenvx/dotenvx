@@ -66,6 +66,10 @@
     "standard-version": "^9.5.0",
     "tap": "^21.7.4"
   },
+  "overrides": {
+    "brace-expansion": "^5.0.8",
+    "minimatch": "^10.2.5"
+  },
   "publishConfig": {
     "access": "public",
     "provenance": true
