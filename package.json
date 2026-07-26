@@ -52,7 +52,7 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
-    "@dotenvx/primitives": "^2.1.0",
+    "@dotenvx/primitives": "^2.1.1",
     "@dotenvx/tooling": "^1.0.3",
     "yocto-spinner": "^1.2.1"
   },
