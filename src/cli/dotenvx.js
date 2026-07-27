@@ -282,11 +282,16 @@ program.command('logout', { hidden: true })
 program.command('curl', { hidden: true })
   .description('Dotenvx Armor API')
   .addHelpText('after', help.curl)
-  .argument('<url>', '(run dotenvx run --help for list of urls)')
+  .argument('[url]', '(run dotenvx curl --help for list of urls)')
   .option('-X, --request <method>', 'HTTP request method')
   .option('--data <json>', 'JSON request body')
   .option('--token <token>', 'set token')
   .action(function (...args) {
+    if (!this.args[0]) {
+      this.outputHelp()
+      return
+    }
+
     return require('./actions/curl').apply(this, args)
   })
 
