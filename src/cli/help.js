@@ -105,6 +105,7 @@ Endpoints:
   GET    /api/teams/:team/invitations
   POST   /api/teams/:team/invitations
   DELETE /api/teams/:team/invitations/:id
+  GET    /api/logs?team=:team
 
 Examples:
 
@@ -119,6 +120,7 @@ Examples:
   dotenvx curl https://armor.dotenvx.com/api/teams/TEAM/members
   dotenvx curl https://armor.dotenvx.com/api/teams/TEAM/invitations --data '{"email":"person@example.com","role":"member"}'
   dotenvx curl https://armor.dotenvx.com/api/teams/TEAM/invitations/123 --request DELETE
+  dotenvx curl https://armor.dotenvx.com/api/logs?team=TEAM
   `
 }
 

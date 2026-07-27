@@ -114,9 +114,11 @@ tap.test('curl function returns API endpoints and examples', (t) => {
   const output = curl()
 
   t.match(output, /Endpoints:\s+GET\s+\/api\/account/)
+  t.match(output, /GET\s+\/api\/logs\?team=:team/)
   t.match(output, /POST\s+\/api\/armor\/keypairs\/:public_key\/settings\/guard/)
   t.match(output, /DELETE \/api\/teams\/:team\/invitations\/:id/)
   t.match(output, /dotenvx curl https:\/\/armor\.dotenvx\.com\/api\/account/)
+  t.match(output, /dotenvx curl https:\/\/armor\.dotenvx\.com\/api\/logs\?team=TEAM/)
   t.match(output, /--request DELETE/)
   t.end()
 })
