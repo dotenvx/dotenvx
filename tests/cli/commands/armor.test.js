@@ -9,7 +9,7 @@ const Session = require('../../../src/db/session')
 
 const armor = configureArmorCommand(new Command('armor'))
 const commandsWithToken = ['up', 'down', 'push', 'pull', 'move']
-const nativeCommands = [...commandsWithToken, 'login', 'logout', 'open', 'status', 'settings']
+const nativeCommands = ['up', 'down', 'push', 'pull', 'open', 'move', 'login', 'logout', 'status', 'settings']
 
 t.test('armor subcommands accept explicit token option', async (ct) => {
   for (const commandName of commandsWithToken) {
@@ -38,7 +38,7 @@ t.test('armor commands are native cli subcommands', async (ct) => {
     const options = ['status', 'settings'].includes(commandName) ? '' : ' \\[options\\]'
     ct.match(armorHelp, new RegExp(`\\n  ${commandName}${options}`), `has armor ${commandName} subcommand`)
   }
-  ct.same(armor.commands.map(command => command.name()), nativeCommands, 'orders open, status, and settings after login and logout')
+  ct.same(armor.commands.map(command => command.name()), nativeCommands, 'orders open before move, then login, logout, status, and settings')
 
   ct.notMatch(armorHelp, /\n {2}keypair \[options\].*generate armored keypair/, 'does not register armor keypair')
 })
