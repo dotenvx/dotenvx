@@ -91,21 +91,21 @@ function configureArmorCommand (armor) {
       return require('./../actions/logout').apply(this, args)
     })
 
+  // dotenvx armor open
+  armor
+    .command('open')
+    .description('open armored key (in browser)')
+    .option('-f, --env-file <path>', 'path to your env file')
+    .action(function (...args) {
+      return require('./../actions/armor/open').apply(this, args)
+    })
+
   // dotenvx armor status
   armor
     .command('status')
     .description('print armor status')
     .action(function (...args) {
       return require('./../actions/armor/status').apply(this, args)
-    })
-
-  // dotenvx armor open
-  armor
-    .command('open')
-    .description('open armored key in browser')
-    .option('-f, --env-file <path>', 'path to your env file')
-    .action(function (...args) {
-      return require('./../actions/armor/open').apply(this, args)
     })
 
   // dotenvx armor settings
