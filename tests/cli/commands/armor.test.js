@@ -9,7 +9,7 @@ const Session = require('../../../src/db/session')
 
 const armor = configureArmorCommand(new Command('armor'))
 const commandsWithToken = ['up', 'down', 'push', 'pull', 'move']
-const nativeCommands = [...commandsWithToken, 'login', 'logout', 'status', 'settings']
+const nativeCommands = [...commandsWithToken, 'login', 'logout', 'status', 'open', 'settings']
 
 t.test('armor subcommands accept explicit token option', async (ct) => {
   for (const commandName of commandsWithToken) {
@@ -38,7 +38,7 @@ t.test('armor commands are native cli subcommands', async (ct) => {
     const options = ['status', 'settings'].includes(commandName) ? '' : ' \\[options\\]'
     ct.match(armorHelp, new RegExp(`\\n  ${commandName}${options}`), `has armor ${commandName} subcommand`)
   }
-  ct.same(armor.commands.map(command => command.name()), nativeCommands, 'orders status and settings after login and logout')
+  ct.same(armor.commands.map(command => command.name()), nativeCommands, 'orders status, open, and settings after login and logout')
 
   ct.notMatch(armorHelp, /\n {2}keypair \[options\].*generate armored keypair/, 'does not register armor keypair')
 })
@@ -77,6 +77,24 @@ t.test('armor status resolves through native action', async (ct) => {
   await status._actionHandler([])
 
   ct.equal(statusStub.callCount, 1, 'status action is called')
+  ct.equal(executeDynamicStub.callCount, 0, 'does not call dotenvx-armor')
+})
+
+t.test('armor open resolves through native action', async (ct) => {
+  const openStub = sinon.stub()
+  const executeDynamicStub = sinon.stub()
+  const configureArmorCommand = proxyquire('../../../src/cli/commands/armor', {
+    './../actions/armor/open': openStub,
+    './../../lib/helpers/executeDynamic': executeDynamicStub
+  })
+  const armor = configureArmorCommand(new Command('armor'))
+  const open = armor.commands.find(command => command.name() === 'open')
+
+  ct.ok(open.options.some(option => option.long === '--env-file'), 'armor open declares --env-file')
+
+  await open._actionHandler([])
+
+  ct.equal(openStub.callCount, 1, 'open action is called')
   ct.equal(executeDynamicStub.callCount, 0, 'does not call dotenvx-armor')
 })
 

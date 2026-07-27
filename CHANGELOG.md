@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.18.1...main)
 
+### Added
+
+* Include `dotenvx armor open` command.
+
 ## [2.18.1](https://github.com/dotenvx/dotenvx/compare/v2.18.0...v2.18.1) (2026-07-26)
 
 * Patch injected message when preset `encrypted:` value ([#927](https://github.com/dotenvx/dotenvx/issues/927))
