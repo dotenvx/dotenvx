@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.18.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.19.0...main)
+
+## [2.19.0](https://github.com/dotenvx/dotenvx/compare/v2.18.1...v2.19.0) (2026-07-27)
+
+### Added
+
+* Add `dotenvx armor open` to open armored key details in browser ([#930](https://github.com/dotenvx/dotenvx/pull/930))
 
 ## [2.18.1](https://github.com/dotenvx/dotenvx/compare/v2.18.0...v2.18.1) (2026-07-26)
 
