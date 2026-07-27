@@ -105,20 +105,22 @@ Endpoints:
   GET    /api/teams/:team/invitations
   POST   /api/teams/:team/invitations
   DELETE /api/teams/:team/invitations/:id
+  GET    /api/logs?team=:team
 
 Examples:
 
-  dotenvx curl https://armor.dotenvx.com/api/account
-  dotenvx curl https://armor.dotenvx.com/api/armor/keypairs
-  dotenvx curl https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY
-  dotenvx curl https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/guard --data '{"value":true}'
-  dotenvx curl https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/enclave --data '{"value":true}'
-  dotenvx curl https://armor.dotenvx.com/api/teams
-  dotenvx curl https://armor.dotenvx.com/api/teams/TEAM
-  dotenvx curl https://armor.dotenvx.com/api/teams/TEAM/members
-  dotenvx curl https://armor.dotenvx.com/api/teams/TEAM/members
-  dotenvx curl https://armor.dotenvx.com/api/teams/TEAM/invitations --data '{"email":"person@example.com","role":"member"}'
-  dotenvx curl https://armor.dotenvx.com/api/teams/TEAM/invitations/123 --request DELETE
+  dotenvx curl "https://armor.dotenvx.com/api/account"
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs"
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY"
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/guard" --data '{"value":true}'
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/enclave" --data '{"value":true}'
+  dotenvx curl "https://armor.dotenvx.com/api/teams"
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM"
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/members"
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/members"
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations" --data '{"email":"person@example.com","role":"member"}'
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations/123" --request DELETE
+  dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM"
   `
 }
 
