@@ -2896,6 +2896,21 @@ $ dotenvx armor pull -f .env.production --token "$DOTENVX_ARMOR_TOKEN"
 ```
 
 </details>
+<details><summary>`armor open`</summary><br>
+
+Open an armored key in your browser.
+
+```sh
+$ dotenvx armor open
+```
+
+Open the armored key for a specific env file.
+
+```sh
+$ dotenvx armor open -f .env.production
+```
+
+</details>
 <details><summary>`armor move`</summary><br>
 
 Move an armored key to another team.
