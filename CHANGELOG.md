@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.19.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.19.1...main)
+
+## [2.19.1](https://github.com/dotenvx/dotenvx/compare/v2.19.0...v2.19.1) (2026-07-29)
+
+### Changed
+
+* User can click enter to open up approval url for convenience ([#934](https://github.com/dotenvx/dotenvx/pull/934))
 
 ## [2.19.0](https://github.com/dotenvx/dotenvx/compare/v2.18.1...v2.19.0) (2026-07-27)
 
