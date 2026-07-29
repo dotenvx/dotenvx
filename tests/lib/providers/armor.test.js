@@ -2,9 +2,12 @@ const t = require('tap')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-t.test('armor provider forwards approval instructions to onStatus', async ct => {
+t.test('armor provider forwards approval instructions to onStatus and opens url on Enter', async ct => {
   const onStatus = sinon.stub()
-  const runStub = sinon.stub().resolves({ 'public-key': 'private-key' })
+  const openUrl = sinon.stub().resolves()
+  const cleanup = sinon.stub()
+  const listenForOpenKey = sinon.stub().returns(cleanup)
+  const instances = []
   class SessionStub {
     hostname () {
       return 'https://armor.example.com'
@@ -18,7 +21,6 @@ t.test('armor provider forwards approval instructions to onStatus', async ct => 
       return 'device-public-key'
     }
   }
-  const instances = []
   class ArmorKeyringStub {
     constructor (hostname, token, devicePublicKey, publicKeyHex) {
       this.hostname = hostname
@@ -29,19 +31,21 @@ t.test('armor provider forwards approval instructions to onStatus', async ct => 
     }
 
     async run () {
-      return runStub()
+      this.onApprovalRequired({
+        approvalUri: 'https://armor.dotenvx.com/grants/grant-token-123',
+        code: 'ACCESS_APPROVAL_REQUIRED'
+      })
+      return { 'public-key': 'private-key' }
     }
   }
   const provider = proxyquire('../../../src/lib/providers/armor/index', {
     '../../../db/session': SessionStub,
-    '../../services/armorKeyring': ArmorKeyringStub
+    '../../services/armorKeyring': ArmorKeyringStub,
+    '../../helpers/listenForOpenKey': listenForOpenKey,
+    '../../helpers/openUrl': openUrl
   })
 
   const ring = await provider('027c9c5579cce25013e1e5ae8b4bde6d93bad14457babf5b3e055572ae4931f71', { onStatus })
-  instances[0].onApprovalRequired({
-    approvalUri: 'https://armor.dotenvx.com/grants/grant-token-123',
-    code: 'ACCESS_APPROVAL_REQUIRED'
-  })
 
   ct.same(ring, { 'public-key': 'private-key' })
   ct.equal(instances.length, 1)
@@ -56,7 +60,11 @@ t.test('armor provider forwards approval instructions to onStatus', async ct => 
     devicePublicKey: 'device-public-key',
     publicKeyHex: '027c9c5579cce25013e1e5ae8b4bde6d93bad14457babf5b3e055572ae4931f71'
   })
-  ct.same(onStatus.firstCall.args, ['[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)'])
+  ct.same(onStatus.firstCall.args, ['[ACCESS_APPROVAL_REQUIRED] press Enter to open [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)'])
+  ct.ok(listenForOpenKey.calledOnce, 'listens for Enter')
+  await listenForOpenKey.firstCall.args[0]()
+  ct.ok(openUrl.calledWith('https://armor.dotenvx.com/grants/grant-token-123'), 'opens approval uri')
+  ct.ok(cleanup.calledOnce, 'cleans up open-key listener')
   ct.end()
 })
 

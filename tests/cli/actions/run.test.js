@@ -66,7 +66,7 @@ t.test('run updates spinner from envs resolver status', async ct => {
     start: sinon.stub()
   }
   async function resolverStub (options) {
-    options.onStatus('[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+    options.onStatus('[ACCESS_APPROVAL_REQUIRED] press Enter to open [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
     return {
       processedEnvs: [],
       readableFilepaths: []
@@ -89,7 +89,7 @@ t.test('run updates spinner from envs resolver status', async ct => {
 
   await runWithStubs.call(fakeContext)
 
-  ct.equal(spinner.text, '[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+  ct.equal(spinner.text, '[ACCESS_APPROVAL_REQUIRED] press Enter to open [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
   ct.equal(spinner.stop.callCount, 1)
   ct.equal(spinner.start.callCount, 0)
   ct.equal(loggerSuccessStub.callCount, 1)
