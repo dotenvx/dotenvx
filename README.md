@@ -1735,6 +1735,37 @@ $ dotenvx get HELLO --no-native
 ```
 
 </details>
+<details><summary>`get KEY --no-armor`</summary><br>
+
+Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features for get.
+
+```sh
+$ dotenvx get HELLO --no-armor
+World
+```
+
+</details>
+<details><summary>`get KEY --ignore`</summary><br>
+
+Ignore specific error codes.
+
+```sh
+$ dotenvx get HELLO --ignore=MISSING_ENV_FILE
+```
+
+Ignore multiple error codes by separating them with spaces.
+
+```sh
+$ dotenvx get HELLO --ignore=MISSING_ENV_FILE MISSING_KEY
+```
+
+You can also set `DOTENV_CONFIG_IGNORE`. Its value is a comma-separated list.
+
+```sh
+$ DOTENV_CONFIG_IGNORE=MISSING_ENV_FILE,OTHER dotenvx get HELLO
+```
+
+</details>
 <details><summary>`get KEY -f`</summary><br>
 
 Return a single environment variable's value from a specific `.env` file.
@@ -1881,6 +1912,20 @@ $ dotenvx get
 ```
 
 </details>
+<details><summary>`get --pretty-print`</summary><br>
+
+Make the JSON output more readable.
+
+```sh
+$ echo "HELLO=World" > .env
+
+$ dotenvx get --pretty-print
+{
+  "HELLO": "World"
+}
+```
+
+</details>
 <details><summary>`get -ik`</summary><br>
 
 Include only matching keys by passing `--include-key`. Glob patterns are supported.
@@ -1902,6 +1947,18 @@ $ echo "DOTENV_PUBLIC_KEY=public\nHELLO=World" > .env
 
 $ dotenvx get --format=eval-export -ek "DOTENV_PUBLIC_KEY*"
 export HELLO='World'
+```
+
+</details>
+<details><summary>`get --format colon`</summary><br>
+
+Return a colon-formatted response of all key/value pairs in a `.env` file.
+
+```sh
+$ echo "HELLO=World" > .env
+
+$ dotenvx get --format colon
+HELLO: World
 ```
 
 </details>
@@ -2101,6 +2158,25 @@ $ dotenvx set HELLO World --no-native
 ```
 
 </details>
+<details><summary>`set KEY value --no-armor`</summary><br>
+
+Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features for set.
+
+```sh
+$ dotenvx set HELLO World --no-armor
+◈ encrypted HELLO (.env)
+```
+
+</details>
+<details><summary>`set KEY value --no-create`</summary><br>
+
+Do not create a missing `.env` file.
+
+```sh
+$ dotenvx set HELLO World -f .env.production --no-create
+```
+
+</details>
 <details><summary>`encrypt`</summary><br>
 
 Encrypt the contents of a `.env` file to an encrypted `.env` file.
@@ -2147,6 +2223,25 @@ Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features for encrypt.
 ```sh
 $ dotenvx encrypt --no-armor
 ◈ encrypted (.env)
+```
+
+</details>
+<details><summary>`encrypt --token`</summary><br>
+
+Set the Armor token.
+
+```sh
+$ dotenvx encrypt --token token
+◈ encrypted (.env) · armored ⛨
+```
+
+</details>
+<details><summary>`encrypt --no-create`</summary><br>
+
+Do not create a missing `.env` file.
+
+```sh
+$ dotenvx encrypt -f .env.production --no-create
 ```
 
 </details>
@@ -2275,6 +2370,16 @@ Turn off OS secret store lookups for decrypt.
 
 ```sh
 $ dotenvx decrypt --no-native
+◇ decrypted (.env)
+```
+
+</details>
+<details><summary>`decrypt --no-armor`</summary><br>
+
+Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features for decrypt.
+
+```sh
+$ dotenvx decrypt --no-armor
 ◇ decrypted (.env)
 ```
 
@@ -2417,6 +2522,16 @@ $ dotenvx keypair --no-native
 ```
 
 </details>
+<details><summary>`keypair --no-armor`</summary><br>
+
+Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features for keypair.
+
+```sh
+$ dotenvx keypair --no-armor
+{"DOTENV_PUBLIC_KEY":"<publicKey>","DOTENV_PRIVATE_KEY":"<privateKey>"}
+```
+
+</details>
 <details><summary>`keypair -f`</summary><br>
 
 Print public/private keys for `.env.production` file.
@@ -2467,6 +2582,39 @@ $ dotenx encrypt
 
 $ dotenvx keypair --format shell
 DOTENV_PUBLIC_KEY=<publicKey> DOTENV_PRIVATE_KEY=<privateKey>
+```
+
+</details>
+<details><summary>`keypair --format colon`</summary><br>
+
+Return a colon-formatted keypair.
+
+```sh
+$ dotenvx keypair --format colon
+DOTENV_PUBLIC_KEY:<publicKey> DOTENV_PRIVATE_KEY:<privateKey>
+```
+
+</details>
+<details><summary>`keypair --format json`</summary><br>
+
+Return a JSON-formatted keypair.
+
+```sh
+$ dotenvx keypair --format json
+{"DOTENV_PUBLIC_KEY":"<publicKey>","DOTENV_PRIVATE_KEY":"<privateKey>"}
+```
+
+</details>
+<details><summary>`keypair --pretty-print`</summary><br>
+
+Make the JSON output more readable.
+
+```sh
+$ dotenvx keypair --pretty-print
+{
+  "DOTENV_PUBLIC_KEY": "<publicKey>",
+  "DOTENV_PRIVATE_KEY": "<privateKey>"
+}
 ```
 
 </details>
