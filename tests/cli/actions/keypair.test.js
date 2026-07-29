@@ -227,7 +227,7 @@ t.test('keypair updates spinner text while waiting for approval', async ct => {
     result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }
   })
   keypairResolver.callsFake(async function (options) {
-    options.onStatus('[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+    options.onStatus('[ACCESS_APPROVAL_REQUIRED] press Enter to open [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
     return { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }
   })
   const fakeContext = { opts: sinon.stub().returns({}) }
@@ -237,7 +237,7 @@ t.test('keypair updates spinner text while waiting for approval', async ct => {
   })
 
   ct.ok(keypairResolver.calledOnce, 'keypair resolver called')
-  ct.equal(fakeSpinner.text, '[ACCESS_APPROVAL_REQUIRED] visit [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
+  ct.equal(fakeSpinner.text, '[ACCESS_APPROVAL_REQUIRED] press Enter to open [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
   ct.ok(fakeSpinner.stop.called, 'spinner stopped')
   ct.end()
 })
