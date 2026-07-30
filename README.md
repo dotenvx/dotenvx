@@ -130,6 +130,13 @@ More examples
 
 Run Claude with your real secrets while redacting them from its output.
 
+Prerequisite: install [Claude Code](https://code.claude.com/docs/en/setup) to get the `claude` command.
+
+```sh
+$ curl -fsSL https://claude.ai/install.sh | bash
+$ claude --version
+```
+
 ```sh
 $ echo "HELLO=World" > .env
 
@@ -144,6 +151,13 @@ see [Claude redaction guide](https://dotenvx.com/docs/cli/run-redact-claude-prin
 
 Run Codex with your real secrets while redacting them from its output.
 
+Prerequisite: install the [Codex CLI](https://developers.openai.com/codex/cli/) to get the `codex` command.
+
+```sh
+$ npm install -g @openai/codex
+$ codex --version
+```
+
 ```sh
 $ echo "HELLO=World" > .env
 
@@ -152,6 +166,27 @@ Hello [REDACTED]
 ```
 
 see [Codex redaction guide](https://dotenvx.com/docs/cli/run-redact-codex-exec)
+
+</details>
+<details><summary>Cursor 🖱️</summary><br>
+
+Run Cursor with your real secrets while redacting them from its output.
+
+Prerequisite: install the separate [Cursor CLI](https://cursor.com/cli). Installing the Cursor desktop app does not necessarily install the `agent` command.
+
+```sh
+$ curl https://cursor.com/install -fsS | bash
+$ agent --version
+```
+
+```sh
+$ echo "HELLO=World" > .env
+
+$ dotenvx run --redact -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
+Hello [REDACTED]
+```
+
+see [Cursor redaction guide](https://dotenvx.com/docs/secrets-in-cursor)
 
 </details>
 <details><summary>1Password 🔐</summary><br>
