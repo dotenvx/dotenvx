@@ -43,7 +43,7 @@ class Prebuild {
 
       // check if that file is being ignored
       if (ig.ignores(file)) {
-        if (file === '.env.example' || file === '.env.x') {
+        if (file === '.env.example' || file === '.env.vault' || file === '.env.x') {
           const warning = new Errors({
             message: `${file} ignored (should not be)`,
             help: `fix: [dotenvx gitignore --pattern !${file}]`
@@ -51,7 +51,7 @@ class Prebuild {
           warnings.push(warning)
         }
       } else {
-        if (file !== '.env.example' && file !== '.env.x') {
+        if (file !== '.env.example' && file !== '.env.vault' && file !== '.env.x') {
           const src = fsx.readFileXSync(file)
           const encrypted = sealed(src)
 
