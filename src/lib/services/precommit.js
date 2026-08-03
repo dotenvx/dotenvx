@@ -60,7 +60,7 @@ class Precommit {
         if (this._isFileToBeCommitted(file)) {
           // check if that file is being ignored
           if (ig.ignores(file)) {
-            if (filename === '.env.example' || filename === '.env.x') {
+            if (filename === '.env.example' || filename === '.env.vault' || filename === '.env.x') {
               const warning = new Errors({
                 message: `${file} ignored (should not be)`,
                 help: `fix: [dotenvx gitignore --pattern !${file}]`
@@ -68,7 +68,7 @@ class Precommit {
               warnings.push(warning)
             }
           } else {
-            if (filename !== '.env.example' && filename !== '.env.x') {
+            if (filename !== '.env.example' && filename !== '.env.vault' && filename !== '.env.x') {
               const src = fsx.readFileXSync(file)
               const encrypted = sealed(src)
 
