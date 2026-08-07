@@ -76,6 +76,18 @@ t.test('#run (gitignore is ignoring .env.x file and shouldn\'t)', ct => {
   ct.end()
 })
 
+t.test('#run (gitignore is ignoring .env.vault file and shouldn\'t)', ct => {
+  sinon.stub(fsx, 'readFileXSync').returns('.env*')
+  sinon.stub(fsx, 'readdirSync').returns(['.env.vault'])
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.vault'])
+  childProcess.execSync.returns(Buffer.from('.env.vault'))
+
+  const { warnings } = new Precommit().run()
+  ct.same(warnings[0].message, '.env.vault ignored (should not be)')
+
+  ct.end()
+})
+
 t.test('#run (gitignore is not ignore .env.production file and should)', ct => {
   sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.production'])
   childProcess.execSync.returns(Buffer.from('.env.production'))
@@ -248,6 +260,46 @@ t.test('#run (.env.x in a subfolder is exempt and does not throw)', ct => {
   readFileXStub.callsFake((filePath) => {
     if (filePath === 'app/.env.x') {
       return 'FOOBAR="baz"'
+    }
+    return ''
+  })
+
+  const result = new Precommit().run()
+
+  ct.same(result.successMessage, '▣ encrypted/gitignored (1)')
+  ct.same(result.warnings, [])
+
+  ct.end()
+})
+
+t.test('#run (.env.vault is exempt and does not throw)', ct => {
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['.env.vault'])
+  childProcess.execSync.returns(Buffer.from('.env.vault'))
+
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
+  readFileXStub.callsFake((filePath) => {
+    if (filePath === '.env.vault') {
+      return 'DOTENV_VAULT_PRODUCTION="ciphertext"'
+    }
+    return ''
+  })
+
+  const result = new Precommit().run()
+
+  ct.same(result.successMessage, '▣ encrypted/gitignored (1)')
+  ct.same(result.warnings, [])
+
+  ct.end()
+})
+
+t.test('#run (.env.vault in a subfolder is exempt and does not throw)', ct => {
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['app/.env.vault'])
+  childProcess.execSync.returns(Buffer.from('app/.env.vault'))
+
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
+  readFileXStub.callsFake((filePath) => {
+    if (filePath === 'app/.env.vault') {
+      return 'DOTENV_VAULT_PRODUCTION="ciphertext"'
     }
     return ''
   })

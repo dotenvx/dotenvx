@@ -62,6 +62,40 @@ t.test('#run (dockerignore is ignoring .env.x file and shouldn\'t)', ct => {
   ct.end()
 })
 
+t.test('#run (dockerignore is ignoring .env.vault file and shouldn\'t)', ct => {
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(fsx, 'readFileXSync').returns('.env*')
+  sinon.stub(fsx, 'readdirSync').returns(['.env.vault'])
+  sinon.stub(Prebuild.prototype, '_filepaths').returns(['.env.vault'])
+  childProcess.execSync.returns(Buffer.from('.env.vault'))
+
+  const { warnings } = new Prebuild().run()
+  ct.same(warnings[0].message, '.env.vault ignored (should not be)')
+
+  ct.end()
+})
+
+t.test('#run (.env.vault is exempt and does not throw)', ct => {
+  sinon.stub(fsx, 'existsSync').returns(true)
+  sinon.stub(Prebuild.prototype, '_filepaths').returns(['.env.vault'])
+  childProcess.execSync.returns(Buffer.from('.env.vault'))
+
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
+  readFileXStub.callsFake((filePath) => {
+    if (filePath === '.env.vault') {
+      return 'DOTENV_VAULT_PRODUCTION="ciphertext"'
+    }
+    return ''
+  })
+
+  const result = new Prebuild().run()
+
+  ct.same(result.successMessage, '▣ encrypted/dockerignored (1)')
+  ct.same(result.warnings, [])
+
+  ct.end()
+})
+
 t.test('#run (dockerignore is not ignore .env.production file and should)', ct => {
   sinon.stub(fsx, 'existsSync').returns(true)
   sinon.stub(Prebuild.prototype, '_filepaths').returns(['.env.production'])

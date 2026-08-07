@@ -2,13 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.19.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.19.1...main)
 
-## [2.19.2](https://github.com/dotenvx/dotenvx/compare/v2.19.1...v2.19.2) (2026-08-03)
+### Fixed
 
-### Changed
-
-* Example `.env.vault` from precommit ([#935](https://github.com/dotenvx/dotenvx/pull/935))
+* Exempt `.env.vault` from `precommit`/`prebuild` sealed checks (vault-format ciphertext is already safe to commit)
 
 ## [2.19.1](https://github.com/dotenvx/dotenvx/compare/v2.19.0...v2.19.1) (2026-07-29)
 
