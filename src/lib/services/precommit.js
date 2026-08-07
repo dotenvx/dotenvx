@@ -123,8 +123,11 @@ class Precommit {
         return true
       }
 
-      const output = childProcess.execSync('git diff HEAD --name-only').toString()
-      const files = output.split('\n')
+      // -z separates paths with NUL and prints them verbatim. without it git c-quotes
+      // any path holding non-ascii or special characters ("caf\303\251/.env"), which
+      // never matches filePath - the file would be skipped and its secrets committed.
+      const output = childProcess.execSync('git diff HEAD --name-only -z').toString()
+      const files = output.split('\0')
       return files.includes(filePath)
     } catch (error) {
       // consider file to be committed if there is an error (not using git)

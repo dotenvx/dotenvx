@@ -232,6 +232,35 @@ t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
   ct.end()
 })
 
+t.test('#run (.env file at a path git c-quotes is still checked)', ct => {
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['café/.env.production'])
+
+  // git c-quotes any path holding non-ascii or special characters unless -z is passed
+  childProcess.execSync.callsFake((command) => {
+    if (command.includes('rev-parse')) return Buffer.from('true')
+    if (command.includes('-z')) return Buffer.from('café/.env.production\0')
+
+    return Buffer.from('"caf\\303\\251/.env.production"\n')
+  })
+
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
+  readFileXStub.callsFake((filePath) => {
+    if (filePath === 'café/.env.production') {
+      return 'ENV_VAR=value'
+    }
+    return ''
+  })
+
+  try {
+    new Precommit().run()
+    ct.fail('should have raised an error but did not')
+  } catch (error) {
+    ct.same(error.message, 'café/.env.production not encrypted/gitignored')
+  }
+
+  ct.end()
+})
+
 t.test('#run (.env.example in a subfolder is exempt and does not throw)', ct => {
   sinon.stub(Precommit.prototype, '_filepaths').returns(['app/.env.example'])
   childProcess.execSync.returns(Buffer.from('app/.env.example'))
