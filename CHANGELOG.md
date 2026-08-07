@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.20.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.20.1...main)
+
+## [2.20.1](https://github.com/dotenvx/dotenvx/compare/v2.20.0...v2.20.1) (2026-08-07)
+
+### Changed
+
+* Handle accent marks for `ext precommit` ([#936](https://github.com/dotenvx/dotenvx/pull/936))
 
 ## [2.20.0](https://github.com/dotenvx/dotenvx/compare/v2.19.1...v2.20.0) (2026-08-07)
 
