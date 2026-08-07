@@ -90,6 +90,17 @@ Examples:
   `
 }
 
+const del = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx del KEY
+  $ dotenvx del KEY -f .env.production
+  \`\`\`
+  `
+}
+
 const curl = function () {
   return `
 Endpoints:
@@ -130,5 +141,6 @@ module.exports = {
   prebuild,
   gitignore,
   set,
+  del,
   curl
 }
