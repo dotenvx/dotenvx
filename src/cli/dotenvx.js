@@ -329,7 +329,7 @@ program.addHelpText('after', 'Professional Security: ')
 program.addHelpText('after', '  lock                     ⊡ lock private keys with a local passphrase')
 program.addHelpText('after', '  native                   ⌥ move private keys into your OS secret store')
 program.addHelpText('after', '  armor                    ⛨ move private keys into Dotenvx Armor [www.dotenvx.com/armor]')
-program.addHelpText('after', '  curl                     ⛨ call authenticated api to Dotenvx Armor [www.dotenvx.com/armor]')
+program.addHelpText('after', '  curl                     ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]')
 
 // dotenvx native
 require('./commands/native')(program.command('native', { hidden: true }))
