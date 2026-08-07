@@ -2,9 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.19.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.20.0...main)
 
-### Fixed
+## [2.20.0](https://github.com/dotenvx/dotenvx/compare/v2.19.1...v2.20.0) (2026-08-07)
+
+### Added
+
+* Add `dotenvx del` command for deleting a key from a .env file ([#939](https://github.com/dotenvx/dotenvx/pull/939))
+
+### Changed
 
 * Exempt `.env.vault` from `precommit`/`prebuild` sealed checks (vault-format ciphertext is already safe to commit)
 
