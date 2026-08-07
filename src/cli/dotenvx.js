@@ -129,6 +129,18 @@ program.command('set')
     return require('./actions/set').apply(this, args)
   })
 
+// dotenvx del
+program.command('del')
+  .usage('<KEY> [options]')
+  .description('delete a single environment variable')
+  .addHelpText('after', help.del)
+  .argument('KEY', 'KEY')
+  .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+  .action(function (...args) {
+    this.envs = envs
+    return require('./actions/del').apply(this, args)
+  })
+
 // dotenvx encrypt
 program.command('encrypt')
   .description('encrypt .env file(s)')

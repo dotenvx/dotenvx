@@ -2212,6 +2212,30 @@ $ dotenvx set HELLO World -f .env.production --no-create
 ```
 
 </details>
+<details><summary>`del KEY`</summary><br>
+
+Delete a key from your `.env` file.
+
+```sh
+$ echo "HELLO=World" > .env
+
+$ dotenvx del HELLO
+◇ removed HELLO (.env)
+```
+
+</details>
+<details><summary>`del KEY -f`</summary><br>
+
+Delete a key from another `.env` file.
+
+```sh
+$ echo "HELLO=production" > .env.production
+
+$ dotenvx del HELLO -f .env.production
+◇ removed HELLO (.env.production)
+```
+
+</details>
 <details><summary>`encrypt`</summary><br>
 
 Encrypt the contents of a `.env` file to an encrypted `.env` file.
