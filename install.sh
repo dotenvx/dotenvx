@@ -295,6 +295,16 @@ binary_name() {
   return 0
 }
 
+alias_name() {
+  if $(is_windows); then
+    echo "dx.exe"
+  else
+    echo "dx"
+  fi
+
+  return 0
+}
+
 # which_* -------------------------------
 which_curl() {
   local result
@@ -322,6 +332,19 @@ warn_of_any_conflict() {
     echo "[DOTENVX_CONFLICT] conflicting dotenvx found at $dotenvx_path" >&2
     echo "? we recommend updating your path to include $(directory)" >&2
   fi
+
+  return 0
+}
+
+link_dx_alias() {
+  local alias_path="$(directory)/$(alias_name)"
+
+  # do not overwrite an existing dx (another tool or prior install)
+  if [ -e "$alias_path" ] || [ -L "$alias_path" ]; then
+    return 0
+  fi
+
+  ln -s "$(binary_name)" "$alias_path"
 
   return 0
 }
@@ -397,6 +420,9 @@ install_dotenvx() {
   # 3. clean up
   rm -r "$tmpdir"
 
+  # 4. link dx shorthand alias
+  link_dx_alias
+
   # warn of any conflict
   warn_of_any_conflict
 
@@ -451,6 +477,7 @@ run() {
   if [ -n "$VERSION" ]; then
     # Check if the specified version is already installed
     if is_installed "$VERSION"; then
+      link_dx_alias
       echo "◈ already installed (${VERSION}:$(directory)/$(binary_name))"
       print_next_run
 
@@ -460,6 +487,7 @@ run() {
     fi
   else
     if is_installed; then
+      link_dx_alias
       echo "◈ already installed (${VERSION}:$(directory)/$(binary_name))"
       print_next_run
 

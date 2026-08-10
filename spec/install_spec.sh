@@ -9,9 +9,9 @@ Describe 'install.sh'
     DIRECTORY="./spec/tmp"
   }
 
-  # remove the dotenvx binary before each test
+  # remove the dotenvx binary and dx alias before each test
   cleanup() {
-    rm -f ./spec/tmp/dotenvx
+    rm -f ./spec/tmp/dotenvx ./spec/tmp/dx
   }
 
   mock_home() {
@@ -358,6 +358,28 @@ Commands:
     End
   End
 
+  Describe 'alias_name()'
+    It 'returns dx'
+      When call alias_name
+      The status should equal 0
+      The output should equal "dx"
+    End
+
+    Describe 'when on windows os'
+      os() {
+        echo "windows"
+
+        return 0
+      }
+
+      It 'returns dx.exe'
+        When call alias_name
+        The status should equal 0
+        The output should equal "dx.exe"
+      End
+    End
+  End
+
   Describe 'is_installed()'
     which_dotenvx() {
       mock_which_dotenvx_empty
@@ -414,7 +436,7 @@ Commands:
       The output should equal ""
     End
 
-    Describe 'when a different path'
+    Describe 'when a different dotenvx path'
       which_dotenvx() {
         mock_which_dotenvx_path_different
       }
@@ -424,6 +446,30 @@ Commands:
         The status should equal 0
         The stderr should equal "[DOTENVX_CONFLICT] conflicting dotenvx found at /different/path
 ? we recommend updating your path to include ./spec/tmp"
+      End
+    End
+  End
+
+  Describe 'link_dx_alias()'
+    It 'creates dx symlink'
+      When call link_dx_alias
+      The status should equal 0
+      The path ./spec/tmp/dx should be symlink
+      Assert [ "$(readlink ./spec/tmp/dx)" = "dotenvx" ]
+    End
+
+    Describe 'when dx already exists'
+      create_existing_dx() {
+        echo "other" > ./spec/tmp/dx
+      }
+
+      Before 'create_existing_dx'
+
+      It 'does not overwrite existing dx'
+        When call link_dx_alias
+        The status should equal 0
+        The path ./spec/tmp/dx should be file
+        Assert [ "$(cat ./spec/tmp/dx)" = "other" ]
       End
     End
   End
@@ -438,6 +484,8 @@ Commands:
       The status should equal 0
       The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
 ⮕ next run [dotenvx encrypt]"
+      The path ./spec/tmp/dx should be symlink
+      Assert [ "$(readlink ./spec/tmp/dx)" = "dotenvx" ]
     End
 
     Describe 'when a different path'
@@ -466,6 +514,8 @@ Commands:
       The status should equal 0
       The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
 ⮕ next run [dotenvx encrypt]"
+      The path ./spec/tmp/dx should be symlink
+      Assert [ "$(readlink ./spec/tmp/dx)" = "dotenvx" ]
     End
 
     Describe 'when a different path'
@@ -491,6 +541,8 @@ Commands:
         The status should equal 0
         The output should equal "◈ already installed (0.44.2:./spec/tmp/dotenvx)
 ⮕ next run [dotenvx encrypt]"
+        The path ./spec/tmp/dx should be symlink
+        Assert [ "$(readlink ./spec/tmp/dx)" = "dotenvx" ]
       End
     End
   End
