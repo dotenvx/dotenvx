@@ -19,17 +19,22 @@ t.test('login and logout remain hidden from default command list', ct => {
   ct.notMatch(src, /program\.addCommand\(require\('\.\/commands\/armor'\), \{ hidden: true \}\)/)
 
   const help = childProcess.execFileSync(process.execPath, [path.join(__dirname, '../../src/cli/dotenvx.js'), '--help'], { encoding: 'utf8' })
-  const professionalSecurity = help.slice(help.indexOf('Professional Security:'))
-  ct.notMatch(professionalSecurity, /\n\s+login\s+/, 'root help does not advertise login')
-  ct.notMatch(professionalSecurity, /\n\s+logout\s+/, 'root help does not advertise logout')
-  ct.match(professionalSecurity, /\n\s+armor\s+⛨ move private keys into Dotenvx Armor/, 'root help advertises armor')
-  ct.match(professionalSecurity, /\n\s+curl\s+⛨ call authenticated api Dotenvx Armor/, 'root help advertises curl')
+  const betterSecurity = help.slice(help.indexOf('Better Security:'), help.indexOf('For Security Teams:'))
+  const forSecurityTeams = help.slice(help.indexOf('For Security Teams:'))
+  ct.notMatch(help.slice(help.indexOf('Better Security:')), /\n\s+login\s+/, 'root help does not advertise login')
+  ct.notMatch(help.slice(help.indexOf('Better Security:')), /\n\s+logout\s+/, 'root help does not advertise logout')
+  ct.match(betterSecurity, /\n\s+lock\s+⊡ lock private keys with a local passphrase/, 'better security advertises lock')
+  ct.match(betterSecurity, /\n\s+native\s+⌥ move private keys into your OS secret store/, 'better security advertises native')
+  ct.notMatch(betterSecurity, /\n\s+armor\s+/, 'better security does not advertise armor')
+  ct.notMatch(betterSecurity, /\n\s+curl\s+/, 'better security does not advertise curl')
+  ct.match(forSecurityTeams, /\n\s+armor\s+⛨ move private keys into Dotenvx Armor/, 'for security teams advertises armor')
+  ct.match(forSecurityTeams, /\n\s+curl\s+⛨ call authenticated api Dotenvx Armor/, 'for security teams advertises curl')
   ct.end()
 })
 
 t.test('default help lists direct utility commands with ls first after keypair', ct => {
   const help = childProcess.execFileSync(process.execPath, [path.join(__dirname, '../../src/cli/dotenvx.js'), '--help'], { encoding: 'utf8' })
-  const commands = help.slice(help.indexOf('Commands:'), help.indexOf('Professional Security:'))
+  const commands = help.slice(help.indexOf('Commands:'), help.indexOf('Better Security:'))
 
   ct.match(commands, /gitignore\s+append to \.gitignore/)
   ct.match(commands, /validate\s+validate \.env file\(s\) against \.env\.example/)

@@ -27,13 +27,14 @@ t.test('#--version', ct => {
 t.test('#--help shows armor advanced command', ct => {
   const output = execShell(`${dotenvx} --help`)
 
-  ct.match(output, /Professional Security:/, 'professional security section is shown')
+  ct.match(output, /Better Security:/, 'better security section is shown')
+  ct.match(output, /For Security Teams:/, 'for security teams section is shown')
   ct.notMatch(output, /Advanced:/, 'advanced section is not shown')
-  ct.match(output, /Professional Security:[\s\S]*native\s+⌥ move private keys into your OS secret store[\s\S]*armor\s+⛨ move private keys into Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'professional security commands include armor')
+  ct.notMatch(output, /Professional Security:/, 'professional security section is not shown')
+  ct.match(output, /Better Security:[\s\S]*lock\s+⊡ lock private keys with a local passphrase[\s\S]*native\s+⌥ move private keys into your OS secret store/, 'better security commands include lock and native')
+  ct.match(output, /For Security Teams:[\s\S]*armor\s+⛨ move private keys into Dotenvx Armor \[www\.dotenvx\.com\/armor\][\s\S]*curl\s+⛨ call authenticated api Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'for security teams commands include armor and curl')
   ct.notMatch(output, /\n\s+login\s+log in to move keys off-device/, 'root help does not show login')
   ct.notMatch(output, /\n\s+logout\s+log out of connected security features/, 'root help does not show logout')
-  ct.match(output, /\n\s+curl\s+⛨ call authenticated api Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'root help shows curl')
-  ct.match(output, /armor\s+⛨ move private keys into Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'armor advanced command is shown')
   ct.notMatch(output, /ext\s+⊕ extensions/, 'ext command is not shown')
 
   ct.end()

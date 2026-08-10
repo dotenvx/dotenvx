@@ -331,11 +331,13 @@ program.command('help [command]')
     }
   })
 
-// dotenvx armor
+// security sections (hidden commands advertised here)
 program.addHelpText('after', ' ')
-program.addHelpText('after', 'Professional Security: ')
+program.addHelpText('after', 'Better Security:')
 program.addHelpText('after', '  lock                     ⊡ lock private keys with a local passphrase')
 program.addHelpText('after', '  native                   ⌥ move private keys into your OS secret store')
+program.addHelpText('after', ' ')
+program.addHelpText('after', 'For Security Teams:')
 program.addHelpText('after', '  armor                    ⛨ move private keys into Dotenvx Armor [www.dotenvx.com/armor]')
 program.addHelpText('after', '  curl                     ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]')
 
