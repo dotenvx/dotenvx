@@ -142,37 +142,45 @@ program.command('del')
   })
 
 // dotenvx encrypt
-program.command('encrypt')
-  .description('encrypt .env file(s)')
-  .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
-  .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
-  .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
-  .option('--stdout', 'send to stdout')
-  .option('--token <token>', 'set Armor ⛨ token')
-  .option('--no-create', 'do not create .env file(s) when missing')
-  .option('--no-armor', 'disable Dotenvx Armor features')
-  .option('--no-native', 'disable OS secret store features')
-  .action(function (...args) {
-    this.envs = envs
-    return require('./actions/encrypt').apply(this, args)
-  })
+function configureEncryptCommand (command) {
+  return command
+    .description('encrypt .env file(s)')
+    .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+    .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
+    .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
+    .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from encryption (default: none)')
+    .option('--stdout', 'send to stdout')
+    .option('--token <token>', 'set Armor ⛨ token')
+    .option('--no-create', 'do not create .env file(s) when missing')
+    .option('--no-armor', 'disable Dotenvx Armor features')
+    .option('--no-native', 'disable OS secret store features')
+    .action(function (...args) {
+      this.envs = envs
+      return require('./actions/encrypt').apply(this, args)
+    })
+}
+configureEncryptCommand(program.command('encrypt'))
+configureEncryptCommand(program.command('enc', { hidden: true })) // shorthand
 
 // dotenvx decrypt
-program.command('decrypt')
-  .description('decrypt .env file(s)')
-  .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
-  .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
-  .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
-  .option('--no-armor', 'disable Dotenvx Armor features')
-  .option('--no-native', 'disable OS secret store features')
-  .option('--stdout', 'send to stdout')
-  .option('--mask [characters]', 'mask stdout values, optionally setting visible characters')
-  .action(function (...args) {
-    this.envs = envs
-    return require('./actions/decrypt').apply(this, args)
-  })
+function configureDecryptCommand (command) {
+  return command
+    .description('decrypt .env file(s)')
+    .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
+    .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
+    .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
+    .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
+    .option('--no-armor', 'disable Dotenvx Armor features')
+    .option('--no-native', 'disable OS secret store features')
+    .option('--stdout', 'send to stdout')
+    .option('--mask [characters]', 'mask stdout values, optionally setting visible characters')
+    .action(function (...args) {
+      this.envs = envs
+      return require('./actions/decrypt').apply(this, args)
+    })
+}
+configureDecryptCommand(program.command('decrypt'))
+configureDecryptCommand(program.command('dec', { hidden: true })) // shorthand
 
 // dotenvx keypair
 program.command('keypair')

@@ -50,6 +50,64 @@ t.test('default help lists direct utility commands with ls first after keypair',
   ct.end()
 })
 
+t.test('enc is a hidden shorthand for encrypt', (ct) => {
+  const src = fs.readFileSync(path.join(__dirname, '../../src/cli/dotenvx.js'), 'utf8')
+  ct.match(src, /program\.command\('enc', \{ hidden: true \}\)/)
+
+  const help = childProcess.execFileSync(process.execPath, [path.join(__dirname, '../../src/cli/dotenvx.js'), '--help'], { encoding: 'utf8' })
+  ct.match(help, /\n\s+encrypt\s+encrypt \.env file\(s\)/)
+  ct.notMatch(help, /encrypt\|enc/)
+  ct.notMatch(help, /\n\s+enc\s+/, 'root help does not advertise enc')
+
+  const executeDynamicStub = sinon.stub()
+  const encryptStub = sinon.stub()
+  const processExitStub = sinon.stub(process, 'exit')
+  const originalArgv = process.argv
+
+  process.argv = ['node', 'dotenvx', 'enc', '--env-file', '.env.production']
+
+  proxyquire('../../src/cli/dotenvx', {
+    './../lib/helpers/executeDynamic': executeDynamicStub,
+    './actions/encrypt': encryptStub
+  })
+
+  ct.equal(processExitStub.callCount, 0, 'process.exit is not called')
+  ct.equal(executeDynamicStub.callCount, 0, 'executeDynamic is not called')
+  ct.equal(encryptStub.callCount, 1, 'encrypt action is called via enc shorthand')
+
+  process.argv = originalArgv
+  ct.end()
+})
+
+t.test('dec is a hidden shorthand for decrypt', (ct) => {
+  const src = fs.readFileSync(path.join(__dirname, '../../src/cli/dotenvx.js'), 'utf8')
+  ct.match(src, /program\.command\('dec', \{ hidden: true \}\)/)
+
+  const help = childProcess.execFileSync(process.execPath, [path.join(__dirname, '../../src/cli/dotenvx.js'), '--help'], { encoding: 'utf8' })
+  ct.match(help, /\n\s+decrypt\s+decrypt \.env file\(s\)/)
+  ct.notMatch(help, /decrypt\|dec/)
+  ct.notMatch(help, /\n\s+dec\s+/, 'root help does not advertise dec')
+
+  const executeDynamicStub = sinon.stub()
+  const decryptStub = sinon.stub()
+  const processExitStub = sinon.stub(process, 'exit')
+  const originalArgv = process.argv
+
+  process.argv = ['node', 'dotenvx', 'dec', '--env-file', '.env.production']
+
+  proxyquire('../../src/cli/dotenvx', {
+    './../lib/helpers/executeDynamic': executeDynamicStub,
+    './actions/decrypt': decryptStub
+  })
+
+  ct.equal(processExitStub.callCount, 0, 'process.exit is not called')
+  ct.equal(executeDynamicStub.callCount, 0, 'executeDynamic is not called')
+  ct.equal(decryptStub.callCount, 1, 'decrypt action is called via dec shorthand')
+
+  process.argv = originalArgv
+  ct.end()
+})
+
 t.test('login resolves through native action', (ct) => {
   const executeDynamicStub = sinon.stub()
   const loginStub = sinon.stub()

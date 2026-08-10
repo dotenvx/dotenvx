@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.20.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.21.0...main)
+
+## [2.21.0](https://github.com/dotenvx/dotenvx/compare/v2.20.1...v2.21.0) (2026-08-10)
+
+### Added
+
+* Add `dotenvx enc` and `dotenvx dec` shorthands for encrypt and decrypt ([#943](https://github.com/dotenvx/dotenvx/pull/943))
+
+### Changed
+
+* Patch typescript types for `path` ([#942](https://github.com/dotenvx/dotenvx/pull/942))
 
 ## [2.20.1](https://github.com/dotenvx/dotenvx/compare/v2.20.0...v2.20.1) (2026-08-07)
 
