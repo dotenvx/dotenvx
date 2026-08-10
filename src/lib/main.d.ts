@@ -333,6 +333,16 @@ export function set(
 
 export interface GetOptions {
   /**
+   * Specify a custom path if your file containing environment variables is located elsewhere.
+   * Can also be an array of strings, specifying multiple paths.
+   *
+   * @default require('path').resolve(process.cwd(), '.env')
+   * @example require('@dotenvx/dotenvx').get('KEY', { path: '/custom/path/to/.env' })
+   * @example require('@dotenvx/dotenvx').get('KEY', { path: ['/path/to/first.env', '/path/to/second.env'] })
+   */
+  path?: string | string[] | URL;
+
+  /**
    * Mask returned values, optionally setting the number of visible characters.
    * @default false
    * @example require('@dotenvx/dotenvx').get('KEY', { mask: true })
