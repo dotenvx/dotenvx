@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Added
 
 * Add `dotenvx enc` and `dotenvx dec` shorthands for encrypt and decrypt ([#943](https://github.com/dotenvx/dotenvx/pull/943))
+* Add convenient `dx` alias for shorter `dx run --`, `dx enc`, etc ([#944](https://github.com/dotenvx/dotenvx/pull/944))
 
 ### Changed
 
