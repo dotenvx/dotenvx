@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.20.1...main)
 
+### Changed
+
+* Patch typescript types for `path` ([#942](https://github.com/dotenvx/dotenvx/pull/942))
+
 ## [2.20.1](https://github.com/dotenvx/dotenvx/compare/v2.20.0...v2.20.1) (2026-08-07)
 
 ### Changed
