@@ -39,3 +39,31 @@ t.test('#removeOptionsHelpParts aligns command descriptions after [options] remo
 
   ct.end()
 })
+
+t.test('#removeOptionsHelpParts hides the Options section', ct => {
+  const lines = [
+    'Usage: dotenvx run -- yourcommand',
+    '',
+    'Options:',
+    '  -l, --log-level <level>  set log level (default: "info")',
+    '  -q, --quiet              sets log level to error',
+    '  -v, --verbose            sets log level to verbose',
+    '  -d, --debug              sets log level to debug',
+    '  -V, --version            output the version number',
+    '  -h, --help               display help for command',
+    '',
+    'Commands:',
+    '  run [options]  inject env at runtime'
+  ]
+
+  removeOptionsHelpParts(lines)
+
+  ct.same(lines, [
+    'Usage: dotenvx run -- yourcommand',
+    '',
+    'Commands:',
+    '  run  inject env at runtime'
+  ])
+
+  ct.end()
+})
