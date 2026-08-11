@@ -1,9 +1,26 @@
-// Remove [options] from help text. example:
+// Remove [options] from usage/command lines and hide the Options: section.
+
+function removeOptionsSection (lines) {
+  const start = lines.indexOf('Options:')
+  if (start === -1) return
+
+  let end = start + 1
+  while (end < lines.length && lines[end] !== '' && !lines[end].endsWith(':')) {
+    end++
+  }
+
+  // drop trailing blank line after the Options block when present
+  if (lines[end] === '') end++
+
+  lines.splice(start, end - start)
+}
 
 function removeOptionsHelpParts (lines) {
   for (let i = 0; i < lines.length; i++) {
     lines[i] = lines[i].replace(' [options]', '')
   }
+
+  removeOptionsSection(lines)
 
   let commandsStart = -1
   for (let i = 0; i < lines.length; i++) {

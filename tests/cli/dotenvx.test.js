@@ -36,6 +36,8 @@ t.test('default help lists direct utility commands with ls first after keypair',
   const help = childProcess.execFileSync(process.execPath, [path.join(__dirname, '../../src/cli/dotenvx.js'), '--help'], { encoding: 'utf8' })
   const commands = help.slice(help.indexOf('Commands:'), help.indexOf('Better Security:'))
 
+  ct.notMatch(help, /^Options:/m, 'root help hides Options section')
+  ct.notMatch(help, /--log-level/, 'root help hides log-level option')
   ct.match(commands, /gitignore\s+append to \.gitignore/)
   ct.match(commands, /validate\s+validate \.env file\(s\) against \.env\.example/)
   ct.match(commands, /genexample \[directory\]\s+generate \.env\.example/)
