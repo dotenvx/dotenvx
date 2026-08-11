@@ -122,7 +122,7 @@ Hello World # with dotenvx
 > :-D
 ```
 
-see [quickstart guides](https://dotenvx.com/docs/quickstart)
+see [quickstart guides](https://dotenvx.com/docs/quickstarts)
 
 More examples
 
@@ -186,7 +186,7 @@ $ dotenvx run --redact -- agent -p --force 'Run `dotenvx get HELLO` and echo bac
 Hello [REDACTED]
 ```
 
-see [Cursor redaction guide](https://dotenvx.com/docs/secrets-in-cursor)
+see [Cursor redaction guide](https://dotenvx.com/docs/cursor)
 
 </details>
 <details><summary>1Password 🔐</summary><br>
@@ -199,7 +199,7 @@ $ dotenvx run -- sh -c 'echo Hello $HELLO'
 Hello World
 ```
 
-see [1Password guide](https://dotenvx.com/docs/secrets-in-1password)
+see [1Password guide](https://dotenvx.com/docs/1password)
 
 </details>
 <details><summary>Bitwarden 🛡️</summary><br>
@@ -272,7 +272,7 @@ export async function GET() {
 }
 ```
 
-see [astro guide](https://dotenvx.com/docs/secrets-in-astro)
+see [astro guide](https://dotenvx.com/docs/astro)
 
 </details>
 <details><summary>Expo 🧭</summary><br>
@@ -292,7 +292,7 @@ Preface Expo scripts with `dotenvx run --`.
 }
 ```
 
-see [expo guide](https://dotenvx.com/docs/secrets-in-expo)
+see [expo guide](https://dotenvx.com/docs/expo)
 
 </details>
 <details><summary>Next.js ▲</summary><br>
@@ -413,7 +413,7 @@ $ dotenvx run -- python3 index.py
 Hello World
 ```
 
-see [extended python guide](https://dotenvx.com/docs/quickstart)
+see [extended python guide](https://dotenvx.com/docs/python)
 
 </details>
 <details><summary>PHP 🐘</summary><br>
@@ -426,7 +426,7 @@ $ dotenvx run -- php index.php
 Hello World
 ```
 
-see [extended php guide](https://dotenvx.com/docs/quickstart)
+see [extended php guide](https://dotenvx.com/docs/php)
 
 </details>
 <details><summary>Ruby 💎</summary><br>
@@ -439,7 +439,7 @@ $ dotenvx run -- ruby index.rb
 Hello World
 ```
 
-see [extended ruby guide](https://dotenvx.com/docs/quickstart)
+see [extended ruby guide](https://dotenvx.com/docs/ruby)
 
 </details>
 <details><summary>Go 🐹</summary><br>
@@ -452,7 +452,7 @@ $ dotenvx run -- go run main.go
 Hello World
 ```
 
-see [extended go guide](https://dotenvx.com/docs/quickstart)
+see [extended go guide](https://dotenvx.com/docs/go)
 
 </details>
 <details><summary>Rust 🦀</summary><br>
@@ -465,7 +465,7 @@ $ dotenvx run -- cargo run
 Hello World
 ```
 
-see [extended rust guide](https://dotenvx.com/docs/quickstart)
+see [extended rust guide](https://dotenvx.com/docs/rust)
 
 </details>
 <details><summary>Java ☕️</summary><br>
@@ -552,7 +552,7 @@ $ dotenvx run -- bin/rails s
 $ dotenvx run -- php artisan serve
 ```
 
-see [framework guides](https://dotenvx.com/docs#frameworks)
+see [framework guides](https://dotenvx.com/docs/quickstarts)
 
 </details>
 <details><summary>Docker 🐳</summary><br>
@@ -570,7 +570,7 @@ RUN curl -fsS https://dotenvx.sh/install.sh | sh
 CMD ["/usr/local/bin/dotenvx", "run", "--", "echo", "Hello $HELLO"]
 ```
 
-see [docker guide](https://dotenvx.com/docs/platforms/docker)
+see [docker guide](https://dotenvx.com/docs/docker)
 
 </details>
 <details><summary>CI/CDs 🐙</summary><br>
@@ -592,7 +592,7 @@ jobs:
         DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
 ```
 
-see [github actions guide](https://dotenvx.com/docs/cis/github-actions)
+see [github actions guide](https://dotenvx.com/docs/github-actions)
 
 </details>
 <details><summary>Platforms</summary><br>
@@ -608,7 +608,7 @@ RUN curl -fsS https://dotenvx.sh | sh
 npm install @dotenvx/dotenvx --save
 ```
 
-see [platform guides](https://dotenvx.com/docs#platforms)
+see [platform guides](https://dotenvx.com/docs/platforms)
 
 </details>
 <details><summary>Process Managers</summary><br>
@@ -620,7 +620,7 @@ see [platform guides](https://dotenvx.com/docs#platforms)
 },
 ```
 
-see [process manager guides](https://dotenvx.com/docs#process-managers)
+see [process manager guides](https://dotenvx.com/docs/process-managers/pm2)
 
 </details>
 <details><summary>npx</summary><br>
@@ -2395,7 +2395,7 @@ $ echo "HELLO=World" > .env
 $ dotenvx encrypt --stdout
 #/-------------------[DOTENV_PUBLIC_KEY]--------------------/
 #/            public-key encryption for .env files          /
-#/       [how it works](https://dotenvx.com/encryption)     /
+#/       [how it works](https://dotenvx.com/docs/quickstart/encryption)     /
 #/----------------------------------------------------------/
 DOTENV_PUBLIC_KEY="034af93e93708b994c10f236c96ef88e47291066946cce2e8d98c9e02c741ced45"
 # .env
@@ -2527,7 +2527,7 @@ Decrypt the contents of an encrypted `.env` file and send to stdout.
 $ dotenvx decrypt --stdout
 #/-------------------[DOTENV_PUBLIC_KEY]--------------------/
 #/            public-key encryption for .env files          /
-#/       [how it works](https://dotenvx.com/encryption)     /
+#/       [how it works](https://dotenvx.com/docs/quickstart/encryption)     /
 #/----------------------------------------------------------/
 DOTENV_PUBLIC_KEY="034af93e93708b994c10f236c96ef88e47291066946cce2e8d98c9e02c741ced45"
 # .env
@@ -3804,22 +3804,22 @@ WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 > Encrypt and run secrets in your language, framework, or tool.
 >
 
-* [Claude](https://dotenvx.com/docs/secrets-in-claude)
-* [Codex](https://dotenvx.com/docs/secrets-in-codex)
-* [1Password](https://dotenvx.com/docs/secrets-in-1password)
-* [Bitwarden](https://dotenvx.com/docs/secrets-in-bitwarden)
-* [Node.js](https://dotenvx.com/docs/secrets-in-nodejs)
-* [Next.js](https://dotenvx.com/docs/secrets-in-nextjs)
-* [Express](https://dotenvx.com/docs/secrets-in-express)
-* [Astro](https://dotenvx.com/docs/secrets-in-astro)
-* [Expo](https://dotenvx.com/docs/secrets-in-expo)
-* [Python](https://dotenvx.com/docs/secrets-in-python)
-* [Ruby](https://dotenvx.com/docs/secrets-in-ruby)
-* [Go](https://dotenvx.com/docs/secrets-in-go)
-* [PHP](https://dotenvx.com/docs/secrets-in-php)
-* [Rust](https://dotenvx.com/docs/secrets-in-rust)
+* [Claude](https://dotenvx.com/docs/claude)
+* [Codex](https://dotenvx.com/docs/codex)
+* [1Password](https://dotenvx.com/docs/1password)
+* [Bitwarden](https://dotenvx.com/docs/bitwarden)
+* [Node.js](https://dotenvx.com/docs/nodejs)
+* [Next.js](https://dotenvx.com/docs/nextjs)
+* [Express](https://dotenvx.com/docs/express)
+* [Astro](https://dotenvx.com/docs/astro)
+* [Expo](https://dotenvx.com/docs/expo)
+* [Python](https://dotenvx.com/docs/python)
+* [Ruby](https://dotenvx.com/docs/ruby)
+* [Go](https://dotenvx.com/docs/go)
+* [PHP](https://dotenvx.com/docs/php)
+* [Rust](https://dotenvx.com/docs/rust)
 
-[Browse all quickstarts](https://dotenvx.com/docs)
+[Browse all quickstarts](https://dotenvx.com/docs/quickstarts)
 
 &nbsp;
 
