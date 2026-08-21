@@ -116,6 +116,13 @@ Endpoints:
   GET    /api/teams/:team/invitations
   POST   /api/teams/:team/invitations
   DELETE /api/teams/:team/invitations/:id
+  GET    /api/join_requests
+  POST   /api/join_requests
+  DELETE /api/join_requests/:id
+  GET    /api/teams/:team/join_requests
+  POST   /api/teams/:team/join_requests/:id/accept
+  POST   /api/teams/:team/join_requests/:id/decline
+  POST   /api/armor/:team/settings/join_requests
   GET    /api/logs?team=:team
 
 Examples:
@@ -128,9 +135,16 @@ Examples:
   dotenvx curl "https://armor.dotenvx.com/api/teams"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/members"
-  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/members"
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations" --data '{"email":"person@example.com","role":"member"}'
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations/123" --request DELETE
+  dotenvx curl "https://armor.dotenvx.com/api/join_requests"
+  dotenvx curl "https://armor.dotenvx.com/api/join_requests" --data '{"team":"TEAM"}'
+  dotenvx curl "https://armor.dotenvx.com/api/join_requests/123" --request DELETE
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests"
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/accept" --request POST
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/decline" --request POST
+  dotenvx curl "https://armor.dotenvx.com/api/armor/TEAM/settings/join_requests" --data '{"value":true}'
   dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM"
   `
 }
