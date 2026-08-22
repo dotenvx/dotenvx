@@ -108,17 +108,21 @@ Endpoints:
   GET    /api/account
   GET    /api/armor/keypairs
   GET    /api/armor/keypairs/:public_key
+  POST   /api/armor/keypairs/:public_key/members/:member_id/grant
+  POST   /api/armor/keypairs/:public_key/members/:member_id/revoke
   POST   /api/armor/keypairs/:public_key/settings/guard
   POST   /api/armor/keypairs/:public_key/settings/enclave
   GET    /api/teams
   GET    /api/teams/:team
   GET    /api/teams/:team/members
+  POST   /api/teams/:team/members/:member_id/keypairs/:public_key/grant
+  POST   /api/teams/:team/members/:member_id/keypairs/:public_key/revoke
   GET    /api/teams/:team/invitations
   POST   /api/teams/:team/invitations
-  DELETE /api/teams/:team/invitations/:id
+  POST   /api/teams/:team/invitations/:id/cancel
   GET    /api/join_requests
   POST   /api/join_requests
-  DELETE /api/join_requests/:id
+  POST   /api/join_requests/:id/cancel
   GET    /api/teams/:team/join_requests
   POST   /api/teams/:team/join_requests/:id/accept
   POST   /api/teams/:team/join_requests/:id/decline
@@ -130,17 +134,21 @@ Examples:
   dotenvx curl "https://armor.dotenvx.com/api/account"
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs"
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY"
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/members/123/grant" --request POST
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/members/123/revoke" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/guard" --data '{"value":true}'
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/enclave" --data '{"value":true}'
   dotenvx curl "https://armor.dotenvx.com/api/teams"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/members"
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/members/123/keypairs/PUBLIC_KEY/grant" --request POST
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/members/123/keypairs/PUBLIC_KEY/revoke" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations" --data '{"email":"person@example.com","role":"member"}'
-  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations/123" --request DELETE
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/invitations/123/cancel" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/join_requests"
   dotenvx curl "https://armor.dotenvx.com/api/join_requests" --data '{"team":"TEAM"}'
-  dotenvx curl "https://armor.dotenvx.com/api/join_requests/123" --request DELETE
+  dotenvx curl "https://armor.dotenvx.com/api/join_requests/123/cancel" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/accept" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/decline" --request POST
