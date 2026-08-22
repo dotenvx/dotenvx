@@ -72,8 +72,8 @@ t.test('ArmorPush reads private key and posts push request without prompting fir
 t.test('ArmorPush prompts for team and retries when api requires team', async (ct) => {
   const sandbox = sinon.createSandbox()
   const getStub = sandbox.stub().returns('priv-from-env-keys')
-  const requiredError = new Error('[DOTENVX_TEAM_REQUIRED] choose a team for armor push')
-  requiredError.code = 'DOTENVX_TEAM_REQUIRED'
+  const requiredError = new Error('[TEAM_REQUIRED] choose a team for armor push')
+  requiredError.code = 'TEAM_REQUIRED'
   requiredError.meta = {
     organizations: [
       { provider_slug: 'dotenvx' },
@@ -175,8 +175,8 @@ t.test('ArmorPush uses only team from required error meta without prompting', as
   const sandbox = sinon.createSandbox()
   const getStub = sandbox.stub().returns('priv-from-env-keys')
   const selectStub = sandbox.stub().resolves('should-not-be-used')
-  const requiredError = new Error('[DOTENVX_TEAM_REQUIRED] choose a team for armor push')
-  requiredError.code = 'DOTENVX_TEAM_REQUIRED'
+  const requiredError = new Error('[TEAM_REQUIRED] choose a team for armor push')
+  requiredError.code = 'TEAM_REQUIRED'
   requiredError.meta = {
     organizations: [{ provider_slug: 'dotenvx' }]
   }

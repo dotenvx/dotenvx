@@ -148,8 +148,8 @@ t.test('ArmorDown sends explicit team without prompt or retry', async (ct) => {
 
 t.test('ArmorDown prompts for team and retries when api requires team', async (ct) => {
   const sandbox = sinon.createSandbox()
-  const requiredError = new Error('[DOTENVX_TEAM_REQUIRED] choose a team for armor down')
-  requiredError.code = 'DOTENVX_TEAM_REQUIRED'
+  const requiredError = new Error('[TEAM_REQUIRED] choose a team for armor down')
+  requiredError.code = 'TEAM_REQUIRED'
   requiredError.meta = {
     organizations: [
       { provider_slug: 'dotenvx' },
@@ -214,8 +214,8 @@ t.test('ArmorDown prompts for team and retries when api requires team', async (c
 t.test('ArmorDown uses only team from required error meta without prompting', async (ct) => {
   const sandbox = sinon.createSandbox()
   const getStub = sandbox.stub().returns('pub-from-env')
-  const requiredError = new Error('[DOTENVX_TEAM_REQUIRED] choose a team for armor down')
-  requiredError.code = 'DOTENVX_TEAM_REQUIRED'
+  const requiredError = new Error('[TEAM_REQUIRED] choose a team for armor down')
+  requiredError.code = 'TEAM_REQUIRED'
   requiredError.meta = {
     organizations: [{ provider_slug: 'dotenvx' }]
   }
