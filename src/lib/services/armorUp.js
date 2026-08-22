@@ -4,6 +4,7 @@ const keynames = require('../conventions/keynames')
 const removeEnvKey = require('../helpers/removeEnvKey')
 const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
+const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 
 class ArmorUp {
   constructor (hostname, token, devicePublicKey, envFile = '.env', team = undefined) {
@@ -37,7 +38,7 @@ class ArmorUp {
       try {
         json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined).run()
       } catch (error) {
-        if (error.code !== 'DOTENVX_TEAM_REQUIRED') {
+        if (!isTeamRequiredError(error)) {
           throw error
         }
 

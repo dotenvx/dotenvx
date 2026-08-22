@@ -4,6 +4,7 @@ const PostArmorPush = require('../api/postArmorPush')
 const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
+const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 
 function publicKeyFromPrivateKey (privateKey) {
   try {
@@ -42,7 +43,7 @@ class ArmorPush {
       try {
         json = await new PostArmorPush(hostname, token, devicePublicKey, privateKey, undefined).run()
       } catch (error) {
-        if (error.code !== 'DOTENVX_TEAM_REQUIRED') {
+        if (!isTeamRequiredError(error)) {
           throw error
         }
 

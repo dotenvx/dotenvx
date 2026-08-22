@@ -4,6 +4,7 @@ const keynames = require('../conventions/keynames')
 const upsertEnvKey = require('../helpers/upsertEnvKey')
 const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
+const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 
 class ArmorDown {
   constructor (hostname, token, devicePublicKey, envFile = '.env', team = undefined) {
@@ -35,7 +36,7 @@ class ArmorDown {
       try {
         json = await new PostArmorDown(hostname, token, devicePublicKey, publicKey, undefined).run()
       } catch (error) {
-        if (error.code !== 'DOTENVX_TEAM_REQUIRED') {
+        if (!isTeamRequiredError(error)) {
           throw error
         }
 

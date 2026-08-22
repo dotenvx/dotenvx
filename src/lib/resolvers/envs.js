@@ -32,6 +32,8 @@ function unresolvedEncryptedErrors (parsed) {
 
 function decryptErrors (parsed, errors) {
   const mappedErrors = (errors || []).map(error => {
+    if (error instanceof Error) return error
+
     return new Errors({
       code: error.code,
       message: error.message,
