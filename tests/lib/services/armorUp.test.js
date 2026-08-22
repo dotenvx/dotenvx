@@ -167,8 +167,8 @@ t.test('ArmorUp retries with selected team when api requires team', async (ct) =
   getStub.onSecondCall().returns('priv-from-env-keys')
   const selectStub = sandbox.stub().resolves('hackclub')
   const removeStub = sandbox.stub().returns({ changed: true })
-  const requiredError = new Error('[DOTENVX_TEAM_REQUIRED] choose a team for armor up')
-  requiredError.code = 'DOTENVX_TEAM_REQUIRED'
+  const requiredError = new Error('[TEAM_REQUIRED] choose a team for armor up')
+  requiredError.code = 'TEAM_REQUIRED'
   requiredError.meta = {
     organizations: [
       { provider_slug: 'dotenvx' },

@@ -4,6 +4,7 @@ const upsertEnvKey = require('../helpers/upsertEnvKey')
 const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
+const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 
 class ArmorPull {
   constructor (hostname, token, devicePublicKey, envFile = '.env', team = undefined) {
@@ -35,7 +36,7 @@ class ArmorPull {
       try {
         json = await new PostArmorPull(hostname, token, devicePublicKey, publicKey, undefined).run()
       } catch (error) {
-        if (error.code !== 'DOTENVX_TEAM_REQUIRED') {
+        if (!isTeamRequiredError(error)) {
           throw error
         }
 

@@ -13,6 +13,7 @@ const Errors = require('../helpers/errors')
 const PostArmorUp = require('../api/postArmorUp')
 const prompts = require('../helpers/prompts')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
+const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 const Session = require('../../db/session')
 
 async function selectKeyStorage () {
@@ -113,7 +114,7 @@ async function setTransform (options = {}) {
           try {
             await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined).run()
           } catch (error) {
-            if (error.code !== 'DOTENVX_TEAM_REQUIRED') {
+            if (!isTeamRequiredError(error)) {
               throw error
             }
 
