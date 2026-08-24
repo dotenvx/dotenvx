@@ -150,7 +150,7 @@ Examples:
   dotenvx curl "https://armor.dotenvx.com/api/join_requests" --data '{"team":"TEAM"}'
   dotenvx curl "https://armor.dotenvx.com/api/join_requests/123/cancel" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests"
-  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/accept" --request POST
+  dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/accept" --data '{"role":"member"}'
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/decline" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/armor/TEAM/settings/join_requests" --data '{"value":true}'
   dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM"

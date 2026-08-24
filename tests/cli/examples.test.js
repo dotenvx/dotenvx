@@ -134,7 +134,7 @@ tap.test('curl function returns API endpoints and examples', (t) => {
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/join_requests\/123\/cancel" --request POST/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/armor\/keypairs\/PUBLIC_KEY\/members\/123\/grant" --request POST/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/teams\/TEAM\/members\/123\/keypairs\/PUBLIC_KEY\/revoke" --request POST/)
-  t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/teams\/TEAM\/join_requests\/123\/accept" --request POST/)
+  t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/teams\/TEAM\/join_requests\/123\/accept" --data '\{"role":"member"\}'/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/armor\/TEAM\/settings\/join_requests" --data '\{"value":true\}'/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/logs\?team=TEAM"/)
   t.notMatch(output, /--request DELETE/)
