@@ -129,6 +129,7 @@ tap.test('curl function returns API endpoints and examples', (t) => {
   t.match(output, /POST\s+\/api\/teams\/:team\/join_requests\/:id\/decline/)
   t.match(output, /POST\s+\/api\/armor\/:team\/settings\/join_requests/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/account"/)
+  t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/armor\/keypairs\/PUBLIC_KEY\/name" --data '\{"name":"Production"\}'/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/join_requests" --data '\{"team":"TEAM"\}'/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/teams\/TEAM\/invitations\/123\/cancel" --request POST/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/join_requests\/123\/cancel" --request POST/)

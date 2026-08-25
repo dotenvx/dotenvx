@@ -108,6 +108,7 @@ Endpoints:
   GET    /api/account
   GET    /api/armor/keypairs
   GET    /api/armor/keypairs/:public_key
+  POST   /api/armor/keypairs/:public_key/name
   POST   /api/armor/keypairs/:public_key/members/:member_id/grant
   POST   /api/armor/keypairs/:public_key/members/:member_id/revoke
   POST   /api/armor/keypairs/:public_key/settings/guard
@@ -134,6 +135,7 @@ Examples:
   dotenvx curl "https://armor.dotenvx.com/api/account"
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs"
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY"
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/name" --data '{"name":"Production"}'
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/members/123/grant" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/members/123/revoke" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/guard" --data '{"value":true}'
