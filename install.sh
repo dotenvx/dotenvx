@@ -3,11 +3,11 @@
 set -e
 OS=""
 ARCH=""
-VERSION=""
+VERSION="2.0.0"
 PRIMARY_DIRECTORY="/usr/local/bin"
 DIRECTORY="$PRIMARY_DIRECTORY"
 FALLBACK_DIRECTORY="$HOME/.local/bin"
-REGISTRY_URL="https://registry.npmjs.org"
+GITHUB_RELEASES_URL="https://github.com/dotenvx/dotenvx/releases"
 INSTALL_SCRIPT_URL="https://dotenvx.sh"
 FORCE=""
 
@@ -300,9 +300,57 @@ filename() {
 }
 
 download_url() {
-  echo "$REGISTRY_URL/@dotenvx/dotenvx-$(os_arch)/-/dotenvx-$(os_arch)-$VERSION.tgz"
+  echo "$GITHUB_RELEASES_URL/download/v$VERSION/$(filename)"
 
   return 0
+}
+
+checksums_url() {
+  echo "$GITHUB_RELEASES_URL/download/v$VERSION/checksums.txt"
+
+  return 0
+}
+
+sha256_of_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1" | awk '{print $1}'
+  elif command -v openssl >/dev/null 2>&1; then
+    openssl dgst -sha256 "$1" | sed 's/.*= *//'
+  else
+    return 1
+  fi
+}
+
+verify_checksum() {
+  local archive_path="$1"
+  local checksums_path="$2"
+  local expected
+  local actual
+
+  expected=$(awk -v name="$(filename)" '$2 == name { print $1 }' "$checksums_path" | head -n 1)
+  if [ -z "$expected" ]; then
+    echo "[INSTALLATION_FAILED] no checksum found for [$(filename)]"
+    return 1
+  fi
+
+  if ! actual=$(sha256_of_file "$archive_path"); then
+    echo "[INSTALLATION_FAILED] sha256sum, shasum, or openssl is required to verify the download"
+    return 1
+  fi
+
+  if [ "$actual" != "$expected" ]; then
+    echo "[INSTALLATION_FAILED] checksum mismatch for [$(filename)]"
+    echo "? expected [$expected] but received [$actual]"
+    return 1
+  fi
+
+  return 0
+}
+
+checksum_fingerprint() {
+  awk -v name="$(filename)" '$2 == name { print substr($1, 1, 7) }' "$1" | head -n 1
 }
 
 progress_bar() {
@@ -428,34 +476,52 @@ install_dotenvx() {
 
   # 1. setup tmpdir
   local tmpdir=$(command mktemp -d)
-  local pipe="$tmpdir/pipe"
-  mkfifo "$pipe"
+  local archive_path="$tmpdir/$(filename)"
+  local checksums_path="$tmpdir/checksums.txt"
+  local extract_dir="$tmpdir/extract"
 
   install_failed_cleanup() {
-    echo "[INSTALLATION_FAILED] failed to download from registry [$(download_url)]"
+    echo "[INSTALLATION_FAILED] failed to download release [$(download_url)]"
     echo "? verify the download url and try downloading manually"
     rm -r "$tmpdir"
   }
 
-  # TODO: handle dotenvx.exe when on a windows machine? binary is not package/dotenvx, it's package/dotenvx.exe
-
-  # Start curl in the background and redirect output to the pipe
-  curl $(progress_bar) --fail -L --proto '=https' "$(download_url)" > "$pipe" &
-  curl_pid=$!
-
-  # Start tar in the background to read from the pipe
-  sh -c "tar xz --directory $(directory) --strip-components=1 -f '$pipe' 'package/$(binary_name)'" &
-  tar_pid=$!
-
-  if ! wait $curl_pid || ! wait $tar_pid; then
+  # 2. download the release archive and its checksums
+  if ! curl $(progress_bar) --fail -L --proto '=https' "$(download_url)" -o "$archive_path"; then
     install_failed_cleanup
     return 1
   fi
 
-  # 3. clean up
+  if ! curl $(progress_bar) --fail -L --proto '=https' "$(checksums_url)" -o "$checksums_path"; then
+    install_failed_cleanup
+    return 1
+  fi
+
+  # 3. verify before extracting or installing anything
+  if ! verify_checksum "$archive_path" "$checksums_path"; then
+    rm -r "$tmpdir"
+    return 1
+  fi
+  echo "▣ verified (sha256:$(checksum_fingerprint "$checksums_path")…)"
+
+  # 4. extract into the temporary directory, then install the verified binary
+  mkdir -p "$extract_dir"
+  if ! tar xzf "$archive_path" --directory "$extract_dir"; then
+    echo "[INSTALLATION_FAILED] failed to extract release [$(filename)]"
+    rm -r "$tmpdir"
+    return 1
+  fi
+
+  if ! mv "$extract_dir/$(binary_name)" "$(directory)/$(binary_name)"; then
+    echo "[INSTALLATION_FAILED] failed to install dotenvx to [$(directory)]"
+    rm -r "$tmpdir"
+    return 1
+  fi
+
+  # 5. clean up
   rm -r "$tmpdir"
 
-  # 4. link dx shorthand alias
+  # 6. link dx shorthand alias
   link_dx_alias
 
   # warn of any conflict

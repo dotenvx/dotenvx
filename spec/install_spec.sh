@@ -5,7 +5,7 @@ Describe 'install.sh'
   Include install.sh
 
   setup() {
-    VERSION="0.44.2"
+    VERSION="1.0.0"
     PRIMARY_DIRECTORY="/usr/local/bin"
     DIRECTORY="./spec/tmp"
     FALLBACK_DIRECTORY="$HOME/.local/bin"
@@ -14,6 +14,7 @@ Describe 'install.sh'
   # remove the dotenvx binary and dx alias before each test
   cleanup() {
     rm -f ./spec/tmp/dotenvx ./spec/tmp/dx
+    rm -f ./spec/tmp/archive.tar.gz ./spec/tmp/checksums.txt
     rm -rf ./spec/tmp/install-directory
   }
 
@@ -66,7 +67,7 @@ Describe 'install.sh'
 
     It 'checks default VERSION'
       When call echo "$VERSION"
-      The output should equal "0.44.2"
+      The output should equal "1.0.0"
     End
 
     It 'checks default DIRECTORY'
@@ -188,7 +189,7 @@ Options:
   --arch            override architecture (e.g., x64, arm64)
   --directory       directory to install dotenvx to (default: \"/usr/local/bin\")
   --force           force reinstallation even if already installed (default: false)
-  --version         version of dotenvx to install (default: \"0.44.2\")
+  --version         version of dotenvx to install (default: \"1.0.0\")
 
 Commands:
   install           install dotenvx
@@ -430,7 +431,7 @@ Commands:
     It 'returns the combined values'
       When call filename
       The status should equal 0
-      The output should equal "dotenvx-0.44.2-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | tr '[:upper:]' '[:lower:]').tar.gz"
+      The output should equal "dotenvx-1.0.0-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | tr '[:upper:]' '[:lower:]').tar.gz"
     End
   End
 
@@ -438,7 +439,61 @@ Commands:
     It 'returns the combined values'
       When call download_url
       The status should equal 0
-      The output should equal "https://registry.npmjs.org/@dotenvx/dotenvx-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | tr '[:upper:]' '[:lower:]')/-/dotenvx-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | tr '[:upper:]' '[:lower:]')-0.44.2.tgz"
+      The output should equal "https://github.com/dotenvx/dotenvx/releases/download/v1.0.0/dotenvx-1.0.0-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | tr '[:upper:]' '[:lower:]').tar.gz"
+    End
+  End
+
+  Describe 'checksums_url()'
+    It 'returns the release checksum URL'
+      When call checksums_url
+      The status should equal 0
+      The output should equal "https://github.com/dotenvx/dotenvx/releases/download/v1.0.0/checksums.txt"
+    End
+  End
+
+  Describe 'verify_checksum()'
+    create_matching_checksum() {
+      echo "dotenvx" > ./spec/tmp/archive.tar.gz
+      checksum=$(sha256_of_file ./spec/tmp/archive.tar.gz)
+      echo "$checksum  $(filename)" > ./spec/tmp/checksums.txt
+    }
+
+    Before 'create_matching_checksum'
+
+    It 'accepts a matching checksum'
+      When call verify_checksum ./spec/tmp/archive.tar.gz ./spec/tmp/checksums.txt
+      The status should equal 0
+      The output should equal ""
+    End
+
+    Describe 'when the checksum does not match'
+      replace_with_bad_checksum() {
+        echo "0000000000000000000000000000000000000000000000000000000000000000  $(filename)" > ./spec/tmp/checksums.txt
+      }
+
+      Before 'replace_with_bad_checksum'
+
+      It 'rejects the archive'
+        When call verify_checksum ./spec/tmp/archive.tar.gz ./spec/tmp/checksums.txt
+        The status should equal 1
+        The output should include "[INSTALLATION_FAILED] checksum mismatch for [$(filename)]"
+      End
+    End
+  End
+
+  Describe 'checksum_fingerprint()'
+    create_checksum_manifest() {
+      echo "dotenvx" > ./spec/tmp/archive.tar.gz
+      checksum=$(sha256_of_file ./spec/tmp/archive.tar.gz)
+      echo "$checksum  $(filename)" > ./spec/tmp/checksums.txt
+    }
+
+    Before 'create_checksum_manifest'
+
+    It 'returns the first seven checksum characters'
+      When call checksum_fingerprint ./spec/tmp/checksums.txt
+      The status should equal 0
+      The output should equal "$(sha256_of_file ./spec/tmp/archive.tar.gz | cut -c1-7)"
     End
   End
 
@@ -500,7 +555,7 @@ Commands:
       It 'returns true and outputs a message'
         When call is_installed
         The status should equal 0
-        The output should equal "◈ already installed (0.44.2:./spec/tmp/dotenvx)
+        The output should equal "◈ already installed (1.0.0:./spec/tmp/dotenvx)
 ⮕ next run [dotenvx encrypt]"
       End
     End
@@ -586,8 +641,9 @@ Commands:
     It 'installs it'
       When call install_dotenvx
       The status should equal 0
-      The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
-⮕ next run [dotenvx encrypt]"
+      The output should include "▣ verified (sha256:"
+      The output should include "◈ installed (1.0.0:./spec/tmp/dotenvx)"
+      The output should include "⮕ next run [dotenvx encrypt]"
       The path ./spec/tmp/dx should be symlink
       Assert [ "$(readlink ./spec/tmp/dx)" = "dotenvx" ]
     End
@@ -600,8 +656,9 @@ Commands:
       It 'installs it but warns'
         When call install_dotenvx
         The status should equal 0
-        The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
-⮕ next run [dotenvx encrypt]"
+        The output should include "▣ verified (sha256:"
+        The output should include "◈ installed (1.0.0:./spec/tmp/dotenvx)"
+        The output should include "⮕ next run [dotenvx encrypt]"
         The stderr should equal "[DOTENVX_CONFLICT] conflicting dotenvx found at /different/path
 ? we recommend updating your path to include ./spec/tmp"
       End
@@ -616,8 +673,9 @@ Commands:
     It 'installs dotenvx'
       When call run
       The status should equal 0
-      The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
-⮕ next run [dotenvx encrypt]"
+      The output should include "▣ verified (sha256:"
+      The output should include "◈ installed (1.0.0:./spec/tmp/dotenvx)"
+      The output should include "⮕ next run [dotenvx encrypt]"
       The path ./spec/tmp/dx should be symlink
       Assert [ "$(readlink ./spec/tmp/dx)" = "dotenvx" ]
     End
@@ -630,8 +688,9 @@ Commands:
       It 'installs it but warns'
         When call run
         The status should equal 0
-        The output should equal "◈ installed (0.44.2:./spec/tmp/dotenvx)
-⮕ next run [dotenvx encrypt]"
+        The output should include "▣ verified (sha256:"
+        The output should include "◈ installed (1.0.0:./spec/tmp/dotenvx)"
+        The output should include "⮕ next run [dotenvx encrypt]"
         The stderr should equal "[DOTENVX_CONFLICT] conflicting dotenvx found at /different/path
 ? we recommend updating your path to include ./spec/tmp"
       End
@@ -643,7 +702,7 @@ Commands:
       It 'says already installed'
         When call run
         The status should equal 0
-        The output should equal "◈ already installed (0.44.2:./spec/tmp/dotenvx)
+        The output should equal "◈ already installed (1.0.0:./spec/tmp/dotenvx)
 ⮕ next run [dotenvx encrypt]"
         The path ./spec/tmp/dx should be symlink
         Assert [ "$(readlink ./spec/tmp/dx)" = "dotenvx" ]
