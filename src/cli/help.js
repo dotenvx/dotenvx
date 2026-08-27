@@ -134,12 +134,18 @@ Examples:
 
   dotenvx curl "https://armor.dotenvx.com/api/account"
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs"
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs?page=1&per=100"
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs?sort=name_asc"
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs?sort=public_key_desc"
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY"
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/name" --data '{"name":"Production"}'
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/name" --data '{"name":null}'
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/members/123/grant" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/members/123/revoke" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/guard" --data '{"value":true}'
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/guard" --data '{"value":false}'
   dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/enclave" --data '{"value":true}'
+  dotenvx curl "https://armor.dotenvx.com/api/armor/keypairs/PUBLIC_KEY/settings/enclave" --data '{"value":false}'
   dotenvx curl "https://armor.dotenvx.com/api/teams"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM"
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/members"
@@ -156,6 +162,8 @@ Examples:
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/decline" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/armor/TEAM/settings/join_requests" --data '{"value":true}'
   dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM"
+  dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM&events=keypair/access&user=USERNAME&keypair=KEYPAIR_ID&page=1&per=100"
+  dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM&user=missing&keypair=missing"
   `
 }
 

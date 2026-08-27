@@ -4,7 +4,9 @@ set -e
 OS=""
 ARCH=""
 VERSION=""
-DIRECTORY="/usr/local/bin"
+PRIMARY_DIRECTORY="/usr/local/bin"
+DIRECTORY="$PRIMARY_DIRECTORY"
+FALLBACK_DIRECTORY="$HOME/.local/bin"
 REGISTRY_URL="https://registry.npmjs.org"
 INSTALL_SCRIPT_URL="https://dotenvx.sh"
 FORCE=""
@@ -119,6 +121,34 @@ is_directory_writable() {
   fi
 
   return 0
+}
+
+select_install_directory() {
+  if [ "$DIRECTORY" = "$PRIMARY_DIRECTORY" ] && [ ! -w "$DIRECTORY" ]; then
+    DIRECTORY="$FALLBACK_DIRECTORY"
+  fi
+
+  return 0
+}
+
+create_install_directory() {
+  mkdir -p "$(directory)" 2>/dev/null || true
+  return 0
+}
+
+is_directory_in_path() {
+  if [ "$(directory)" != "$FALLBACK_DIRECTORY" ]; then
+    return 0
+  fi
+
+  case ":$PATH:" in
+  *":$(directory):"*) return 0 ;;
+  *)
+    echo "[INSTALLATION_FAILED] the installation directory [$(directory)] is not in your PATH"
+    echo "? add it to your PATH [$(help_add_directory_to_path_command)] and try again"
+    return 1
+    ;;
+  esac
 }
 
 is_curl_installed() {
@@ -370,6 +400,11 @@ help_customize_directory_command() {
   return 0
 }
 
+help_add_directory_to_path_command() {
+  echo "export PATH=\"$(directory):\$PATH\""
+  return 0
+}
+
 help_install_curl_command() {
   if command -v apt-get >/dev/null 2>&1; then
     echo "sudo apt-get update && sudo apt-get install -y curl"
@@ -468,7 +503,10 @@ run() {
 
   # machine checks
   is_version_valid
+  select_install_directory
+  create_install_directory
   is_directory_writable
+  is_directory_in_path
   is_curl_installed
   is_os_supported
   is_arch_supported
