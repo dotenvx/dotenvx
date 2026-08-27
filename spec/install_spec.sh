@@ -6,12 +6,15 @@ Describe 'install.sh'
 
   setup() {
     VERSION="0.44.2"
+    PRIMARY_DIRECTORY="/usr/local/bin"
     DIRECTORY="./spec/tmp"
+    FALLBACK_DIRECTORY="$HOME/.local/bin"
   }
 
   # remove the dotenvx binary and dx alias before each test
   cleanup() {
     rm -f ./spec/tmp/dotenvx ./spec/tmp/dx
+    rm -rf ./spec/tmp/install-directory
   }
 
   mock_home() {
@@ -260,6 +263,107 @@ Commands:
         The status should equal 1
         The output should equal "[INSTALLATION_FAILED] the installation directory [/usr/local/testing-installer] is not writable by the current user
 ? run as root [sudo $0] or choose a writable directory like your current directory [$0 --directory=.]"
+      End
+    End
+  End
+
+  Describe 'select_install_directory()'
+    mock_default_directory() {
+      PRIMARY_DIRECTORY="/dotenvx-test-primary"
+      DIRECTORY="$PRIMARY_DIRECTORY"
+      FALLBACK_DIRECTORY="./spec/tmp"
+    }
+
+    Before 'mock_default_directory'
+
+    It 'falls back when /usr/local/bin is not writable'
+      When call select_install_directory
+      The status should equal 0
+      The output should equal ""
+      The variable DIRECTORY should equal "./spec/tmp"
+    End
+
+    Describe 'when /usr/local/bin is writable'
+      is_default_directory_writable() {
+        DIRECTORY="./spec/tmp"
+      }
+
+      Before 'is_default_directory_writable'
+
+      It 'keeps the preferred directory'
+        When call select_install_directory
+        The status should equal 0
+        The output should equal ""
+        The variable DIRECTORY should equal "./spec/tmp"
+      End
+    End
+
+    Describe 'when a custom directory is selected'
+      use_custom_directory() {
+        DIRECTORY="./spec/tmp"
+      }
+
+      Before 'use_custom_directory'
+
+      It 'preserves the requested directory'
+        When call select_install_directory
+        The status should equal 0
+        The output should equal ""
+        The variable DIRECTORY should equal "./spec/tmp"
+      End
+    End
+  End
+
+  Describe 'create_install_directory()'
+    use_new_install_directory() {
+      DIRECTORY="./spec/tmp/install-directory"
+    }
+
+    Before 'use_new_install_directory'
+
+    It 'creates the selected directory'
+      When call create_install_directory
+      The status should equal 0
+      The output should equal ""
+      The path ./spec/tmp/install-directory should be directory
+    End
+  End
+
+  Describe 'is_directory_in_path()'
+    use_fallback_directory() {
+      DIRECTORY="/dotenvx-test-bin"
+      FALLBACK_DIRECTORY="$DIRECTORY"
+    }
+
+    Before 'use_fallback_directory'
+
+    It 'returns true when the fallback directory is in PATH'
+      PATH="/usr/bin:/dotenvx-test-bin:/bin"
+      When call is_directory_in_path
+      The status should equal 0
+      The output should equal ""
+    End
+
+    It 'returns false with help when the fallback directory is not in PATH'
+      PATH="/usr/bin:/bin"
+      When call is_directory_in_path
+      The status should equal 1
+      The output should equal "[INSTALLATION_FAILED] the installation directory [/dotenvx-test-bin] is not in your PATH
+? add it to your PATH [export PATH=\"/dotenvx-test-bin:\$PATH\"] and try again"
+    End
+
+    Describe 'when a custom directory is not in PATH'
+      use_custom_directory() {
+        DIRECTORY="."
+      }
+
+      Before 'use_custom_directory'
+
+      It 'allows the custom directory'
+        PATH="/usr/bin:/bin"
+        When call is_directory_in_path
+        The status should equal 0
+        The output should equal ""
       End
     End
   End
