@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.21.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.22.0...main)
+
+## [2.22.0](https://github.com/dotenvx/dotenvx/compare/v2.21.0...v2.22.0) (2026-08-27)
+
+### Added
+
+* Install verified binaries directly from GitHub Releases ([#956](https://github.com/dotenvx/dotenvx/pull/956))
+
+### Changed
+
+* Fall back to `~/.local/bin` when `/usr/local/bin` is not writable ([#955](https://github.com/dotenvx/dotenvx/pull/955))
 
 ## [2.21.0](https://github.com/dotenvx/dotenvx/compare/v2.20.1...v2.21.0) (2026-08-10)
 
