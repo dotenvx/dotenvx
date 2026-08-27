@@ -8,14 +8,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-* Expand `dotenvx curl` examples and support for Dotenvx Armor keypair, team, invitation, join request, and audit log APIs ([#953](https://github.com/dotenvx/dotenvx/pull/953), [#954](https://github.com/dotenvx/dotenvx/pull/954))
 * Install verified binaries directly from GitHub Releases ([#956](https://github.com/dotenvx/dotenvx/pull/956))
 
 ### Changed
 
-* Better organize security commands for individuals and teams ([#946](https://github.com/dotenvx/dotenvx/pull/946))
-* Simplify command help by hiding internal options ([#947](https://github.com/dotenvx/dotenvx/pull/947))
-* Update README links to canonical documentation URLs ([#948](https://github.com/dotenvx/dotenvx/pull/948))
 * Fall back to `~/.local/bin` when `/usr/local/bin` is not writable ([#955](https://github.com/dotenvx/dotenvx/pull/955))
 
 ## [2.21.0](https://github.com/dotenvx/dotenvx/compare/v2.20.1...v2.21.0) (2026-08-10)
