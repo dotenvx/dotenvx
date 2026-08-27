@@ -380,6 +380,16 @@ jobs:
             echo "postrelease dotenvx get failure: expected Ubuntu, got $EXPECTED_VALUE"
             exit 1
           fi
+      - name: verify Alpine compatibility
+        run: |
+          EXPECTED_VERSION=$(node -p "require('./package.json').version")
+          RELEASED_VERSION=$(docker run --rm -v "$PWD/bin/linux-x86_64:/app:ro" alpine:3.22 /app/dotenvx --version)
+          echo $RELEASED_VERSION
+          echo $EXPECTED_VERSION
+          if [ "$RELEASED_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "Alpine version mismatch: expected $EXPECTED_VERSION, got $RELEASED_VERSION"
+            exit 1
+          fi
 
   # run only on semantic version tag
   release:
