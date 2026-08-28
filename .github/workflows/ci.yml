@@ -733,7 +733,6 @@ jobs:
             ARM64_SHA256=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
           fi
 
-          git fetch origin "$BRANCH:refs/remotes/origin/$BRANCH" || true
           git fetch https://github.com/gominimal/pkgs.git main
           git checkout -B "$BRANCH" FETCH_HEAD
           sed -i "s/let version = \".*\" in/let version = \"$CLEAN_VERSION\" in/" packages/dotenvx/build.ncl
@@ -749,7 +748,7 @@ jobs:
           git config user.email 'mot@dotenv.org'
           git add packages/dotenvx/build.ncl
           git commit -m "dotenvx@$CLEAN_VERSION"
-          git push --force-with-lease origin "$BRANCH"
+          git push --force origin "$BRANCH"
 
           PR_URL=$(gh pr list \
             --repo gominimal/pkgs \
@@ -811,8 +810,8 @@ jobs:
       - name: commit and push
         run: |
           cd dotenvx.sh
-          git config --global user.name 'motdotenv'
-          git config --global user.email 'mot@dotenv.org'
+          git config user.name 'motdotenv'
+          git config user.email 'mot@dotenv.org'
           git add .
           git commit -m "${{ env.VERSION }}" --allow-empty
           git tag "${{ env.VERSION }}" --force
