@@ -662,6 +662,7 @@ jobs:
           short-description: ${{ github.event.repository.description }}
   winget:
     needs: release
+    continue-on-error: true
     runs-on: windows-latest
     steps:
       - name: extract version using powershell
@@ -675,6 +676,73 @@ jobs:
         run: | 
           iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
           .\wingetcreate.exe update dotenvx.dotenvx -s -v ${{ env.CLEAN_VERSION }} -u https://github.com/dotenvx/dotenvx/releases/download/${{ env.VERSION }}/dotenvx-${{ env.CLEAN_VERSION }}-windows-x86_64.zip -t ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  minimal:
+    needs: release
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: extract version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          CLEAN_VERSION=${VERSION#v}
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> "$GITHUB_ENV"
+      - name: checkout Minimal packages fork
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: dotenvx/minimal-pkgs
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: update package and open pull request
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          BRANCH="dotenvx-${CLEAN_VERSION//./-}"
+          AMD64_ASSET="dotenvx-${CLEAN_VERSION}-linux-x86_64.tar.gz"
+          ARM64_ASSET="dotenvx-${CLEAN_VERSION}-linux-aarch64.tar.gz"
+
+          gh release download "$VERSION" \
+            --repo dotenvx/dotenvx \
+            --pattern "$AMD64_ASSET" \
+            --pattern "$ARM64_ASSET"
+          AMD64_SHA256=$(sha256sum "$AMD64_ASSET" | cut -d ' ' -f 1)
+          ARM64_SHA256=$(sha256sum "$ARM64_ASSET" | cut -d ' ' -f 1)
+
+          git fetch https://github.com/gominimal/pkgs.git main
+          git checkout -B "$BRANCH" FETCH_HEAD
+          sed -i "s/let version = \".*\" in/let version = \"$CLEAN_VERSION\" in/" packages/dotenvx/build.ncl
+          sed -i "/linux-x86_64.tar.gz/{n;s/sha256 = \".*\"/sha256 = \"$AMD64_SHA256\"/;}" packages/dotenvx/build.ncl
+          sed -i "/linux-aarch64.tar.gz/{n;s/sha256 = \".*\"/sha256 = \"$ARM64_SHA256\"/;}" packages/dotenvx/build.ncl
+
+          if git diff --quiet; then
+            echo "Minimal package is already at $CLEAN_VERSION"
+            exit 0
+          fi
+
+          git config user.name 'motdotenv'
+          git config user.email 'mot@dotenv.org'
+          git add packages/dotenvx/build.ncl
+          git commit -m "dotenvx@$CLEAN_VERSION"
+          git push --force origin "$BRANCH"
+
+          PR_URL=$(gh pr list \
+            --repo gominimal/pkgs \
+            --head "dotenvx:$BRANCH" \
+            --state open \
+            --json url \
+            --jq '.[0].url')
+          if [ -n "$PR_URL" ]; then
+            echo "Minimal pull request already exists: $PR_URL"
+          else
+            gh pr create \
+              --repo gominimal/pkgs \
+              --head "dotenvx:$BRANCH" \
+              --base main \
+              --title "dotenvx@$CLEAN_VERSION" \
+              --body "## Summary
+
+          bumps dotenvx to v$CLEAN_VERSION"
+          fi
 
   # aggregate publish-all job to wait for all previous jobs to complete
   publish-all:
@@ -717,8 +785,8 @@ jobs:
       - name: commit and push
         run: |
           cd dotenvx.sh
-          git config --global user.name 'motdotenv'
-          git config --global user.email 'mot@dotenv.org'
+          git config user.name 'motdotenv'
+          git config user.email 'mot@dotenv.org'
           git add .
           git commit -m "${{ env.VERSION }}" --allow-empty
           git tag "${{ env.VERSION }}" --force
