@@ -6,18 +6,6 @@ on:
     tags: ['*']
   pull_request:
     branches: [main]
-  workflow_dispatch:
-    inputs:
-      minimal_version:
-        description: Version to write to the Minimal manifest
-        required: true
-        default: 2.22.1
-        type: string
-      minimal_asset_version:
-        description: Existing dotenvx release whose assets should be hashed
-        required: true
-        default: 2.22.0
-        type: string
 
 jobs:
   audit:
@@ -691,24 +679,15 @@ jobs:
 
   minimal:
     needs: release
-    if: always() && (needs.release.result == 'success' || github.event_name == 'workflow_dispatch')
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: extract version
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            CLEAN_VERSION="${{ inputs.minimal_version }}"
-            ASSET_VERSION="${{ inputs.minimal_asset_version }}"
-            VERSION="v$ASSET_VERSION"
-          else
-            VERSION=${GITHUB_REF#refs/tags/}
-            CLEAN_VERSION=${VERSION#v}
-            ASSET_VERSION=$CLEAN_VERSION
-          fi
+          VERSION=${GITHUB_REF#refs/tags/}
+          CLEAN_VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "CLEAN_VERSION=$CLEAN_VERSION" >> "$GITHUB_ENV"
-          echo "ASSET_VERSION=$ASSET_VERSION" >> "$GITHUB_ENV"
       - name: checkout Minimal packages fork
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
@@ -719,8 +698,8 @@ jobs:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           BRANCH="dotenvx-${CLEAN_VERSION//./-}"
-          AMD64_ASSET="dotenvx-${ASSET_VERSION}-linux-x86_64.tar.gz"
-          ARM64_ASSET="dotenvx-${ASSET_VERSION}-linux-aarch64.tar.gz"
+          AMD64_ASSET="dotenvx-${CLEAN_VERSION}-linux-x86_64.tar.gz"
+          ARM64_ASSET="dotenvx-${CLEAN_VERSION}-linux-aarch64.tar.gz"
 
           gh release download "$VERSION" \
             --repo dotenvx/dotenvx \
@@ -728,10 +707,6 @@ jobs:
             --pattern "$ARM64_ASSET"
           AMD64_SHA256=$(sha256sum "$AMD64_ASSET" | cut -d ' ' -f 1)
           ARM64_SHA256=$(sha256sum "$ARM64_ASSET" | cut -d ' ' -f 1)
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            AMD64_SHA256=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            ARM64_SHA256=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-          fi
 
           git fetch https://github.com/gominimal/pkgs.git main
           git checkout -B "$BRANCH" FETCH_HEAD
