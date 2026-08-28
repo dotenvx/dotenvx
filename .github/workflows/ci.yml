@@ -662,6 +662,7 @@ jobs:
           short-description: ${{ github.event.repository.description }}
   winget:
     needs: release
+    continue-on-error: true
     runs-on: windows-latest
     steps:
       - name: extract version using powershell
@@ -678,6 +679,7 @@ jobs:
 
   minimal:
     needs: release
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: extract version
