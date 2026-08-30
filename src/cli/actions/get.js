@@ -7,7 +7,7 @@ const Session = require('../../db/session')
 const getResolver = require('./../../lib/resolvers/get')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
-const normalizeDotenvConfigEnvFile = require('../../lib/helpers/normalizeDotenvConfigEnvFile')
+const normalizeDotenvConfigPath = require('../../lib/helpers/normalizeDotenvConfigPath')
 const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
@@ -27,7 +27,7 @@ async function get (key) {
   const ignore = options.ignore || []
   let errorCount = 0
 
-  const envs = buildCommandEnvs(normalizeDotenvConfigEnvFile(this.envs), options.convention)
+  const envs = buildCommandEnvs(normalizeDotenvConfigPath(this.envs), options.convention)
 
   try {
     const sesh = new Session()
