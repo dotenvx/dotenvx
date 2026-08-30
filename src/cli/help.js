@@ -162,8 +162,8 @@ Examples:
   dotenvx curl "https://armor.dotenvx.com/api/teams/TEAM/join_requests/123/decline" --request POST
   dotenvx curl "https://armor.dotenvx.com/api/armor/TEAM/settings/join_requests" --data '{"value":true}'
   dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM"
-  dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM&events=keypair/access&user=USERNAME&keypair=KEYPAIR_ID&page=1&per=100"
-  dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM&user=missing&keypair=missing"
+  dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM&action=keypair/access&actor=USERNAME&result=success&resource=keypair/KEYPAIR_ID&page=1&per=100"
+  dotenvx curl "https://armor.dotenvx.com/api/logs?team=TEAM&actor=missing&resource=missing"
   `
 }
 
