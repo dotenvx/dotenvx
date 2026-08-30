@@ -16,8 +16,15 @@ const normalizeDotenvConfigQuiet = require('./../lib/helpers/normalizeDotenvConf
 const envs = []
 function collectEnvs (type) {
   return function (value, previous) {
-    envs.push({ type, value })
-    return (previous || []).concat([value])
+    const values = type === 'envFile'
+      ? value.split(',').map(item => item.trim()).filter(Boolean)
+      : [value]
+
+    for (const item of values) {
+      envs.push({ type, value: item })
+    }
+
+    return (previous || []).concat(values)
   }
 }
 

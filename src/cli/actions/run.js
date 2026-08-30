@@ -9,6 +9,7 @@ const Session = require('../../db/session')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
+const normalizeDotenvConfigEnvFile = require('../../lib/helpers/normalizeDotenvConfigEnvFile')
 const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
@@ -106,7 +107,7 @@ async function run () {
   }
 
   try {
-    let envs = buildCommandEnvs(this.envs, options.convention)
+    let envs = buildCommandEnvs(normalizeDotenvConfigEnvFile(this.envs), options.convention)
     envs = determine(envs, process.env)
 
     const {

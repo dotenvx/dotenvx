@@ -27,6 +27,7 @@ const Errors = require('./helpers/errors')
 const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgnore')
+const normalizeDotenvConfigEnvFile = require('./helpers/normalizeDotenvConfigEnvFile')
 const mask = require('./helpers/mask')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
 
@@ -75,7 +76,7 @@ const config = function (options = {}) {
   const noKeychain = resolveNoKeychain(options)
 
   try {
-    let envs = buildConfigEnvs(options)
+    let envs = normalizeDotenvConfigEnvFile(buildConfigEnvs(options))
     if (!options.envs) {
       envs = determine(envs, processEnv)
     }
