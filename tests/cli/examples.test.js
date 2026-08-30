@@ -142,7 +142,7 @@ tap.test('curl function returns API endpoints and examples', (t) => {
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/teams\/TEAM\/join_requests\/123\/accept" --data '\{"role":"member"\}'/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/armor\/TEAM\/settings\/join_requests" --data '\{"value":true\}'/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/logs\?team=TEAM"/)
-  t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/logs\?team=TEAM&action=keypair\/access&actor=USERNAME&result=success&resource=keypair:KEYPAIR_ID&page=1&per=100"/)
+  t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/logs\?team=TEAM&action=keypair\/access&actor=USERNAME&result=success&resource=keypair\/KEYPAIR_ID&page=1&per=100"/)
   t.match(output, /dotenvx curl "https:\/\/armor\.dotenvx\.com\/api\/logs\?team=TEAM&actor=missing&resource=missing"/)
   t.notMatch(output, /--request DELETE/)
   t.end()
