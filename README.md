@@ -747,12 +747,12 @@ $ echo "HELLO=local" > .env.local
 
 $ echo "HELLO=World" > .env
 
-$ dotenvx run -f .env.local -f .env -- node index.js
+$ dotenvx run -f .env.local,.env -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.local,.env
 Hello local
 ```
 
-Note subsequent files do NOT override pre-existing variables defined in previous files or env. This follows historic principle. For example, above `local` wins – from the first file.
+Comma-separate multiple files after a single `-f`. Subsequent files do NOT override pre-existing variables defined in previous files or env. This follows historic principle. For example, above `local` wins – from the first file.
 
 </details>
 
@@ -763,7 +763,7 @@ $ echo "HELLO=local" > .env.local
 
 $ echo "HELLO=World" > .env
 
-$ dotenvx run -f .env.local -f .env --overload -- node index.js
+$ dotenvx run -f .env.local,.env --overload -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.local,.env
 Hello World
 ```
@@ -1267,7 +1267,7 @@ Hello World
 ```
 
 </details>
-<details><summary>`run` - multiple `-f` flags</summary><br>
+<details><summary>`run -f` - multiple files</summary><br>
 
 Compose multiple `.env` files for environment variables loading, as you need.
 
@@ -1276,12 +1276,12 @@ $ echo "HELLO=local" > .env.local
 $ echo "HELLO=World" > .env
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
-$ dotenvx run -f .env.local -f .env -- node index.js
+$ dotenvx run -f .env.local,.env -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.local, .env
 Hello local
 ```
 
-Note subsequent files do NOT override pre-existing variables defined in previous files or env. This follows historic principle. For example, above `local` wins – from the first file.
+Comma-separate multiple files after a single `-f`. Subsequent files do NOT override pre-existing variables defined in previous files or env. This follows historic principle. For example, above `local` wins – from the first file.
 
 </details>
 <details><summary>`run --env HELLO=String`</summary><br>
@@ -1371,7 +1371,7 @@ $ echo "HELLO=local" > .env.local
 $ echo "HELLO=World" > .env
 $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
 
-$ dotenvx run -f .env.local -f .env --overload -- node index.js
+$ dotenvx run -f .env.local,.env --overload -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.local, .env
 Hello World
 ```
@@ -2833,7 +2833,7 @@ Pass multiple `.env` files to generate your `.env.example` file from the combina
 $ echo "HELLO=World" > .env
 $ echo "DB_HOST=example.com" > .env.production
 
-$ dotenvx genexample -f .env -f .env.production
+$ dotenvx genexample -f .env,.env.production
 ▣ generated (.env.example)
 ```
 
