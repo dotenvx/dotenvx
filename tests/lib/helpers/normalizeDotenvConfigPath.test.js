@@ -23,8 +23,8 @@ t.test('#normalizeDotenvConfigPath', t => {
       DOTENV_F: '.env.local',
       DOTENV_PATH: '.env.production'
     }),
-    [{ type: 'envFile', value: '.env.local' }],
-    'DOTENV_F takes precedence over DOTENV_PATH'
+    [{ type: 'envFile', value: '.env.production' }],
+    'DOTENV_PATH takes precedence over DOTENV_F'
   )
 
   const explicitEnvs = [

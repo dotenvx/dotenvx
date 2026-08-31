@@ -3728,8 +3728,8 @@ There are global settings available that can be configured as environment variab
 ```ini
 # config
 DOTENV_CONVENTION= # set to a default convention like 'nextjs' or 'flow'
-DOTENV_F= # path to your env file; comma-separate multiple paths
-DOTENV_PATH= # synonym for DOTENV_F
+DOTENV_PATH= # path to your env file; comma-separate multiple paths
+DOTENV_F= # synonym for DOTENV_PATH
 DOTENV_IGNORE= # MISSING_ENV_FILE,OTHER
 DOTENV_QUIET= # set to "true" to default to --quiet
 
