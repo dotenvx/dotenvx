@@ -4,27 +4,27 @@ const normalizeDotenvConfigPath = require('../../../src/lib/helpers/normalizeDot
 
 t.test('#normalizeDotenvConfigPath', t => {
   t.same(
-    normalizeDotenvConfigPath([], { DOTENV_CONFIG_F: '.env.production' }),
+    normalizeDotenvConfigPath([], { DOTENV_F: '.env.production' }),
     [{ type: 'envFile', value: '.env.production' }],
-    'uses DOTENV_CONFIG_F when no env file was specified'
+    'uses DOTENV_F when no env file was specified'
   )
 
   t.same(
-    normalizeDotenvConfigPath([], { DOTENV_CONFIG_PATH: '.env.local, .env' }),
+    normalizeDotenvConfigPath([], { DOTENV_PATH: '.env.local, .env' }),
     [
       { type: 'envFile', value: '.env.local' },
       { type: 'envFile', value: '.env' }
     ],
-    'supports DOTENV_CONFIG_PATH and comma-separated env files'
+    'supports DOTENV_PATH and comma-separated env files'
   )
 
   t.same(
     normalizeDotenvConfigPath([], {
-      DOTENV_CONFIG_F: '.env.local',
-      DOTENV_CONFIG_PATH: '.env.production'
+      DOTENV_F: '.env.local',
+      DOTENV_PATH: '.env.production'
     }),
     [{ type: 'envFile', value: '.env.local' }],
-    'DOTENV_CONFIG_F takes precedence over DOTENV_CONFIG_PATH'
+    'DOTENV_F takes precedence over DOTENV_PATH'
   )
 
   const explicitEnvs = [
@@ -32,7 +32,7 @@ t.test('#normalizeDotenvConfigPath', t => {
     { type: 'env', value: 'HELLO=World' }
   ]
   t.same(
-    normalizeDotenvConfigPath(explicitEnvs, { DOTENV_CONFIG_F: '.env.production' }),
+    normalizeDotenvConfigPath(explicitEnvs, { DOTENV_F: '.env.production' }),
     explicitEnvs,
     'explicit env files take precedence'
   )

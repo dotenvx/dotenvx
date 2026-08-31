@@ -814,10 +814,10 @@ $ dotenvx run -f .env.production --quiet -- node index.js
 Hello production
 ```
 
-You can also set `DOTENV_CONFIG_QUIET=true`.
+You can also set `DOTENV_QUIET=true`.
 
 ```sh
-$ DOTENV_CONFIG_QUIET=true dotenvx run -f .env.production -- node index.js
+$ DOTENV_QUIET=true dotenvx run -f .env.production -- node index.js
 Hello production
 ```
 
@@ -1530,10 +1530,10 @@ $ dotenvx run -f .env.production --quiet -- node index.js
 Hello production
 ```
 
-You can also set `DOTENV_CONFIG_QUIET=true`.
+You can also set `DOTENV_QUIET=true`.
 
 ```sh
-$ DOTENV_CONFIG_QUIET=true dotenvx run -f .env.production -- node index.js
+$ DOTENV_QUIET=true dotenvx run -f .env.production -- node index.js
 Hello production
 ```
 
@@ -1603,10 +1603,10 @@ $ dotenvx run -f .env.missing --ignore=MISSING_ENV_FILE -- node index.js
 ...
 ```
 
-You can also set `DOTENV_CONFIG_IGNORE="MISSING_ENV_FILE"`. It is parsed as a comma-separated list.
+You can also set `DOTENV_IGNORE="MISSING_ENV_FILE"`. It is parsed as a comma-separated list.
 
 ```sh
-$ DOTENV_CONFIG_IGNORE="MISSING_ENV_FILE,OTHER_ERROR_CODE" dotenvx run -f .env.missing -- node index.js
+$ DOTENV_IGNORE="MISSING_ENV_FILE,OTHER_ERROR_CODE" dotenvx run -f .env.missing -- node index.js
 ```
 </details>
 <details><summary>`run --convention=nextjs`</summary><br>
@@ -1625,10 +1625,10 @@ $ dotenvx run --convention=nextjs -- node index.js
 Hello development local
 ```
 
-You can also set `DOTENV_CONFIG_CONVENTION=nextjs`.
+You can also set `DOTENV_CONVENTION=nextjs`.
 
 ```sh
-$ DOTENV_CONFIG_CONVENTION=nextjs dotenvx run -- node index.js
+$ DOTENV_CONVENTION=nextjs dotenvx run -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.local, .env.development, .env
 Hello development local
 ```
@@ -1663,10 +1663,10 @@ $ NODE_ENV=development dotenvx run --convention=flow -- node index.js
 Hello development local
 ```
 
-You can also set `DOTENV_CONFIG_CONVENTION=flow`.
+You can also set `DOTENV_CONVENTION=flow`.
 
 ```sh
-$ NODE_ENV=development DOTENV_CONFIG_CONVENTION=flow dotenvx run -- node index.js
+$ NODE_ENV=development DOTENV_CONVENTION=flow dotenvx run -- node index.js
 [dotenvx@1.X.X] injecting env (1) from .env.development.local, .env.development, .env.local, .env
 Hello development local
 ```
@@ -1794,10 +1794,10 @@ Ignore multiple error codes by separating them with spaces.
 $ dotenvx get HELLO --ignore=MISSING_ENV_FILE MISSING_KEY
 ```
 
-You can also set `DOTENV_CONFIG_IGNORE`. Its value is a comma-separated list.
+You can also set `DOTENV_IGNORE`. Its value is a comma-separated list.
 
 ```sh
-$ DOTENV_CONFIG_IGNORE=MISSING_ENV_FILE,OTHER dotenvx get HELLO
+$ DOTENV_IGNORE=MISSING_ENV_FILE,OTHER dotenvx get HELLO
 ```
 
 </details>
@@ -1887,10 +1887,10 @@ $ dotenvx get HELLO --convention=nextjs
 development local
 ```
 
-You can also set `DOTENV_CONFIG_CONVENTION=nextjs`.
+You can also set `DOTENV_CONVENTION=nextjs`.
 
 ```sh
-$ DOTENV_CONFIG_CONVENTION=nextjs dotenvx get HELLO
+$ DOTENV_CONVENTION=nextjs dotenvx get HELLO
 development local
 ```
 
@@ -1920,10 +1920,10 @@ $ NODE_ENV=development dotenvx get HELLO --convention=flow
 development local
 ```
 
-You can also set `DOTENV_CONFIG_CONVENTION=flow`.
+You can also set `DOTENV_CONVENTION=flow`.
 
 ```sh
-$ NODE_ENV=development DOTENV_CONFIG_CONVENTION=flow dotenvx get HELLO
+$ NODE_ENV=development DOTENV_CONVENTION=flow dotenvx get HELLO
 development local
 ```
 
@@ -2801,10 +2801,10 @@ Ignore multiple error codes by separating them with spaces.
 $ dotenvx validate --ignore=MISSING_ENV_FILE MISSING_ENV_EXAMPLE
 ```
 
-You can also set `DOTENV_CONFIG_IGNORE`. Its value is a comma-separated list.
+You can also set `DOTENV_IGNORE`. Its value is a comma-separated list.
 
 ```sh
-$ DOTENV_CONFIG_IGNORE=MISSING_ENV_FILE,OTHER dotenvx validate
+$ DOTENV_IGNORE=MISSING_ENV_FILE,OTHER dotenvx validate
 ```
 
 </details>
@@ -3413,10 +3413,10 @@ Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
 Hello World
 ```
 
-You can also set `DOTENV_CONFIG_QUIET=true`.
+You can also set `DOTENV_QUIET=true`.
 
 ```sh
-$ DOTENV_CONFIG_QUIET=true node index.js
+$ DOTENV_QUIET=true node index.js
 Error: [MISSING_ENV_FILE] missing .env.missing file (/path/to/.env.missing)
 Hello World
 ```
@@ -3521,10 +3521,10 @@ This is equivalent to using `--convention=nextjs` with the CLI:
 $ dotenvx run --convention=nextjs -- node index.js
 ```
 
-You can also set `DOTENV_CONFIG_CONVENTION=nextjs`.
+You can also set `DOTENV_CONVENTION=nextjs`.
 
 ```sh
-$ DOTENV_CONFIG_CONVENTION=nextjs node index.js
+$ DOTENV_CONVENTION=nextjs node index.js
 ```
 
 </details>
@@ -3727,11 +3727,16 @@ There are global settings available that can be configured as environment variab
 
 ```ini
 # config
-DOTENV_CONFIG_CONVENTION= # set to a default convention like 'nextjs' or 'flow'
-DOTENV_CONFIG_F= # path to your env file; comma-separate multiple paths
-DOTENV_CONFIG_PATH= # synonym for DOTENV_CONFIG_F
-DOTENV_CONFIG_IGNORE= # MISSING_ENV_FILE,OTHER
-DOTENV_CONFIG_QUIET= # set to "true" to default to --quiet
+DOTENV_CONVENTION= # set to a default convention like 'nextjs' or 'flow'
+DOTENV_F= # path to your env file; comma-separate multiple paths
+DOTENV_PATH= # synonym for DOTENV_F
+DOTENV_IGNORE= # MISSING_ENV_FILE,OTHER
+DOTENV_QUIET= # set to "true" to default to --quiet
+
+# legacy aliases (still supported)
+DOTENV_CONFIG_CONVENTION=
+DOTENV_CONFIG_IGNORE=
+DOTENV_CONFIG_QUIET=
 
 # armor
 DOTENVX_ARMOR_TOKEN= # for api calls
