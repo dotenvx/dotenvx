@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.22.0...main)
 
+### Added
+
+* Add `DOTENV_PATH` (or `DOTENV_F`) for selecting one or more env files, with comma-separated path support across the CLI and `config()`
+* Add `DOTENV_CONVENTION`, `DOTENV_IGNORE`, and `DOTENV_QUIET`, while retaining their existing `DOTENV_CONFIG_*` names as fallbacks
+
+### Changed
+
+* Allow comma-separated env file paths with `-f` and the `config({ path })` option
+
 ## [2.22.0](https://github.com/dotenvx/dotenvx/compare/v2.21.0...v2.22.0) (2026-08-27)
 
 ### Added

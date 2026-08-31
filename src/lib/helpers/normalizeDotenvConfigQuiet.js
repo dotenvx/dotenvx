@@ -1,7 +1,9 @@
 function normalizeDotenvConfigQuiet (
   /** @type {import('../main').DotenvConfigOptions} */ options
 ) {
-  if (process.env.DOTENV_CONFIG_QUIET === 'true') {
+  const quiet = process.env.DOTENV_QUIET ?? process.env.DOTENV_CONFIG_QUIET
+
+  if (quiet === 'true') {
     options.quiet = true
   }
 

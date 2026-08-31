@@ -24,6 +24,15 @@ t.test('takes string for path option', ct => {
   ct.end()
 })
 
+t.test('takes comma-separated string for path option', ct => {
+  const env = dotenvx.config({ path: 'tests/.env.local, tests/.env' })
+
+  ct.equal(env.parsed.BASIC, 'local_basic')
+  ct.equal(env.parsed.SINGLE_QUOTES, 'single_quotes')
+  ct.equal(process.env.BASIC, 'local_basic')
+  ct.end()
+})
+
 t.test('takes array for path option', ct => {
   const testPath = ['tests/.env']
   const env = dotenvx.config({ path: testPath })
@@ -41,6 +50,37 @@ t.test('takes two or more files in the array for path option', ct => {
   ct.equal(env.parsed.BASIC, 'local_basic')
   ct.equal(process.env.BASIC, 'local_basic')
 
+  ct.end()
+})
+
+t.test('respects DOTENV_F', ct => {
+  process.env.DOTENV_F = 'tests/.env.local'
+
+  const env = dotenvx.config()
+
+  ct.equal(env.parsed.BASIC, 'local_basic')
+  ct.equal(process.env.BASIC, 'local_basic')
+  ct.end()
+})
+
+t.test('respects DOTENV_PATH', ct => {
+  process.env.DOTENV_PATH = 'tests/.env.local'
+
+  const env = dotenvx.config()
+
+  ct.equal(env.parsed.BASIC, 'local_basic')
+  ct.equal(process.env.BASIC, 'local_basic')
+  ct.end()
+})
+
+t.test('path option takes precedence over configured paths', ct => {
+  process.env.DOTENV_F = 'tests/.env.local'
+  process.env.DOTENV_PATH = 'tests/.env.local'
+
+  const env = dotenvx.config({ path: 'tests/.env' })
+
+  ct.equal(env.parsed.BASIC, 'basic')
+  ct.equal(process.env.BASIC, 'basic')
   ct.end()
 })
 

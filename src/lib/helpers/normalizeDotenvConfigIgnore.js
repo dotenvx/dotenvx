@@ -1,7 +1,8 @@
 function normalizeDotenvConfigIgnore (
   /** @type {import('../main').DotenvConfigOptions} */ options
 ) {
-  const configIgnore = (process.env.DOTENV_CONFIG_IGNORE || '')
+  const configuredIgnore = process.env.DOTENV_IGNORE ?? process.env.DOTENV_CONFIG_IGNORE ?? ''
+  const configIgnore = configuredIgnore
     .split(',')
     .map(code => code.trim())
     .filter(Boolean)

@@ -1,8 +1,10 @@
 function normalizeDotenvConfigConvention (
   /** @type {import('../main').DotenvConfigOptions} */ options
 ) {
-  if (!options.convention && process.env.DOTENV_CONFIG_CONVENTION) {
-    options.convention = process.env.DOTENV_CONFIG_CONVENTION
+  const convention = process.env.DOTENV_CONVENTION || process.env.DOTENV_CONFIG_CONVENTION
+
+  if (!options.convention && convention) {
+    options.convention = convention
   }
 
   return options
