@@ -9,6 +9,14 @@ t.beforeEach(() => {
   sinon.restore()
 })
 
+t.test('set exposes --plain without a -p shorthand', ct => {
+  const help = childProcess.execFileSync(process.execPath, [path.join(__dirname, '../../src/cli/dotenvx.js'), 'set', '--help'], { encoding: 'utf8' })
+
+  ct.match(help, /--plain\s+store value as plain text/)
+  ct.notMatch(help, /-p, --plain/)
+  ct.end()
+})
+
 t.test('login and logout remain hidden from default command list', ct => {
   const src = fs.readFileSync(path.join(__dirname, '../../src/cli/dotenvx.js'), 'utf8')
 

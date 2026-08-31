@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.23.0...main)
 
+* BREAKING: Remove the `-p` shorthand for `--plain`; use `--plain` instead
+
 ## [2.23.0](https://github.com/dotenvx/dotenvx/compare/v2.22.0...v2.23.0) (2026-08-31)
 
 ### Added
