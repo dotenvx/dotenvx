@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.23.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.24.0...main)
+
+## [2.24.0](https://github.com/dotenvx/dotenvx/compare/v2.23.0...v2.24.0) (2026-09-10)
+
+### Changed
+
+* Do not expand nested commands ([#965](https://github.com/dotenvx/dotenvx/pull/965))
+
+### Removed
 
 * BREAKING: Remove the `-p` shorthand for `--plain`; use `--plain` instead
 
