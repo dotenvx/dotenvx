@@ -108,28 +108,12 @@ async function executeCommand (commandArgs, env, sensitiveValues = []) {
   /* c8 ignore stop */
 
   try {
-    // ensure the first command is expanded
+    // Expand only the executable; child arguments and separators pass through unchanged.
     try {
       commandArgs[0] = path.resolve(which.sync(`${commandArgs[0]}`))
       logger.debug(`expanding process command to [${commandArgs.join(' ')}]`)
     } catch (e) {
       logger.debug(`could not expand process command. using [${commandArgs.join(' ')}]`)
-    }
-
-    // expand any other commands that follow a --
-    let expandNext = false
-    for (let i = 0; i < commandArgs.length; i++) {
-      if (commandArgs[i] === '--') {
-        expandNext = true
-      } else if (expandNext) {
-        try {
-          commandArgs[i] = path.resolve(which.sync(`${commandArgs[i]}`))
-          logger.debug(`expanding process command to [${commandArgs.join(' ')}]`)
-        } catch (e) {
-          logger.debug(`could not expand process command. using [${commandArgs.join(' ')}]`)
-        }
-        expandNext = false
-      }
     }
 
     const redactStdout = sensitiveValues.length > 0
