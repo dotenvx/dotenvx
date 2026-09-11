@@ -1,4 +1,4 @@
-const { parse, parseSync } = require('@dotenvx/primitives')
+const { parse, parseSync, parsearrays } = require('@dotenvx/primitives')
 const SERVER_SIDE_DECRYPTION_REQUIRED = 'SERVER_SIDE_DECRYPTION_REQUIRED'
 
 function decryptOptions (error) {
@@ -27,21 +27,29 @@ function failedKeyAccessFallback (result, error) {
 }
 
 async function parseWithDecryptor (src, options = {}) {
+  return parseWith(src, options, parse)
+}
+
+parseWithDecryptor.arrays = async function parsearraysWithDecryptor (src, options = {}) {
+  return parseWith(src, options, parsearrays)
+}
+
+async function parseWith (src, options, parser) {
   try {
-    return await parse(src, options)
+    return await parser(src, options)
   } catch (error) {
     if (error.code !== SERVER_SIDE_DECRYPTION_REQUIRED || typeof options.decryptor !== 'function') {
       if (typeof options.provider !== 'function') throw error
 
-      const result = await parse(src, parseOptionsWithoutProvider(options))
+      const result = await parser(src, parseOptionsWithoutProvider(options))
       return failedKeyAccessFallback(result, error)
     }
 
     try {
       const result = await options.decryptor(src, decryptOptions(error))
-      return await parse(result.src, parseOptionsWithoutProvider(options))
+      return await parser(result.src, parseOptionsWithoutProvider(options))
     } catch (decryptorError) {
-      const result = await parse(src, parseOptionsWithoutProvider(options))
+      const result = await parser(src, parseOptionsWithoutProvider(options))
       return failedKeyAccessFallback(result, decryptorError)
     }
   }
