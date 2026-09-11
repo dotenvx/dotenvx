@@ -207,3 +207,39 @@ t.test('parseWithDecryptor.sync preserves encrypted src and the permission error
   ct.same(result.errors, [permissionError])
   ct.end()
 })
+
+for (const scenario of ['local', 'remote', 'provider-denied', 'decryptor-offline']) {
+  t.test(`parseWithDecryptor.arrays preserves duplicate assignments: ${scenario}`, async ct => {
+    const { encrypt, keypair } = require('@dotenvx/primitives')
+    const { privateKey, publicKey } = keypair()
+    const first = encrypt(publicKey, 'first')
+    const second = encrypt(publicKey, 'second')
+    const src = `DOTENV_PUBLIC_KEY=${publicKey}\nHELLO=${first}\nHELLO=${second}\n`
+    const requiredError = serverSideDecryptionRequired()
+    const denied = Object.assign(new Error('access denied'), { code: 'PERMISSION_DENIED' })
+    const offline = Object.assign(new Error('offline'), { code: 'ENETUNREACH' })
+    const options = { fk: [], processEnv: {} }
+    if (scenario === 'local') {
+      options.processEnv.DOTENV_PRIVATE_KEY = privateKey
+    } else if (scenario === 'provider-denied') {
+      options.provider = async () => { throw denied }
+    } else {
+      options.provider = async () => { throw requiredError }
+      options.decryptor = async () => {
+        if (scenario === 'decryptor-offline') throw offline
+        return { src: 'HELLO=first\nHELLO=second\n' }
+      }
+    }
+    const parseWithDecryptor = require('../../../src/lib/helpers/parseWithDecryptor')
+    const result = await parseWithDecryptor.arrays(src, options)
+    const failed = scenario === 'provider-denied' || scenario === 'decryptor-offline'
+    ct.same(result.parsed.HELLO, failed ? [first, second] : ['first', 'second'])
+    if (failed) {
+      ct.equal(result.errors[0], scenario === 'provider-denied' ? denied : offline)
+      ct.equal(result.errors[1].code, 'DECRYPTION_FAILED')
+    } else {
+      ct.same(result.errors, [])
+      ct.same(result.injected.HELLO, ['first', 'second'])
+    }
+  })
+}
