@@ -6,7 +6,7 @@ const Errors = require('./errors')
 const { createRedactedStreamWriter, redactOutput } = require('./redactOutput')
 const ptyCommand = require('./ptyCommand')
 
-async function executeCommand (commandArgs, env, sensitiveValues = []) {
+async function executeCommand (commandArgs, env, sensitiveValues = [], onComplete) {
   const FORWARD_SIGNAL_GRACE_MS = 1000
   const FORCE_KILL_GRACE_MS = 1000
   const signals = [
@@ -17,6 +17,7 @@ async function executeCommand (commandArgs, env, sensitiveValues = []) {
   logger.debug(`executing process command [${commandArgs.join(' ')}]`)
 
   let child
+  let commandExitCode
   let signalSent
   let sigintCount = 0
   const signalForwardTimers = new Set()
@@ -175,7 +176,7 @@ async function executeCommand (commandArgs, env, sensitiveValues = []) {
     }
 
     // Exit with the error code from the command process, or 1 if unavailable
-    process.exit(error.exitCode || 1)
+    commandExitCode = error.exitCode || 1
   } finally {
     signalForwardTimers.forEach(timer => clearTimeout(timer))
     signalForwardTimers.clear()
@@ -188,7 +189,10 @@ async function executeCommand (commandArgs, env, sensitiveValues = []) {
     otherSignalHandlers.forEach((handler, signal) => {
       process.removeListener(signal, handler)
     })
+    if (onComplete) await onComplete()
   }
+
+  if (commandExitCode) process.exit(commandExitCode)
 }
 
 module.exports = executeCommand

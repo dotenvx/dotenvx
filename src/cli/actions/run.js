@@ -17,6 +17,8 @@ const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
+const configureGateway = require('../../lib/helpers/configureGateway')
+const readDefenv = require('../../lib/helpers/readDefenv')
 const validateEnvExample = require('../../lib/helpers/validateEnvExample')
 
 const { determine } = require('./../../lib/helpers/envResolution')
@@ -65,6 +67,7 @@ async function run () {
   }
   let commandEnv = process.env
   let sensitiveValues = []
+  let closeGateway
 
   let commandArgs = this.args
   if (commandArgs.length < 1) {
@@ -88,7 +91,9 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+  const gatewayToken = options.token || process.env.DOTENVX_TOKEN
+  const noArmor = options.armor === false || (!gatewayToken && (await sesh.noArmor()))
+  const gatewayCredentials = noArmor ? undefined : []
   const noKeychain = options.native === false || options.noNative === true
 
   if (commandArgs.length < 1) {
@@ -107,6 +112,12 @@ async function run () {
   }
 
   try {
+    const gatewayKeys = readDefenv()
+    for (const name of gatewayKeys) {
+      if (name !== 'STRIPE_SECRET_KEY') throw new Error(`Defenv gateway currently supports only STRIPE_SECRET_KEY (received ${name}).`)
+    }
+    if (gatewayKeys.size > 0 && noArmor) throw new Error('Defenv gateway requires Armor. Enable Armor and authenticate before running.')
+
     let envs = buildCommandEnvs(normalizeDotenvConfigPath(this.envs), options.convention)
     envs = determine(envs, process.env)
 
@@ -115,6 +126,8 @@ async function run () {
       readableFilepaths
     } = await envsResolver({
       envs,
+      gatewayCredentials,
+      gatewayKeys,
       overload: options.overload,
       processEnv: process.env,
       envKeysFile: resolveEnvKeysFile(options.envKeysFile),
@@ -130,6 +143,12 @@ async function run () {
         }
       }
     })
+
+    for (const name of gatewayKeys) {
+      if (process.env[name] !== undefined && !(gatewayCredentials || []).some(credential => credential.name === name && credential.placeholder === process.env[name])) {
+        throw new Error(`Defenv gateway requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload.`)
+      }
+    }
 
     if (redactEnabled) {
       sensitiveValues = redactedValues(processedEnvs)
@@ -198,7 +217,23 @@ async function run () {
       }
     }
 
-    let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
+    const gateway = await configureGateway(commandArgs, commandEnv, gatewayCredentials, sesh, gatewayToken)
+    closeGateway = gateway.close
+    commandArgs = gateway.commandArgs
+    commandEnv = gateway.env
+
+    const gatedKeys = new Set((gatewayCredentials || [])
+      .filter(credential => commandEnv[credential.name] === credential.placeholder)
+      .map(credential => credential.name))
+    const injectedKeys = uniqueInjectedKeys(processedEnvs)
+    for (const key of gatedKeys) {
+      injectedKeys.delete(key)
+      logger.verbose(`${key} gated via Armor gateway`)
+    }
+
+    let msg = gatedKeys.size > 0
+      ? `injected (${injectedKeys.size}), ⧈ gated (${gatedKeys.size})`
+      : `injected env (${injectedKeys.size})`
     const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
     if (readableFilepaths.length > 0 && envStringCount > 0) {
       msg += ` from ${readableFilepaths.join(', ')}, and --env flag${envStringCount > 1 ? 's' : ''}`
@@ -211,6 +246,7 @@ async function run () {
     if (spinner) spinner.stop()
     logger.success(`⟐ ${msg}`)
   } catch (error) {
+    if (closeGateway) await closeGateway()
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
       process.exit(130)
@@ -220,7 +256,11 @@ async function run () {
     process.exit(1)
   }
 
-  await executeCommand(commandArgs, commandEnv, sensitiveValues)
+  try {
+    await executeCommand(commandArgs, commandEnv, sensitiveValues, closeGateway)
+  } finally {
+    if (closeGateway) await closeGateway()
+  }
 }
 
 module.exports = run
