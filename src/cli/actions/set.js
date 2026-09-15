@@ -61,10 +61,12 @@ async function set (key, value) {
   const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
   const noKeychain = options.native === false || options.noNative === true
 
+  const no1Password = options['1password'] === false || options.no1Password === true
+
   let errorCount = 0
 
   try {
-    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await setTransform({ envs, key, value, fk, noArmor, noCreate, encrypt, noKeychain })
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await setTransform({ envs, key, value, fk, noArmor, noCreate, encrypt, noKeychain, no1Password })
 
     if (keysSrc) {
       await fsx.writeFileX(fk, keysSrc)

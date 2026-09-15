@@ -257,6 +257,7 @@ const set = async function (key, value, options = {}) {
     fk: envKeysFilepath,
     noArmor,
     noKeychain,
+    no1Password: options.no1Password,
     noCreate,
     encrypt
   })

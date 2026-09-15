@@ -23,11 +23,13 @@ async function encryptAction () {
   const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
   const noKeychain = options.native === false || options.noNative === true
 
+  const no1Password = options['1password'] === false || options.no1Password === true
+
   let errorCount = 0
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    const { processedEnvs } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate, noKeychain })
+    const { processedEnvs } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate, noKeychain, no1Password })
 
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
@@ -48,7 +50,7 @@ async function encryptAction () {
   }
 
   try {
-    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate, noKeychain })
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate, noKeychain, no1Password })
 
     if (keysSrc) {
       await fsx.writeFileX(fk, keysSrc)

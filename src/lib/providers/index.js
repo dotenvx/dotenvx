@@ -2,6 +2,7 @@ const Session = require('./../../db/session')
 
 const armorProvider = require('./armor/index')
 const nativeProvider = require('./native/index')
+const onePasswordCustody = require('../helpers/onePasswordCustody')
 
 function syncArmorProvider (publicKeyHex) {
   const { createSyncFn } = require('@dotenvx/tooling')
@@ -49,6 +50,10 @@ function useNative (options) {
   return options.noNative !== true && options.native !== false && options.noKeychain !== true
 }
 
+function useOnePassword (options) {
+  return options.no1Password !== true && process.env.DOTENVX_NO_1PASSWORD !== 'true' && onePasswordCustody.configured()
+}
+
 function useArmor (options, noArmor) {
   return options.noArmor !== true && options.armor !== false && !noArmor
 }
@@ -71,6 +76,8 @@ async function providers (options = {}) {
     providerFns.push(nativeProvider)
   }
 
+  if (useOnePassword(options)) providerFns.push(onePasswordCustody.get)
+
   if (options.noArmor !== true && options.armor !== false) {
     const sesh = new Session()
     const noArmor = !options.token && await sesh.noArmor()
@@ -92,6 +99,8 @@ providers.sync = function providersSync (options = {}) {
   if (useNative(options)) {
     providerFns.push(nativeProvider)
   }
+
+  if (useOnePassword(options)) providerFns.push(onePasswordCustody.getSync)
 
   if (options.noArmor !== true && options.armor !== false) {
     const sesh = new Session()

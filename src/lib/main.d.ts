@@ -293,6 +293,9 @@ export interface SetOptions {
    */
   noNative?: boolean;
 
+  /** Disable 1Password custody and secret-reference resolution. */
+  no1Password?: boolean;
+
 }
 
 export type SetProcessedEnv = {
