@@ -18,7 +18,7 @@ const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
 const configureProxy = require('../../lib/proxy/configureProxy')
-const readDefenv = require('../../lib/helpers/readDefenv')
+const readEnvfile = require('../../lib/helpers/readEnvfile')
 const validateEnvExample = require('../../lib/helpers/validateEnvExample')
 
 const { determine } = require('./../../lib/helpers/envResolution')
@@ -112,8 +112,8 @@ async function run () {
   }
 
   try {
-    const proxyRules = readDefenv()
-    if (proxyRules.size > 0 && noArmor) throw new Error('Defenv proxy requires Armor. Enable Armor and authenticate before running.')
+    const proxyRules = readEnvfile()
+    if (proxyRules.size > 0 && noArmor) throw new Error('Envfile proxy requires Armor. Enable Armor and authenticate before running.')
 
     let envs = buildCommandEnvs(normalizeDotenvConfigPath(this.envs), options.convention)
     envs = determine(envs, process.env)
@@ -143,7 +143,7 @@ async function run () {
 
     for (const name of proxyRules.keys()) {
       if (process.env[name] !== undefined && !(proxyCredentials || []).some(credential => credential.name === name && credential.placeholder === process.env[name])) {
-        throw new Error(`Defenv proxy requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload.`)
+        throw new Error(`Envfile proxy requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload.`)
       }
     }
 
