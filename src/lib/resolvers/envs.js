@@ -54,12 +54,12 @@ function inject (processEnv, parsed) {
   }
 }
 
-function buildParseOptions ({ processEnv, overload, envKeysFilepath, provider, decryptor, gatewayCredentials, gatewayKeys }) {
+function buildParseOptions ({ processEnv, overload, envKeysFilepath, provider, decryptor, proxyCredentials, proxyRules }) {
   const options = {
     processEnv,
     overload,
-    gatewayCredentials,
-    gatewayKeys,
+    proxyCredentials,
+    proxyRules,
     fk: envKeysFilepath
   }
 
@@ -76,7 +76,7 @@ function buildParseOptions ({ processEnv, overload, envKeysFilepath, provider, d
   return options
 }
 
-async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus, gatewayCredentials, gatewayKeys }) {
+async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus, proxyCredentials, proxyRules }) {
   const row = {}
   row.type = TYPE_ENV
   row.string = env.value
@@ -93,8 +93,8 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
       envKeysFilepath,
       provider,
       decryptor,
-      gatewayCredentials,
-      gatewayKeys
+      proxyCredentials,
+      proxyRules
     })
 
     const {
@@ -183,7 +183,7 @@ function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, 
   return row
 }
 
-async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus, gatewayCredentials, gatewayKeys }) {
+async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus, proxyCredentials, proxyRules }) {
   const row = {}
   row.type = TYPE_ENV_FILE
   row.filepath = env.value
@@ -202,8 +202,8 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
       envKeysFilepath: fk,
       provider,
       decryptor,
-      gatewayCredentials,
-      gatewayKeys
+      proxyCredentials,
+      proxyRules
     })
 
     const {
@@ -325,8 +325,8 @@ async function envs (options = {}) {
         readableFilepaths,
         no1Password,
         noBitwarden,
-        gatewayCredentials: options.gatewayCredentials,
-        gatewayKeys: options.gatewayKeys,
+        proxyCredentials: options.proxyCredentials,
+        proxyRules: options.proxyRules,
         onStatus: options.onStatus
       }))
     } else if (env.type === TYPE_ENV) {
@@ -339,8 +339,8 @@ async function envs (options = {}) {
         decryptor,
         no1Password,
         noBitwarden,
-        gatewayCredentials: options.gatewayCredentials,
-        gatewayKeys: options.gatewayKeys,
+        proxyCredentials: options.proxyCredentials,
+        proxyRules: options.proxyRules,
         onStatus: options.onStatus
       }))
     }

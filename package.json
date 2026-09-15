@@ -56,6 +56,9 @@
   "dependencies": {
     "@dotenvx/primitives": "^3.0.2",
     "@dotenvx/tooling": "^1.0.3",
+    "global-agent": "^3.0.0",
+    "node-forge": "^1.4.0",
+    "undici": "^6.28.1",
     "yocto-spinner": "^1.2.1"
   },
   "devDependencies": {

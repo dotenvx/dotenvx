@@ -1,5 +1,5 @@
 const { parse, parseSync, parsearrays, scan, encrypted } = require('@dotenvx/primitives')
-const prepareGateway = require('./prepareGateway')
+const prepareProxy = require('../proxy/prepareProxy')
 const SERVER_SIDE_DECRYPTION_REQUIRED = 'SERVER_SIDE_DECRYPTION_REQUIRED'
 
 function decryptOptions (error) {
@@ -28,9 +28,9 @@ function failedKeyAccessFallback (result, error) {
 }
 
 async function parseWithDecryptor (src, options = {}) {
-  if (options.gatewayCredentials) {
+  if (options.proxyCredentials) {
     const original = src
-    src = prepareGateway(src, options.gatewayCredentials, options.processEnv, options.gatewayKeys)
+    src = prepareProxy(src, options.proxyCredentials, options.processEnv, options.proxyRules)
     if (src !== original && !Object.values(scan(src).parsed).flat().some(encrypted)) {
       options = parseOptionsWithoutProvider(options)
     }

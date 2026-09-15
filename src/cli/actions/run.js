@@ -17,7 +17,7 @@ const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
-const configureGateway = require('../../lib/helpers/configureGateway')
+const configureProxy = require('../../lib/proxy/configureProxy')
 const readDefenv = require('../../lib/helpers/readDefenv')
 const validateEnvExample = require('../../lib/helpers/validateEnvExample')
 
@@ -67,7 +67,7 @@ async function run () {
   }
   let commandEnv = process.env
   let sensitiveValues = []
-  let closeGateway
+  let closeProxy
 
   let commandArgs = this.args
   if (commandArgs.length < 1) {
@@ -91,9 +91,9 @@ async function run () {
   const ignore = options.ignore || []
 
   const sesh = new Session()
-  const gatewayToken = options.token || process.env.DOTENVX_TOKEN
-  const noArmor = options.armor === false || (!gatewayToken && (await sesh.noArmor()))
-  const gatewayCredentials = noArmor ? undefined : []
+  const proxyToken = options.token || process.env.DOTENVX_TOKEN
+  const noArmor = options.armor === false || (!proxyToken && (await sesh.noArmor()))
+  const proxyCredentials = noArmor ? undefined : []
   const noKeychain = options.native === false || options.noNative === true
 
   if (commandArgs.length < 1) {
@@ -112,11 +112,8 @@ async function run () {
   }
 
   try {
-    const gatewayKeys = readDefenv()
-    for (const name of gatewayKeys) {
-      if (name !== 'STRIPE_SECRET_KEY') throw new Error(`Defenv gateway currently supports only STRIPE_SECRET_KEY (received ${name}).`)
-    }
-    if (gatewayKeys.size > 0 && noArmor) throw new Error('Defenv gateway requires Armor. Enable Armor and authenticate before running.')
+    const proxyRules = readDefenv()
+    if (proxyRules.size > 0 && noArmor) throw new Error('Defenv proxy requires Armor. Enable Armor and authenticate before running.')
 
     let envs = buildCommandEnvs(normalizeDotenvConfigPath(this.envs), options.convention)
     envs = determine(envs, process.env)
@@ -126,8 +123,8 @@ async function run () {
       readableFilepaths
     } = await envsResolver({
       envs,
-      gatewayCredentials,
-      gatewayKeys,
+      proxyCredentials,
+      proxyRules,
       overload: options.overload,
       processEnv: process.env,
       envKeysFile: resolveEnvKeysFile(options.envKeysFile),
@@ -144,9 +141,9 @@ async function run () {
       }
     })
 
-    for (const name of gatewayKeys) {
-      if (process.env[name] !== undefined && !(gatewayCredentials || []).some(credential => credential.name === name && credential.placeholder === process.env[name])) {
-        throw new Error(`Defenv gateway requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload.`)
+    for (const name of proxyRules.keys()) {
+      if (process.env[name] !== undefined && !(proxyCredentials || []).some(credential => credential.name === name && credential.placeholder === process.env[name])) {
+        throw new Error(`Defenv proxy requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload.`)
       }
     }
 
@@ -217,18 +214,18 @@ async function run () {
       }
     }
 
-    const gateway = await configureGateway(commandArgs, commandEnv, gatewayCredentials, sesh, gatewayToken)
-    closeGateway = gateway.close
-    commandArgs = gateway.commandArgs
-    commandEnv = gateway.env
+    const proxy = await configureProxy(commandArgs, commandEnv, proxyCredentials, sesh, proxyToken)
+    closeProxy = proxy.close
+    commandArgs = proxy.commandArgs
+    commandEnv = proxy.env
 
-    const gatedKeys = new Set((gatewayCredentials || [])
+    const gatedKeys = new Set((proxyCredentials || [])
       .filter(credential => commandEnv[credential.name] === credential.placeholder)
       .map(credential => credential.name))
     const injectedKeys = uniqueInjectedKeys(processedEnvs)
     for (const key of gatedKeys) {
       injectedKeys.delete(key)
-      logger.verbose(`${key} gated via Armor gateway`)
+      logger.verbose(`${key} gated via Armor proxy`)
     }
 
     let msg = gatedKeys.size > 0
@@ -246,7 +243,7 @@ async function run () {
     if (spinner) spinner.stop()
     logger.success(`⟐ ${msg}`)
   } catch (error) {
-    if (closeGateway) await closeGateway()
+    if (closeProxy) await closeProxy()
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
       process.exit(130)
@@ -257,9 +254,9 @@ async function run () {
   }
 
   try {
-    await executeCommand(commandArgs, commandEnv, sensitiveValues, closeGateway)
+    await executeCommand(commandArgs, commandEnv, sensitiveValues, closeProxy)
   } finally {
-    if (closeGateway) await closeGateway()
+    if (closeProxy) await closeProxy()
   }
 }
 

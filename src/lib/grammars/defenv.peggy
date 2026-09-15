@@ -2,16 +2,22 @@ Document
   = _ declarations:(Declaration _)* { return declarations.map(item => item[0]); }
 
 Declaration
-  = "env" [ \t]+ name:Name gateway:Gateway? [ \t]* Comment? (Newline / !.) {
-      return { name, gateway: gateway === true };
+  = "env" [ \t]+ name:Name proxy:Proxy? [ \t]* Comment? (Newline / !.) {
+      return { name, proxy: proxy || false };
     }
 
-Gateway
-  = [ \t]* "," [ \t]* "gateway" [ \t]* ":" [ \t]* value:Boolean { return value; }
+Proxy
+  = [ \t]* "," _ "proxy" [ \t]* ":" _ value:(ProxyOptions / Disabled) { return value; }
 
-Boolean
-  = "true" { return true; }
-  / "false" { return false; }
+ProxyOptions
+  = "{" _ "domain" [ \t]* ":" _ domain:Destination _ ","? _ "}" { return { domain }; }
+
+Disabled
+  = "false" { return false; }
+
+Destination
+  = '"' host:$([A-Za-z0-9.-]+) '"' { return host; }
+  / "'" host:$([A-Za-z0-9.-]+) "'" { return host; }
 
 Name
   = '"' name:Identifier '"' { return name; }
