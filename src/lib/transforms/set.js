@@ -16,27 +16,16 @@ const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 const Session = require('../../db/session')
 
-async function selectKeyStorage () {
-  const selected = await prompts.select({
-    message: 'Choose private key storage',
-    choices: [
-      { name: '◫ File (.env.keys)', value: 'file' },
-      { name: '⛨ Armor (armor.dotenvx.com)', value: 'armored' }
-    ]
-  }, {
-    input: process.stdin,
-    output: process.stderr
-  })
-
-  return selected
-}
+const selectKeyStorage = require('../helpers/selectKeyStorage')
+const storeNativePrivateKey = require('../helpers/storeNativePrivateKey')
 
 async function setTransform (options = {}) {
   const envs = options.envs || []
   const key = options.key
   const value = options.value
   const fk = options.fk || '.env.keys'
-  let noArmor = options.noArmor // key storage selector below
+  const noArmor = options.noArmor
+  let storage
   const noKeychain = options.noKeychain
   const noCreate = options.noCreate
   const noEncrypt = !options.encrypt || isPlainKey(key)
@@ -88,9 +77,7 @@ async function setTransform (options = {}) {
 
       // only create if missing public key and encryption needed
       if (!publicKey && !noEncrypt) {
-        if (!noCreate && !noArmor && selectKeyStorage) {
-          noArmor = await selectKeyStorage() !== 'armored'
-        }
+        storage = storage || await selectKeyStorage(options)
 
         // upsert public key to .env file
         const kp = keypair() // local
@@ -102,7 +89,9 @@ async function setTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        if (noArmor) {
+        if (storage === 'native' && storeNativePrivateKey(publicKey, privateKey, fk)) {
+          row.nativePrivateKeyAdded = true
+        } else if (storage !== 'armored') {
           const mutated = mutateKeysSrc({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
           keysSrc = mutated.keysSrc
         } else {

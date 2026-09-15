@@ -35,7 +35,7 @@ async function encryptAction () {
         errorCount += 1
         logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
       }
-      if (processedEnv.envSrc) {
+      if (!processedEnv.error && processedEnv.envSrc) {
         console.log(processedEnv.envSrc)
       }
     }

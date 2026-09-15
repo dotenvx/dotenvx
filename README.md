@@ -872,6 +872,14 @@ $ dotenvx encrypt
 
 > A `DOTENV_PUBLIC_KEY` (encryption key) and a `DOTENV_PRIVATE_KEY` (decryption key) are generated using the same public-key cryptography as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1).
 
+New private keys created by `encrypt` and encrypted `set` default to your OS secret store: macOS Keychain, Windows Credential Manager, or Linux Secret Service. When logged into Armor, the interactive picker offers OS secret store or Armor. When Armor is off, OS storage is selected automatically. Existing `.env.keys` files are not automatically migrated.
+
+Linux requires `secret-tool` (typically the `libsecret-tools` package), a running Secret Service such as GNOME Keyring, and a user D-Bus session. When native tooling or the service is missing, dotenvx reports the fallback to `.env.keys`. Locked, denied, timed-out, or unverified storage operations fail without falling back to a plaintext key file.
+
+CI uses file storage. To explicitly use file storage elsewhere, run `dotenvx encrypt --no-native --no-armor` (or pass both flags to `set`). For deployment, continue supplying the private key through your platform's secret injection.
+
+To move an existing key into the OS store, run `dotenvx native up`. It verifies the stored key before removing it from `.env.keys`. Use `dotenvx native push` to keep a file copy, `dotenvx native pull` to export a copy, or `dotenvx native down` to move it back to `.env.keys`. Add `-f .env.production` for a particular env file. Keep a recoverable copy in your team's secret manager or backup before replacing or losing the machine.
+
 More examples
 
 <details><summary>`.env`</summary><br>

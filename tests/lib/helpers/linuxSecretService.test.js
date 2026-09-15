@@ -23,6 +23,8 @@ t.test('writes a secret through secret-tool with the private key on stdin', t =>
     'public-key', 'public-key'
   ], {
     input: 'private-key-that-must-not-be-an-argument',
+    timeout: 10000,
+    killSignal: 'SIGKILL',
     encoding: 'utf8',
     stdio: ['pipe', 'ignore', 'pipe']
   }])
@@ -42,6 +44,8 @@ t.test('reads a secret through secret-tool', t => {
     'service', 'dotenvx',
     'public-key', 'public-key'
   ], {
+    timeout: 10000,
+    killSignal: 'SIGKILL',
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe']
   }])
@@ -61,6 +65,8 @@ t.test('deletes a secret through secret-tool', t => {
     'service', 'dotenvx',
     'public-key', 'public-key'
   ], {
+    timeout: 10000,
+    killSignal: 'SIGKILL',
     stdio: ['ignore', 'ignore', 'pipe']
   }])
   t.end()

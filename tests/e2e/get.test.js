@@ -21,7 +21,7 @@ function execShell (commands) {
 
 t.beforeEach((ct) => {
   // important, clear process.env before each test
-  process.env = {}
+  process.env = { CI: 'true' } // These fixtures exercise file storage.
   process.env.DOTENVX_NO_ARMOR = 'true'
 
   tempDir = fs.mkdtempSync(path.join(osTempDir, 'dotenvx-test-'))

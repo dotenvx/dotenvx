@@ -23,7 +23,7 @@ cleanup () {
 trap cleanup EXIT
 
 printf '%s\n' 'HELLO=LinuxNative' > .env
-"$DOTENVX" encrypt --no-armor
+"$DOTENVX" encrypt --no-armor --no-native
 
 PUBLIC_KEY="$(grep '^DOTENV_PUBLIC_KEY=' .env | tail -n 1 | cut -d= -f2- | tr -d '"')"
 PRIVATE_KEY="$(grep '^DOTENV_PRIVATE_KEY=' .env.keys | tail -n 1 | cut -d= -f2- | tr -d '"')"
