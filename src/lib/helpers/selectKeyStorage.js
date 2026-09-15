@@ -14,7 +14,7 @@ async function selectKeyStorage (options = {}) {
   if (process.env.CI || options.noCreate || !process.stdin.isTTY || !process.stderr.isTTY) return defaultStorage
 
   const choices = [
-    ...(useNative ? [{ name: `□ Local Custody (${secretStoreNames[process.platform]})`, value: 'native' }] : [])
+    ...(useNative ? [{ name: `□ Local Custody (Native ${secretStoreNames[process.platform]})`, value: 'native' }] : [])
   ]
   if (!options.no1Password && process.env.DOTENVX_NO_1PASSWORD !== 'true' && await onePasswordCustody.available()) {
     choices.push({ name: '□ Local Custody (1Password)', value: 'onepassword' })

@@ -159,4 +159,12 @@ async function set (publicKey, privateKey) {
   new Session().createStore().set(`${PREFIX}${publicKey}`, Buffer.from(JSON.stringify(loc)).toString('base64'))
 }
 
-module.exports = { available, configured, get, getSync, set }
+async function remove (publicKey) {
+  const loc = location(publicKey)
+  if (!loc) return
+  await authenticate(loc)
+  await run(['delete', 'item', loc.item])
+  new Session().openStore().delete(`${PREFIX}${publicKey}`)
+}
+
+module.exports = { available, configured, get, getSync, set, delete: remove }
