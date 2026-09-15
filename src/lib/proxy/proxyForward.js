@@ -31,23 +31,31 @@ function install (config, nativeFetch = globalThis.fetch) {
     if (active.length > 8 || active.some(item => item.publicKey !== active[0].publicKey)) {
       throw new Error('Proxy request requires at most eight credentials from the same keypair.')
     }
-    // Separate the original headers from Armor authentication. Radar independently
-    // validates this envelope and performs substitution after authorizing decryption.
-    const envelope = Buffer.from(JSON.stringify({
-      headers: upstreamHeaders,
-      credentials: active.map(({ placeholder, ciphertext }) => ({ placeholder, ciphertext }))
-    })).toString('base64')
-    if (envelope.length > 12 * 1024) throw new Error('Proxy header envelope exceeds 12 KiB.')
+    const body = ['GET', 'HEAD'].includes(request.method) ? null : Buffer.from(await request.arrayBuffer())
+    if (body && body.length > 256 * 1024) throw new Error('Proxy request body exceeds 256 KiB.')
+    const credentials = active.map(({ publicKey, placeholder, ciphertext }) => ({ publicKey, placeholder, ciphertext }))
+    const metadata = JSON.stringify({ headers: upstreamHeaders, credentials })
+    if (Buffer.byteLength(metadata) > 64 * 1024) throw new Error('Proxy request metadata exceeds 64 KiB.')
+    const payload = JSON.stringify({
+      version: 1,
+      request: {
+        url: url.href,
+        method: request.method,
+        headers: upstreamHeaders,
+        body: body === null ? null : { encoding: 'base64', data: body.toString('base64') }
+      },
+      credentials
+    })
+    if (Buffer.byteLength(payload) > 512 * 1024) throw new Error('Proxy request envelope exceeds 512 KiB.')
     const headers = new Headers({
       Authorization: `Bearer ${config.token}`,
-      'dotenvx-upstream-host': url.hostname,
-      'dotenvx-upstream-headers': envelope
+      'Content-Type': 'application/json'
     })
     if (config.devicePublicKey) headers.set('dotenvx-device-public-key', config.devicePublicKey)
-    return nativeFetch(`${config.hostname}/api/gateway/${active[0].publicKey}${url.pathname}${url.search}`, {
-      method: request.method,
+    return nativeFetch(`${config.hostname}/api/proxy`, {
+      method: 'POST',
       headers,
-      body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.arrayBuffer(),
+      body: payload,
       signal: request.signal,
       redirect: 'error'
     })
