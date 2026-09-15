@@ -258,6 +258,7 @@ const set = async function (key, value, options = {}) {
     noArmor,
     noKeychain,
     no1Password: options.no1Password,
+    noBitwarden: options.noBitwarden,
     noCreate,
     encrypt
   })

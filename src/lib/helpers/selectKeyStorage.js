@@ -1,5 +1,6 @@
 const prompts = require('./prompts')
 const onePasswordCustody = require('./onePasswordCustody')
+const bitwardenCustody = require('./bitwardenCustody')
 
 const secretStoreNames = {
   darwin: 'macOS Keychain',
@@ -17,6 +18,9 @@ async function selectKeyStorage (options = {}) {
   ]
   if (!options.no1Password && process.env.DOTENVX_NO_1PASSWORD !== 'true' && await onePasswordCustody.available()) {
     choices.push({ name: '□ Local Custody (1Password)', value: 'onepassword' })
+  }
+  if (!options.noBitwarden && process.env.DOTENVX_NO_BITWARDEN !== 'true' && await bitwardenCustody.available()) {
+    choices.push({ name: '□ Local Custody (Bitwarden)', value: 'bitwarden' })
   }
   if (!options.noArmor) choices.push({ name: '⛨ Managed Custody (Armor)', value: 'armored' })
   if (choices.length < 2) return choices.length ? choices[0].value : defaultStorage

@@ -132,6 +132,7 @@ program.command('set')
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
   .option('--no-1password', 'disable 1Password features')
+  .option('--no-bitwarden', 'disable Bitwarden features')
   .action(function (...args) {
     this.envs = envs
     return require('./actions/set').apply(this, args)
@@ -163,6 +164,7 @@ function configureEncryptCommand (command) {
     .option('--no-armor', 'disable Dotenvx Armor features')
     .option('--no-native', 'disable OS secret store features')
     .option('--no-1password', 'disable 1Password features')
+    .option('--no-bitwarden', 'disable Bitwarden features')
     .action(function (...args) {
       this.envs = envs
       return require('./actions/encrypt').apply(this, args)
@@ -201,6 +203,7 @@ program.command('keypair')
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
   .option('--no-1password', 'disable 1Password features')
+  .option('--no-bitwarden', 'disable Bitwarden features')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, colon)', 'json')

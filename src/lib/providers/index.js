@@ -3,6 +3,7 @@ const Session = require('./../../db/session')
 const armorProvider = require('./armor/index')
 const nativeProvider = require('./native/index')
 const onePasswordCustody = require('../helpers/onePasswordCustody')
+const bitwardenCustody = require('../helpers/bitwardenCustody')
 
 function syncArmorProvider (publicKeyHex) {
   const { createSyncFn } = require('@dotenvx/tooling')
@@ -54,6 +55,10 @@ function useOnePassword (options) {
   return options.no1Password !== true && process.env.DOTENVX_NO_1PASSWORD !== 'true' && onePasswordCustody.configured()
 }
 
+function useBitwarden (options) {
+  return options.noBitwarden !== true && process.env.DOTENVX_NO_BITWARDEN !== 'true' && bitwardenCustody.configured()
+}
+
 function useArmor (options, noArmor) {
   return options.noArmor !== true && options.armor !== false && !noArmor
 }
@@ -77,6 +82,7 @@ async function providers (options = {}) {
   }
 
   if (useOnePassword(options)) providerFns.push(onePasswordCustody.get)
+  if (useBitwarden(options)) providerFns.push(bitwardenCustody.get)
 
   if (options.noArmor !== true && options.armor !== false) {
     const sesh = new Session()
@@ -101,6 +107,7 @@ providers.sync = function providersSync (options = {}) {
   }
 
   if (useOnePassword(options)) providerFns.push(onePasswordCustody.getSync)
+  if (useBitwarden(options)) providerFns.push(bitwardenCustody.getSync)
 
   if (options.noArmor !== true && options.armor !== false) {
     const sesh = new Session()

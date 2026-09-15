@@ -19,6 +19,7 @@ const Session = require('../../db/session')
 const selectKeyStorage = require('../helpers/selectKeyStorage')
 const storeNativePrivateKey = require('../helpers/storeNativePrivateKey')
 const onePasswordCustody = require('../helpers/onePasswordCustody')
+const bitwardenCustody = require('../helpers/bitwardenCustody')
 
 async function encryptTransform (options = {}) {
   const envs = options.envs || []
@@ -86,7 +87,9 @@ async function encryptTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        if (storage === 'onepassword') {
+        if (storage === 'bitwarden') {
+          await bitwardenCustody.set(publicKey, privateKey)
+        } else if (storage === 'onepassword') {
           await onePasswordCustody.set(publicKey, privateKey)
         } else if (storage === 'native' && storeNativePrivateKey(publicKey, privateKey, fk)) {
           row.nativePrivateKeyAdded = true

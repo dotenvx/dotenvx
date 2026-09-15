@@ -13,15 +13,51 @@ function failure (message) {
   return error
 }
 
+function commandError (args, stderr) {
+  const step = args[0] === 'item'
+    ? 'create the key item'
+    : {
+        whoami: 'check the signed-in account',
+        signin: 'sign in',
+        read: 'read the private key'
+      }[args[0]] || 'check availability'
+  if (/account is not signed in/i.test(String(stderr || ''))) {
+    const error = failure(`1Password could not ${step}: account is not signed in. Sign in with op signin or enable the desktop app CLI integration`)
+    error.reason = 'NOT_SIGNED_IN'
+    return error
+  }
+  return failure(`1Password could not ${step}; check sign-in and vault permissions`)
+}
+
 function run (args, input, timeout = COMMAND_OPTIONS.timeout) {
   return new Promise((resolve, reject) => {
-    const child = execFile('op', args, { ...COMMAND_OPTIONS, timeout }, (error, stdout) => {
+    // On Unix, Node supplies a socket for stdin. op only detects piped JSON
+    // through a real pipe, so cat bridges the socket without writing a file.
+    const pipeInput = input !== undefined && process.platform !== 'win32'
+    const command = pipeInput ? '/bin/sh' : 'op'
+    const commandArgs = pipeInput ? ['-c', 'cat | op "$@"', 'dotenvx-op', ...args] : args
+    let timer
+    const child = execFile(command, commandArgs, {
+      ...COMMAND_OPTIONS,
+      timeout: pipeInput ? 0 : timeout,
+      ...(pipeInput ? { detached: true } : {})
+    }, (error, stdout, stderr) => {
+      clearTimeout(timer)
       // Subprocess errors may include secrets from stdin or stdout.
-      if (error) reject(failure('1Password CLI operation failed; check sign-in and vault permissions'))
+      if (error) reject(commandError(args, stderr))
       else resolve(stdout)
     })
-    child.stdin.on('error', () => {})
-    child.stdin.end(input)
+    if (pipeInput) {
+      timer = setTimeout(() => {
+        // Kill the whole pipeline, including op, if authentication times out.
+        try { process.kill(-child.pid, 'SIGKILL') } catch {}
+      }, timeout)
+      timer.unref()
+    }
+    if (child.stdin) {
+      child.stdin.on('error', () => {})
+      child.stdin.end(input)
+    }
   })
 }
 
@@ -54,7 +90,7 @@ function location (publicKey) {
   const value = store && store.get(`${PREFIX}${publicKey}`)
   if (!value) return null
   const [account, reference] = String(value).split('|')
-  if (!ID.test(account) || !/^op:\/\/[a-z0-9]{26}\/[a-z0-9]{26}\/private_key$/i.test(reference || '')) {
+  if (!ID.test(account) || !/^op:\/\/[a-z0-9]{26}\/[a-z0-9]{26}\/(?:private_key|password)$/i.test(reference || '')) {
     throw failure('invalid 1Password private-key reference in dotenvx settings')
   }
   return { account, reference }
@@ -89,7 +125,16 @@ function getSync (publicKey) {
 }
 
 async function set (publicKey, privateKey) {
-  const identity = parseResponse(await run(['whoami', '--format=json']))
+  let identity
+  try {
+    identity = parseResponse(await run(['whoami', '--format=json']))
+  } catch (error) {
+    if (error.reason !== 'NOT_SIGNED_IN' || process.env.OP_SERVICE_ACCOUNT_TOKEN) throw error
+    // whoami checks authentication but does not initiate the desktop app flow.
+    // Discard signin output; never print or evaluate a returned session token.
+    await run(['signin'])
+    identity = parseResponse(await run(['whoami', '--format=json']))
+  }
   const account = identity.account_uuid
   if (!ID.test(account || '')) throw failure('could not identify the signed-in 1Password account')
   const item = parseResponse(await run(['item', 'create', '-', '--format=json', `--account=${account}`], JSON.stringify({
@@ -97,14 +142,14 @@ async function set (publicKey, privateKey) {
     category: 'PASSWORD',
     tags: ['dotenvx'],
     fields: [
-      { id: 'private_key', label: 'private_key', type: 'CONCEALED', value: privateKey },
+      { id: 'password', label: 'private_key', type: 'CONCEALED', purpose: 'PASSWORD', value: privateKey },
       { id: 'public_key', label: 'public_key', type: 'STRING', value: publicKey }
     ]
   })))
   if (!ID.test(item.id || '')) throw failure('1Password did not return a saved item ID')
   const vault = item.vault && item.vault.id
   if (!ID.test(vault || '')) throw failure('1Password did not return the saved item vault ID')
-  const reference = `op://${vault}/${item.id}/private_key`
+  const reference = `op://${vault}/${item.id}/password`
   const saved = await run(['read', reference, '--no-newline', `--account=${account}`])
   if (saved.trim() !== privateKey) throw failure('could not verify private key in 1Password')
   // Only a nonsecret locator is persisted locally, never the private key.
