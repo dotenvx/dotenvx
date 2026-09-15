@@ -2,9 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.26.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.26.1...main)
 
-## [2.25.0](https://github.com/dotenvx/dotenvx/compare/v2.25.0...v2.26.0) (2026-09-15)
+## [2.26.1](https://github.com/dotenvx/dotenvx/compare/v2.26.0...v2.26.1) (2026-09-15)
+
+### Changed
+
+* Add `dotenvx 1password up|down|push|pull` and `dotenvx bitwarden up|down|push|pull` ([#969](https://github.com/dotenvx/dotenvx/pull/969))
+
+## [2.26.0](https://github.com/dotenvx/dotenvx/compare/v2.25.0...v2.26.0) (2026-09-15)
 
 ### Added
 
