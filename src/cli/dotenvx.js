@@ -346,13 +346,18 @@ program.command('help [command]')
 
 // security sections (hidden commands advertised here)
 program.addHelpText('after', ' ')
-program.addHelpText('after', 'Better Security:')
+program.addHelpText('after', 'Local Custody:')
 program.addHelpText('after', '  lock                     ⊡ lock private keys with a local passphrase')
-program.addHelpText('after', '  native                   ⌥ move private keys into your OS secret store')
+program.addHelpText('after', '  native                   ⌥ move private keys in/out of your OS secret store')
+program.addHelpText('after', '  1password                □ move private keys in/out of 1Password')
+program.addHelpText('after', '  bitwarden                □ move private keys in/out of Bitwarden')
 program.addHelpText('after', ' ')
-program.addHelpText('after', 'For Security Teams:')
-program.addHelpText('after', '  armor                    ⛨ move private keys into Dotenvx Armor [www.dotenvx.com/armor]')
+program.addHelpText('after', 'Managed Custody:')
+program.addHelpText('after', '  armor                    ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]')
 program.addHelpText('after', '  curl                     ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]')
+
+require('./commands/custody')(program.command('1password', { hidden: true }), '1Password', '../../lib/helpers/onePasswordCustody')
+require('./commands/custody')(program.command('bitwarden', { hidden: true }), 'Bitwarden', '../../lib/helpers/bitwardenCustody')
 
 // dotenvx native
 require('./commands/native')(program.command('native', { hidden: true }))

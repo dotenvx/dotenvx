@@ -15,7 +15,7 @@ function failure (message) {
 
 function commandError (args, stderr) {
   const step = args[0] === 'item'
-    ? 'create the key item'
+    ? (args[1] === 'delete' ? 'delete the key item' : 'create the key item')
     : {
         whoami: 'check the signed-in account',
         signin: 'sign in',
@@ -156,4 +156,12 @@ async function set (publicKey, privateKey) {
   new Session().createStore().set(`${PREFIX}${publicKey}`, `${account}|${reference}`)
 }
 
-module.exports = { available, configured, get, getSync, set }
+async function remove (publicKey) {
+  const loc = location(publicKey)
+  if (!loc) return
+  const [vault, item] = loc.reference.slice('op://'.length).split('/')
+  await run(['item', 'delete', item, `--vault=${vault}`, `--account=${loc.account}`])
+  new Session().openStore().delete(`${PREFIX}${publicKey}`)
+}
+
+module.exports = { available, configured, get, getSync, set, delete: remove }

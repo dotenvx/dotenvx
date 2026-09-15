@@ -27,12 +27,12 @@ t.test('#--version', ct => {
 t.test('#--help shows armor advanced command', ct => {
   const output = execShell(`${dotenvx} --help`)
 
-  ct.match(output, /Better Security:/, 'better security section is shown')
-  ct.match(output, /For Security Teams:/, 'for security teams section is shown')
+  ct.match(output, /Local Custody:/, 'local custody section is shown')
+  ct.match(output, /Managed Custody:/, 'managed custody section is shown')
   ct.notMatch(output, /Advanced:/, 'advanced section is not shown')
   ct.notMatch(output, /Professional Security:/, 'professional security section is not shown')
-  ct.match(output, /Better Security:[\s\S]*lock\s+⊡ lock private keys with a local passphrase[\s\S]*native\s+⌥ move private keys into your OS secret store/, 'better security commands include lock and native')
-  ct.match(output, /For Security Teams:[\s\S]*armor\s+⛨ move private keys into Dotenvx Armor \[www\.dotenvx\.com\/armor\][\s\S]*curl\s+⛨ call authenticated api Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'for security teams commands include armor and curl')
+  ct.match(output, /Local Custody:[\s\S]*lock\s+⊡ lock private keys with a local passphrase[\s\S]*native\s+⌥ move private keys in\/out of your OS secret store/, 'local custody commands include lock and native')
+  ct.match(output, /Managed Custody:[\s\S]*armor\s+⛨ move private keys in\/out of Dotenvx Armor \[www\.dotenvx\.com\/armor\][\s\S]*curl\s+⛨ call authenticated api Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'managed custody commands include armor and curl')
   ct.notMatch(output, /\n\s+login\s+log in to move keys off-device/, 'root help does not show login')
   ct.notMatch(output, /\n\s+logout\s+log out of connected security features/, 'root help does not show logout')
   ct.notMatch(output, /ext\s+⊕ extensions/, 'ext command is not shown')
