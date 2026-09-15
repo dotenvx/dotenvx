@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.24.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.25.0...main)
+
+## [2.25.0](https://github.com/dotenvx/dotenvx/compare/v2.24.1...v2.25.0) (2026-09-14)
+
+### Changed
+
+* Store private key to os secret store rather than `.env.keys` by default ([#967](https://github.com/dotenvx/dotenvx/pull/967))
 
 ## [2.24.1](https://github.com/dotenvx/dotenvx/compare/v2.24.0...v2.24.1) (2026-09-11)
 
