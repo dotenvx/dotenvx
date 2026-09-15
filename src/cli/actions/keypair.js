@@ -22,6 +22,8 @@ async function keypair (key) {
       envKeysFile: options.envKeysFile,
       armor: options.armor,
       noKeychain: options.native === false || options.noNative === true,
+      noBitwarden: options.bitwarden === false || options.noBitwarden === true,
+      no1Password: options['1password'] === false || options.no1Password === true,
       token: options.token,
       command: process.argv.slice(2),
       onStatus: (text) => {

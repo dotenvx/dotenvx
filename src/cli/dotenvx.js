@@ -131,6 +131,8 @@ program.command('set')
   .option('--no-create', 'do not create .env file(s) when missing')
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
+  .option('--no-1password', 'disable 1Password features')
+  .option('--no-bitwarden', 'disable Bitwarden features')
   .action(function (...args) {
     this.envs = envs
     return require('./actions/set').apply(this, args)
@@ -161,6 +163,8 @@ function configureEncryptCommand (command) {
     .option('--no-create', 'do not create .env file(s) when missing')
     .option('--no-armor', 'disable Dotenvx Armor features')
     .option('--no-native', 'disable OS secret store features')
+    .option('--no-1password', 'disable 1Password features')
+    .option('--no-bitwarden', 'disable Bitwarden features')
     .action(function (...args) {
       this.envs = envs
       return require('./actions/encrypt').apply(this, args)
@@ -198,6 +202,8 @@ program.command('keypair')
   .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
+  .option('--no-1password', 'disable 1Password features')
+  .option('--no-bitwarden', 'disable Bitwarden features')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, colon)', 'json')

@@ -293,6 +293,12 @@ export interface SetOptions {
    */
   noNative?: boolean;
 
+  /** Disable 1Password custody and secret-reference resolution. */
+  no1Password?: boolean;
+
+  /** Disable Bitwarden custody and secret-reference resolution. */
+  noBitwarden?: boolean;
+
 }
 
 export type SetProcessedEnv = {
