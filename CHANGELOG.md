@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.25.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.26.0...main)
+
+## [2.25.0](https://github.com/dotenvx/dotenvx/compare/v2.25.0...v2.26.0) (2026-09-15)
+
+### Added
+
+* Add support for storing private key to bitwarden or 1password ([#968](https://github.com/dotenvx/dotenvx/pull/968))
 
 ## [2.25.0](https://github.com/dotenvx/dotenvx/compare/v2.24.1...v2.25.0) (2026-09-14)
 
