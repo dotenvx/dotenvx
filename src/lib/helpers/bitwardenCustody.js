@@ -1,6 +1,10 @@
 const { execFile, execFileSync } = require('child_process')
 const { derive } = require('@dotenvx/primitives')
 const Session = require('../../db/session')
+const prompts = require('./prompts')
+const createSpinner = require('./createSpinner')
+let unlockedSession
+
 const armoredKeyDisplay = require('./armoredKeyDisplay')
 
 const PREFIX = 'DOTENVX_BITWARDEN_'
@@ -17,9 +21,9 @@ function commandFailure () {
   return failure('Bitwarden CLI operation failed; check sign-in and unlock your vault with BW_SESSION')
 }
 
-function run (args, input, timeout = COMMAND_OPTIONS.timeout) {
+function run (args, input, timeout = COMMAND_OPTIONS.timeout, env = commandEnv()) {
   return new Promise((resolve, reject) => {
-    const child = execFile('bw', [...args, '--nointeraction'], { ...COMMAND_OPTIONS, timeout }, (error, stdout) => {
+    const child = execFile('bw', [...args, '--nointeraction'], { ...COMMAND_OPTIONS, timeout, env }, (error, stdout) => {
       if (error) reject(commandFailure())
       else resolve(stdout)
     })
@@ -57,8 +61,44 @@ function location (publicKey) {
   return loc
 }
 
+function commandEnv () {
+  return { ...process.env, ...(unlockedSession ? { BW_SESSION: unlockedSession } : {}) }
+}
+
+async function authenticate (loc) {
+  let status = parse(await run(['status']))
+  if (loc && status && status.userId && (status.userId !== loc.userId || (status.serverUrl || '') !== loc.serverUrl)) {
+    throw failure('Bitwarden account or server does not match the stored private-key reference')
+  }
+  if (status && status.status === 'unlocked') return checkIdentity(status, loc)
+  unlockedSession = undefined
+  if (status && status.status === 'unauthenticated') throw failure('Sign in to Bitwarden once with bw login, then retry; dotenvx will prompt to unlock your vault')
+  if (!status || status.status !== 'locked') throw commandFailure()
+  if (!process.stdin.isTTY || !process.stderr.isTTY || process.env.CI) {
+    throw failure('Bitwarden is locked; set an unlocked BW_SESSION for noninteractive use')
+  }
+  let password
+  createSpinner.pause()
+  try {
+    password = await prompts.password({ message: 'Bitwarden master password', prefix: '◇', separator: '=' }, { input: process.stdin, output: process.stderr })
+  } finally {
+    createSpinner.resume()
+  }
+  const passwordEnv = 'DOTENVX_BITWARDEN_PASSWORD'
+  const session = (await run(['unlock', '--passwordenv', passwordEnv, '--raw'], undefined, COMMAND_OPTIONS.timeout, { ...process.env, [passwordEnv]: password })).trim()
+  if (!session) throw commandFailure()
+  unlockedSession = session
+  try {
+    status = parse(await run(['status']))
+    return checkIdentity(status, loc)
+  } catch (error) {
+    unlockedSession = undefined
+    throw error
+  }
+}
+
 function requireSession () {
-  if (!process.env.BW_SESSION) throw failure('Bitwarden requires an unlocked BW_SESSION; run bw login, then bw unlock --raw and set BW_SESSION')
+  if (!unlockedSession && !process.env.BW_SESSION) throw failure('Bitwarden requires an unlocked BW_SESSION; run bw login, then bw unlock --raw and set BW_SESSION')
 }
 
 function checkIdentity (status, loc) {
@@ -77,8 +117,7 @@ function verified (publicKey, privateKey) {
 async function get (publicKey) {
   const loc = location(publicKey)
   if (!loc) return {}
-  requireSession()
-  checkIdentity(parse(await run(['status'])), loc)
+  await authenticate(loc)
   return verified(publicKey, (await run(['get', 'password', loc.item])).trim())
 }
 
@@ -87,7 +126,7 @@ function getSync (publicKey) {
   if (!loc) return {}
   requireSession()
   function read (args) {
-    try { return execFileSync('bw', [...args, '--nointeraction'], { ...COMMAND_OPTIONS, stdio: ['ignore', 'pipe', 'pipe'] }) } catch { throw commandFailure() }
+    try { return execFileSync('bw', [...args, '--nointeraction'], { ...COMMAND_OPTIONS, env: commandEnv(), stdio: ['ignore', 'pipe', 'pipe'] }) } catch { throw commandFailure() }
   }
   checkIdentity(parse(read(['status'])), loc)
   return verified(publicKey, read(['get', 'password', loc.item]).trim())
@@ -99,8 +138,7 @@ async function set (publicKey, privateKey) {
     await get(publicKey)
     return
   }
-  requireSession()
-  const status = checkIdentity(parse(await run(['status'])))
+  const status = await authenticate()
   const template = {
     organizationId: null,
     collectionIds: [],
