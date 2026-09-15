@@ -16,27 +16,15 @@ const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 const Session = require('../../db/session')
 
-async function selectKeyStorage () {
-  const selected = await prompts.select({
-    message: 'Choose private key storage',
-    choices: [
-      { name: '◫ File (.env.keys)', value: 'file' },
-      { name: '⛨ Armor (armor.dotenvx.com)', value: 'armored' }
-    ]
-  }, {
-    input: process.stdin,
-    output: process.stderr
-  })
-
-  return selected
-}
+const selectKeyStorage = require('../helpers/selectKeyStorage')
+const storeNativePrivateKey = require('../helpers/storeNativePrivateKey')
 
 async function encryptTransform (options = {}) {
   const envs = options.envs || []
   const ik = options.ik
   const ek = options.ek
   const fk = options.fk || '.env.keys'
-  let noArmor = options.noArmor // key storage selector below
+  let storage
   const noCreate = options.noCreate
 
   const processedEnvs = []
@@ -85,9 +73,7 @@ async function encryptTransform (options = {}) {
       let publicKey = publickeys(row.envSrc)[0]
 
       if (!publicKey) {
-        if (!noCreate && !noArmor && selectKeyStorage) {
-          noArmor = await selectKeyStorage() !== 'armored'
-        }
+        storage = storage || await selectKeyStorage(options)
 
         // upsert public key to .env file
         const kp = keypair() // local
@@ -99,7 +85,9 @@ async function encryptTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        if (noArmor) {
+        if (storage === 'native' && storeNativePrivateKey(publicKey, privateKey, fk)) {
+          row.nativePrivateKeyAdded = true
+        } else if (storage !== 'armored') {
           const mutated = mutateKeysSrc({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
           keysSrc = mutated.keysSrc
         } else {

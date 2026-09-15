@@ -1,4 +1,5 @@
 const { execFileSync } = require('child_process')
+const nativeStoreError = require('./nativeStoreError')
 
 const POWERSHELL_BIN = 'powershell.exe'
 const SERVICE = 'dotenvx'
@@ -128,6 +129,8 @@ function target (publicKey) {
 function run (payload) {
   return execFileSync(POWERSHELL_BIN, ['-NoProfile', '-NonInteractive', '-EncodedCommand', encodedScript], {
     input: JSON.stringify(payload),
+    timeout: 10000,
+    killSignal: 'SIGKILL',
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
     windowsHide: true
@@ -137,16 +140,16 @@ function run (payload) {
 function get (publicKey) {
   try {
     return run({ action: 'read', target: target(publicKey) }).trim() || null
-  } catch {
-    throw new Error('failed to read private key from Windows Credential Manager')
+  } catch (error) {
+    throw nativeStoreError('failed to read private key from Windows Credential Manager', error)
   }
 }
 
 function set (publicKey, privateKey) {
   try {
     run({ action: 'write', target: target(publicKey), username: publicKey, secret: privateKey })
-  } catch {
-    throw new Error('failed to save private key to Windows Credential Manager')
+  } catch (error) {
+    throw nativeStoreError('failed to save private key to Windows Credential Manager', error)
   }
 }
 
@@ -156,8 +159,8 @@ module.exports = {
   delete (publicKey) {
     try {
       run({ action: 'delete', target: target(publicKey) })
-    } catch {
-      throw new Error('failed to delete private key from Windows Credential Manager')
+    } catch (error) {
+      throw nativeStoreError('failed to delete private key from Windows Credential Manager', error)
     }
   }
 }

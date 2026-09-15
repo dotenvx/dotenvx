@@ -54,6 +54,9 @@ class KeychainUp {
     }
 
     nativeProvider.set(publicKey, privateKey, label)
+    if (nativeProvider.get(publicKey) !== privateKey) {
+      throw new Error('could not verify private key in OS secret store; .env.keys unchanged')
+    }
     removeEnvKey(privateKeyName, envKeysFile)
 
     return {

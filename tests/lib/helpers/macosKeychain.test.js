@@ -16,6 +16,8 @@ t.test('reads a generic password through security', t => {
 
   t.equal(keychain.get('public-key'), 'private-key')
   t.same(execFileSync.firstCall.args, ['/usr/bin/security', ['find-generic-password', '-s', 'dotenvx', '-a', 'public-key', '-w'], {
+    timeout: 10000,
+    killSignal: 'SIGKILL',
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'ignore']
   }])
@@ -30,7 +32,7 @@ t.test('writes a generic password through security', t => {
 
   keychain.set('public-key', 'private-key', 'dotenvx (PUB LIC)')
 
-  t.same(execFileSync.firstCall.args, ['/usr/bin/security', ['add-generic-password', '-U', '-s', 'dotenvx', '-a', 'public-key', '-l', 'dotenvx (PUB LIC)', '-w', 'private-key'], { stdio: 'ignore' }])
+  t.same(execFileSync.firstCall.args, ['/usr/bin/security', ['add-generic-password', '-U', '-s', 'dotenvx', '-a', 'public-key', '-l', 'dotenvx (PUB LIC)', '-w', 'private-key'], { timeout: 10000, killSignal: 'SIGKILL', stdio: 'ignore' }])
   t.end()
 })
 
@@ -42,6 +44,6 @@ t.test('deletes a generic password through security', t => {
 
   keychain.delete('public-key')
 
-  t.same(execFileSync.firstCall.args, ['/usr/bin/security', ['delete-generic-password', '-s', 'dotenvx', '-a', 'public-key'], { stdio: 'ignore' }])
+  t.same(execFileSync.firstCall.args, ['/usr/bin/security', ['delete-generic-password', '-s', 'dotenvx', '-a', 'public-key'], { timeout: 10000, killSignal: 'SIGKILL', stdio: 'ignore' }])
   t.end()
 })
