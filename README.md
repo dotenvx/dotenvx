@@ -1599,7 +1599,7 @@ end
 
 Both `dotenvx run -f .env.production -- node index.js` and `dotenvx validate -f .env.production` use the production rules. Block declarations inherit top-level options and override only the options they specify. A block's `encrypted` directive applies to all inherited and newly declared variables; a per-variable `encrypted:` option inside that block overrides it.
 
-Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_PATH` use their resolved file paths.
+Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_FILE` use their resolved file paths.
 
 When no file block matches, top-level rules apply. When one or more blocks match, each matching block's inherited rules must hold for the final resolved environment. Shell values, fallback files, and `--overload` cannot bypass them. A selected missing file still activates its block. Multiple matching blocks cannot cancel each other's restrictions; conflicting proxy domains are rejected. Blocks cannot be nested, and duplicate declarations within one scope or duplicate file blocks are errors.
 
@@ -3249,7 +3249,7 @@ inject env at runtime [dotenvx run -- yourcommand]
 
 Options:
   -e, --env <strings...>            environment variable(s) set as string (example: "HELLO=World") (default: [])
-  -f, --env-file <paths...>         path(s) to your env file(s) (default: [])
+  -f, --file <paths...>             path(s) to your env file(s) (default: [])
   -fv, --env-vault-file <paths...>  path(s) to your .env.vault file(s) (default: [])
   -o, --overload                    override existing env variables
   --convention <name>               load a .env convention (available conventions: ['nextjs'])
@@ -3747,8 +3747,9 @@ There are global settings available that can be configured as environment variab
 ```ini
 # config
 DOTENV_CONVENTION= # set to a default convention like 'nextjs' or 'flow'
-DOTENV_PATH= # path to your env file; comma-separate multiple paths
-DOTENV_F= # synonym for DOTENV_PATH
+DOTENV_FILE= # path to your env file; comma-separate multiple paths
+DOTENV_PATH= # synonym for DOTENV_FILE
+DOTENV_F= # synonym for DOTENV_FILE
 DOTENV_IGNORE= # MISSING_ENV_FILE,OTHER
 DOTENV_QUIET= # set to "true" to default to --quiet
 
@@ -3872,13 +3873,13 @@ Breaking this encryption would require brute-forcing both AES-256 and elliptic c
 
 You are using Node 20 or greater and it adds a differing implementation of `--env-file` flag support. Rather than warn on a missing `.env` file (like dotenv has historically done), it raises an error: `node: .env: not found`.
 
-This fix is easy. Replace `--env-file` with `-f`.
+This fix is easy. Replace `--env-file` with `--file` (or `-f`).
 
 ```bash
-# from this:
+# from this (legacy spelling):
 ./node_modules/.bin/dotenvx run --env-file .env -- yourcommand
 # to this:
-./node_modules/.bin/dotenvx run -f .env -- yourcommand
+./node_modules/.bin/dotenvx run --file .env -- yourcommand
 ```
 
 [more context](https://github.com/dotenvx/dotenvx/issues/131)

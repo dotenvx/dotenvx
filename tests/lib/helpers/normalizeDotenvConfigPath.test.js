@@ -45,3 +45,15 @@ t.test('#normalizeDotenvConfigPath', t => {
 
   t.end()
 })
+
+t.test('DOTENV_FILE takes precedence over older aliases and supports multiple files', t => {
+  t.same(normalizeDotenvConfigPath([], {
+    DOTENV_FILE: '.env.production, .env',
+    DOTENV_PATH: '.env.old',
+    DOTENV_F: '.env.older'
+  }), [{ type: 'envFile', value: '.env.production' }, { type: 'envFile', value: '.env' }])
+  t.same(normalizeDotenvConfigPath([{ type: 'envFile', value: '.env.explicit' }], {
+    DOTENV_FILE: '.env.ignored'
+  }), [{ type: 'envFile', value: '.env.explicit' }])
+  t.end()
+})

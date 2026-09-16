@@ -25,7 +25,7 @@ function inferCommandArgsFromProcessArgv (argv) {
   if (separatorIndex !== -1) return args.slice(separatorIndex + 1)
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '-f' || args[i] === '--env-file') {
+    if (args[i] === '-f' || args[i] === '--file' || args[i] === '--env-file') {
       i++
       continue
     }
