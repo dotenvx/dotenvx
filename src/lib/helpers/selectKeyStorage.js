@@ -13,22 +13,29 @@ async function selectKeyStorage (options = {}) {
   const defaultStorage = useNative ? 'native' : 'file'
   if (process.env.CI || options.noCreate || !process.stdin.isTTY || !process.stderr.isTTY) return defaultStorage
 
-  const choices = [
-    ...(useNative ? [{ name: `□ Local Custody (Native ${secretStoreNames[process.platform]})`, value: 'native' }] : [])
+  const use1Password = !options.no1Password && process.env.DOTENVX_NO_1PASSWORD !== 'true' && await onePasswordCustody.available()
+  const useBitwarden = !options.noBitwarden && process.env.DOTENVX_NO_BITWARDEN !== 'true' && await bitwardenCustody.available()
+  const localChoices = [
+    { name: `OS${secretStoreNames[process.platform] ? ` (${secretStoreNames[process.platform]})` : ''}`, value: 'native', disabled: !useNative },
+    { name: '1Password', value: 'onepassword', disabled: !use1Password },
+    { name: 'Bitwarden', value: 'bitwarden', disabled: !useBitwarden }
   ]
-  if (!options.no1Password && process.env.DOTENVX_NO_1PASSWORD !== 'true' && await onePasswordCustody.available()) {
-    choices.push({ name: '□ Local Custody (1Password)', value: 'onepassword' })
-  }
-  if (!options.noBitwarden && process.env.DOTENVX_NO_BITWARDEN !== 'true' && await bitwardenCustody.available()) {
-    choices.push({ name: '□ Local Custody (Bitwarden)', value: 'bitwarden' })
-  }
-  if (!options.noArmor) choices.push({ name: '⛨ Managed Custody (Armor)', value: 'armored' })
-  if (choices.length < 2) return choices.length ? choices[0].value : defaultStorage
+  const useLocal = localChoices.some(choice => !choice.disabled)
+  if (!useLocal && options.noArmor) return defaultStorage
 
-  return prompts.select({
+  const choices = [{ name: '⛉ Local Custody', value: 'local', disabled: !useLocal }]
+  if (!options.noArmor) choices.push({ name: '⛊ Managed Custody', value: 'managed' })
+
+  const context = { input: process.stdin, output: process.stderr }
+  const custody = await prompts.select({
     message: 'Choose private key storage',
     choices
-  }, { input: process.stdin, output: process.stderr })
+  }, context)
+
+  return prompts.select({
+    message: custody === 'local' ? 'Choose local custody' : 'Choose managed custody',
+    choices: custody === 'local' ? localChoices : [{ name: '⛨ Armor', value: 'armored' }]
+  }, context)
 }
 
 module.exports = selectKeyStorage
