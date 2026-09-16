@@ -1,4 +1,5 @@
 const path = require('node:path')
+const fs = require('node:fs')
 const startProxy = require('./proxyServer')
 
 module.exports = async function configureProxy (commandArgs, env, credentials = [], session, explicitToken) {
@@ -12,7 +13,13 @@ module.exports = async function configureProxy (commandArgs, env, credentials = 
     throw new Error('Credential proxy requires an HTTPS Armor hostname.')
   }
   const server = await startProxy({ credentials: active, token, hostname: url.href.replace(/\/$/, ''), devicePublicKey: session.devicePublicKey(), env })
-  const preload = require.resolve('./proxyPreload')
+  const preload = path.join(path.dirname(server.caPath), 'proxy-preload.cjs')
+  try {
+    fs.writeFileSync(preload, require('./proxyPreloadSource'), { mode: 0o600 })
+  } catch (error) {
+    await server.close()
+    throw error
+  }
   const nodeOptions = `${env.NODE_OPTIONS || ''} --require ${JSON.stringify(preload)}`.trim()
   const args = /\.(mjs|cjs|js)$/.test(commandArgs[0])
     ? [process.pkg ? 'node' : process.execPath, path.resolve(commandArgs[0]), ...commandArgs.slice(1)]

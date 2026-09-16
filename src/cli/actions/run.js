@@ -196,20 +196,19 @@ async function run () {
       logger.verbose(`${key} proxied via Armor proxy`)
     }
 
-    let msg = gatedKeys.size > 0
-      ? `injected (${injectedKeys.size}), ⧈ proxied (${gatedKeys.size})`
-      : `injected env (${injectedKeys.size})`
+    let sources = ''
     const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
     if (readableFilepaths.length > 0 && envStringCount > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}, and --env flag${envStringCount > 1 ? 's' : ''}`
+      sources = ` from ${readableFilepaths.join(', ')}, and --env flag${envStringCount > 1 ? 's' : ''}`
     } else if (readableFilepaths.length > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}`
+      sources = ` from ${readableFilepaths.join(', ')}`
     } else if (envStringCount > 0) {
-      msg += ` from --env flag${envStringCount > 1 ? 's' : ''}`
+      sources = ` from --env flag${envStringCount > 1 ? 's' : ''}`
     }
 
     if (spinner) spinner.stop()
-    logger.success(`⟐ ${msg}`)
+    if (gatedKeys.size > 0) logger.success(`⧈ proxied (${gatedKeys.size})${sources}`)
+    logger.success(`⟐ injected env (${injectedKeys.size})${sources}`)
   } catch (error) {
     if (closeProxy) await closeProxy()
     if (spinner) spinner.stop()
