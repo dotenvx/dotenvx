@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.26.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.27.0...main)
+
+## [2.27.0](https://github.com/dotenvx/dotenvx/compare/v2.26.1...v2.27.0) (2026-09-16)
+
+### Removed
+
+* BREAKING: Removed `run --validate` flag and `validate` command against .env.example file. To be replaced soon with a modern validation scheme.
 
 ## [2.26.1](https://github.com/dotenvx/dotenvx/compare/v2.26.0...v2.26.1) (2026-09-15)
 

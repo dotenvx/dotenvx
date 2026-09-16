@@ -73,7 +73,7 @@ const config = function (options = {}) {
 
   // dotenvx-armor related
   const noArmor = resolveNoArmor(options)
-  const noKeychain = resolveNoKeychain(options)
+  const noNative = resolveNoNative(options)
 
   try {
     let envs = normalizeDotenvConfigPath(buildConfigEnvs(options))
@@ -89,7 +89,7 @@ const config = function (options = {}) {
       processEnv,
       envKeysFile,
       noArmor,
-      noKeychain,
+      noNative,
       no1Password: options.no1Password,
       noBitwarden: options.noBitwarden,
       noSpinner: options.noSpinner,
@@ -243,7 +243,7 @@ const set = async function (key, value, options = {}) {
   const envKeysFilepath = options.envKeysFile
   const noCreate = options.create === false
   const noArmor = resolveNoArmor(options)
-  const noKeychain = resolveNoKeychain(options)
+  const noNative = resolveNoNative(options)
 
   const {
     keysSrc,
@@ -256,7 +256,7 @@ const set = async function (key, value, options = {}) {
     value,
     fk: envKeysFilepath,
     noArmor,
-    noKeychain,
+    noNative,
     no1Password: options.no1Password,
     noBitwarden: options.noBitwarden,
     noCreate,
@@ -327,7 +327,7 @@ const get = async function (key, options = {}) {
 
   const envs = buildEnvs(options)
   const noArmor = resolveNoArmor(options)
-  const noKeychain = resolveNoKeychain(options)
+  const noNative = resolveNoNative(options)
 
   // ignore
   const ignore = options.ignore || []
@@ -339,7 +339,7 @@ const get = async function (key, options = {}) {
     all: options.all,
     envKeysFile: options.envKeysFile,
     noArmor,
-    noKeychain,
+    noNative,
     no1Password: options.no1Password,
     noBitwarden: options.noBitwarden
   })
@@ -410,7 +410,7 @@ function resolveNoArmor (options = {}) {
   return options.noArmor === true || (!options.token && sesh.noArmorSync())
 }
 
-function resolveNoKeychain (options = {}) {
+function resolveNoNative (options = {}) {
   return options.noNative === true || options.native === false
 }
 

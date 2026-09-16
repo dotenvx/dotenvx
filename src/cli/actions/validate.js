@@ -1,52 +1,34 @@
 const { logger } = require('./../../shared/logger')
 
-const envsResolver = require('./../../lib/resolvers/envs')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
+const prepareValidatedEnv = require('../../lib/services/validate')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
-const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
-const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
-const validateEnvExample = require('../../lib/helpers/validateEnvExample')
-
-const { determine } = require('./../../lib/helpers/envResolution')
 
 async function validate () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'validating' })
   const ignore = options.ignore || []
-  const validateEnv = { ...process.env }
   let errorCount = 0
 
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    let envs = buildCommandEnvs(this.envs, options.convention)
-    envs = determine(envs, process.env)
-
-    const sesh = new Session()
-    const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
-    const noKeychain = options.native === false || options.noNative === true
-
-    const { processedEnvs } = await envsResolver({
-      envs,
-      overload: options.overload,
-      processEnv: validateEnv,
-      envKeysFile: resolveEnvKeysFile(options.envKeysFile),
-      noArmor,
-      noKeychain,
-      no1Password: options['1password'] === false || options.no1Password === true,
-      noBitwarden: options.bitwarden === false || options.noBitwarden === true,
-      token: options.token,
+    const { processedEnvs, readableFilepaths, proxyError, validationError } = await prepareValidatedEnv({
+      envs: this.envs,
+      options,
       onStatus: (text) => {
-        if (spinner && text) {
-          spinner.text = text
-        }
+        if (spinner && text) spinner.text = text
       }
     })
+
+    const sources = [...readableFilepaths]
+    if (processedEnvs.some(env => env.type === 'env' && env.parsed)) sources.push('--env')
+    if (sources.length === 0) sources.push('shell environment')
+    const sourceSummary = `(${sources.join(', ')})`
 
     for (const processedEnv of processedEnvs) {
       for (const error of processedEnv.errors || []) {
@@ -55,18 +37,24 @@ async function validate () {
           continue
         }
 
-        errorCount += 1
+        if (error.code !== 'MISSING_ENV_FILE' || options.strict) errorCount += 1
+        if (error.code === 'MISSING_ENV_FILE' && options.convention && !options.strict) continue
         logger.error(error.messageWithHelp || error.message)
       }
     }
 
-    const validationError = validateEnvExample(validateEnv)
+    if (proxyError) {
+      proxyError.message += ` ${sourceSummary}`
+      throw proxyError
+    }
+
     if (validationError) {
+      const message = `${validationError.message} ${sourceSummary}`
       if (ignore.includes(validationError.code)) {
-        logger.verbose(`ignored: ${validationError.message}`)
+        logger.verbose(`ignored: ${message}`)
       } else {
         errorCount += 1
-        logger.error(validationError.messageWithHelp || validationError.message)
+        logger.error(message)
       }
     }
 
@@ -75,7 +63,7 @@ async function validate () {
     if (errorCount > 0) {
       process.exit(1)
     } else {
-      logger.success('▣ validated')
+      logger.success(`▣ valid ${sourceSummary}`)
     }
   } catch (error) {
     if (spinner) spinner.stop()

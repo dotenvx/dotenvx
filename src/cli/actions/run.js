@@ -2,24 +2,18 @@ const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
-const envsResolver = require('./../../lib/resolvers/envs')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
+const prepareValidatedEnv = require('../../lib/services/validate')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
-const normalizeDotenvConfigPath = require('../../lib/helpers/normalizeDotenvConfigPath')
-const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
-const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
 const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
-const validateEnvExample = require('../../lib/helpers/validateEnvExample')
-
-const { determine } = require('./../../lib/helpers/envResolution')
+const configureProxy = require('../../lib/proxy/configureProxy')
 
 function inferCommandArgsFromProcessArgv (argv) {
   const runIndex = argv.indexOf('run')
@@ -65,6 +59,7 @@ async function run () {
   }
   let commandEnv = process.env
   let sensitiveValues = []
+  let closeProxy
 
   let commandArgs = this.args
   if (commandArgs.length < 1) {
@@ -87,10 +82,6 @@ async function run () {
 
   const ignore = options.ignore || []
 
-  const sesh = new Session()
-  const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
-  const noKeychain = options.native === false || options.noNative === true
-
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
 
@@ -107,29 +98,26 @@ async function run () {
   }
 
   try {
-    let envs = buildCommandEnvs(normalizeDotenvConfigPath(this.envs), options.convention)
-    envs = determine(envs, process.env)
-
     const {
       processedEnvs,
-      readableFilepaths
-    } = await envsResolver({
-      envs,
-      overload: options.overload,
+      readableFilepaths,
+      hasEnvfile,
+      proxyCredentials,
+      proxyToken,
+      session: sesh,
+      proxyError,
+      validationError: error
+    } = await prepareValidatedEnv({
+      envs: this.envs,
+      options,
       processEnv: process.env,
-      envKeysFile: resolveEnvKeysFile(options.envKeysFile),
-      noArmor,
-      noKeychain,
-      no1Password: options['1password'] === false || options.no1Password === true,
-      noBitwarden: options.bitwarden === false || options.noBitwarden === true,
-      token: options.token,
+      requireEnvfile: false,
       command: commandArgs,
       onStatus: (text) => {
-        if (spinner && text) {
-          spinner.text = text
-        }
+        if (spinner && text) spinner.text = text
       }
     })
+    if (proxyError) throw proxyError
 
     if (redactEnabled) {
       sensitiveValues = redactedValues(processedEnvs)
@@ -140,17 +128,13 @@ async function run () {
       maskProcessedEnvs(processedEnvs, commandEnv, showChar)
     }
 
-    if (options.validate) {
-      const error = validateEnvExample(process.env)
-
-      if (error) {
-        if (ignore.includes(error.code)) {
-          logger.verbose(`ignored: ${error.message}`)
-        } else if (options.strict) {
-          throw error
-        } else {
-          logger.error(error.messageWithHelp || error.message)
-        }
+    if (error) {
+      if (ignore.includes(error.code)) {
+        logger.verbose(`ignored: ${error.message}`)
+      } else if (options.strict || hasEnvfile) {
+        throw error
+      } else {
+        logger.error(error.messageWithHelp || error.message)
       }
     }
 
@@ -198,7 +182,21 @@ async function run () {
       }
     }
 
-    let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
+    const proxy = await configureProxy(commandArgs, commandEnv, proxyCredentials, sesh, proxyToken)
+    closeProxy = proxy.close
+    commandArgs = proxy.commandArgs
+    commandEnv = proxy.env
+
+    const gatedKeys = new Set((proxyCredentials || [])
+      .filter(credential => commandEnv[credential.name] === credential.placeholder)
+      .map(credential => credential.name))
+    const injectedKeys = uniqueInjectedKeys(processedEnvs)
+    for (const key of gatedKeys) {
+      injectedKeys.delete(key)
+      logger.verbose(`${key} proxied via Armor proxy`)
+    }
+
+    let msg = ''
     const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
     if (readableFilepaths.length > 0 && envStringCount > 0) {
       msg += ` from ${readableFilepaths.join(', ')}, and --env flag${envStringCount > 1 ? 's' : ''}`
@@ -209,8 +207,10 @@ async function run () {
     }
 
     if (spinner) spinner.stop()
-    logger.success(`⟐ ${msg}`)
+    if (gatedKeys.size > 0) logger.success(`⧈ proxied (${gatedKeys.size})${msg}`)
+    logger.success(`⟐ injected env (${injectedKeys.size})${msg}`)
   } catch (error) {
+    if (closeProxy) await closeProxy()
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
       process.exit(130)
@@ -220,7 +220,11 @@ async function run () {
     process.exit(1)
   }
 
-  await executeCommand(commandArgs, commandEnv, sensitiveValues)
+  try {
+    await executeCommand(commandArgs, commandEnv, sensitiveValues, closeProxy)
+  } finally {
+    if (closeProxy) await closeProxy()
+  }
 }
 
 module.exports = run

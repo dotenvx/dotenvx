@@ -49,18 +49,23 @@
     "testshell": "shellspec --shell /bin/bash",
     "release:check": "npm test && npm run testshell",
     "prerelease": "npm run release:check",
-    "release": "npm run release:check && standard-version"
+    "release": "npm run release:check && standard-version",
+    "build:envfile": "peggy --format commonjs -o src/lib/helpers/envfileParser.js src/lib/grammars/envfile.peggy"
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
     "@dotenvx/primitives": "^3.0.2",
     "@dotenvx/tooling": "^1.0.3",
+    "global-agent": "^3.0.0",
+    "node-forge": "^1.4.0",
+    "undici": "^6.28.1",
     "yocto-spinner": "^1.2.1"
   },
   "devDependencies": {
     "@yao-pkg/pkg": "^6.12.0",
     "capture-console": "^1.0.2",
     "esbuild": "^0.28.1",
+    "peggy": "^5.1.0",
     "proxyquire": "^2.1.3",
     "sinon": "^14.0.1",
     "standard": "^17.1.2",
@@ -74,5 +79,10 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "standard": {
+    "ignore": [
+      "src/lib/helpers/envfileParser.js"
+    ]
   }
 }

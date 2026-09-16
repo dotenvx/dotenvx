@@ -41,17 +41,6 @@ t.test('#errors missingEnvFile falls back to .env', ct => {
   ct.end()
 })
 
-t.test('#errors validationFailed', ct => {
-  const result = new Errors({ message: 'missing required (DATABASE_URL)' }).validationFailed()
-
-  t.equal(result.code, 'VALIDATION_FAILED')
-  t.equal(result.message, '[VALIDATION_FAILED] missing required (DATABASE_URL)')
-  t.equal(result.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/907]')
-  t.equal(result.messageWithHelp, '[VALIDATION_FAILED] missing required (DATABASE_URL). fix: [https://github.com/dotenvx/dotenvx/issues/907]')
-
-  ct.end()
-})
-
 t.test('#errors onePasswordFailed', ct => {
   const result = new Errors({ message: '1Password CLI failed to resolve API_KEY' }).onePasswordFailed()
 

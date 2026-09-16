@@ -1565,29 +1565,44 @@ Hello production
 Available log levels are `error, warn, info, verbose, debug, silly` ([source](https://docs.npmjs.com/cli/v8/using-npm/logging#setting-log-levels))
 
 </details>
-<details><summary>`run --validate`</summary><br>
+<details><summary>`run` with an Envfile</summary><br>
 
-Validate your environment against `.env.example`.
+When an `Envfile` is present, `run` automatically validates the resolved environment before starting your command. No validation flag is needed.
 
-```ini
-# .env.example
-DATABASE_URL=
-API_KEY=
-SENTRY_DSN= # optional
+```ruby
+# Envfile
+env "DATABASE_URL", type: "url"
+env "API_KEY"
+env "SENTRY_DSN", optional: true
 ```
 
 ```sh
-$ dotenvx run --validate -- node index.js
-[VALIDATION_FAILED] missing required (DATABASE_URL, API_KEY). fix: [https://github.com/dotenvx/dotenvx/issues/907]
+$ dotenvx run -- node index.js
+[INVALID_ENV] DATABASE_URL is required; API_KEY is required
 ```
 
-Validation errors are reported without stopping your command. Combine `--validate` with `--strict` to exit with code `1` before the command runs.
+Envfile validation failures stop the command. Other loading errors require `--strict` to stop execution.
 
-```sh
-$ dotenvx run --validate --strict -- node index.js
+Use exact file blocks to override rules for selected files:
+
+```ruby
+env "HELLO"
+env "PORT", type: "port"
+env "STRIPE_SECRET_KEY", optional: true
+
+file ".env.production" do
+  encrypted true
+  env "STRIPE_SECRET_KEY", required: true
+  env "PORT", min: 1024
+end
 ```
 
-Any inline comment containing the word `optional` marks that key as optional. If `.env.example` is missing, dotenvx reports `MISSING_ENV_EXAMPLE`. An empty `.env.example` is valid and declares no required variables.
+Both `dotenvx run -f .env.production -- node index.js` and `dotenvx validate -f .env.production` use the production rules. Block declarations inherit top-level options and override only the options they specify. A block's `encrypted` directive applies to all inherited and newly declared variables; a per-variable `encrypted:` option inside that block overrides it.
+
+Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_PATH` use their resolved file paths.
+
+When no file block matches, top-level rules apply. When one or more blocks match, each matching block's inherited rules must hold for the final resolved environment. Shell values, fallback files, and `--overload` cannot bypass them. A selected missing file still activates its block. Multiple matching blocks cannot cancel each other's restrictions; conflicting proxy domains are rejected. Blocks cannot be nested, and duplicate declarations within one scope or duplicate file blocks are errors.
+
 
 </details>
 <details><summary>`run --strict`</summary><br>
@@ -2778,46 +2793,38 @@ $ dotenvx ls --json > dotenv-files.json
 </details>
 <details><summary>`validate`</summary><br>
 
-Validate `.env` file(s) against `.env.example` without running a command.
+Validate resolved `.env` values against an `Envfile` without running a command. An `Envfile` in the current directory is required; `.env.example` is not used for validation.
 
-```ini
-# .env.example
-DATABASE_URL=
-API_KEY=
-SENTRY_DSN= # optional
+```ruby
+# Envfile
+env "DATABASE_URL", type: "url"
+env "PORT", type: "port"
+env "SENTRY_DSN", optional: true
 ```
 
 ```sh
 $ dotenvx validate
-[VALIDATION_FAILED] missing required (DATABASE_URL, API_KEY). fix: [https://github.com/dotenvx/dotenvx/issues/907]
-```
+[INVALID_ENV] DATABASE_URL is required; PORT is required
 
-Use `-f` and `-fk` to validate a specific env file and keys file. The command exits with code `1` when validation fails and prints errors to stderr. On success, it exits with code `0`.
-
-```sh
 $ dotenvx validate -f .env.production -fk .env.keys
 ```
+
+The command enforces required values, types, enums, bounds, and encryption requirements. It exits with code `1` on validation or other loading errors. Missing env files are reported but do not fail validation when the resolved values satisfy Envfile; use `--strict` to make missing files fatal too. On success, it prints `▣ valid (.env)` (listing the loaded input files) and exits with code `0` on success. It does not change your shell's environment.
+
+A missing Envfile reports `ENVFILE_REQUIRED`; invalid syntax reports `MALFORMED_ENVFILE`.
 
 </details>
 <details><summary>`validate --ignore`</summary><br>
 
-Ignore specific validation error codes.
+Ignore specific loading or value-validation errors:
 
 ```sh
-$ dotenvx validate --ignore=MISSING_ENV_EXAMPLE
+$ dotenvx validate --ignore=MISSING_ENV_FILE
+$ dotenvx validate --ignore=MISSING_ENV_FILE INVALID_ENV
+$ DOTENV_IGNORE=MISSING_ENV_FILE dotenvx validate
 ```
 
-Ignore multiple error codes by separating them with spaces.
-
-```sh
-$ dotenvx validate --ignore=MISSING_ENV_FILE MISSING_ENV_EXAMPLE
-```
-
-You can also set `DOTENV_IGNORE`. Its value is a comma-separated list.
-
-```sh
-$ DOTENV_IGNORE=MISSING_ENV_FILE,OTHER dotenvx validate
-```
+An Envfile is still required, even when errors are ignored.
 
 </details>
 <details><summary>`genexample`</summary><br>
@@ -3784,7 +3791,7 @@ INVALID_PUBLIC_KEY= # a public key is malformed or otherwise invalid
 MALFORMED_ENCRYPTED_DATA= # the encrypted value is malformed
 MISPAIRED_PRIVATE_KEY= # a private key does not match the existing public key
 MISSING_DIRECTORY= # the requested directory does not exist
-MISSING_ENV_EXAMPLE= # the required .env.example file does not exist
+ENVFILE_REQUIRED= # the required Envfile does not exist
 MISSING_ENV_FILE= # a requested environment file does not exist
 MISSING_ENV_FILES= # no .env* files were found
 MISSING_ENV_KEYS_FILE= # the requested .env.keys file does not exist
@@ -3792,11 +3799,12 @@ MISSING_KEY= # a requested environment key does not exist
 MISSING_LOG_LEVEL= # the requested log level is not supported
 MISSING_PRIVATE_KEY= # the private key required to decrypt a value is missing
 MISSING_PUBLIC_KEY= # the public key required to encrypt a value is missing
-MISSING_REQUIRED= # validation detail for which required variables are missing; surfaced by VALIDATION_FAILED
+MISSING_REQUIRED= # validation detail for which required variables are missing; surfaced by INVALID_ENV
 MISSING_VALUE= # no value was supplied for a key
 NOT_FOUND= # a private key was not found in the native secret store
 PRECOMMIT_HOOK_MODIFY_FAILED= # dotenvx could not update the pre-commit hook
-VALIDATION_FAILED= # one or more required variables declared by .env.example are missing
+INVALID_ENV= # resolved values do not satisfy Envfile rules
+MALFORMED_ENVFILE= # Envfile syntax or configuration is invalid
 WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 ```
 

@@ -32,7 +32,7 @@ async function get (key) {
   try {
     const sesh = new Session()
     const noArmor = options.armor === false || (await sesh.noArmor())
-    const noKeychain = options.native === false || options.noNative === true
+    const noNative = options.native === false || options.noNative === true
     const { parsed: resolved, errors } = await getResolver({
       key,
       envs,
@@ -40,7 +40,7 @@ async function get (key) {
       all: options.all,
       envKeysFile: resolveEnvKeysFile(options.envKeysFile),
       noArmor,
-      noKeychain,
+      noNative,
       no1Password: options['1password'] === false || options.no1Password === true,
       noBitwarden: options.bitwarden === false || options.noBitwarden === true,
       onStatus: (text) => {
