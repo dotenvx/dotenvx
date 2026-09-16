@@ -21,7 +21,7 @@ t.test('select uses enquirer with normalized choices and IO context', async ct =
     choices: [
       'raw',
       { name: '◫ File (.env.keys)', value: 'file' },
-      { value: 'armored' }
+      { value: 'armored', disabled: true }
     ]
   }, { input, output })
 
@@ -33,7 +33,7 @@ t.test('select uses enquirer with normalized choices and IO context', async ct =
     choices: [
       'raw',
       { name: 'file', message: '◫ File (.env.keys)' },
-      { name: 'armored', message: 'armored' }
+      { name: 'armored', message: 'armored', disabled: '(unavailable)' }
     ],
     stdin: input,
     stdout: output
@@ -43,7 +43,7 @@ t.test('select uses enquirer with normalized choices and IO context', async ct =
 })
 
 t.test('select does not require IO context', async ct => {
-  const prompt = sinon.stub().resolves({ value: 'armored' })
+  const prompt = sinon.stub().resolves({ value: 'armored', disabled: true })
 
   function EnquirerMock () {
     this.prompt = prompt

@@ -8,7 +8,8 @@ function choicesForSelect (choices) {
 
     return {
       name: choice.value,
-      message: choice.name || choice.value
+      message: choice.name || choice.value,
+      ...(choice.disabled !== undefined ? { disabled: choice.disabled === true ? '(unavailable)' : choice.disabled } : {})
     }
   })
 }
