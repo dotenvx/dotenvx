@@ -47,6 +47,7 @@ Escape
 Type
   = ('"integer"' / "'integer'") { return "integer"; }
   / ('"boolean"' / "'boolean'") { return "boolean"; }
+  / ('"port"' / "'port'") { return "port"; }
 
 Boolean
   = "true" { return true; }

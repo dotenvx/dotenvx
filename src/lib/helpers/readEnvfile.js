@@ -22,18 +22,23 @@ module.exports = function readEnvfile (filepath = path.resolve('Envfile')) {
     declarations = parser.parse(src)
   } catch (error) {
     const location = error.location && error.location.start
-    throw new Error(`Invalid Envfile at ${filepath}${location ? `:${location.line}:${location.column}` : ''}. Expected env "NAME" with required: true (or false) or optional: true (or false), type: "integer" (or "boolean"), enum: ["value", ...], min: 0, max: 65535, and proxy: { domain: "api.example.com" } (or false).`)
+    throw new Error(`Invalid Envfile at ${filepath}${location ? `:${location.line}:${location.column}` : ''}. Expected env "NAME" with required: true (or false) or optional: true (or false), type: "integer" (or "boolean" or "port"), enum: ["value", ...], min: 0, max: 65535, and proxy: { domain: "api.example.com" } (or false).`)
   }
 
   const names = new Set()
   for (const declaration of declarations) {
     if (names.has(declaration.name)) throw new Error(`Duplicate Envfile declaration: ${declaration.name}`)
     names.add(declaration.name)
+    if (declaration.type === 'port') {
+      declaration.type = 'integer'
+      if (declaration.min === undefined || BigInt(declaration.min) < 0n) declaration.min = '0'
+      if (declaration.max === undefined || BigInt(declaration.max) > 65535n) declaration.max = '65535'
+    }
     if (declaration.required) requiredKeys.push(declaration.name)
     if (declaration.type) types.set(declaration.name, declaration.type)
     if (declaration.min !== undefined || declaration.max !== undefined) {
       if (declaration.type !== 'integer') {
-        throw new Error(`Invalid Envfile range for ${declaration.name}: min and max require type: "integer".`)
+        throw new Error(`Invalid Envfile range for ${declaration.name}: min and max require type: "integer" or "port".`)
       }
       if (declaration.min !== undefined && declaration.max !== undefined && BigInt(declaration.min) > BigInt(declaration.max)) {
         throw new Error(`Invalid Envfile range for ${declaration.name}: min must be less than or equal to max.`)
