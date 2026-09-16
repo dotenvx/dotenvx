@@ -20,6 +20,8 @@ const { redactOutput } = require('../../lib/helpers/redactOutput')
 const configureProxy = require('../../lib/proxy/configureProxy')
 const readEnvfile = require('../../lib/helpers/readEnvfile')
 const validateEnvExample = require('../../lib/helpers/validateEnvExample')
+const validate = require('../../lib/helpers/validate')
+const Errors = require('../../lib/helpers/errors')
 
 const { determine } = require('./../../lib/helpers/envResolution')
 
@@ -112,7 +114,7 @@ async function run () {
   }
 
   try {
-    const proxyRules = readEnvfile()
+    const { exists: hasEnvfile, proxyRules, requiredKeys, types, enums, ranges } = readEnvfile()
     if (proxyRules.size > 0 && noArmor) throw new Error('Envfile proxy requires Armor. Enable Armor and authenticate before running.')
 
     let envs = buildCommandEnvs(normalizeDotenvConfigPath(this.envs), options.convention)
@@ -156,13 +158,27 @@ async function run () {
       maskProcessedEnvs(processedEnvs, commandEnv, showChar)
     }
 
+    const required = Object.fromEntries(requiredKeys.map(key => [key, '']))
+    const validation = validate(required, process.env, { types, enums, ranges })
+    if (!validation.valid) {
+      const message = validation.errors.map(error => error.message).join('; ')
+      const error = new Errors({ message }).validationFailed()
+      if (ignore.includes(error.code)) {
+        logger.verbose(`ignored: ${error.message}`)
+      } else if (options.strict || hasEnvfile) {
+        throw error
+      } else {
+        logger.error(error.messageWithHelp || error.message)
+      }
+    }
+
     if (options.validate) {
       const error = validateEnvExample(process.env)
 
       if (error) {
         if (ignore.includes(error.code)) {
           logger.verbose(`ignored: ${error.message}`)
-        } else if (options.strict) {
+        } else if (options.strict || (hasEnvfile && error.code === 'VALIDATION_FAILED')) {
           throw error
         } else {
           logger.error(error.messageWithHelp || error.message)
