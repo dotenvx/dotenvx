@@ -2,7 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.27.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.28.0...main)
+
+## [2.28.0](https://github.com/dotenvx/dotenvx/compare/v2.27.0...v2.28.0) (2026-09-16)
+
+### Added
+
+* Choose where you custody your keys ([#972](https://github.com/dotenvx/dotenvx/pull/972))
+
+```text
+Your private key
+├── ⛉ Local Custody
+│   ├── OS (macOS Keychain / Windows Credential Manager / Linux Secret Service)
+│   ├── 1Password
+│   ├── Bitwarden
+│   └── File (.env.keys)
+└── ⛊ Managed Custody
+    └── ⛨ Armor
+```
 
 ## [2.27.0](https://github.com/dotenvx/dotenvx/compare/v2.26.1...v2.27.0) (2026-09-16)
 
