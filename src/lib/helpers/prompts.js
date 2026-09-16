@@ -51,6 +51,23 @@ async function select ({ message, choices }, context) {
   return answer.value
 }
 
+async function confirm ({ message, initial = false }, context) {
+  try {
+    const answer = await enquirer.prompt({
+      type: 'confirm',
+      name: 'value',
+      message,
+      initial,
+      ...enquirerOptions(context)
+    })
+    return answer.value === true
+  } catch {
+    const error = new Error('prompt cancelled')
+    error.code = 'PROMPT_CANCELLED'
+    throw error
+  }
+}
+
 async function password ({ message, prefix, separator }, context) {
   const output = (context && context.output) || process.stderr
 
@@ -85,6 +102,7 @@ async function password ({ message, prefix, separator }, context) {
 }
 
 module.exports = {
+  confirm,
   password,
   select
 }

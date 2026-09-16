@@ -19,10 +19,10 @@ t.test('native provider is disabled outside supported platforms', ct => {
   const execFileSync = sinon.stub()
   const getWindowsCredential = sinon.stub()
   const getLinuxSecret = sinon.stub()
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
     child_process: { execFileSync },
-    '../../helpers/windowsCredentialManager': { get: getWindowsCredential },
-    '../../helpers/linuxSecretService': { get: getLinuxSecret }
+    '../../../helpers/windowsCredentialManager': { get: getWindowsCredential },
+    '../../../helpers/linuxSecretService': { get: getLinuxSecret }
   })
 
   setPlatform('freebsd')
@@ -36,8 +36,8 @@ t.test('native provider is disabled outside supported platforms', ct => {
 
 t.test('native provider reads macOS Keychain on darwin', ct => {
   const get = sinon.stub().returns('private-key')
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/macosKeychain': { get }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/macosKeychain': { get }
   })
 
   setPlatform('darwin')
@@ -49,8 +49,8 @@ t.test('native provider reads macOS Keychain on darwin', ct => {
 
 t.test('native provider reads Windows Credential Manager on win32', ct => {
   const get = sinon.stub().returns('private-key')
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/windowsCredentialManager': { get }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/windowsCredentialManager': { get }
   })
 
   setPlatform('win32')
@@ -62,8 +62,8 @@ t.test('native provider reads Windows Credential Manager on win32', ct => {
 
 t.test('native provider reads Linux Secret Service on linux', ct => {
   const get = sinon.stub().returns('private-key')
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/linuxSecretService': { get }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/linuxSecretService': { get }
   })
 
   setPlatform('linux')
@@ -75,8 +75,8 @@ t.test('native provider reads Linux Secret Service on linux', ct => {
 
 t.test('native provider writes macOS Keychain on darwin', ct => {
   const set = sinon.stub()
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/macosKeychain': { set }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/macosKeychain': { set }
   })
 
   setPlatform('darwin')
@@ -88,8 +88,8 @@ t.test('native provider writes macOS Keychain on darwin', ct => {
 
 t.test('native provider defaults secret label to key', ct => {
   const set = sinon.stub()
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/macosKeychain': { set }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/macosKeychain': { set }
   })
 
   setPlatform('darwin')
@@ -101,8 +101,8 @@ t.test('native provider defaults secret label to key', ct => {
 
 t.test('native provider writes Windows Credential Manager on win32', ct => {
   const set = sinon.stub()
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/windowsCredentialManager': { set }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/windowsCredentialManager': { set }
   })
 
   setPlatform('win32')
@@ -114,8 +114,8 @@ t.test('native provider writes Windows Credential Manager on win32', ct => {
 
 t.test('native provider writes Linux Secret Service on linux', ct => {
   const set = sinon.stub()
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/linuxSecretService': { set }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/linuxSecretService': { set }
   })
 
   setPlatform('linux')
@@ -127,8 +127,8 @@ t.test('native provider writes Linux Secret Service on linux', ct => {
 
 t.test('native provider deletes macOS Keychain item on darwin', ct => {
   const deleteSecret = sinon.stub()
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/macosKeychain': { delete: deleteSecret }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/macosKeychain': { delete: deleteSecret }
   })
 
   setPlatform('darwin')
@@ -140,8 +140,8 @@ t.test('native provider deletes macOS Keychain item on darwin', ct => {
 
 t.test('native provider deletes Windows Credential Manager item on win32', ct => {
   const deleteSecret = sinon.stub()
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/windowsCredentialManager': { delete: deleteSecret }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/windowsCredentialManager': { delete: deleteSecret }
   })
 
   setPlatform('win32')
@@ -153,8 +153,8 @@ t.test('native provider deletes Windows Credential Manager item on win32', ct =>
 
 t.test('native provider deletes Linux Secret Service item on linux', ct => {
   const deleteSecret = sinon.stub()
-  const provider = proxyquire('../../../src/lib/custodians/native/backend', {
-    '../../helpers/linuxSecretService': { delete: deleteSecret }
+  const provider = proxyquire('../../../src/lib/custodians/local/native/backend', {
+    '../../../helpers/linuxSecretService': { delete: deleteSecret }
   })
 
   setPlatform('linux')

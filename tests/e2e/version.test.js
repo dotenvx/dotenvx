@@ -24,15 +24,17 @@ t.test('#--version', ct => {
   ct.end()
 })
 
-t.test('#--help shows armor advanced command', ct => {
+t.test('#hidden lists custody commands outside the main menu', ct => {
   const output = execShell(`${dotenvx} --help`)
 
-  ct.match(output, /Local Custody:/, 'local custody section is shown')
-  ct.match(output, /Managed Custody:/, 'managed custody section is shown')
+  const hidden = execShell(`${dotenvx} hidden`)
+  ct.match(hidden, /Hidden Commands:/, 'hidden commands are listed')
+  ct.notMatch(hidden, /Local Custody:|Managed Custody:/, 'hidden menu has no category separators')
+  ct.notMatch(output, /\n\s+(?:lock|native|armor|curl)\s+/, 'custody commands are absent from the main menu')
   ct.notMatch(output, /Advanced:/, 'advanced section is not shown')
   ct.notMatch(output, /Professional Security:/, 'professional security section is not shown')
-  ct.match(output, /Local Custody:[\s\S]*lock\s+⊡ lock private keys with a local passphrase[\s\S]*native\s+⌥ move private keys in\/out of your OS secret store/, 'local custody commands include lock and native')
-  ct.match(output, /Managed Custody:[\s\S]*armor\s+⛨ move private keys in\/out of Dotenvx Armor \[www\.dotenvx\.com\/armor\][\s\S]*curl\s+⛨ call authenticated api Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'managed custody commands include armor and curl')
+  ct.match(hidden, /Hidden Commands:[\s\S]*lock\s+⊡ lock private keys with a local passphrase[\s\S]*native\s+⌥ move private keys in\/out of your OS secret store/, 'local custody commands include lock and native')
+  ct.match(hidden, /Hidden Commands:[\s\S]*armor\s+⛨ move private keys in\/out of Dotenvx Armor \[www\.dotenvx\.com\/armor\][\s\S]*curl\s+⛨ call authenticated api Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'managed custody commands include armor and curl')
   ct.notMatch(output, /\n\s+login\s+log in to move keys off-device/, 'root help does not show login')
   ct.notMatch(output, /\n\s+logout\s+log out of connected security features/, 'root help does not show logout')
   ct.notMatch(output, /ext\s+⊕ extensions/, 'ext command is not shown')

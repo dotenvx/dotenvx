@@ -1,10 +1,13 @@
+const protection = require('./lock')
+
 // Explicit registration keeps bundling predictable and avoids executing
 // arbitrary modules discovered in a project's working directory.
 const builtins = [
-  require('./native'),
-  require('./onepassword'),
-  require('./bitwarden'),
-  require('./file')
+  require('./local/native'),
+  require('./local/onepassword'),
+  require('./local/bitwarden'),
+  require('./local/file'),
+  require('./managed/armor')
 ]
 
 function createRegistry (custodians) {
@@ -27,9 +30,10 @@ function createRegistry (custodians) {
 
   return {
     get,
-    async choices (options = {}) {
+    async choices (options = {}, custody = 'local') {
       const choices = []
       for (const custodian of entries.values()) {
+        if ((custodian.custody || 'local') !== custody) continue
         choices.push({ name: custodian.name, value: custodian.id, disabled: !custodian.enabled(options) || !await custodian.available() })
       }
       return choices
@@ -37,15 +41,26 @@ function createRegistry (custodians) {
     providers (options = {}, sync = false) {
       const providers = []
       for (const custodian of entries.values()) {
+        if (custodian.custody === 'managed') continue
         const method = sync ? 'getSync' : 'get'
         if (!custodian.enabled(options) || !custodian.get || (custodian.configured && !custodian.configured())) continue
         if (typeof custodian[method] !== 'function') throw new Error(`custodian ${custodian.id} does not support synchronous reads`)
-        providers.push(custodian[method].bind(custodian))
+        if (sync) {
+          providers.push(publicKey => protection.unlockSync(publicKey, custodian[method](publicKey)))
+        } else {
+          providers.push(async publicKey => protection.unlock(publicKey, await custodian[method](publicKey)))
+        }
       }
       return providers
     },
-    async store (id, publicKey, privateKey, context = {}) {
-      const result = await get(id).store(publicKey, privateKey, context) || {}
+    async store (selection, publicKey, privateKey, context = {}) {
+      const { id, lock = false } = typeof selection === 'string' ? { id: selection } : selection
+      const custodian = get(id)
+      if (lock) {
+        if (custodian.custody === 'managed') throw new Error('password locking is only supported for local custody')
+        privateKey = await protection.lock(publicKey, privateKey, context)
+      }
+      const result = await custodian.store(publicKey, privateKey, context) || {}
       // Only the native custodian's unavailable-write path requests fallback.
       // Authentication and verification errors propagate without writing a file.
       if (result.fallback) return get(result.fallback).store(publicKey, privateKey, context)

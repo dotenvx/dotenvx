@@ -1,4 +1,4 @@
-const { derive } = require('@dotenvx/primitives')
+const matchesStoredKey = require('../helpers/matchesStoredKey')
 const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const removeEnvKey = require('../helpers/removeEnvKey')
@@ -6,7 +6,7 @@ const upsertEnvKey = require('../helpers/upsertEnvKey')
 
 function verify (publicKey, privateKey) {
   try {
-    if (derive(privateKey) === publicKey) return
+    if (matchesStoredKey(publicKey, privateKey)) return
   } catch {}
   throw new Error('private key does not match the .env public key')
 }

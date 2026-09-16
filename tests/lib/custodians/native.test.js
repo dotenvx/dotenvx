@@ -2,9 +2,9 @@ const t = require('tap')
 const proxyquire = require('proxyquire')
 
 function storeWith (backend, warnings) {
-  return proxyquire('../../../src/lib/custodians/native/store', {
+  return proxyquire('../../../src/lib/custodians/local/native/store', {
     './backend': backend,
-    '../../../shared/logger': { logger: { warn: message => warnings.push(message) } }
+    '../../../../shared/logger': { logger: { warn: message => warnings.push(message) } }
   })
 }
 

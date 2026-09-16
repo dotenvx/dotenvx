@@ -1,6 +1,6 @@
 const t = require('tap')
 const { createRegistry } = require('../../../src/lib/custodians')
-const file = require('../../../src/lib/custodians/file')
+const file = require('../../../src/lib/custodians/local/file')
 
 function plugin (id, overrides = {}) {
   return { id, name: id, enabled: () => true, available: async () => true, store: async () => {}, ...overrides }
@@ -34,7 +34,7 @@ t.test('disabled custodians are never probed or read; unconfigured ones are not 
     plugin('second', { get: key => ({ [key]: 'second' }), getSync: key => ({ [key]: 'second-sync' }) })
   ])
   t.equal((await registry.choices())[0].disabled, true)
-  t.same(registry.providers().map(fn => fn('key')), [{ key: 'first' }, { key: 'second' }])
+  t.same(await Promise.all(registry.providers().map(fn => fn('key'))), [{ key: 'first' }, { key: 'second' }])
   t.same(registry.providers({}, true).map(fn => fn('key')), [{ key: 'first-sync' }, { key: 'second-sync' }])
 })
 

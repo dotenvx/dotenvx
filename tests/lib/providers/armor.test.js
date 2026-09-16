@@ -38,11 +38,11 @@ t.test('armor provider forwards approval instructions to onStatus and opens url 
       return { 'public-key': 'private-key' }
     }
   }
-  const provider = proxyquire('../../../src/lib/providers/armor/index', {
-    '../../../db/session': SessionStub,
-    '../../services/armorKeyring': ArmorKeyringStub,
-    '../../helpers/listenForOpenKey': listenForOpenKey,
-    '../../helpers/openUrl': openUrl
+  const provider = proxyquire('../../../src/lib/custodians/managed/armor/get', {
+    '../../../../db/session': SessionStub,
+    '../../../services/armorKeyring': ArmorKeyringStub,
+    '../../../helpers/listenForOpenKey': listenForOpenKey,
+    '../../../helpers/openUrl': openUrl
   })
 
   const ring = await provider('027c9c5579cce25013e1e5ae8b4bde6d93bad14457babf5b3e055572ae4931f71', { onStatus })
@@ -87,9 +87,9 @@ t.test('armor provider returns an empty keyring when armor has no matching keys'
       return {}
     }
   }
-  const provider = proxyquire('../../../src/lib/providers/armor/index', {
-    '../../../db/session': SessionStub,
-    '../../services/armorKeyring': ArmorKeyringStub
+  const provider = proxyquire('../../../src/lib/custodians/managed/armor/get', {
+    '../../../../db/session': SessionStub,
+    '../../../services/armorKeyring': ArmorKeyringStub
   })
 
   const ring = await provider('027c9c5579cce25013e1e5ae8b4bde6d93bad14457babf5b3e055572ae4931f71')
@@ -119,9 +119,9 @@ t.test('armor provider returns an empty keyring when Armor is offline', async ct
       throw error
     }
   }
-  const provider = proxyquire('../../../src/lib/providers/armor/index', {
-    '../../../db/session': SessionStub,
-    '../../services/armorKeyring': ArmorKeyringStub
+  const provider = proxyquire('../../../src/lib/custodians/managed/armor/get', {
+    '../../../../db/session': SessionStub,
+    '../../../services/armorKeyring': ArmorKeyringStub
   })
 
   const ring = await provider('public-key')
@@ -144,9 +144,9 @@ t.test('armor provider preserves Armor API errors', async ct => {
       throw expectedError
     }
   }
-  const provider = proxyquire('../../../src/lib/providers/armor/index', {
-    '../../../db/session': SessionStub,
-    '../../services/armorKeyring': ArmorKeyringStub
+  const provider = proxyquire('../../../src/lib/custodians/managed/armor/get', {
+    '../../../../db/session': SessionStub,
+    '../../../services/armorKeyring': ArmorKeyringStub
   })
 
   await ct.rejects(provider('public-key'), expectedError)
