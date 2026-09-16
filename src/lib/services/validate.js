@@ -13,7 +13,7 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
   envs = buildCommandEnvs(normalizeDotenvConfigPath(envs, processEnv), options.convention)
   envs = determine(envs, processEnv)
   const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
-  if (requireEnvfile && !schema.exists) throw new Errors().missingEnvfile()
+  if (requireEnvfile && !schema.exists) throw new Errors().envfileRequired()
 
   const session = new Session()
   const proxyToken = options.token || processEnv.DOTENVX_TOKEN

@@ -233,9 +233,9 @@ class Errors {
     return e
   }
 
-  missingEnvfile () {
-    const e = new Error('[MISSING_ENVFILE] Envfile is required')
-    e.code = 'MISSING_ENVFILE'
+  envfileRequired () {
+    const e = new Error('[ENVFILE_REQUIRED] validate requires an Envfile')
+    e.code = 'ENVFILE_REQUIRED'
     e.messageWithHelp = e.message
     return e
   }

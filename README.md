@@ -2811,7 +2811,7 @@ $ dotenvx validate -f .env.production -fk .env.keys
 
 The command enforces required values, types, enums, bounds, and encryption requirements. It exits with code `1` on validation or other loading errors. Missing env files are reported but do not fail validation when the resolved values satisfy Envfile; use `--strict` to make missing files fatal too. On success, it prints `▣ valid (.env)` (listing the loaded input files) and exits with code `0` on success. It does not change your shell's environment.
 
-A missing Envfile reports `MISSING_ENVFILE`; invalid syntax reports `MALFORMED_ENVFILE`.
+A missing Envfile reports `ENVFILE_REQUIRED`; invalid syntax reports `MALFORMED_ENVFILE`.
 
 </details>
 <details><summary>`validate --ignore`</summary><br>
@@ -3791,7 +3791,7 @@ INVALID_PUBLIC_KEY= # a public key is malformed or otherwise invalid
 MALFORMED_ENCRYPTED_DATA= # the encrypted value is malformed
 MISPAIRED_PRIVATE_KEY= # a private key does not match the existing public key
 MISSING_DIRECTORY= # the requested directory does not exist
-MISSING_ENVFILE= # the required Envfile does not exist
+ENVFILE_REQUIRED= # the required Envfile does not exist
 MISSING_ENV_FILE= # a requested environment file does not exist
 MISSING_ENV_FILES= # no .env* files were found
 MISSING_ENV_KEYS_FILE= # the requested .env.keys file does not exist
