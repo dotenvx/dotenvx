@@ -4,6 +4,7 @@ const { logger } = require('../../../shared/logger')
 const LockDown = require('./../../../lib/services/lockDown')
 const armoredKeyDisplay = require('../../../lib/helpers/armoredKeyDisplay')
 const prompts = require('../../../lib/helpers/prompts')
+const resolveLockPassword = require('../../../lib/helpers/resolveLockPassword')
 
 async function down () {
   const options = this.opts()
@@ -15,14 +16,17 @@ async function down () {
     let results = plan.alreadyUnlocked
 
     if (plan.locked.length > 0) {
-      const passphrase = await prompts.password({
-        message: 'passphrase',
-        prefix: '⊡',
-        separator: '='
-      }, {
-        input: process.stdin,
-        output: process.stderr
-      })
+      const preset = resolveLockPassword(options)
+      const passphrase = preset !== undefined
+        ? preset
+        : await prompts.password({
+          message: 'passphrase',
+          prefix: '⊡',
+          separator: '='
+        }, {
+          input: process.stdin,
+          output: process.stderr
+        })
 
       results = lockDown.run(lockedPrivateKey => unlockedValue(lockedPrivateKey, passphrase)).results
     }

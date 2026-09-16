@@ -18,7 +18,7 @@ async function get (key) {
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'decrypting' })
 
-  logger.debug(`options: ${JSON.stringify(options)}`)
+  logger.debug(`options: ${JSON.stringify({ ...options, ...(options.lockPassword !== undefined ? { lockPassword: '[REDACTED]' } : {}) })}`)
   if (key) {
     logger.debug(`key: ${key}`)
   }
@@ -41,6 +41,7 @@ async function get (key) {
       envKeysFile: resolveEnvKeysFile(options.envKeysFile),
       noArmor,
       noNative,
+      lockPassword: options.lockPassword,
       no1Password: options['1password'] === false || options.no1Password === true,
       noBitwarden: options.bitwarden === false || options.noBitwarden === true,
       onStatus: (text) => {
