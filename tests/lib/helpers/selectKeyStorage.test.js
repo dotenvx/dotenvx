@@ -42,7 +42,8 @@ t.test('local custody lists all stores and disables unavailable choices', async 
   ct.same(choices.map(({ value, disabled }) => ({ value, disabled })), [
     { value: 'native', disabled: true },
     { value: 'onepassword', disabled: false },
-    { value: 'bitwarden', disabled: true }
+    { value: 'bitwarden', disabled: true },
+    { value: 'file', disabled: false }
   ])
   ct.match(choices[0].name, /^OS/)
 })
@@ -64,17 +65,19 @@ t.test('Armor unavailable hides managed custody but still opens local submenu', 
 })
 
 t.test('explicit opt-outs disable installed stores without probing them', async ct => {
-  const { picker, select, onepassword, bitwarden } = setup(ct, ['managed', 'armored'], { onepassword: true, bitwarden: true })
+  const { picker, select, onepassword, bitwarden } = setup(ct, ['local', 'file'], { onepassword: true, bitwarden: true })
   await picker({ noNative: true, no1Password: true, noBitwarden: true })
-  ct.equal(select.firstCall.args[0].choices[0].disabled, true)
+  ct.equal(select.firstCall.args[0].choices[0].disabled, false)
+  ct.same(select.secondCall.args[0].choices.map(choice => choice.disabled), [true, true, true, false])
   ct.equal(onepassword.callCount, 0)
   ct.equal(bitwarden.callCount, 0)
 })
 
-t.test('no available storage preserves file fallback without an unusable prompt', async ct => {
-  const { picker, select } = setup(ct, [])
+t.test('file remains selectable last when other stores are unavailable', async ct => {
+  const { picker, select } = setup(ct, ['local', 'file'])
   ct.equal(await picker({ noNative: true, noArmor: true }), 'file')
-  ct.equal(select.callCount, 0)
+  ct.equal(select.callCount, 2)
+  ct.same(select.secondCall.args[0].choices[3], { name: 'File (.env.keys)', value: 'file', disabled: false })
 })
 
 t.test('noninteractive use preserves defaults and does not probe stores', async ct => {

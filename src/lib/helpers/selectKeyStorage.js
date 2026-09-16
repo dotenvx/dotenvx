@@ -18,12 +18,11 @@ async function selectKeyStorage (options = {}) {
   const localChoices = [
     { name: `OS${secretStoreNames[process.platform] ? ` (${secretStoreNames[process.platform]})` : ''}`, value: 'native', disabled: !useNative },
     { name: '1Password', value: 'onepassword', disabled: !use1Password },
-    { name: 'Bitwarden', value: 'bitwarden', disabled: !useBitwarden }
+    { name: 'Bitwarden', value: 'bitwarden', disabled: !useBitwarden },
+    { name: 'File (.env.keys)', value: 'file', disabled: false }
   ]
-  const useLocal = localChoices.some(choice => !choice.disabled)
-  if (!useLocal && options.noArmor) return defaultStorage
 
-  const choices = [{ name: '⛉ Local Custody', value: 'local', disabled: !useLocal }]
+  const choices = [{ name: '⛉ Local Custody', value: 'local', disabled: false }]
   if (!options.noArmor) choices.push({ name: '⛊ Managed Custody', value: 'managed' })
 
   const context = { input: process.stdin, output: process.stderr }
