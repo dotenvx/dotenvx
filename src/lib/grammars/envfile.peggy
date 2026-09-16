@@ -1,5 +1,10 @@
 Document
-  = _ declarations:(Declaration _)* { return declarations.map(item => item[0]); }
+  = _ encrypted:EncryptedDefault? _ declarations:(Declaration _)* {
+      return declarations.map(item => ({ encrypted: encrypted === true, ...item[0] }));
+    }
+
+EncryptedDefault
+  = "encrypted" [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) { return value; }
 
 Declaration
   = "env" [ \t]+ name:Name options:Option* [ \t]* Comment? (Newline / !.) {
@@ -22,11 +27,12 @@ Option
   = [ \t]* "," _ "proxy" [ \t]* ":" _ value:(ProxyOptions / Disabled) { return { key: "proxy", value }; }
   / [ \t]* "," _ "required" [ \t]* ":" _ value:Boolean { return { key: "required", value }; }
   / [ \t]* "," _ "optional" [ \t]* ":" _ value:Boolean { return { key: "optional", value }; }
+  / [ \t]* "," _ "encrypted" [ \t]* ":" _ value:Boolean { return { key: "encrypted", value }; }
   / [ \t]* "," _ "type" [ \t]* ":" _ value:Type { return { key: "type", value }; }
   / [ \t]* "," _ "enum" [ \t]* ":" _ value:Enum { return { key: "enum", value }; }
   / [ \t]* "," _ key:("min" / "max") [ \t]* ":" _ value:Integer { return { key, value }; }
 
-Integer
+Integer "an integer"
   = value:$([+-]? [0-9]+) { return value; }
 
 Enum
@@ -44,12 +50,15 @@ Escape
       return ({ n: "\n", r: "\r", t: "\t" })[char] || char;
     }
 
-Type
+Type "a supported type (integer, boolean, port, url, email, or ip)"
   = ('"integer"' / "'integer'") { return "integer"; }
   / ('"boolean"' / "'boolean'") { return "boolean"; }
   / ('"port"' / "'port'") { return "port"; }
+  / ('"url"' / "'url'") { return "url"; }
+  / ('"email"' / "'email'") { return "email"; }
+  / ('"ip"' / "'ip'") { return "ip"; }
 
-Boolean
+Boolean "true or false"
   = "true" { return true; }
   / Disabled
 
@@ -59,11 +68,11 @@ ProxyOptions
 Disabled
   = "false" { return false; }
 
-Destination
+Destination "a quoted domain"
   = '"' host:$([A-Za-z0-9.-]+) '"' { return host; }
   / "'" host:$([A-Za-z0-9.-]+) "'" { return host; }
 
-Name
+Name "a quoted variable name"
   = '"' name:Identifier '"' { return name; }
   / "'" name:Identifier "'" { return name; }
 

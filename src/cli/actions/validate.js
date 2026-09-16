@@ -9,7 +9,10 @@ const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDote
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
 const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
-const validateEnvExample = require('../../lib/helpers/validateEnvExample')
+const readEnvfile = require('../../lib/helpers/readEnvfile')
+const validateEnvfile = require('../../lib/helpers/validateEnvfile')
+const normalizeDotenvConfigPath = require('../../lib/helpers/normalizeDotenvConfigPath')
+const Errors = require('../../lib/helpers/errors')
 
 const { determine } = require('./../../lib/helpers/envResolution')
 
@@ -24,15 +27,24 @@ async function validate () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    let envs = buildCommandEnvs(this.envs, options.convention)
+    const schema = readEnvfile()
+    const { exists, proxyRules } = schema
+    if (!exists) throw new Errors().missingEnvfile()
+
+    let envs = buildCommandEnvs(normalizeDotenvConfigPath(this.envs), options.convention)
     envs = determine(envs, process.env)
 
     const sesh = new Session()
-    const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+    const proxyToken = options.token || process.env.DOTENVX_TOKEN
+    const noArmor = options.armor === false || (!proxyToken && (await sesh.noArmor()))
+    if (proxyRules.size > 0 && noArmor) throw new Error('Envfile proxy requires Armor. Enable Armor and authenticate before running.')
+    const proxyCredentials = noArmor ? undefined : []
     const noKeychain = options.native === false || options.noNative === true
 
-    const { processedEnvs } = await envsResolver({
+    const { processedEnvs, readableFilepaths } = await envsResolver({
       envs,
+      proxyRules,
+      proxyCredentials,
       overload: options.overload,
       processEnv: validateEnv,
       envKeysFile: resolveEnvKeysFile(options.envKeysFile),
@@ -48,6 +60,11 @@ async function validate () {
       }
     })
 
+    const sources = [...readableFilepaths]
+    if (processedEnvs.some(env => env.type === 'env' && env.parsed)) sources.push('--env')
+    if (sources.length === 0) sources.push('shell environment')
+    const sourceSummary = `(${sources.join(', ')})`
+
     for (const processedEnv of processedEnvs) {
       for (const error of processedEnv.errors || []) {
         if (ignore.includes(error.code)) {
@@ -60,13 +77,20 @@ async function validate () {
       }
     }
 
-    const validationError = validateEnvExample(validateEnv)
+    for (const name of proxyRules.keys()) {
+      if (validateEnv[name] !== undefined && !(proxyCredentials || []).some(credential => credential.name === name && credential.placeholder === validateEnv[name])) {
+        throw new Error(`Envfile proxy requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload. ${sourceSummary}`)
+      }
+    }
+
+    const validationError = validateEnvfile(schema, validateEnv, processedEnvs)
     if (validationError) {
+      const message = `${validationError.message} ${sourceSummary}`
       if (ignore.includes(validationError.code)) {
-        logger.verbose(`ignored: ${validationError.message}`)
+        logger.verbose(`ignored: ${message}`)
       } else {
         errorCount += 1
-        logger.error(validationError.messageWithHelp || validationError.message)
+        logger.error(message)
       }
     }
 
@@ -75,7 +99,7 @@ async function validate () {
     if (errorCount > 0) {
       process.exit(1)
     } else {
-      logger.success('▣ validated')
+      logger.success(`▣ valid ${sourceSummary}`)
     }
   } catch (error) {
     if (spinner) spinner.stop()
