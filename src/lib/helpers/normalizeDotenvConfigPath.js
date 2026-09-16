@@ -3,7 +3,7 @@ const TYPE_ENV_FILE = 'envFile'
 function normalizeDotenvConfigPath (envs = [], processEnv = process.env) {
   if (envs.some(env => env.type === TYPE_ENV_FILE)) return envs
 
-  const configuredEnvFiles = processEnv.DOTENV_PATH || processEnv.DOTENV_F
+  const configuredEnvFiles = processEnv.DOTENV_FILE || processEnv.DOTENV_PATH || processEnv.DOTENV_F
   if (!configuredEnvFiles) return envs
 
   const envFiles = configuredEnvFiles.split(',').map(value => value.trim()).filter(Boolean)

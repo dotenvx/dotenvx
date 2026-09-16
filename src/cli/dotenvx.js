@@ -387,4 +387,6 @@ program.helpInformation = function () {
 }
 /* c8 ignore stop */
 
+require('./commands/fileOptions')(program)
+
 program.parse(process.argv)
