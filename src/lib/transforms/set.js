@@ -28,7 +28,7 @@ async function setTransform (options = {}) {
   const fk = options.fk || '.env.keys'
   const noArmor = options.noArmor
   let storage
-  const noKeychain = options.noKeychain
+  const noNative = options.noNative
   const noCreate = options.noCreate
   const noEncrypt = !options.encrypt || isPlainKey(key)
 
@@ -147,7 +147,7 @@ async function setTransform (options = {}) {
           all: true,
           envKeysFile: fk,
           noArmor,
-          noKeychain,
+          noNative,
           no1Password: options.no1Password,
           noBitwarden: options.noBitwarden
         })

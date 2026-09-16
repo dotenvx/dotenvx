@@ -48,7 +48,7 @@ function armorProviderForOptions (options) {
 function useNative (options) {
   if (!['darwin', 'linux', 'win32'].includes(process.platform)) return false
   if (process.env.CI) return false
-  return options.noNative !== true && options.native !== false && options.noKeychain !== true && process.env.DOTENVX_NO_NATIVE !== 'true'
+  return options.noNative !== true && options.native !== false && process.env.DOTENVX_NO_NATIVE !== 'true'
 }
 
 function useOnePassword (options) {

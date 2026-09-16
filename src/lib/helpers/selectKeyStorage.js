@@ -9,7 +9,7 @@ const secretStoreNames = {
 }
 
 async function selectKeyStorage (options = {}) {
-  const useNative = !options.noKeychain && process.env.DOTENVX_NO_NATIVE !== 'true' && !process.env.CI && ['darwin', 'linux', 'win32'].includes(process.platform)
+  const useNative = !options.noNative && process.env.DOTENVX_NO_NATIVE !== 'true' && !process.env.CI && ['darwin', 'linux', 'win32'].includes(process.platform)
   const defaultStorage = useNative ? 'native' : 'file'
   if (process.env.CI || options.noCreate || !process.stdin.isTTY || !process.stderr.isTTY) return defaultStorage
 

@@ -18,7 +18,7 @@ async function decrypt () {
   const envs = this.envs
   const sesh = new Session()
   const noArmor = options.armor === false || (await sesh.noArmor())
-  const noKeychain = options.native === false || options.noNative === true
+  const noNative = options.native === false || options.noNative === true
 
   let errorCount = 0
 
@@ -32,7 +32,7 @@ async function decrypt () {
       ek: options.excludeKey,
       fk: options.envKeysFile,
       noArmor,
-      noKeychain,
+      noNative,
       onStatus: (text) => {
         if (spinner && text) {
           spinner.text = text
@@ -76,7 +76,7 @@ async function decrypt () {
         ek: options.excludeKey,
         fk: options.envKeysFile,
         noArmor,
-        noKeychain,
+        noNative,
         onStatus: (text) => {
           if (spinner && text) {
             spinner.text = text
