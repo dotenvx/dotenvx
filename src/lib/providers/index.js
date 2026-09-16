@@ -1,9 +1,7 @@
 const Session = require('./../../db/session')
 
 const armorProvider = require('./armor/index')
-const nativeProvider = require('./native/index')
-const onePasswordCustody = require('../helpers/onePasswordCustody')
-const bitwardenCustody = require('../helpers/bitwardenCustody')
+const custodians = require('../custodians')
 
 function syncArmorProvider (publicKeyHex) {
   const { createSyncFn } = require('@dotenvx/tooling')
@@ -45,20 +43,6 @@ function armorProviderForOptions (options) {
   })
 }
 
-function useNative (options) {
-  if (!['darwin', 'linux', 'win32'].includes(process.platform)) return false
-  if (process.env.CI) return false
-  return options.noNative !== true && options.native !== false && process.env.DOTENVX_NO_NATIVE !== 'true'
-}
-
-function useOnePassword (options) {
-  return options.no1Password !== true && process.env.DOTENVX_NO_1PASSWORD !== 'true' && onePasswordCustody.configured()
-}
-
-function useBitwarden (options) {
-  return options.noBitwarden !== true && process.env.DOTENVX_NO_BITWARDEN !== 'true' && bitwardenCustody.configured()
-}
-
 function useArmor (options, noArmor) {
   return options.noArmor !== true && options.armor !== false && !noArmor
 }
@@ -75,14 +59,7 @@ async function providers (options = {}) {
     return options.provider
   }
 
-  const providerFns = []
-
-  if (useNative(options)) {
-    providerFns.push(nativeProvider)
-  }
-
-  if (useOnePassword(options)) providerFns.push(onePasswordCustody.get)
-  if (useBitwarden(options)) providerFns.push(bitwardenCustody.get)
+  const providerFns = custodians.providers(options)
 
   if (options.noArmor !== true && options.armor !== false) {
     const sesh = new Session()
@@ -100,14 +77,7 @@ providers.sync = function providersSync (options = {}) {
     return options.provider
   }
 
-  const providerFns = []
-
-  if (useNative(options)) {
-    providerFns.push(nativeProvider)
-  }
-
-  if (useOnePassword(options)) providerFns.push(onePasswordCustody.getSync)
-  if (useBitwarden(options)) providerFns.push(bitwardenCustody.getSync)
+  const providerFns = custodians.providers(options, true)
 
   if (options.noArmor !== true && options.armor !== false) {
     const sesh = new Session()

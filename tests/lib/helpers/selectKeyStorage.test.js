@@ -7,10 +7,13 @@ function setup (ct, answers, availability = {}) {
   answers.forEach((answer, index) => select.onCall(index).resolves(answer))
   const onepassword = sinon.stub().resolves(availability.onepassword || false)
   const bitwarden = sinon.stub().resolves(availability.bitwarden || false)
+  const custodians = proxyquire('../../../src/lib/custodians', {
+    './onepassword': { available: onepassword },
+    './bitwarden': { available: bitwarden }
+  })
   const picker = proxyquire('../../../src/lib/helpers/selectKeyStorage', {
     './prompts': { select },
-    './onePasswordCustody': { available: onepassword },
-    './bitwardenCustody': { available: bitwarden }
+    '../custodians': custodians
   })
   for (const stream of [process.stdin, process.stderr]) {
     const descriptor = Object.getOwnPropertyDescriptor(stream, 'isTTY')

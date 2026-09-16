@@ -1,11 +1,11 @@
 const { execFile, execFileSync } = require('child_process')
 const { derive } = require('@dotenvx/primitives')
 const Session = require('../../db/session')
-const prompts = require('./prompts')
-const createSpinner = require('./createSpinner')
+const prompts = require('../helpers/prompts')
+const createSpinner = require('../helpers/createSpinner')
 let unlockedSession
 
-const armoredKeyDisplay = require('./armoredKeyDisplay')
+const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
 
 const PREFIX = 'DOTENVX_BITWARDEN_'
 const ID = /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i
@@ -167,4 +167,8 @@ async function remove (publicKey) {
   new Session().openStore().delete(`${PREFIX}${publicKey}`)
 }
 
-module.exports = { available, configured, get, getSync, set, delete: remove }
+function enabled (options = {}) {
+  return options.noBitwarden !== true && process.env.DOTENVX_NO_BITWARDEN !== 'true'
+}
+
+module.exports = { id: 'bitwarden', name: 'Bitwarden', enabled, store: set, available, configured, get, getSync, set, delete: remove }

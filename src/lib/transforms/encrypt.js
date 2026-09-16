@@ -8,7 +8,7 @@ const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 const Errors = require('../helpers/errors')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
-const { isDotenvPublicKey, isPlainKey, mutateSrc, mutateKeysSrc } = require('../helpers/cryptography')
+const { isDotenvPublicKey, isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const PostArmorUp = require('../api/postArmorUp')
 const prompts = require('../helpers/prompts')
@@ -17,9 +17,7 @@ const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 const Session = require('../../db/session')
 
 const selectKeyStorage = require('../helpers/selectKeyStorage')
-const storeNativePrivateKey = require('../helpers/storeNativePrivateKey')
-const onePasswordCustody = require('../helpers/onePasswordCustody')
-const bitwardenCustody = require('../helpers/bitwardenCustody')
+const custodians = require('../custodians')
 
 async function encryptTransform (options = {}) {
   const envs = options.envs || []
@@ -87,15 +85,10 @@ async function encryptTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        if (storage === 'bitwarden') {
-          await bitwardenCustody.set(publicKey, privateKey)
-        } else if (storage === 'onepassword') {
-          await onePasswordCustody.set(publicKey, privateKey)
-        } else if (storage === 'native' && storeNativePrivateKey(publicKey, privateKey, fk)) {
-          row.nativePrivateKeyAdded = true
-        } else if (storage !== 'armored') {
-          const mutated = mutateKeysSrc({ keysSrc, privateKeyName, privateKeyValue: privateKey, comment })
-          keysSrc = mutated.keysSrc
+        if (storage !== 'armored') {
+          const stored = await custodians.store(storage, publicKey, privateKey, { keysSrc, privateKeyName, comment, keysFilepath: fk })
+          if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
+          if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
         } else {
           const sesh = new Session()
           const hostname = sesh.hostname()

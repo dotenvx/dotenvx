@@ -356,8 +356,8 @@ program.addHelpText('after', 'Managed Custody:')
 program.addHelpText('after', '  armor                    ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]')
 program.addHelpText('after', '  curl                     ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]')
 
-require('./commands/custody')(program.command('1password', { hidden: true }), '1Password', '../../lib/helpers/onePasswordCustody')
-require('./commands/custody')(program.command('bitwarden', { hidden: true }), 'Bitwarden', '../../lib/helpers/bitwardenCustody')
+require('./commands/custody')(program.command('1password', { hidden: true }), '1Password', 'onepassword')
+require('./commands/custody')(program.command('bitwarden', { hidden: true }), 'Bitwarden', 'bitwarden')
 
 // dotenvx native
 require('./commands/native')(program.command('native', { hidden: true }))

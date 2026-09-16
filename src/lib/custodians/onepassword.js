@@ -1,7 +1,7 @@
 const { execFile, execFileSync } = require('child_process')
 const { derive } = require('@dotenvx/primitives')
 const Session = require('../../db/session')
-const armoredKeyDisplay = require('./armoredKeyDisplay')
+const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
 
 const PREFIX = 'DOTENVX_ONEPASSWORD_'
 const ID = /^[a-z0-9]{26}$/i
@@ -164,4 +164,8 @@ async function remove (publicKey) {
   new Session().openStore().delete(`${PREFIX}${publicKey}`)
 }
 
-module.exports = { available, configured, get, getSync, set, delete: remove }
+function enabled (options = {}) {
+  return options.no1Password !== true && process.env.DOTENVX_NO_1PASSWORD !== 'true'
+}
+
+module.exports = { id: 'onepassword', name: '1Password', enabled, store: set, available, configured, get, getSync, set, delete: remove }

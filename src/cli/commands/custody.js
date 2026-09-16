@@ -1,4 +1,4 @@
-function configureCustodyCommand (command, name, providerPath) {
+function configureCustodyCommand (command, name, custodianId) {
   command.hook('preAction', async () => {
     const Session = require('../../db/session')
     await new Session().notifyUpdate()
@@ -23,7 +23,7 @@ function configureCustodyCommand (command, name, providerPath) {
         const options = this.opts()
         const spinner = await createSpinner({ ...this.optsWithGlobals(), text: `${operation === 'up' || operation === 'push' ? 'storing in' : 'reading from'} ${name}` })
         try {
-          const result = await transfer(require(providerPath), name, operation, options.envFile, options.envKeysFile)
+          const result = await transfer(require('../../lib/custodians').get(custodianId), name, operation, options.envFile, options.envKeysFile)
           if (spinner) spinner.stop()
           const display = armoredKeyDisplay(result.publicKeyValue) || result.privateKeyName
           const messages = { up: `stored in ${name}`, down: `moved to ${options.envKeysFile}`, push: `pushed to ${name}`, pull: `pulled to ${options.envKeysFile}` }
