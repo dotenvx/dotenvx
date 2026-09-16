@@ -20,6 +20,7 @@ async function encryptTransform (options = {}) {
   const ek = options.ek
   const fk = options.fk || '.env.keys'
   let storage
+  const custodyContext = {}
   const noCreate = options.noCreate
 
   const processedEnvs = []
@@ -80,7 +81,7 @@ async function encryptTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        const stored = await custodians.store(storage, publicKey, privateKey, { keysSrc, privateKeyName, comment, keysFilepath: fk })
+        const stored = await custodians.store(storage, publicKey, privateKey, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
         if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
       }

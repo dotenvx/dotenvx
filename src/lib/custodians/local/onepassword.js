@@ -1,5 +1,5 @@
 const { execFile, execFileSync } = require('child_process')
-const { derive } = require('@dotenvx/primitives')
+const matchesStoredKey = require('../../helpers/matchesStoredKey')
 const Session = require('../../../db/session')
 const armoredKeyDisplay = require('../../helpers/armoredKeyDisplay')
 
@@ -98,7 +98,7 @@ function location (publicKey) {
 
 function verified (publicKey, privateKey) {
   try {
-    if (derive(privateKey) === publicKey) return { [publicKey]: privateKey }
+    if (matchesStoredKey(publicKey, privateKey)) return { [publicKey]: privateKey }
   } catch {}
   throw failure('1Password private key does not match the .env public key')
 }

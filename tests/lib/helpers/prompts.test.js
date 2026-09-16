@@ -69,3 +69,21 @@ t.test('select does not require IO context', async ct => {
 
   ct.end()
 })
+
+t.test('confirm defaults to false and sends input/output context to Enquirer', async ct => {
+  const prompt = sinon.stub().resolves({ value: false })
+  function EnquirerMock () { this.prompt = prompt }
+  const prompts = proxyquire('../../../src/lib/helpers/prompts', {
+    '@dotenvx/tooling': { ...tooling, Enquirer: EnquirerMock }
+  })
+  const input = {}
+  const output = {}
+  ct.equal(await prompts.confirm({ message: 'Add a password lock?' }, { input, output }), false)
+  ct.same(prompt.firstCall.args[0], {
+    type: 'confirm', name: 'value', message: 'Add a password lock?', initial: false, stdin: input, stdout: output
+  })
+  prompt.resolves({ value: true })
+  ct.equal(await prompts.confirm({ message: 'Add a password lock?' }), true)
+  prompt.rejects(new Error('cancelled'))
+  await ct.rejects(prompts.confirm({ message: 'Add a password lock?' }), { code: 'PROMPT_CANCELLED' })
+})

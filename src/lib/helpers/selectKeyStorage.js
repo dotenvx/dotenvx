@@ -17,10 +17,14 @@ async function selectKeyStorage (options = {}) {
     choices
   }, context)
 
-  return prompts.select({
+  const storage = await prompts.select({
     message: custody === 'local' ? 'Choose local custody' : 'Choose managed custody',
     choices: custody === 'local' ? localChoices : managedChoices
   }, context)
+
+  if (custody !== 'local') return storage
+  const lock = await prompts.confirm({ message: 'Add a password lock?', initial: false }, context)
+  return lock ? { id: storage, lock: true } : storage
 }
 
 module.exports = selectKeyStorage

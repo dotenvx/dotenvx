@@ -3,6 +3,7 @@ const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
 function setup (ct, answers, availability = {}) {
+  const confirm = sinon.stub().resolves(false)
   const select = sinon.stub()
   answers.forEach((answer, index) => select.onCall(index).resolves(answer))
   const onepassword = sinon.stub().resolves(availability.onepassword || false)
@@ -12,7 +13,7 @@ function setup (ct, answers, availability = {}) {
     './local/bitwarden': { available: bitwarden }
   })
   const picker = proxyquire('../../../src/lib/helpers/selectKeyStorage', {
-    './prompts': { select },
+    './prompts': { select, confirm },
     '../custodians': custodians
   })
   for (const stream of [process.stdin, process.stderr]) {
@@ -31,7 +32,7 @@ function setup (ct, answers, availability = {}) {
       else process.env[key] = original
     })
   }
-  return { picker, select, onepassword, bitwarden }
+  return { picker, select, confirm, onepassword, bitwarden }
 }
 
 t.test('local custody lists all stores and disables unavailable choices', async ct => {
@@ -76,7 +77,7 @@ t.test('explicit opt-outs disable installed stores without probing them', async 
   ct.equal(bitwarden.callCount, 0)
 })
 
-t.test('file remains selectable last when other stores are unavailable', async ct => {
+t.test('file choices remain selectable after other stores', async ct => {
   const { picker, select } = setup(ct, ['local', 'file'])
   ct.equal(await picker({ noNative: true, noArmor: true }), 'file')
   ct.equal(select.callCount, 2)
@@ -89,4 +90,27 @@ t.test('noninteractive use preserves defaults and does not probe stores', async 
   ct.equal(select.callCount, 0)
   ct.equal(onepassword.callCount, 0)
   ct.equal(bitwarden.callCount, 0)
+})
+
+t.test('local password locking defaults to false for every store', async ct => {
+  for (const storage of ['native', 'onepassword', 'bitwarden', 'file']) {
+    const { picker, confirm } = setup(ct, ['local', storage])
+    ct.equal(await picker(), storage)
+    ct.same(confirm.firstCall.args[0], { message: 'Add a password lock?', initial: false })
+  }
+})
+
+t.test('opting in keeps custody and locking separate', async ct => {
+  for (const storage of ['native', 'onepassword', 'bitwarden', 'file']) {
+    const { picker, confirm } = setup(ct, ['local', storage])
+    confirm.resolves(true)
+    ct.same(await picker(), { id: storage, lock: true })
+  }
+})
+
+t.test('managed and noninteractive choices never ask about locking', async ct => {
+  const { picker, confirm } = setup(ct, ['managed', 'armored'])
+  ct.equal(await picker(), 'armored')
+  ct.equal(await picker({ noCreate: true, noNative: true }), 'file')
+  ct.equal(confirm.callCount, 0)
 })

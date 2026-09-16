@@ -1,5 +1,5 @@
 const { execFile, execFileSync } = require('child_process')
-const { derive } = require('@dotenvx/primitives')
+const matchesStoredKey = require('../../helpers/matchesStoredKey')
 const Session = require('../../../db/session')
 const prompts = require('../../helpers/prompts')
 const createSpinner = require('../../helpers/createSpinner')
@@ -110,7 +110,7 @@ function checkIdentity (status, loc) {
 }
 
 function verified (publicKey, privateKey) {
-  try { if (derive(privateKey) === publicKey) return { [publicKey]: privateKey } } catch {}
+  try { if (matchesStoredKey(publicKey, privateKey)) return { [publicKey]: privateKey } } catch {}
   throw failure('Bitwarden private key does not match the .env public key')
 }
 
@@ -155,6 +155,7 @@ async function set (publicKey, privateKey) {
   if (!item || !ID.test(item.id || '') || item.organizationId) throw failure('Bitwarden did not return a personal vault item')
   const saved = (await run(['get', 'password', item.id])).trim()
   verified(publicKey, saved)
+  if (saved !== privateKey) throw failure('could not verify private key in Bitwarden')
   const loc = { item: item.id, userId: status.userId, serverUrl: status.serverUrl || '' }
   new Session().createStore().set(`${PREFIX}${publicKey}`, Buffer.from(JSON.stringify(loc)).toString('base64'))
 }

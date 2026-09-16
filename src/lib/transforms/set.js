@@ -21,6 +21,7 @@ async function setTransform (options = {}) {
   const fk = options.fk || '.env.keys'
   const noArmor = options.noArmor
   let storage
+  const custodyContext = {}
   const noNative = options.noNative
   const noCreate = options.noCreate
   const noEncrypt = !options.encrypt || isPlainKey(key)
@@ -84,7 +85,7 @@ async function setTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        const stored = await custodians.store(storage, publicKey, privateKey, { keysSrc, privateKeyName, comment, keysFilepath: fk })
+        const stored = await custodians.store(storage, publicKey, privateKey, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
         if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
       }

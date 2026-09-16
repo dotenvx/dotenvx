@@ -25,13 +25,14 @@ t.test('armor commands are native cli subcommands', async (ct) => {
     cwd: process.cwd(),
     encoding: 'utf8'
   })
+  const hiddenHelp = execFileSync(process.execPath, ['src/cli/dotenvx.js', 'hidden'], { encoding: 'utf8' })
   const armorHelp = execFileSync(process.execPath, ['src/cli/dotenvx.js', 'armor', '--help'], {
     cwd: process.cwd(),
     encoding: 'utf8'
   })
 
-  ct.match(rootHelp, /\n\s{2}armor\s+⛨ move private keys in\/out of Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'root help shows curated armor line')
-  ct.match(rootHelp, /\n\s{2}curl\s+⛨ call authenticated api Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'root help shows curated curl line')
+  ct.match(hiddenHelp, /\n\s{2}armor\s+⛨ move private keys in\/out of Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'hidden menu shows curated armor line')
+  ct.match(hiddenHelp, /\n\s{2}curl\s+⛨ call authenticated api Dotenvx Armor \[www\.dotenvx\.com\/armor\]/, 'hidden menu shows curated curl line')
   ct.notMatch(rootHelp, /\n {2}armor {2,}move private keys off-device/, 'hides native armor command from root command list')
 
   for (const commandName of nativeCommands) {

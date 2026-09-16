@@ -211,7 +211,7 @@ program.command('keypair')
   })
 
 // dotenvx ls
-program.command('ls')
+program.command('ls', { hidden: true })
   .description('print all .env files in a tree structure')
   .argument('[directory]', 'directory to list .env files from', '.')
   .option('-f, --env-file <filenames...>', 'path(s) to your env file(s)', '.env*')
@@ -242,7 +242,7 @@ program.command('validate')
   })
 
 // dotenvx gitignore
-program.command('gitignore')
+program.command('gitignore', { hidden: true })
   .description('append to .gitignore')
   .addHelpText('after', help.gitignore)
   .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
@@ -251,7 +251,7 @@ program.command('gitignore')
   })
 
 // dotenvx genexample
-program.command('genexample')
+program.command('genexample', { hidden: true })
   .description('generate .env.example')
   .argument('[directory]', 'directory to generate from', '.')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
@@ -270,7 +270,7 @@ program.command('precommit')
   })
 
 // dotenvx prebuild
-program.command('prebuild')
+program.command('prebuild', { hidden: true })
   .description('prevent including .env files in docker')
   .addHelpText('after', help.prebuild)
   .argument('[directory]', 'directory to prevent including .env files from', '.')
@@ -285,6 +285,13 @@ program.command('doctor', { hidden: true })
   .action(function (...args) {
     return require('./actions/doctor').apply(this, args)
   })
+
+// dotenvx hidden (a menu of top-level commands)
+program.command('hidden')
+  .allowExcessArguments(false)
+  .description("dotenvx's hidden menu - like in-n-out")
+  .addHelpText('after', '\nHidden Commands:\n  genexample [directory] generate .env.example\n  gitignore              append to .gitignore\n  ls [directory]         print all .env files in a tree structure\n  prebuild [directory]   prevent including .env files in docker\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nRun directly: dotenvx <command>')
+  .action(function () { this.outputHelp() })
 
 // dotenvx update
 program.command('update')
@@ -343,18 +350,6 @@ program.command('help [command]')
       program.outputHelp()
     }
   })
-
-// security sections (hidden commands advertised here)
-program.addHelpText('after', ' ')
-program.addHelpText('after', 'Local Custody:')
-program.addHelpText('after', '  lock                     ⊡ lock private keys with a local passphrase')
-program.addHelpText('after', '  native                   ⌥ move private keys in/out of your OS secret store')
-program.addHelpText('after', '  1password                □ move private keys in/out of 1Password')
-program.addHelpText('after', '  bitwarden                □ move private keys in/out of Bitwarden')
-program.addHelpText('after', ' ')
-program.addHelpText('after', 'Managed Custody:')
-program.addHelpText('after', '  armor                    ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]')
-program.addHelpText('after', '  curl                     ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]')
 
 require('./commands/custody')(program.command('1password', { hidden: true }), '1Password', 'onepassword')
 require('./commands/custody')(program.command('bitwarden', { hidden: true }), 'Bitwarden', 'bitwarden')
