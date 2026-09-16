@@ -31,6 +31,7 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
     noNative: options.native === false || options.noNative === true,
     no1Password: options['1password'] === false || options.no1Password === true,
     noBitwarden: options.bitwarden === false || options.noBitwarden === true,
+    lockPassword: options.lockPassword,
     token: options.token,
     command,
     onStatus

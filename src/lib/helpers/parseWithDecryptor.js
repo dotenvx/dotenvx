@@ -1,5 +1,6 @@
 const { parse, parseSync, parsearrays, scan, encrypted } = require('@dotenvx/primitives')
 const prepareProxy = require('../proxy/prepareProxy')
+const withLockedKeys = require('./withLockedKeys')
 const SERVER_SIDE_DECRYPTION_REQUIRED = 'SERVER_SIDE_DECRYPTION_REQUIRED'
 
 function decryptOptions (error) {
@@ -43,6 +44,7 @@ parseWithDecryptor.arrays = async function parsearraysWithDecryptor (src, option
 }
 
 async function parseWith (src, options, parser) {
+  options = withLockedKeys(options)
   try {
     return await parser(src, options)
   } catch (error) {
@@ -64,6 +66,7 @@ async function parseWith (src, options, parser) {
 }
 
 parseWithDecryptor.sync = function parseWithDecryptorSync (src, options = {}) {
+  options = withLockedKeys(options, true)
   try {
     return parseSync(src, options)
   } catch (error) {

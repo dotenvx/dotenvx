@@ -4,6 +4,7 @@ const { logger } = require('../../../shared/logger')
 const LockUp = require('./../../../lib/services/lockUp')
 const armoredKeyDisplay = require('../../../lib/helpers/armoredKeyDisplay')
 const prompts = require('../../../lib/helpers/prompts')
+const resolveLockPassword = require('../../../lib/helpers/resolveLockPassword')
 
 async function up () {
   const options = this.opts()
@@ -23,14 +24,17 @@ async function up () {
     }))
 
     if (plan.matches.length > 0) {
-      const passphrase = await prompts.password({
-        message: 'passphrase',
-        prefix: '⊡',
-        separator: '='
-      }, {
-        input: process.stdin,
-        output: process.stderr
-      })
+      const preset = resolveLockPassword(options)
+      const passphrase = preset !== undefined
+        ? preset
+        : await prompts.password({
+          message: 'passphrase',
+          prefix: '⊡',
+          separator: '='
+        }, {
+          input: process.stdin,
+          output: process.stderr
+        })
 
       results = lockUp.run((privateKey, publicKey) => lockedValue(privateKey, passphrase, publicKey)).results
     }

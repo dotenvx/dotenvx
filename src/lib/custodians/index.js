@@ -46,9 +46,9 @@ function createRegistry (custodians) {
         if (!custodian.enabled(options) || !custodian.get || (custodian.configured && !custodian.configured())) continue
         if (typeof custodian[method] !== 'function') throw new Error(`custodian ${custodian.id} does not support synchronous reads`)
         if (sync) {
-          providers.push(publicKey => protection.unlockSync(publicKey, custodian[method](publicKey)))
+          providers.push(publicKey => protection.unlockSync(publicKey, custodian[method](publicKey), options))
         } else {
-          providers.push(async publicKey => protection.unlock(publicKey, await custodian[method](publicKey)))
+          providers.push(async publicKey => protection.unlock(publicKey, await custodian[method](publicKey), options))
         }
       }
       return providers

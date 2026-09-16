@@ -53,6 +53,7 @@ function buildOptions (options, processEnv) {
     noNative: options.noNative,
     no1Password: options.no1Password,
     noBitwarden: options.noBitwarden,
+    lockPassword: options.lockPassword,
     onStatus: options.onStatus
   }
 }
