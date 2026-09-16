@@ -1,6 +1,6 @@
 const t = require('tap')
 const { createRegistry } = require('../../../src/lib/custodians')
-const file = require('../../../src/lib/custodians/file')
+const file = require('../../../src/lib/custodians/local/file')
 
 function plugin (id, overrides = {}) {
   return { id, name: id, enabled: () => true, available: async () => true, store: async () => {}, ...overrides }

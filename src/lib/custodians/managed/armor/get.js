@@ -1,9 +1,9 @@
-const Session = require('../../../db/session')
-const ArmorKeyring = require('../../services/armorKeyring')
-const armoredKeyDisplay = require('../../helpers/armoredKeyDisplay')
-const isNetworkError = require('../../helpers/isNetworkError')
-const listenForOpenKey = require('../../helpers/listenForOpenKey')
-const openUrl = require('../../helpers/openUrl')
+const Session = require('../../../../db/session')
+const ArmorKeyring = require('../../../services/armorKeyring')
+const armoredKeyDisplay = require('../../../helpers/armoredKeyDisplay')
+const isNetworkError = require('../../../helpers/isNetworkError')
+const listenForOpenKey = require('../../../helpers/listenForOpenKey')
+const openUrl = require('../../../helpers/openUrl')
 
 async function index (publicKeyHex, options = {}) {
   const sesh = new Session()

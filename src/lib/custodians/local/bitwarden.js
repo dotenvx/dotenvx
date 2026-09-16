@@ -1,11 +1,11 @@
 const { execFile, execFileSync } = require('child_process')
 const { derive } = require('@dotenvx/primitives')
-const Session = require('../../db/session')
-const prompts = require('../helpers/prompts')
-const createSpinner = require('../helpers/createSpinner')
+const Session = require('../../../db/session')
+const prompts = require('../../helpers/prompts')
+const createSpinner = require('../../helpers/createSpinner')
 let unlockedSession
 
-const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
+const armoredKeyDisplay = require('../../helpers/armoredKeyDisplay')
 
 const PREFIX = 'DOTENVX_BITWARDEN_'
 const ID = /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i

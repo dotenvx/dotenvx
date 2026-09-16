@@ -8,7 +8,8 @@ async function selectKeyStorage (options = {}) {
   const localChoices = await custodians.choices(options)
 
   const choices = [{ name: '⛉ Local Custody', value: 'local', disabled: false }]
-  if (!options.noArmor) choices.push({ name: '⛊ Managed Custody', value: 'managed' })
+  const managedChoices = (await custodians.choices(options, 'managed')).filter(choice => !choice.disabled).map(({ name, value }) => ({ name, value }))
+  if (managedChoices.length) choices.push({ name: '⛊ Managed Custody', value: 'managed' })
 
   const context = { input: process.stdin, output: process.stderr }
   const custody = await prompts.select({
@@ -18,7 +19,7 @@ async function selectKeyStorage (options = {}) {
 
   return prompts.select({
     message: custody === 'local' ? 'Choose local custody' : 'Choose managed custody',
-    choices: custody === 'local' ? localChoices : [{ name: '⛨ Armor', value: 'armored' }]
+    choices: custody === 'local' ? localChoices : managedChoices
   }, context)
 }
 

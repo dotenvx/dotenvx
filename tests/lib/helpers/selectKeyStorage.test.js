@@ -8,8 +8,8 @@ function setup (ct, answers, availability = {}) {
   const onepassword = sinon.stub().resolves(availability.onepassword || false)
   const bitwarden = sinon.stub().resolves(availability.bitwarden || false)
   const custodians = proxyquire('../../../src/lib/custodians', {
-    './onepassword': { available: onepassword },
-    './bitwarden': { available: bitwarden }
+    './local/onepassword': { available: onepassword },
+    './local/bitwarden': { available: bitwarden }
   })
   const picker = proxyquire('../../../src/lib/helpers/selectKeyStorage', {
     './prompts': { select },

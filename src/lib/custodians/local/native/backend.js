@@ -1,6 +1,6 @@
-const macosKeychain = require('../../helpers/macosKeychain')
-const windowsCredentialManager = require('../../helpers/windowsCredentialManager')
-const linuxSecretService = require('../../helpers/linuxSecretService')
+const macosKeychain = require('../../../helpers/macosKeychain')
+const windowsCredentialManager = require('../../../helpers/windowsCredentialManager')
+const linuxSecretService = require('../../../helpers/linuxSecretService')
 
 function get (key) {
   if (process.platform === 'win32') {

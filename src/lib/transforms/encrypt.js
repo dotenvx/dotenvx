@@ -10,11 +10,6 @@ const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
 const { isDotenvPublicKey, isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
-const PostArmorUp = require('../api/postArmorUp')
-const prompts = require('../helpers/prompts')
-const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
-const isTeamRequiredError = require('../helpers/isTeamRequiredError')
-const Session = require('../../db/session')
 
 const selectKeyStorage = require('../helpers/selectKeyStorage')
 const custodians = require('../custodians')
@@ -85,41 +80,9 @@ async function encryptTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        if (storage !== 'armored') {
-          const stored = await custodians.store(storage, publicKey, privateKey, { keysSrc, privateKeyName, comment, keysFilepath: fk })
-          if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
-          if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
-        } else {
-          const sesh = new Session()
-          const hostname = sesh.hostname()
-          const token = sesh.token()
-          const devicePublicKey = sesh.devicePublicKey()
-
-          try {
-            await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined).run()
-          } catch (error) {
-            if (!isTeamRequiredError(error)) {
-              throw error
-            }
-
-            const choices = teamChoicesFromMeta(error.meta)
-
-            let team = choices[0].value
-            if (choices.length > 1) {
-              team = await prompts.select({
-                message: 'Select team',
-                choices
-              }, {
-                input: process.stdin,
-                output: process.stderr
-              })
-            }
-
-            await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team).run()
-          }
-
-          // don't set keysSrc (in armor)
-        }
+        const stored = await custodians.store(storage, publicKey, privateKey, { keysSrc, privateKeyName, comment, keysFilepath: fk })
+        if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
+        if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
       }
 
       const { parsed } = scan(row.envSrc, { ik, ek })

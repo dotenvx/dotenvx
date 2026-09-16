@@ -1,6 +1,6 @@
 const nativeProvider = require('./backend')
-const armoredKeyDisplay = require('../../helpers/armoredKeyDisplay')
-const { logger } = require('../../../shared/logger')
+const armoredKeyDisplay = require('../../../helpers/armoredKeyDisplay')
+const { logger } = require('../../../../shared/logger')
 
 function storeNativePrivateKey (publicKey, privateKey, keysFilepath) {
   try {

@@ -1,7 +1,7 @@
 const { execFile, execFileSync } = require('child_process')
 const { derive } = require('@dotenvx/primitives')
-const Session = require('../../db/session')
-const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
+const Session = require('../../../db/session')
+const armoredKeyDisplay = require('../../helpers/armoredKeyDisplay')
 
 const PREFIX = 'DOTENVX_ONEPASSWORD_'
 const ID = /^[a-z0-9]{26}$/i
