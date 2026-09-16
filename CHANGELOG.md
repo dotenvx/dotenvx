@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.28.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.29.0...main)
+
+## [2.29.0](https://github.com/dotenvx/dotenvx/compare/v2.28.0...v2.29.0) (2026-09-16)
+
+### Added
+
+* Optionally lock with a passphrase any private key, regardless of where custodied ([#973](https://github.com/dotenvx/dotenvx/pull/973))
+
+### Changed
+
+* Move some commands under a hidden menu ([#973](https://github.com/dotenvx/dotenvx/pull/973))
 
 ## [2.28.0](https://github.com/dotenvx/dotenvx/compare/v2.27.0...v2.28.0) (2026-09-16)
 
