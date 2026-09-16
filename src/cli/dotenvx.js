@@ -224,6 +224,7 @@ program.command('ls')
 // dotenvx validate
 program.command('validate')
   .description('validate .env file(s) against Envfile')
+  .option('--strict', 'process.exit(1) on any errors, including missing env files', false)
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)

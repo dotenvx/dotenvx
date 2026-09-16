@@ -1583,6 +1583,27 @@ $ dotenvx run -- node index.js
 
 Envfile validation failures stop the command. Other loading errors require `--strict` to stop execution.
 
+Use exact file blocks to override rules for selected files:
+
+```ruby
+env "HELLO"
+env "PORT", type: "port"
+env "STRIPE_SECRET_KEY", optional: true
+
+file ".env.production" do
+  encrypted true
+  env "STRIPE_SECRET_KEY", required: true
+  env "PORT", min: 1024
+end
+```
+
+Both `dotenvx run -f .env.production -- node index.js` and `dotenvx validate -f .env.production` use the production rules. Block declarations inherit top-level options and override only the options they specify. A block's `encrypted` directive applies to all inherited and newly declared variables; a per-variable `encrypted:` option inside that block overrides it.
+
+Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_PATH` use their resolved file paths.
+
+When no file block matches, top-level rules apply. When one or more blocks match, each matching block's inherited rules must hold for the final resolved environment. Shell values, fallback files, and `--overload` cannot bypass them. A selected missing file still activates its block. Multiple matching blocks cannot cancel each other's restrictions; conflicting proxy domains are rejected. Blocks cannot be nested, and duplicate declarations within one scope or duplicate file blocks are errors.
+
+
 </details>
 <details><summary>`run --strict`</summary><br>
 
@@ -2788,7 +2809,7 @@ $ dotenvx validate
 $ dotenvx validate -f .env.production -fk .env.keys
 ```
 
-The command enforces required values, types, enums, bounds, and encryption requirements. It exits with code `1` on loading or validation errors, or prints `▣ valid (.env)` (listing the loaded input files) and exits with code `0` on success. It does not change your shell's environment.
+The command enforces required values, types, enums, bounds, and encryption requirements. It exits with code `1` on validation or other loading errors. Missing env files are reported but do not fail validation when the resolved values satisfy Envfile; use `--strict` to make missing files fatal too. On success, it prints `▣ valid (.env)` (listing the loaded input files) and exits with code `0` on success. It does not change your shell's environment.
 
 A missing Envfile reports `MISSING_ENVFILE`; invalid syntax reports `MALFORMED_ENVFILE`.
 

@@ -2,26 +2,18 @@ const path = require('path')
 const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
-const envsResolver = require('./../../lib/resolvers/envs')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const Session = require('../../db/session')
+const prepareValidatedEnv = require('../../lib/services/validate')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
-const normalizeDotenvConfigPath = require('../../lib/helpers/normalizeDotenvConfigPath')
-const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
-const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
 const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
 const configureProxy = require('../../lib/proxy/configureProxy')
-const readEnvfile = require('../../lib/helpers/readEnvfile')
-const validateEnvfile = require('../../lib/helpers/validateEnvfile')
-
-const { determine } = require('./../../lib/helpers/envResolution')
 
 function inferCommandArgsFromProcessArgv (argv) {
   const runIndex = argv.indexOf('run')
@@ -90,12 +82,6 @@ async function run () {
 
   const ignore = options.ignore || []
 
-  const sesh = new Session()
-  const proxyToken = options.token || process.env.DOTENVX_TOKEN
-  const noArmor = options.armor === false || (!proxyToken && (await sesh.noArmor()))
-  const proxyCredentials = noArmor ? undefined : []
-  const noKeychain = options.native === false || options.noNative === true
-
   if (commandArgs.length < 1) {
     if (spinner) spinner.stop()
 
@@ -112,41 +98,26 @@ async function run () {
   }
 
   try {
-    const schema = readEnvfile()
-    const { exists: hasEnvfile, proxyRules } = schema
-    if (proxyRules.size > 0 && noArmor) throw new Error('Envfile proxy requires Armor. Enable Armor and authenticate before running.')
-
-    let envs = buildCommandEnvs(normalizeDotenvConfigPath(this.envs), options.convention)
-    envs = determine(envs, process.env)
-
     const {
       processedEnvs,
-      readableFilepaths
-    } = await envsResolver({
-      envs,
+      readableFilepaths,
+      hasEnvfile,
       proxyCredentials,
-      proxyRules,
-      overload: options.overload,
+      proxyToken,
+      session: sesh,
+      proxyError,
+      validationError: error
+    } = await prepareValidatedEnv({
+      envs: this.envs,
+      options,
       processEnv: process.env,
-      envKeysFile: resolveEnvKeysFile(options.envKeysFile),
-      noArmor,
-      noKeychain,
-      no1Password: options['1password'] === false || options.no1Password === true,
-      noBitwarden: options.bitwarden === false || options.noBitwarden === true,
-      token: options.token,
+      requireEnvfile: false,
       command: commandArgs,
       onStatus: (text) => {
-        if (spinner && text) {
-          spinner.text = text
-        }
+        if (spinner && text) spinner.text = text
       }
     })
-
-    for (const name of proxyRules.keys()) {
-      if (process.env[name] !== undefined && !(proxyCredentials || []).some(credential => credential.name === name && credential.placeholder === process.env[name])) {
-        throw new Error(`Envfile proxy requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload.`)
-      }
-    }
+    if (proxyError) throw proxyError
 
     if (redactEnabled) {
       sensitiveValues = redactedValues(processedEnvs)
@@ -157,7 +128,6 @@ async function run () {
       maskProcessedEnvs(processedEnvs, commandEnv, showChar)
     }
 
-    const error = validateEnvfile(schema, process.env, processedEnvs)
     if (error) {
       if (ignore.includes(error.code)) {
         logger.verbose(`ignored: ${error.message}`)

@@ -1,14 +1,23 @@
 Document
-  = _ encrypted:EncryptedDefault? _ declarations:(Declaration _)* {
-      return declarations.map(item => ({ encrypted: encrypted === true, ...item[0] }));
+  = _ encrypted:EncryptedDefault? _ entries:((FileBlock / Declaration) _)* {
+      return { encrypted: encrypted === true, declarations: entries.map(item => item[0]).filter(item => !item.file), files: entries.map(item => item[0]).filter(item => item.file) };
     }
+
+FileBlock
+  = "file" [ \t]+ file:Filename [ \t]+ "do" [ \t]* Comment? Newline _ encrypted:EncryptedDefault? _ declarations:(Declaration _)* "end" [ \t]* Comment? (Newline / !.) {
+      return { file, encrypted, declarations: declarations.map(item => item[0]) };
+    }
+
+Filename "a quoted filename"
+  = '"' value:$([^"\r\n\0]+) '"' { return value; }
+  / "'" value:$([^'\r\n\0]+) "'" { return value; }
 
 EncryptedDefault
   = "encrypted" [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) { return value; }
 
 Declaration
   = "env" [ \t]+ name:Name options:Option* [ \t]* Comment? (Newline / !.) {
-      const declaration = { name, proxy: false, required: true };
+      const declaration = { name };
       const seen = new Set();
       for (const option of options) {
         if (seen.has(option.key)) error(`Duplicate Envfile option: ${option.key}`);

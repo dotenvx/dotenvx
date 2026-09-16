@@ -7,30 +7,16 @@ const isValidUrl = require('./isValidUrl')
 const isValidEmail = require('./isValidEmail')
 const formatEnvfileSyntaxError = require('./formatEnvfileSyntaxError')
 
-module.exports = function readEnvfile (filepath = path.resolve('Envfile')) {
+function compileDeclarations (declarations) {
   const proxyRules = new Map()
   const requiredKeys = []
   const types = new Map()
   const enums = new Map()
   const ranges = new Map()
   const encryptedKeys = []
-  let src
-  try {
-    src = fs.readFileSync(filepath, 'utf8')
-  } catch (error) {
-    if (error.code === 'ENOENT') return { exists: false, proxyRules, requiredKeys, types, enums, ranges, encryptedKeys }
-    throw error
-  }
-
-  let declarations
-  try {
-    declarations = parser.parse(src)
-  } catch (error) {
-    throw new Errors({ message: formatEnvfileSyntaxError(error, src, filepath) }).malformedEnvfile()
-  }
-
   const names = new Set()
-  for (const declaration of declarations) {
+  for (const input of declarations) {
+    const declaration = { ...input }
     if (names.has(declaration.name)) throw new Errors({ message: `Duplicate Envfile declaration: ${declaration.name}` }).malformedEnvfile()
     names.add(declaration.name)
     if (declaration.encrypted) encryptedKeys.push(declaration.name)
@@ -77,4 +63,66 @@ module.exports = function readEnvfile (filepath = path.resolve('Envfile')) {
     }
   }
   return { exists: true, proxyRules, requiredKeys, types, enums, ranges, encryptedKeys }
+}
+
+module.exports = function readEnvfile (filepath = path.resolve('Envfile'), envFiles = ['.env']) {
+  let src
+  try {
+    src = fs.readFileSync(filepath, 'utf8')
+  } catch (error) {
+    if (error.code === 'ENOENT') return { ...compileDeclarations([]), exists: false }
+    throw error
+  }
+
+  let document
+  try {
+    document = parser.parse(src)
+  } catch (error) {
+    throw new Errors({ message: formatEnvfileSyntaxError(error, src, filepath) }).malformedEnvfile()
+  }
+
+  const defaults = { proxy: false, required: true, encrypted: document.encrypted }
+  const base = document.declarations.map(item => ({ ...defaults, ...item }))
+  const baseSchema = compileDeclarations(base)
+  const selected = new Set(envFiles.map(file => path.resolve(file)))
+  const seen = new Set()
+  const active = []
+  for (const block of document.files) {
+    if (/[*?[\]]/.test(block.file)) {
+      throw new Errors({ message: `File blocks require an exact filename: ${block.file}` }).malformedEnvfile()
+    }
+    const file = path.resolve(path.dirname(filepath), block.file)
+    if (seen.has(file)) throw new Errors({ message: `Duplicate Envfile file block: ${block.file}` }).malformedEnvfile()
+    seen.add(file)
+    const merged = new Map(base.map(item => [item.name, { ...item }]))
+    if (block.encrypted !== null && block.encrypted !== undefined) {
+      for (const item of merged.values()) item.encrypted = block.encrypted
+    }
+    const names = new Set()
+    for (const item of block.declarations) {
+      if (names.has(item.name)) throw new Errors({ message: `Duplicate Envfile declaration in ${block.file}: ${item.name}` }).malformedEnvfile()
+      names.add(item.name)
+      merged.set(item.name, {
+        ...defaults,
+        ...(block.encrypted === null || block.encrypted === undefined ? {} : { encrypted: block.encrypted }),
+        ...merged.get(item.name),
+        ...item
+      })
+    }
+    const schema = compileDeclarations([...merged.values()])
+    if (selected.has(file)) active.push(schema)
+  }
+  if (active.length === 0) return baseSchema
+
+  // Each selected file policy must hold, regardless of file loading order.
+  const proxyRules = new Map()
+  for (const schema of active) {
+    for (const [key, host] of schema.proxyRules) {
+      if (proxyRules.has(key) && proxyRules.get(key) !== host) {
+        throw new Errors({ message: `Conflicting Envfile proxy domains for ${key} in selected file blocks` }).malformedEnvfile()
+      }
+      proxyRules.set(key, host)
+    }
+  }
+  return { ...active[0], proxyRules, schemas: active }
 }
