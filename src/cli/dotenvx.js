@@ -276,7 +276,7 @@ program.command('precommit')
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
   .option('-i, --install', 'install a pre-commit hook and required Git clean filter')
   .option('--global', 'with --install, install the clean filter for all repositories')
-  .option('--clean <path>', 'validate Git filter input from stdin')
+  .addOption(program.createOption('--clean <path>', 'validate Git filter input from stdin').hideHelp())
   .action(function (...args) {
     return require('./actions/ext/precommit').apply(this, args)
   })

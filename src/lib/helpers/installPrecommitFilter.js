@@ -34,6 +34,8 @@ function installPrecommitFilter (global = false) {
     : `${quote(process.execPath)} ${quote(path.resolve(__dirname, '../../cli/dotenvx.js'))}`
 
   const scope = global ? '--global' : '--local'
+  // Git's filter_buffer_or_fd shell-quotes the filename with sq_quote_buf
+  // before substituting %f (convert.c). Keep the placeholder unquoted here.
   git('config', scope, 'filter.dotenvx.clean', `${executable} precommit --clean %f`)
   git('config', scope, 'filter.dotenvx.required', 'true')
   fs.mkdirSync(path.dirname(attributesPath), { recursive: true })

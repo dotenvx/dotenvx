@@ -139,3 +139,37 @@ t.test('clean mode reads stdin, preserves stdout, and never leaks rejected conte
   ct.equal(success.stdout, allowed)
   ct.end()
 })
+
+t.test('Git quotes shell metacharacters in %f without executing filename contents', ct => {
+  const { cwd, git, install } = repo(ct)
+  ct.equal(install().status, 0)
+  const filenames = [
+    '.env; touch injected; #',
+    '.env$(touch injected)',
+    '.env`touch injected`',
+    ".env'; touch injected; #",
+    '.env"; touch injected; #',
+    '.env\ntouch injected\n#',
+    '.env | touch injected #',
+    '.env space ! %f \\ name'
+  ]
+  for (const filename of filenames) {
+    const filepath = path.join(cwd, filename)
+    fs.writeFileSync(filepath, 'SECRET=plaintext\n')
+    const rejected = git('add', '-f', '--', filename)
+    ct.not(rejected.status, 0, 'plaintext is rejected')
+    ct.match(rejected.stderr, `refusing to stage ${JSON.stringify(filename)}:`, 'filter receives the literal filename')
+    ct.equal(git('ls-files', '-z').stdout, '', 'rejected file is not staged')
+    ct.notOk(fs.existsSync(path.join(cwd, 'injected')), 'filename commands did not execute')
+
+    const encrypted = 'SECRET=encrypted:example\n'
+    fs.writeFileSync(filepath, encrypted)
+    const accepted = git('add', '-A')
+    ct.equal(accepted.status, 0, accepted.stderr)
+    ct.equal(git('ls-files', '-z').stdout, filename + '\0', 'literal filename is staged')
+    ct.equal(git('show', `:${filename}`).stdout, encrypted, 'encrypted content is unchanged')
+    ct.notOk(fs.existsSync(path.join(cwd, 'injected')), 'filename commands did not execute')
+    ct.equal(git('rm', '-f', '--', filename).status, 0)
+  }
+  ct.end()
+})
