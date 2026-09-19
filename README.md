@@ -2936,11 +2936,22 @@ $ dotenvx precommit
 </details>
 <details><summary>`precommit --install`</summary><br>
 
-Install a shell script to `.git/hooks/pre-commit` to prevent accidentally committing any `.env` files to source control.
+Install a pre-commit hook and a required Git clean filter in the current repository. The filter rejects plaintext `.env*` files before staging, including with `git add -A` or `git add -f`. Encrypted files pass through unchanged. `.env.example`, `.env.vault`, and `.env.x` retain their exemptions; `.env.keys*` files are always rejected.
+
+The filter uses repository-local Git configuration and `info/attributes`; run the installer in each clone. Keep the installed dotenvx executable available, or staging protected files will fail. It does not inspect content already staged before installation, and local Git configuration can be overridden.
+
+To enable the clean filter for all existing and future repositories for your user, run this once, even outside a Git repository:
+
+```sh
+$ dotenvx precommit --install --global
+```
+
+This writes the filter configuration to your global Git config and adds the `.env*` rule to your global attributes file. It preserves an existing `core.attributesFile`; otherwise it uses `$XDG_CONFIG_HOME/git/attributes` or `~/.config/git/attributes`. It leaves hooks unchanged. Repository attributes and configuration can override the global protection. Use a persistent dotenvx installation: moving or removing its executable requires reinstalling the filter.
 
 ```sh
 $ dotenvx precommit --install
 ▣ dotenvx precommit installed [.git/hooks/pre-commit]
+▣ dotenvx required clean filter installed (blocks staging plaintext .env files)
 ```
 
 </details>

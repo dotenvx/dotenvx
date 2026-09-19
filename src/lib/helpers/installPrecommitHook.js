@@ -25,8 +25,8 @@ fi
 `
 
 class InstallPrecommitHook {
-  constructor () {
-    this.hookPath = path.join('.git', 'hooks', 'pre-commit')
+  constructor (hookPath = path.join('.git', 'hooks', 'pre-commit')) {
+    this.hookPath = hookPath
   }
 
   run () {

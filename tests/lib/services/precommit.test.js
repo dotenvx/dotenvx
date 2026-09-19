@@ -356,8 +356,11 @@ t.test('#run (gitignore is ignoring a subfolder .env.example file and shouldn\'t
 t.test('_installPrecommitHook calls InstallPrecommitHook.run', ct => {
   const stub = sinon.stub(InstallPrecommitHook.prototype, 'run').returns({})
 
-  const precommit = new Precommit()
-  precommit._installPrecommitHook()
+  const proxyquire = require('proxyquire')
+  const FilterPrecommit = proxyquire('../../../src/lib/services/precommit', {
+    '../helpers/installPrecommitFilter': () => '.git/hooks/pre-commit'
+  })
+  new FilterPrecommit()._installPrecommitHook()
 
   t.ok(stub.called, 'new InstallPrecommitHook().run() called')
 
