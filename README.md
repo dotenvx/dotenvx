@@ -2791,6 +2791,28 @@ $ dotenvx ls --json > dotenv-files.json
 ```
 
 </details>
+<details><summary>`init`</summary><br>
+
+Create an `Envfile` to validate your project's environment variables:
+
+```sh
+$ dotenvx init
+▣ created Envfile from .env.example, .env (3 variables)
+Review Envfile, then run: dotenvx validate
+dotenvx run automatically validates when Envfile is present.
+```
+
+Merges variable names from both `.env.example` and `.env`, skipping missing files and including each name once. Use `dotenvx init -f .env.production` to read only a specific input. If neither default file exists, it creates a starter. An existing `Envfile` is always left unchanged.
+
+The first line is `encrypted false` by default, or `encrypted true` if any application variable assignment in either input starts with `encrypted:`. Duplicate assignments are all inspected. This sets the encryption requirement for all declarations; use `encrypted: false` on individual variables that should remain plaintext.
+
+Generated declarations are required by default. Review them and mark optional variables with `optional: true`. A commented reference at the end covers encryption, required and optional values, types, enums, bounds, file-specific rules, and credential proxies.
+
+Only names are copied: values are never included, decrypted, expanded, or fetched from secret providers. Dotenvx public and private key entries are excluded. Your env files are unchanged.
+
+Run `dotenvx validate` (or `dotenvx validate -f .env.production` for another file) to check your configuration. Once `Envfile` exists, `dotenvx run` validates automatically before starting your command.
+
+</details>
 <details><summary>`validate`</summary><br>
 
 Validate resolved `.env` values against an `Envfile` without running a command. An `Envfile` in the current directory is required; `.env.example` is not used for validation.
@@ -2914,11 +2936,22 @@ $ dotenvx precommit
 </details>
 <details><summary>`precommit --install`</summary><br>
 
-Install a shell script to `.git/hooks/pre-commit` to prevent accidentally committing any `.env` files to source control.
+Install a pre-commit hook and a required Git clean filter in the current repository. The filter rejects plaintext `.env*` files before staging, including with `git add -A` or `git add -f`. Encrypted files pass through unchanged. `.env.example`, `.env.vault`, and `.env.x` retain their exemptions; `.env.keys*` files are always rejected.
+
+The filter uses repository-local Git configuration and `info/attributes`; run the installer in each clone. Keep the installed dotenvx executable available, or staging protected files will fail. It does not inspect content already staged before installation, and local Git configuration can be overridden.
+
+To enable the clean filter for all existing and future repositories for your user, run this once, even outside a Git repository:
+
+```sh
+$ dotenvx precommit --install --global
+```
+
+This writes the filter configuration to your global Git config and adds the `.env*` rule to your global attributes file. It preserves an existing `core.attributesFile`; otherwise it uses `$XDG_CONFIG_HOME/git/attributes` or `~/.config/git/attributes`. It leaves hooks unchanged. Repository attributes and configuration can override the global protection. Use a persistent dotenvx installation: moving or removing its executable requires reinstalling the filter.
 
 ```sh
 $ dotenvx precommit --install
 ▣ dotenvx precommit installed [.git/hooks/pre-commit]
+▣ dotenvx required clean filter installed (blocks staging plaintext .env files)
 ```
 
 </details>

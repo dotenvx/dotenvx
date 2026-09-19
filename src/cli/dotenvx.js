@@ -223,6 +223,14 @@ program.command('ls', { hidden: true })
     return require('./actions/ls').apply(this, args)
   })
 
+// dotenvx init
+program.command('init')
+  .description('create an Envfile from .env.example and .env')
+  .option('-f, --env-file <path>', 'file to read variable names from')
+  .action(function () {
+    return require('./actions/init').apply(this, arguments)
+  })
+
 // dotenvx validate
 program.command('validate')
   .description('validate .env file(s) against Envfile')
@@ -266,7 +274,9 @@ program.command('precommit')
   .description('prevent committing .env files to code')
   .addHelpText('after', help.precommit)
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
-  .option('-i, --install', 'install to .git/hooks/pre-commit')
+  .option('-i, --install', 'install a pre-commit hook and required Git clean filter')
+  .option('--global', 'with --install, install the clean filter for all repositories')
+  .addOption(program.createOption('--clean <path>', 'validate Git filter input from stdin').hideHelp())
   .action(function (...args) {
     return require('./actions/ext/precommit').apply(this, args)
   })
