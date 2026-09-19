@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.29.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.30.0...main)
+
+## [2.30.0](https://github.com/dotenvx/dotenvx/compare/v2.29.0...v2.30.0) (2026-09-19)
+
+### Added
+
+* Introduce `init` command ([#977](https://github.com/dotenvx/dotenvx/pull/977))
 
 ## [2.29.0](https://github.com/dotenvx/dotenvx/compare/v2.28.0...v2.29.0) (2026-09-16)
 
