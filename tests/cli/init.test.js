@@ -112,10 +112,15 @@ t.test('init defines an Envfile too', ct => {
   ct.end()
 })
 
-t.test('init and define are hidden from main help', ct => {
+t.test('init, define, and validate appear only in the hidden menu', ct => {
   const result = spawnSync(process.execPath, [cli, '--help'], { encoding: 'utf8' })
   ct.equal(result.status, 0, result.stderr)
-  ct.notMatch(result.stdout, /\n\s+(?:init|define)(?:\s|\[)/)
+  ct.notMatch(result.stdout, /\n\s+(?:init|define|validate)(?:\s|\[)/)
+  const hidden = spawnSync(process.execPath, [cli, 'hidden'], { encoding: 'utf8' })
+  ct.equal(hidden.status, 0, hidden.stderr)
+  for (const command of ['init', 'define', 'validate']) {
+    ct.match(hidden.stdout, new RegExp(`\\n\\s+${command}\\s+`))
+  }
   ct.end()
 })
 

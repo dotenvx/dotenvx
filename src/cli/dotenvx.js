@@ -240,7 +240,7 @@ program.command('define', { hidden: true })
   })
 
 // dotenvx validate
-program.command('validate')
+program.command('validate', { hidden: true })
   .description('validate .env file(s) against Envfile')
   .option('--strict', 'process.exit(1) on any errors, including missing env files', false)
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
@@ -310,7 +310,7 @@ program.command('doctor', { hidden: true })
 program.command('hidden')
   .allowExcessArguments(false)
   .description("dotenvx's hidden menu - like in-n-out")
-  .addHelpText('after', '\nHidden Commands:\n  genexample [directory] generate .env.example\n  gitignore              append to .gitignore\n  ls [directory]         print all .env files in a tree structure\n  prebuild [directory]   prevent including .env files in docker\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nRun directly: dotenvx <command>')
+  .addHelpText('after', '\nHidden Commands:\n  init                   create an Envfile from .env.example and .env\n  define                 define your environment in an Envfile\n  validate               validate .env file(s) against Envfile\n  genexample [directory] generate .env.example\n  gitignore              append to .gitignore\n  ls [directory]         print all .env files in a tree structure\n  prebuild [directory]   prevent including .env files in docker\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nRun directly: dotenvx <command>')
   .action(function () { this.outputHelp() })
 
 // dotenvx update
