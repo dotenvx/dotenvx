@@ -266,7 +266,7 @@ const set = async function (key, value, options = {}) {
   })
 
   if (keysSrc) {
-    fsx.writeFileXSync(envKeysFilepath || '.env.keys', keysSrc, { mode: 0o600 })
+    fsx.writeKeyFileSync(envKeysFilepath || '.env.keys', keysSrc)
   }
 
   let withEncryption = ''

@@ -2,6 +2,7 @@ const fs = require('fs')
 const Errors = require('./errors')
 
 const ENCODING = 'utf8'
+const KEY_FILE_OPTIONS = { encoding: ENCODING, mode: 0o600 }
 
 async function readFileX (filepath, encoding = null) {
   if (!encoding) {
@@ -43,6 +44,14 @@ async function writeFileX (filepath, str, options = ENCODING) {
   }
 }
 
+function writeKeyFile (filepath, str) {
+  return writeFileX(filepath, str, KEY_FILE_OPTIONS)
+}
+
+function writeKeyFileSync (filepath, str) {
+  return writeFileXSync(filepath, str, KEY_FILE_OPTIONS)
+}
+
 async function exists (filepath) {
   try {
     await fs.promises.access(filepath)
@@ -65,7 +74,9 @@ const fsx = {
   readFileX,
   readFileXSync,
   writeFileX,
-  writeFileXSync
+  writeFileXSync,
+  writeKeyFile,
+  writeKeyFileSync
 }
 
 module.exports = fsx

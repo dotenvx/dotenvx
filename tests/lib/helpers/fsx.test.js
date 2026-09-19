@@ -91,11 +91,11 @@ t.test('#writeFileX translates permission errors', async ct => {
   ct.end()
 })
 
-t.test('key file modes are forwarded by both writers', async ct => {
-  fsx.writeFileXSync('custom.keys', 'key=value', { mode: 0o600 })
-  await fsx.writeFileX('custom.keys', 'key=value', { mode: 0o600 })
-  ct.ok(writeFileSyncStub.calledWith('custom.keys', 'key=value', { mode: 0o600 }))
-  ct.ok(writeFileStub.calledWith('custom.keys', 'key=value', { mode: 0o600 }))
+t.test('key file writers use utf8 and owner-only creation permissions', async ct => {
+  fsx.writeKeyFileSync('custom.keys', 'key=value')
+  await fsx.writeKeyFile('custom.keys', 'key=value')
+  ct.ok(writeFileSyncStub.calledWith('custom.keys', 'key=value', { encoding: 'utf8', mode: 0o600 }))
+  ct.ok(writeFileStub.calledWith('custom.keys', 'key=value', { encoding: 'utf8', mode: 0o600 }))
 })
 
 t.test('#exists', async ct => {

@@ -54,7 +54,7 @@ async function encryptAction () {
     const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate, noNative, no1Password, noBitwarden })
 
     if (keysSrc) {
-      await fsx.writeFileX(fk, keysSrc, { mode: 0o600 })
+      await fsx.writeKeyFile(fk, keysSrc)
     }
 
     if (spinner) spinner.stop()
