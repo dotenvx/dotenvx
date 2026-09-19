@@ -46,7 +46,7 @@ function upsertEnvKey (key, value, keysFilepath = '.env.keys') {
   const changed = created || nextSrc !== src
 
   if (changed) {
-    fs.writeFileSync(resolvedKeysFilepath, nextSrc, 'utf8')
+    fs.writeFileSync(resolvedKeysFilepath, nextSrc, { encoding: 'utf8', mode: 0o600 })
   }
 
   return {

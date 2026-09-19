@@ -95,6 +95,17 @@ t.test('#encrypt creates a minimal sample env', ct => {
   ct.end()
 })
 
+t.test('encrypt and set create owner-only key files under umask 022', { skip: process.platform === 'win32' }, ct => {
+  for (const [command, keysFile] of [['encrypt', '.env.keys'], ['set HELLO World', 'custom.keys']]) {
+    if (fs.existsSync('.env')) fs.unlinkSync('.env')
+    const result = execShellResult(`umask 022\n${dotenvx} ${command} -fk ${keysFile}`)
+    ct.equal(result.status, 0, result.stderr)
+    ct.equal(fs.statSync(keysFile).mode & 0o777, 0o600)
+    ct.equal(fs.statSync('.env').mode & 0o777, 0o644, 'ordinary env file keeps default permissions')
+  }
+  ct.end()
+})
+
 t.test('#encrypt -k', ct => {
   ct.plan(8)
 

@@ -34,7 +34,7 @@ function removeEnvKey (key, keysFilepath = '.env.keys') {
 
     if (hasRemainingKeys) {
       const nextSrc = `${nextLines.join(eol)}${eol}`
-      fs.writeFileSync(resolvedKeysFilepath, nextSrc, 'utf8')
+      fs.writeFileSync(resolvedKeysFilepath, nextSrc, { encoding: 'utf8', mode: 0o600 })
     } else {
       fs.rmSync(resolvedKeysFilepath, { force: true })
     }

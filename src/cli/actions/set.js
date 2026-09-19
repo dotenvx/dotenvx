@@ -70,7 +70,7 @@ async function set (key, value) {
     const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await setTransform({ envs, key, value, fk, noArmor, noCreate, encrypt, noNative, no1Password, noBitwarden })
 
     if (keysSrc) {
-      await fsx.writeFileX(fk, keysSrc)
+      await fsx.writeFileX(fk, keysSrc, { mode: 0o600 })
     }
 
     let withEncryption = ''

@@ -19,9 +19,9 @@ function readFileXSync (filepath, encoding = null) {
   return fs.readFileSync(filepath, encoding) // utf8 default so it returns a string
 }
 
-function writeFileXSync (filepath, str) {
+function writeFileXSync (filepath, str, options = ENCODING) {
   try {
-    return fs.writeFileSync(filepath, str, ENCODING) // utf8 always
+    return fs.writeFileSync(filepath, str, options)
   } catch (error) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       throw new Errors({ filepath }).fileNotWritable()
@@ -31,9 +31,9 @@ function writeFileXSync (filepath, str) {
   }
 }
 
-async function writeFileX (filepath, str) {
+async function writeFileX (filepath, str, options = ENCODING) {
   try {
-    return await fs.promises.writeFile(filepath, str, ENCODING)
+    return await fs.promises.writeFile(filepath, str, options)
   } catch (error) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       throw new Errors({ filepath }).fileNotWritable()
