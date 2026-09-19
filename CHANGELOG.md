@@ -2,28 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.30.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.28.1...main)
 
-## [2.30.1](https://github.com/dotenvx/dotenvx/compare/v2.30.0...v2.30.1) (2026-09-19)
-
-### Changed
-
-* Send pk via stdin to keychain. was argv ([#978](https://github.com/dotenvx/dotenvx/pull/978))
-
-## [2.30.0](https://github.com/dotenvx/dotenvx/compare/v2.29.0...v2.30.0) (2026-09-19)
-
-### Added
-
-* Introduce `init` command ([#977](https://github.com/dotenvx/dotenvx/pull/977))
-
-## [2.29.0](https://github.com/dotenvx/dotenvx/compare/v2.28.0...v2.29.0) (2026-09-16)
-
-### Added
-
-* Optionally lock with a passphrase any private key, regardless of where custodied ([#973](https://github.com/dotenvx/dotenvx/pull/973))
+## [2.28.1](https://github.com/dotenvx/dotenvx/compare/v2.28.0...v2.28.1) (2026-09-19)
 
 ### Changed
 
+* Send pk via stdin to keychain. was argv. thank you @kta1kri for the security report. ([#978](https://github.com/dotenvx/dotenvx/pull/978))
 * Move some commands under a hidden menu ([#973](https://github.com/dotenvx/dotenvx/pull/973))
 
 ## [2.28.0](https://github.com/dotenvx/dotenvx/compare/v2.27.0...v2.28.0) (2026-09-16)
