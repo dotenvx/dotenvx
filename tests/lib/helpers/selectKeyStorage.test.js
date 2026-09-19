@@ -92,19 +92,11 @@ t.test('noninteractive use preserves defaults and does not probe stores', async 
   ct.equal(bitwarden.callCount, 0)
 })
 
-t.test('local password locking defaults to false for every store', async ct => {
+t.test('local storage selection does not offer password locking', async ct => {
   for (const storage of ['native', 'onepassword', 'bitwarden', 'file']) {
     const { picker, confirm } = setup(ct, ['local', storage])
     ct.equal(await picker(), storage)
-    ct.same(confirm.firstCall.args[0], { message: 'Add a password lock?', initial: false })
-  }
-})
-
-t.test('opting in keeps custody and locking separate', async ct => {
-  for (const storage of ['native', 'onepassword', 'bitwarden', 'file']) {
-    const { picker, confirm } = setup(ct, ['local', storage])
-    confirm.resolves(true)
-    ct.same(await picker(), { id: storage, lock: true })
+    ct.equal(confirm.callCount, 0)
   }
 })
 
