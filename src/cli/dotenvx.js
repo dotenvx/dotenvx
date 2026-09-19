@@ -223,6 +223,14 @@ program.command('ls', { hidden: true })
     return require('./actions/ls').apply(this, args)
   })
 
+// dotenvx init
+program.command('init')
+  .description('create an Envfile from .env.example and .env')
+  .option('-f, --env-file <path>', 'file to read variable names from')
+  .action(function () {
+    return require('./actions/init').apply(this, arguments)
+  })
+
 // dotenvx validate
 program.command('validate')
   .description('validate .env file(s) against Envfile')
