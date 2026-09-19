@@ -3,7 +3,6 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { spawnSync } = require('node:child_process')
 const readEnvfile = require('../../src/lib/helpers/readEnvfile')
-const parser = require('../../src/lib/helpers/envfileParser')
 
 const cli = path.resolve(__dirname, '../../src/cli/dotenvx.js')
 function run (cwd, args = []) {
@@ -21,27 +20,14 @@ t.test('merges both inputs, copies unique names only, and generates valid rules'
   })
   const result = run(cwd)
   ct.equal(result.status, 0, result.stderr)
-  ct.match(result.stdout + result.stderr, 'from .env.example, .env (3 variables)')
-  ct.match(result.stdout, 'dotenvx validate')
-  ct.match(result.stdout, 'automatically validates')
+  ct.equal(result.stdout + result.stderr, '≡ specified (Envfile)\n')
   const content = fs.readFileSync(path.join(cwd, 'Envfile'), 'utf8')
   ct.same(readEnvfile(path.join(cwd, 'Envfile')).requiredKeys, ['API_KEY', 'PORT', 'OTHER'])
   ct.match(content, /^encrypted false\n\n/)
   ct.notMatch(content, /secret-marker|second-secret|actual-secret/)
-  ct.ok(content.indexOf('env "PORT"') < content.indexOf('# Required by default'))
+  ct.equal(content, 'encrypted false\n\nenv "API_KEY"\nenv "PORT"\nenv "OTHER"\n')
   ct.equal(fs.readFileSync(path.join(cwd, '.env'), 'utf8'), 'OTHER=actual-secret\nPORT=4000\n')
 
-  // The reference must remain executable documentation when uncommented.
-  const reference = content.slice(content.indexOf('# Required by default'))
-  const snippets = reference.split('\n').filter(line => /^# (?:encrypted |env |file | {2}|end$)/.test(line)).map(line => line.slice(2))
-  // Validate independently because examples intentionally reuse variable names.
-  for (const line of snippets.filter(line => /^(env |encrypted )/.test(line))) {
-    const filename = path.join(cwd, 'Example')
-    fs.writeFileSync(filename, line + '\n')
-    ct.doesNotThrow(() => readEnvfile(filename), line)
-  }
-  const block = snippets.slice(snippets.findIndex(line => line.startsWith('file ')))
-  ct.doesNotThrow(() => parser.parse(block.join('\n') + '\n'), 'file block example parses')
   ct.end()
 })
 
@@ -64,7 +50,7 @@ t.test('explicit input and missing explicit input', ct => {
   const result = run(cwd, ['-f', 'custom env'])
   ct.equal(result.status, 0, result.stderr)
   ct.same(readEnvfile(path.join(cwd, 'Envfile')).requiredKeys, ['CUSTOM'])
-  ct.match(fs.readFileSync(path.join(cwd, 'Envfile'), 'utf8'), /^encrypted false\n/)
+  ct.equal(fs.readFileSync(path.join(cwd, 'Envfile'), 'utf8'), 'encrypted false\n\nenv "CUSTOM"\n')
   ct.end()
 })
 
@@ -87,7 +73,7 @@ t.test('starter and repeat invocation preserve user edits', ct => {
   const cwd = ct.testdir({})
   ct.equal(run(cwd).status, 0)
   ct.same(readEnvfile(path.join(cwd, 'Envfile')).requiredKeys, [])
-  ct.match(fs.readFileSync(path.join(cwd, 'Envfile'), 'utf8'), /^encrypted false\n/)
+  ct.equal(fs.readFileSync(path.join(cwd, 'Envfile'), 'utf8'), 'encrypted false\n')
   fs.writeFileSync(path.join(cwd, 'Envfile'), '# user edits\n')
   const repeat = run(cwd, ['-f', 'missing'])
   ct.equal(repeat.status, 0)

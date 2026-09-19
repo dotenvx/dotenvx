@@ -2797,16 +2797,14 @@ Create an `Envfile` to validate your project's environment variables:
 
 ```sh
 $ dotenvx init
-▣ created Envfile from .env.example, .env (3 variables)
-Review Envfile, then run: dotenvx validate
-dotenvx run automatically validates when Envfile is present.
+≡ specified (Envfile)
 ```
 
 Merges variable names from both `.env.example` and `.env`, skipping missing files and including each name once. Use `dotenvx init -f .env.production` to read only a specific input. If neither default file exists, it creates a starter. An existing `Envfile` is always left unchanged.
 
 The first line is `encrypted false` by default, or `encrypted true` if any application variable assignment in either input starts with `encrypted:`. Duplicate assignments are all inspected. This sets the encryption requirement for all declarations; use `encrypted: false` on individual variables that should remain plaintext.
 
-Generated declarations are required by default. Review them and mark optional variables with `optional: true`. A commented reference at the end covers encryption, required and optional values, types, enums, bounds, file-specific rules, and credential proxies.
+Generated declarations are required by default. Review them and mark optional variables with `optional: true`.
 
 Only names are copied: values are never included, decrypted, expanded, or fetched from secret providers. Dotenvx public and private key entries are excluded. Your env files are unchanged.
 
