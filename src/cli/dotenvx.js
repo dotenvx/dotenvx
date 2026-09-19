@@ -224,11 +224,19 @@ program.command('ls', { hidden: true })
   })
 
 // dotenvx init
-program.command('init')
+program.command('init', { hidden: true })
   .description('create an Envfile from .env.example and .env')
   .option('-f, --env-file <path>', 'file to read variable names from')
   .action(function () {
     return require('./actions/init').apply(this, arguments)
+  })
+
+// dotenvx define
+program.command('define', { hidden: true })
+  .description('define your environment in an Envfile')
+  .option('-f, --env-file <path>', 'file to read variable names from')
+  .action(function () {
+    return require('./actions/define').apply(this, arguments)
   })
 
 // dotenvx validate

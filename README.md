@@ -2791,16 +2791,16 @@ $ dotenvx ls --json > dotenv-files.json
 ```
 
 </details>
-<details><summary>`init`</summary><br>
+<details><summary>`define` (hidden)</summary><br>
 
 Create an `Envfile` to validate your project's environment variables:
 
 ```sh
-$ dotenvx init
-≡ specified (Envfile)
+$ dotenvx define
+≡ defined (Envfile)
 ```
 
-Merges variable names from both `.env.example` and `.env`, skipping missing files and including each name once. Use `dotenvx init -f .env.production` to read only a specific input. If neither default file exists, it creates a starter. An existing `Envfile` is always left unchanged.
+Merges variable names from both `.env.example` and `.env`, skipping missing files and including each name once. Use `dotenvx define -f .env.production` to read only a specific input. If neither default file exists, it creates a starter. An existing `Envfile` is always left unchanged. The hidden `dotenvx init` command currently performs the same step.
 
 The first line is `encrypted false` by default, or `encrypted true` if any application variable assignment in either input starts with `encrypted:`. Duplicate assignments are all inspected. This sets the encryption requirement for all declarations; use `encrypted: false` on individual variables that should remain plaintext.
 

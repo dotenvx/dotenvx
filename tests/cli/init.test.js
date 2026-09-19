@@ -5,8 +5,8 @@ const { spawnSync } = require('node:child_process')
 const readEnvfile = require('../../src/lib/helpers/readEnvfile')
 
 const cli = path.resolve(__dirname, '../../src/cli/dotenvx.js')
-function run (cwd, args = []) {
-  return spawnSync(process.execPath, [cli, 'init', ...args], {
+function run (cwd, args = [], command = 'define') {
+  return spawnSync(process.execPath, [cli, command, ...args], {
     cwd,
     encoding: 'utf8',
     env: { ...process.env, DOTENVX_NO_ARMOR: 'true' }
@@ -20,7 +20,7 @@ t.test('merges both inputs, copies unique names only, and generates valid rules'
   })
   const result = run(cwd)
   ct.equal(result.status, 0, result.stderr)
-  ct.equal(result.stdout + result.stderr, '≡ specified (Envfile)\n')
+  ct.equal(result.stdout + result.stderr, '≡ defined (Envfile)\n')
   const content = fs.readFileSync(path.join(cwd, 'Envfile'), 'utf8')
   ct.same(readEnvfile(path.join(cwd, 'Envfile')).requiredKeys, ['API_KEY', 'PORT', 'OTHER'])
   ct.match(content, /^encrypted false\n\n/)
@@ -92,7 +92,7 @@ t.test('unsupported names do not create an invalid Envfile', ct => {
   ct.end()
 })
 
-t.test('init is discoverable and quiet mode is respected', ct => {
+t.test('define command help is available and quiet mode is respected', ct => {
   const cwd = ct.testdir({})
   const help = run(cwd, ['--help'])
   ct.match(help.stdout + help.stderr, '--file')
@@ -100,6 +100,22 @@ t.test('init is discoverable and quiet mode is respected', ct => {
   ct.equal(result.status, 0)
   ct.equal(result.stdout, '')
   ct.ok(fs.existsSync(path.join(cwd, 'Envfile')))
+  ct.end()
+})
+
+t.test('init defines an Envfile too', ct => {
+  const cwd = ct.testdir({ '.env': 'PORT=3000\n' })
+  const result = run(cwd, [], 'init')
+  ct.equal(result.status, 0, result.stderr)
+  ct.equal(result.stdout + result.stderr, '≡ defined (Envfile)\n')
+  ct.equal(fs.readFileSync(path.join(cwd, 'Envfile'), 'utf8'), 'encrypted false\n\nenv "PORT"\n')
+  ct.end()
+})
+
+t.test('init and define are hidden from main help', ct => {
+  const result = spawnSync(process.execPath, [cli, '--help'], { encoding: 'utf8' })
+  ct.equal(result.status, 0, result.stderr)
+  ct.notMatch(result.stdout, /\n\s+(?:init|define)(?:\s|\[)/)
   ct.end()
 })
 
