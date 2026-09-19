@@ -278,7 +278,7 @@ program.command('genexample', { hidden: true })
   })
 
 // dotenvx precommit
-program.command('precommit')
+program.command('precommit', { hidden: true })
   .description('prevent committing .env files to code')
   .addHelpText('after', help.precommit)
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
@@ -309,8 +309,8 @@ program.command('doctor', { hidden: true })
 // dotenvx hidden (a menu of top-level commands)
 program.command('hidden')
   .allowExcessArguments(false)
-  .description("dotenvx's hidden menu - like in-n-out")
-  .addHelpText('after', '\nHidden Commands:\n  init                   create an Envfile from .env.example and .env\n  define                 define your environment in an Envfile\n  validate               validate .env file(s) against Envfile\n  genexample [directory] generate .env.example\n  gitignore              append to .gitignore\n  ls [directory]         print all .env files in a tree structure\n  prebuild [directory]   prevent including .env files in docker\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nRun directly: dotenvx <command>')
+  .description('hidden commands')
+  .addHelpText('after', '\nHidden Commands:\n  init                   create an Envfile from .env.example and .env\n  define                 define your environment in an Envfile\n  validate               validate .env file(s) against Envfile\n  genexample [directory] generate .env.example\n  gitignore              append to .gitignore\n  ls [directory]         print all .env files in a tree structure\n  prebuild [directory]   prevent including .env files in docker\n  precommit [directory]  prevent committing .env files to code\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nRun directly: dotenvx <command>')
   .action(function () { this.outputHelp() })
 
 // dotenvx update
