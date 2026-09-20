@@ -2,6 +2,7 @@ const fs = require('fs')
 const Errors = require('./errors')
 
 const ENCODING = 'utf8'
+const KEY_FILE_OPTIONS = { encoding: ENCODING, mode: 0o600 }
 
 async function readFileX (filepath, encoding = null) {
   if (!encoding) {
@@ -19,9 +20,9 @@ function readFileXSync (filepath, encoding = null) {
   return fs.readFileSync(filepath, encoding) // utf8 default so it returns a string
 }
 
-function writeFileXSync (filepath, str) {
+function writeFileXSync (filepath, str, options = ENCODING) {
   try {
-    return fs.writeFileSync(filepath, str, ENCODING) // utf8 always
+    return fs.writeFileSync(filepath, str, options)
   } catch (error) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       throw new Errors({ filepath }).fileNotWritable()
@@ -31,9 +32,9 @@ function writeFileXSync (filepath, str) {
   }
 }
 
-async function writeFileX (filepath, str) {
+async function writeFileX (filepath, str, options = ENCODING) {
   try {
-    return await fs.promises.writeFile(filepath, str, ENCODING)
+    return await fs.promises.writeFile(filepath, str, options)
   } catch (error) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       throw new Errors({ filepath }).fileNotWritable()
@@ -41,6 +42,14 @@ async function writeFileX (filepath, str) {
 
     throw error
   }
+}
+
+function writeKeyFile (filepath, str) {
+  return writeFileX(filepath, str, KEY_FILE_OPTIONS)
+}
+
+function writeKeyFileSync (filepath, str) {
+  return writeFileXSync(filepath, str, KEY_FILE_OPTIONS)
 }
 
 async function exists (filepath) {
@@ -65,7 +74,9 @@ const fsx = {
   readFileX,
   readFileXSync,
   writeFileX,
-  writeFileXSync
+  writeFileXSync,
+  writeKeyFile,
+  writeKeyFileSync
 }
 
 module.exports = fsx

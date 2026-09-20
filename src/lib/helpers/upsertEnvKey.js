@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const fsx = require('./fsx')
 
 function escapeForRegex (value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -46,7 +47,7 @@ function upsertEnvKey (key, value, keysFilepath = '.env.keys') {
   const changed = created || nextSrc !== src
 
   if (changed) {
-    fs.writeFileSync(resolvedKeysFilepath, nextSrc, 'utf8')
+    fsx.writeKeyFileSync(resolvedKeysFilepath, nextSrc)
   }
 
   return {
