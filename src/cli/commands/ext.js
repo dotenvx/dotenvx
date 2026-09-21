@@ -49,7 +49,7 @@ ext.command('gitignore')
 
 // dotenvx ext prebuild
 ext.command('prebuild')
-  .description('prevent including .env files in docker')
+  .description('deprecated. use [dotenvx protect --docker]')
   .addHelpText('after', help.prebuild)
   .argument('[directory]', 'directory to prevent including .env files from', '.')
   .action(function (...args) {

@@ -21,8 +21,10 @@ t.test('prebuild - successMessage', (ct) => {
   })
 
   const loggerSuccessStub = sinon.stub(logger, 'success')
+  const loggerWarnStub = sinon.stub(logger, 'warn')
 
   prebuild.call(fakeContext)
+  ct.ok(loggerWarnStub.calledWith('[DEPRECATED] dotenvx prebuild. fix: run [dotenvx protect --docker]'))
 
   ct.ok(loggerSuccessStub.calledWith('success'), 'logger.success logs')
 

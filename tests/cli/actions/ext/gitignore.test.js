@@ -25,8 +25,10 @@ t.test('gitignore calls Git, Docker, Npm, and Vercel', ct => {
   const dockerStub = sinon.stub(Docker.prototype, 'run')
   const npmStub = sinon.stub(Npm.prototype, 'run')
   const vercelStub = sinon.stub(Vercel.prototype, 'run')
+  const warnStub = sinon.stub(logger, 'warn')
 
   gitignore.call(fakeContext)
+  ct.ok(warnStub.calledOnceWithExactly('[DEPRECATED] dotenvx gitignore. fix: run [dotenvx protect]'))
 
   t.ok(gitStub.called, 'Git().run() called')
   t.ok(dockerStub.called, 'Docker().run() called')
