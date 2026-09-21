@@ -8,9 +8,10 @@ const createSpinner = require('../../lib/helpers/createSpinner')
 
 module.exports = async function protect (directory) {
   if (this.opts().docker) return require('./protectDocker').call(this, directory)
-  if (this.opts().gitProcess) return require('./protectProcess')()
+  const filterOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : this.opts()
+  if (this.opts().gitProcess) return require('./protectProcess')(filterOptions)
   if (this.opts().gitFile !== undefined) {
-    return require('./protectStdin')(this.opts().gitFile)
+    return require('./protectStdin')(this.opts().gitFile, filterOptions)
   }
   let spinner
   try {
@@ -51,7 +52,7 @@ module.exports = async function protect (directory) {
       require('../../lib/helpers/removeLegacyProtectFilter')()
       const { warning } = require('../../lib/helpers/uninstallPrecommitHook')()
       hookWarning = warning
-      protectedFiles.push('plaintext *.env')
+      protectedFiles.push('.env*')
     }
     if (ignore) {
       if (!current || !current.ignore) installProtectIgnore()
@@ -60,8 +61,9 @@ module.exports = async function protect (directory) {
     if (interactive) settings.markConfigured()
     if (spinner) spinner.stop()
     if (hookWarning) logger.warn(hookWarning)
-    if (protectedFiles.length) logger.success(`⛉ protected (${protectedFiles.join(', ')})`)
-    else logger.success('⛉ unprotected (none)')
+    const status = protectedFiles.length === 2 ? 'full' : 'partial'
+    if (protectedFiles.length) logger.success(`⛉ protection: ${status} (${protectedFiles.join(', ')})`)
+    else logger.success('⛉ protection: none')
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

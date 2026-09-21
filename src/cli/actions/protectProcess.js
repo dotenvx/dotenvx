@@ -1,6 +1,8 @@
 const { once } = require('events')
-const { check } = require('./protectStdin')
+const { check, exempt } = require('./protectStdin')
 const { logger } = require('../../shared/logger')
+const createProtectSpinner = require('../../lib/helpers/createProtectSpinner')
+const logProtectedFiles = require('../../lib/helpers/logProtectedFiles')
 
 // Git's v2 filter protocol frames every message and blob with pkt-line lengths.
 async function * packets (input) {
@@ -21,7 +23,24 @@ async function * packets (input) {
   if (buffer.length) throw new Error('Incomplete Git filter packet')
 }
 
-module.exports = async function protectProcess () {
+module.exports = async function protectProcess (options = {}) {
+  let spinner
+  let started = false
+  let failed = false
+  let activeRequest = false
+  let reported = false
+  const checkedFiles = new Set()
+  const stop = () => { if (spinner) spinner.stop() }
+  const finish = () => {
+    stop()
+    if (spinner && !failed && !activeRequest && !reported) {
+      reported = true
+      logProtectedFiles(checkedFiles)
+    }
+  }
+  // Git may terminate an idle filter with SIGTERM instead of closing stdin.
+  const onExit = code => { if (code === 0 || code === 143) finish() }
+  process.once('exit', onExit)
   const reader = packets(process.stdin)
   const write = async data => {
     if (!process.stdout.write(data)) await once(process.stdout, 'drain')
@@ -60,17 +79,24 @@ module.exports = async function protectProcess () {
     while (true) {
       const headers = await list(true)
       if (headers === null) return
+      activeRequest = true
       const fields = new Map(lines(headers).map(line => {
         const index = line.indexOf('=')
         return [line.slice(0, index), line.slice(index + 1)]
       }))
-      const content = Buffer.concat(await list())
       const command = fields.get('command')
       if ((command !== 'clean' && !(smudge && command === 'smudge')) || !fields.has('pathname')) throw new Error('Invalid Git filter request')
+      if (command === 'clean' && !started) {
+        started = true
+        spinner = await createProtectSpinner(options)
+      }
+      const content = Buffer.concat(await list())
       // Checkout must remain a byte-for-byte passthrough, even for existing plaintext history.
-      if (command === 'clean' && !check(fields.get('pathname'), content)) {
+      if (command === 'clean' && !check(fields.get('pathname'), content, stop)) {
+        failed = true
         await packet('status=error\n')
         await packet(null)
+        activeRequest = false
         continue
       }
       await packet('status=success\n')
@@ -80,11 +106,18 @@ module.exports = async function protectProcess () {
       }
       await packet(null)
       await packet(null)
+      if (command === 'clean' && !exempt(fields.get('pathname'))) checkedFiles.add(fields.get('pathname'))
+      activeRequest = false
     }
   } catch {
+    failed = true
+    stop()
     // Never include malformed protocol data: it may contain secret contents.
     logger.error('Git protection filter protocol failed')
     process.exitCode = 1
     process.stdin.destroy()
+  } finally {
+    finish()
+    process.removeListener('exit', onExit)
   }
 }
