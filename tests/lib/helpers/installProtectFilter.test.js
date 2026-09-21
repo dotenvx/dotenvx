@@ -5,6 +5,7 @@ const path = require('path')
 const { spawnSync } = require('child_process')
 
 const cli = path.resolve(__dirname, '../../../src/cli/dotenvx.js')
+const attributesRules = '.env* filter=dotenvx\n*.env filter=dotenvx\n.flaskenv filter=dotenvx\n.dev.vars* filter=dotenvx\n**/.env.d/* filter=dotenvx\n'
 
 for (const custom of [false, true]) {
   t.test(`global install protects existing and future repos (${custom ? 'custom' : 'default'} attributes)`, ct => {
@@ -23,14 +24,15 @@ for (const custom of [false, true]) {
     fs.mkdirSync(existing)
     ct.equal(git(existing, 'init', '-q').status, 0)
     fs.mkdirSync(path.dirname(attributes), { recursive: true })
-    fs.writeFileSync(attributes, '*.txt text\n')
+    fs.writeFileSync(attributes, '*.txt text\n.env* filter=dotenvx\n')
     if (custom) ct.equal(git(root, 'config', '--global', 'core.attributesFile', attributes).status, 0)
     for (let i = 0; i < 2; i++) {
-      const result = run(root, process.execPath, [cli, 'precommit', '--install', '--global'])
+      const result = run(root, process.execPath, [cli, 'protect'])
       ct.equal(result.status, 0, result.stderr)
     }
-    ct.equal(fs.readFileSync(attributes, 'utf8'), '*.txt text\n.env* filter=dotenvx\n')
+    ct.equal(fs.readFileSync(attributes, 'utf8'), '*.txt text\n' + attributesRules)
     ct.equal(git(root, 'config', '--global', '--get', 'filter.dotenvx.required').stdout.trim(), 'true')
+    ct.match(git(root, 'config', '--global', '--get', 'filter.dotenvx.clean').stdout, 'protect --clean %f')
     ct.equal(git(root, 'config', '--global', '--get', 'core.hooksPath').status, 1)
     if (custom) ct.equal(git(root, 'config', '--global', '--get', 'core.attributesFile').stdout.trim(), attributes)
     const future = path.join(root, 'future')
@@ -58,28 +60,41 @@ function repo (ct) {
   const run = (command, args, options = {}) => spawnSync(command, args, {
     cwd,
     encoding: 'utf8',
-    env: { ...process.env, GIT_CONFIG_GLOBAL: os.devNull, GIT_CONFIG_NOSYSTEM: '1' },
+    env: { ...process.env, GIT_CONFIG_GLOBAL: path.join(cwd, '.git/test-gitconfig'), GIT_CONFIG_NOSYSTEM: '1', XDG_CONFIG_HOME: path.join(cwd, '.git/test-config') },
     ...options
   })
   const git = (...args) => run('git', args)
   ct.equal(git('init', '-q').status, 0)
-  const install = () => run(process.execPath, [cli, 'precommit', '--install'])
+  const install = () => run(process.execPath, [cli, 'protect'])
   return { cwd, run, git, install }
 }
 
-t.test('install is local, preserves attributes and hooks, and is repeatable', ct => {
-  const { cwd, git, install } = repo(ct)
+t.test('precommit install only installs a hook and preserves existing attributes', ct => {
+  const { cwd, git, run } = repo(ct)
   fs.writeFileSync(path.join(cwd, '.git/info/attributes'), '*.txt text')
   fs.writeFileSync(path.join(cwd, '.git/hooks/pre-commit'), '#!/bin/sh\necho existing\n')
   for (let i = 0; i < 2; i++) {
-    const result = install()
+    const result = run(process.execPath, [cli, 'precommit', '--install'])
     ct.equal(result.status, 0, result.stderr)
   }
-  ct.equal(git('config', '--local', '--get', 'filter.dotenvx.required').stdout.trim(), 'true')
-  ct.equal(fs.readFileSync(path.join(cwd, '.git/info/attributes'), 'utf8'), '*.txt text\n.env* filter=dotenvx\n')
+  ct.equal(git('config', '--get', 'filter.dotenvx.required').status, 1)
+  ct.equal(fs.readFileSync(path.join(cwd, '.git/info/attributes'), 'utf8'), '*.txt text')
   const hook = fs.readFileSync(path.join(cwd, '.git/hooks/pre-commit'), 'utf8')
   ct.match(hook, 'echo existing')
   ct.equal(hook.split('if command -v dotenvx').length, 2)
+  ct.end()
+})
+
+t.test('protect is hidden and precommit no longer accepts filter options', ct => {
+  const { run } = repo(ct)
+  const invoke = args => run(process.execPath, [cli, ...args])
+  ct.notMatch(invoke(['--help']).stdout, /\n\s+protect\s/)
+  ct.match(invoke(['hidden']).stdout, /\n\s+protect\s/)
+  ct.notMatch(invoke(['protect', '--help']).stdout, /--clean|--global|--install/)
+  for (const command of [['precommit'], ['ext', 'precommit']]) {
+    ct.equal(invoke([...command, '--global']).status, 1)
+    ct.equal(invoke([...command, '--clean', '.env']).status, 1)
+  }
   ct.end()
 })
 
@@ -127,14 +142,51 @@ t.test('nested paths, exemptions, private keys, and missing executable', ct => {
   ct.end()
 })
 
+t.test('additional env formats are protected at root and nested paths', ct => {
+  const { cwd, git, install } = repo(ct)
+  ct.equal(install().status, 0)
+  for (const prefix of ['', 'app/']) {
+    for (const name of ['.dev.vars', '.dev.vars.production', '.flaskenv', 'config.env', '.env.d/production']) {
+      const filename = prefix + name
+      const filepath = path.join(cwd, filename)
+      fs.mkdirSync(path.dirname(filepath), { recursive: true })
+      fs.writeFileSync(filepath, 'SECRET=plaintext\n')
+      ct.not(git('add', '-f', '--', filename).status, 0, `${filename} rejects plaintext`)
+      ct.equal(git('ls-files', '--', filename).stdout, '')
+      const encrypted = 'SECRET=encrypted:example\n'
+      fs.writeFileSync(filepath, encrypted)
+      ct.equal(git('add', '--', filename).status, 0, `${filename} accepts encrypted content`)
+      ct.equal(git('show', `:${filename}`).stdout, encrypted)
+    }
+  }
+  for (const filename of ['Dockerfile', 'docker-compose.yml', 'settings.json']) {
+    fs.writeFileSync(path.join(cwd, filename), 'SECRET=plaintext\n')
+    ct.equal(git('add', filename).status, 0, `${filename} is not filtered`)
+  }
+  ct.end()
+})
+
+t.test('precommit scan discovers additional env formats', ct => {
+  const { cwd } = repo(ct)
+  const Precommit = require('../../../src/lib/services/precommit')
+  const files = ['.dev.vars', 'app/.dev.vars.staging', '.flaskenv', 'app/config.env', '.env.d/production', 'app/.env.d/local']
+  for (const filename of [...files, 'Dockerfile', 'docker-compose.yml']) {
+    const filepath = path.join(cwd, filename)
+    fs.mkdirSync(path.dirname(filepath), { recursive: true })
+    fs.writeFileSync(filepath, 'SECRET=plaintext\n')
+  }
+  ct.same(new Precommit(cwd)._filepaths().sort(), files.sort())
+  ct.end()
+})
+
 t.test('clean mode reads stdin, preserves stdout, and never leaks rejected contents', ct => {
   const { run } = repo(ct)
-  const result = run(process.execPath, [cli, '--debug', 'precommit', '--clean', '.env'], { input: 'SECRET=do-not-print\n' })
+  const result = run(process.execPath, [cli, '--debug', 'protect', '--clean', '.env'], { input: 'SECRET=do-not-print\n' })
   ct.equal(result.status, 1)
   ct.equal(result.stdout, '')
   ct.notMatch(result.stderr, 'do-not-print')
   const allowed = '# comment\nSECRET=encrypted:example\n'
-  const success = run(process.execPath, [cli, '--debug', 'precommit', '--clean', '.env'], { input: allowed })
+  const success = run(process.execPath, [cli, '--debug', 'protect', '--clean', '.env'], { input: allowed })
   ct.equal(success.status, 0)
   ct.equal(success.stdout, allowed)
   ct.end()

@@ -17,14 +17,10 @@ class Precommit {
     this.directory = directory
     // options
     this.install = options.install
-    this.global = options.global
     this.excludeEnvFile = ['test/**', 'tests/**', 'spec/**', 'specs/**', 'pytest/**', 'test_suite/**']
   }
 
   run () {
-    if (this.global && !this.install) {
-      throw new Error('--global requires --install')
-    }
     if (this.install) {
       const {
         successMessage
@@ -107,6 +103,7 @@ class Precommit {
   _filepaths () {
     return ls.sync({
       directory: this.directory,
+      envFile: require('../helpers/precommitEnvPatterns'),
       excludeEnvFile: this.excludeEnvFile
     })
   }
@@ -140,14 +137,7 @@ class Precommit {
   }
 
   _installPrecommitHook () {
-    if (this.global) {
-      const attributesPath = require('../helpers/installPrecommitFilter')(true)
-      return { successMessage: `▣ dotenvx required clean filter installed globally [${attributesPath}]` }
-    }
-    const hookPath = require('../helpers/installPrecommitFilter')()
-    const result = new InstallPrecommitHook(hookPath).run()
-    result.successMessage += '\n▣ dotenvx required clean filter installed (blocks staging plaintext .env files)'
-    return result
+    return new InstallPrecommitHook().run()
   }
 }
 

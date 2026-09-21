@@ -4,9 +4,6 @@ const Precommit = require('./../../../lib/services/precommit')
 const catchAndLog = require('./../../../lib/helpers/catchAndLog')
 
 function precommit (directory) {
-  if (this.opts().clean !== undefined) {
-    return require('./precommitClean')(this.opts().clean)
-  }
   // debug args
   logger.debug(`directory: ${directory}`)
 

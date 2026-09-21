@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const { sealed } = require('@dotenvx/primitives')
 
-function precommitClean (filepath) {
+function protectClean (filepath) {
   try {
     const content = fs.readFileSync(0)
     const filename = path.posix.basename(filepath)
@@ -18,4 +18,4 @@ function precommitClean (filepath) {
   }
 }
 
-module.exports = precommitClean
+module.exports = protectClean
