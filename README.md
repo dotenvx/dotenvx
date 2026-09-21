@@ -2924,6 +2924,8 @@ $ dotenvx gitignore --pattern .env.keys
 </details>
 <details><summary>`precommit`</summary><br>
 
+Deprecated in favor of `dotenvx protect`. Existing hooks continue checking files and print a migration notice on each invocation. Run `dotenvx protect` inside the repository to install global staging protection and remove its recognized dotenvx hook block. Other hook commands are preserved; customized or shared hooks may require manual cleanup.
+
 Prevent `.env` files from being committed to code.
 
 ```sh
@@ -2944,6 +2946,17 @@ $ dotenvx precommit --install
 For protection during staging, use `dotenvx protect`.
 
 </details>
+<details><summary>`precommit --uninstall`</summary><br>
+
+Remove the installed dotenvx pre-commit hook without installing replacement protection:
+
+```sh
+$ dotenvx precommit --uninstall
+```
+
+This removes recognized dotenvx installer blocks while preserving other hook commands. It also supports `dotenvx ext precommit --uninstall`. Unrecognized, symlinked, or external shared hooks are left unchanged with a manual-cleanup message.
+
+</details>
 <details><summary>`protect` (hidden)</summary><br>
 
 Install a required Git clean filter for all existing and future repositories for your user. Run this once, even outside a Git repository:
@@ -2951,6 +2964,8 @@ Install a required Git clean filter for all existing and future repositories for
 ```sh
 $ dotenvx protect
 ```
+
+When run inside a repository, this also removes recognized dotenvx pre-commit hook blocks after protection is successfully installed. Run it in each repository with an old hook to migrate that repository.
 
 The filter rejects plaintext `.env*`, `*.env`, `.flaskenv`, `.dev.vars*`, and files directly inside `.env.d/` directories at any depth before staging, including with `git add -A` or `git add -f`. Encrypted files pass through unchanged. `.env.example`, `.env.vault`, and `.env.x` retain their exemptions; `.env.keys*` files are always rejected.
 

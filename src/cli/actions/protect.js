@@ -8,7 +8,9 @@ module.exports = function protect () {
   }
   try {
     installProtectFilter()
-    logger.success('⁑ protected (plaintext .env files now protected from being committed to code)')
+    const { warning } = require('../../lib/helpers/uninstallPrecommitHook')()
+    if (warning) logger.warn(warning)
+    logger.success('⁑ protected (plaintext .env files now protected from being committed to code on this machine)')
   } catch (error) {
     catchAndLog(error)
     process.exitCode = 1

@@ -62,6 +62,7 @@ ext.command('precommit')
   .addHelpText('after', help.precommit)
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
   .option('-i, --install', 'install a pre-commit hook')
+  .option('--uninstall', 'remove the dotenvx pre-commit hook')
   .action(function (...args) {
     return require('./../actions/ext/precommit').apply(this, args)
   })
