@@ -32,7 +32,7 @@ for (const custom of [false, true]) {
     }
     ct.equal(fs.readFileSync(attributes, 'utf8'), '*.txt text\n' + attributesRules)
     ct.equal(git(root, 'config', '--global', '--get', 'filter.dotenvx.required').stdout.trim(), 'true')
-    ct.match(git(root, 'config', '--global', '--get', 'filter.dotenvx.clean').stdout, 'protect --clean %f')
+    ct.match(git(root, 'config', '--global', '--get', 'filter.dotenvx.clean').stdout, 'protect --git-file %f')
     ct.equal(git(root, 'config', '--global', '--get', 'core.hooksPath').status, 1)
     if (custom) ct.equal(git(root, 'config', '--global', '--get', 'core.attributesFile').stdout.trim(), attributes)
     const future = path.join(root, 'future')
@@ -90,7 +90,7 @@ t.test('protect is hidden and precommit no longer accepts filter options', ct =>
   const invoke = args => run(process.execPath, [cli, ...args])
   ct.notMatch(invoke(['--help']).stdout, /\n\s+protect\s/)
   ct.match(invoke(['hidden']).stdout, /\n\s+protect\s/)
-  ct.notMatch(invoke(['protect', '--help']).stdout, /--clean|--global|--install/)
+  ct.notMatch(invoke(['protect', '--help']).stdout, /--git-file|--clean|--global|--install/)
   for (const command of [['precommit'], ['ext', 'precommit']]) {
     ct.equal(invoke([...command, '--global']).status, 1)
     ct.equal(invoke([...command, '--clean', '.env']).status, 1)
@@ -181,12 +181,12 @@ t.test('precommit scan discovers additional env formats', ct => {
 
 t.test('clean mode reads stdin, preserves stdout, and never leaks rejected contents', ct => {
   const { run } = repo(ct)
-  const result = run(process.execPath, [cli, '--debug', 'protect', '--clean', '.env'], { input: 'SECRET=do-not-print\n' })
+  const result = run(process.execPath, [cli, '--debug', 'protect', '--git-file', '.env'], { input: 'SECRET=do-not-print\n' })
   ct.equal(result.status, 1)
   ct.equal(result.stdout, '')
   ct.notMatch(result.stderr, 'do-not-print')
   const allowed = '# comment\nSECRET=encrypted:example\n'
-  const success = run(process.execPath, [cli, '--debug', 'protect', '--clean', '.env'], { input: allowed })
+  const success = run(process.execPath, [cli, '--debug', 'protect', '--git-file', '.env'], { input: allowed })
   ct.equal(success.status, 0)
   ct.equal(success.stdout, allowed)
   ct.end()

@@ -31,7 +31,7 @@ function installProtectFilter () {
 
   // Git's filter_buffer_or_fd shell-quotes the filename with sq_quote_buf
   // before substituting %f (convert.c). Keep the placeholder unquoted here.
-  git('config', '--global', 'filter.dotenvx.clean', `${executable} protect --clean %f`)
+  git('config', '--global', 'filter.dotenvx.clean', `${executable} protect --git-file %f`)
   git('config', '--global', 'filter.dotenvx.required', 'true')
   fs.mkdirSync(path.dirname(attributesPath), { recursive: true })
   const existing = new Set(current.split(/\r?\n/))

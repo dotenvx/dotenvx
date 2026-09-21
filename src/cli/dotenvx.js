@@ -290,7 +290,7 @@ program.command('precommit', { hidden: true })
 // dotenvx protect
 program.command('protect', { hidden: true })
   .description('protect env files from being staged across your repositories')
-  .addOption(program.createOption('--clean <path>', 'validate Git filter input from stdin').hideHelp())
+  .addOption(program.createOption('--git-file <pathname>', 'check stdin contents for the given Git pathname').hideHelp())
   .action(function () {
     return require('./actions/protect').apply(this, arguments)
   })
