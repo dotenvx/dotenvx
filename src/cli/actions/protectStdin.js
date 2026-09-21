@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const { sealed } = require('@dotenvx/primitives')
+const { scan, encrypted } = require('@dotenvx/primitives')
 const { logger } = require('../../shared/logger')
 
 function fixMessage (filepath, privateKeyFile) {
@@ -17,7 +17,12 @@ function check (filepath, content) {
   const filename = path.posix.basename(filepath)
   const exempt = ['.env.example', '.env.vault', '.env.x'].includes(filename)
   const privateKeyFile = filename.startsWith('.env.keys')
-  if (privateKeyFile || (!exempt && !sealed(content.toString('utf8')))) {
+  const { parsed } = scan(content.toString('utf8'))
+  const plaintext = Object.entries(parsed).some(([key, values]) => {
+    if (key.startsWith('DOTENV_PUBLIC_KEY') || key.endsWith('_PLAIN')) return false
+    return values.some(value => value.trim() !== '' && !encrypted(value))
+  })
+  if (privateKeyFile || (!exempt && plaintext)) {
     const code = privateKeyFile ? 'PRIVATE_KEY_FILE' : 'PLAINTEXT_ENV'
     const fix = fixMessage(filepath, privateKeyFile)
     const message = privateKeyFile
