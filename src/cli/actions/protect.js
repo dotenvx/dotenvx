@@ -8,7 +8,7 @@ module.exports = function protect () {
   }
   try {
     installProtectFilter()
-    logger.success('⁑ protected (plaintext .env files are now protected from being committed to code)')
+    logger.success('⁑ protected (plaintext .env files now protected from being committed to code)')
   } catch (error) {
     catchAndLog(error)
     process.exitCode = 1
