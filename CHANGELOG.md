@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.28.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.29.0...main)
+
+## [2.29.0](https://github.com/dotenvx/dotenvx/compare/v2.28.2...v2.29.0) (2026-09-21)
+
+### Added
+
+* Add `dotenvx protect` to prevent plaintext .env files from being committed to code on a machine ([#980](https://github.com/dotenvx/dotenvx/pull/980))
+
+### Changed
+
+* Deprecate `dotenvx gitignore`. Use `dotenvx protect`.
+* Deprecate `dotenvx precommit`. Use `dotenvx protect`.
+* Deprecate `dotenvx prebuild`. Use `dotenvx protect --docker`.
 
 ## [2.28.2](https://github.com/dotenvx/dotenvx/compare/v2.28.1...v2.28.2) (2026-09-19)
 
