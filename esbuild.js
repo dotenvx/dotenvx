@@ -23,11 +23,12 @@ async function emptyDir (dir) {
   await mkdir(dir)
 }
 
-async function printSize (fileName) {
-  const stats = await stat(fileName)
+async function printSize (fileNames) {
+  const stats = await Promise.all(fileNames.map(fileName => stat(fileName)))
+  const size = stats.reduce((total, file) => total + file.size, 0)
 
   // print size in MB
-  console.log(`Bundle size: ${Math.round(stats.size / 10000) / 100}MB\n\n`)
+  console.log(`Total bundle size: ${Math.round(size / 10000) / 100}MB\n\n`)
 }
 
 async function main () {
@@ -59,6 +60,14 @@ async function main () {
     keepNames: minify,
     outfile,
     plugins: [{
+      name: 'shared-tooling',
+      setup (build) {
+        build.onResolve({ filter: /^@dotenvx\/tooling$/ }, () => ({
+          path: './tooling.js',
+          external: true
+        }))
+      }
+    }, {
       name: 'embed-proxy-preload',
       setup (build) {
         build.onLoad({ filter: /[/\\]proxyPreloadSource\.js$/ }, () => ({
@@ -79,6 +88,17 @@ async function main () {
   await Promise.all([
     esbuild.build({
       ...config,
+      entryPoints: [],
+      stdin: {
+        contents: "module.exports = require('@dotenvx/tooling')",
+        resolveDir: __dirname,
+        sourcefile: 'tooling-entry.js'
+      },
+      plugins: [],
+      outfile: `${outputDir}/tooling.js`
+    }),
+    esbuild.build({
+      ...config,
       entryPoints: ['src/lib/providers/provider-worker.js'],
       outfile: `${outputDir}/provider-worker.js`
     }),
@@ -90,7 +110,7 @@ async function main () {
   ])
 
   console.log(`Build took ${Date.now() - start}ms`)
-  await printSize(outfile)
+  await printSize([outfile, `${outputDir}/tooling.js`, `${outputDir}/provider-worker.js`, `${outputDir}/decryptor-worker.js`])
 
   // create main patched package.json
   cleanPkgJson(pkgJson)
@@ -102,6 +122,7 @@ async function main () {
   pkgJson.bin = 'index.js'
   pkgJson.pkg = {
     scripts: [
+      'tooling.js',
       'provider-worker.js',
       'decryptor-worker.js'
     ]

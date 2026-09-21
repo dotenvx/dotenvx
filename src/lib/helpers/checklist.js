@@ -36,9 +36,14 @@ class Checklist extends Enquirer.prompts.MultiSelect {
     return super.selected.filter(choice => !choice.action)
   }
 
-  format () {
-    if (!this.state.submitted || this.state.cancelled) return ''
-    return this.selected.map(choice => this.styles.primary(choice.message)).join(', ')
+  async render () {
+    if (this.state.submitted && !this.state.cancelled) {
+      this.clear(this.state.size)
+      this.state.prompt = ''
+      this.state.size = 0
+      return
+    }
+    return super.render()
   }
 }
 
