@@ -79,3 +79,4 @@ class InstallPrecommitHook {
 }
 
 module.exports = InstallPrecommitHook
+module.exports.HOOK_SCRIPT = HOOK_SCRIPT

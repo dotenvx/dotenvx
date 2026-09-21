@@ -86,6 +86,7 @@ class Vercel {
 }
 
 function gitignore () {
+  logger.warn('[DEPRECATED] dotenvx gitignore. fix: run [dotenvx protect]')
   const options = this.opts()
   logger.debug(`options: ${JSON.stringify(options)}`)
 

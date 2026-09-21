@@ -2924,6 +2924,8 @@ $ dotenvx gitignore --pattern .env.keys
 </details>
 <details><summary>`precommit`</summary><br>
 
+Deprecated in favor of `dotenvx protect`. Existing hooks continue checking files and print a migration notice on each invocation. Run `dotenvx protect` inside the repository to install global staging protection and remove its recognized dotenvx hook block. Other hook commands are preserved; customized or shared hooks may require manual cleanup.
+
 Prevent `.env` files from being committed to code.
 
 ```sh
@@ -2934,23 +2936,56 @@ $ dotenvx precommit
 </details>
 <details><summary>`precommit --install`</summary><br>
 
-Install a pre-commit hook and a required Git clean filter in the current repository. The filter rejects plaintext `.env*` files before staging, including with `git add -A` or `git add -f`. Encrypted files pass through unchanged. `.env.example`, `.env.vault`, and `.env.x` retain their exemptions; `.env.keys*` files are always rejected.
-
-The filter uses repository-local Git configuration and `info/attributes`; run the installer in each clone. Keep the installed dotenvx executable available, or staging protected files will fail. It does not inspect content already staged before installation, and local Git configuration can be overridden.
-
-To enable the clean filter for all existing and future repositories for your user, run this once, even outside a Git repository:
-
-```sh
-$ dotenvx precommit --install --global
-```
-
-This writes the filter configuration to your global Git config and adds the `.env*` rule to your global attributes file. It preserves an existing `core.attributesFile`; otherwise it uses `$XDG_CONFIG_HOME/git/attributes` or `~/.config/git/attributes`. It leaves hooks unchanged. Repository attributes and configuration can override the global protection. Use a persistent dotenvx installation: moving or removing its executable requires reinstalling the filter.
+Install a pre-commit hook in the current repository:
 
 ```sh
 $ dotenvx precommit --install
 ▣ dotenvx precommit installed [.git/hooks/pre-commit]
-▣ dotenvx required clean filter installed (blocks staging plaintext .env files)
 ```
+
+For protection during staging, use `dotenvx protect`.
+
+</details>
+<details><summary>`precommit --uninstall`</summary><br>
+
+Remove the installed dotenvx pre-commit hook without installing replacement protection:
+
+```sh
+$ dotenvx precommit --uninstall
+```
+
+This removes recognized dotenvx installer blocks while preserving other hook commands. It also supports `dotenvx ext precommit --uninstall`. Unrecognized, symlinked, or external shared hooks are left unchanged with a manual-cleanup message.
+
+</details>
+<details><summary>`protect` (hidden)</summary><br>
+
+For a Docker build-time check instead of Git setup, use `RUN dotenvx protect --docker` in your Dockerfile, or `RUN dotenvx protect --docker apps/backend` for a specific directory. This replaces `prebuild` with the same checks, without prompts or Git configuration changes. It does not edit Dockerfiles or prevent files from reaching the builder; use `.dockerignore` for that.
+
+Install a required Git clean filter for all existing and future repositories for your user. Run this once, even outside a Git repository:
+
+```sh
+$ dotenvx protect
+```
+
+Interactive setup shows one checklist with both protections selected every time, even if you previously turned them off:
+
+```text
+Set protections
+● Protect plaintext secrets from code commits (.env*)
+● Protect private keys from code commits (.env.keys*)
+
+  Install protections
+```
+
+Use arrow keys to move and Enter or Space to toggle a choice. The action row changes to **Install protections**, **Apply changes**, **Remove protections**, or **Done**. Press Enter on that row to apply. Unchecking removes that protection; clearing both reports `⛉ unprotected (none)`. Cancelling leaves settings unchanged.
+
+The first installs the staging filter. The second adds `.env.keys*` to your global Git ignore file, preserving existing rules and any configured `core.excludesFile`. Otherwise, it uses `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`. This skips private-key files during normal adds; the filter still rejects forced adds when enabled. Only dotenvx-owned ignore rules are removed. Older or manually added `.env.keys*` rules without an ownership record require manual removal. Noninteractive and CI runs retain filter-only installation without prompting or removing existing protections.
+
+When run inside a repository with the filter selected, this also removes recognized dotenvx pre-commit hook blocks and legacy repo-local `precommit --clean` filter registrations after global protection is successfully installed. Custom filter commands are preserved. Run it in each repository with an old hook or filter override to migrate that repository.
+
+The filter rejects plaintext `.env*`, `*.env`, `.flaskenv`, `.dev.vars*`, and files directly inside `.env.d/` directories at any depth before staging, including with `git add -A` or `git add -f`. Encrypted files pass through unchanged. `.env.example`, `.env.vault`, and `.env.x` retain their exemptions; `.env.keys*` files are always rejected.
+
+This writes the filter configuration to your global Git config and adds the env-file rules to your global attributes file. Re-run `dotenvx protect` with the filter selected to refresh it after upgrading or moving the executable. It preserves an existing `core.attributesFile`; otherwise it uses `$XDG_CONFIG_HOME/git/attributes` or `~/.config/git/attributes`. It does not inspect content already staged before installation. Repository attributes and configuration can override the global protection. Use a persistent dotenvx installation.
 
 </details>
 <details><summary>`precommit directory`</summary><br>
@@ -2969,7 +3004,7 @@ $ dotenvx precommit apps/backend
 </details>
 <details><summary>`prebuild`</summary><br>
 
-Prevent `.env` files from being built into your docker containers.
+Deprecated. Use `dotenvx protect --docker` for the same build-time check.
 
 Add it to your `Dockerfile`.
 
@@ -2982,14 +3017,14 @@ COPY --from=dotenv/dotenvx:latest /usr/local/bin/dotenvx /bin/local/bin
 
 # ... orther container commands
 
-RUN dotenvx prebuild
+RUN dotenvx protect --docker
 CMD ["/usr/local/bin/dotenvx", "run", "--", "node", "index.js"]
 ```
 
 </details>
 <details><summary>`prebuild directory`</summary><br>
 
-Prevent `.env` files from being built into your docker containers inside a specified path to a directory.
+Deprecated. Use `dotenvx protect --docker <directory>` for the same build-time check in a specified directory.
 
 Add it to your `Dockerfile`.
 
@@ -3002,7 +3037,7 @@ COPY --from=dotenv/dotenvx:latest /usr/local/bin/dotenvx /bin/local/bin
 
 # ... orther container commands
 
-RUN dotenvx prebuild apps/backend
+RUN dotenvx protect --docker apps/backend
 CMD ["/usr/local/bin/dotenvx", "run", "--", "node", "apps/backend/index.js"]
 ```
 

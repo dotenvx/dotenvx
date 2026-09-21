@@ -51,6 +51,29 @@ async function select ({ message, choices }, context) {
   return answer.value
 }
 
+async function multiselect ({ message, choices, initial = [], submitLabel }, context) {
+  try {
+    const options = {
+      type: 'multiselect',
+      name: 'value',
+      message,
+      choices: choicesForSelect(choices),
+      initial,
+      ...enquirerOptions(context)
+    }
+    if (submitLabel) {
+      const Checklist = require('./checklist')
+      return await new Checklist({ ...options, submitLabel }).run()
+    }
+    const answer = await enquirer.prompt(options)
+    return answer.value
+  } catch {
+    const error = new Error('prompt cancelled')
+    error.code = 'PROMPT_CANCELLED'
+    throw error
+  }
+}
+
 async function confirm ({ message, initial = false }, context) {
   try {
     const answer = await enquirer.prompt({
@@ -103,6 +126,7 @@ async function password ({ message, prefix, separator }, context) {
 
 module.exports = {
   confirm,
+  multiselect,
   password,
   select
 }

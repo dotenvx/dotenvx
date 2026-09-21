@@ -5,7 +5,7 @@ const { ignore } = require('@dotenvx/tooling')
 
 const ls = require('../resolvers/ls')
 const Errors = require('../helpers/errors')
-const { sealed } = require('@dotenvx/primitives')
+const hasPlaintextSecrets = require('../helpers/hasPlaintextSecrets')
 
 const MISSING_DOCKERIGNORE = '.env.keys' // by default only ignore .env.keys. all other .env* files COULD be included - as long as they are encrypted
 
@@ -53,13 +53,12 @@ class Prebuild {
       } else {
         if (file !== '.env.example' && file !== '.env.vault' && file !== '.env.x') {
           const src = fsx.readFileXSync(file)
-          const encrypted = sealed(src)
+          const privateKeyFile = path.basename(file).startsWith('.env.keys')
 
-          // if contents are encrypted don't raise an error
-          if (!encrypted) {
+          if (privateKeyFile || hasPlaintextSecrets(src)) {
             let errorMsg = `${file} not encrypted/dockerignored`
             let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx gitignore --pattern ${file}]`
-            if (file.includes('.env.keys')) {
+            if (privateKeyFile) {
               errorMsg = `${file} not dockerignored`
               errorHelp = `fix: [dotenvx gitignore --pattern ${file}]`
             }

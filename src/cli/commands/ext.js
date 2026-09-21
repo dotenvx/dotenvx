@@ -49,7 +49,7 @@ ext.command('gitignore')
 
 // dotenvx ext prebuild
 ext.command('prebuild')
-  .description('prevent including .env files in docker')
+  .description('deprecated. use [dotenvx protect --docker]')
   .addHelpText('after', help.prebuild)
   .argument('[directory]', 'directory to prevent including .env files from', '.')
   .action(function (...args) {
@@ -61,9 +61,8 @@ ext.command('precommit')
   .description('prevent committing .env files to code')
   .addHelpText('after', help.precommit)
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
-  .option('-i, --install', 'install a pre-commit hook and required Git clean filter')
-  .option('--global', 'with --install, install the clean filter for all repositories')
-  .addOption(ext.createOption('--clean <path>', 'validate Git filter input from stdin').hideHelp())
+  .option('-i, --install', 'install a pre-commit hook')
+  .option('--uninstall', 'remove the dotenvx pre-commit hook')
   .action(function (...args) {
     return require('./../actions/ext/precommit').apply(this, args)
   })

@@ -56,17 +56,18 @@ Try it:
 
 tap.test('prebuild function returns expected string', (t) => {
   const expected = `
+Deprecated. Use [dotenvx protect --docker].
+
 Examples:
 
   \`\`\`
-  $ dotenvx prebuild
+  $ dotenvx protect --docker
   \`\`\`
 
 Try it:
 
   \`\`\`
-  $ dotenvx prebuild
-  [dotenvx@0.10.0][prebuild] success
+  $ dotenvx protect --docker apps/backend
   \`\`\`
   `
   t.equal(prebuild(), expected)

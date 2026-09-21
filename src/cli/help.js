@@ -42,17 +42,18 @@ Try it:
 
 const prebuild = function () {
   return `
+Deprecated. Use [dotenvx protect --docker].
+
 Examples:
 
   \`\`\`
-  $ dotenvx prebuild
+  $ dotenvx protect --docker
   \`\`\`
 
 Try it:
 
   \`\`\`
-  $ dotenvx prebuild
-  [dotenvx@0.10.0][prebuild] success
+  $ dotenvx protect --docker apps/backend
   \`\`\`
   `
 }

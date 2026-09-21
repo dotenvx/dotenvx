@@ -4,9 +4,6 @@ const Precommit = require('./../../../lib/services/precommit')
 const catchAndLog = require('./../../../lib/helpers/catchAndLog')
 
 function precommit (directory) {
-  if (this.opts().clean !== undefined) {
-    return require('./precommitClean')(this.opts().clean)
-  }
   // debug args
   logger.debug(`directory: ${directory}`)
 
@@ -14,6 +11,14 @@ function precommit (directory) {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
+    if (options.uninstall) {
+      if (options.install) throw new Error('--install and --uninstall cannot be used together')
+      const { removed, warning } = require('../../../lib/helpers/uninstallPrecommitHook')(directory)
+      if (warning) logger.warn(warning)
+      else logger.success(removed ? '▣ uninstalled (dotenvx precommit hook)' : '○ no dotenvx precommit hook found')
+      return
+    }
+    logger.warn('[DEPRECATED] dotenvx precommit. fix: run [dotenvx protect]')
     const {
       successMessage,
       warnings

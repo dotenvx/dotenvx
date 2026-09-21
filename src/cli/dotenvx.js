@@ -261,7 +261,7 @@ program.command('validate', { hidden: true })
 
 // dotenvx gitignore
 program.command('gitignore', { hidden: true })
-  .description('append to .gitignore')
+  .description('deprecated. use [dotenvx protect]')
   .addHelpText('after', help.gitignore)
   .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
   .action(function (...args) {
@@ -279,19 +279,29 @@ program.command('genexample', { hidden: true })
 
 // dotenvx precommit
 program.command('precommit', { hidden: true })
-  .description('prevent committing .env files to code')
+  .description('deprecated. use [dotenvx protect]')
   .addHelpText('after', help.precommit)
   .argument('[directory]', 'directory to prevent committing .env files from', '.')
-  .option('-i, --install', 'install a pre-commit hook and required Git clean filter')
-  .option('--global', 'with --install, install the clean filter for all repositories')
-  .addOption(program.createOption('--clean <path>', 'validate Git filter input from stdin').hideHelp())
+  .option('-i, --install', 'install a pre-commit hook')
+  .option('--uninstall', 'remove the dotenvx pre-commit hook')
   .action(function (...args) {
     return require('./actions/ext/precommit').apply(this, args)
   })
 
+// dotenvx protect
+program.command('protect', { hidden: true })
+  .description('protect secrets and private keys from code commits')
+  .argument('[directory]', 'directory to check with --docker', '.')
+  .addOption(program.createOption('--docker', 'check env files are encrypted or dockerignored').conflicts(['gitFile', 'gitProcess']))
+  .addOption(program.createOption('--git-file <pathname>', 'check stdin contents for the given Git pathname').hideHelp())
+  .addOption(program.createOption('--git-process', 'run the Git protection filter protocol').hideHelp())
+  .action(function () {
+    return require('./actions/protect').apply(this, arguments)
+  })
+
 // dotenvx prebuild
 program.command('prebuild', { hidden: true })
-  .description('prevent including .env files in docker')
+  .description('deprecated. use [dotenvx protect --docker]')
   .addHelpText('after', help.prebuild)
   .argument('[directory]', 'directory to prevent including .env files from', '.')
   .action(function (...args) {
@@ -310,7 +320,7 @@ program.command('doctor', { hidden: true })
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', '\nHidden Commands:\n  init                   create an Envfile from .env.example and .env\n  define                 define your environment in an Envfile\n  validate               validate .env file(s) against Envfile\n  genexample [directory] generate .env.example\n  gitignore              append to .gitignore\n  ls [directory]         print all .env files in a tree structure\n  prebuild [directory]   prevent including .env files in docker\n  precommit [directory]  prevent committing .env files to code\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nRun directly: dotenvx <command>')
+  .addHelpText('after', '\nHidden Commands:\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n  init                   create an Envfile from .env.example and .env\n  define                 define your environment in an Envfile\n  validate               validate .env file(s) against Envfile\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>')
   .action(function () { this.outputHelp() })
 
 // dotenvx update
