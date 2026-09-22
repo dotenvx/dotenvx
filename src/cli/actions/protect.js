@@ -6,12 +6,13 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const settings = require('../../lib/helpers/protectSettings')
 const createSpinner = require('../../lib/helpers/createSpinner')
 
-module.exports = async function protect (directory) {
+async function protect (directory) {
+  this.events.add({ action: this.opts().docker ? 'docker' : (this.opts().gitProcess || this.opts().gitFile !== undefined ? 'check' : 'configure') })
   if (this.opts().docker) return require('./protectDocker').call(this, directory)
   const filterOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : this.opts()
-  if (this.opts().gitProcess) return require('./protectProcess')(filterOptions)
+  if (this.opts().gitProcess) return require('./protectProcess')(filterOptions, this.events)
   if (this.opts().gitFile !== undefined) {
-    return require('./protectStdin')(this.opts().gitFile, filterOptions)
+    return require('./protectStdin')(this.opts().gitFile, filterOptions, this.events)
   }
   let spinner
   try {
@@ -59,6 +60,7 @@ module.exports = async function protect (directory) {
       protectedFiles.push('.env.keys*')
     }
     if (interactive) settings.markConfigured()
+    this.events.add({ action: 'configure', filter, ...(interactive ? { ignore } : {}), scope: 'global' })
     if (spinner) spinner.stop()
     if (hookWarning) logger.warn(hookWarning)
     const status = protectedFiles.length === 2 ? 'full' : 'partial'
@@ -66,7 +68,10 @@ module.exports = async function protect (directory) {
     else logger.success('⛉ protection: none')
   } catch (error) {
     if (spinner) spinner.stop()
+    this.events.fail(error)
     catchAndLog(error)
     process.exitCode = 1
   }
 }
+
+module.exports = require('../../lib/events/cli')('protect', protect)

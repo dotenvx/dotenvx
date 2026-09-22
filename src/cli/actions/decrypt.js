@@ -57,12 +57,15 @@ async function decrypt () {
         }
         console.log(envSrc)
       }
+
+      this.events.file(processedEnv, { output: options.stdout ? 'stdout' : 'file' })
     }
 
+    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
-      process.exit(1)
+      return await this.events.exit(1)
     } else {
-      process.exit(0) // exit early
+      return await this.events.exit(0) // exit early
     }
   } else {
     try {
@@ -99,6 +102,8 @@ async function decrypt () {
         } else {
           logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
+
+        this.events.file(processedEnv, { output: options.stdout ? 'stdout' : 'file' })
       }
 
       if (spinner) spinner.stop()
@@ -110,15 +115,16 @@ async function decrypt () {
         // do nothing - scenario when no .env files found
       }
 
+      this.events.add({ error_count: errorCount })
       if (errorCount > 0) {
-        process.exit(1)
+        return await this.events.exit(1)
       }
     } catch (error) {
       if (spinner) spinner.stop()
       catchAndLog(error)
-      process.exit(1)
+      return await this.events.exit(1, error)
     }
   }
 }
 
-module.exports = decrypt
+module.exports = require('../../lib/events/cli')('decrypt', decrypt)

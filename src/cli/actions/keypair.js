@@ -34,6 +34,7 @@ async function keypair (key) {
     })
 
     const results = key ? keypairs[key] : keypairs
+    this.events.add({ result_count: results === undefined ? 0 : (key ? 1 : Object.keys(keypairs).length) })
 
     if (spinner) spinner.stop()
     if (typeof results === 'object' && results !== null) {
@@ -65,7 +66,7 @@ async function keypair (key) {
     } else {
       if (results === undefined) {
         console.log('')
-        process.exit(1)
+        return await this.events.exit(1)
       } else if (options.format === 'colon' && key) {
         console.log(`${key}:${results}`)
       } else {
@@ -75,8 +76,8 @@ async function keypair (key) {
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    process.exit(1)
+    return await this.events.exit(1, error)
   }
 }
 
-module.exports = keypair
+module.exports = require('../../lib/events/cli')('keypair', keypair)

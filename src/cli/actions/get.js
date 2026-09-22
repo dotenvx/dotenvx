@@ -118,18 +118,18 @@ async function get (key) {
       }
     }
 
+    this.events.add({ result_count: Object.values(parsed).filter(value => value !== undefined).length, error_count: errorCount })
     if (errorCount > 0) {
-      process.exit(1)
+      return await this.events.exit(1)
     }
   } catch (error) {
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
-      process.exit(130)
-      return
+      return await this.events.exit(130, error)
     }
     catchAndLog(error)
-    process.exit(1)
+    return await this.events.exit(1, error)
   }
 }
 
-module.exports = get
+module.exports = require('../../lib/events/cli')('get', get)

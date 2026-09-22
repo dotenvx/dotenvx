@@ -23,7 +23,7 @@ async function * packets (input) {
   if (buffer.length) throw new Error('Incomplete Git filter packet')
 }
 
-module.exports = async function protectProcess (options = {}) {
+module.exports = async function protectProcess (options = {}, events) {
   let spinner
   let started = false
   let failed = false
@@ -92,7 +92,7 @@ module.exports = async function protectProcess (options = {}) {
       }
       const content = Buffer.concat(await list())
       // Checkout must remain a byte-for-byte passthrough, even for existing plaintext history.
-      if (command === 'clean' && !check(fields.get('pathname'), content, stop)) {
+      if (command === 'clean' && !check(fields.get('pathname'), content, stop, events)) {
         failed = true
         await packet('status=error\n')
         await packet(null)
@@ -113,6 +113,7 @@ module.exports = async function protectProcess (options = {}) {
     failed = true
     stop()
     // Never include malformed protocol data: it may contain secret contents.
+    if (events) events.fail({ code: 'GIT_FILTER_PROTOCOL_FAILED' })
     logger.error('Git protection filter protocol failed')
     process.exitCode = 1
     process.stdin.destroy()

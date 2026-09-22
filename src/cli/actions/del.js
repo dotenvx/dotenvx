@@ -33,6 +33,8 @@ async function del (key) {
       } else {
         logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
+
+      this.events.file(processedEnv, { key, output: options.stdout ? 'stdout' : 'file' })
     }
 
     if (changedFilepaths.length > 0) {
@@ -43,14 +45,15 @@ async function del (key) {
       // do nothing - scenario when no .env files found
     }
 
+    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
-      process.exit(1)
+      return await this.events.exit(1)
     }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    process.exit(1)
+    return await this.events.exit(1, error)
   }
 }
 
-module.exports = del
+module.exports = require('../../lib/events/cli')('del', del)

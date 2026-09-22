@@ -42,7 +42,7 @@ function uniqueInjectedKeys (processedEnvs) {
 }
 
 /** @type {import('./main').config} */
-const config = function (options = {}) {
+const config = function (options = {}, events) {
   options = normalizeDotenvConfigQuiet(options)
   options = normalizeDotenvConfigConvention(options)
   options = normalizeDotenvConfigIgnore(options)
@@ -148,6 +148,7 @@ const config = function (options = {}) {
       }
     }
 
+    if (events) events.add({ files: readableFilepaths, injected_count: uniqueInjectedKeys(processedEnvs).size })
     let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
     if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
@@ -155,11 +156,13 @@ const config = function (options = {}) {
     logger.success(`⟐ ${msg}`)
 
     if (lastError) {
+      if (events) events.fail(lastError)
       return { parsed: parsedAll, error: lastError }
     } else {
       return { parsed: parsedAll }
     }
   } catch (error) {
+    if (events) events.fail(error)
     if (strict) throw error // throw immediately if strict
 
     logger.error(error.messageWithHelp || error.message)
@@ -223,7 +226,7 @@ const parse = function (src, options = {}) {
 }
 
 /* @type {import('./main').set} */
-const set = async function (key, value, options = {}) {
+const set = async function (key, value, options = {}, events) {
   options = normalizeDotenvConfigQuiet(options)
 
   // encrypt
@@ -288,7 +291,9 @@ const set = async function (key, value, options = {}) {
       logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
       logger.debug(`${processedEnv.key} set${withEncryption} to ${processedEnv.value} (${processedEnv.envFilepath})`)
     }
+    if (events) events.file(processedEnv, { key, output: 'file' })
   }
+  if (events) events.add({ error_count: processedEnvs.filter(env => env.error).length })
 
   let keyAddedSuffix = ''
   const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
@@ -323,7 +328,7 @@ const set = async function (key, value, options = {}) {
 }
 
 /* @type {import('./main').get} */
-const get = async function (key, options = {}) {
+const get = async function (key, options = {}, events) {
   options = normalizeDotenvConfigConvention(options)
   options = normalizeDotenvConfigIgnore(options)
 
@@ -359,11 +364,13 @@ const get = async function (key, options = {}) {
       continue // ignore error
     }
 
+    if (events) events.fail(error)
     if (options.strict) throw error // throw immediately if strict
 
     logger.error(error.messageWithHelp || error.message)
   }
 
+  if (events) events.add({ result_count: Object.values(parsed).filter(value => value !== undefined).length, error_count: (errors || []).filter(error => !ignore.includes(error.code)).length })
   if (key) {
     const single = parsed[key]
     if (single === undefined) {
@@ -418,6 +425,7 @@ function resolveNoNative (options = {}) {
 }
 
 module.exports = {
+  withEvents: () => require('./events/sdk')({ config, get, set }),
   // dotenv proxies
   config,
   parse,

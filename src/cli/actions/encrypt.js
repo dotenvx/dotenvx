@@ -41,12 +41,15 @@ async function encryptAction () {
       if (!processedEnv.error && processedEnv.envSrc) {
         console.log(processedEnv.envSrc)
       }
+
+      this.events.file(processedEnv, { output: options.stdout ? 'stdout' : 'file' })
     }
 
+    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
-      process.exit(1)
+      return await this.events.exit(1)
     } else {
-      process.exit(0) // exit early
+      return await this.events.exit(0) // exit early
     }
   }
 
@@ -69,6 +72,8 @@ async function encryptAction () {
       } else {
         logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
+
+      this.events.file(processedEnv, { output: options.stdout ? 'stdout' : 'file' })
     }
 
     if (changedFilepaths.length > 0) {
@@ -84,14 +89,15 @@ async function encryptAction () {
       // do nothing - scenario when no .env files found
     }
 
+    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
-      process.exit(1)
+      return await this.events.exit(1)
     }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    process.exit(1)
+    return await this.events.exit(1, error)
   }
 }
 
-module.exports = encryptAction
+module.exports = require('../../lib/events/cli')('encrypt', encryptAction)
