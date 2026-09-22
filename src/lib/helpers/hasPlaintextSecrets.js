@@ -1,11 +1,7 @@
-const { scan, encrypted } = require('@dotenvx/primitives')
+const { sealed } = require('@dotenvx/primitives')
 
 function hasPlaintextSecrets (src) {
-  const { parsed } = scan(src)
-  return Object.entries(parsed).some(([key, values]) => {
-    if (key.startsWith('DOTENV_PUBLIC_KEY') || key.endsWith('_PLAIN')) return false
-    return values.some(value => value.trim() !== '' && !encrypted(value))
-  })
+  return !sealed(src)
 }
 
 module.exports = hasPlaintextSecrets
