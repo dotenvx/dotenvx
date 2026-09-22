@@ -65,7 +65,7 @@ async function keypair (key) {
     } else {
       if (results === undefined) {
         console.log('')
-        process.exit(1)
+        return { exitCode: 1 }
       } else if (options.format === 'colon' && key) {
         console.log(`${key}:${results}`)
       } else {
@@ -75,8 +75,8 @@ async function keypair (key) {
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 
-module.exports = keypair
+module.exports = require('../../lib/events/cli')('keypair', keypair)

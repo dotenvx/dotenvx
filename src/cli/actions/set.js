@@ -25,8 +25,7 @@ async function set (key, value) {
   if (value === undefined || value === null) {
     if (!process.stdin.isTTY) {
       catchAndLog(new Errors({ key }).missingValue())
-      process.exit(1)
-      return
+      return { exitCode: 1 }
     }
 
     try {
@@ -40,8 +39,7 @@ async function set (key, value) {
       })
     } catch (error) {
       if (error.code === 'PROMPT_CANCELLED') {
-        process.exit(130)
-        return
+        return { exitCode: 130, error }
       }
 
       throw error
@@ -127,14 +125,12 @@ async function set (key, value) {
     //   // do nothing
     // }
 
-    if (errorCount > 0) {
-      process.exit(1)
-    }
+    return { exitCode: errorCount > 0 ? 1 : 0, errorCount }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 
-module.exports = set
+module.exports = require('../../lib/events/cli')('set', set)

@@ -7,7 +7,7 @@ function off () {
     logger.success('✔ armor: off')
   } catch (error) {
     logger.error(error.message)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

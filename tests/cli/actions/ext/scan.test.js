@@ -26,9 +26,10 @@ t.test('scan - gitleaks not installed', (ct) => {
   const loggerErrorStub = sinon.stub(logger, 'error')
   const loggerHelpStub = sinon.stub(logger, 'help')
 
-  scan.call(fakeContext)
+  const result = scan.call(fakeContext)
 
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.ok(loggerErrorStub.calledWith('gitleaks: command not found'), 'logger.error logs')
   ct.ok(loggerHelpStub.calledWith('fix: install gitleaks:      [brew install gitleaks]'), 'logger.help logs')
   ct.ok(loggerHelpStub.calledWith('fix: other install options: [https://github.com/gitleaks/gitleaks]'), 'logger.help logs')
@@ -72,9 +73,10 @@ t.test('scan - gitleaks installed and raises error', (ct) => {
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
 
-  scan.call(fakeContext)
+  const result = scan.call(fakeContext)
 
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called with code 1')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.ok(loggerErrorStub.calledWith('leak: API_KEY=abcd1234'), 'logger.error logs')
 
   ct.end()

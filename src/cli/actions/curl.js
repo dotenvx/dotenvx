@@ -58,10 +58,10 @@ async function curl () {
     const text = await response.body.text()
     console.log(outputBody(text))
 
-    if (response.statusCode >= 400) process.exitCode = 1
+    if (response.statusCode >= 400) return { exitCode: 1 }
   } catch (error) {
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

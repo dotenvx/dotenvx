@@ -27,6 +27,7 @@ module.exports = async function protectProcess (options = {}) {
   let spinner
   let started = false
   let failed = false
+  let errorCount = 0
   let activeRequest = false
   let reported = false
   const checkedFiles = new Set()
@@ -78,7 +79,7 @@ module.exports = async function protectProcess (options = {}) {
     await packet(null)
     while (true) {
       const headers = await list(true)
-      if (headers === null) return
+      if (headers === null) return { errorCount }
       activeRequest = true
       const fields = new Map(lines(headers).map(line => {
         const index = line.indexOf('=')
@@ -94,6 +95,7 @@ module.exports = async function protectProcess (options = {}) {
       // Checkout must remain a byte-for-byte passthrough, even for existing plaintext history.
       if (command === 'clean' && !check(fields.get('pathname'), content, stop)) {
         failed = true
+        errorCount++
         await packet('status=error\n')
         await packet(null)
         activeRequest = false
@@ -116,6 +118,7 @@ module.exports = async function protectProcess (options = {}) {
     logger.error('Git protection filter protocol failed')
     process.exitCode = 1
     process.stdin.destroy()
+    return { error: { code: 'GIT_FILTER_PROTOCOL_FAILED' } }
   } finally {
     finish()
     process.removeListener('exit', onExit)

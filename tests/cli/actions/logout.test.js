@@ -47,12 +47,13 @@ t.test('logout action falls back to saved hostname and reports errors', async ct
     '../../lib/helpers/createSpinner': sinon.stub().resolves(spinner)
   })
 
-  await logout.call({ opts: () => ({}) })
+  const result = await logout.call({ opts: () => ({}) })
 
   ct.same(Logout.firstCall.args, ['https://saved.example.com'])
   ct.ok(loggerErrorStub.calledWith('logout failed'))
   ct.equal(spinner.stop.callCount, 1)
-  ct.ok(processExitStub.calledWith(1))
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
 })
 
 t.test('logout action reports non-error rejection values', async ct => {
@@ -70,8 +71,9 @@ t.test('logout action reports non-error rejection values', async ct => {
     '../../lib/helpers/createSpinner': sinon.stub().resolves(spinner)
   })
 
-  await logout.call({ opts: () => ({}) })
+  const result = await logout.call({ opts: () => ({}) })
 
   ct.same(loggerErrorStub.firstCall.args, [failure])
-  ct.ok(processExitStub.calledWith(1))
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
 })

@@ -10,10 +10,10 @@ function hostname () {
     }
 
     logger.error('missing hostname. Try running [dotenvx armor login].')
-    process.exit(1)
+    return { exitCode: 1 }
   } catch (error) {
     logger.error(error.message)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

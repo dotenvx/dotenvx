@@ -6,7 +6,7 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const settings = require('../../lib/helpers/protectSettings')
 const createSpinner = require('../../lib/helpers/createSpinner')
 
-module.exports = async function protect (directory) {
+async function protect (directory) {
   if (this.opts().docker) return require('./protectDocker').call(this, directory)
   const filterOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : this.opts()
   if (this.opts().gitProcess) return require('./protectProcess')(filterOptions)
@@ -68,5 +68,8 @@ module.exports = async function protect (directory) {
     if (spinner) spinner.stop()
     catchAndLog(error)
     process.exitCode = 1
+    return { error }
   }
 }
+
+module.exports = require('../../lib/events/cli')('protect', protect)

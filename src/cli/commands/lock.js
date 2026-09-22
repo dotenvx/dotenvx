@@ -1,3 +1,4 @@
+const commandAction = require('../commandAction')
 function configureLockCommand (lock) {
   lock.hook('preAction', async () => {
     const Session = require('./../../db/session')
@@ -17,7 +18,7 @@ function configureLockCommand (lock) {
     .option('-f, --env-file <path>', 'path to your env file')
     .option('-fk, --env-keys-file <path>', 'path to your .env.keys file', '.env.keys')
     .action(function (...args) {
-      return require('./../actions/lock/up').apply(this, args)
+      return commandAction(require('./../actions/lock/up')).apply(this, args)
     })
 
   lock
@@ -26,7 +27,7 @@ function configureLockCommand (lock) {
     .option('-f, --env-file <path>', 'path to your env file')
     .option('-fk, --env-keys-file <path>', 'path to your .env.keys file', '.env.keys')
     .action(function (...args) {
-      return require('./../actions/lock/down').apply(this, args)
+      return commandAction(require('./../actions/lock/down')).apply(this, args)
     })
 
   return lock

@@ -95,7 +95,7 @@ async function run () {
       logger.error(`ambiguous command due to missing '--' separator. try [dotenvx run -f ${realExample} -- yourcommand]`)
     }
 
-    process.exit(1)
+    return { exitCode: 1 }
   }
 
   try {
@@ -214,18 +214,17 @@ async function run () {
     if (closeProxy) await closeProxy()
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
-      process.exit(130)
-      return
+      return { exitCode: 130, error }
     }
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 
   try {
-    await executeCommand(commandArgs, commandEnv, sensitiveValues, closeProxy)
+    return await executeCommand(commandArgs, commandEnv, sensitiveValues, closeProxy)
   } finally {
     if (closeProxy) await closeProxy()
   }
 }
 
-module.exports = run
+module.exports = require('../../lib/events/cli')('run', run)

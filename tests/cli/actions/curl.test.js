@@ -90,16 +90,17 @@ t.test('refuses to send the token to another origin', async ct => {
   const { action, http } = loadAction()
   const exit = sinon.stub(process, 'exit')
 
-  await action.call({
+  const result = await action.call({
     args: ['https://evil.example/api/armor/keypairs'],
     opts: () => ({})
   })
 
   ct.equal(http.callCount, 0)
-  ct.ok(exit.calledWith(1))
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(exit.notCalled, 'leaves process termination to the command lifecycle')
 })
 
-t.test('prints API error JSON and sets a failing exit code', async ct => {
+t.test('prints API error JSON and returns a failing exit code', async ct => {
   const { action } = loadAction({
     response: {
       statusCode: 401,
@@ -108,11 +109,12 @@ t.test('prints API error JSON and sets a failing exit code', async ct => {
   })
   const log = sinon.stub(console, 'log')
 
-  await action.call({
+  const result = await action.call({
     args: ['https://armor.dotenvx.com/api/armor/keypairs'],
     opts: () => ({})
   })
 
   ct.match(log.firstCall.args[0], /UNAUTHORIZED/)
-  ct.equal(process.exitCode, 1)
+  ct.equal(result.exitCode, 1, 'returns a failing exit code')
+  ct.equal(process.exitCode, undefined, 'does not change the process exit code directly')
 })

@@ -23,7 +23,7 @@ async function down () {
   } catch (error) {
     if (spinner) spinner.stop()
     logger.error(error.message)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

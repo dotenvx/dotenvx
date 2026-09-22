@@ -43,14 +43,12 @@ async function del (key) {
       // do nothing - scenario when no .env files found
     }
 
-    if (errorCount > 0) {
-      process.exit(1)
-    }
+    return { exitCode: errorCount > 0 ? 1 : 0, errorCount }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 
-module.exports = del
+module.exports = require('../../lib/events/cli')('del', del)

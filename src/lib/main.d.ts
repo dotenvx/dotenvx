@@ -1,5 +1,19 @@
 import type { URL } from 'url';
 
+export interface EventSdk {
+  config: typeof config;
+  get: typeof get;
+  set: typeof set;
+  /** Flush event delivery for calls that have completed. Await operations first. */
+  flushEvents(): Promise<void>;
+}
+
+/**
+ * Create an explicitly instrumented SDK client using connected Armor. config() remains synchronous;
+ * get()/set() preserve their results and errors. Plain SDK calls are unchanged.
+ */
+export function withEvents(): EventSdk;
+
 export interface DotenvParseOptions {
   /**
    * Override any environment variables that have already been set on your machine with values from your .env file.

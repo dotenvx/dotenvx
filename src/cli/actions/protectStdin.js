@@ -53,6 +53,7 @@ async function protectStdin (filepath, options = {}) {
     stop()
     logger.error(error.message)
     process.exitCode = 1
+    return { error }
   } finally {
     stop()
   }

@@ -1,3 +1,4 @@
+const commandAction = require('../commandAction')
 const executeDynamic = require('./../../lib/helpers/executeDynamic')
 
 function configureArmorCommand (armor) {
@@ -25,7 +26,7 @@ function configureArmorCommand (armor) {
     .option('--token <token>', 'set token')
     .option('--team <team>', 'team to armor private key for')
     .action(function (...args) {
-      return require('./../actions/armor/up').apply(this, args)
+      return commandAction(require('./../actions/armor/up')).apply(this, args)
     })
 
   // dotenvx armor down
@@ -36,7 +37,7 @@ function configureArmorCommand (armor) {
     .option('--token <token>', 'set token')
     .option('--team <team>', 'team to dearmor private key from')
     .action(function (...args) {
-      return require('./../actions/armor/down').apply(this, args)
+      return commandAction(require('./../actions/armor/down')).apply(this, args)
     })
 
   // dotenvx armor push
@@ -47,7 +48,7 @@ function configureArmorCommand (armor) {
     .option('--token <token>', 'set token')
     .option('--team <team>', 'team to push armored private key for')
     .action(function (...args) {
-      return require('./../actions/armor/push').apply(this, args)
+      return commandAction(require('./../actions/armor/push')).apply(this, args)
     })
 
   // dotenvx armor pull
@@ -58,7 +59,7 @@ function configureArmorCommand (armor) {
     .option('--token <token>', 'set token')
     .option('--team <team>', 'team to pull armored private key from')
     .action(function (...args) {
-      return require('./../actions/armor/pull').apply(this, args)
+      return commandAction(require('./../actions/armor/pull')).apply(this, args)
     })
 
   // dotenvx armor open
@@ -67,7 +68,7 @@ function configureArmorCommand (armor) {
     .description('open armored key (in browser)')
     .option('-f, --env-file <path>', 'path to your env file')
     .action(function (...args) {
-      return require('./../actions/armor/open').apply(this, args)
+      return commandAction(require('./../actions/armor/open')).apply(this, args)
     })
 
   // dotenvx armor move
@@ -77,7 +78,7 @@ function configureArmorCommand (armor) {
     .option('-f, --env-file <path>', 'path to your env file')
     .option('--token <token>', 'set token')
     .action(function (...args) {
-      return require('./../actions/armor/move').apply(this, args)
+      return commandAction(require('./../actions/armor/move')).apply(this, args)
     })
 
   // dotenvx armor login
@@ -87,7 +88,7 @@ function configureArmorCommand (armor) {
     .allowUnknownOption()
     .option('--hostname <hostname>', 'set Armor ⛨ hostname')
     .action(function (...args) {
-      return require('./../actions/login').apply(this, args)
+      return commandAction(require('./../actions/login')).apply(this, args)
     })
 
   // dotenvx armor logout
@@ -97,7 +98,7 @@ function configureArmorCommand (armor) {
     .allowUnknownOption()
     .option('--hostname <hostname>', 'set Armor ⛨ hostname')
     .action(function (...args) {
-      return require('./../actions/logout').apply(this, args)
+      return commandAction(require('./../actions/logout')).apply(this, args)
     })
 
   // dotenvx armor status
@@ -105,7 +106,7 @@ function configureArmorCommand (armor) {
     .command('status')
     .description('print armor status')
     .action(function (...args) {
-      return require('./../actions/armor/status').apply(this, args)
+      return commandAction(require('./../actions/armor/status')).apply(this, args)
     })
 
   // dotenvx armor settings

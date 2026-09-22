@@ -164,7 +164,7 @@ t.test('armor push falls back to private key name when public key display is una
   ct.same(successStub.lastCall && successStub.lastCall.args, ['⛨ pushed (DOTENV_PRIVATE_KEY)'], 'prints private key name fallback')
 })
 
-t.test('armor push logs errors and exits', async (ct) => {
+t.test('armor push logs errors and returns failure', async (ct) => {
   const sandbox = sinon.createSandbox()
   const spinnerStop = sandbox.spy()
   const errorStub = sandbox.stub()
@@ -195,9 +195,10 @@ t.test('armor push logs errors and exits', async (ct) => {
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
   const processExitStub = sandbox.stub(process, 'exit').callsFake(() => {})
 
-  await pushAction.call({ opts: () => ({}) })
+  const result = await pushAction.call({ opts: () => ({}) })
 
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after error')
   ct.same(errorStub.lastCall && errorStub.lastCall.args, ['push failed'], 'logs error message')
-  ct.ok(processExitStub.calledWith(1), 'exits with code 1')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
 })

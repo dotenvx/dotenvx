@@ -3,7 +3,7 @@ const { logger } = require('../../shared/logger')
 const Prebuild = require('../../lib/services/prebuild')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 
-function protectDocker (directory) {
+async function protectDocker (directory) {
   // debug args
   logger.debug(`directory: ${directory}`)
 
@@ -23,7 +23,7 @@ function protectDocker (directory) {
     logger.success(successMessage)
   } catch (error) {
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

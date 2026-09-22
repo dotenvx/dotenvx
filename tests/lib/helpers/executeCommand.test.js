@@ -75,9 +75,10 @@ t.test('executeCommand - exitCode 1', async ct => {
   const loggerDebugStub = sinon.stub(logger, 'debug')
   const loggerErrorStub = sinon.stub(logger, 'error')
 
-  await executeCommand(['node', 'index.js'], { HELLO: 'World' })
+  const result = await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
-  ct.ok(processExitStub.called, 'process.exit called')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.ok(execaStub.called, 'execa called')
   ct.ok(loggerDebugStub.calledWith('received exitCode 1'), 'logger debug')
   ct.ok(loggerErrorStub.notCalled, 'does not duplicate the command failure')
@@ -108,10 +109,11 @@ t.test('executeCommand - error with OTHER signal', async ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
 
-  await executeCommand(['node', 'index.js'], { HELLO: 'World' })
+  const result = await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
   ct.ok(execaStub.called, 'execa called')
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.ok(loggerErrorStub.calledWith('Mock Error'), 'logger error')
 
   ct.end()
@@ -127,9 +129,10 @@ t.test('executeCommand - command failed error', async ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
 
-  await executeCommand(['node', 'index.js'], { HELLO: 'World' })
+  const result = await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.ok(loggerErrorStub.notCalled, 'does not duplicate the command failure')
 
   ct.end()
@@ -146,9 +149,10 @@ t.test('executeCommand - ENOENT', async ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const loggerErrorStub = sinon.stub(logger, 'error')
 
-  await executeCommand(['node', 'index.js'], { HELLO: 'World' })
+  const result = await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.ok(loggerErrorStub.calledWith('Unknown command: command'), 'logger error')
 
   ct.end()
@@ -252,10 +256,11 @@ t.test('executeCommand - first SIGINT in TTY mode does not suppress non-signal e
   error.exitCode = 1
   rejectChild(error)
 
-  await runPromise
+  const result = await runPromise
 
   ct.ok(loggerErrorStub.calledWith('Mock Error After SIGINT'), 'logger error is not suppressed')
-  ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
 
   if (stdinDescriptor) {
     Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor)

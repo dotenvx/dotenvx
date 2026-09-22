@@ -76,9 +76,10 @@ t.test('genexample calls Genexample.run (other error)', ct => {
   }
 
   // Call the genexample function with the fake context
-  genexample.call(fakeContext, '.')
+  const result = genexample.call(fakeContext, '.')
 
-  ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(exitStub.notCalled, 'leaves process termination to the command lifecycle')
 
   stub.restore()
   exitStub.restore()
@@ -100,9 +101,10 @@ t.test('genexample calls Genexample.run (error with code and help message)', ct 
   }
 
   // Call the genexample function with the fake context
-  genexample.call(fakeContext, '.')
+  const result = genexample.call(fakeContext, '.')
 
-  ct.ok(exitStub.calledWith(1), 'process.exit was called with code 1')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(exitStub.notCalled, 'leaves process termination to the command lifecycle')
 
   stub.restore()
   exitStub.restore()

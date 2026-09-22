@@ -3,6 +3,7 @@
 /* c8 ignore start */
 const { Command } = require('@dotenvx/tooling')
 const program = new Command()
+const commandAction = require('./commandAction')
 
 const { setLogLevel } = require('../shared/logger')
 const help = require('./help')
@@ -220,7 +221,7 @@ program.command('ls', { hidden: true })
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
   .option('--json', 'output a JSON array of absolute filepaths')
   .action(function (...args) {
-    return require('./actions/ls').apply(this, args)
+    return commandAction(require('./actions/ls')).apply(this, args)
   })
 
 // dotenvx init
@@ -228,7 +229,7 @@ program.command('init', { hidden: true })
   .description('create an Envfile from .env.example and .env')
   .option('-f, --env-file <path>', 'file to read variable names from')
   .action(function () {
-    return require('./actions/init').apply(this, arguments)
+    return commandAction(require('./actions/init')).apply(this, arguments)
   })
 
 // dotenvx define
@@ -236,7 +237,7 @@ program.command('define', { hidden: true })
   .description('define your environment in an Envfile')
   .option('-f, --env-file <path>', 'file to read variable names from')
   .action(function () {
-    return require('./actions/define').apply(this, arguments)
+    return commandAction(require('./actions/define')).apply(this, arguments)
   })
 
 // dotenvx validate
@@ -256,7 +257,7 @@ program.command('validate', { hidden: true })
   .option('--no-bitwarden', 'disable Bitwarden secret reference resolution')
   .action(function (...args) {
     this.envs = envs
-    return require('./actions/validate').apply(this, args)
+    return commandAction(require('./actions/validate')).apply(this, args)
   })
 
 // dotenvx gitignore
@@ -274,7 +275,7 @@ program.command('genexample', { hidden: true })
   .argument('[directory]', 'directory to generate from', '.')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .action(function (...args) {
-    return require('./actions/ext/genexample').apply(this, args)
+    return commandAction(require('./actions/ext/genexample')).apply(this, args)
   })
 
 // dotenvx precommit
@@ -313,7 +314,7 @@ program.command('doctor', { hidden: true })
   .description('scan for dotenv loaders')
   .argument('[directory]', 'directory to scan', '.')
   .action(function (...args) {
-    return require('./actions/doctor').apply(this, args)
+    return commandAction(require('./actions/doctor')).apply(this, args)
   })
 
 // dotenvx hidden (a menu of top-level commands)
@@ -327,7 +328,7 @@ program.command('hidden')
 program.command('update')
   .description('update dotenvx')
   .action(function (...args) {
-    return require('./actions/update').apply(this, args)
+    return commandAction(require('./actions/update')).apply(this, args)
   })
 
 // dotenvx login (compatibility alias for dotenvx armor login)
@@ -336,7 +337,7 @@ program.command('login', { hidden: true })
   .allowUnknownOption()
   .option('--hostname <hostname>', 'set Armor ⛨ hostname')
   .action(function (...args) {
-    return require('./actions/login').apply(this, args)
+    return commandAction(require('./actions/login')).apply(this, args)
   })
 
 // dotenvx logout (compatibility alias for dotenvx armor logout)
@@ -345,7 +346,7 @@ program.command('logout', { hidden: true })
   .allowUnknownOption()
   .option('--hostname <hostname>', 'set Armor ⛨ hostname')
   .action(function (...args) {
-    return require('./actions/logout').apply(this, args)
+    return commandAction(require('./actions/logout')).apply(this, args)
   })
 
 // dotenvx curl
@@ -362,7 +363,7 @@ program.command('curl', { hidden: true })
       return
     }
 
-    return require('./actions/curl').apply(this, args)
+    return commandAction(require('./actions/curl')).apply(this, args)
   })
 
 // dotenvx help
@@ -414,6 +415,9 @@ program.helpInformation = function () {
   return filteredLines.join('\n')
 }
 /* c8 ignore stop */
+
+program.command('_deliver-events', { hidden: true })
+  .action(() => require('../lib/events/worker')())
 
 require('./commands/fileOptions')(program)
 

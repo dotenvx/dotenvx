@@ -45,7 +45,7 @@ async function login () {
     cleanupOpenKeyListener()
     if (spinner) spinner.stop()
     logger.success(`◉ logged in (${data.username})`)
-    process.exit(0)
+    return { exitCode: 0 }
   } catch (error) {
     cleanupOpenKeyListener()
     if (spinner) spinner.stop()
@@ -57,7 +57,7 @@ async function login () {
     if (error.stack) {
       logger.debug(error.stack)
     }
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

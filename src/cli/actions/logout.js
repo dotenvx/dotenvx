@@ -30,7 +30,7 @@ async function logout () {
     if (error.stack) {
       logger.debug(error.stack)
     }
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 
