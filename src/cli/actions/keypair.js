@@ -34,7 +34,6 @@ async function keypair (key) {
     })
 
     const results = key ? keypairs[key] : keypairs
-    this.events.add({ result_count: results === undefined ? 0 : (key ? 1 : Object.keys(keypairs).length) })
 
     if (spinner) spinner.stop()
     if (typeof results === 'object' && results !== null) {

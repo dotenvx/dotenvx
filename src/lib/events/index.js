@@ -9,7 +9,7 @@ module.exports = function createEvents (name, options = {}, config = {}) {
   let backend
   let selectedOptions
   try {
-    selectedOptions = safe.options(options)
+    selectedOptions = safe.options(config.eventOptions || options)
     if (Object.prototype.hasOwnProperty.call(catalog, name)) {
       backend = Object.prototype.hasOwnProperty.call(config, 'backend') ? config.backend : armor(options)
     }
@@ -25,11 +25,12 @@ module.exports = function createEvents (name, options = {}, config = {}) {
   function record (metadata = {}, outcome = 'success', terminal = false) {
     try {
       if (completion) return
+      const eventOptions = safe.options(selectedOptions)
       delivery.write({
         name,
         occurred_at: new Date().toISOString(),
         outcome: outcome === 'success' ? 'success' : 'unsuccessful',
-        metadata: { ...safe.metadata(metadata), options: safe.options(selectedOptions), ...runtime }
+        metadata: { ...safe.metadata(metadata), ...(Object.keys(eventOptions).length ? { options: eventOptions } : {}), ...runtime }
       }, terminal)
     } catch {}
   }

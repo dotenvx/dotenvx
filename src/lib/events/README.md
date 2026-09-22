@@ -24,7 +24,7 @@ CLI and SDK record `occurred_at` when constructing each event, before batching.
 Armor assigns `created_at` when it receives the event.
 No account, team,
 or actor claims come from the local event. An authenticated receiver determines
-those separately and marks these as device-reported events.
+those separately from the authenticated token.
 
 ## Catalog
 
@@ -39,12 +39,12 @@ operation result, including returned errors. They have no process exit code.
 | `cli/decrypt` | Same file events as encrypt |
 | `cli/set` | Same file events, plus variable `key`; encryption mode is in `options.plain` |
 | `cli/del` | Same file events, plus variable `key` |
-| `cli/get` | Completion: optional `key`, returned `result_count`, `error_count` |
-| `cli/keypair` | Completion: optional requested key name and `result_count`; never key material |
+| `cli/get` | Completion: optional `key`, `error_count` |
+| `cli/keypair` | Completion: optional requested key name; never key material |
 | `cli/run` | `phase: start` after spawn, with executable basename only; completion includes env `files`, `injected_count`, `proxied_count`, exit code and optional signal |
 | `cli/protect` | `action: check` per clean-filter file with decision `allowed`, `blocked`, or `exempt`; configuration completion includes `action: configure`, `filter`, `ignore`, `scope: global`; Docker checks use `action: docker` |
 | `sdk/config` | Completion: env `files`, `injected_count`, stable error code if configuration returned or threw an error |
-| `sdk/get` | Completion: optional `key`, returned `result_count`, nonignored `error_count` |
+| `sdk/get` | Completion: optional `key`, nonignored `error_count` |
 | `sdk/set` | File events after writes, variable `key`, completion `error_count`; encryption mode is in `options.encrypt` |
 
 File success is recorded after its write (or stdout call) succeeds. A later
@@ -91,8 +91,9 @@ plain SDK calls remain uninstrumented.
 passwords, inline env values, positional values, raw argv, child output, private
 keys, raw error messages, and unknown future options. Strings and arrays have
 size limits. Paths and variable names are retained and can themselves be
-sensitive organizational metadata. Options reflect Commander-provided values
-and defaults; they do not claim to resolve every provider's effective settings.
+sensitive organizational metadata. CLI options include only explicit flags or configured option environment inputs,
+including explicit values equal to defaults. SDK options reflect caller-supplied
+values. Empty options are omitted; secret fields remain excluded.
 
 ## Pluggable event custody
 
@@ -125,17 +126,16 @@ The client adapter sends POST `/api/events` with the existing bearer token and b
 
 ```json
 {
-  "device_public_key": "<device public key>",
   "events": ["<event objects above>"]
 }
 ```
 
 The sibling Radar repository implements this endpoint. It authenticates the token
-and registered OAuth device, and validates the event catalog and metadata.
+and validates the event catalog and metadata. Device identity is available through
+the linked OAuth token; it is not sent or copied into event metadata.
 Armor assigns its existing Activity ID; repeated submissions are separate records.
 Client `occurred_at` preserves event timing; server `created_at` records receipt.
-Records carry
-`client_reported: true`; actor and team attribution comes from the server.
+Actor and team attribution comes from the server.
 This adapter uses the token's default organization. Automation tokens attribute
 events to their organization without claiming a verified device or user.
 Radar must apply the occurrence-time migration and deploy the endpoint before

@@ -1,5 +1,5 @@
 // Event metadata is an allowlist, not a copy of command options or debug logs.
-const fields = new Set(['key', 'file', 'files', 'changed', 'output', 'action', 'phase', 'decision', 'reason', 'error_code', 'error_count', 'warning_count', 'result_count', 'injected_count', 'proxied_count', 'exit_code', 'signal', 'duration_ms', 'filter', 'ignore', 'scope', 'executable'])
+const fields = new Set(['key', 'file', 'files', 'changed', 'output', 'action', 'phase', 'decision', 'reason', 'error_code', 'error_count', 'warning_count', 'injected_count', 'proxied_count', 'exit_code', 'signal', 'duration_ms', 'filter', 'ignore', 'scope', 'executable'])
 const optionFields = new Set(['envFile', 'envKeysFile', 'key', 'includeKey', 'excludeKey', 'stdout', 'plain', 'armor', 'native', '1password', 'bitwarden', 'create', 'overload', 'all', 'strict', 'convention', 'ignore', 'mask', 'redact', 'format', 'prettyPrint', 'pp', 'docker', 'gitFile', 'gitProcess', 'quiet', 'verbose', 'debug', 'logLevel', 'path', 'encoding', 'override', 'encrypt', 'noArmor', 'noNative', 'no1Password', 'noBitwarden'])
 
 function value (input) {

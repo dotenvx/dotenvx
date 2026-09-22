@@ -10,7 +10,6 @@ module.exports = function armor (options = {}) {
   const token = options.token || session.token()
   if (!token) return
   const hostname = session.hostname()
-  const devicePublicKey = session.devicePublicKey()
 
   return {
     id: 'armor',
@@ -19,7 +18,7 @@ module.exports = function armor (options = {}) {
         method: 'POST',
         signal,
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ device_public_key: devicePublicKey, events })
+        body: JSON.stringify({ events })
       })
       // No response data belongs in console output (including errors).
       response.body.destroy()

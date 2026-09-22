@@ -118,7 +118,7 @@ async function get (key) {
       }
     }
 
-    this.events.add({ result_count: Object.values(parsed).filter(value => value !== undefined).length, error_count: errorCount })
+    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
       return await this.events.exit(1)
     }

@@ -370,7 +370,7 @@ const get = async function (key, options = {}, events) {
     logger.error(error.messageWithHelp || error.message)
   }
 
-  if (events) events.add({ result_count: Object.values(parsed).filter(value => value !== undefined).length, error_count: (errors || []).filter(error => !ignore.includes(error.code)).length })
+  if (events) events.add({ error_count: (errors || []).filter(error => !ignore.includes(error.code)).length })
   if (key) {
     const single = parsed[key]
     if (single === undefined) {
