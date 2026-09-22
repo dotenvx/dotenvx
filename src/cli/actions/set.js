@@ -88,8 +88,6 @@ async function set (key, value) {
       } else {
         logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
-
-      this.events.file(processedEnv)
     }
 
     // const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
@@ -127,9 +125,7 @@ async function set (key, value) {
     //   // do nothing
     // }
 
-    if (errorCount > 0) {
-      return { exitCode: 1 }
-    }
+    return { exitCode: errorCount > 0 ? 1 : 0, errorCount }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

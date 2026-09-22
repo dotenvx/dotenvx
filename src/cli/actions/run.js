@@ -197,8 +197,6 @@ async function run () {
       logger.verbose(`${key} proxied via Armor proxy`)
     }
 
-    this.events.add({ files: readableFilepaths, injected_count: injectedKeys.size, proxied_count: gatedKeys.size })
-
     let msg = ''
     const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
     if (readableFilepaths.length > 0 && envStringCount > 0) {

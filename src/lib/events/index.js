@@ -23,7 +23,7 @@ module.exports = function createEvents (name, options = {}, config = {}) {
   const runtime = name.startsWith('sdk/') ? { sdk_version: version, sdk_language: 'javascript' } : { cli_version: version }
   let completion
   let failed = false
-  let details = catalog[name]?.fileResults ? { error_count: 0 } : {}
+  let details = {}
 
   function record (metadata = {}, outcome = 'success', terminal = false) {
     try {

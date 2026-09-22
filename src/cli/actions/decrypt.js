@@ -57,15 +57,9 @@ async function decrypt () {
         }
         console.log(envSrc)
       }
-
-      this.events.file(processedEnv)
     }
 
-    if (errorCount > 0) {
-      return { exitCode: 1 }
-    } else {
-      return { exitCode: 0 } // exit early
-    }
+    return { exitCode: errorCount > 0 ? 1 : 0, errorCount }
   } else {
     try {
       const {
@@ -101,8 +95,6 @@ async function decrypt () {
         } else {
           logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
         }
-
-        this.events.file(processedEnv)
       }
 
       if (spinner) spinner.stop()
@@ -114,9 +106,7 @@ async function decrypt () {
         // do nothing - scenario when no .env files found
       }
 
-      if (errorCount > 0) {
-        return { exitCode: 1 }
-      }
+      return { exitCode: errorCount > 0 ? 1 : 0, errorCount }
     } catch (error) {
       if (spinner) spinner.stop()
       catchAndLog(error)

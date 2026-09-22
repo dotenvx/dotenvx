@@ -5,7 +5,6 @@ module.exports = function trackCli (command, action) {
   return async function (...args) {
     const options = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : this.opts()
     const context = this
-    const previous = Object.getOwnPropertyDescriptor(context, 'events')
     const name = `cli/${command}`
     const eventOptions = {}
     for (const [key, value] of Object.entries(options)) {
@@ -15,7 +14,6 @@ module.exports = function trackCli (command, action) {
       if (source === 'cli' || source === 'env') eventOptions[key] = value
     }
     const events = createEvents(name, options, { eventOptions, background: true })
-    Object.defineProperty(context, 'events', { configurable: true, value: events })
     if (catalog[name]?.keyArgument) events.add({ key: args[0] })
     let code
     let result
@@ -26,6 +24,7 @@ module.exports = function trackCli (command, action) {
         events.fail(result.error)
         code = code ?? 1
       }
+      if (Number.isInteger(result?.errorCount)) events.add({ error_count: result.errorCount })
       if (result?.signal) events.add({ signal: result.signal })
       return result
     } catch (error) {
@@ -33,13 +32,8 @@ module.exports = function trackCli (command, action) {
       events.fail(error)
       throw error
     } finally {
-      try {
-        const exitCode = code ?? process.exitCode ?? 0
-        await events.complete(exitCode === 0 ? 'success' : 'unsuccessful', { exit_code: exitCode })
-      } finally {
-        if (previous) Object.defineProperty(context, 'events', previous)
-        else delete context.events
-      }
+      const exitCode = code ?? process.exitCode ?? 0
+      await events.complete(exitCode === 0 && !(result?.errorCount > 0) ? 'success' : 'unsuccessful', { exit_code: exitCode })
       if (Number.isInteger(result?.exitCode)) process.exit(result.exitCode)
     }
   }

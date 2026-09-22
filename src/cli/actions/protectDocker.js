@@ -20,7 +20,6 @@ async function protectDocker (directory) {
       logger.warn(warning.messageWithHelp || warning.message)
     }
 
-    this.events.add({ action: 'docker', warning_count: warnings.length })
     logger.success(successMessage)
   } catch (error) {
     catchAndLog(error)

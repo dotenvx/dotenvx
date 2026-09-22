@@ -118,10 +118,7 @@ async function get (key) {
       }
     }
 
-    this.events.add({ error_count: errorCount })
-    if (errorCount > 0) {
-      return { exitCode: 1 }
-    }
+    return { exitCode: errorCount > 0 ? 1 : 0, errorCount }
   } catch (error) {
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {

@@ -33,8 +33,6 @@ async function del (key) {
       } else {
         logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
-
-      this.events.file(processedEnv)
     }
 
     if (changedFilepaths.length > 0) {
@@ -45,9 +43,7 @@ async function del (key) {
       // do nothing - scenario when no .env files found
     }
 
-    if (errorCount > 0) {
-      return { exitCode: 1 }
-    }
+    return { exitCode: errorCount > 0 ? 1 : 0, errorCount }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

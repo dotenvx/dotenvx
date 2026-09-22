@@ -19,7 +19,7 @@ function fixMessage (filepath, privateKeyFile) {
     : `fix: run [dotenvx encrypt -f ${argument}]`
 }
 
-function check (filepath, content, beforeError = () => {}, events) {
+function check (filepath, content, beforeError = () => {}) {
   const filename = path.posix.basename(filepath)
   const privateKeyFile = filename.startsWith('.env.keys')
   if (privateKeyFile || (!exempt(filepath) && hasPlaintextSecrets(content.toString('utf8')))) {
@@ -28,22 +28,20 @@ function check (filepath, content, beforeError = () => {}, events) {
     const message = privateKeyFile
       ? `refusing to stage ${JSON.stringify(filepath)}`
       : `${JSON.stringify(filepath)} contains plaintext secrets`
-    if (events) events.record({ action: 'check', file: filepath, decision: 'blocked', reason: code })
     beforeError()
     logger.error(`[${code}] ${message}. ${fix}`)
     return false
   }
-  if (events) events.record({ action: 'check', file: filepath, decision: exempt(filepath) ? 'exempt' : 'allowed' })
   return true
 }
 
-async function protectStdin (filepath, options = {}, events) {
+async function protectStdin (filepath, options = {}) {
   let spinner
   const stop = () => { if (spinner) spinner.stop() }
   try {
     spinner = await createProtectSpinner(options)
     const content = fs.readFileSync(0)
-    if (!check(filepath, content, stop, events)) {
+    if (!check(filepath, content, stop)) {
       process.exitCode = 1
       return
     }
@@ -52,10 +50,10 @@ async function protectStdin (filepath, options = {}, events) {
     stop()
     if (spinner && !exempt(filepath)) logProtectedFiles([filepath])
   } catch (error) {
-    if (events) events.fail(error)
     stop()
     logger.error(error.message)
     process.exitCode = 1
+    return { error }
   } finally {
     stop()
   }
