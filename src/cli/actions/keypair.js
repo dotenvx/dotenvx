@@ -65,7 +65,7 @@ async function keypair (key) {
     } else {
       if (results === undefined) {
         console.log('')
-        return await this.events.exit(1)
+        return { exitCode: 1 }
       } else if (options.format === 'colon' && key) {
         console.log(`${key}:${results}`)
       } else {
@@ -75,7 +75,7 @@ async function keypair (key) {
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    return await this.events.exit(1, error)
+    return { exitCode: 1, error }
   }
 }
 

@@ -68,9 +68,9 @@ async function protect (directory) {
     else logger.success('⛉ protection: none')
   } catch (error) {
     if (spinner) spinner.stop()
-    this.events.fail(error)
     catchAndLog(error)
     process.exitCode = 1
+    return { error }
   }
 }
 

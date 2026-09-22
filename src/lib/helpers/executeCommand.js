@@ -6,7 +6,7 @@ const Errors = require('./errors')
 const { createRedactedStreamWriter, redactOutput } = require('./redactOutput')
 const ptyCommand = require('./ptyCommand')
 
-async function executeCommand (commandArgs, env, sensitiveValues = [], onComplete, events) {
+async function executeCommand (commandArgs, env, sensitiveValues = [], onComplete) {
   const FORWARD_SIGNAL_GRACE_MS = 1000
   const FORCE_KILL_GRACE_MS = 1000
   const signals = [
@@ -18,6 +18,7 @@ async function executeCommand (commandArgs, env, sensitiveValues = [], onComplet
 
   let child
   let commandExitCode
+  let commandError
   let commandSignal
   let signalSent
   let sigintCount = 0
@@ -146,12 +147,6 @@ async function executeCommand (commandArgs, env, sensitiveValues = [], onComplet
       child.stderr.once('end', stderrWriter.flush)
     }
 
-    if (events && child.once) {
-      child.once('spawn', () => {
-        events.record({ phase: 'start', executable: path.basename(commandArgs[0]) })
-      })
-    }
-
     process.on('SIGINT', sigintHandler)
     process.on('SIGTERM', sigtermHandler)
 
@@ -172,7 +167,7 @@ async function executeCommand (commandArgs, env, sensitiveValues = [], onComplet
     }
   } catch (error) {
     commandSignal = signalSent || error.signal
-    if (events && error.code === 'ENOENT') events.fail({ code: 'COMMAND_NOT_FOUND' })
+    if (error.code === 'ENOENT') commandError = { code: 'COMMAND_NOT_FOUND' }
     const commandExited = Number.isInteger(error.exitCode) && (error.code === 'COMMAND_EXITED_WITH_CODE' || error.command)
 
     // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.
@@ -201,11 +196,7 @@ async function executeCommand (commandArgs, env, sensitiveValues = [], onComplet
     if (onComplete) await onComplete()
   }
 
-  if (events) {
-    events.add({ signal: commandSignal, exit_code: commandExitCode || 0 })
-    await events.finish(commandExitCode || 0)
-  }
-  if (commandExitCode) process.exit(commandExitCode)
+  return { exitCode: commandExitCode || 0, signal: commandSignal, error: commandError }
 }
 
 module.exports = executeCommand

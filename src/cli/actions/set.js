@@ -25,7 +25,7 @@ async function set (key, value) {
   if (value === undefined || value === null) {
     if (!process.stdin.isTTY) {
       catchAndLog(new Errors({ key }).missingValue())
-      return await this.events.exit(1)
+      return { exitCode: 1 }
     }
 
     try {
@@ -39,7 +39,7 @@ async function set (key, value) {
       })
     } catch (error) {
       if (error.code === 'PROMPT_CANCELLED') {
-        return await this.events.exit(130, error)
+        return { exitCode: 130, error }
       }
 
       throw error
@@ -89,7 +89,7 @@ async function set (key, value) {
         logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
 
-      this.events.file(processedEnv, { key, output: options.stdout ? 'stdout' : 'file' })
+      this.events.file(processedEnv)
     }
 
     // const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
@@ -127,14 +127,13 @@ async function set (key, value) {
     //   // do nothing
     // }
 
-    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
-      return await this.events.exit(1)
+      return { exitCode: 1 }
     }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    return await this.events.exit(1, error)
+    return { exitCode: 1, error }
   }
 }
 

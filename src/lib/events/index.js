@@ -23,7 +23,7 @@ module.exports = function createEvents (name, options = {}, config = {}) {
   const runtime = name.startsWith('sdk/') ? { sdk_version: version, sdk_language: 'javascript' } : { cli_version: version }
   let completion
   let failed = false
-  let details = {}
+  let details = catalog[name]?.fileResults ? { error_count: 0 } : {}
 
   function record (metadata = {}, outcome = 'success', terminal = false) {
     try {
@@ -42,8 +42,12 @@ module.exports = function createEvents (name, options = {}, config = {}) {
     record,
     file (row, metadata = {}) {
       try {
+        if (completion) return
+        details.error_count = (details.error_count || 0) + (row.error ? 1 : 0)
         if (row.error) failed = true
         record({
+          output: options.stdout ? 'stdout' : 'file',
+          ...(details.key !== undefined ? { key: details.key } : {}),
           ...metadata,
           phase: 'file',
           file: row.envFilepath,

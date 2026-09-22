@@ -24,7 +24,7 @@ async function protectDocker (directory) {
     logger.success(successMessage)
   } catch (error) {
     catchAndLog(error)
-    return await this.events.exit(1, error)
+    return { exitCode: 1, error }
   }
 }
 

@@ -34,7 +34,7 @@ async function del (key) {
         logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
 
-      this.events.file(processedEnv, { key, output: options.stdout ? 'stdout' : 'file' })
+      this.events.file(processedEnv)
     }
 
     if (changedFilepaths.length > 0) {
@@ -45,14 +45,13 @@ async function del (key) {
       // do nothing - scenario when no .env files found
     }
 
-    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
-      return await this.events.exit(1)
+      return { exitCode: 1 }
     }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    return await this.events.exit(1, error)
+    return { exitCode: 1, error }
   }
 }
 

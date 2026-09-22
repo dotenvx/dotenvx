@@ -42,14 +42,13 @@ async function encryptAction () {
         console.log(processedEnv.envSrc)
       }
 
-      this.events.file(processedEnv, { output: options.stdout ? 'stdout' : 'file' })
+      this.events.file(processedEnv)
     }
 
-    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
-      return await this.events.exit(1)
+      return { exitCode: 1 }
     } else {
-      return await this.events.exit(0) // exit early
+      return { exitCode: 0 } // exit early
     }
   }
 
@@ -73,7 +72,7 @@ async function encryptAction () {
         logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
 
-      this.events.file(processedEnv, { output: options.stdout ? 'stdout' : 'file' })
+      this.events.file(processedEnv)
     }
 
     if (changedFilepaths.length > 0) {
@@ -89,14 +88,13 @@ async function encryptAction () {
       // do nothing - scenario when no .env files found
     }
 
-    this.events.add({ error_count: errorCount })
     if (errorCount > 0) {
-      return await this.events.exit(1)
+      return { exitCode: 1 }
     }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    return await this.events.exit(1, error)
+    return { exitCode: 1, error }
   }
 }
 
