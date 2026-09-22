@@ -1,5 +1,6 @@
 const { spawn } = require('child_process')
 const Session = require('../../db/session')
+const workerEnvironment = require('./workerEnvironment')
 
 // CLI delivery owns no network handles. Credentials are read by the worker.
 module.exports = function createBackground (options = {}) {
@@ -7,7 +8,7 @@ module.exports = function createBackground (options = {}) {
   const session = new Session()
   if (!options.token && (!session.on() || !session.username())) return
   // Capture before run loads application environment values.
-  const env = { ...process.env }
+  const env = workerEnvironment()
   const cwd = process.cwd()
   const args = process.pkg ? [] : [process.argv[1]]
   const token = options.token
