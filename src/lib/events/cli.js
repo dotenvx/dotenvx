@@ -14,7 +14,7 @@ module.exports = function trackCli (command, action) {
         : this.getOptionValueSource?.(key)
       if (source === 'cli' || source === 'env') eventOptions[key] = value
     }
-    const events = createEvents(name, options, { eventOptions })
+    const events = createEvents(name, options, { eventOptions, background: true })
     events.finish = (code = 0) => events.complete(code === 0 ? 'success' : 'unsuccessful', { exit_code: code })
     events.exit = async (code, error) => {
       if (error) events.fail(error)

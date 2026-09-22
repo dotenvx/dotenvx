@@ -21,6 +21,9 @@ module.exports = function armor (options = {}) {
         body: JSON.stringify({ events })
       })
       // No response data belongs in console output (including errors).
+      // Undici can emit an asynchronous AbortError when its body is destroyed,
+      // even after the request promise resolves. Handle it before cleanup.
+      response.body.on('error', () => {})
       response.body.destroy()
       if (response.statusCode >= 400) throw new Error('Event delivery failed')
     }

@@ -415,6 +415,9 @@ program.helpInformation = function () {
 }
 /* c8 ignore stop */
 
+program.command('_deliver-events', { hidden: true })
+  .action(() => require('../lib/events/worker')())
+
 require('./commands/fileOptions')(program)
 
 program.parse(process.argv)

@@ -2,20 +2,23 @@ const { performance } = require('perf_hooks')
 const safe = require('./metadata')
 const catalog = require('./catalog')
 const createDelivery = require('./delivery')
+const createBackground = require('./background')
 const armor = require('./backends/armor')
 const { version } = require('../helpers/packageJson')
 
 module.exports = function createEvents (name, options = {}, config = {}) {
   let backend
+  let delivery
   let selectedOptions
   try {
     selectedOptions = safe.options(config.eventOptions || options)
     if (Object.prototype.hasOwnProperty.call(catalog, name)) {
-      backend = Object.prototype.hasOwnProperty.call(config, 'backend') ? config.backend : armor(options)
+      if (config.background && !Object.prototype.hasOwnProperty.call(config, 'backend')) delivery = createBackground(options)
+      else backend = Object.prototype.hasOwnProperty.call(config, 'backend') ? config.backend : armor(options)
     }
   } catch {} // Missing credentials, keychain failures, and setup are optional.
 
-  const delivery = createDelivery(backend, config.timeoutMs)
+  delivery = delivery || createDelivery(backend, config.timeoutMs)
   const started = performance.now()
   const runtime = name.startsWith('sdk/') ? { sdk_version: version, sdk_language: 'javascript' } : { cli_version: version }
   let completion
