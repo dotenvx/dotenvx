@@ -45,7 +45,7 @@
   "scripts": {
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "test": "tap run --test-env=DOTENVX_NO_ARMOR=true --allow-empty-coverage --disable-coverage --timeout=60000",
+    "test": "tap run --test-env=DOTENVX_NO_ARMOR=true --allow-empty-coverage --allow-incomplete-coverage --disable-coverage --timeout=60000",
     "testshell": "shellspec --shell /bin/bash",
     "release:check": "npm test && npm run testshell",
     "prerelease": "npm run release:check",

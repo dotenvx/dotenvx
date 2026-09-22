@@ -36,7 +36,7 @@ t.test('login action runs native oauth device flow', async ct => {
     '../../lib/helpers/openUrl': sinon.stub()
   })
 
-  await login.call({ opts: () => ({ hostname: 'https://armor.example.com' }) })
+  const result = await login.call({ opts: () => ({ hostname: 'https://armor.example.com' }) })
 
   ct.same(Login.firstCall.args, ['https://armor.example.com'])
   ct.same(poll.firstCall.args, ['device-code', 3])
@@ -44,7 +44,8 @@ t.test('login action runs native oauth device flow', async ct => {
   ct.ok(loggerSuccessStub.calledWith('◉ logged in (scott)'))
   ct.equal(cleanup.callCount, 1)
   ct.equal(spinner.stop.callCount, 1)
-  ct.ok(processExitStub.calledWith(0))
+  ct.equal(result.exitCode, 0, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
 })
 
 t.test('login action falls back to saved hostname and reports errors', async ct => {
@@ -67,12 +68,13 @@ t.test('login action falls back to saved hostname and reports errors', async ct 
     '../../lib/helpers/openUrl': sinon.stub()
   })
 
-  await login.call({ opts: () => ({}) })
+  const result = await login.call({ opts: () => ({}) })
 
   ct.same(Login.firstCall.args, ['https://saved.example.com'])
   ct.ok(loggerErrorStub.calledWith('login failed'))
   ct.equal(spinner.stop.callCount, 1)
-  ct.ok(processExitStub.calledWith(1))
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
 })
 
 t.test('login action reports non-error rejection values', async ct => {
@@ -95,8 +97,9 @@ t.test('login action reports non-error rejection values', async ct => {
     '../../lib/helpers/openUrl': sinon.stub()
   })
 
-  await login.call({ opts: () => ({}) })
+  const result = await login.call({ opts: () => ({}) })
 
   ct.same(loggerErrorStub.firstCall.args, [failure])
-  ct.ok(processExitStub.calledWith(1))
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
 })

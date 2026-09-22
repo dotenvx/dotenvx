@@ -5,6 +5,7 @@ const { logger } = require('./../../shared/logger')
 const Errors = require('./errors')
 const { createRedactedStreamWriter, redactOutput } = require('./redactOutput')
 const ptyCommand = require('./ptyCommand')
+const { finished } = require('stream/promises')
 
 async function executeCommand (commandArgs, env, sensitiveValues = [], onComplete) {
   const FORWARD_SIGNAL_GRACE_MS = 1000
@@ -22,6 +23,7 @@ async function executeCommand (commandArgs, env, sensitiveValues = [], onComplet
   let commandSignal
   let signalSent
   let sigintCount = 0
+  const outputFinished = []
   const signalForwardTimers = new Set()
   const otherSignalHandlers = new Map()
   const isInteractiveTTY = Boolean(process.stdin && process.stdin.isTTY)
@@ -139,12 +141,14 @@ async function executeCommand (commandArgs, env, sensitiveValues = [], onComplet
       const stdoutWriter = createRedactedStreamWriter(process.stdout, sensitiveValues, child.stdout)
       child.stdout.on('data', stdoutWriter.write)
       child.stdout.once('end', stdoutWriter.flush)
+      outputFinished.push(finished(child.stdout).catch(() => {}))
     }
 
     if (redactStderr && child.stderr) {
       const stderrWriter = createRedactedStreamWriter(process.stderr, sensitiveValues, child.stderr)
       child.stderr.on('data', stderrWriter.write)
       child.stderr.once('end', stderrWriter.flush)
+      outputFinished.push(finished(child.stderr).catch(() => {}))
     }
 
     process.on('SIGINT', sigintHandler)
@@ -182,6 +186,9 @@ async function executeCommand (commandArgs, env, sensitiveValues = [], onComplet
     // Exit with the error code from the command process, or 1 if unavailable
     commandExitCode = error.exitCode || 1
   } finally {
+    // Child exit can precede pipe EOF. Let redaction flush its held-back tail
+    // before the action returns and the CLI exits.
+    await Promise.all(outputFinished)
     signalForwardTimers.forEach(timer => clearTimeout(timer))
     signalForwardTimers.clear()
 

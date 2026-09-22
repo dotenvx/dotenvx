@@ -101,10 +101,11 @@ t.test('ls stops the spinner and reports traversal errors', async ct => {
     '../../lib/helpers/catchAndLog': catchAndLog
   })
 
-  await ls.call({ opts: () => ({}) }, '.')
+  const result = await ls.call({ opts: () => ({}) }, '.')
 
   ct.equal(spinner.stop.callCount, 1)
   ct.same(catchAndLog.firstCall.args, [error])
-  ct.ok(exitStub.calledWith(1))
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(exitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.end()
 })

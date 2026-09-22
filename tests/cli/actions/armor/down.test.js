@@ -221,7 +221,7 @@ t.test('armor down prints no changes message when remote armor is unchanged', as
   ct.same(infoStub.lastCall && infoStub.lastCall.args, ['○ no change (027 C9C)'], 'prints no change message')
 })
 
-t.test('armor down logs errors and exits', async (ct) => {
+t.test('armor down logs errors and returns failure', async (ct) => {
   const sandbox = sinon.createSandbox()
   const spinnerStop = sandbox.spy()
   const errorStub = sandbox.stub()
@@ -252,9 +252,10 @@ t.test('armor down logs errors and exits', async (ct) => {
   sandbox.stub(Session.prototype, 'devicePublicKey').returns('device-public-key')
   const processExitStub = sandbox.stub(process, 'exit').callsFake(() => {})
 
-  await downAction.call({ opts: () => ({}) })
+  const result = await downAction.call({ opts: () => ({}) })
 
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after error')
   ct.same(errorStub.lastCall && errorStub.lastCall.args, ['down failed'], 'logs error message')
-  ct.ok(processExitStub.calledWith(1), 'exits with code 1')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
 })
