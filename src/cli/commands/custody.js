@@ -1,3 +1,5 @@
+const commandAction = require('../commandAction')
+
 function configureCustodyCommand (command, name, custodianId) {
   command.hook('preAction', async () => {
     const Session = require('../../db/session')
@@ -15,7 +17,7 @@ function configureCustodyCommand (command, name, custodianId) {
       .description(description)
       .option('-f, --env-file <path>', 'path to your env file')
       .option('-fk, --env-keys-file <path>', 'path to your .env.keys file', '.env.keys')
-      .action(async function () {
+      .action(commandAction(async function () {
         const { logger } = require('../../shared/logger')
         const createSpinner = require('../../lib/helpers/createSpinner')
         const armoredKeyDisplay = require('../../lib/helpers/armoredKeyDisplay')
@@ -31,11 +33,11 @@ function configureCustodyCommand (command, name, custodianId) {
           else logger.info(`○ no change (${display})`)
         } catch (error) {
           if (spinner) spinner.stop()
-          if (error.code === 'PROMPT_CANCELLED') return process.exit(130)
+          if (error.code === 'PROMPT_CANCELLED') return { exitCode: 130, error }
           logger.error(error.message)
-          process.exit(1)
+          return { exitCode: 1, error }
         }
-      })
+      }))
   }
   return command
 }

@@ -1,8 +1,9 @@
+const commandAction = require('../../cli/commandAction')
 const createEvents = require('./index')
 const catalog = require('./catalog')
 
 module.exports = function trackCli (command, action) {
-  return async function (...args) {
+  return commandAction(async function (...args) {
     const options = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : this.opts()
     const context = this
     const name = `cli/${command}`
@@ -34,7 +35,6 @@ module.exports = function trackCli (command, action) {
     } finally {
       const exitCode = code ?? process.exitCode ?? 0
       await events.complete(exitCode === 0 && !(result?.errorCount > 0) ? 'success' : 'unsuccessful', { exit_code: exitCode })
-      if (Number.isInteger(result?.exitCode)) process.exit(result.exitCode)
     }
-  }
+  })
 }

@@ -1,3 +1,4 @@
+const commandAction = require('../commandAction')
 function configureNativeCommand (native) {
   native.hook('preAction', async () => {
     const Session = require('./../../db/session')
@@ -17,7 +18,7 @@ function configureNativeCommand (native) {
     .option('-f, --env-file <path>', 'path to your env file')
     .option('-fk, --env-keys-file <path>', 'path to your .env.keys file', '.env.keys')
     .action(function (...args) {
-      return require('./../actions/keychain/up').apply(this, args)
+      return commandAction(require('./../actions/keychain/up')).apply(this, args)
     })
 
   native
@@ -26,7 +27,7 @@ function configureNativeCommand (native) {
     .option('-f, --env-file <path>', 'path to your env file')
     .option('-fk, --env-keys-file <path>', 'path to your .env.keys file', '.env.keys')
     .action(function (...args) {
-      return require('./../actions/keychain/down').apply(this, args)
+      return commandAction(require('./../actions/keychain/down')).apply(this, args)
     })
 
   native
@@ -35,7 +36,7 @@ function configureNativeCommand (native) {
     .option('-f, --env-file <path>', 'path to your env file')
     .option('-fk, --env-keys-file <path>', 'path to your .env.keys file', '.env.keys')
     .action(function (...args) {
-      return require('./../actions/keychain/push').apply(this, args)
+      return commandAction(require('./../actions/keychain/push')).apply(this, args)
     })
 
   native
@@ -44,7 +45,7 @@ function configureNativeCommand (native) {
     .option('-f, --env-file <path>', 'path to your env file')
     .option('-fk, --env-keys-file <path>', 'path to your .env.keys file', '.env.keys')
     .action(function (...args) {
-      return require('./../actions/keychain/pull').apply(this, args)
+      return commandAction(require('./../actions/keychain/pull')).apply(this, args)
     })
 
   return native

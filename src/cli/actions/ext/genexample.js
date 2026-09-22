@@ -29,7 +29,7 @@ function genexample (directory) {
     }
   } catch (error) {
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

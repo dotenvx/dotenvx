@@ -42,12 +42,11 @@ async function down () {
     }
   } catch (error) {
     if (error.code === 'PROMPT_CANCELLED') {
-      process.exit(130)
-      return
+      return { exitCode: 130, error }
     }
 
     logger.error(error.message)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

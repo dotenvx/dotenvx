@@ -69,7 +69,7 @@ async function ls (directory) {
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

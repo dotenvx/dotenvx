@@ -14,8 +14,7 @@ function scan () {
     logger.error('gitleaks: command not found')
     logger.help('fix: install gitleaks:      [brew install gitleaks]')
     logger.help('fix: other install options: [https://github.com/gitleaks/gitleaks]')
-    process.exit(1)
-    return
+    return { exitCode: 1, error }
   }
 
   let output = ''
@@ -27,7 +26,7 @@ function scan () {
       logger.error(chomp(error.stdout.toString()))
     }
 
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

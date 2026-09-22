@@ -13,10 +13,10 @@ function device () {
     }
 
     logger.error('missing device. Try generating one with [dotenvx armor login].')
-    process.exit(1)
+    return { exitCode: 1 }
   } catch (error) {
     logger.error(error.message)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

@@ -12,6 +12,6 @@ module.exports = function define () {
     }
   } catch (error) {
     catchAndLog(error)
-    process.exitCode = 1
+    return { exitCode: 1, error }
   }
 }

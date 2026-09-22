@@ -13,10 +13,10 @@ function token () {
     }
 
     logger.error('missing token. Try generating one with [dotenvx armor login].')
-    process.exit(1)
+    return { exitCode: 1 }
   } catch (error) {
     logger.error(error.message)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 

@@ -1,3 +1,4 @@
+const commandAction = require('../commandAction')
 const { Command } = require('@dotenvx/tooling')
 
 const help = require('./../help')
@@ -26,7 +27,7 @@ ext.command('ls')
   .option('-ef, --exclude-env-file <excludeFilenames...>', 'path(s) to exclude from your env file(s) (default: none)')
   .option('--json', 'output a JSON array of absolute filepaths')
   .action(function (...args) {
-    return require('./../actions/ls').apply(this, args)
+    return commandAction(require('./../actions/ls')).apply(this, args)
   })
 
 // dotenvx ext genexample
@@ -35,7 +36,7 @@ ext.command('genexample')
   .argument('[directory]', 'directory to generate from', '.')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .action(function (...args) {
-    return require('./../actions/ext/genexample').apply(this, args)
+    return commandAction(require('./../actions/ext/genexample')).apply(this, args)
   })
 
 // dotenvx ext gitignore
@@ -71,7 +72,7 @@ ext.command('precommit')
 ext.command('scan')
   .description('scan for leaked secrets')
   .action(function (...args) {
-    return require('./../actions/ext/scan').apply(this, args)
+    return commandAction(require('./../actions/ext/scan')).apply(this, args)
   })
 
 // override helpInformation to hide dynamic commands

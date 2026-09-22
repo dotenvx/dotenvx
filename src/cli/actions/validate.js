@@ -61,14 +61,14 @@ async function validate () {
     if (spinner) spinner.stop()
 
     if (errorCount > 0) {
-      process.exit(1)
+      return { exitCode: 1 }
     } else {
       logger.success(`▣ valid ${sourceSummary}`)
     }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
-    process.exit(1)
+    return { exitCode: 1, error }
   }
 }
 
