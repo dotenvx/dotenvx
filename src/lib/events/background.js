@@ -9,6 +9,9 @@ module.exports = function createBackground (options = {}) {
   if (!options.token && (!session.on() || !session.username())) return
   // Capture before run loads application environment values.
   const env = workerEnvironment()
+  // pkg otherwise treats the first child argument as a JavaScript entrypoint.
+  // Relaunch the embedded CLI so _deliver-events remains a command.
+  if (process.pkg) env.PKG_EXECPATH = ''
   const cwd = process.cwd()
   const args = process.pkg ? [] : [process.argv[1]]
   const token = options.token
