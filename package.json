@@ -54,7 +54,7 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
-    "@dotenvx/primitives": "^3.0.2",
+    "@dotenvx/primitives": "^3.0.3",
     "@dotenvx/tooling": "^1.0.3",
     "global-agent": "^3.0.0",
     "node-forge": "^1.4.0",
