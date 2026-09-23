@@ -1565,7 +1565,7 @@ Hello production
 Available log levels are `error, warn, info, verbose, debug, silly` ([source](https://docs.npmjs.com/cli/v8/using-npm/logging#setting-log-levels))
 
 </details>
-<details><summary>`run` with an Envfile</summary><br>
+<details><summary>`run with an Envfile`</summary><br>
 
 When an `Envfile` is present, `run` automatically validates the resolved environment before starting your command. No validation flag is needed.
 
@@ -1582,6 +1582,9 @@ $ dotenvx run -- node index.js
 ```
 
 Envfile validation failures stop the command. Other loading errors require `--strict` to stop execution.
+
+</details>
+<details><summary>`run with Envfile file rules`</summary><br>
 
 Use exact file blocks to override rules for selected files:
 
@@ -1602,7 +1605,6 @@ Both `dotenvx run -f .env.production -- node index.js` and `dotenvx validate -f 
 Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_FILE` use their resolved file paths.
 
 When no file block matches, top-level rules apply. When one or more blocks match, each matching block's inherited rules must hold for the final resolved environment. Shell values, fallback files, and `--overload` cannot bypass them. A selected missing file still activates its block. Multiple matching blocks cannot cancel each other's restrictions; conflicting proxy domains are rejected. Blocks cannot be nested, and duplicate declarations within one scope or duplicate file blocks are errors.
-
 
 </details>
 <details><summary>`run --strict`</summary><br>
@@ -2841,7 +2843,7 @@ $ dotenvx ls --json > dotenv-files.json
 ```
 
 </details>
-<details><summary>`define` (hidden)</summary><br>
+<details><summary>`define (hidden)`</summary><br>
 
 Create an `Envfile` to validate your project's environment variables:
 
@@ -2850,7 +2852,7 @@ $ dotenvx define
 ≡ defined (Envfile)
 ```
 
-Merges variable names from both `.env.example` and `.env`, skipping missing files and including each name once. Use `dotenvx define -f .env.production` to read only a specific input. If neither default file exists, it creates a starter. An existing `Envfile` is always left unchanged. The hidden `dotenvx init` command currently performs the same step.
+Merges variable names from both `.env.example` and `.env`, skipping missing files and including each name once. If neither default file exists, it creates a starter. An existing `Envfile` is always left unchanged.
 
 The first line is `encrypted false` by default, or `encrypted true` if any application variable assignment in either input starts with `encrypted:`. Duplicate assignments are all inspected. This sets the encryption requirement for all declarations; use `encrypted: false` on individual variables that should remain plaintext.
 
@@ -2859,6 +2861,26 @@ Generated declarations are required by default. Review them and mark optional va
 Only names are copied: values are never included, decrypted, expanded, or fetched from secret providers. Dotenvx public and private key entries are excluded. Your env files are unchanged.
 
 Run `dotenvx validate` (or `dotenvx validate -f .env.production` for another file) to check your configuration. Once `Envfile` exists, `dotenvx run` validates automatically before starting your command.
+
+</details>
+<details><summary>`define -f`</summary><br>
+
+Create an Envfile from one env file without copying its values.
+
+```sh
+$ dotenvx define -f .env.production
+≡ defined (Envfile)
+```
+
+</details>
+<details><summary>`init`</summary><br>
+
+Create an Envfile from `.env.example` and `.env`. This is an alias for `define`.
+
+```sh
+$ dotenvx init
+≡ defined (Envfile)
+```
 
 </details>
 <details><summary>`validate`</summary><br>
@@ -2875,13 +2897,38 @@ env "SENTRY_DSN", optional: true
 ```sh
 $ dotenvx validate
 [INVALID_ENV] DATABASE_URL is required; PORT is required
-
-$ dotenvx validate -f .env.production -fk .env.keys
 ```
 
-The command enforces required values, types, enums, bounds, and encryption requirements. It exits with code `1` on validation or other loading errors. Missing env files are reported but do not fail validation when the resolved values satisfy Envfile; use `--strict` to make missing files fatal too. On success, it prints `▣ valid (.env)` (listing the loaded input files) and exits with code `0` on success. It does not change your shell's environment.
+The command enforces required values, types, enums, bounds, and encryption requirements. It exits with code `1` on validation or other loading errors. Missing env files are reported but do not fail validation when the resolved values satisfy Envfile. On success, it prints `▣ valid (.env)` (listing the loaded input files) and exits with code `0` on success. It does not change your shell's environment.
 
 A missing Envfile reports `ENVFILE_REQUIRED`; invalid syntax reports `MALFORMED_ENVFILE`.
+
+</details>
+<details><summary>`validate -f`</summary><br>
+
+Validate a specific env file against your Envfile.
+
+```sh
+$ dotenvx validate -f .env.production
+```
+
+</details>
+<details><summary>`validate -fk`</summary><br>
+
+Use a specific private-key file for validation.
+
+```sh
+$ dotenvx validate -fk .env.keys.production
+```
+
+</details>
+<details><summary>`validate --strict`</summary><br>
+
+Fail on missing env files as well as other loading and validation errors.
+
+```sh
+$ dotenvx validate --strict
+```
 
 </details>
 <details><summary>`validate --ignore`</summary><br>
@@ -3007,9 +3054,7 @@ $ dotenvx precommit --uninstall
 This removes recognized dotenvx installer blocks while preserving other hook commands. It also supports `dotenvx ext precommit --uninstall`. Unrecognized, symlinked, or external shared hooks are left unchanged with a manual-cleanup message.
 
 </details>
-<details><summary>`protect` (hidden)</summary><br>
-
-For a Docker build-time check instead of Git setup, use `RUN dotenvx protect --docker` in your Dockerfile, or `RUN dotenvx protect --docker apps/backend` for a specific directory. This replaces `prebuild` with the same checks, without prompts or Git configuration changes. It does not edit Dockerfiles or prevent files from reaching the builder; use `.dockerignore` for that.
+<details><summary>`protect (hidden)`</summary><br>
 
 Install a required Git clean filter for all existing and future repositories for your user. Run this once, even outside a Git repository:
 
@@ -3036,6 +3081,24 @@ When run inside a repository with the filter selected, this also removes recogni
 The filter rejects plaintext `.env*`, `*.env`, `.flaskenv`, `.dev.vars*`, and files directly inside `.env.d/` directories at any depth before staging, including with `git add -A` or `git add -f`. Encrypted files pass through unchanged. `.env.example`, `.env.vault`, and `.env.x` retain their exemptions; `.env.keys*` files are always rejected.
 
 This writes the filter configuration to your global Git config and adds the env-file rules to your global attributes file. Re-run `dotenvx protect` with the filter selected to refresh it after upgrading or moving the executable. It preserves an existing `core.attributesFile`; otherwise it uses `$XDG_CONFIG_HOME/git/attributes` or `~/.config/git/attributes`. It does not inspect content already staged before installation. Repository attributes and configuration can override the global protection. Use a persistent dotenvx installation.
+
+</details>
+<details><summary>`protect --docker`</summary><br>
+
+Check env files during a Docker build. Use `.dockerignore` to exclude files from the build context.
+
+```dockerfile
+RUN dotenvx protect --docker
+```
+
+</details>
+<details><summary>`protect --docker directory`</summary><br>
+
+Check env files in a specific directory during a Docker build.
+
+```dockerfile
+RUN dotenvx protect --docker apps/backend
+```
 
 </details>
 <details><summary>`precommit directory`</summary><br>
@@ -3110,17 +3173,22 @@ Lock a private key in `.env.keys` with a local passphrase.
 $ dotenvx lock up
 ```
 
-Here's what a locked key looks like:
+</details>
+<details><summary>`lock up -f`</summary><br>
 
-```ini
-# .env.keys
-DOTENV_PRIVATE_KEY=locked:02f5b97ad58b49ae324cd4e7937bc19b251d006b31cacf46f789eeaf03f923cedc:AZIPDxKqjPLiGl5b4CqVGbR3CIBDUcqHthGaoeWLoUvxbTHJkj3jGoGWGaxFSDUJGQUmWDaExRzxKpVydYF_7qiWr1ecqksOFho5t3EMwKbqX2-y-LZO9K3a4SJaYAjDJXpn3NwG4vAt1oLmGA
-```
-
-Specify files with `-f` and `-fk`.
+Select a specific env file.
 
 ```sh
-$ dotenvx lock up -f .env.production -fk .env.keys
+$ dotenvx lock up -f .env.production
+```
+
+</details>
+<details><summary>`lock up -fk`</summary><br>
+
+Select a specific private-key file.
+
+```sh
+$ dotenvx lock up -fk .env.keys.production
 ```
 
 </details>
@@ -3150,10 +3218,22 @@ Move a private key from `.env.keys` into your OS secret store.
 $ dotenvx native up
 ```
 
-Specify files with `-f` and `-fk`.
+</details>
+<details><summary>`native up -f`</summary><br>
+
+Select a specific env file.
 
 ```sh
-$ dotenvx native up -f .env.production -fk .env.keys
+$ dotenvx native up -f .env.production
+```
+
+</details>
+<details><summary>`native up -fk`</summary><br>
+
+Select a specific private-key file.
+
+```sh
+$ dotenvx native up -fk .env.keys.production
 ```
 
 </details>
@@ -3194,14 +3274,34 @@ Move private keys into [Dotenvx Armor ⛨](https://dotenvx.com/armor) for off-de
 Move a private key from `.env.keys` into Dotenvx Armor.
 
 ```sh
-$ dotenvx armor login
 $ dotenvx armor up
 ```
 
-Specify environment and team.
+</details>
+<details><summary>`armor up -f`</summary><br>
+
+Select a specific env file.
 
 ```sh
-$ dotenvx armor up -f .env.production --team acme
+$ dotenvx armor up -f .env.production
+```
+
+</details>
+<details><summary>`armor up --team`</summary><br>
+
+Select an Armor team.
+
+```sh
+$ dotenvx armor up --team acme
+```
+
+</details>
+<details><summary>`armor up --token`</summary><br>
+
+Use an Armor token when running non-interactively.
+
+```sh
+$ dotenvx armor up --token "$DOTENVX_ARMOR_TOKEN"
 ```
 
 </details>
@@ -3231,10 +3331,31 @@ Copy a private key from Dotenvx Armor into `.env.keys`.
 $ dotenvx armor pull
 ```
 
-Use a token when running non-interactively.
+</details>
+<details><summary>`armor pull -f`</summary><br>
+
+Select a specific env file.
 
 ```sh
-$ dotenvx armor pull -f .env.production --token "$DOTENVX_ARMOR_TOKEN"
+$ dotenvx armor pull -f .env.production
+```
+
+</details>
+<details><summary>`armor pull --team`</summary><br>
+
+Select an Armor team.
+
+```sh
+$ dotenvx armor pull --team acme
+```
+
+</details>
+<details><summary>`armor pull --token`</summary><br>
+
+Use an Armor token when running non-interactively.
+
+```sh
+$ dotenvx armor pull --token "$DOTENVX_ARMOR_TOKEN"
 ```
 
 </details>
@@ -3246,7 +3367,10 @@ Open an armored key in your browser.
 $ dotenvx armor open
 ```
 
-Open the armored key for a specific env file.
+</details>
+<details><summary>`armor open -f`</summary><br>
+
+Select a specific env file.
 
 ```sh
 $ dotenvx armor open -f .env.production
@@ -3294,23 +3418,87 @@ on
 </details>
 <details><summary>`armor settings`</summary><br>
 
-Inspect and manage your local Armor settings.
+Inspect and manage local Armor settings. Choose a setting below.
+
+</details>
+<details><summary>`armor settings username`</summary><br>
+
+Print your username.
 
 ```sh
 $ dotenvx armor settings username
-$ dotenvx armor settings token
-$ dotenvx armor settings device
-$ dotenvx armor settings hostname
-$ dotenvx armor settings path
-$ dotenvx armor settings on
-$ dotenvx armor settings off
 ```
 
-Access tokens and device public keys are masked by default. Reveal the complete value only when you explicitly need it.
+</details>
+<details><summary>`armor settings token`</summary><br>
+
+Print your masked access token.
+
+```sh
+$ dotenvx armor settings token
+```
+
+</details>
+<details><summary>`armor settings token --unmask`</summary><br>
+
+Print the complete access token.
 
 ```sh
 $ dotenvx armor settings token --unmask
+```
+
+</details>
+<details><summary>`armor settings device`</summary><br>
+
+Print your masked device public key.
+
+```sh
+$ dotenvx armor settings device
+```
+
+</details>
+<details><summary>`armor settings device --unmask`</summary><br>
+
+Print the complete device public key.
+
+```sh
 $ dotenvx armor settings device --unmask
+```
+
+</details>
+<details><summary>`armor settings hostname`</summary><br>
+
+Print the Armor hostname.
+
+```sh
+$ dotenvx armor settings hostname
+```
+
+</details>
+<details><summary>`armor settings path`</summary><br>
+
+Print the settings file path.
+
+```sh
+$ dotenvx armor settings path
+```
+
+</details>
+<details><summary>`armor settings on`</summary><br>
+
+Turn Armor on.
+
+```sh
+$ dotenvx armor settings on
+```
+
+</details>
+<details><summary>`armor settings off`</summary><br>
+
+Turn Armor off.
+
+```sh
+$ dotenvx armor settings off
 ```
 
 </details>
