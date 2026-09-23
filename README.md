@@ -2585,31 +2585,54 @@ SECRET="abcdef******"
 Pass a number to control how many characters are visible, such as `--mask 0` to fully mask values.
 
 </details>
-<details><summary>`primitives keypair` and `primitives derive`</summary><br>
+<details><summary>`primitives keypair`</summary><br>
 
-Generate a new key pair, restore a pair from a private key, or derive just the public key. These commands do not read or write `.env` or `.env.keys` files or discover keys from environment variables.
+Generate a key pair without reading or writing env files.
 
 ```sh
 $ dotenvx primitives keypair
 {"publicKey":"<publicKey>","privateKey":"<privateKey>"}
+```
 
+</details>
+<details><summary>`primitives keypair &lt;privateKey&gt;`</summary><br>
+
+Restore a key pair from a private key.
+
+```sh
 $ dotenvx primitives keypair <privateKey>
 {"publicKey":"<publicKey>","privateKey":"<privateKey>"}
+```
 
+</details>
+<details><summary>`primitives keypair --stdin`</summary><br>
+
+Restore a key pair from a private key on stdin.
+
+```sh
+$ printf '%s\n' "$PRIVATE_KEY" | dotenvx primitives keypair --stdin
+{"publicKey":"<publicKey>","privateKey":"<privateKey>"}
+```
+
+</details>
+<details><summary>`primitives derive`</summary><br>
+
+Derive a public key without reading or writing env files.
+
+```sh
 $ dotenvx primitives derive <privateKey>
 <publicKey>
 ```
 
-`keypair` prints JSON containing both keys. `derive` prints only the public key. Invalid private keys produce an error on stderr and exit code 1.
+</details>
+<details><summary>`primitives derive --stdin`</summary><br>
 
-Pass `--stdin` to read one private key from standard input instead of a positional argument:
+Derive a public key from a private key on stdin.
 
 ```sh
-printf '%s\n' "$PRIVATE_KEY" | dotenvx primitives keypair --stdin
-printf '%s\n' "$PRIVATE_KEY" | dotenvx primitives derive --stdin
+$ printf '%s\n' "$PRIVATE_KEY" | dotenvx primitives derive --stdin
+<publicKey>
 ```
-
-Surrounding whitespace is trimmed. Empty input and combining `--stdin` with a private key argument are errors. Stdin is only read when `--stdin` is explicit; `keypair` without arguments always generates a new pair.
 
 </details>
 <details><summary>`keypair`</summary><br>
