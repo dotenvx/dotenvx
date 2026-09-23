@@ -74,6 +74,22 @@ async function multiselect ({ message, choices, initial = [], submitLabel }, con
   }
 }
 
+async function input ({ message }, context) {
+  try {
+    const answer = await enquirer.prompt({
+      type: 'input',
+      name: 'value',
+      message,
+      ...enquirerOptions(context)
+    })
+    return answer.value
+  } catch {
+    const error = new Error('prompt cancelled')
+    error.code = 'PROMPT_CANCELLED'
+    throw error
+  }
+}
+
 async function confirm ({ message, initial = false }, context) {
   try {
     const answer = await enquirer.prompt({
@@ -125,6 +141,7 @@ async function password ({ message, prefix, separator }, context) {
 }
 
 module.exports = {
+  input,
   confirm,
   multiselect,
   password,
