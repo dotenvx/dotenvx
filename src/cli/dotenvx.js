@@ -320,7 +320,7 @@ program.command('doctor', { hidden: true })
 // dotenvx feedback
 program.command('feedback', { hidden: true })
   .description('send feedback to dotenvx')
-  .argument('[message]', 'feedback message (don’t include secrets)')
+  .argument('[message]', 'feedback message')
   .allowExcessArguments(false)
   .option('--hostname <hostname>', 'set API hostname')
   .action(function (...args) {
