@@ -317,6 +317,16 @@ program.command('doctor', { hidden: true })
     return commandAction(require('./actions/doctor')).apply(this, args)
   })
 
+// dotenvx feedback
+program.command('feedback', { hidden: true })
+  .description('send feedback to dotenvx')
+  .argument('[message]', 'feedback message')
+  .allowExcessArguments(false)
+  .option('--hostname <hostname>', 'set API hostname')
+  .action(function (...args) {
+    return commandAction(require('./actions/feedback')).apply(this, args)
+  })
+
 // Build menu entries from the command definitions so new subcommands stay discoverable.
 function hiddenSubcommands (name) {
   const parent = program.commands.find(command => command.name() === name)
@@ -333,11 +343,11 @@ function hiddenSubcommands (name) {
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => `\nHidden Commands:\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n  init                   create an Envfile from .env.example and .env\n  define                 define your environment in an Envfile\n  validate               validate .env file(s) against Envfile\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
+  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n  init                   create an Envfile from .env.example and .env\n  define                 define your environment in an Envfile\n  validate               validate .env file(s) against Envfile\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
   .action(function () { this.outputHelp() })
 
 // dotenvx update
-program.command('update')
+program.command('update', { hidden: true })
   .description('update dotenvx')
   .action(function (...args) {
     return commandAction(require('./actions/update')).apply(this, args)
