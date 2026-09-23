@@ -2,8 +2,10 @@ const { logger } = require('../../shared/logger')
 const Session = require('../../db/session')
 const PostFeedback = require('../../lib/api/postFeedback')
 const prompts = require('../../lib/helpers/prompts')
+const createSpinner = require('../../lib/helpers/createSpinner')
 
 async function feedback (body) {
+  let spinner
   try {
     if (body === undefined) {
       if (!process.stdin.isTTY) {
@@ -11,7 +13,7 @@ async function feedback (body) {
       }
 
       body = await prompts.input({
-        message: 'What could we improve? (don’t include secrets)'
+        message: 'Send feedback'
       }, { input: process.stdin, output: process.stderr })
     }
 
@@ -19,10 +21,15 @@ async function feedback (body) {
       throw new Error('feedback cannot be empty')
     }
 
-    const hostname = this.opts().hostname || new Session().hostname()
+    const options = this.opts()
+    const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
+    const hostname = options.hostname || new Session().hostname()
+    spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'sending' })
     await new PostFeedback(hostname, body).run()
-    logger.success('✔ feedback sent. Thank you!')
+    if (spinner) spinner.stop()
+    logger.success('✔ Feedback sent, thanks!')
   } catch (error) {
+    if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
       return { exitCode: 130, error }
     }
