@@ -2585,6 +2585,33 @@ SECRET="abcdef******"
 Pass a number to control how many characters are visible, such as `--mask 0` to fully mask values.
 
 </details>
+<details><summary>`primitives keypair` and `primitives derive`</summary><br>
+
+Generate a new key pair, restore a pair from a private key, or derive just the public key. These commands do not read or write `.env` or `.env.keys` files or discover keys from environment variables.
+
+```sh
+$ dotenvx primitives keypair
+{"publicKey":"<publicKey>","privateKey":"<privateKey>"}
+
+$ dotenvx primitives keypair <privateKey>
+{"publicKey":"<publicKey>","privateKey":"<privateKey>"}
+
+$ dotenvx primitives derive <privateKey>
+<publicKey>
+```
+
+`keypair` prints JSON containing both keys. `derive` prints only the public key. Invalid private keys produce an error on stderr and exit code 1.
+
+Pass `--stdin` to read one private key from standard input instead of a positional argument:
+
+```sh
+printf '%s\n' "$PRIVATE_KEY" | dotenvx primitives keypair --stdin
+printf '%s\n' "$PRIVATE_KEY" | dotenvx primitives derive --stdin
+```
+
+Surrounding whitespace is trimmed. Empty input and combining `--stdin` with a private key argument are errors. Stdin is only read when `--stdin` is explicit; `keypair` without arguments always generates a new pair.
+
+</details>
 <details><summary>`keypair`</summary><br>
 
 Print public/private keys for `.env` file.
