@@ -2694,71 +2694,11 @@ $ dotenvx keypair --pretty-print
 ```
 
 </details>
-<details><summary>`gitignore`</summary><br>
+<details><summary>`hidden`</summary><br>
 
-Gitignore your `.env` files.
+Dotenvx has a slew of hidden commands.
 
-```sh
-$ dotenvx gitignore
-▣ ignored .env* (.gitignore)
-```
-
-</details>
-<details><summary>`gitignore --pattern`</summary><br>
-
-Gitignore specific pattern(s) of `.env` files.
-
-```sh
-$ dotenvx gitignore --pattern .env.keys
-▣ ignored .env.keys (.gitignore)
-```
-
-</details>
-<details><summary>`protect (hidden)`</summary><br>
-
-Install a required Git clean filter for all existing and future repositories for your user. Run this once, even outside a Git repository:
-
-```sh
-$ dotenvx protect
-```
-
-Interactive setup shows one checklist with both protections selected every time, even if you previously turned them off:
-
-```text
-Set protections
-● Protect plaintext secrets from code commits (.env*)
-● Protect private keys from code commits (.env.keys*)
-
-  Install protections
-```
-
-Use arrow keys to move and Enter or Space to toggle a choice. The action row changes to **Install protections**, **Apply changes**, **Remove protections**, or **Done**. Press Enter on that row to apply. Unchecking removes that protection; clearing both reports `⛉ unprotected (none)`. Cancelling leaves settings unchanged.
-
-The first installs the staging filter. The second adds `.env.keys*` to your global Git ignore file, preserving existing rules and any configured `core.excludesFile`. Otherwise, it uses `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`. This skips private-key files during normal adds; the filter still rejects forced adds when enabled. Only dotenvx-owned ignore rules are removed. Older or manually added `.env.keys*` rules without an ownership record require manual removal. Noninteractive and CI runs retain filter-only installation without prompting or removing existing protections.
-
-When run inside a repository with the filter selected, this also removes recognized dotenvx pre-commit hook blocks and legacy repo-local `precommit --clean` filter registrations after global protection is successfully installed. Custom filter commands are preserved. Run it in each repository with an old hook or filter override to migrate that repository.
-
-The filter rejects plaintext `.env*`, `*.env`, `.flaskenv`, `.dev.vars*`, and files directly inside `.env.d/` directories at any depth before staging, including with `git add -A` or `git add -f`. Encrypted files pass through unchanged. `.env.example`, `.env.vault`, and `.env.x` retain their exemptions; `.env.keys*` files are always rejected.
-
-This writes the filter configuration to your global Git config and adds the env-file rules to your global attributes file. Re-run `dotenvx protect` with the filter selected to refresh it after upgrading or moving the executable. It preserves an existing `core.attributesFile`; otherwise it uses `$XDG_CONFIG_HOME/git/attributes` or `~/.config/git/attributes`. It does not inspect content already staged before installation. Repository attributes and configuration can override the global protection. Use a persistent dotenvx installation.
-
-</details>
-<details><summary>`protect --docker`</summary><br>
-
-Check env files during a Docker build. Use `.dockerignore` to exclude files from the build context.
-
-```dockerfile
-RUN dotenvx protect --docker
-```
-
-</details>
-<details><summary>`protect --docker directory`</summary><br>
-
-Check env files in a specific directory during a Docker build.
-
-```dockerfile
-RUN dotenvx protect --docker apps/backend
-```
+[See their documentation →](https://dotenvx.com/docs/cli/hidden/)
 
 </details>
 <details><summary>`help`</summary><br>
