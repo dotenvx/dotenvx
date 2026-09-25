@@ -939,13 +939,13 @@ Point `-f` at a directory to load the `.env` inside it. From a workspace, this m
 ```text
 my-monorepo/
   .env
-  .env.keys
   apps/
     web/
       index.js
 ```
 
 ```sh
+$ dotenvx encrypt
 $ cd apps/web
 
 $ dotenvx get HELLO -f ../..
@@ -956,7 +956,7 @@ $ dotenvx run -f ../.. -- node index.js
 Hello World
 ```
 
-Encrypted values work without extra configuration when `.env.keys` sits beside the resolved `.env`.
+With the private key in your OS secret store, dotenvx finds it automatically from any workspace on the same machine.
 
 The directory also becomes the base when using a convention:
 
@@ -966,10 +966,10 @@ $ dotenvx run -f ../.. --convention=nextjs -- node index.js
 Hello development local
 ```
 
-If a workspace has its own `.env` but shares the root `.env.keys`, point `-fk` at the root directory:
+For a workspace with its own encrypted `.env`, run from that workspace:
 
 ```sh
-$ dotenvx run -f . -fk ../.. -- node index.js
+$ dotenvx run -- node index.js
 ```
 
 </details>
@@ -1699,7 +1699,7 @@ Hello development local
 </details>
 <details><summary>`run -fk`</summary><br>
 
-Specify path to `.env.keys`. This is useful with monorepos.
+Specify a custom private-key file when using file storage.
 
 ```sh
 $ mkdir -p apps/app1
@@ -1843,7 +1843,7 @@ World
 </details>
 <details><summary>`get KEY -fk`</summary><br>
 
-Specify path to `.env.keys`. This is useful with monorepos.
+Specify a custom private-key file when using file storage.
 
 ```sh
 $ mkdir -p apps/app1
@@ -2127,7 +2127,7 @@ set HELLO with encryption (.env.production)
 </details>
 <details><summary>`set KEY value -fk`</summary><br>
 
-Specify path to `.env.keys`. This is useful with monorepos.
+Specify a custom private-key file when using file storage.
 
 ```sh
 $ mkdir -p apps/app1
@@ -2323,7 +2323,7 @@ $ dotenvx encrypt -f .env.production --no-create
 </details>
 <details><summary>`encrypt -fk`</summary><br>
 
-Specify path to `.env.keys`. This is useful with monorepos.
+Specify a custom private-key file when using file storage.
 
 ```sh
 $ mkdir -p apps/app1
@@ -2477,7 +2477,7 @@ $ dotenvx decrypt -f .env.production
 </details>
 <details><summary>`decrypt -fk`</summary><br>
 
-Specify path to `.env.keys`. This is useful with monorepos.
+Specify a custom private-key file when using file storage.
 
 ```sh
 $ mkdir -p apps/app1
@@ -2575,56 +2575,6 @@ SECRET="abcdef******"
 Pass a number to control how many characters are visible, such as `--mask 0` to fully mask values.
 
 </details>
-<details><summary>`primitives keypair`</summary><br>
-
-Generate a key pair without reading or writing env files.
-
-```sh
-$ dotenvx primitives keypair
-{"publicKey":"<publicKey>","privateKey":"<privateKey>"}
-```
-
-</details>
-<details><summary>`primitives keypair &lt;privateKey&gt;`</summary><br>
-
-Restore a key pair from a private key.
-
-```sh
-$ dotenvx primitives keypair <privateKey>
-{"publicKey":"<publicKey>","privateKey":"<privateKey>"}
-```
-
-</details>
-<details><summary>`primitives keypair --stdin`</summary><br>
-
-Restore a key pair from a private key on stdin.
-
-```sh
-$ printf '%s\n' "$PRIVATE_KEY" | dotenvx primitives keypair --stdin
-{"publicKey":"<publicKey>","privateKey":"<privateKey>"}
-```
-
-</details>
-<details><summary>`primitives derive`</summary><br>
-
-Derive a public key without reading or writing env files.
-
-```sh
-$ dotenvx primitives derive <privateKey>
-<publicKey>
-```
-
-</details>
-<details><summary>`primitives derive --stdin`</summary><br>
-
-Derive a public key from a private key on stdin.
-
-```sh
-$ printf '%s\n' "$PRIVATE_KEY" | dotenvx primitives derive --stdin
-<publicKey>
-```
-
-</details>
 <details><summary>`keypair`</summary><br>
 
 Print public/private keys for `.env` file.
@@ -2673,7 +2623,7 @@ $ dotenvx keypair -f .env.production
 </details>
 <details><summary>`keypair -fk`</summary><br>
 
-Specify path to `.env.keys`. This is useful for printing public/private keys for monorepos.
+Print keys from a custom private-key file when using file storage.
 
 ```sh
 $ mkdir -p apps/app1
@@ -2744,249 +2694,6 @@ $ dotenvx keypair --pretty-print
 ```
 
 </details>
-<details><summary>`ls`</summary><br>
-
-Print all `.env` files in a tree structure.
-
-```sh
-$ touch .env
-$ touch .env.production
-$ mkdir -p apps/backend
-$ touch apps/backend/.env
-
-$ dotenvx ls
-├─ .env.production
-├─ .env
-└─ apps
-   └─ backend
-      └─ .env
-```
-
-</details>
-<details><summary>`ls directory`</summary><br>
-
-Print all `.env` files inside a specified path to a directory.
-
-```sh
-$ touch .env
-$ touch .env.production
-$ mkdir -p apps/backend
-$ touch apps/backend/.env
-
-$ dotenvx ls apps/backend
-└─ .env
-```
-
-</details>
-<details><summary>`ls -f`</summary><br>
-
-Glob `.env` filenames matching a wildcard.
-
-```sh
-$ touch .env
-$ touch .env.production
-$ mkdir -p apps/backend
-$ touch apps/backend/.env
-$ touch apps/backend/.env.prod
-
-$ dotenvx ls -f **/.env.prod*
-├─ .env.production
-└─ apps
-   └─ backend
-      └─ .env.prod
-```
-
-</details>
-<details><summary>`ls -ef`</summary><br>
-
-Glob `.env` filenames excluding a wildcard.
-
-```sh
-$ touch .env
-$ touch .env.production
-$ mkdir -p apps/backend
-$ touch apps/backend/.env
-$ touch apps/backend/.env.prod
-
-$ dotenvx ls -ef '**/.env.prod*'
-├─ .env
-└─ apps
-   └─ backend
-      └─ .env
-```
-
-</details>
-<details><summary>`ls --json`</summary><br>
-
-Print all matching `.env` files as a JSON array of absolute filepaths. Progress and summary details are written to stderr, so stdout can be safely piped to another command or file.
-
-```sh
-$ dotenvx ls --json
-[
-  "/path/to/project/.env",
-  "/path/to/project/apps/backend/.env"
-]
-
-$ dotenvx ls --json > dotenv-files.json
-```
-
-</details>
-<details><summary>`define (hidden)`</summary><br>
-
-Create an `Envfile` to validate your project's environment variables:
-
-```sh
-$ dotenvx define
-≡ defined (Envfile)
-```
-
-Merges variable names from both `.env.example` and `.env`, skipping missing files and including each name once. If neither default file exists, it creates a starter. An existing `Envfile` is always left unchanged.
-
-The first line is `encrypted false` by default, or `encrypted true` if any application variable assignment in either input starts with `encrypted:`. Duplicate assignments are all inspected. This sets the encryption requirement for all declarations; use `encrypted: false` on individual variables that should remain plaintext.
-
-Generated declarations are required by default. Review them and mark optional variables with `optional: true`.
-
-Only names are copied: values are never included, decrypted, expanded, or fetched from secret providers. Dotenvx public and private key entries are excluded. Your env files are unchanged.
-
-Run `dotenvx validate` (or `dotenvx validate -f .env.production` for another file) to check your configuration. Once `Envfile` exists, `dotenvx run` validates automatically before starting your command.
-
-</details>
-<details><summary>`define -f`</summary><br>
-
-Create an Envfile from one env file without copying its values.
-
-```sh
-$ dotenvx define -f .env.production
-≡ defined (Envfile)
-```
-
-</details>
-<details><summary>`init`</summary><br>
-
-Create an Envfile from `.env.example` and `.env`. This is an alias for `define`.
-
-```sh
-$ dotenvx init
-≡ defined (Envfile)
-```
-
-</details>
-<details><summary>`validate`</summary><br>
-
-Validate resolved `.env` values against an `Envfile` without running a command. An `Envfile` in the current directory is required; `.env.example` is not used for validation.
-
-```ruby
-# Envfile
-env "DATABASE_URL", type: "url"
-env "PORT", type: "port"
-env "SENTRY_DSN", optional: true
-```
-
-```sh
-$ dotenvx validate
-[INVALID_ENV] DATABASE_URL is required; PORT is required
-```
-
-The command enforces required values, types, enums, bounds, and encryption requirements. It exits with code `1` on validation or other loading errors. Missing env files are reported but do not fail validation when the resolved values satisfy Envfile. On success, it prints `▣ valid (.env)` (listing the loaded input files) and exits with code `0` on success. It does not change your shell's environment.
-
-A missing Envfile reports `ENVFILE_REQUIRED`; invalid syntax reports `MALFORMED_ENVFILE`.
-
-</details>
-<details><summary>`validate -f`</summary><br>
-
-Validate a specific env file against your Envfile.
-
-```sh
-$ dotenvx validate -f .env.production
-```
-
-</details>
-<details><summary>`validate -fk`</summary><br>
-
-Use a specific private-key file for validation.
-
-```sh
-$ dotenvx validate -fk .env.keys.production
-```
-
-</details>
-<details><summary>`validate --strict`</summary><br>
-
-Fail on missing env files as well as other loading and validation errors.
-
-```sh
-$ dotenvx validate --strict
-```
-
-</details>
-<details><summary>`validate --ignore`</summary><br>
-
-Ignore specific loading or value-validation errors:
-
-```sh
-$ dotenvx validate --ignore=MISSING_ENV_FILE
-$ dotenvx validate --ignore=MISSING_ENV_FILE INVALID_ENV
-$ DOTENV_IGNORE=MISSING_ENV_FILE dotenvx validate
-```
-
-An Envfile is still required, even when errors are ignored.
-
-</details>
-<details><summary>`genexample`</summary><br>
-
-In one command, generate a `.env.example` file from your current `.env` file contents.
-
-```sh
-$ echo "HELLO=World" > .env
-
-$ dotenvx genexample
-▣ generated (.env.example)
-```
-
-```ini
-# .env.example
-HELLO=""
-```
-
-</details>
-<details><summary>`genexample -f`</summary><br>
-
-Pass multiple `.env` files to generate your `.env.example` file from the combination of their contents.
-
-```sh
-$ echo "HELLO=World" > .env
-$ echo "DB_HOST=example.com" > .env.production
-
-$ dotenvx genexample -f .env,.env.production
-▣ generated (.env.example)
-```
-
-```ini
-# .env.example
-HELLO=""
-DB_HOST=""
-```
-
-</details>
-<details><summary>`genexample directory`</summary><br>
-
-Generate a `.env.example` file inside the specified directory. Useful for monorepos.
-
-```sh
-$ echo "HELLO=World" > .env
-$ mkdir -p apps/backend
-$ echo "HELLO=Backend" > apps/backend/.env
-
-$ dotenvx genexample apps/backend
-▣ generated (.env.example)
-```
-
-```ini
-# apps/backend/.env.example
-HELLO=""
-```
-
-</details>
 <details><summary>`gitignore`</summary><br>
 
 Gitignore your `.env` files.
@@ -3005,41 +2712,6 @@ Gitignore specific pattern(s) of `.env` files.
 $ dotenvx gitignore --pattern .env.keys
 ▣ ignored .env.keys (.gitignore)
 ```
-
-</details>
-<details><summary>`precommit`</summary><br>
-
-Deprecated in favor of `dotenvx protect`. Existing hooks continue checking files and print a migration notice on each invocation. Run `dotenvx protect` inside the repository to install global staging protection and remove its recognized dotenvx hook block. Other hook commands are preserved; customized or shared hooks may require manual cleanup.
-
-Prevent `.env` files from being committed to code.
-
-```sh
-$ dotenvx precommit
-▣ .env files (1) protected (encrypted or gitignored)
-```
-
-</details>
-<details><summary>`precommit --install`</summary><br>
-
-Install a pre-commit hook in the current repository:
-
-```sh
-$ dotenvx precommit --install
-▣ dotenvx precommit installed [.git/hooks/pre-commit]
-```
-
-For protection during staging, use `dotenvx protect`.
-
-</details>
-<details><summary>`precommit --uninstall`</summary><br>
-
-Remove the installed dotenvx pre-commit hook without installing replacement protection:
-
-```sh
-$ dotenvx precommit --uninstall
-```
-
-This removes recognized dotenvx installer blocks while preserving other hook commands. It also supports `dotenvx ext precommit --uninstall`. Unrecognized, symlinked, or external shared hooks are left unchanged with a manual-cleanup message.
 
 </details>
 <details><summary>`protect (hidden)`</summary><br>
@@ -3086,407 +2758,6 @@ Check env files in a specific directory during a Docker build.
 
 ```dockerfile
 RUN dotenvx protect --docker apps/backend
-```
-
-</details>
-<details><summary>`precommit directory`</summary><br>
-
-Prevent `.env` files from being committed to code inside a specified path to a directory.
-
-```sh
-$ echo "HELLO=World" > .env
-$ mkdir -p apps/backend
-$ echo "HELLO=Backend" > apps/backend/.env
-
-$ dotenvx precommit apps/backend
-▣ apps/backend/.env not protected (encrypted or gitignored)
-```
-
-</details>
-<details><summary>`prebuild`</summary><br>
-
-Deprecated. Use `dotenvx protect --docker` for the same build-time check.
-
-Add it to your `Dockerfile`.
-
-```Containerfile
-# Install via script
-RUN curl -fsS https://dotenvx.sh | sh
-
-# Or copy binary from official image
-COPY --from=dotenv/dotenvx:latest /usr/local/bin/dotenvx /bin/local/bin
-
-# ... orther container commands
-
-RUN dotenvx protect --docker
-CMD ["/usr/local/bin/dotenvx", "run", "--", "node", "index.js"]
-```
-
-</details>
-<details><summary>`prebuild directory`</summary><br>
-
-Deprecated. Use `dotenvx protect --docker <directory>` for the same build-time check in a specified directory.
-
-Add it to your `Dockerfile`.
-
-```Containerfile
-# Install via script
-RUN curl -fsS https://dotenvx.sh | sh
-
-# Or copy binary from official image
-COPY --from=dotenv/dotenvx:latest /usr/local/bin/dotenvx /bin/local/bin
-
-# ... orther container commands
-
-RUN dotenvx protect --docker apps/backend
-CMD ["/usr/local/bin/dotenvx", "run", "--", "node", "apps/backend/index.js"]
-```
-
-</details>
-<details><summary>`lock`</summary><br>
-
-Lock private keys with a local passphrase to keep them protected inside `.env.keys`.
-
-```
-# example
-DOTENV_PRIVATE_KEY=locked:02f5b97ad58b49ae324cd4e7937bc19b251d006b31cacf46f789eeaf03f923cedc:AZIPDxKqjPLiGl5b4CqVGbR3CIBDUcqHthGaoeWLoUvxbTHJkj3jGoGWGaxFSDUJGQUmWDaExRzxKpVydYF_7qiWr1ecqksOFho5t3EMwKbqX2-y-LZO9K3a4SJaYAjDJXpn3NwG4vAt1oLmGA
-```
-
-</details>
-<details><summary>`lock up`</summary><br>
-
-Lock a private key in `.env.keys` with a local passphrase.
-
-```sh
-$ dotenvx lock up
-```
-
-</details>
-<details><summary>`lock up -f`</summary><br>
-
-Select a specific env file.
-
-```sh
-$ dotenvx lock up -f .env.production
-```
-
-</details>
-<details><summary>`lock up -fk`</summary><br>
-
-Select a specific private-key file.
-
-```sh
-$ dotenvx lock up -fk .env.keys.production
-```
-
-</details>
-<details><summary>`lock down`</summary><br>
-
-Unlock a private key in `.env.keys` with its local passphrase.
-
-```sh
-$ dotenvx lock down
-```
-
-</details>
-<details><summary>`native`</summary><br>
-
-Move private keys into your OS secret store.
-
-Native commands support macOS Keychain, Linux Secret Service, and Windows Credential Manager.
-
-On Linux, `secret-tool` and an available Secret Service are required.
-
-</details>
-<details><summary>`native up`</summary><br>
-
-Move a private key from `.env.keys` into your OS secret store.
-
-```sh
-$ dotenvx native up
-```
-
-</details>
-<details><summary>`native up -f`</summary><br>
-
-Select a specific env file.
-
-```sh
-$ dotenvx native up -f .env.production
-```
-
-</details>
-<details><summary>`native up -fk`</summary><br>
-
-Select a specific private-key file.
-
-```sh
-$ dotenvx native up -fk .env.keys.production
-```
-
-</details>
-<details><summary>`native down`</summary><br>
-
-Move a private key from your OS secret store back into `.env.keys`.
-
-```sh
-$ dotenvx native down
-```
-
-</details>
-<details><summary>`native push`</summary><br>
-
-Copy a private key from `.env.keys` into your OS secret store.
-
-```sh
-$ dotenvx native push
-```
-
-</details>
-<details><summary>`native pull`</summary><br>
-
-Copy a private key from your OS secret store into `.env.keys`.
-
-```sh
-$ dotenvx native pull
-```
-
-</details>
-<details><summary>`armor`</summary><br>
-
-Move private keys into [Dotenvx Armor ⛨](https://dotenvx.com/armor) for off-device storage, sharing with your team, and audited access.
-
-</details>
-<details><summary>`armor up`</summary><br>
-
-Move a private key from `.env.keys` into Dotenvx Armor.
-
-```sh
-$ dotenvx armor up
-```
-
-</details>
-<details><summary>`armor up -f`</summary><br>
-
-Select a specific env file.
-
-```sh
-$ dotenvx armor up -f .env.production
-```
-
-</details>
-<details><summary>`armor up --team`</summary><br>
-
-Select an Armor team.
-
-```sh
-$ dotenvx armor up --team acme
-```
-
-</details>
-<details><summary>`armor up --token`</summary><br>
-
-Use an Armor token when running non-interactively.
-
-```sh
-$ dotenvx armor up --token "$DOTENVX_ARMOR_TOKEN"
-```
-
-</details>
-<details><summary>`armor down`</summary><br>
-
-Move a private key from Dotenvx Armor back into `.env.keys`.
-
-```sh
-$ dotenvx armor down
-```
-
-</details>
-<details><summary>`armor push`</summary><br>
-
-Copy a private key from `.env.keys` into Dotenvx Armor.
-
-```sh
-$ dotenvx armor push
-```
-
-</details>
-<details><summary>`armor pull`</summary><br>
-
-Copy a private key from Dotenvx Armor into `.env.keys`.
-
-```sh
-$ dotenvx armor pull
-```
-
-</details>
-<details><summary>`armor pull -f`</summary><br>
-
-Select a specific env file.
-
-```sh
-$ dotenvx armor pull -f .env.production
-```
-
-</details>
-<details><summary>`armor pull --team`</summary><br>
-
-Select an Armor team.
-
-```sh
-$ dotenvx armor pull --team acme
-```
-
-</details>
-<details><summary>`armor pull --token`</summary><br>
-
-Use an Armor token when running non-interactively.
-
-```sh
-$ dotenvx armor pull --token "$DOTENVX_ARMOR_TOKEN"
-```
-
-</details>
-<details><summary>`armor open`</summary><br>
-
-Open an armored key in your browser.
-
-```sh
-$ dotenvx armor open
-```
-
-</details>
-<details><summary>`armor open -f`</summary><br>
-
-Select a specific env file.
-
-```sh
-$ dotenvx armor open -f .env.production
-```
-
-</details>
-<details><summary>`armor move`</summary><br>
-
-Move an armored key to another team.
-
-```sh
-$ dotenvx armor move --team acme
-```
-
-</details>
-<details><summary>`armor login`</summary><br>
-
-Log in to Dotenvx Armor.
-
-```sh
-$ dotenvx armor login
-```
-
-After authentication, dotenvx first attempts to store your access token in your operating system's native secret store: macOS Keychain, Windows Credential Manager, or Linux Secret Service. If native secure storage is unavailable, dotenvx falls back to its settings file. This follows a common CLI credential-storage pattern: prefer protected OS storage when available while remaining usable in headless or minimal environments.
-
-</details>
-<details><summary>`armor logout`</summary><br>
-
-Log out of Dotenvx Armor.
-
-```sh
-$ dotenvx armor logout
-```
-
-</details>
-<details><summary>`armor status`</summary><br>
-
-Print the current Armor status. It returns `on` when you are logged in and Armor is enabled; otherwise it returns `off`.
-
-```sh
-$ dotenvx armor status
-on
-```
-
-</details>
-<details><summary>`armor settings`</summary><br>
-
-Inspect and manage local Armor settings. Choose a setting below.
-
-</details>
-<details><summary>`armor settings username`</summary><br>
-
-Print your username.
-
-```sh
-$ dotenvx armor settings username
-```
-
-</details>
-<details><summary>`armor settings token`</summary><br>
-
-Print your masked access token.
-
-```sh
-$ dotenvx armor settings token
-```
-
-</details>
-<details><summary>`armor settings token --unmask`</summary><br>
-
-Print the complete access token.
-
-```sh
-$ dotenvx armor settings token --unmask
-```
-
-</details>
-<details><summary>`armor settings device`</summary><br>
-
-Print your masked device public key.
-
-```sh
-$ dotenvx armor settings device
-```
-
-</details>
-<details><summary>`armor settings device --unmask`</summary><br>
-
-Print the complete device public key.
-
-```sh
-$ dotenvx armor settings device --unmask
-```
-
-</details>
-<details><summary>`armor settings hostname`</summary><br>
-
-Print the Armor hostname.
-
-```sh
-$ dotenvx armor settings hostname
-```
-
-</details>
-<details><summary>`armor settings path`</summary><br>
-
-Print the settings file path.
-
-```sh
-$ dotenvx armor settings path
-```
-
-</details>
-<details><summary>`armor settings on`</summary><br>
-
-Turn Armor on.
-
-```sh
-$ dotenvx armor settings on
-```
-
-</details>
-<details><summary>`armor settings off`</summary><br>
-
-Turn Armor off.
-
-```sh
-$ dotenvx armor settings off
 ```
 
 </details>
@@ -3788,7 +3059,7 @@ Hello World
 </details>
 <details><summary>`config(envKeysFile:)` - envKeysFile</summary><br>
 
-Use `envKeysFile` to customize the path to your `.env.keys` file. This is useful with monorepos.
+Use `envKeysFile` to specify a custom private-key file when using file storage.
 
 ```ini
 # .env
