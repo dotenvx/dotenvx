@@ -110,24 +110,26 @@ dotenvx encrypt
 
 ### Usage
 
+*Encrypt* your secrets in `.env` files. The values become ciphertext and only your private key can unlock them.
+
 ```sh
 $ dotenvx encrypt
 ◈ encrypted (.env)
 ```
-> **Encrypt** your secrets in `.env` files. The values become ciphertext and only your private key can unlock them.
 
+*Commit* your encrypted `.env` files with your code. It's safe. Now you can securely share secrets through git.
 
 ```sh
 $ git add .env
 $ git commit -m "encrypt .env"
 ```
-> **Commit** your encrypted `.env` files with your code. It's safe. Now you can securely share secrets through git.
+
+*Ship* your code and secrets together. Dotenvx uses your private key to decrypt and inject your secrets just-in-time to your code.
 
 ```sh
 $ dotenvx run -- node index.js
 ⟐ injected env (2) from .env
 ```
-> **Ship** your code and secrets together. Dotenvx uses your private key to decrypt and inject your secrets just-in-time to your code.
 
 &nbsp;
 
