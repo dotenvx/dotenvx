@@ -6,7 +6,7 @@
 * Commit
 * Ship
 
-[Read the whitepaper](https://dotenvx.com/dotenvx.pdf?v=README)
+[Install](https://dotenvx.com/docs/install) · [Quickstart](https://dotenvx.com/docs/quickstart)
 
 &nbsp;
 
@@ -130,6 +130,24 @@ $ git commit -m "encrypt .env"
 $ dotenvx run -- node index.js
 ⟐ injected env (2) from .env
 ```
+
+&nbsp;
+
+## Design
+
+Three widely used and proven primitives make up Dotenvx's design. Git, .env, and secp256k1.
+
+We chose git because it is the best way to deliver digital goods. It is the container ship of the digital world. All code travels on its ships. Why not secrets? Why invent an inferior secrets delivery mechanism when the world class one is right there at your fingertips.
+
+We chose .env because it is the open standard for loading secrets into code. It represents environment variables, the core primitive that all secrets end up injected into at runtime of code.
+
+Lastly, we needed to choose an encryption algorithm. Encryption of the values inside the .env file would allow us to place those values with code, leveraging git's distribution advantages while still following the twelve-factor config – by separating the decryption key from the code (environment).
+
+It was important that we choose a proven, simple, asymmetric standard with small keys. We chose secp256k1, battle-tested by Bitcoin for more than seventeen years. We made cryptography an opinionated choice so developers wouldn't have to. Encryption just worked.
+
+The result is a system built entirely from primitives, developers already understand, and infrastructure they already use. Secrets can travel with code without becoming part of the code. Git distributes them, .env defines how apps consume them, and secp256k1 keeps their values unreadable. The kicker, all this works by setting a single private key on your infrastructure - no more risky async coordination of secrets, no more centralized downtime risk. Your secrets are always just there with your code, ready to be unlocked at runtime.
+
+[Read the whitepaper →](https://dotenvx.com/dotenvx.pdf?v=README)
 
 &nbsp;
 
@@ -3222,14 +3240,6 @@ WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 > Get a Dotenvx membership – support development and get other benefits.
 
 [Membership Benefits →](https://dotenvx.com/membership)
-
-&nbsp;
-
-## Quickstarts
-
-> Encrypt and run secrets in your language, framework, or tool.
-
-[Quickstart Guides →](https://dotenvx.com/docs)
 
 &nbsp;
 
