@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Add `dx feedback` command so you (and your coding agent) can give feedback on the cli ([#987](https://github.com/dotenvx/dotenvx/pull/987))
 
-## [2.23.0](https://github.com/dotenvx/dotenvx/compare/v2.29.0...v2.30.0) (2026-09-22)
+## [2.30.0](https://github.com/dotenvx/dotenvx/compare/v2.29.0...v2.30.0) (2026-09-22)
 
 ### Added
 
