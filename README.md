@@ -108,7 +108,7 @@ dotenvx encrypt
 
 &nbsp;
 
-### Usage
+## Usage
 
 *Encrypt* your secrets in `.env` files. The values become ciphertext and only your private key can unlock them.
 
