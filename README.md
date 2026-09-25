@@ -3235,31 +3235,15 @@ WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 
 > Get a Dotenvx membership – support development and get other benefits.
 
-[See Benefits →](https://dotenvx.com/membership)
+[Membership Benefits →](https://dotenvx.com/membership)
 
 &nbsp;
 
 ## Quickstarts
 
 > Encrypt and run secrets in your language, framework, or tool.
->
 
-* [Claude](https://dotenvx.com/docs/claude)
-* [Codex](https://dotenvx.com/docs/codex)
-* [1Password](https://dotenvx.com/docs/1password)
-* [Bitwarden](https://dotenvx.com/docs/bitwarden)
-* [Node.js](https://dotenvx.com/docs/nodejs)
-* [Next.js](https://dotenvx.com/docs/nextjs)
-* [Express](https://dotenvx.com/docs/express)
-* [Astro](https://dotenvx.com/docs/astro)
-* [Expo](https://dotenvx.com/docs/expo)
-* [Python](https://dotenvx.com/docs/python)
-* [Ruby](https://dotenvx.com/docs/ruby)
-* [Go](https://dotenvx.com/docs/go)
-* [PHP](https://dotenvx.com/docs/php)
-* [Rust](https://dotenvx.com/docs/rust)
-
-[Browse all quickstarts](https://dotenvx.com/docs/quickstarts)
+[Quickstart Guides →](https://dotenvx.com/docs)
 
 &nbsp;
 
