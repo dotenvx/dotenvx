@@ -1,10 +1,10 @@
 [![dotenvx](https://dotenvx.com/banner.png?v2)](https://dotenvx.com)
 
-*a secure dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
+*A secure dotenv*–from the creator of [`dotenv`](https://github.com/motdotla/dotenv).
 
-* run anywhere (cross-platform)
-* multi-environment
-* encrypted envs
+* Encrypt
+* Commit
+* Ship
 
 [Read the whitepaper](https://dotenvx.com/dotenvx.pdf?v=README)
 
@@ -105,6 +105,37 @@ dotenvx encrypt
 ```
 
 </details>
+
+&nbsp;
+
+## Usage
+
+### Encrypt
+
+```sh
+$ dotenvx encrypt
+◈ encrypted (.env)
+```
+
+Encrypt your secrets in `.env` files. The values become ciphertext and only your private key can unlock them.
+
+### Commit
+
+```sh
+$ git add .env
+$ git commit -m "encrypt .env"
+```
+
+Commit your encrypted `.env` files with your code. It's safe. Now you can securely share secrets through git.
+
+### Ship
+
+```sh
+$ dotenvx run -- node index.js
+⟐ injected env (2) from .env
+```
+
+Ship your code and secrets together. Dotenvx uses your private key to decrypt and inject your secrets just-in-time to your code.
 
 &nbsp;
 
