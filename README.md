@@ -3376,17 +3376,9 @@ WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 
 &nbsp;
 
-## Armor ⛨
+## Membership
 
-[![dotenvx-armor](https://dotenvx.com/dotenvx-armor-banner.png?v2)](https://dotenvx.com/armor)
-
-```
-⛨ ARMORED KEYS: Harden your private keys.
-⮕ install [curl -sfS https://dotenvx.sh/armor | sh]
-⮕ then run [dotenvx armor login]
-```
-
-[Learn more](https://dotenvx.com/armor)
+[See Benefits →](https://dotenvx.com/membership)
 
 &nbsp;
 
