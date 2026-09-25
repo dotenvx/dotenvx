@@ -3237,11 +3237,11 @@ WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 
 ## Membership
 
-[![dotenvx](https://dotenvx.com/membership.png?v1)](https://dotenvx.com/membership)
+[![dotenvx](https://dotenvx.com/membership.png?v2)](https://dotenvx.com/membership)
 
-> Dotenvx Membership. Be part of the .env story.
+<p align="center">Dotenvx Membership. Be part of the .env story.</p>
 
-[Membership Benefits →](https://dotenvx.com/membership)
+<p align="center"><a href="https://dotenvx.com/membership">Membership Benefits →</a></p>
 
 &nbsp;
 
