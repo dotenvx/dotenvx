@@ -3237,7 +3237,9 @@ WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 
 ## Membership
 
-> Get a Dotenvx membership – support development and get other benefits.
+[![dotenvx](https://dotenvx.com/membership.png?v1)](https://dotenvx.com/membership)
+
+> Dotenvx Membership. Be part of the .env story.
 
 [Membership Benefits →](https://dotenvx.com/membership)
 
