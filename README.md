@@ -2701,91 +2701,6 @@ Dotenvx has a slew of hidden commands.
 [See their documentation →](https://dotenvx.com/docs/cli/hidden/)
 
 </details>
-<details><summary>`help`</summary><br>
-
-Output help for `dotenvx`.
-
-```sh
-$ dotenvx help
-Usage: dotenvx run -- yourcommand
-
-a secure dotenv–from the creator of `dotenv`
-
-Options:
-  -l, --log-level <level>      set log level (default: "info")
-  -q, --quiet                  sets log level to error
-  -v, --verbose                sets log level to verbose
-  -d, --debug                  sets log level to debug
-  -V, --version                output the version number
-  -h, --help                   display help for command
-
-Commands:
-  run                inject env at runtime [dotenvx run -- yourcommand]
-  get [KEY]          return a single environment variable
-  set <KEY> <value>  set a single environment variable
-  encrypt            encrypt .env file(s)
-  decrypt            decrypt .env file(s)
-  keypair [KEY]      print public/private keys for .env file(s)
-  ls [directory]     print all .env files in a tree structure
-  gitignore          append to .gitignore
-  genexample [directory]
-                     generate .env.example
-  validate           validate .env file(s) against .env.example
-  precommit [directory]
-                     prevent committing .env files to code
-  prebuild [directory]
-                     prevent including .env files in docker
- 
-Professional Security: 
-  lock                     ⊡ lock private keys with a local passphrase
-  native                   ⌥ move private keys into your OS secret store
-  armor                    ⛨ move private keys into Dotenvx Armor [www.dotenvx.com/armor]
-```
-
-You can get more detailed help per command with `dotenvx help COMMAND`.
-
-```sh
-$ dotenvx help run
-Usage: @dotenvx/dotenvx run [options]
-
-inject env at runtime [dotenvx run -- yourcommand]
-
-Options:
-  -e, --env <strings...>            environment variable(s) set as string (example: "HELLO=World") (default: [])
-  -f, --file <paths...>             path(s) to your env file(s) (default: [])
-  -fv, --env-vault-file <paths...>  path(s) to your .env.vault file(s) (default: [])
-  -o, --overload                    override existing env variables
-  --convention <name>               load a .env convention (available conventions: ['nextjs'])
-  -h, --help                        display help for command
-
-Examples:
-
-  $ dotenvx run -- npm run dev
-  $ dotenvx run -- flask --app index run
-  $ dotenvx run -- php artisan serve
-  $ dotenvx run -- bin/rails s
-
-Try it:
-
-  $ echo "HELLO=World" > .env
-  $ echo "console.log('Hello ' + process.env.HELLO)" > index.js
-
-  $ dotenvx run -- node index.js
-  [dotenvx@1.X.X] injecting env (1) from .env
-  Hello World
-```
-
-</details>
-<details><summary>`--version`</summary><br>
-
-Check current version of `dotenvx`.
-
-```sh
-$ dotenvx --version
-X.X.X
-```
-
-</details>
 
 &nbsp;
 
@@ -3317,6 +3232,8 @@ WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 &nbsp;
 
 ## Membership
+
+> Get a Dotenvx membership – support development and get other benefits.
 
 [See Benefits →](https://dotenvx.com/membership)
 
