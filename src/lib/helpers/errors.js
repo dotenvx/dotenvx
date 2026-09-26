@@ -234,7 +234,7 @@ class Errors {
   }
 
   envfileRequired () {
-    const e = new Error('[ENVFILE_REQUIRED] validate requires an Envfile')
+    const e = new Error('[ENVFILE_REQUIRED] check requires an Envfile')
     e.code = 'ENVFILE_REQUIRED'
     e.messageWithHelp = e.message
     return e
