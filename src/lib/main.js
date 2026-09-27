@@ -424,8 +424,12 @@ function resolveNoNative (options = {}) {
   return options.noNative === true || options.native === false
 }
 
+/** @type {import('./main').withEvents} */
+const withEvents = () => require('./events/sdk')({ config, get, set })
+
+// Keep named bindings here so Node can detect CommonJS exports for ESM imports.
 module.exports = {
-  withEvents: () => require('./events/sdk')({ config, get, set }),
+  withEvents,
   // dotenv proxies
   config,
   parse,
