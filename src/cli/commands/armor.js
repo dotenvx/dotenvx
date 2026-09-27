@@ -43,7 +43,7 @@ function configureArmorCommand (armor) {
   // dotenvx armor push
   armor
     .command('push')
-    .description('push armored key (from .env.keys)')
+    .description('push armored key')
     .option('-f, --env-file <path>', 'path to your env file')
     .option('--token <token>', 'set token')
     .option('--team <team>', 'team to push armored private key for')
