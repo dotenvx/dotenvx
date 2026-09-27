@@ -21,7 +21,7 @@ function configureArmorCommand (armor) {
   // dotenvx armor up
   armor
     .command('up')
-    .description('armor key (move from local storage)')
+    .description('armor key')
     .option('-f, --env-file <path>', 'path to your env file')
     .option('--token <token>', 'set token')
     .option('--team <team>', 'team to armor private key for')
@@ -43,7 +43,7 @@ function configureArmorCommand (armor) {
   // dotenvx armor push
   armor
     .command('push')
-    .description('push armored key (keep in local storage)')
+    .description('push armored key')
     .option('-f, --env-file <path>', 'path to your env file')
     .option('--token <token>', 'set token')
     .option('--team <team>', 'team to push armored private key for')
