@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
+* Restore ESM named imports such as `import { config } from '@dotenvx/dotenvx'`, broken in 2.30.0 by the `withEvents` export ([#989](https://github.com/dotenvx/dotenvx/issues/989)).
 * BREAKING: `dotenvx validate` renamed to `dotenvx check` and works off Envfile only going forward. Support for .env.example dropped. Switch to using an `Envfile`.
 
 ### Removed
