@@ -1,8 +1,6 @@
 const prompts = require('../helpers/prompts')
+const resolveLocalKey = require('../custodians/resolveLocalKey')
 const PostArmorUp = require('../api/postArmorUp')
-const keynames = require('../conventions/keynames')
-const removeEnvKey = require('../helpers/removeEnvKey')
-const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 const isTeamRequiredError = require('../helpers/isTeamRequiredError')
 
@@ -22,13 +20,8 @@ class ArmorUp {
     const envFile = this.envFile
     const team = this.team
 
-    const {
-      publicKeyName,
-      privateKeyName
-    } = keynames(envFile)
-
-    const publicKey = readEnvKey(publicKeyName, envFile, { strict: true, ignore: ['MISSING_PRIVATE_KEY'] })
-    const privateKey = readEnvKey(privateKeyName, '.env.keys', { strict: true, ignore: ['MISSING_KEY'] })
+    const source = await resolveLocalKey(envFile, { allowMissing: true })
+    const { publicKey, privateKey, privateKeyName } = source
 
     let json
 
@@ -59,11 +52,11 @@ class ArmorUp {
       }
     }
 
-    removeEnvKey(privateKeyName)
+    await source.remove()
 
     return {
       ...json,
-      changed: json.changed,
+      changed: Boolean(json.changed || privateKey),
       privateKeyName,
       privateKeyValue: json.private_key,
       publicKeyValue: publicKey

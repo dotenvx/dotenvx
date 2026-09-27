@@ -1,18 +1,8 @@
-const { derive } = require('@dotenvx/primitives')
 const prompts = require('../helpers/prompts')
+const resolveLocalKey = require('../custodians/resolveLocalKey')
 const PostArmorPush = require('../api/postArmorPush')
-const keynames = require('../conventions/keynames')
-const readEnvKey = require('../helpers/readEnvKey')
 const teamChoicesFromMeta = require('../helpers/teamChoicesFromMeta')
 const isTeamRequiredError = require('../helpers/isTeamRequiredError')
-
-function publicKeyFromPrivateKey (privateKey) {
-  try {
-    return derive(privateKey)
-  } catch {
-    return ''
-  }
-}
 
 class ArmorPush {
   constructor (hostname, token, devicePublicKey, envFile = '.env', team = undefined) {
@@ -30,10 +20,8 @@ class ArmorPush {
     const envFile = this.envFile
     const team = this.team
 
-    const { privateKeyName } = keynames(envFile)
-
-    const privateKey = readEnvKey(privateKeyName, '.env.keys', { strict: true })
-    const publicKey = publicKeyFromPrivateKey(privateKey)
+    const source = await resolveLocalKey(envFile)
+    const { publicKey, privateKey, privateKeyName } = source
 
     let json
 
