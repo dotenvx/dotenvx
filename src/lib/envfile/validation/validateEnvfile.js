@@ -1,6 +1,6 @@
 const validate = require('./validate')
 const encryptedSources = require('./encryptedSources')
-const Errors = require('./errors')
+const Errors = require('../../helpers/errors')
 
 module.exports = function validateEnvfile (schema, env, processedEnvs) {
   const messages = new Set()

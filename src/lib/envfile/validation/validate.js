@@ -1,5 +1,5 @@
-const isValidUrl = require('./isValidUrl')
-const isValidEmail = require('./isValidEmail')
+const isValidUrl = require('../../helpers/isValidUrl')
+const isValidEmail = require('../../helpers/isValidEmail')
 const { isIP } = require('node:net')
 
 function validate (example = {}, env = {}, options = {}) {

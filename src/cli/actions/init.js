@@ -2,7 +2,8 @@ const fs = require('node:fs')
 const process = require('node:process')
 const prompts = require('../../lib/helpers/prompts')
 const initEnvfile = require('../../lib/services/init')
-const scanSource = require('../../lib/helpers/scanSource')
+const scanSource = require('../../lib/envfile/discovery/scanSource')
+const discoverEnvFiles = require('../../lib/envfile/discovery/discoverEnvFiles')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const { logger } = require('../../shared/logger')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
@@ -25,15 +26,9 @@ module.exports = async function init () {
       if (spinner) spinner.text = `scanning ${filename}`
     }
     if (interactive && !envFile) {
-      const candidates = fs.readdirSync('.', { withFileTypes: true })
-        .filter(entry => (entry.name === '.env' || entry.name.startsWith('.env.')) &&
-          !/^\.env\.(schema|x)$/.test(entry.name) &&
-          !/^\.env\.(keys|vault)(\.|$)/.test(entry.name) &&
-          (entry.isFile() || (entry.isSymbolicLink() && fs.statSync(entry.name, { throwIfNoEntry: false })?.isFile())))
-        .map(entry => entry.name)
-        .sort()
+      const candidates = discoverEnvFiles()
       const selected = await prompts.multiselect({
-        message: 'Create Envfile from your .env files and source code:',
+        message: 'Create Envfile from .env files and code',
         submitLabel: 'Create Envfile',
         choices: [...candidates, { name: 'code ./**/* (env references)', value: '__scan_source' }],
         initial: [...candidates, '__scan_source']

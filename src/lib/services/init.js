@@ -2,8 +2,8 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { scan, encrypted } = require('@dotenvx/primitives')
 
-const normalizeEnvfile = require('../helpers/normalizeEnvfile')
-const renderEnvfile = require('../helpers/renderEnvfile')
+const normalizeEnvfile = require('../envfile/rendering/normalizeEnvfile')
+const renderEnvfile = require('../envfile/rendering/renderEnvfile')
 
 function declaration (name) {
   if (/(^|_)port$/i.test(name)) return { name, type: 'port' }
