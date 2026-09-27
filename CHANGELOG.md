@@ -2,11 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.31.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.31.1...main)
+
+## [2.31.1](https://github.com/dotenvx/dotenvx/compare/v2.31.0...v2.31.1) (2026-09-27)
 
 ### Changed
 
-* Read private keys from .env.keys, OS secret storage, 1Password, or Bitwarden with `dotenvx armor up` and `dotenvx armor push`. `up` removes the source copy after a successful upload; `push` keeps it. `armor down` continues to write to .env.keys.
+* `armor up` should read for os secret store, 1password, and bitwarden ([#992](https://github.com/dotenvx/dotenvx/pull/992))
 
 ## [2.31.0](https://github.com/dotenvx/dotenvx/compare/v2.30.0...v2.31.0) (2026-09-27)
 
