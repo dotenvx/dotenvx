@@ -1225,7 +1225,7 @@ Use `--no-1password` to leave `op://` values unresolved.
 $ dotenvx run --no-1password -- node index.js
 ```
 
-The same flag is available for `dotenvx get` and `dotenvx validate`.
+The same flag is available for `dotenvx get` and `dotenvx check`.
 
 </details>
 <details><summary>`run` - Bitwarden</summary><br>
@@ -1257,7 +1257,7 @@ Use `--no-bitwarden` to skip Bitwarden resolution intentionally.
 $ dotenvx run --no-bitwarden -- node index.js
 ```
 
-The same flag is available for `dotenvx get` and `dotenvx validate`.
+The same flag is available for `dotenvx get` and `dotenvx check`.
 
 </details>
 <details><summary>`run -f <directory>`</summary><br>
@@ -1592,7 +1592,7 @@ file ".env.production" do
 end
 ```
 
-Both `dotenvx run -f .env.production -- node index.js` and `dotenvx validate -f .env.production` use the production rules. Block declarations inherit top-level options and override only the options they specify. A block's `encrypted` directive applies to all inherited and newly declared variables; a per-variable `encrypted:` option inside that block overrides it.
+Both `dotenvx run -f .env.production -- node index.js` and `dotenvx check -f .env.production` use the production rules. Block declarations inherit top-level options and override only the options they specify. A block's `encrypted` directive applies to all inherited and newly declared variables; a per-variable `encrypted:` option inside that block overrides it.
 
 Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_FILE` use their resolved file paths.
 

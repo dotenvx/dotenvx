@@ -2,9 +2,9 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { isIP } = require('node:net')
 const parser = require('./envfileParser')
-const Errors = require('./errors')
-const isValidUrl = require('./isValidUrl')
-const isValidEmail = require('./isValidEmail')
+const Errors = require('../../helpers/errors')
+const isValidUrl = require('../../helpers/isValidUrl')
+const isValidEmail = require('../../helpers/isValidEmail')
 const formatEnvfileSyntaxError = require('./formatEnvfileSyntaxError')
 
 function compileDeclarations (declarations) {

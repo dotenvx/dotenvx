@@ -11,7 +11,7 @@ class Checklist extends Enquirer.prompts.MultiSelect {
 
   indicator (choice) {
     if (choice.action) return ' '
-    return choice.enabled ? '●' : this.styles.muted('○')
+    return choice.enabled ? '◉' : this.styles.muted('○')
   }
 
   async renderChoice (choice, index) {

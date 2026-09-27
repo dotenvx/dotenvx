@@ -7,10 +7,10 @@ const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvCon
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
 
-async function validate () {
+async function check () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
-  const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'validating' })
+  const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking' })
   const ignore = options.ignore || []
   let errorCount = 0
 
@@ -72,4 +72,4 @@ async function validate () {
   }
 }
 
-module.exports = validate
+module.exports = check

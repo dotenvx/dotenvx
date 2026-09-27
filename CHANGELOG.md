@@ -2,11 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.30.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.31.0...main)
+
+## [2.31.0](https://github.com/dotenvx/dotenvx/compare/v2.30.0...v2.31.0) (2026-09-27)
 
 ### Added
 
-* Add `dx feedback` command so you (and your coding agent) can give feedback on the cli ([#987](https://github.com/dotenvx/dotenvx/pull/987))
+* Add `dotenvx feedback` command so you (and your coding agent) can give feedback on the cli ([#987](https://github.com/dotenvx/dotenvx/pull/987))
+* Add `dotenvx init` for generating your `Envfile` ([#990](https://github.com/dotenvx/dotenvx/pull/990))
+
+### Changed
+
+* BREAKING: `dotenvx validate` renamed to `dotenvx check` and works off Envfile only going forward. Support for .env.example dropped. Switch to using an `Envfile`.
+
+### Removed
+
+* BREAKING: `dotenvx define` removed. Use `dotenvx init`.
 
 ## [2.30.0](https://github.com/dotenvx/dotenvx/compare/v2.29.0...v2.30.0) (2026-09-22)
 
