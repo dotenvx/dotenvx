@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.32.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.32.2...main)
+
+## [2.32.2](https://github.com/dotenvx/dotenvx/compare/v2.32.1...v2.32.2) (2026-09-29)
+
+### Changed
+
+* Improve bundle size ([#1000](https://github.com/dotenvx/dotenvx/pull/1000))
 
 ## [2.32.1](https://github.com/dotenvx/dotenvx/compare/v2.32.0...v2.32.1) (2026-09-29)
 
