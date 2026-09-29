@@ -9,7 +9,7 @@ const Errors = require('../helpers/errors')
 const { determine } = require('../helpers/envResolution')
 
 // Load once and validate the final values; callers own presentation and execution.
-module.exports = async function validate ({ envs = [], options = {}, processEnv = { ...process.env }, requireEnvfile = true, command, onStatus } = {}) {
+module.exports = async function validate ({ envs = [], options = {}, processEnv = { ...process.env }, requireEnvfile = true, command, onStatus, onKey } = {}) {
   envs = buildCommandEnvs(normalizeDotenvConfigPath(envs, processEnv), options.convention)
   envs = determine(envs, processEnv)
   const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
@@ -50,10 +50,11 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
     processedEnvs,
     readableFilepaths,
     hasEnvfile: schema.exists,
+    schema,
     proxyCredentials,
     proxyToken,
     session,
     proxyError,
-    validationError: validateEnvfile(schema, processEnv, processedEnvs)
+    validationError: validateEnvfile(schema, processEnv, processedEnvs, onKey)
   }
 }

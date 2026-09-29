@@ -2,12 +2,13 @@ function declaration (item) {
   let line = `env "${item.name}"`
   if (item.type) line += `, type: "${item.type}"`
   if (item.encrypted !== undefined) line += `, encrypted: ${item.encrypted}`
+  if (item.redacted !== undefined) line += `, redacted: ${item.redacted}`
   if (item.optional !== undefined) line += `, optional: ${item.optional}`
   return line
 }
 
 module.exports = function renderEnvfile (document) {
-  const sections = [`encrypted ${document.encrypted}`]
+  const sections = [`redacted ${document.redacted ?? true}\nencrypted ${document.encrypted}`]
   if (document.declarations.length) sections.push(document.declarations.map(declaration).join('\n'))
   for (const file of document.files) {
     const quote = file.filename.includes('"') ? "'" : '"'

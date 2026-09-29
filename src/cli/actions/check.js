@@ -1,8 +1,8 @@
 const { logger } = require('./../../shared/logger')
-
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prepareValidatedEnv = require('../../lib/services/validate')
+const diagnosticLocations = require('../../lib/envfile/validation/diagnosticLocation')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
@@ -10,63 +10,60 @@ const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvCo
 async function check () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
-  const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking' })
+  const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking', ...(process.env.CI ? { spinner: false } : {}) })
   const ignore = options.ignore || []
   let errorCount = 0
-
-  logger.debug(`options: ${JSON.stringify(options)}`)
+  const checked = []
+  const messages = []
+  const report = (level, message) => messages.push({ level, message })
+  const flush = () => {
+    if (spinner) spinner.stop()
+    for (const { level, message } of messages.splice(0)) logger[level](message)
+  }
 
   try {
-    const { processedEnvs, readableFilepaths, proxyError, validationError } = await prepareValidatedEnv({
+    const { processedEnvs, readableFilepaths, proxyError, validationError, schema, processEnv } = await prepareValidatedEnv({
       envs: this.envs,
       options,
-      onStatus: (text) => {
-        if (spinner && text) spinner.text = text
-      }
+      onStatus: text => { if (spinner && text) spinner.text = text },
+      onKey: key => { if (spinner) spinner.text = `checking ${key}` }
     })
-
-    const sources = [...readableFilepaths]
-    if (processedEnvs.some(env => env.type === 'env' && env.parsed)) sources.push('--env')
-    if (sources.length === 0) sources.push('shell environment')
-    const sourceSummary = `(${sources.join(', ')})`
-
-    for (const processedEnv of processedEnvs) {
-      for (const error of processedEnv.errors || []) {
-        if (ignore.includes(error.code)) {
-          logger.verbose(`ignored: ${error.message}`)
+    checked.push(...readableFilepaths)
+    if (processedEnvs.some(row => row.type === 'env' && Object.keys(row.parsed || {}).length)) checked.push('--env')
+    if (checked.length === 0 && [...schema.redactionRules.keys()].some(key => processEnv[key] !== undefined)) checked.push('shell environment')
+    const location = diagnosticLocations(processedEnvs, checked.join(', ') || 'Envfile')
+    for (const row of processedEnvs) {
+      for (const error of row.errors || []) {
+        if (ignore.includes(error.code)) continue
+        if (error.code === 'MISSING_ENV_FILE' && !options.strict) {
+          report('infoerror', `○ skipped (${row.filepath})`)
           continue
         }
-
-        if (error.code !== 'MISSING_ENV_FILE' || options.strict) errorCount += 1
-        if (error.code === 'MISSING_ENV_FILE' && options.convention && !options.strict) continue
-        logger.error(error.messageWithHelp || error.message)
+        errorCount++
+        report('error', error.messageWithHelp || error.message)
       }
     }
-
     if (proxyError) {
-      proxyError.message += ` ${sourceSummary}`
-      throw proxyError
+      errorCount++
+      report('error', proxyError.message)
     }
-
-    if (validationError) {
-      const message = `${validationError.message} ${sourceSummary}`
-      if (ignore.includes(validationError.code)) {
-        logger.verbose(`ignored: ${message}`)
-      } else {
-        errorCount += 1
-        logger.error(message)
+    if (validationError && !ignore.includes(validationError.code)) {
+      errorCount++
+      for (const diagnostic of validationError.diagnostics) {
+        const message = diagnostic.message.replace(`${diagnostic.key} is `, `${diagnostic.key} `)
+        report('error', `${message} (${location(diagnostic.key)})`)
       }
     }
 
-    if (spinner) spinner.stop()
-
-    if (errorCount > 0) {
+    flush()
+    if (checked.length === 0) {
+      logger.error('no environment sources found to check')
       return { exitCode: 1 }
-    } else {
-      logger.success(`▣ valid ${sourceSummary}`)
     }
+    if (errorCount > 0) return { exitCode: 1 }
+    logger.success(`▣ valid (${checked.join(', ')})`)
   } catch (error) {
-    if (spinner) spinner.stop()
+    flush()
     catchAndLog(error)
     return { exitCode: 1, error }
   }

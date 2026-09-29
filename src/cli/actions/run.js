@@ -52,7 +52,6 @@ async function run () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const maskEnabled = options.mask !== undefined
-  const redactEnabled = options.redact === true
   let showChar = options.mask
   if (options.mask === true) {
     showChar = 6
@@ -78,8 +77,6 @@ async function run () {
     debugOptions = { ...options, env: (options.env || []).map(envSrc => maskEnvSrc(envSrc, showChar)), token }
   }
   if (options.lockPassword !== undefined) debugOptions = { ...debugOptions, lockPassword: '[REDACTED]' }
-  logger.debug(`options: ${JSON.stringify(debugOptions)}`)
-  logger.debug(`process command [${commandArgs.join(' ')}]`)
 
   const ignore = options.ignore || []
 
@@ -103,6 +100,7 @@ async function run () {
       processedEnvs,
       readableFilepaths,
       hasEnvfile,
+      schema,
       proxyCredentials,
       proxyToken,
       session: sesh,
@@ -120,9 +118,12 @@ async function run () {
     })
     if (proxyError) throw proxyError
 
-    if (redactEnabled) {
-      sensitiveValues = redactedValues(processedEnvs)
+    if (hasEnvfile) {
+      sensitiveValues = redactedValues(processedEnvs, schema, process.env)
     }
+
+    logger.debug(redactOutput(`options: ${JSON.stringify(debugOptions)}`, sensitiveValues))
+    logger.debug(redactOutput(`process command [${commandArgs.join(' ')}]`, sensitiveValues))
 
     if (maskEnabled) {
       commandEnv = { ...process.env }
@@ -149,7 +150,7 @@ async function run () {
         if (maskEnabled) {
           envString = maskEnvSrc(processedEnv.string, showChar)
         }
-        logger.verbose(`loading env from string (${envString})`)
+        logger.verbose(redactOutput(`loading env from string (${envString})`, sensitiveValues))
       }
 
       for (const error of processedEnv.errors || []) {

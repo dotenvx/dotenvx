@@ -183,7 +183,8 @@ $ claude --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
+$ dotenvx init
+$ dotenvx run -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
 Hello [REDACTED]
 ```
 
@@ -204,7 +205,8 @@ $ codex --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
+$ dotenvx init
+$ dotenvx run -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
 Hello [REDACTED]
 ```
 
@@ -225,7 +227,8 @@ $ agent --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
+$ dotenvx init
+$ dotenvx run -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
 Hello [REDACTED]
 ```
 
@@ -1302,67 +1305,74 @@ Hello String
 ```
 
 </details>
-<details><summary>`run --redact`</summary><br>
+<details><summary>`run with Envfile redaction`</summary><br>
 
-Run any command with real environment variables while automatically redacting their values from stdout and stderr. Keys ending in `_PLAIN` are left visible.
+Run any command with real environment variables while automatically redacting values selected by your Envfile from stdout and stderr.
 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 $ echo "VISIBLE_PLAIN=visible-value" >> .env
 $ echo "console.log(process.env.SECRET, process.env.VISIBLE_PLAIN)" > index.js
 
-$ dotenvx run --redact --quiet -- node index.js
+$ dotenvx init
+$ dotenvx run --quiet -- node index.js
 [REDACTED] visible-value
 ```
 
-Redaction is off by default. It applies to every key declared in `.env` files and `--env` flags unless the key ends in `_PLAIN`. If an existing environment variable takes precedence, its effective value is redacted too. Matching is exact, so transformed or derived values are not redacted.
+Redaction requires an Envfile. Set `redacted true` at the root and use `redacted: false` on individual declarations to leave those values visible. `init` generates these settings, including public-name exceptions. If an existing environment variable takes precedence, its effective value follows the same rules. Matching is exact, so transformed or derived values are not redacted.
+
+**Breaking change:** `run --redact` has been removed. Create an Envfile with `dotenvx init`, review its redaction settings, and use `dotenvx run -- yourcommand`. Without an Envfile, output is not redacted.
 
 When stdin, stdout, and stderr are attached to a terminal, dotenvx preserves interactive behavior on macOS and Linux systems with `script` available. Piped and redirected commands continue to use normal stdin, stdout, and stderr streams.
 
 </details>
-<details><summary>`run --redact -- claude -p`</summary><br>
+<details><summary>`run -- claude -p`</summary><br>
 
 Run Claude in print mode with real environment variables while redacting any values it prints.
 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- claude -p 'Print the value of $SECRET'
+$ dotenvx init
+$ dotenvx run --quiet -- claude -p 'Print the value of $SECRET'
 [REDACTED]
 ```
 
 </details>
-<details><summary>`run --redact -- claude`</summary><br>
+<details><summary>`run -- claude`</summary><br>
 
 Start a fully interactive Claude session. Claude receives the real values, but any values it prints are redacted.
 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- claude
+$ dotenvx init
+$ dotenvx run --quiet -- claude
 ```
 
 </details>
-<details><summary>`run --redact -- codex exec`</summary><br>
+<details><summary>`run -- codex exec`</summary><br>
 
 Run Codex non-interactively with real environment variables while redacting any values it prints.
 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- codex exec 'Print the value of $SECRET'
+$ dotenvx init
+$ dotenvx run --quiet -- codex exec 'Print the value of $SECRET'
 [REDACTED]
 ```
 
 </details>
-<details><summary>`run --redact -- codex`</summary><br>
+<details><summary>`run -- codex`</summary><br>
 
 Start a fully interactive Codex session. Codex receives the real values, but any values it prints are redacted.
 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- codex
+$ dotenvx init
+$ dotenvx run --quiet -- codex
 ```
 
 </details>
@@ -1575,6 +1585,22 @@ $ dotenvx run -- node index.js
 
 Envfile validation failures stop the command. Other loading errors require `--strict` to stop execution.
 
+Envfile values default to `redacted: true`: `run` masks their values in child stdout/stderr and resolved-value debug output, while the child still receives the real values. Set `redacted: false` for values that may appear in output. This is independent of `encrypted: true`, which requires an encrypted source.
+
+```ruby
+redacted true
+
+file ".env.development" do
+  env "BASE_URL", type: "url", redacted: false
+  env "TOKEN_SECRET", encrypted: true
+end
+```
+
+`init` writes explicit `encrypted true/false` and `redacted true` defaults at the root. It infers `redacted: false` for names ending in `_PLAIN`, starting with `PUBLIC`, `VITE`, `NEXT_PUBLIC`, or `NUXT_PUBLIC`, or containing `PUBLIC` anywhere (case-sensitive, matching Varlock’s public-name inference). Public matches take precedence even when the name also contains `SECRET` or `TOKEN`. Other names remain redacted, even if their current values are plaintext. Encryption requirements are still inferred from existing encrypted values. Existing Envfiles are never overwritten.
+
+Root and file blocks accept `redacted true` or `redacted false`; individual `redacted:` options override inherited settings. When selected file policies disagree about a variable, redaction wins. `check` shows individual issues or a compact success summary without displaying values.
+
+
 </details>
 <details><summary>`run with Envfile file rules`</summary><br>
 
@@ -1597,6 +1623,27 @@ Both `dotenvx run -f .env.production -- node index.js` and `dotenvx check -f .en
 Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_FILE` use their resolved file paths.
 
 When no file block matches, top-level rules apply. When one or more blocks match, each matching block's inherited rules must hold for the final resolved environment. Shell values, fallback files, and `--overload` cannot bypass them. A selected missing file still activates its block. Multiple matching blocks cannot cancel each other's restrictions; conflicting proxy domains are rejected. Blocks cannot be nested, and duplicate declarations within one scope or duplicate file blocks are errors.
+
+</details>
+<details><summary>`check`</summary><br>
+
+Validate the final resolved environment against your Envfile, using the same loader and precedence as `run`:
+
+```sh
+$ dotenvx check -f .env.local -f .env
+▣ valid (.env.local, .env)
+
+$ dotenvx check -f .env.production
+☠ TOKEN_SECRET not encrypted (.env.production:4)
+```
+
+Envfile `file` blocks define policy; they do not select files to load. By default, `check` uses the same `.env` selection as `run`, including configured paths and private-key-based filename inference. Use repeated `-f` flags or `--convention` to select layers. `DOTENV_FILE` and its aliases are also supported.
+
+All selected sources are merged before validation. The first file wins by default, existing shell values take precedence, and `--overload` lets later sources override earlier values. Partial files can satisfy the schema together. Encryption requirements apply to the source of the winning value, not to every overridden assignment on disk. Each selected file block's inherited rules must hold for the final environment, just as with `run`.
+
+Missing layers are reported as `○ skipped (filename)` unless `--strict` makes missing files an error. Required values must still resolve; shell or inline values can satisfy the schema without a local file. A check with no readable files, inline values, or declared shell values fails rather than reporting an empty success.
+
+On interactive terminals, a single progress line updates with the key being checked. CI and redirected output have no animation. All check output goes to stderr. Success names the loaded sources; validation failures use one diagnostic per issue with the winning source location where available. Shell and inline overrides are identified separately. Failed checks exit with code 1.
 
 </details>
 <details><summary>`run --strict`</summary><br>

@@ -6,9 +6,12 @@ const normalizeEnvfile = require('../envfile/rendering/normalizeEnvfile')
 const renderEnvfile = require('../envfile/rendering/renderEnvfile')
 
 function declaration (name) {
-  if (/(^|_)port$/i.test(name)) return { name, type: 'port' }
-  if (/(^|_)url$/i.test(name)) return { name, type: 'url' }
-  return { name }
+  const item = { name }
+  if (/(^|_)port$/i.test(name)) item.type = 'port'
+  if (/(^|_)url$/i.test(name)) item.type = 'url'
+  const publicPrefixes = ['PUBLIC', 'VITE', 'NEXT_PUBLIC', 'NUXT_PUBLIC']
+  if (name.endsWith('_PLAIN') || name.includes('PUBLIC') || publicPrefixes.some(prefix => name.startsWith(prefix))) item.redacted = false
+  return item
 }
 
 module.exports = function init ({ directory = process.cwd(), envFile, envFiles, sourceKeys = [], onFile = () => {} } = {}) {

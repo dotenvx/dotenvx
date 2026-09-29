@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.31.1...main)
 
+### Changed
+
+* `check` validates the final merged environment using the same file selection and precedence as `run`. Envfile file blocks define policy without loading files. Report per-key progress and individual source diagnostics instead of settings lists.
+
+### Breaking Changes
+
+* Remove `run --redact`. Output redaction now requires an Envfile and follows its `redacted` settings. Use `dotenvx init` to generate an Envfile; run without an Envfile leaves output unredacted.
+
 ## [2.31.1](https://github.com/dotenvx/dotenvx/compare/v2.31.0...v2.31.1) (2026-09-27)
 
 ### Changed

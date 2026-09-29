@@ -1,19 +1,26 @@
 Document
-  = _ encrypted:EncryptedDefault? _ entries:((FileBlock / Declaration) _)* {
-      return { encrypted: encrypted === true, declarations: entries.map(item => item[0]).filter(item => !item.file), files: entries.map(item => item[0]).filter(item => item.file) };
+  = _ defaults:Defaults _ entries:((FileBlock / Declaration) _)* {
+      return { encrypted: false, redacted: true, ...defaults, declarations: entries.map(item => item[0]).filter(item => !item.file), files: entries.map(item => item[0]).filter(item => item.file) };
     }
 
 FileBlock
-  = "file" [ \t]+ file:Filename [ \t]+ "do" [ \t]* Comment? Newline _ encrypted:EncryptedDefault? _ declarations:(Declaration _)* "end" [ \t]* Comment? (Newline / !.) {
-      return { file, encrypted, declarations: declarations.map(item => item[0]) };
+  = "file" [ \t]+ file:Filename [ \t]+ "do" [ \t]* Comment? Newline _ defaults:Defaults _ declarations:(Declaration _)* "end" [ \t]* Comment? (Newline / !.) {
+      return { file, ...defaults, declarations: declarations.map(item => item[0]) };
     }
 
 Filename "a quoted filename"
   = '"' value:$([^"\r\n\0]+) '"' { return value; }
   / "'" value:$([^'\r\n\0]+) "'" { return value; }
 
-EncryptedDefault
-  = "encrypted" [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) { return value; }
+Defaults
+  = items:(key:("encrypted" / "redacted") [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) _ { return { key, value }; })* {
+      const defaults = {};
+      for (const { key, value } of items) {
+        if (key in defaults) error(`Duplicate Envfile default: ${key}`);
+        defaults[key] = value;
+      }
+      return defaults;
+    }
 
 Declaration
   = "env" [ \t]+ name:Name options:Option* [ \t]* Comment? (Newline / !.) {
@@ -36,6 +43,7 @@ Option
   = [ \t]* "," _ "proxy" [ \t]* ":" _ value:(ProxyOptions / Disabled) { return { key: "proxy", value }; }
   / [ \t]* "," _ "required" [ \t]* ":" _ value:Boolean { return { key: "required", value }; }
   / [ \t]* "," _ "optional" [ \t]* ":" _ value:Boolean { return { key: "optional", value }; }
+  / [ \t]* "," _ "redacted" [ \t]* ":" _ value:Boolean { return { key: "redacted", value }; }
   / [ \t]* "," _ "encrypted" [ \t]* ":" _ value:Boolean { return { key: "encrypted", value }; }
   / [ \t]* "," _ "type" [ \t]* ":" _ value:Type { return { key: "type", value }; }
   / [ \t]* "," _ "enum" [ \t]* ":" _ value:Enum { return { key: "enum", value }; }

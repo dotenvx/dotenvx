@@ -52,5 +52,5 @@ module.exports = function normalizeEnvfile ({ files, codeDeclarations = [] }) {
     if (result.encrypted === encrypted) delete result.encrypted
     return result
   })
-  return { encrypted, declarations, files: blocks, codeDeclarations: code }
+  return { encrypted, redacted: true, declarations, files: blocks, codeDeclarations: code }
 }

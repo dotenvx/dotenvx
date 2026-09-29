@@ -14,11 +14,13 @@ function compileDeclarations (declarations) {
   const enums = new Map()
   const ranges = new Map()
   const encryptedKeys = []
+  const redactionRules = new Map()
   const names = new Set()
   for (const input of declarations) {
     const declaration = { ...input }
     if (names.has(declaration.name)) throw new Errors({ message: `Duplicate Envfile declaration: ${declaration.name}` }).malformedEnvfile()
     names.add(declaration.name)
+    redactionRules.set(declaration.name, declaration.redacted !== false)
     if (declaration.encrypted) encryptedKeys.push(declaration.name)
     if (declaration.type === 'port') {
       declaration.type = 'integer'
@@ -62,7 +64,7 @@ function compileDeclarations (declarations) {
       proxyRules.set(declaration.name, host)
     }
   }
-  return { exists: true, proxyRules, requiredKeys, types, enums, ranges, encryptedKeys }
+  return { exists: true, proxyRules, requiredKeys, types, enums, ranges, encryptedKeys, redactionRules }
 }
 
 module.exports = function readEnvfile (filepath = path.resolve('Envfile'), envFiles = ['.env']) {
@@ -81,9 +83,9 @@ module.exports = function readEnvfile (filepath = path.resolve('Envfile'), envFi
     throw new Errors({ message: formatEnvfileSyntaxError(error, src, filepath) }).malformedEnvfile()
   }
 
-  const defaults = { proxy: false, required: true, encrypted: document.encrypted }
+  const defaults = { proxy: false, required: true, encrypted: document.encrypted, redacted: document.redacted }
   const base = document.declarations.map(item => ({ ...defaults, ...item }))
-  const baseSchema = compileDeclarations(base)
+  const baseSchema = { ...compileDeclarations(base), redacted: document.redacted }
   const selected = new Set(envFiles.map(file => path.resolve(file)))
   const seen = new Set()
   const active = []
@@ -98,6 +100,9 @@ module.exports = function readEnvfile (filepath = path.resolve('Envfile'), envFi
     if (block.encrypted !== null && block.encrypted !== undefined) {
       for (const item of merged.values()) item.encrypted = block.encrypted
     }
+    if (block.redacted !== undefined) {
+      for (const item of merged.values()) item.redacted = block.redacted
+    }
     const names = new Set()
     for (const item of block.declarations) {
       if (names.has(item.name)) throw new Errors({ message: `Duplicate Envfile declaration in ${block.file}: ${item.name}` }).malformedEnvfile()
@@ -105,11 +110,12 @@ module.exports = function readEnvfile (filepath = path.resolve('Envfile'), envFi
       merged.set(item.name, {
         ...defaults,
         ...(block.encrypted === null || block.encrypted === undefined ? {} : { encrypted: block.encrypted }),
+        ...(block.redacted === undefined ? {} : { redacted: block.redacted }),
         ...merged.get(item.name),
         ...item
       })
     }
-    const schema = compileDeclarations([...merged.values()])
+    const schema = { ...compileDeclarations([...merged.values()]), redacted: block.redacted ?? document.redacted }
     if (selected.has(file)) active.push(schema)
   }
   if (active.length === 0) return baseSchema
@@ -124,5 +130,11 @@ module.exports = function readEnvfile (filepath = path.resolve('Envfile'), envFi
       proxyRules.set(key, host)
     }
   }
-  return { ...active[0], proxyRules, schemas: active }
+  const redactionRules = new Map()
+  for (const schema of active) {
+    for (const [name, redacted] of schema.redactionRules) {
+      redactionRules.set(name, redactionRules.get(name) === true || redacted)
+    }
+  }
+  return { ...active[0], redacted: active.some(schema => schema.redacted), redactionRules, proxyRules, schemas: active }
 }
