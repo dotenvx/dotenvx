@@ -13,10 +13,10 @@ Filename "a quoted filename"
   / "'" value:$([^'\r\n\0]+) "'" { return value; }
 
 Defaults
-  = items:(key:("encrypted" / "redacted") [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) _ { return { key, value }; })* {
+  = items:(key:("encrypted" / "redacted" / "commit") [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) _ { return { key, value }; })* {
       const defaults = {};
       for (const { key, value } of items) {
-        if (key in defaults) error(`Duplicate Envfile default: ${key}`);
+        if (key in defaults) error(`Duplicate Envspec default: ${key}`);
         defaults[key] = value;
       }
       return defaults;
@@ -27,10 +27,10 @@ Declaration
       const declaration = { name };
       const seen = new Set();
       for (const option of options) {
-        if (seen.has(option.key)) error(`Duplicate Envfile option: ${option.key}`);
+        if (seen.has(option.key)) error(`Duplicate Envspec option: ${option.key}`);
         if ((option.key === "optional" && seen.has("required")) ||
             (option.key === "required" && seen.has("optional"))) {
-          error("Cannot combine required and optional in an Envfile declaration");
+          error("Cannot combine required and optional in an Envspec declaration");
         }
         seen.add(option.key);
         if (option.key === "optional") declaration.required = !option.value;

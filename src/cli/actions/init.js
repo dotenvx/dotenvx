@@ -1,23 +1,28 @@
 const fs = require('node:fs')
 const process = require('node:process')
 const prompts = require('../../lib/helpers/prompts')
-const initEnvfile = require('../../lib/services/init')
-const scanSource = require('../../lib/envfile/discovery/scanSource')
-const discoverEnvFiles = require('../../lib/envfile/discovery/discoverEnvFiles')
+const initEnvspec = require('../../lib/services/init')
+const scanSource = require('../../lib/envspec/discovery/scanSource')
+const discoverEnvFiles = require('../../lib/envspec/discovery/discoverEnvFiles')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const { logger } = require('../../shared/logger')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 
-module.exports = async function init () {
-  const envFile = this.opts().envFile
+module.exports = async function spec () {
+  const options = this.opts()
+  const envFile = options.envFile
+  const overwrite = options.overwrite === true
+  const stdout = options.stdout === true
   const interactive = !process.env.CI && process.stdin.isTTY && process.stderr.isTTY
   let spinner
 
   try {
-    if (fs.lstatSync('Envfile', { throwIfNoEntry: false })) {
-      logger.info('○ Envfile already exists (unchanged)')
+    const existing = stdout ? undefined : fs.lstatSync('Envspec', { throwIfNoEntry: false })
+    if (existing && !overwrite) {
+      logger.info('○ Envspec already exists [edit or run: spec --overwrite]')
       return
     }
+    if (existing && !existing.isFile()) throw new Error('Cannot replace Envspec: expected a regular file')
 
     let envFiles
     let sourceKeys = []
@@ -28,8 +33,8 @@ module.exports = async function init () {
     if (interactive && !envFile) {
       const candidates = discoverEnvFiles()
       const selected = await prompts.multiselect({
-        message: 'Create Envfile from .env files and code',
-        submitLabel: 'Create Envfile',
+        message: existing ? 'Recreate Envspec from .env files and code' : 'Create Envspec from .env files and code',
+        submitLabel: existing ? 'Recreate Envspec' : 'Create Envspec',
         choices: [...candidates, { name: 'code ./**/* (env references)', value: '__scan_source' }],
         initial: [...candidates, '__scan_source']
       })
@@ -37,7 +42,6 @@ module.exports = async function init () {
       scanCode = selected.includes('__scan_source')
     }
 
-    const options = this.opts()
     const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
     spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'scanning' })
     if (scanCode) {
@@ -45,10 +49,14 @@ module.exports = async function init () {
       sourceKeys = keys
     }
 
-    const { created } = initEnvfile({ envFile, envFiles, sourceKeys, onFile })
+    const { created, replaced, content } = initEnvspec({ envFile, envFiles, sourceKeys, overwrite, stdout, onFile })
     if (spinner) spinner.stop()
-    if (created) logger.success('◈ created (Envfile)')
-    else logger.info('○ Envfile already exists (unchanged)')
+    if (stdout) {
+      process.stdout.write(content)
+      return
+    }
+    if (created) logger.success(replaced ? '◈ recreated (Envspec)' : '◈ created (Envspec)')
+    else logger.info('○ Envspec already exists [edit or run: spec --overwrite]')
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

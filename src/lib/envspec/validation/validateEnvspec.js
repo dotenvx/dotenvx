@@ -2,7 +2,7 @@ const validate = require('./validate')
 const encryptedSources = require('./encryptedSources')
 const Errors = require('../../helpers/errors')
 
-module.exports = function validateEnvfile (schema, env, processedEnvs, onKey) {
+module.exports = function validateEnvspec (schema, env, processedEnvs, onKey) {
   const diagnostics = new Map()
   const schemas = schema.schemas || [schema]
   const sources = schemas.some(rules => rules.encryptedKeys.length > 0) ? encryptedSources(processedEnvs) : undefined

@@ -99,7 +99,7 @@ async function run () {
     const {
       processedEnvs,
       readableFilepaths,
-      hasEnvfile,
+      hasEnvspec,
       schema,
       proxyCredentials,
       proxyToken,
@@ -110,7 +110,7 @@ async function run () {
       envs: this.envs,
       options,
       processEnv: process.env,
-      requireEnvfile: false,
+      requireEnvspec: false,
       command: commandArgs,
       onStatus: (text) => {
         if (spinner && text) spinner.text = text
@@ -118,8 +118,8 @@ async function run () {
     })
     if (proxyError) throw proxyError
 
-    if (hasEnvfile) {
-      sensitiveValues = redactedValues(processedEnvs, schema, process.env)
+    if (hasEnvspec || options.redact === true) {
+      sensitiveValues = redactedValues(processedEnvs, schema, process.env, options.redact === true)
     }
 
     logger.debug(redactOutput(`options: ${JSON.stringify(debugOptions)}`, sensitiveValues))
@@ -133,7 +133,7 @@ async function run () {
     if (error) {
       if (ignore.includes(error.code)) {
         logger.verbose(`ignored: ${error.message}`)
-      } else if (options.strict || hasEnvfile) {
+      } else if (options.strict || hasEnvspec) {
         throw error
       } else {
         logger.error(error.messageWithHelp || error.message)

@@ -6,11 +6,27 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
-* `check` validates the final merged environment using the same file selection and precedence as `run`. Envfile file blocks define policy without loading files. Report per-key progress and individual source diagnostics instead of settings lists.
+* `spec --stdout` prints the generated Envspec without writing or replacing a file.
+
+* `spec` leaves existing Envspecs untouched with guidance to edit or run `spec --overwrite`. The new `--overwrite` flag regenerates the Envspec from selected inputs.
+
+* `encrypt` respects Envspec encryption defaults and per-key exceptions, leaving `encrypted: false` values unchanged and avoiding key generation when nothing needs encryption.
+
+* `spec` sets root `encrypted true` when any selected env file contains a `DOTENV_PUBLIC_KEY*` entry or encrypted value, preserving plaintext exceptions in declarations and file overrides.
+
+* Git protection requires `commit true` in an adjacent Envspec before permitting plaintext under its encryption policy. `commit false` blocks staging; invalid policies and private-key files remain blocked. `spec` suggests `# commit true` in each mixed file’s block, without granting commit permission or changing the source files.
+
+* `check` validates the final merged environment using the same file selection and precedence as `run`. Envspec file blocks define policy without loading files. Report per-key progress and individual source diagnostics instead of settings lists.
+
+* `run` automatically follows Envspec redaction settings, even when `--redact` is passed. Without an Envspec, `--redact` retains its existing behavior, including the `_PLAIN` exception.
 
 ### Breaking Changes
 
-* Remove `run --redact`. Output redaction now requires an Envfile and follows its `redacted` settings. Use `dotenvx init` to generate an Envfile; run without an Envfile leaves output unredacted.
+* Rename `Envfile` to `Envspec`, including `ENVSPEC_REQUIRED` and `MALFORMED_ENVSPEC` error codes. Rename existing definition files to `Envspec`.
+
+* Rename `dotenvx init` to `dotenvx spec` for creating an Envspec.
+
+* Git protection no longer exempts plaintext values solely because their names end in `_PLAIN`; allow them explicitly with an Envspec commit policy.
 
 ## [2.31.1](https://github.com/dotenvx/dotenvx/compare/v2.31.0...v2.31.1) (2026-09-27)
 

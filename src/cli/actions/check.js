@@ -2,7 +2,7 @@ const { logger } = require('./../../shared/logger')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prepareValidatedEnv = require('../../lib/services/validate')
-const diagnosticLocations = require('../../lib/envfile/validation/diagnosticLocation')
+const diagnosticLocations = require('../../lib/envspec/validation/diagnosticLocation')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
@@ -31,7 +31,7 @@ async function check () {
     checked.push(...readableFilepaths)
     if (processedEnvs.some(row => row.type === 'env' && Object.keys(row.parsed || {}).length)) checked.push('--env')
     if (checked.length === 0 && [...schema.redactionRules.keys()].some(key => processEnv[key] !== undefined)) checked.push('shell environment')
-    const location = diagnosticLocations(processedEnvs, checked.join(', ') || 'Envfile')
+    const location = diagnosticLocations(processedEnvs, checked.join(', ') || 'Envspec')
     for (const row of processedEnvs) {
       for (const error of row.errors || []) {
         if (ignore.includes(error.code)) continue

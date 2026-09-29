@@ -1,14 +1,14 @@
 // Pure final pass over independently inferred file rules. Never mutates inputs.
-module.exports = function normalizeEnvfile ({ files, codeDeclarations = [] }) {
+module.exports = function normalizeEnvspec ({ files, codeDeclarations = [] }) {
   const hasNamedEnvironment = files.some(file => !['.env', '.env.example'].includes(file.filename))
   const rootFiles = []
   const environments = []
   for (const file of files) {
-    if (file.filename === '.env.example' || (file.filename === '.env' && !hasNamedEnvironment)) rootFiles.push(file)
+    if (!file.suggestCommit && (file.filename === '.env.example' || (file.filename === '.env' && !hasNamedEnvironment))) rootFiles.push(file)
     else environments.push(file)
   }
 
-  const encrypted = rootFiles.some(file => file.hasValues) && rootFiles.every(file => !file.hasValues || file.encrypted)
+  const encrypted = files.some(file => file.encrypted)
   const root = new Map()
   for (const file of rootFiles) {
     for (const item of file.declarations) {
@@ -37,7 +37,7 @@ module.exports = function normalizeEnvfile ({ files, codeDeclarations = [] }) {
       const overrides = Object.fromEntries(Object.entries(item).filter(([key, value]) => key !== 'name' && value !== defaults[key]))
       return inherited && !Object.keys(overrides).length ? [] : [{ name: item.name, ...overrides }]
     })
-    return { filename: file.filename, ...(overridesEncryption ? { encrypted: file.encrypted } : {}), declarations }
+    return { filename: file.filename, ...(file.suggestCommit ? { suggestCommit: true } : {}), ...(overridesEncryption ? { encrypted: file.encrypted } : {}), declarations }
   })
 
   const names = new Set(files.flatMap(file => file.declarations.map(item => item.name)))
