@@ -130,16 +130,6 @@ async function run () {
       maskProcessedEnvs(processedEnvs, commandEnv, showChar)
     }
 
-    if (error) {
-      if (ignore.includes(error.code)) {
-        logger.verbose(`ignored: ${error.message}`)
-      } else if (options.strict || error.diagnostics?.some(diagnostic => diagnostic.strict)) {
-        throw error
-      } else {
-        logger.warn(error.messageWithHelp || error.message)
-      }
-    }
-
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envFile') {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
@@ -184,6 +174,16 @@ async function run () {
       for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
         logger.debug(redactOutput(`${key} pre-exists as ${value} (protip: use --overload to override)`, sensitiveValues))
+      }
+    }
+
+    if (error) {
+      if (ignore.includes(error.code)) {
+        logger.verbose(`ignored: ${error.message}`)
+      } else if (options.strict || error.diagnostics?.some(diagnostic => diagnostic.strict)) {
+        throw error
+      } else {
+        logger.warn(error.messageWithHelp || error.message)
       }
     }
 
