@@ -52,7 +52,6 @@ async function run () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const maskEnabled = options.mask !== undefined
-  const redactEnabled = options.redact === true
   let showChar = options.mask
   if (options.mask === true) {
     showChar = 6
@@ -78,8 +77,6 @@ async function run () {
     debugOptions = { ...options, env: (options.env || []).map(envSrc => maskEnvSrc(envSrc, showChar)), token }
   }
   if (options.lockPassword !== undefined) debugOptions = { ...debugOptions, lockPassword: '[REDACTED]' }
-  logger.debug(`options: ${JSON.stringify(debugOptions)}`)
-  logger.debug(`process command [${commandArgs.join(' ')}]`)
 
   const ignore = options.ignore || []
 
@@ -102,7 +99,8 @@ async function run () {
     const {
       processedEnvs,
       readableFilepaths,
-      hasEnvfile,
+      hasEnvspec,
+      schema,
       proxyCredentials,
       proxyToken,
       session: sesh,
@@ -112,7 +110,8 @@ async function run () {
       envs: this.envs,
       options,
       processEnv: process.env,
-      requireEnvfile: false,
+      requireEnvspec: false,
+      validateEncryption: false,
       command: commandArgs,
       onStatus: (text) => {
         if (spinner && text) spinner.text = text
@@ -120,9 +119,12 @@ async function run () {
     })
     if (proxyError) throw proxyError
 
-    if (redactEnabled) {
-      sensitiveValues = redactedValues(processedEnvs)
+    if (hasEnvspec || options.redact === true) {
+      sensitiveValues = redactedValues(processedEnvs, schema, process.env, options.redact === true)
     }
+
+    logger.debug(redactOutput(`options: ${JSON.stringify(debugOptions)}`, sensitiveValues))
+    logger.debug(redactOutput(`process command [${commandArgs.join(' ')}]`, sensitiveValues))
 
     if (maskEnabled) {
       commandEnv = { ...process.env }
@@ -132,10 +134,10 @@ async function run () {
     if (error) {
       if (ignore.includes(error.code)) {
         logger.verbose(`ignored: ${error.message}`)
-      } else if (options.strict || hasEnvfile) {
+      } else if (options.strict || error.diagnostics?.some(diagnostic => diagnostic.strict)) {
         throw error
       } else {
-        logger.error(error.messageWithHelp || error.message)
+        logger.warn(error.messageWithHelp || error.message)
       }
     }
 
@@ -149,7 +151,7 @@ async function run () {
         if (maskEnabled) {
           envString = maskEnvSrc(processedEnv.string, showChar)
         }
-        logger.verbose(`loading env from string (${envString})`)
+        logger.verbose(redactOutput(`loading env from string (${envString})`, sensitiveValues))
       }
 
       for (const error of processedEnv.errors || []) {
@@ -158,7 +160,10 @@ async function run () {
           continue // ignore error
         }
 
-        if (options.strict) throw error // throw if strict and not ignored
+        const strict = processedEnv.type === 'envFile'
+          ? (schema.strictByFile?.get(path.resolve(processedEnv.filepath)) ?? schema.strict)
+          : schema.strict
+        if (options.strict || strict) throw error // throw if strict and not ignored
 
         if (error.code === 'MISSING_ENV_FILE' && options.convention) { // do not output error for conventions (too noisy)
           // intentionally quiet

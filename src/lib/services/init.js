@@ -2,24 +2,24 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { scan, encrypted } = require('@dotenvx/primitives')
 
-const normalizeEnvfile = require('../envfile/rendering/normalizeEnvfile')
-const renderEnvfile = require('../envfile/rendering/renderEnvfile')
+const normalizeEnvspec = require('../envspec/rendering/normalizeEnvspec')
+const renderEnvspec = require('../envspec/rendering/renderEnvspec')
+const isPublicKey = require('../helpers/isPublicKey')
 
 function declaration (name) {
-  if (/(^|_)port$/i.test(name)) return { name, type: 'port' }
-  if (/(^|_)url$/i.test(name)) return { name, type: 'url' }
-  return { name }
+  const item = { name }
+  if (/(^|_)port$/i.test(name)) item.type = 'port'
+  if (/(^|_)url$/i.test(name)) item.type = 'url'
+  if (isPublicKey(name)) item.redacted = false
+  return item
 }
 
-module.exports = function init ({ directory = process.cwd(), envFile, envFiles, sourceKeys = [], onFile = () => {} } = {}) {
-  const target = path.resolve(directory, 'Envfile')
-  // lstat also preserves dangling symlinks. Never overwrite an existing Envfile.
-  try {
-    fs.lstatSync(target)
-    return { created: false }
-  } catch (error) {
-    if (error.code !== 'ENOENT') throw error
-  }
+module.exports = function init ({ directory = process.cwd(), envFile, envFiles, sourceKeys = [], overwrite = false, stdout = false, onFile = () => {} } = {}) {
+  const target = path.resolve(directory, 'Envspec')
+  const existing = stdout ? undefined : fs.lstatSync(target, { throwIfNoEntry: false })
+  if (existing && !overwrite) return { created: false }
+  if (existing && !existing.isFile()) throw new Error(`Cannot replace Envspec: expected a regular file (${target})`)
+  const seen = new Set()
 
   const sources = []
   const names = new Set()
@@ -27,6 +27,9 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
   const candidates = envFiles || (envFile ? [envFile] : ['.env.example', '.env'])
   const relativeFilename = candidate => path.relative(path.resolve(directory), path.resolve(directory, candidate)).split(path.sep).join('/')
   for (const candidate of candidates) {
+    const resolved = path.resolve(directory, candidate)
+    if (seen.has(resolved)) continue
+    seen.add(resolved)
     let src
     try {
       src = fs.readFileSync(path.resolve(directory, candidate), 'utf8')
@@ -37,16 +40,17 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
     onFile(candidate)
     sources.push(candidate)
     // scan preserves every assignment as an array, without decrypting or expanding.
-    const entries = Object.entries(scan(src).parsed).filter(([key]) => !key.startsWith('DOTENV_PUBLIC_KEY'))
+    const allEntries = Object.entries(scan(src).parsed)
+    const entries = allEntries.filter(([key]) => !key.startsWith('DOTENV_PUBLIC_KEY'))
     for (const [key] of entries) {
       if (!/^DOTENV_PRIVATE_KEY(?:_|$)/.test(key)) names.add(key)
     }
+    const hasEncryptedValues = entries.some(([key, values]) => !/^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) && values.some(value => encrypted(value)))
     files.push({
       filename: relativeFilename(candidate),
       hasValues: entries.length > 0,
-      encrypted: entries.length > 0 && entries.every(([, values]) => values.every(value => encrypted(value))),
       declarations: entries.filter(([key]) => !/^DOTENV_PRIVATE_KEY(?:_|$)/.test(key)).map(([key, values]) => ({
-        ...declaration(key), encrypted: values.some(value => encrypted(value))
+        ...declaration(key), encrypted: values.some(value => encrypted(value)) || (!hasEncryptedValues && !key.endsWith('_PLAIN'))
       }))
     })
   }
@@ -57,15 +61,16 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
   const addedFromSource = names.size - inputCount
   const keys = [...names]
   const invalid = keys.filter(key => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(key))
-  if (invalid.length) throw new Error(`Unsupported Envfile variable names: ${invalid.join(', ')}`)
+  if (invalid.length) throw new Error(`Unsupported Envspec variable names: ${invalid.join(', ')}`)
 
-  const document = normalizeEnvfile({ files, codeDeclarations })
-  const content = renderEnvfile(document)
+  const document = normalizeEnvspec({ files, codeDeclarations })
+  const content = renderEnvspec(document)
+  if (stdout) return { created: false, content }
   try {
-    fs.writeFileSync(target, content, { flag: 'wx' })
+    fs.writeFileSync(target, content, { flag: overwrite ? fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC | fs.constants.O_NOFOLLOW : 'wx' })
   } catch (error) {
     if (error.code === 'EEXIST') return { created: false }
     throw error
   }
-  return { created: true, source: sources.join(', '), count: keys.length, addedFromSource }
+  return { created: true, replaced: Boolean(existing), source: sources.join(', '), count: keys.length, addedFromSource }
 }

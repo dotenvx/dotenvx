@@ -1,29 +1,35 @@
 Document
-  = _ encrypted:EncryptedDefault? _ entries:((FileBlock / Declaration) _)* {
-      return { encrypted: encrypted === true, declarations: entries.map(item => item[0]).filter(item => !item.file), files: entries.map(item => item[0]).filter(item => item.file) };
+  = _ entries:((FileBlock / Declaration / Strict) _)* {
+      const items = entries.map(item => item[0]);
+      const settings = items.filter(item => item.strict !== undefined && !item.file);
+      if (settings.length > 1) error("Duplicate Envspec setting: strict");
+      return { ...settings[0], declarations: items.filter(item => item.name), files: items.filter(item => item.file) };
     }
 
 FileBlock
-  = "file" [ \t]+ file:Filename [ \t]+ "do" [ \t]* Comment? Newline _ encrypted:EncryptedDefault? _ declarations:(Declaration _)* "end" [ \t]* Comment? (Newline / !.) {
-      return { file, encrypted, declarations: declarations.map(item => item[0]) };
+  = "file" [ \t]+ file:Filename [ \t]+ "do" [ \t]* Comment? Newline _ entries:((Declaration / Strict) _)* "end" [ \t]* Comment? (Newline / !.) {
+      const items = entries.map(item => item[0]);
+      const settings = items.filter(item => item.strict !== undefined);
+      if (settings.length > 1) error("Duplicate Envspec setting: strict");
+      return { file, ...settings[0], declarations: items.filter(item => item.name) };
     }
+
+Strict
+  = "strict" [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) { return { strict: value }; }
 
 Filename "a quoted filename"
   = '"' value:$([^"\r\n\0]+) '"' { return value; }
   / "'" value:$([^'\r\n\0]+) "'" { return value; }
-
-EncryptedDefault
-  = "encrypted" [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) { return value; }
 
 Declaration
   = "env" [ \t]+ name:Name options:Option* [ \t]* Comment? (Newline / !.) {
       const declaration = { name };
       const seen = new Set();
       for (const option of options) {
-        if (seen.has(option.key)) error(`Duplicate Envfile option: ${option.key}`);
+        if (seen.has(option.key)) error(`Duplicate Envspec option: ${option.key}`);
         if ((option.key === "optional" && seen.has("required")) ||
             (option.key === "required" && seen.has("optional"))) {
-          error("Cannot combine required and optional in an Envfile declaration");
+          error("Cannot combine required and optional in an Envspec declaration");
         }
         seen.add(option.key);
         if (option.key === "optional") declaration.required = !option.value;
@@ -36,7 +42,8 @@ Option
   = [ \t]* "," _ "proxy" [ \t]* ":" _ value:(ProxyOptions / Disabled) { return { key: "proxy", value }; }
   / [ \t]* "," _ "required" [ \t]* ":" _ value:Boolean { return { key: "required", value }; }
   / [ \t]* "," _ "optional" [ \t]* ":" _ value:Boolean { return { key: "optional", value }; }
-  / [ \t]* "," _ "encrypted" [ \t]* ":" _ value:Boolean { return { key: "encrypted", value }; }
+  / [ \t]* "," _ ("redacted" / "redact") [ \t]* ":" _ value:Boolean { return { key: "redacted", value }; }
+  / [ \t]* "," _ ("encrypted" / "encrypt") [ \t]* ":" _ value:Boolean { return { key: "encrypted", value }; }
   / [ \t]* "," _ "type" [ \t]* ":" _ value:Type { return { key: "type", value }; }
   / [ \t]* "," _ "enum" [ \t]* ":" _ value:Enum { return { key: "enum", value }; }
   / [ \t]* "," _ key:("min" / "max") [ \t]* ":" _ value:Integer { return { key, value }; }

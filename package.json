@@ -50,7 +50,7 @@
     "release:check": "npm test && npm run testshell",
     "prerelease": "npm run release:check",
     "release": "npm run release:check && standard-version",
-    "build:envfile": "peggy --format commonjs -o src/lib/envfile/parsing/envfileParser.js src/lib/envfile/parsing/envfile.peggy"
+    "build:envspec": "peggy --format commonjs -o src/lib/envspec/parsing/envspecParser.js src/lib/envspec/parsing/envspec.peggy"
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
@@ -82,7 +82,7 @@
   },
   "standard": {
     "ignore": [
-      "src/lib/envfile/parsing/envfileParser.js"
+      "src/lib/envspec/parsing/envspecParser.js"
     ]
   }
 }

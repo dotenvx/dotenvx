@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
-const hasPlaintextSecrets = require('../../lib/helpers/hasPlaintextSecrets')
+const plaintextKeys = require('../../lib/helpers/plaintextKeys')
+const protectEnvspec = require('../../lib/envspec/validation/protectEnvspec')
 const { logger } = require('../../shared/logger')
 const createProtectSpinner = require('../../lib/helpers/createProtectSpinner')
 const logProtectedFiles = require('../../lib/helpers/logProtectedFiles')
@@ -22,12 +23,27 @@ function fixMessage (filepath, privateKeyFile) {
 function check (filepath, content, beforeError = () => {}) {
   const filename = path.posix.basename(filepath)
   const privateKeyFile = filename.startsWith('.env.keys')
-  if (privateKeyFile || (!exempt(filepath) && hasPlaintextSecrets(content.toString('utf8')))) {
+  let rejected = null
+  if (!privateKeyFile) {
+    try {
+      rejected = protectEnvspec(filepath, content.toString('utf8'))
+    } catch (error) {
+      beforeError()
+      logger.error(error.message)
+      return false
+    }
+  }
+  const plaintext = rejected === null
+    ? !exempt(filepath) && plaintextKeys(content.toString('utf8')).length > 0
+    : rejected.length > 0
+  if (privateKeyFile || plaintext) {
     const code = privateKeyFile ? 'PRIVATE_KEY_FILE' : 'PLAINTEXT_ENV'
     const fix = fixMessage(filepath, privateKeyFile)
     const message = privateKeyFile
       ? `refusing to stage ${JSON.stringify(filepath)}`
-      : `${JSON.stringify(filepath)} contains plaintext secrets`
+      : rejected?.length
+        ? `${rejected.join(', ')} not encrypted (${JSON.stringify(filepath)})`
+        : `${JSON.stringify(filepath)} contains plaintext secrets`
     beforeError()
     logger.error(`[${code}] ${message}. ${fix}`)
     return false

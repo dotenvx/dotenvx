@@ -1,5 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
+const fs = require('node:fs')
 const { encrypted, encrypt, scan, upsert, publickeys, keypair } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
@@ -13,6 +14,7 @@ const keynames = require('../conventions/keynames')
 
 const selectKeyStorage = require('../helpers/selectKeyStorage')
 const custodians = require('../custodians')
+const readEnvspec = require('../envspec/parsing/readEnvspec')
 
 async function encryptTransform (options = {}) {
   const envs = options.envs || []
@@ -52,6 +54,11 @@ async function encryptTransform (options = {}) {
     const row = { keys: [], type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
+      const policyPath = path.resolve('Envspec')
+      const schema = readEnvspec(policyPath, [filepath])
+      if (!schema.exists && fs.lstatSync(policyPath, { throwIfNoEntry: false })) {
+        throw new Error(`Cannot read Envspec: ${policyPath}`)
+      }
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = SAMPLE_ENV_KIT
@@ -61,9 +68,21 @@ async function encryptTransform (options = {}) {
         row.envSrc = await fsx.readFileX(filepath, { encoding })
       }
 
-      if (row.envSrc.trim().length === 0) {
+      if (!schema.exists && row.envSrc.trim().length === 0) {
         row.envSrc = SAMPLE_ENV_KIT
         row.changed = true
+      }
+
+      const { parsed } = scan(row.envSrc, { ik, ek })
+      const selected = Object.entries(parsed).filter(([key]) => {
+        if (isDotenvPublicKey(key)) return false
+        return schema.exists ? (schema.encryptionRules.get(key) ?? schema.encrypted) : !isPlainKey(key)
+      })
+      if (schema.exists && !selected.some(([, values]) => values.some(value => !encrypted(value)))) {
+        row.changed = false
+        unchangedFilepaths.push(envFilepath)
+        processedEnvs.push(row)
+        continue
       }
 
       let publicKey = publickeys(row.envSrc)[0]
@@ -86,13 +105,7 @@ async function encryptTransform (options = {}) {
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
       }
 
-      const { parsed } = scan(row.envSrc, { ik, ek })
-
-      for (const [key, values] of Object.entries(parsed)) {
-        if (isDotenvPublicKey(key) || isPlainKey(key)) {
-          continue
-        }
-
+      for (const [key, values] of selected) {
         const transformedValues = []
         for (const value of values) {
           if (encrypted(value)) {

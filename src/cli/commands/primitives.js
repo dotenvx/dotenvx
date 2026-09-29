@@ -31,7 +31,7 @@ module.exports = function primitives (command) {
     .action(function () { this.help() })
 
   command.command('keypair')
-    .description('generate or restore a key pair and print JSON')
+    .description('generate or restore a keypair and print JSON')
     .argument('[privateKey]', 'hex-encoded private key to restore')
     .option('--stdin', 'read the private key from stdin')
     .allowExcessArguments(false)

@@ -233,9 +233,9 @@ class Errors {
     return e
   }
 
-  envfileRequired () {
-    const e = new Error('[ENVFILE_REQUIRED] check requires an Envfile')
-    e.code = 'ENVFILE_REQUIRED'
+  envspecRequired () {
+    const e = new Error('[ENVSPEC_REQUIRED] check requires an Envspec')
+    e.code = 'ENVSPEC_REQUIRED'
     e.messageWithHelp = e.message
     return e
   }
@@ -338,8 +338,8 @@ class Errors {
     return e
   }
 
-  malformedEnvfile () {
-    const code = 'MALFORMED_ENVFILE'
+  malformedEnvspec () {
+    const code = 'MALFORMED_ENVSPEC'
     const message = `[${code}] ${this.message}`
     const e = new Error(message)
     e.code = code
