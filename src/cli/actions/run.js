@@ -134,7 +134,7 @@ async function run () {
     if (error) {
       if (ignore.includes(error.code)) {
         logger.verbose(`ignored: ${error.message}`)
-      } else if (options.strict) {
+      } else if (options.strict || error.diagnostics?.some(diagnostic => diagnostic.strict)) {
         throw error
       } else {
         logger.warn(error.messageWithHelp || error.message)
@@ -160,7 +160,10 @@ async function run () {
           continue // ignore error
         }
 
-        if (options.strict) throw error // throw if strict and not ignored
+        const strict = processedEnv.type === 'envFile'
+          ? (schema.strictByFile?.get(path.resolve(processedEnv.filepath)) ?? schema.strict)
+          : schema.strict
+        if (options.strict || strict) throw error // throw if strict and not ignored
 
         if (error.code === 'MISSING_ENV_FILE' && options.convention) { // do not output error for conventions (too noisy)
           // intentionally quiet

@@ -7,12 +7,14 @@ const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvCon
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
 const path = require('node:path')
+const previewEnvspec = require('../../lib/envspec/rendering/previewEnvspec')
 
 async function check () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking', ...(process.env.CI ? { spinner: false } : {}) })
   const ignore = options.ignore || []
+  const showPreview = !options.quiet && !['error', 'infoerror', 'warn'].includes(logger.level)
   let errorCount = 0
   const checked = []
   const messages = []
@@ -23,7 +25,7 @@ async function check () {
   }
 
   try {
-    const { processedEnvs, readableFilepaths, requiredFilepaths, proxyError, validationError, schema, processEnv } = await prepareValidatedEnv({
+    const { processedEnvs, readableFilepaths, requiredFilepaths, proxyError, validationError, schema, processEnv, proxyCredentials } = await prepareValidatedEnv({
       envs: this.envs,
       options,
       onStatus: text => { if (spinner && text) spinner.text = text },
@@ -50,19 +52,26 @@ async function check () {
     }
     if (validationError && !ignore.includes(validationError.code)) {
       errorCount++
-      for (const diagnostic of validationError.diagnostics) {
+      for (const diagnostic of showPreview ? [] : validationError.diagnostics) {
         const message = diagnostic.message.replace(`${diagnostic.key} is `, `${diagnostic.key} `)
         report('error', `${message} (${location(diagnostic.key)})`)
       }
     }
 
+    if (spinner) spinner.stop()
+    if (showPreview) {
+      const diagnostics = validationError && !ignore.includes(validationError.code) ? validationError.diagnostics : []
+      const preview = previewEnvspec(processedEnvs, schema, processEnv, proxyCredentials, diagnostics)
+      if (preview) {
+        for (const line of preview.split('\n')) logger.info(line)
+      }
+    }
     flush()
     if (checked.length === 0) {
       logger.error('no environment sources found to check')
       return { exitCode: 1 }
     }
     if (errorCount > 0) return { exitCode: 1 }
-    logger.success(`▣ valid (${checked.join(', ')})`)
   } catch (error) {
     flush()
     catchAndLog(error)

@@ -12,17 +12,17 @@ function assignmentLines (src) {
   return result
 }
 
-module.exports = function diagnosticLocations (processedEnvs, fallback) {
+module.exports = function diagnosticLocations (processedEnvs, fallback, { environmentLabel } = {}) {
   const locations = new Map()
   for (const row of processedEnvs) {
-    const filename = row.type === 'envFile' ? path.relative(process.cwd(), path.resolve(row.filepath)) : '--env'
+    const filename = row.type === 'envFile' ? path.relative(process.cwd(), path.resolve(row.filepath)) : (environmentLabel || '--env')
     const lines = assignmentLines(row.src || row.string)
     for (const key of Object.keys(row.injected || {})) {
-      const line = lines.get(key)
+      const line = row.type === 'envFile' || !environmentLabel ? lines.get(key) : undefined
       locations.set(key, line ? `${filename}:${line}` : filename)
     }
     for (const key of Object.keys(row.existed || {})) {
-      if (!locations.has(key)) locations.set(key, 'shell environment')
+      if (!locations.has(key)) locations.set(key, environmentLabel || 'shell environment')
     }
   }
   return key => locations.get(key) || fallback

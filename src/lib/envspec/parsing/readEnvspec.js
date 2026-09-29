@@ -11,6 +11,7 @@ function compileDeclarations (declarations) {
   const proxyRules = new Map()
   const requiredKeys = []
   const types = new Map()
+  const declaredTypes = new Map()
   const enums = new Map()
   const ranges = new Map()
   const encryptedKeys = []
@@ -19,6 +20,7 @@ function compileDeclarations (declarations) {
   const names = new Set()
   for (const input of declarations) {
     const declaration = { ...input }
+    if (input.type) declaredTypes.set(input.name, input.type)
     if (names.has(declaration.name)) throw new Errors({ message: `Duplicate Envspec declaration: ${declaration.name}` }).malformedEnvspec()
     names.add(declaration.name)
     redactionRules.set(declaration.name, declaration.redacted !== false)
@@ -66,7 +68,7 @@ function compileDeclarations (declarations) {
       proxyRules.set(declaration.name, host)
     }
   }
-  return { exists: true, proxyRules, requiredKeys, types, enums, ranges, encryptedKeys, redactionRules, encryptionRules }
+  return { exists: true, proxyRules, requiredKeys, types, declaredTypes, enums, ranges, encryptedKeys, redactionRules, encryptionRules }
 }
 
 module.exports = function readEnvspec (filepath = path.resolve('Envspec'), envFiles = ['.env']) {
@@ -87,7 +89,8 @@ module.exports = function readEnvspec (filepath = path.resolve('Envspec'), envFi
 
   const defaults = { proxy: false, required: true, encrypted: true, redacted: true }
   const base = document.declarations.map(item => ({ ...defaults, ...item }))
-  const baseSchema = { ...compileDeclarations(base), encrypted: true, redacted: true }
+  const strictByFile = new Map()
+  const baseSchema = { ...compileDeclarations(base), encrypted: true, redacted: true, strict: document.strict ?? false, strictByFile }
   const selected = new Set(envFiles.map(file => path.resolve(file)))
   const seen = new Set()
   const active = []
@@ -109,7 +112,9 @@ module.exports = function readEnvspec (filepath = path.resolve('Envspec'), envFi
         ...item
       })
     }
-    const schema = { ...compileDeclarations([...merged.values()]), encrypted: true, redacted: true }
+    const strict = block.strict ?? baseSchema.strict
+    strictByFile.set(file, strict)
+    const schema = { ...compileDeclarations([...merged.values()]), encrypted: true, redacted: true, strict }
     if (selected.has(file)) active.push(schema)
   }
   if (active.length === 0) return baseSchema
@@ -130,5 +135,5 @@ module.exports = function readEnvspec (filepath = path.resolve('Envspec'), envFi
       redactionRules.set(name, redactionRules.get(name) === true || redacted)
     }
   }
-  return { ...active[0], redactionRules, proxyRules, schemas: active }
+  return { ...active[0], strict: baseSchema.strict, strictByFile, redactionRules, proxyRules, schemas: active }
 }
