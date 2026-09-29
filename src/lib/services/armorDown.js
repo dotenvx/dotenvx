@@ -46,6 +46,7 @@ class ArmorDown {
         if (choices.length > 1) {
           team = await prompts.select({
             message: 'Select team',
+            prefix: '⛨',
             choices
           }, {
             input: process.stdin,

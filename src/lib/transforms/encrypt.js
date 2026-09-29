@@ -12,8 +12,7 @@ const detectEncoding = require('./../helpers/detectEncoding')
 const { isDotenvPublicKey, isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 
-const selectKeyStorage = require('../helpers/selectKeyStorage')
-const custodians = require('../custodians')
+const storeKeyStorage = require('../helpers/storeKeyStorage')
 const readEnvspec = require('../envspec/parsing/readEnvspec')
 
 async function encryptTransform (options = {}) {
@@ -22,7 +21,7 @@ async function encryptTransform (options = {}) {
   const ek = options.ek
   const fk = options.fk || '.env.keys'
   let storage
-  const custodyContext = {}
+  const custodyContext = { token: options.token }
   const noCreate = options.noCreate
 
   const processedEnvs = []
@@ -79,8 +78,10 @@ async function encryptTransform (options = {}) {
         return schema.exists ? (schema.encryptionRules.get(key) ?? schema.encrypted) : !isPlainKey(key)
       })
       if (schema.exists && !selected.some(([, values]) => values.some(value => !encrypted(value)))) {
-        row.changed = false
-        unchangedFilepaths.push(envFilepath)
+        // A missing file still needs writing even when its initial values are
+        // exempt from encryption. Avoid generating keys, but preserve creation.
+        if (row.changed) changedFilepaths.push(envFilepath)
+        else unchangedFilepaths.push(envFilepath)
         processedEnvs.push(row)
         continue
       }
@@ -88,8 +89,6 @@ async function encryptTransform (options = {}) {
       let publicKey = publickeys(row.envSrc)[0]
 
       if (!publicKey) {
-        storage = storage || await selectKeyStorage(options)
-
         // upsert public key to .env file
         const kp = keypair() // local
         publicKey = kp.publicKey
@@ -100,7 +99,9 @@ async function encryptTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        const stored = await custodians.store(storage, publicKey, privateKey, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
+        const result = await storeKeyStorage(storage, publicKey, privateKey, options, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
+        storage = result.storage
+        const stored = result.stored
         if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
       }

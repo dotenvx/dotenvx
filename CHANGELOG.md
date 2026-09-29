@@ -2,7 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.32.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.32.1...main)
+
+## [2.32.1](https://github.com/dotenvx/dotenvx/compare/v2.32.0...v2.32.1) (2026-09-29)
+
+### Changed
+
+* Simplify custody picker to 3 initial options ([#998](https://github.com/dotenvx/dotenvx/pull/998))
+
+```text
+? Choose private key custody …
+❯ ⛉ Local
+  ⛨ Dotenvx Armor
+  ⛊ Password Managers
+```
 
 ## [2.32.0](https://github.com/dotenvx/dotenvx/compare/v2.31.1...v2.32.0) (2026-09-29)
 

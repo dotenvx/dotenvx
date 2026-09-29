@@ -9,6 +9,7 @@ function choicesForSelect (choices) {
     return {
       name: choice.value,
       message: choice.name || choice.value,
+      ...(choice.role ? { role: choice.role } : {}),
       ...(choice.disabled !== undefined ? { disabled: choice.disabled === true ? '(unavailable)' : choice.disabled } : {})
     }
   })
@@ -39,10 +40,15 @@ function clearLastLine (stream) {
   }
 }
 
-async function select ({ message, choices }, context) {
+async function select ({ message, choices, navigation, backValue, initial, prefix }, context) {
+  if (navigation) {
+    const CustodySelect = require('./custodySelect')
+    return new CustodySelect({ message, choices: choicesForSelect(choices), backValue, initial, ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}), ...enquirerOptions(context) }).run()
+  }
   const answer = await enquirer.prompt({
     type: 'select',
     name: 'value',
+    ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}),
     message,
     choices: choicesForSelect(choices),
     ...enquirerOptions(context)

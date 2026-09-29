@@ -11,8 +11,7 @@ const { isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const Errors = require('../helpers/errors')
 
-const selectKeyStorage = require('../helpers/selectKeyStorage')
-const custodians = require('../custodians')
+const storeKeyStorage = require('../helpers/storeKeyStorage')
 
 async function setTransform (options = {}) {
   const envs = options.envs || []
@@ -21,7 +20,7 @@ async function setTransform (options = {}) {
   const fk = options.fk || '.env.keys'
   const noArmor = options.noArmor
   let storage
-  const custodyContext = {}
+  const custodyContext = { token: options.token }
   const noNative = options.noNative
   const noCreate = options.noCreate
   const noEncrypt = !options.encrypt || isPlainKey(key)
@@ -73,8 +72,6 @@ async function setTransform (options = {}) {
 
       // only create if missing public key and encryption needed
       if (!publicKey && !noEncrypt) {
-        storage = storage || await selectKeyStorage(options)
-
         // upsert public key to .env file
         const kp = keypair() // local
         publicKey = kp.publicKey
@@ -85,7 +82,9 @@ async function setTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        const stored = await custodians.store(storage, publicKey, privateKey, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
+        const result = await storeKeyStorage(storage, publicKey, privateKey, options, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
+        storage = result.storage
+        const stored = result.stored
         if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
       }
