@@ -11,7 +11,7 @@ const path = require('node:path')
 const resolveDirectoryFilepath = require('../helpers/resolveDirectoryFilepath')
 
 // Load once and validate the final values; callers own presentation and execution.
-module.exports = async function validate ({ envs = [], options = {}, processEnv = { ...process.env }, requireEnvspec = true, validateEncryption = true, command, onStatus, onKey } = {}) {
+module.exports = async function validate ({ envs = [], options = {}, processEnv = { ...process.env }, requireEnvspec = true, command, onStatus, onKey } = {}) {
   envs = normalizeDotenvConfigPath(envs, processEnv)
   const requiredFilepaths = new Set(envs.filter(env => env.type === 'envFile').flatMap(env => {
     const resolved = resolveDirectoryFilepath(env.value, '.env')
@@ -64,6 +64,6 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
     proxyToken,
     session,
     proxyError,
-    validationError: validateEnvspec(schema, processEnv, processedEnvs, onKey, { validateEncryption })
+    validationError: validateEnvspec(schema, processEnv, processedEnvs, onKey)
   }
 }

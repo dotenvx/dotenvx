@@ -111,7 +111,6 @@ async function run () {
       options,
       processEnv: process.env,
       requireEnvspec: false,
-      validateEncryption: false,
       command: commandArgs,
       onStatus: (text) => {
         if (spinner && text) spinner.text = text
