@@ -21,6 +21,7 @@ async function encryptAction () {
   const fk = options.envKeysFile || '.env.keys'
   const noCreate = options.create === false
   const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+  const allowArmorSetup = options.armor !== false && process.env.DOTENVX_NO_ARMOR !== 'true'
   const noNative = options.native === false || options.noNative === true
 
   const noBitwarden = options.bitwarden === false || options.noBitwarden === true
@@ -30,7 +31,7 @@ async function encryptAction () {
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    const { processedEnvs } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate, noNative, no1Password, noBitwarden })
+    const { processedEnvs } = await encryptTransform({ envs, ik, ek, fk, noArmor, allowArmorSetup, token: options.token, noCreate, noNative, no1Password, noBitwarden })
 
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
@@ -47,7 +48,7 @@ async function encryptAction () {
   }
 
   try {
-    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, noCreate, noNative, no1Password, noBitwarden })
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ envs, ik, ek, fk, noArmor, allowArmorSetup, token: options.token, noCreate, noNative, no1Password, noBitwarden })
 
     if (keysSrc) {
       await fsx.writeKeyFile(fk, keysSrc)

@@ -57,6 +57,7 @@ async function set (key, value) {
   const fk = options.envKeysFile || '.env.keys'
   const noCreate = options.create === false
   const noArmor = options.armor === false || (!options.token && (await sesh.noArmor()))
+  const allowArmorSetup = options.armor !== false && process.env.DOTENVX_NO_ARMOR !== 'true'
   const noNative = options.native === false || options.noNative === true
 
   const noBitwarden = options.bitwarden === false || options.noBitwarden === true
@@ -65,7 +66,7 @@ async function set (key, value) {
   let errorCount = 0
 
   try {
-    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await setTransform({ envs, key, value, fk, noArmor, noCreate, encrypt, noNative, no1Password, noBitwarden })
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await setTransform({ envs, key, value, fk, noArmor, allowArmorSetup, token: options.token, noCreate, encrypt, noNative, no1Password, noBitwarden })
 
     if (keysSrc) {
       await fsx.writeKeyFile(fk, keysSrc)

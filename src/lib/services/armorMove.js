@@ -34,6 +34,7 @@ class ArmorMove {
     }))
     team = await prompts.select({
       message: 'Select team',
+      prefix: '⛨',
       choices
     }, {
       input: process.stdin,

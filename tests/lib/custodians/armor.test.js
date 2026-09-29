@@ -51,6 +51,7 @@ t.test('multiple teams prompt and retry with selected team', async t => {
   t.equal(calls[1][5], 'team-b')
   t.same(select.firstCall.args[0], {
     message: 'Select team',
+    prefix: '⛨',
     choices: [{ name: 'team-a', value: 'team-a' }, { name: 'team-b', value: 'team-b' }]
   })
 })
@@ -83,4 +84,18 @@ t.test('Armor configuration preserves explicit token and sync/async session chec
   noArmorSync.returns(false)
   t.equal(await armor.configured(), true)
   t.equal(armor.configuredSync(), true)
+})
+
+t.test('back from team selection returns before storing in a team', async t => {
+  const { registry, calls, select } = setup({ code: 'TEAM_REQUIRED' }, ['team-a', 'team-b'])
+  select.resolves('__back')
+  await t.rejects(registry.store('armored', 'public', 'private', { allowCustodyBack: true }), { code: 'KEY_CUSTODY_BACK' })
+  t.equal(calls.length, 1, 'does not retry storage with the back sentinel')
+  t.same(select.firstCall.args[0], {
+    message: 'Select team',
+    prefix: '⛨',
+    choices: [{ name: 'team-a', value: 'team-a' }, { name: 'team-b', value: 'team-b' }, { name: '← back', value: '__back' }],
+    navigation: true,
+    backValue: '__back'
+  })
 })
