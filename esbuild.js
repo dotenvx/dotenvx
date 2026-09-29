@@ -60,10 +60,14 @@ async function main () {
     keepNames: minify,
     outfile,
     plugins: [{
-      name: 'shared-tooling',
+      name: 'shared-dependencies',
       setup (build) {
         build.onResolve({ filter: /^@dotenvx\/tooling$/ }, () => ({
           path: './tooling.js',
+          external: true
+        }))
+        build.onResolve({ filter: /^@dotenvx\/primitives$/ }, () => ({
+          path: './primitives.js',
           external: true
         }))
       }
@@ -99,6 +103,17 @@ async function main () {
     }),
     esbuild.build({
       ...config,
+      entryPoints: [],
+      stdin: {
+        contents: "module.exports = require('@dotenvx/primitives')",
+        resolveDir: __dirname,
+        sourcefile: 'primitives-entry.js'
+      },
+      plugins: [],
+      outfile: `${outputDir}/primitives.js`
+    }),
+    esbuild.build({
+      ...config,
       entryPoints: ['src/lib/providers/provider-worker.js'],
       outfile: `${outputDir}/provider-worker.js`
     }),
@@ -110,7 +125,7 @@ async function main () {
   ])
 
   console.log(`Build took ${Date.now() - start}ms`)
-  await printSize([outfile, `${outputDir}/tooling.js`, `${outputDir}/provider-worker.js`, `${outputDir}/decryptor-worker.js`])
+  await printSize([outfile, `${outputDir}/tooling.js`, `${outputDir}/primitives.js`, `${outputDir}/provider-worker.js`, `${outputDir}/decryptor-worker.js`])
 
   // create main patched package.json
   cleanPkgJson(pkgJson)
@@ -123,6 +138,7 @@ async function main () {
   pkgJson.pkg = {
     scripts: [
       'tooling.js',
+      'primitives.js',
       'provider-worker.js',
       'decryptor-worker.js'
     ]
