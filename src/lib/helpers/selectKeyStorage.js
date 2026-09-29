@@ -19,9 +19,7 @@ async function selectKeyStorage (options = {}) {
     const entries = []
     for (const id of ids) {
       const custodian = custodians.get(id)
-      // CLI callers distinguish an explicit opt-out from a signed-out session.
-      const enabledOptions = id === 'armored' && options.allowArmorSetup ? { ...options, noArmor: false } : options
-      if (!custodian.enabled(enabledOptions) || (id === 'armored' && process.env.DOTENVX_NO_ARMOR === 'true')) continue
+      if (!custodian.enabled(options)) continue
       let name = id === 'native' ? nativeNames[process.platform] : id === 'file' ? `File ${options.fk || '.env.keys'}` : id === 'armored' ? '⛨ Dotenvx Armor' : custodian.name
       if (!await custodian.available()) {
         const command = id === 'onepassword' ? 'op' : 'bw'
