@@ -6,27 +6,35 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
+* `run` validates application requirements, warning by default and failing with `--strict`. Encryption requirements remain enforced by `check` and `protect`; loading and decryption failures still respect `run --strict`.
+
 * `spec --stdout` prints the generated Envspec without writing or replacing a file.
 
 * `spec` leaves existing Envspecs untouched with guidance to edit or run `spec --overwrite`. The new `--overwrite` flag regenerates the Envspec from selected inputs.
 
-* `encrypt` respects Envspec encryption defaults and per-key exceptions, leaving `encrypted: false` values unchanged and avoiding key generation when nothing needs encryption.
+* `encrypt` respects Envspec encryption requirements and per-key exceptions, leaving `encrypted: false` values unchanged and avoiding key generation when nothing needs encryption.
 
-* `spec` sets root `encrypted true` when any selected env file contains a `DOTENV_PUBLIC_KEY*` entry or encrypted value, preserving plaintext exceptions in declarations and file overrides.
+* Envspec requires encryption by default, including undeclared loaded keys. Root and file-level `encrypted` settings are removed; use per-key `encrypted: false` exceptions. `spec` preserves plaintext exceptions only in files that already contain ciphertext.
 
-* Git protection requires `commit true` in an adjacent Envspec before permitting plaintext under its encryption policy. `commit false` blocks staging; invalid policies and private-key files remain blocked. `spec` suggests `# commit true` in each mixed file’s block, without granting commit permission or changing the source files.
+* Git protection follows adjacent Envspec encryption rules directly: per-key `encrypted: false` permits plaintext. Remove the `commit` option and generated comment; invalid policies and private-key files remain blocked.
 
 * `check` validates the final merged environment using the same file selection and precedence as `run`. Envspec file blocks define policy without loading files. Report per-key progress and individual source diagnostics instead of settings lists.
 
-* `run` automatically follows Envspec redaction settings, even when `--redact` is passed. Without an Envspec, `--redact` retains its existing behavior, including the `_PLAIN` exception.
+* `run` automatically follows Envspec redaction settings, even when `--redact` is passed. Without an Envspec, `--redact` now exempts public names (containing `PUBLIC` or starting with `VITE`) instead of `_PLAIN` keys.
 
 ### Breaking Changes
+
+* Remove `check --strict`. Missing explicitly selected env files now fail; missing optional convention layers are skipped.
+
+* Remove root and file-level `redacted` settings. Redaction is always enabled by default; use per-key `redacted: false` exceptions.
+
+* Remove root and file-level `encrypted` settings. `run` now warns on value validation failures unless `--strict` is passed; `check` still fails. Malformed Envspecs remain fatal.
 
 * Rename `Envfile` to `Envspec`, including `ENVSPEC_REQUIRED` and `MALFORMED_ENVSPEC` error codes. Rename existing definition files to `Envspec`.
 
 * Rename `dotenvx init` to `dotenvx spec` for creating an Envspec.
 
-* Git protection no longer exempts plaintext values solely because their names end in `_PLAIN`; allow them explicitly with an Envspec commit policy.
+* Git protection no longer exempts plaintext values solely because their names end in `_PLAIN`; allow them explicitly with `encrypted: false` in Envspec.
 
 ## [2.31.1](https://github.com/dotenvx/dotenvx/compare/v2.31.0...v2.31.1) (2026-09-27)
 

@@ -22,8 +22,8 @@ function compileDeclarations (declarations) {
     if (names.has(declaration.name)) throw new Errors({ message: `Duplicate Envspec declaration: ${declaration.name}` }).malformedEnvspec()
     names.add(declaration.name)
     redactionRules.set(declaration.name, declaration.redacted !== false)
-    encryptionRules.set(declaration.name, declaration.encrypted === true)
-    if (declaration.encrypted) encryptedKeys.push(declaration.name)
+    encryptionRules.set(declaration.name, declaration.encrypted !== false)
+    if (declaration.encrypted !== false) encryptedKeys.push(declaration.name)
     if (declaration.type === 'port') {
       declaration.type = 'integer'
       if (declaration.min === undefined || BigInt(declaration.min) < 0n) declaration.min = '0'
@@ -85,9 +85,9 @@ module.exports = function readEnvspec (filepath = path.resolve('Envspec'), envFi
     throw new Errors({ message: formatEnvspecSyntaxError(error, src, filepath) }).malformedEnvspec()
   }
 
-  const defaults = { proxy: false, required: true, encrypted: document.encrypted, redacted: document.redacted }
+  const defaults = { proxy: false, required: true, encrypted: true, redacted: true }
   const base = document.declarations.map(item => ({ ...defaults, ...item }))
-  const baseSchema = { ...compileDeclarations(base), encrypted: document.encrypted, redacted: document.redacted, commit: document.commit }
+  const baseSchema = { ...compileDeclarations(base), encrypted: true, redacted: true }
   const selected = new Set(envFiles.map(file => path.resolve(file)))
   const seen = new Set()
   const active = []
@@ -99,25 +99,17 @@ module.exports = function readEnvspec (filepath = path.resolve('Envspec'), envFi
     if (seen.has(file)) throw new Errors({ message: `Duplicate Envspec file block: ${block.file}` }).malformedEnvspec()
     seen.add(file)
     const merged = new Map(base.map(item => [item.name, { ...item }]))
-    if (block.encrypted !== null && block.encrypted !== undefined) {
-      for (const item of merged.values()) item.encrypted = block.encrypted
-    }
-    if (block.redacted !== undefined) {
-      for (const item of merged.values()) item.redacted = block.redacted
-    }
     const names = new Set()
     for (const item of block.declarations) {
       if (names.has(item.name)) throw new Errors({ message: `Duplicate Envspec declaration in ${block.file}: ${item.name}` }).malformedEnvspec()
       names.add(item.name)
       merged.set(item.name, {
         ...defaults,
-        ...(block.encrypted === null || block.encrypted === undefined ? {} : { encrypted: block.encrypted }),
-        ...(block.redacted === undefined ? {} : { redacted: block.redacted }),
         ...merged.get(item.name),
         ...item
       })
     }
-    const schema = { ...compileDeclarations([...merged.values()]), encrypted: block.encrypted ?? document.encrypted, redacted: block.redacted ?? document.redacted, commit: block.commit ?? document.commit }
+    const schema = { ...compileDeclarations([...merged.values()]), encrypted: true, redacted: true }
     if (selected.has(file)) active.push(schema)
   }
   if (active.length === 0) return baseSchema
@@ -138,5 +130,5 @@ module.exports = function readEnvspec (filepath = path.resolve('Envspec'), envFi
       redactionRules.set(name, redactionRules.get(name) === true || redacted)
     }
   }
-  return { ...active[0], redacted: active.some(schema => schema.redacted), redactionRules, proxyRules, schemas: active }
+  return { ...active[0], redactionRules, proxyRules, schemas: active }
 }

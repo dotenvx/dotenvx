@@ -4,14 +4,13 @@ const { scan, encrypted } = require('@dotenvx/primitives')
 
 const normalizeEnvspec = require('../envspec/rendering/normalizeEnvspec')
 const renderEnvspec = require('../envspec/rendering/renderEnvspec')
-const plaintextKeys = require('../helpers/plaintextKeys')
+const isPublicKey = require('../helpers/isPublicKey')
 
 function declaration (name) {
   const item = { name }
   if (/(^|_)port$/i.test(name)) item.type = 'port'
   if (/(^|_)url$/i.test(name)) item.type = 'url'
-  const publicPrefixes = ['PUBLIC', 'VITE', 'NEXT_PUBLIC', 'NUXT_PUBLIC']
-  if (name.endsWith('_PLAIN') || name.includes('PUBLIC') || publicPrefixes.some(prefix => name.startsWith(prefix))) item.redacted = false
+  if (isPublicKey(name)) item.redacted = false
   return item
 }
 
@@ -46,14 +45,12 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
     for (const [key] of entries) {
       if (!/^DOTENV_PRIVATE_KEY(?:_|$)/.test(key)) names.add(key)
     }
+    const hasEncryptedValues = entries.some(([key, values]) => !/^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) && values.some(value => encrypted(value)))
     files.push({
       filename: relativeFilename(candidate),
-      suggestCommit: entries.some(([key, values]) => !/^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) && values.some(value => encrypted(value))) &&
-        plaintextKeys(src).some(key => !/^DOTENV_PRIVATE_KEY(?:_|$)/.test(key)),
       hasValues: entries.length > 0,
-      encrypted: allEntries.some(([key, values]) => key.startsWith('DOTENV_PUBLIC_KEY') || values.some(value => encrypted(value))),
       declarations: entries.filter(([key]) => !/^DOTENV_PRIVATE_KEY(?:_|$)/.test(key)).map(([key, values]) => ({
-        ...declaration(key), encrypted: values.some(value => encrypted(value))
+        ...declaration(key), encrypted: values.some(value => encrypted(value)) || (!hasEncryptedValues && !key.endsWith('_PLAIN'))
       }))
     })
   }

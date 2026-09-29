@@ -111,6 +111,7 @@ async function run () {
       options,
       processEnv: process.env,
       requireEnvspec: false,
+      validateEncryption: false,
       command: commandArgs,
       onStatus: (text) => {
         if (spinner && text) spinner.text = text
@@ -133,10 +134,10 @@ async function run () {
     if (error) {
       if (ignore.includes(error.code)) {
         logger.verbose(`ignored: ${error.message}`)
-      } else if (options.strict || hasEnvspec) {
+      } else if (options.strict) {
         throw error
       } else {
-        logger.error(error.messageWithHelp || error.message)
+        logger.warn(error.messageWithHelp || error.message)
       }
     }
 

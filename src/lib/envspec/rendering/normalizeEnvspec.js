@@ -4,11 +4,11 @@ module.exports = function normalizeEnvspec ({ files, codeDeclarations = [] }) {
   const rootFiles = []
   const environments = []
   for (const file of files) {
-    if (!file.suggestCommit && (file.filename === '.env.example' || (file.filename === '.env' && !hasNamedEnvironment))) rootFiles.push(file)
+    if ((file.filename === '.env.example' || (file.filename === '.env' && !hasNamedEnvironment))) rootFiles.push(file)
     else environments.push(file)
   }
 
-  const encrypted = files.some(file => file.encrypted)
+  const encrypted = true
   const root = new Map()
   for (const file of rootFiles) {
     for (const item of file.declarations) {
@@ -22,22 +22,19 @@ module.exports = function normalizeEnvspec ({ files, codeDeclarations = [] }) {
       const matches = environments.map(file => file.declarations.find(other => other.name === item.name))
       if (!root.has(item.name) && matches.every(other => other && other.type === item.type && other.optional === item.optional)) {
         // Keep encryption differences in their file scopes, not the shared declaration.
-        root.set(item.name, { ...item, encrypted })
+        root.set(item.name, { ...item, encrypted: matches.some(other => other.encrypted !== false) })
       }
     }
   }
 
   const blocks = environments.map(file => {
-    const overridesEncryption = file.encrypted !== encrypted
     const declarations = file.declarations.flatMap(item => {
       const inherited = root.get(item.name)
-      const defaults = inherited
-        ? { ...inherited, encrypted: overridesEncryption ? file.encrypted : inherited.encrypted }
-        : { encrypted: file.encrypted }
+      const defaults = inherited || { encrypted: true }
       const overrides = Object.fromEntries(Object.entries(item).filter(([key, value]) => key !== 'name' && value !== defaults[key]))
       return inherited && !Object.keys(overrides).length ? [] : [{ name: item.name, ...overrides }]
     })
-    return { filename: file.filename, ...(file.suggestCommit ? { suggestCommit: true } : {}), ...(overridesEncryption ? { encrypted: file.encrypted } : {}), declarations }
+    return { filename: file.filename, declarations }
   })
 
   const names = new Set(files.flatMap(file => file.declarations.map(item => item.name)))
@@ -52,5 +49,5 @@ module.exports = function normalizeEnvspec ({ files, codeDeclarations = [] }) {
     if (result.encrypted === encrypted) delete result.encrypted
     return result
   })
-  return { encrypted, redacted: true, declarations, files: blocks, codeDeclarations: code }
+  return { declarations, files: blocks, codeDeclarations: code }
 }

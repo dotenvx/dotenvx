@@ -7,10 +7,18 @@ const validateEnvspec = require('../envspec/validation/validateEnvspec')
 const normalizeDotenvConfigPath = require('../helpers/normalizeDotenvConfigPath')
 const Errors = require('../helpers/errors')
 const { determine } = require('../helpers/envResolution')
+const path = require('node:path')
+const resolveDirectoryFilepath = require('../helpers/resolveDirectoryFilepath')
 
 // Load once and validate the final values; callers own presentation and execution.
-module.exports = async function validate ({ envs = [], options = {}, processEnv = { ...process.env }, requireEnvspec = true, command, onStatus, onKey } = {}) {
-  envs = buildCommandEnvs(normalizeDotenvConfigPath(envs, processEnv), options.convention)
+module.exports = async function validate ({ envs = [], options = {}, processEnv = { ...process.env }, requireEnvspec = true, validateEncryption = true, command, onStatus, onKey } = {}) {
+  envs = normalizeDotenvConfigPath(envs, processEnv)
+  const requiredFilepaths = new Set(envs.filter(env => env.type === 'envFile').flatMap(env => {
+    const resolved = resolveDirectoryFilepath(env.value, '.env')
+    // A directory with a convention selects optional layers rather than one file.
+    return options.convention && resolved !== env.value ? [] : [path.resolve(resolved)]
+  }))
+  envs = buildCommandEnvs(envs, options.convention)
   envs = determine(envs, processEnv)
   const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
   if (requireEnvspec && !schema.exists) throw new Errors().envspecRequired()
@@ -49,12 +57,13 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
     processEnv,
     processedEnvs,
     readableFilepaths,
+    requiredFilepaths,
     hasEnvspec: schema.exists,
     schema,
     proxyCredentials,
     proxyToken,
     session,
     proxyError,
-    validationError: validateEnvspec(schema, processEnv, processedEnvs, onKey)
+    validationError: validateEnvspec(schema, processEnv, processedEnvs, onKey, { validateEncryption })
   }
 }

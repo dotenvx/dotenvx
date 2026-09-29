@@ -1311,17 +1311,17 @@ Run any command with real environment variables while automatically redacting va
 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
-$ echo "VISIBLE_PLAIN=visible-value" >> .env
-$ echo "console.log(process.env.SECRET, process.env.VISIBLE_PLAIN)" > index.js
+$ echo "PUBLIC_VALUE=visible-value" >> .env
+$ echo "console.log(process.env.SECRET, process.env.PUBLIC_VALUE)" > index.js
 
 $ dotenvx spec
 $ dotenvx run --quiet -- node index.js
 [REDACTED] visible-value
 ```
 
-With an Envspec, set `redacted true` at the root and use `redacted: false` on individual declarations to leave those values visible. `spec` generates these settings, including public-name exceptions. If an existing environment variable takes precedence, its effective value follows the same rules. Matching is exact, so transformed or derived values are not redacted.
+With an Envspec, all values are redacted by default. Use `redacted: false` on individual declarations to leave those values visible. `spec` generates these settings, including public-name exceptions. If an existing environment variable takes precedence, its effective value follows the same rules. Matching is exact, so transformed or derived values are not redacted.
 
-Without an Envspec, `dotenvx run --redact -- yourcommand` redacts loaded values except keys ending in `_PLAIN`. Without either an Envspec or `--redact`, output is not redacted. An Envspec always takes precedence: its rules apply automatically, even when `--redact` is passed.
+Without an Envspec, `dotenvx run --redact -- yourcommand` redacts loaded values except recognized public names (containing `PUBLIC` or starting with `VITE`, case-sensitive). `_PLAIN` values are redacted too. Without either an Envspec or `--redact`, output is not redacted. An Envspec always takes precedence: its rules apply automatically, even when `--redact` is passed.
 
 When stdin, stdout, and stderr are attached to a terminal, dotenvx preserves interactive behavior on macOS and Linux systems with `script` available. Piped and redirected commands continue to use normal stdin, stdout, and stderr streams.
 
@@ -1569,7 +1569,7 @@ Available log levels are `error, warn, info, verbose, debug, silly` ([source](ht
 </details>
 <details><summary>`run with an Envspec`</summary><br>
 
-When an `Envspec` is present, `run` automatically validates the resolved environment before starting your command. No validation flag is needed.
+When an `Envspec` is present, `run` automatically validates application requirements (required values, types, enums, and ranges) before starting your command. Storage encryption requirements are enforced by `check` and `protect`, not `run`. No validation flag is needed.
 
 ```ruby
 # Envspec
@@ -1583,26 +1583,26 @@ $ dotenvx run -- node index.js
 [INVALID_ENV] DATABASE_URL is required; API_KEY is required
 ```
 
-Envspec validation failures stop the command. Other loading errors require `--strict` to stop execution.
+Envspec value validation failures warn by default; `run --strict` stops before launching the command. `check` always fails validation. Invalid Envspec syntax still stops execution. No root `strict` setting is supported.
 
 Envspec values default to `redacted: true`: `run` masks their values in child stdout/stderr and resolved-value debug output, while the child still receives the real values. Set `redacted: false` for values that may appear in output. This is independent of `encrypted: true`, which requires an encrypted source.
 
 ```ruby
-redacted true
-
 file ".env.development" do
   env "BASE_URL", type: "url", redacted: false
   env "TOKEN_SECRET", encrypted: true
 end
 ```
 
-On first creation, `spec` writes explicit `encrypted true/false` and `redacted true` defaults at the root. It infers `redacted: false` for names ending in `_PLAIN`, starting with `PUBLIC`, `VITE`, `NEXT_PUBLIC`, or `NUXT_PUBLIC`, or containing `PUBLIC` anywhere (case-sensitive, matching Varlock’s public-name inference). Public matches take precedence even when the name also contains `SECRET` or `TOKEN`. Other names remain redacted, even if their current values are plaintext. If any selected env file contains a `DOTENV_PUBLIC_KEY*` entry or an encrypted value, `spec` writes root `encrypted true`. Plaintext declarations in those files get `encrypted: false`; files with neither signal retain a file-level `encrypted false` override when needed. If no selected file has either signal, the root stays `encrypted false`. When an individual selected file contains both encrypted and nonempty plaintext values, `spec` adds a commented `# commit true` inside that file’s block (including `.env`); public encryption keys, private keys, empty values, and secret-manager references do not trigger this inference. Separate fully encrypted and fully plaintext files do not trigger it either. Source env files are never modified.
+`spec` generates declarations with encryption and redaction required by default. Encryption is required by default: root and file-level `encrypted` settings are not supported. Use `encrypted: false` on individual declarations to permit plaintext. Entirely plaintext inputs generate no encryption exceptions except for keys ending in `_PLAIN`, so the next `encrypt` encrypts the remaining values. `_PLAIN` keys get `encrypted: false` only when none of their assignments contain ciphertext; code-only references do not infer this exception. For files that already contain ciphertext, `spec` preserves plaintext values with per-key exceptions. Source files are never modified.
+
+`spec` infers `redacted: false` for names starting with `PUBLIC`, `VITE`, `NEXT_PUBLIC`, or `NUXT_PUBLIC`, or containing `PUBLIC` anywhere (case-sensitive). This affects visibility only; public names still require encryption unless explicitly exempted. Other names, including those ending in `_PLAIN`, remain redacted.
 
 If an Envspec already exists, `spec` leaves it untouched and prints `○ Envspec already exists [edit or run: spec --overwrite]`. Use `spec --overwrite` to regenerate it from the selected inputs, replacing custom rules, comments, and blocks for files absent from this machine. Interactive overwrite runs show the full file-and-code checklist with the prompt `Recreate Envspec from .env files and code`. Noninteractive runs use `.env.example` and `.env`, or the file selected with `-f`. Input validation finishes before the old Envspec is replaced; cancelled selection leaves it untouched. Symlinked Envspecs cannot be overwritten.
 
 Use `dotenvx spec --stdout` to print the generated Envspec without writing it, or `dotenvx spec --stdout -f .env.production` to select an input file. This works even when an Envspec already exists; `--stdout` leaves it untouched even with `--overwrite`. Prompts and progress stay on stderr so stdout contains only the generated content.
 
-Root and file blocks accept `redacted true` or `redacted false`; individual `redacted:` options override inherited settings. When selected file policies disagree about a variable, redaction wins. `check` shows individual issues or a compact success summary without displaying values.
+Root and file-level `redacted` settings are not supported. Use per-key `redacted: false` to permit output visibility. When selected file policies disagree about a variable, redaction wins. `check` shows individual issues or a compact success summary without displaying values.
 
 
 </details>
@@ -1616,7 +1616,6 @@ env "PORT", type: "port"
 env "STRIPE_SECRET_KEY", optional: true
 
 file ".env.production" do
-  encrypted true
   env "STRIPE_SECRET_KEY", required: true
   env "PORT", min: 1024
 end
@@ -1645,33 +1644,27 @@ Envspec `file` blocks define policy; they do not select files to load. By defaul
 
 All selected sources are merged before validation. The first file wins by default, existing shell values take precedence, and `--overload` lets later sources override earlier values. Partial files can satisfy the schema together. Encryption requirements apply to the source of the winning value, not to every overridden assignment on disk. Each selected file block's inherited rules must hold for the final environment, just as with `run`.
 
-Missing layers are reported as `○ skipped (filename)` unless `--strict` makes missing files an error. Required values must still resolve; shell or inline values can satisfy the schema without a local file. A check with no readable files, inline values, or declared shell values fails rather than reporting an empty success.
+Missing files explicitly selected with `-f` or `DOTENV_FILE` (and its aliases) fail the check. Missing optional convention layers and implicit default files are reported as `○ skipped (filename)`. `check` has no `--strict` flag. Required values must still resolve; shell or inline values can satisfy the schema without a local file. A check with no readable files, inline values, or declared shell values fails rather than reporting an empty success.
 
 On interactive terminals, a single progress line updates with the key being checked. CI and redirected output have no animation. All check output goes to stderr. Success names the loaded sources; validation failures use one diagnostic per issue with the winning source location where available. Shell and inline overrides are identified separately. Failed checks exit with code 1.
 
 </details>
 <details><summary>`protect with an Envspec`</summary><br>
 
-The Git protection filter reads `Envspec` in the same directory as the file being staged. By default, plaintext values remain blocked even when the Envspec says `encrypted false`. Use `commit true` to allow plaintext permitted by the encryption policy:
+The Git protection filter reads `Envspec` in the same directory as the file being staged. Encryption is required by default. Keys explicitly marked `encrypted: false` may be committed as plaintext:
 
 ```ruby
-commit true
-redacted true
-encrypted true
-
 env "BASE_URL", encrypted: false
 env "TOKEN_SECRET"
 ```
 
-This permits plaintext `BASE_URL` while requiring `TOKEN_SECRET` and undeclared keys to be encrypted. With `commit true`, a root or matching file-level `encrypted false` permits plaintext by default. `redacted` only controls output visibility.
+This permits plaintext `BASE_URL` while requiring `TOKEN_SECRET` and undeclared keys to be encrypted. Only keys explicitly marked `encrypted: false` may remain plaintext. `redacted` only controls output visibility.
 
-`commit` accepts `true` or `false` at the root or inside a file block. File settings override the root. `commit false` blocks staging even when every value is encrypted. With no setting, protection requires encryption, retaining the exemptions for `.env.example`, `.env.vault`, and `.env.x`. A `_PLAIN` suffix alone no longer permits plaintext through Git protection.
+Without an Envspec, protection keeps its existing rules, including exemptions for `.env.example`, `.env.vault`, and `.env.x`. A `_PLAIN` suffix alone does not permit plaintext through Git protection.
 
-`spec` adds a commented `# commit true` inside each file block containing a mixture of encrypted and plaintext values. Uncomment it to permit committing that file under its encryption rules. Generation never grants commit permission automatically.
+Protection inspects every assignment in the incoming Git blob, including duplicates. It does not merge files, use shell overrides, or decrypt values. Empty values, public encryption keys, and `op://` / `bw://` references remain allowed. Private-key files (`.env.keys*`) and nonempty plaintext `DOTENV_PRIVATE_KEY` values remain blocked even with `encrypted: false`.
 
-Protection inspects every assignment in the incoming Git blob, including duplicates. It does not merge files, use shell overrides, or decrypt values. Empty values, public encryption keys, and `op://` / `bw://` references remain allowed. Private-key files (`.env.keys*`) and nonempty plaintext `DOTENV_PRIVATE_KEY` values remain blocked regardless of commit permission.
-
-The policy is read from the working-tree Envspec beside the staged file, even if that policy itself is unstaged. Parent directories are not searched. Invalid or unreadable policies block staging with an error. An explicit commit policy also applies to otherwise exempt files such as `.env.example`.
+The policy is read from the working-tree Envspec beside the staged file, even if that policy itself is unstaged. Parent directories are not searched. Invalid or unreadable policies block staging with an error. Envspec encryption rules also apply to otherwise exempt files such as `.env.example`.
 
 Accepted blobs pass through byte-for-byte. This integration applies to Git protection, not `protect --docker`.
 
@@ -2338,7 +2331,7 @@ $ dotenvx del HELLO -f .env.production
 
 Encrypt the contents of a `.env` file to an encrypted `.env` file.
 
-When the current directory contains an Envspec, `encrypt` respects its root, matching file-block, and per-key encryption settings. Values with effective `encrypted: false` remain unchanged, including any existing ciphertext. Root or file-level `encrypted true` also covers undeclared keys. The policy applies even with `--key` or `--stdout`; `--exclude-key` can further narrow the selection. If no values need encryption, no keypair is generated. Invalid Envspecs fail rather than falling back to encrypting everything. The Envspec itself is never modified.
+When the current directory contains an Envspec, `encrypt` encrypts all keys except those explicitly marked `encrypted: false` in the applicable declarations. Values with effective `encrypted: false` remain unchanged, including any existing ciphertext. Undeclared keys require encryption too; `check` validates loaded keys and their shell overrides without checking unrelated host environment variables. `run` validates application requirements without enforcing storage encryption. The policy applies even with `--key` or `--stdout`; `--exclude-key` can further narrow the selection. If no values need encryption, no keypair is generated. Invalid Envspecs fail rather than falling back to encrypting everything. The Envspec itself is never modified.
 
 ```sh
 $ echo "HELLO=World" > .env

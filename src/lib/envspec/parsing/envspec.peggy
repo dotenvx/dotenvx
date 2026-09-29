@@ -1,26 +1,16 @@
 Document
-  = _ defaults:Defaults _ entries:((FileBlock / Declaration) _)* {
-      return { encrypted: false, redacted: true, ...defaults, declarations: entries.map(item => item[0]).filter(item => !item.file), files: entries.map(item => item[0]).filter(item => item.file) };
+  = _ entries:((FileBlock / Declaration) _)* {
+      return { declarations: entries.map(item => item[0]).filter(item => !item.file), files: entries.map(item => item[0]).filter(item => item.file) };
     }
 
 FileBlock
-  = "file" [ \t]+ file:Filename [ \t]+ "do" [ \t]* Comment? Newline _ defaults:Defaults _ declarations:(Declaration _)* "end" [ \t]* Comment? (Newline / !.) {
-      return { file, ...defaults, declarations: declarations.map(item => item[0]) };
+  = "file" [ \t]+ file:Filename [ \t]+ "do" [ \t]* Comment? Newline _ declarations:(Declaration _)* "end" [ \t]* Comment? (Newline / !.) {
+      return { file, declarations: declarations.map(item => item[0]) };
     }
 
 Filename "a quoted filename"
   = '"' value:$([^"\r\n\0]+) '"' { return value; }
   / "'" value:$([^'\r\n\0]+) "'" { return value; }
-
-Defaults
-  = items:(key:("encrypted" / "redacted" / "commit") [ \t]+ value:Boolean [ \t]* Comment? (Newline / !.) _ { return { key, value }; })* {
-      const defaults = {};
-      for (const { key, value } of items) {
-        if (key in defaults) error(`Duplicate Envspec default: ${key}`);
-        defaults[key] = value;
-      }
-      return defaults;
-    }
 
 Declaration
   = "env" [ \t]+ name:Name options:Option* [ \t]* Comment? (Newline / !.) {

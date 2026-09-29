@@ -6,6 +6,7 @@ const diagnosticLocations = require('../../lib/envspec/validation/diagnosticLoca
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
+const path = require('node:path')
 
 async function check () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
@@ -22,7 +23,7 @@ async function check () {
   }
 
   try {
-    const { processedEnvs, readableFilepaths, proxyError, validationError, schema, processEnv } = await prepareValidatedEnv({
+    const { processedEnvs, readableFilepaths, requiredFilepaths, proxyError, validationError, schema, processEnv } = await prepareValidatedEnv({
       envs: this.envs,
       options,
       onStatus: text => { if (spinner && text) spinner.text = text },
@@ -35,7 +36,7 @@ async function check () {
     for (const row of processedEnvs) {
       for (const error of row.errors || []) {
         if (ignore.includes(error.code)) continue
-        if (error.code === 'MISSING_ENV_FILE' && !options.strict) {
+        if (error.code === 'MISSING_ENV_FILE' && !requiredFilepaths.has(path.resolve(row.filepath))) {
           report('infoerror', `○ skipped (${row.filepath})`)
           continue
         }

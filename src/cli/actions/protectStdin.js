@@ -24,11 +24,9 @@ function check (filepath, content, beforeError = () => {}) {
   const filename = path.posix.basename(filepath)
   const privateKeyFile = filename.startsWith('.env.keys')
   let rejected = null
-  let policy
   if (!privateKeyFile) {
     try {
-      policy = protectEnvspec(filepath, content.toString('utf8'))
-      rejected = policy?.rejected ?? null
+      rejected = protectEnvspec(filepath, content.toString('utf8'))
     } catch (error) {
       beforeError()
       logger.error(error.message)
@@ -40,16 +38,12 @@ function check (filepath, content, beforeError = () => {}) {
     : rejected.length > 0
   if (privateKeyFile || plaintext) {
     const code = privateKeyFile ? 'PRIVATE_KEY_FILE' : 'PLAINTEXT_ENV'
-    const fix = policy?.commitRequired
-      ? 'fix: add [commit true] to Envspec'
-      : fixMessage(filepath, privateKeyFile)
+    const fix = fixMessage(filepath, privateKeyFile)
     const message = privateKeyFile
       ? `refusing to stage ${JSON.stringify(filepath)}`
-      : policy?.commitRequired
-        ? `${JSON.stringify(filepath)} contains permitted plaintext but lacks commit true`
-        : rejected?.length
-          ? `${rejected.join(', ')} not encrypted (${JSON.stringify(filepath)})`
-          : `${JSON.stringify(filepath)} contains plaintext secrets`
+      : rejected?.length
+        ? `${rejected.join(', ')} not encrypted (${JSON.stringify(filepath)})`
+        : `${JSON.stringify(filepath)} contains plaintext secrets`
     beforeError()
     logger.error(`[${code}] ${message}. ${fix}`)
     return false

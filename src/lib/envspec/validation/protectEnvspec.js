@@ -14,16 +14,5 @@ module.exports = function protectEnvspec (filepath, content) {
     return null
   }
 
-  if (schema.commit === false) {
-    throw new Error(`[COMMIT_DISABLED] refusing to stage ${JSON.stringify(filepath)}: commit false in Envspec`)
-  }
-  const plaintext = plaintextKeys(content)
-  const rejected = plaintext.filter(key => /^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) || (schema.encryptionRules.get(key) ?? schema.encrypted))
-  if (schema.commit !== true) {
-    return {
-      rejected: null,
-      commitRequired: plaintext.length > 0 && rejected.length === 0
-    }
-  }
-  return { rejected }
+  return plaintextKeys(content).filter(key => /^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) || (schema.encryptionRules.get(key) ?? true))
 }

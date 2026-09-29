@@ -1,4 +1,4 @@
-const isPlainKey = require('./cryptography/isPlainKey')
+const isPublicKey = require('./isPublicKey')
 
 function redactedValues (processedEnvs, schema, processEnv = {}, legacyRedact = false) {
   if (!schema?.exists && !legacyRedact) return []
@@ -15,7 +15,7 @@ function redactedValues (processedEnvs, schema, processEnv = {}, legacyRedact = 
     }
 
     for (const [key, value] of Object.entries(values)) {
-      const redacted = schema?.exists ? (schema.redactionRules.get(key) ?? schema.redacted) : !isPlainKey(key)
+      const redacted = schema?.exists ? (schema.redactionRules.get(key) ?? schema.redacted) : !isPublicKey(key)
       if (!redacted) continue
       if (value === undefined || value === null || value === '') continue
 
