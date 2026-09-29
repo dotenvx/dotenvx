@@ -236,7 +236,8 @@ class Errors {
   envspecRequired () {
     const e = new Error('[ENVSPEC_REQUIRED] check requires an Envspec')
     e.code = 'ENVSPEC_REQUIRED'
-    e.messageWithHelp = e.message
+    e.help = 'fix: run [dotenvx spec]'
+    e.messageWithHelp = `${e.message}. ${e.help}`
     return e
   }
 

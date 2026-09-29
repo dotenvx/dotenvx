@@ -1569,7 +1569,7 @@ Available log levels are `error, warn, info, verbose, debug, silly` ([source](ht
 </details>
 <details><summary>`run with an Envspec`</summary><br>
 
-When an `Envspec` is present, `run` automatically validates application requirements (required values, types, enums, and ranges) before starting your command. Storage encryption requirements are enforced by `check` and `protect`, not `run`. No validation flag is needed.
+When an `Envspec` is present, `run` and `check` validate the same requirements: required values, types, enums, ranges, and storage encryption. No validation flag is needed. `run` performs validation before starting your command.
 
 ```ruby
 # Envspec
@@ -1583,7 +1583,7 @@ $ dotenvx run -- node index.js
 [INVALID_ENV] DATABASE_URL is required; API_KEY is required
 ```
 
-Envspec value validation failures warn by default; `run --strict` stops before launching the command. `check` always fails validation. Invalid Envspec syntax still stops execution. No root `strict` setting is supported.
+Envspec validation failures, including unencrypted values, warn by default; `run --strict` stops before launching the command. A `strict true` setting in Envspec, at the root or in an active file block, also makes its validation failures fatal. `check` always exits with failure when validation fails. Strictness changes enforcement, not which rules are checked. Invalid Envspec syntax always stops execution.
 
 Envspec values default to `redacted: true`: `run` masks their values in child stdout/stderr and resolved-value debug output, while the child still receives the real values. Set `redacted: false` for values that may appear in output. This is independent of `encrypted: true`, which requires an encrypted source.
 
@@ -2331,7 +2331,7 @@ $ dotenvx del HELLO -f .env.production
 
 Encrypt the contents of a `.env` file to an encrypted `.env` file.
 
-When the current directory contains an Envspec, `encrypt` encrypts all keys except those explicitly marked `encrypted: false` in the applicable declarations. Values with effective `encrypted: false` remain unchanged, including any existing ciphertext. Undeclared keys require encryption too; `check` validates loaded keys and their shell overrides without checking unrelated host environment variables. `run` validates application requirements without enforcing storage encryption. The policy applies even with `--key` or `--stdout`; `--exclude-key` can further narrow the selection. If no values need encryption, no keypair is generated. Invalid Envspecs fail rather than falling back to encrypting everything. The Envspec itself is never modified.
+When the current directory contains an Envspec, `encrypt` encrypts all keys except those explicitly marked `encrypted: false` in the applicable declarations. Values with effective `encrypted: false` remain unchanged, including any existing ciphertext. Undeclared keys require encryption too; both `run` and `check` validate loaded keys and their shell overrides without checking unrelated host environment variables. `run` warns on validation failures by default and refuses to launch when strictness is enabled; `check` exits with failure. The policy applies even with `--key` or `--stdout`; `--exclude-key` can further narrow the selection. If no values need encryption, no keypair is generated. Invalid Envspecs fail rather than falling back to encrypting everything. The Envspec itself is never modified.
 
 ```sh
 $ echo "HELLO=World" > .env

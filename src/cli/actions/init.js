@@ -55,8 +55,10 @@ module.exports = async function spec () {
       process.stdout.write(content)
       return
     }
-    if (created) logger.success(replaced ? '◈ recreated (Envspec)' : '◈ created (Envspec)')
-    else logger.info('○ Envspec already exists [edit or run: spec --overwrite]')
+    if (created) {
+      logger.success(replaced ? '◈ recreated (Envspec)' : '◈ created (Envspec)')
+      logger.help('⮕ next run [dotenvx check]')
+    } else logger.info('○ Envspec already exists [edit or run: spec --overwrite]')
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
