@@ -62,9 +62,12 @@ for (const name of ['encrypt', 'set']) {
     for (const env of envFiles) fs.writeFileSync(env, 'HELLO=world\n')
     const fk = path.join(dir, 'custom.keys')
     const { registry, counts } = setup(() => 'test-passphrase')
-    const transform = proxyquire(`../../../src/lib/transforms/${name}`, {
-      '../helpers/selectKeyStorage': async () => ({ id: 'file', lock: true }),
+    const storeKeyStorage = proxyquire('../../../src/lib/helpers/storeKeyStorage', {
+      './selectKeyStorage': async () => ({ id: 'file', lock: true }),
       '../custodians': registry
+    })
+    const transform = proxyquire(`../../../src/lib/transforms/${name}`, {
+      '../helpers/storeKeyStorage': storeKeyStorage
     })
     const result = await transform({
       envs: envFiles.map(value => ({ type: 'envFile', value })),
