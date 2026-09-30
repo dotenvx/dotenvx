@@ -310,6 +310,8 @@ jobs:
           node esbuild.js --minify
           cd ./build
           ../node_modules/.bin/pkg . --public-packages "*" --public --target node20-linuxstatic-x86_64 --output ../bin/linux-x86_64/dotenvx
+      - name: verify packaged startup stays under 200 ms
+        run: node .github/scripts/check-startup.js bin/linux-x86_64/dotenvx
       - name: verify version
         run: |
           cd bin/linux-x86_64/
