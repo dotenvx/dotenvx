@@ -30,6 +30,10 @@ const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgno
 const normalizeDotenvConfigPath = require('./helpers/normalizeDotenvConfigPath')
 const mask = require('./helpers/mask')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
+const readEnvspec = require('./envspec/parsing/readEnvspec')
+const validateEnvspec = require('./envspec/validation/validateEnvspec')
+const redactedValues = require('./helpers/redactedValues')
+const { redactOutput } = require('./helpers/redactOutput')
 
 function uniqueInjectedKeys (processedEnvs) {
   const result = new Set()
@@ -75,10 +79,17 @@ const config = function (options = {}, events) {
   const noArmor = resolveNoArmor(options)
   const noNative = resolveNoNative(options)
 
+  let fatal = false
+  let sensitiveValues = []
   try {
     let envs = normalizeDotenvConfigPath(buildConfigEnvs(options))
     if (!options.envs) {
       envs = determine(envs, processEnv)
+    }
+    const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+    if (schema.proxyRules.size > 0) {
+      fatal = true
+      throw new Error('Envspec proxy is not supported by synchronous config(). Use dotenvx run -- yourcommand.')
     }
     const {
       processedEnvs,
@@ -96,6 +107,9 @@ const config = function (options = {}, events) {
       noSpinner: options.noSpinner,
       token: options.token
     })
+
+    const validationError = validateEnvspec(schema, processEnv, processedEnvs)
+    sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
 
     if (options.mask !== undefined) {
       const showChar = options.mask === true ? 6 : options.mask
@@ -116,7 +130,13 @@ const config = function (options = {}, events) {
           continue // ignore error
         }
 
-        if (strict) throw error // throw if strict and not ignored
+        const policyStrict = processedEnv.type === 'envFile'
+          ? (schema.strictByFile?.get(path.resolve(processedEnv.filepath)) ?? schema.strict)
+          : schema.strict
+        if (strict || policyStrict) {
+          fatal = true
+          throw error
+        }
 
         lastError = error // surface later in { error }
 
@@ -133,18 +153,30 @@ const config = function (options = {}, events) {
       Object.assign(parsedAll, processedEnv.existed || {}) // existed 'wins'
 
       // debug parsed
-      logger.debug(processedEnv.parsed)
+      logger.debug(redactOutput(processedEnv.parsed, sensitiveValues))
 
       // verbose/debug injected key/value
       for (const [key, value] of Object.entries(processedEnv.injected || {})) {
         logger.verbose(`${key} set`)
-        logger.debug(`${key} set to ${value}`)
+        logger.debug(redactOutput(`${key} set to ${value}`, sensitiveValues))
       }
 
       // verbose/debug existed key/value
       for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
+        logger.debug(redactOutput(`${key} pre-exists as ${value} (protip: use --overload to override)`, sensitiveValues))
+      }
+    }
+
+    if (validationError) {
+      if (ignore.includes(validationError.code)) {
+        logger.verbose(`ignored: ${validationError.message}`)
+      } else if (strict || validationError.diagnostics?.some(diagnostic => diagnostic.strict)) {
+        fatal = true
+        throw validationError
+      } else {
+        logger.warn(validationError.messageWithHelp || validationError.message)
+        lastError = validationError
       }
     }
 
@@ -163,9 +195,9 @@ const config = function (options = {}, events) {
     }
   } catch (error) {
     if (events) events.fail(error)
-    if (strict) throw error // throw immediately if strict
+    if (strict || fatal || error.code === 'MALFORMED_ENVSPEC') throw error
 
-    logger.error(error.messageWithHelp || error.message)
+    logger.error(redactOutput(error.messageWithHelp || error.message, sensitiveValues))
 
     return { parsed: {}, error }
   }

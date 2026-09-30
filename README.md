@@ -1587,6 +1587,8 @@ Envspec validation failures, including unencrypted values, warn by default; `run
 
 Envspec values default to `redacted: true`: `run` masks their values in child stdout/stderr and resolved-value debug output, while the child still receives the real values. Set `redacted: false` for values that may appear in output. This is independent of `encrypted: true`, which requires an encrypted source.
 
+The synchronous `dotenvx.config()` API also reads `Envspec` from the current working directory and validates the final resolved values using the same rules, including selected file blocks and storage encryption. Validation failures warn and are returned in `{ parsed, error }`; `config({ strict: true })` or an applicable Envspec `strict true` setting makes failures throw. `ignore: ['INVALID_ENV']` suppresses validation failures. Invalid Envspec syntax always throws before loading values. Envspec redaction applies to dotenvx's own resolved-value debug logs; application output and returned values retain their real values. Active proxy declarations throw before loading values because synchronous `config()` cannot start the proxy; use `dotenvx run -- yourcommand` for those policies.
+
 ```ruby
 file ".env.development" do
   env "BASE_URL", type: "url", redacted: false

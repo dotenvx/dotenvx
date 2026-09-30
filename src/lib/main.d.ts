@@ -110,6 +110,7 @@ export interface DotenvConfigOptions {
 
   /**
    * Throw immediately if an error is encountered - like a missing .env file.
+   * Includes Envspec validation failures. Envspec strict settings also enforce throwing.
    * @default false
    * @example require('@dotenvx/dotenvx').config({ strict: true })
    */
@@ -255,6 +256,9 @@ export interface DotenvPopulateInput {
 
 /**
  * Loads `.env` file contents into process.env by default.
+ * Reads Envspec from the current directory and validates the final resolved environment.
+ * Validation failures warn and return an error, or throw when strictness is enabled.
+ * Invalid Envspec syntax and active proxy rules always throw; use run for proxy support.
  *
  * @see https://dotenvx.com/docs
  *
