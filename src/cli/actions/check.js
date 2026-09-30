@@ -34,7 +34,7 @@ async function check () {
     checked.push(...readableFilepaths)
     if (processedEnvs.some(row => row.type === 'env' && Object.keys(row.parsed || {}).length)) checked.push('--env')
     if (checked.length === 0 && [...schema.redactionRules.keys()].some(key => processEnv[key] !== undefined)) checked.push('shell environment')
-    const location = diagnosticLocations(processedEnvs, checked.join(', ') || 'Envspec')
+    const location = diagnosticLocations(processedEnvs, checked.join(', ') || 'Dotenvspec')
     for (const row of processedEnvs) {
       for (const error of row.errors || []) {
         if (ignore.includes(error.code)) continue

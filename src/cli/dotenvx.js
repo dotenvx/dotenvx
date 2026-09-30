@@ -78,7 +78,7 @@ program.command('run')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('--token <token>', 'set Armor ⛨ token')
   .option('--mask [characters]', 'inject masked values, optionally setting visible characters')
-  .option('--redact', 'redact injected values except public keys (Envspec rules take precedence)', false)
+  .option('--redact', 'redact injected values except public keys (Dotenvspec rules take precedence)', false)
   .option('--lock-password <password>', 'password to unlock private keys (defaults to DOTENVX_LOCK_PASSWORD)')
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
@@ -226,9 +226,9 @@ program.command('ls', { hidden: true })
 
 // dotenvx spec
 program.command('spec', { hidden: true })
-  .description('create an Envspec')
+  .description('create a Dotenvspec')
   .option('--stdout', 'send to stdout')
-  .option('--overwrite', 'replace existing Envspec, including custom rules, comments, and missing-file blocks')
+  .option('--overwrite', 'replace existing Dotenvspec, including custom rules, comments, and missing-file blocks')
   .option('-f, --env-file <path>', 'file to read variable names from')
   .action(function () {
     return commandAction(require('./actions/init')).apply(this, arguments)
@@ -236,7 +236,7 @@ program.command('spec', { hidden: true })
 
 // dotenvx check
 program.command('check', { hidden: true })
-  .description('check Envspec rules against .env file(s)')
+  .description('check Dotenvspec rules against .env file(s)')
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
   .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
@@ -336,7 +336,7 @@ function hiddenSubcommands (name) {
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n  spec                   create an Envspec\n  check                  check Envspec rules against .env file(s)\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
+  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n  spec                   create a Dotenvspec\n  check                  check Dotenvspec rules against .env file(s)\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
   .action(function () { this.outputHelp() })
 
 // dotenvx update
