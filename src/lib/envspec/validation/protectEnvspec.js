@@ -2,13 +2,14 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { execFileSync } = require('node:child_process')
 const readEnvspec = require('../parsing/readEnvspec')
+const resolveEnvspecPath = require('../parsing/resolveEnvspecPath')
 const plaintextKeys = require('../../helpers/plaintextKeys')
 
 function readPolicy (policyPath, file) {
   const schema = readEnvspec(policyPath, [file])
   if (!schema.exists) {
     // A dangling policy symlink is a broken policy, not an absent policy.
-    if (fs.lstatSync(policyPath, { throwIfNoEntry: false })) throw new Error(`Cannot read Envspec: ${policyPath}`)
+    if (fs.lstatSync(policyPath, { throwIfNoEntry: false })) throw new Error(`Cannot read Dotenvspec: ${policyPath}`)
     return null
   }
   return schema
@@ -18,7 +19,9 @@ function readPolicy (policyPath, file) {
 module.exports = function protectEnvspec (filepath, content) {
   const file = path.resolve(filepath)
   const directory = path.dirname(file)
-  let schema = readPolicy(path.join(directory, 'Envspec'), file)
+  let schema = process.env.DOTENV_SPEC !== undefined
+    ? readEnvspec(undefined, [file])
+    : readPolicy(resolveEnvspecPath(directory), file)
   if (!schema) {
     let root
     try {
@@ -31,7 +34,7 @@ module.exports = function protectEnvspec (filepath, content) {
       // Outside a Git working tree, only an adjacent policy can apply.
       return null
     }
-    if (path.resolve(root) !== directory) schema = readPolicy(path.join(root, 'Envspec'), file)
+    if (path.resolve(root) !== directory) schema = readPolicy(resolveEnvspecPath(root), file)
   }
   if (!schema) return null
 

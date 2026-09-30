@@ -20,13 +20,13 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
   }))
   envs = buildCommandEnvs(envs, options.convention)
   envs = determine(envs, processEnv)
-  const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+  const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value), processEnv)
   if (requireEnvspec && !schema.exists) throw new Errors().envspecRequired()
 
   const session = new Session()
   const proxyToken = options.token || processEnv.DOTENVX_TOKEN
   const noArmor = options.armor === false || (!proxyToken && (await session.noArmor()))
-  if (schema.proxyRules.size > 0 && noArmor) throw new Error('Envspec proxy requires Armor. Enable Armor and authenticate before running.')
+  if (schema.proxyRules.size > 0 && noArmor) throw new Error('Dotenvspec proxy requires Armor. Enable Armor and authenticate before running.')
   const proxyCredentials = noArmor ? undefined : []
   const { processedEnvs, readableFilepaths } = await envsResolver({
     envs,
@@ -48,7 +48,7 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
   let proxyError
   for (const name of schema.proxyRules.keys()) {
     if (processEnv[name] !== undefined && !(proxyCredentials || []).some(credential => credential.name === name && credential.placeholder === processEnv[name])) {
-      proxyError = new Error(`Envspec proxy requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload.`)
+      proxyError = new Error(`Dotenvspec proxy requires an encrypted ${name} loaded from an env file. Remove plaintext or shell overrides, or use --overload.`)
       break
     }
   }

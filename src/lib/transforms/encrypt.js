@@ -1,6 +1,5 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const fs = require('node:fs')
 const { encrypted, encrypt, scan, upsert, publickeys, keypair } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
@@ -53,11 +52,7 @@ async function encryptTransform (options = {}) {
     const row = { keys: [], type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
-      const policyPath = path.resolve('Envspec')
-      const schema = readEnvspec(policyPath, [filepath])
-      if (!schema.exists && fs.lstatSync(policyPath, { throwIfNoEntry: false })) {
-        throw new Error(`Cannot read Envspec: ${policyPath}`)
-      }
+      const schema = readEnvspec(undefined, [filepath])
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = SAMPLE_ENV_KIT

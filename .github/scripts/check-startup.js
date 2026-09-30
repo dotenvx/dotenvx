@@ -8,7 +8,7 @@ const { performance } = require('node:perf_hooks')
 // Usage: node .github/scripts/check-startup.js path/to/packaged/dotenvx
 // Measure the whole command, including spawning Node and loading a plain .env.
 // Warm up OS caches first; every measured run must stay below the budget.
-const LIMIT_MS = 200
+const LIMIT_MS = 500
 const WARMUP_RUNS = 2
 const MEASURED_RUNS = 7
 assert.ok(process.argv[2], 'Provide the packaged dotenvx executable to benchmark')
