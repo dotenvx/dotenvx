@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.32.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.32.3...main)
+
+## [2.32.3](https://github.com/dotenvx/dotenvx/compare/v2.32.2...v2.32.3) (2026-09-30)
+
+### Changed
+
+* Make `Dotenvspec` the filename ([#1002](https://github.com/dotenvx/dotenvx/pull/1002))
+* Improve startup time for cli ([#1001](https://github.com/dotenvx/dotenvx/pull/1001))
 
 ## [2.32.2](https://github.com/dotenvx/dotenvx/compare/v2.32.1...v2.32.2) (2026-09-29)
 
