@@ -9,7 +9,7 @@ function readPolicy (policyPath, file) {
   const schema = readEnvspec(policyPath, [file])
   if (!schema.exists) {
     // A dangling policy symlink is a broken policy, not an absent policy.
-    if (fs.lstatSync(policyPath, { throwIfNoEntry: false })) throw new Error(`Cannot read Dotenvspec: ${policyPath}`)
+    if (fs.lstatSync(policyPath, { throwIfNoEntry: false })) throw new Error(`Cannot read Envfile: ${policyPath}`)
     return null
   }
   return schema
@@ -19,9 +19,7 @@ function readPolicy (policyPath, file) {
 module.exports = function protectEnvspec (filepath, content) {
   const file = path.resolve(filepath)
   const directory = path.dirname(file)
-  let schema = process.env.DOTENV_SPEC !== undefined
-    ? readEnvspec(undefined, [file])
-    : readPolicy(resolveEnvspecPath(directory), file)
+  let schema = readPolicy(resolveEnvspecPath(directory), file)
   if (!schema) {
     let root
     try {

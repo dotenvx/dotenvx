@@ -11,7 +11,7 @@ module.exports = function discoverEnvFiles ({ directory = process.cwd() } = {}) 
   function walk (current) {
     const entries = fs.readdirSync(current, { withFileTypes: true })
     // Stop at nested packages and initialized projects, including symlinked markers.
-    if (current !== root && entries.some(entry => ['Dotenvspec', 'Envspec', 'Dotenvxspec', 'package.json'].includes(entry.name))) return
+    if (current !== root && entries.some(entry => ['Envfile', 'Envspec', 'Dotenvspec', 'package.json'].includes(entry.name))) return
     for (const entry of entries) {
       const filename = path.join(current, entry.name)
       if (entry.isDirectory()) {
