@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.32.3...main)
 
+### Changed
+
+* Make `Envfile` the filename. Final decision. ([#1003](https://github.com/dotenvx/dotenvx/pull/1003))
+
 ## [2.32.3](https://github.com/dotenvx/dotenvx/compare/v2.32.2...v2.32.3) (2026-09-30)
 
 ### Changed
