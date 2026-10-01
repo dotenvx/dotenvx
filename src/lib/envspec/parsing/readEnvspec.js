@@ -22,7 +22,7 @@ function compileDeclarations (declarations) {
   for (const input of declarations) {
     const declaration = { ...input }
     if (input.type) declaredTypes.set(input.name, input.type)
-    if (names.has(declaration.name)) throw new Errors({ message: `Duplicate Dotenvspec declaration: ${declaration.name}` }).malformedEnvspec()
+    if (names.has(declaration.name)) throw new Errors({ message: `Duplicate Envfile declaration: ${declaration.name}` }).malformedEnvspec()
     names.add(declaration.name)
     redactionRules.set(declaration.name, declaration.redacted !== false)
     encryptionRules.set(declaration.name, declaration.encrypted !== false)
@@ -36,35 +36,35 @@ function compileDeclarations (declarations) {
     if (declaration.type) types.set(declaration.name, declaration.type)
     if (declaration.min !== undefined || declaration.max !== undefined) {
       if (declaration.type !== 'integer') {
-        throw new Errors({ message: `Invalid Dotenvspec range for ${declaration.name}: min and max require type: "integer" or "port".` }).malformedEnvspec()
+        throw new Errors({ message: `Invalid Envfile range for ${declaration.name}: min and max require type: "integer" or "port".` }).malformedEnvspec()
       }
       if (declaration.min !== undefined && declaration.max !== undefined && BigInt(declaration.min) > BigInt(declaration.max)) {
-        throw new Errors({ message: `Invalid Dotenvspec range for ${declaration.name}: min must be less than or equal to max.` }).malformedEnvspec()
+        throw new Errors({ message: `Invalid Envfile range for ${declaration.name}: min must be less than or equal to max.` }).malformedEnvspec()
       }
       ranges.set(declaration.name, { min: declaration.min, max: declaration.max })
     }
     if (declaration.enum) {
       if (declaration.type === 'integer' && declaration.enum.some(value => !/^[+-]?\d+$/.test(value.trim()))) {
-        throw new Errors({ message: `Invalid Dotenvspec enum for ${declaration.name}: expected integer choices.` }).malformedEnvspec()
+        throw new Errors({ message: `Invalid Envfile enum for ${declaration.name}: expected integer choices.` }).malformedEnvspec()
       }
       if (declaration.type === 'boolean' && declaration.enum.some(value => !['true', 'false', '1', '0'].includes(value))) {
-        throw new Errors({ message: `Invalid Dotenvspec enum for ${declaration.name}: expected true, false, 1, or 0 choices.` }).malformedEnvspec()
+        throw new Errors({ message: `Invalid Envfile enum for ${declaration.name}: expected true, false, 1, or 0 choices.` }).malformedEnvspec()
       }
       if (declaration.type === 'url' && declaration.enum.some(value => !isValidUrl(value))) {
-        throw new Errors({ message: `Invalid Dotenvspec enum for ${declaration.name}: expected URL choices.` }).malformedEnvspec()
+        throw new Errors({ message: `Invalid Envfile enum for ${declaration.name}: expected URL choices.` }).malformedEnvspec()
       }
       if (declaration.type === 'email' && declaration.enum.some(value => !isValidEmail(value))) {
-        throw new Errors({ message: `Invalid Dotenvspec enum for ${declaration.name}: expected email choices.` }).malformedEnvspec()
+        throw new Errors({ message: `Invalid Envfile enum for ${declaration.name}: expected email choices.` }).malformedEnvspec()
       }
       if (declaration.type === 'ip' && declaration.enum.some(value => isIP(value) === 0)) {
-        throw new Errors({ message: `Invalid Dotenvspec enum for ${declaration.name}: expected IPv4 or IPv6 choices.` }).malformedEnvspec()
+        throw new Errors({ message: `Invalid Envfile enum for ${declaration.name}: expected IPv4 or IPv6 choices.` }).malformedEnvspec()
       }
       enums.set(declaration.name, declaration.enum)
     }
     if (declaration.proxy) {
       const host = declaration.proxy.domain.toLowerCase()
       if (host.length > 253 || isIP(host) || !/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(host)) {
-        throw new Errors({ message: `Invalid Dotenvspec proxy host for ${declaration.name}: expected a DNS hostname without a scheme, port, path or wildcard.` }).malformedEnvspec()
+        throw new Errors({ message: `Invalid Envfile proxy host for ${declaration.name}: expected a DNS hostname without a scheme, port, path or wildcard.` }).malformedEnvspec()
       }
       proxyRules.set(declaration.name, host)
     }
@@ -72,24 +72,17 @@ function compileDeclarations (declarations) {
   return { exists: true, proxyRules, requiredKeys, types, declaredTypes, enums, ranges, encryptedKeys, redactionRules, encryptionRules }
 }
 
-module.exports = function readEnvspec (filepath, envFiles = ['.env'], processEnv = process.env) {
+module.exports = function readEnvspec (filepath, envFiles = ['.env']) {
+  if (filepath === undefined) filepath = resolveEnvspecPath()
   let src
-  if (filepath === undefined && processEnv.DOTENV_SPEC !== undefined) {
-    // Inline policy replaces file discovery, even when the value is empty.
-    // Use the working directory for file blocks and DOTENV_SPEC in diagnostics.
-    filepath = path.resolve('DOTENV_SPEC')
-    src = processEnv.DOTENV_SPEC
-  } else {
-    if (filepath === undefined) filepath = resolveEnvspecPath()
-    try {
-      src = fs.readFileSync(filepath, 'utf8')
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        if (fs.lstatSync(filepath, { throwIfNoEntry: false })) throw new Error(`Cannot read ${path.basename(filepath)}: ${filepath}`)
-        return { ...compileDeclarations([]), exists: false }
-      }
-      throw error
+  try {
+    src = fs.readFileSync(filepath, 'utf8')
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      if (fs.lstatSync(filepath, { throwIfNoEntry: false })) throw new Error(`Cannot read ${path.basename(filepath)}: ${filepath}`)
+      return { ...compileDeclarations([]), exists: false }
     }
+    throw error
   }
 
   let document
@@ -111,12 +104,12 @@ module.exports = function readEnvspec (filepath, envFiles = ['.env'], processEnv
       throw new Errors({ message: `File blocks require an exact filename: ${block.file}` }).malformedEnvspec()
     }
     const file = path.resolve(path.dirname(filepath), block.file)
-    if (seen.has(file)) throw new Errors({ message: `Duplicate Dotenvspec file block: ${block.file}` }).malformedEnvspec()
+    if (seen.has(file)) throw new Errors({ message: `Duplicate Envfile file block: ${block.file}` }).malformedEnvspec()
     seen.add(file)
     const merged = new Map(base.map(item => [item.name, { ...item }]))
     const names = new Set()
     for (const item of block.declarations) {
-      if (names.has(item.name)) throw new Errors({ message: `Duplicate Dotenvspec declaration in ${block.file}: ${item.name}` }).malformedEnvspec()
+      if (names.has(item.name)) throw new Errors({ message: `Duplicate Envfile declaration in ${block.file}: ${item.name}` }).malformedEnvspec()
       names.add(item.name)
       merged.set(item.name, {
         ...defaults,
@@ -136,7 +129,7 @@ module.exports = function readEnvspec (filepath, envFiles = ['.env'], processEnv
   for (const schema of active) {
     for (const [key, host] of schema.proxyRules) {
       if (proxyRules.has(key) && proxyRules.get(key) !== host) {
-        throw new Errors({ message: `Conflicting Dotenvspec proxy domains for ${key} in selected file blocks` }).malformedEnvspec()
+        throw new Errors({ message: `Conflicting Envfile proxy domains for ${key} in selected file blocks` }).malformedEnvspec()
       }
       proxyRules.set(key, host)
     }

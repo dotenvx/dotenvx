@@ -86,10 +86,10 @@ const config = function (options = {}, events) {
     if (!options.envs) {
       envs = determine(envs, processEnv)
     }
-    const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value), processEnv)
+    const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
     if (schema.proxyRules.size > 0) {
       fatal = true
-      throw new Error('Dotenvspec proxy is not supported by synchronous config(). Use dotenvx run -- yourcommand.')
+      throw new Error('Envfile proxy is not supported by synchronous config(). Use dotenvx run -- yourcommand.')
     }
     const {
       processedEnvs,

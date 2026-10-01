@@ -2,7 +2,7 @@ Document
   = _ entries:((FileBlock / Declaration / Strict) _)* {
       const items = entries.map(item => item[0]);
       const settings = items.filter(item => item.strict !== undefined && !item.file);
-      if (settings.length > 1) error("Duplicate Dotenvspec setting: strict");
+      if (settings.length > 1) error("Duplicate Envfile setting: strict");
       return { ...settings[0], declarations: items.filter(item => item.name), files: items.filter(item => item.file) };
     }
 
@@ -10,7 +10,7 @@ FileBlock
   = "file" [ \t]+ file:Filename [ \t]+ "do" [ \t]* Comment? Newline _ entries:((Declaration / Strict) _)* "end" [ \t]* Comment? (Newline / !.) {
       const items = entries.map(item => item[0]);
       const settings = items.filter(item => item.strict !== undefined);
-      if (settings.length > 1) error("Duplicate Dotenvspec setting: strict");
+      if (settings.length > 1) error("Duplicate Envfile setting: strict");
       return { file, ...settings[0], declarations: items.filter(item => item.name) };
     }
 
@@ -26,10 +26,10 @@ Declaration
       const declaration = { name };
       const seen = new Set();
       for (const option of options) {
-        if (seen.has(option.key)) error(`Duplicate Dotenvspec option: ${option.key}`);
+        if (seen.has(option.key)) error(`Duplicate Envfile option: ${option.key}`);
         if ((option.key === "optional" && seen.has("required")) ||
             (option.key === "required" && seen.has("optional"))) {
-          error("Cannot combine required and optional in a Dotenvspec declaration");
+          error("Cannot combine required and optional in a Envfile declaration");
         }
         seen.add(option.key);
         if (option.key === "optional") declaration.required = !option.value;

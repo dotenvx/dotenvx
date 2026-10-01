@@ -234,7 +234,7 @@ class Errors {
   }
 
   envspecRequired () {
-    const e = new Error('[ENVSPEC_REQUIRED] check requires a Dotenvspec or DOTENV_SPEC')
+    const e = new Error('[ENVSPEC_REQUIRED] check requires an Envfile')
     e.code = 'ENVSPEC_REQUIRED'
     e.help = 'fix: run [dotenvx spec]'
     e.messageWithHelp = `${e.message}. ${e.help}`

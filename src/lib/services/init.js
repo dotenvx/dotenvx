@@ -15,10 +15,10 @@ function declaration (name) {
 }
 
 module.exports = function init ({ directory = process.cwd(), envFile, envFiles, sourceKeys = [], overwrite = false, stdout = false, onFile = () => {} } = {}) {
-  const target = path.resolve(directory, 'Dotenvspec')
+  const target = path.resolve(directory, 'Envfile')
   const existing = stdout ? undefined : fs.lstatSync(target, { throwIfNoEntry: false })
   if (existing && !overwrite) return { created: false }
-  if (existing && !existing.isFile()) throw new Error(`Cannot replace Dotenvspec: expected a regular file (${target})`)
+  if (existing && !existing.isFile()) throw new Error(`Cannot replace Envfile: expected a regular file (${target})`)
   const seen = new Set()
 
   const sources = []
@@ -61,7 +61,7 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
   const addedFromSource = names.size - inputCount
   const keys = [...names]
   const invalid = keys.filter(key => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(key))
-  if (invalid.length) throw new Error(`Unsupported Dotenvspec variable names: ${invalid.join(', ')}`)
+  if (invalid.length) throw new Error(`Unsupported Envfile variable names: ${invalid.join(', ')}`)
 
   const document = normalizeEnvspec({ files, codeDeclarations })
   const content = renderEnvspec(document)

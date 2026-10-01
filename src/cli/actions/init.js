@@ -17,12 +17,12 @@ module.exports = async function spec () {
   let spinner
 
   try {
-    const existing = stdout ? undefined : fs.lstatSync('Dotenvspec', { throwIfNoEntry: false })
+    const existing = stdout ? undefined : fs.lstatSync('Envfile', { throwIfNoEntry: false })
     if (existing && !overwrite) {
-      logger.info('○ Dotenvspec already exists [edit or run: spec --overwrite]')
+      logger.info('○ Envfile already exists [edit or run: spec --overwrite]')
       return
     }
-    if (existing && !existing.isFile()) throw new Error('Cannot replace Dotenvspec: expected a regular file')
+    if (existing && !existing.isFile()) throw new Error('Cannot replace Envfile: expected a regular file')
 
     let envFiles
     let sourceKeys = []
@@ -33,8 +33,8 @@ module.exports = async function spec () {
     if (interactive && !envFile) {
       const candidates = discoverEnvFiles()
       const selected = await prompts.multiselect({
-        message: existing ? 'Recreate Dotenvspec from .env files and code' : 'Create Dotenvspec from .env files and code',
-        submitLabel: existing ? 'Recreate Dotenvspec' : 'Create Dotenvspec',
+        message: existing ? 'Recreate Envfile from .env files and code' : 'Create Envfile from .env files and code',
+        submitLabel: existing ? 'Recreate Envfile' : 'Create Envfile',
         choices: [...candidates, { name: 'code ./**/* (env references)', value: '__scan_source' }],
         initial: [...candidates, '__scan_source']
       })
@@ -56,9 +56,9 @@ module.exports = async function spec () {
       return
     }
     if (created) {
-      logger.success(replaced ? '◈ recreated (Dotenvspec)' : '◈ created (Dotenvspec)')
+      logger.success(replaced ? '◈ recreated (Envfile)' : '◈ created (Envfile)')
       logger.help('⮕ next run [dotenvx check]')
-    } else logger.info('○ Dotenvspec already exists [edit or run: spec --overwrite]')
+    } else logger.info('○ Envfile already exists [edit or run: spec --overwrite]')
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
