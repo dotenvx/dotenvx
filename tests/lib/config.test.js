@@ -121,7 +121,7 @@ t.test('sets values from both .env.local and .env. but neither is used as value 
 t.test('takes option for path along with home directory char ~', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('test=foo')
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo') // for purpose of encoding check
-  readFileSyncStub.withArgs(path.resolve('Dotenvspec')).throws(Object.assign(new Error('missing Dotenvspec'), { code: 'ENOENT' }))
+  readFileSyncStub.withArgs(path.resolve('Envfile')).throws(Object.assign(new Error('missing Envfile'), { code: 'ENOENT' }))
   const mockedHomedir = '/Users/dummy'
   const homedirStub = sinon.stub(os, 'homedir').returns(mockedHomedir)
   const testPath = '~/.env'
@@ -139,7 +139,7 @@ t.test('takes option for path along with home directory char ~', ct => {
 t.test('reads path with encoding, parsing output to process.env', ct => {
   const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('BASIC=basic')
   const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo') // for purpose of encoding check
-  readFileSyncStub.withArgs(path.resolve('Dotenvspec')).throws(Object.assign(new Error('missing Dotenvspec'), { code: 'ENOENT' }))
+  readFileSyncStub.withArgs(path.resolve('Envfile')).throws(Object.assign(new Error('missing Envfile'), { code: 'ENOENT' }))
   const parseStub = sinon.stub(dotenvx, 'parse').returns({ BASIC: 'basic' })
 
   const res = dotenvx.config()
