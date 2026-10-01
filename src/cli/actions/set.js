@@ -69,11 +69,6 @@ async function set (key, value) {
       await fsx.writeKeyFile(fk, keysSrc)
     }
 
-    let withEncryption = ''
-    if (encrypt) {
-      withEncryption = ' with encryption'
-    }
-
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
       logger.verbose(`setting for ${processedEnv.envFilepath}`)
@@ -82,7 +77,7 @@ async function set (key, value) {
         logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
       } else if (processedEnv.changed) {
         await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
-        logger.verbose(`${processedEnv.key} set${withEncryption} (${processedEnv.envFilepath})`)
+        logger.verbose(`${processedEnv.key} set${processedEnv.encrypted ? ' with encryption' : ''} (${processedEnv.envFilepath})`)
       } else {
         logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
       }
@@ -97,7 +92,7 @@ async function set (key, value) {
 
     if (changedFilepaths.length > 0) {
       let msg = `◇ set ${key} (${changedFilepaths.join(',')})`
-      if (encrypt) {
+      if (processedEnvs.filter(row => row.changed && !row.error).every(row => row.encrypted)) {
         msg = `◈ encrypted ${key} (${changedFilepaths.join(',')})`
       }
 

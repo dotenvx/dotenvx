@@ -11,6 +11,8 @@ const { isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const Errors = require('../helpers/errors')
 
+const readEnvspec = require('../envspec/parsing/readEnvspec')
+
 const storeKeyStorage = require('../helpers/storeKeyStorage')
 
 async function setTransform (options = {}) {
@@ -23,7 +25,6 @@ async function setTransform (options = {}) {
   const custodyContext = { token: options.token }
   const noNative = options.noNative
   const noCreate = options.noCreate
-  const noEncrypt = !options.encrypt || isPlainKey(key)
 
   const processedEnvs = []
   const changedFilepaths = []
@@ -54,6 +55,13 @@ async function setTransform (options = {}) {
     const row = { key, value, type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
+      const schema = readEnvspec(undefined, [filepath])
+      const policyEncrypt = schema.encryptionRules.get(key) ?? schema.encrypted
+      const noEncrypt = schema.exists ? !policyEncrypt : !options.encrypt || isPlainKey(key)
+      if (schema.exists && policyEncrypt && options.encrypt === false) {
+        throw new Errors({ message: `${key} requires encryption in Envfile; remove --plain or set encrypted: false in the policy` }).invalidEnv()
+      }
+      row.encrypted = !noEncrypt
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = ''

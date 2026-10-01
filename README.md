@@ -2278,7 +2278,7 @@ $ dotenvx set HELLO_PLAIN World
 set HELLO_PLAIN (.env)
 ```
 
-Keys ending in `_PLAIN` are not encrypted by `dotenvx set`. `dotenvx encrypt` also skips these keys when there is no Envfile; with an Envfile, its encryption rules take precedence.
+Without an Envfile, `dotenvx set` and `dotenvx encrypt` skip keys ending in `_PLAIN`. With an Envfile, both commands follow its encryption rules: keys default to encrypted, and `encrypted: false` permits plaintext. `set --plain` fails when the applicable policy requires encryption. File blocks apply to the target file, and malformed policies fail before that file is modified.
 
 </details>
 <details><summary>`set KEY value --no-native`</summary><br>
