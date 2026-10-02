@@ -17,7 +17,7 @@ function renderFile (file) {
   return lines.join('\n')
 }
 
-module.exports = function renderEnvspec (document) {
+module.exports = function renderEnvfile (document) {
   const sections = []
   if (document.declarations.length) sections.push(document.declarations.map(declaration).join('\n'))
   for (const file of document.files) {

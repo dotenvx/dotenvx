@@ -1,5 +1,5 @@
 // Pure final pass over independently inferred file rules. Never mutates inputs.
-module.exports = function normalizeEnvspec ({ files, codeDeclarations = [] }) {
+module.exports = function normalizeEnvfile ({ files, codeDeclarations = [] }) {
   const hasNamedEnvironment = files.some(file => !['.env', '.env.example'].includes(file.filename))
   const rootFiles = []
   const environments = []

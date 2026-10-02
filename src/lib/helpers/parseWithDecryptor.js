@@ -1,5 +1,4 @@
-const { parse, parseSync, parsearrays, scan, encrypted } = require('@dotenvx/primitives')
-const prepareProxy = require('../proxy/prepareProxy')
+const { parse, parseSync, parsearrays } = require('@dotenvx/primitives')
 const withLockedKeys = require('./withLockedKeys')
 const SERVER_SIDE_DECRYPTION_REQUIRED = 'SERVER_SIDE_DECRYPTION_REQUIRED'
 
@@ -29,13 +28,6 @@ function failedKeyAccessFallback (result, error) {
 }
 
 async function parseWithDecryptor (src, options = {}) {
-  if (options.proxyCredentials) {
-    const original = src
-    src = prepareProxy(src, options.proxyCredentials, options.processEnv, options.proxyRules)
-    if (src !== original && !Object.values(scan(src).parsed).flat().some(encrypted)) {
-      options = parseOptionsWithoutProvider(options)
-    }
-  }
   return parseWith(src, options, parse)
 }
 

@@ -12,7 +12,7 @@ const { isDotenvPublicKey, isPlainKey, mutateSrc } = require('../helpers/cryptog
 const keynames = require('../conventions/keynames')
 
 const storeKeyStorage = require('../helpers/storeKeyStorage')
-const readEnvspec = require('../envspec/parsing/readEnvspec')
+const readEnvfile = require('../envfile/parsing/readEnvfile')
 
 async function encryptTransform (options = {}) {
   const envs = options.envs || []
@@ -52,7 +52,7 @@ async function encryptTransform (options = {}) {
     const row = { keys: [], type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
-      const schema = readEnvspec(undefined, [filepath])
+      const schema = readEnvfile(undefined, [filepath])
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = SAMPLE_ENV_KIT
