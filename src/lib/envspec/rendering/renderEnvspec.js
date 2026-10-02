@@ -18,7 +18,7 @@ function renderFile (file) {
 }
 
 module.exports = function renderEnvspec (document) {
-  const sections = []
+  const sections = ['strict true']
   if (document.declarations.length) sections.push(document.declarations.map(declaration).join('\n'))
   for (const file of document.files) {
     sections.push(renderFile(file))
@@ -26,5 +26,5 @@ module.exports = function renderEnvspec (document) {
   if (document.codeDeclarations.length) {
     sections.push('# additionally found in code\n' + document.codeDeclarations.map(declaration).join('\n'))
   }
-  return '# Envfile (safe to commit)\n# ------------------------\n\n' + sections.join('\n\n') + (sections.length ? '\n' : '')
+  return '# Envfile (safe to commit)\n# ------------------------\n\n' + sections.join('\n\n') + '\n'
 }

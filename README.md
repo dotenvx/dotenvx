@@ -1602,7 +1602,7 @@ end
 
 `spec` infers `redacted: false` for names starting with `PUBLIC`, `VITE`, `NEXT_PUBLIC`, or `NUXT_PUBLIC`, or containing `PUBLIC` anywhere (case-sensitive). This affects visibility only; public names still require encryption unless explicitly exempted. Other names, including those ending in `_PLAIN`, remain redacted.
 
-`dotenvx spec` always generates `Envfile`, including with `--overwrite` or `--stdout`.
+`dotenvx spec` always generates `Envfile` with `strict true` at the top, including with `--overwrite` or `--stdout`. Generated policies stop commands on validation failures. Existing policies that omit `strict` continue to warn.
 
 If an Envfile already exists, `spec` leaves it untouched and prints `○ Envfile already exists [edit or run: spec --overwrite]`. Use `spec --overwrite` to regenerate it from the selected inputs, replacing custom rules, comments, and blocks for files absent from this machine. Interactive overwrite runs show the full file-and-code checklist with the prompt `Recreate Envfile from .env files and code`. Noninteractive runs use `.env.example` and `.env`, or the file selected with `-f`. Input validation finishes before the old Envfile is replaced; cancelled selection leaves it untouched. Symlinked Envfiles cannot be overwritten.
 
