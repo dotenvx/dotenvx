@@ -13,7 +13,6 @@ const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
-const configureProxy = require('../../lib/proxy/configureProxy')
 
 function inferCommandArgsFromProcessArgv (argv) {
   const runIndex = argv.indexOf('run')
@@ -58,7 +57,6 @@ async function run () {
   }
   let commandEnv = process.env
   let sensitiveValues = []
-  let closeProxy
 
   let commandArgs = this.args
   if (commandArgs.length < 1) {
@@ -101,10 +99,6 @@ async function run () {
       readableFilepaths,
       hasEnvspec,
       schema,
-      proxyCredentials,
-      proxyToken,
-      session: sesh,
-      proxyError,
       validationError: error
     } = await prepareValidatedEnv({
       envs: this.envs,
@@ -116,7 +110,6 @@ async function run () {
         if (spinner && text) spinner.text = text
       }
     })
-    if (proxyError) throw proxyError
 
     if (hasEnvspec || options.redact === true) {
       sensitiveValues = redactedValues(processedEnvs, schema, process.env, options.redact === true)
@@ -187,19 +180,7 @@ async function run () {
       }
     }
 
-    const proxy = await configureProxy(commandArgs, commandEnv, proxyCredentials, sesh, proxyToken)
-    closeProxy = proxy.close
-    commandArgs = proxy.commandArgs
-    commandEnv = proxy.env
-
-    const gatedKeys = new Set((proxyCredentials || [])
-      .filter(credential => commandEnv[credential.name] === credential.placeholder)
-      .map(credential => credential.name))
     const injectedKeys = uniqueInjectedKeys(processedEnvs)
-    for (const key of gatedKeys) {
-      injectedKeys.delete(key)
-      logger.verbose(`${key} proxied via Armor proxy`)
-    }
 
     let msg = ''
     const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
@@ -212,10 +193,8 @@ async function run () {
     }
 
     if (spinner) spinner.stop()
-    if (gatedKeys.size > 0) logger.success(`⧈ proxied (${gatedKeys.size})${msg}`)
     logger.success(`⟐ injected env (${injectedKeys.size})${msg}`)
   } catch (error) {
-    if (closeProxy) await closeProxy()
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
       return { exitCode: 130, error }
@@ -224,11 +203,7 @@ async function run () {
     return { exitCode: 1, error }
   }
 
-  try {
-    return await executeCommand(commandArgs, commandEnv, sensitiveValues, closeProxy)
-  } finally {
-    if (closeProxy) await closeProxy()
-  }
+  return executeCommand(commandArgs, commandEnv, sensitiveValues)
 }
 
 module.exports = require('../../lib/events/cli')('run', run)

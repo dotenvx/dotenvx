@@ -9,10 +9,9 @@ function displayValue (value) {
 }
 
 // Show final resolved values once, not source contents or unrelated shell variables.
-module.exports = function previewEnvspec (processedEnvs, schema, processEnv, proxyCredentials = [], diagnostics = []) {
+module.exports = function previewEnvspec (processedEnvs, schema, processEnv, diagnostics = []) {
   const keys = new Set((processedEnvs || []).flatMap(row => [...Object.keys(row.parsed || {}), ...Object.keys(row.injected || {}), ...Object.keys(row.existed || {})]))
   for (const key of schema.redactionRules.keys()) keys.add(key)
-  const proxyKeys = new Set(proxyCredentials.map(credential => credential.name))
   const location = diagnosticLocations(processedEnvs || [], 'process.env', { environmentLabel: 'process.env' })
   const rows = []
   const errors = new Map()
@@ -32,7 +31,7 @@ module.exports = function previewEnvspec (processedEnvs, schema, processEnv, pro
     if (/^DOTENV_(?:PUBLIC|PRIVATE)_KEY/.test(key) || (missing && !errors.has(key))) continue
     const value = String(processEnv[key])
     const redacted = schema.redactionRules.get(key) ?? true
-    const display = missing ? '[MISSING]' : redacted || encrypted(value) || proxyKeys.has(key) ? '[REDACTED]' : displayValue(value)
+    const display = missing ? '[MISSING]' : redacted || encrypted(value) ? '[REDACTED]' : displayValue(value)
     const source = missing ? '' : displayValue(location(key))
     const error = errors.has(key) ? errors.get(key).join(', ') : ''
     const unspecced = !schema.redactionRules.has(key)

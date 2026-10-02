@@ -1589,7 +1589,7 @@ Envfile validation failures, including unencrypted values, warn by default; `run
 
 Envfile values default to `redacted: true`: `run` masks their values in child stdout/stderr and resolved-value debug output, while the child still receives the real values. Set `redacted: false` for values that may appear in output. This is independent of `encrypted: true`, which requires an encrypted source.
 
-The synchronous `dotenvx.config()` API also reads `Envfile` from the current working directory and validates the final resolved values using the same rules, including selected file blocks and storage encryption. Validation failures warn and are returned in `{ parsed, error }`; `config({ strict: true })` or an applicable Envfile `strict true` setting makes failures throw. `ignore: ['INVALID_ENV']` suppresses validation failures. Invalid Envfile syntax always throws before loading values. Envfile redaction applies to dotenvx's own resolved-value debug logs; application output and returned values retain their real values. Active proxy declarations throw before loading values because synchronous `config()` cannot start the proxy; use `dotenvx run -- yourcommand` for those policies.
+The synchronous `dotenvx.config()` API also reads `Envfile` from the current working directory and validates the final resolved values using the same rules, including selected file blocks and storage encryption. Validation failures warn and are returned in `{ parsed, error }`; `config({ strict: true })` or an applicable Envfile `strict true` setting makes failures throw. `ignore: ['INVALID_ENV']` suppresses validation failures. Invalid Envfile syntax always throws before loading values. Envfile redaction applies to dotenvx's own resolved-value debug logs; application output and returned values retain their real values.
 
 ```ruby
 file ".env.development" do
@@ -1631,7 +1631,7 @@ Both `dotenvx run -f .env.production -- node index.js` and `dotenvx check -f .en
 
 Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_FILE` use their resolved file paths.
 
-When no file block matches, top-level rules apply. When one or more blocks match, each matching block's inherited rules must hold for the final resolved environment. Shell values, fallback files, and `--overload` cannot bypass them. A selected missing file still activates its block. Multiple matching blocks cannot cancel each other's restrictions; conflicting proxy domains are rejected. Blocks cannot be nested, and duplicate declarations within one scope or duplicate file blocks are errors.
+When no file block matches, top-level rules apply. When one or more blocks match, each matching block's inherited rules must hold for the final resolved environment. Shell values, fallback files, and `--overload` cannot bypass them. A selected missing file still activates its block. Multiple matching blocks cannot cancel each other's restrictions. Blocks cannot be nested, and duplicate declarations within one scope or duplicate file blocks are errors.
 
 </details>
 <details><summary>`check`</summary><br>
@@ -2278,7 +2278,7 @@ $ dotenvx set HELLO_PLAIN World
 set HELLO_PLAIN (.env)
 ```
 
-Without an Envfile, `dotenvx set` and `dotenvx encrypt` skip keys ending in `_PLAIN`. With an Envfile, both commands follow its encryption rules: keys default to encrypted, and `encrypted: false` permits plaintext. `set --plain` fails when the applicable policy requires encryption. File blocks apply to the target file, and malformed policies fail before that file is modified.
+Keys ending in `_PLAIN` are not encrypted by `dotenvx set`. `dotenvx encrypt` also skips these keys when there is no Envfile; with an Envfile, its encryption rules take precedence.
 
 </details>
 <details><summary>`set KEY value --no-native`</summary><br>

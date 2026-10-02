@@ -25,7 +25,7 @@ async function check () {
   }
 
   try {
-    const { processedEnvs, readableFilepaths, requiredFilepaths, proxyError, validationError, schema, processEnv, proxyCredentials } = await prepareValidatedEnv({
+    const { processedEnvs, readableFilepaths, requiredFilepaths, validationError, schema, processEnv } = await prepareValidatedEnv({
       envs: this.envs,
       options,
       onStatus: text => { if (spinner && text) spinner.text = text },
@@ -46,10 +46,6 @@ async function check () {
         report('error', error.messageWithHelp || error.message)
       }
     }
-    if (proxyError) {
-      errorCount++
-      report('error', proxyError.message)
-    }
     if (validationError && !ignore.includes(validationError.code)) {
       errorCount++
       for (const diagnostic of showPreview ? [] : validationError.diagnostics) {
@@ -61,7 +57,7 @@ async function check () {
     if (spinner) spinner.stop()
     if (showPreview) {
       const diagnostics = validationError && !ignore.includes(validationError.code) ? validationError.diagnostics : []
-      const preview = previewEnvspec(processedEnvs, schema, processEnv, proxyCredentials, diagnostics)
+      const preview = previewEnvspec(processedEnvs, schema, processEnv, diagnostics)
       if (preview) {
         for (const line of preview.split('\n')) logger.info(line)
       }

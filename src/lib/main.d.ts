@@ -259,7 +259,7 @@ export interface DotenvPopulateInput {
  * Reads Envfile from the current directory and validates the final resolved environment.
  * Falls back to Envspec, then Dotenvspec, when earlier filenames are absent.
  * Validation failures warn and return an error, or throw when strictness is enabled.
- * Invalid Envfile syntax and active proxy rules always throw; use run for proxy support.
+ * Invalid Envfile syntax always throws before loading values.
  *
  * @see https://dotenvx.com/docs
  *

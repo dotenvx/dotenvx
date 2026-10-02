@@ -1,10 +1,11 @@
-const { envfile } = require('@dotenvx/primitives')
+const { check } = require('@dotenvx/primitives')
+const encryptedSources = require('./encryptedSources')
 const Errors = require('../../helpers/errors')
 
 module.exports = function validateEnvspec (schema, env, processedEnvs, onKey, { validateEncryption = true } = {}) {
-  const diagnostics = envfile.check(schema, env, {
+  const diagnostics = check(schema, env, {
     loadedKeys: new Set((processedEnvs || []).flatMap(row => [...Object.keys(row.injected || {}), ...Object.keys(row.existed || {})])),
-    encryptedKeys: envfile.encryptedSources(processedEnvs),
+    encryptedKeys: encryptedSources(processedEnvs),
     validateEncryption,
     onKey
   })
