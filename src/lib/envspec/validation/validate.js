@@ -1,1 +1,1 @@
-module.exports = require('@dotenvx/primitives').envfile.validateValues
+module.exports = require('@dotenvx/primitives').envfile.checkValues
