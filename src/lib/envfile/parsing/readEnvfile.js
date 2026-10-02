@@ -2,11 +2,11 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { parseenvfile } = require('@dotenvx/primitives')
 const Errors = require('../../helpers/errors')
-const formatEnvspecSyntaxError = require('./formatEnvspecSyntaxError')
-const resolveEnvspecPath = require('./resolveEnvspecPath')
+const formatEnvfileSyntaxError = require('./formatEnvfileSyntaxError')
+const resolveEnvfilePath = require('./resolveEnvfilePath')
 
-module.exports = function readEnvspec (filepath, envFiles = ['.env']) {
-  if (filepath === undefined) filepath = resolveEnvspecPath()
+module.exports = function readEnvfile (filepath, envFiles = ['.env']) {
+  if (filepath === undefined) filepath = resolveEnvfilePath()
   let source
   try {
     source = fs.readFileSync(filepath, 'utf8')
@@ -21,6 +21,6 @@ module.exports = function readEnvspec (filepath, envFiles = ['.env']) {
     return parseenvfile(source, { filepath, envFiles })
   } catch (error) {
     if (!error.cause) throw error
-    throw new Errors({ message: formatEnvspecSyntaxError(error.cause, source, filepath) }).malformedEnvspec()
+    throw new Errors({ message: formatEnvfileSyntaxError(error.cause, source, filepath) }).malformedEnvfile()
   }
 }

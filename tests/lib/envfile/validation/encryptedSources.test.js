@@ -1,6 +1,6 @@
 const t = require('tap')
 const { keypair, encrypt } = require('@dotenvx/primitives')
-const encryptedSources = require('../../../../src/lib/envspec/validation/encryptedSources')
+const encryptedSources = require('../../../../src/lib/envfile/validation/encryptedSources')
 const parse = require('../../../../src/lib/helpers/parseWithDecryptor')
 
 t.test('normally decrypted values retain encrypted provenance', async t => {

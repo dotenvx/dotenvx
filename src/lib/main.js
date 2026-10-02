@@ -30,8 +30,8 @@ const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgno
 const normalizeDotenvConfigPath = require('./helpers/normalizeDotenvConfigPath')
 const mask = require('./helpers/mask')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
-const readEnvspec = require('./envspec/parsing/readEnvspec')
-const validateEnvspec = require('./envspec/validation/validateEnvspec')
+const readEnvfile = require('./envfile/parsing/readEnvfile')
+const validateEnvfile = require('./envfile/validation/validateEnvfile')
 const redactedValues = require('./helpers/redactedValues')
 const { redactOutput } = require('./helpers/redactOutput')
 
@@ -86,7 +86,7 @@ const config = function (options = {}, events) {
     if (!options.envs) {
       envs = determine(envs, processEnv)
     }
-    const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+    const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
     const {
       processedEnvs,
       readableFilepaths
@@ -104,7 +104,7 @@ const config = function (options = {}, events) {
       token: options.token
     })
 
-    const validationError = validateEnvspec(schema, processEnv, processedEnvs)
+    const validationError = validateEnvfile(schema, processEnv, processedEnvs)
     sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
 
     if (options.mask !== undefined) {
@@ -191,7 +191,7 @@ const config = function (options = {}, events) {
     }
   } catch (error) {
     if (events) events.fail(error)
-    if (strict || fatal || error.code === 'MALFORMED_ENVSPEC') throw error
+    if (strict || fatal || error.code === 'MALFORMED_ENVFILE') throw error
 
     logger.error(redactOutput(error.messageWithHelp || error.message, sensitiveValues))
 

@@ -9,7 +9,7 @@ function displayValue (value) {
 }
 
 // Show final resolved values once, not source contents or unrelated shell variables.
-module.exports = function previewEnvspec (processedEnvs, schema, processEnv, diagnostics = []) {
+module.exports = function previewEnvfile (processedEnvs, schema, processEnv, diagnostics = []) {
   const keys = new Set((processedEnvs || []).flatMap(row => [...Object.keys(row.parsed || {}), ...Object.keys(row.injected || {}), ...Object.keys(row.existed || {})]))
   for (const key of schema.redactionRules.keys()) keys.add(key)
   const location = diagnosticLocations(processedEnvs || [], 'process.env', { environmentLabel: 'process.env' })

@@ -3292,7 +3292,7 @@ INVALID_PUBLIC_KEY= # a public key is malformed or otherwise invalid
 MALFORMED_ENCRYPTED_DATA= # the encrypted value is malformed
 MISPAIRED_PRIVATE_KEY= # a private key does not match the existing public key
 MISSING_DIRECTORY= # the requested directory does not exist
-ENVSPEC_REQUIRED= # the required Envfile does not exist
+ENVFILE_REQUIRED= # the required Envfile does not exist
 MISSING_ENV_FILE= # a requested environment file does not exist
 MISSING_ENV_FILES= # no .env* files were found
 MISSING_ENV_KEYS_FILE= # the requested .env.keys file does not exist
@@ -3305,7 +3305,7 @@ MISSING_VALUE= # no value was supplied for a key
 NOT_FOUND= # a private key was not found in the native secret store
 PRECOMMIT_HOOK_MODIFY_FAILED= # dotenvx could not update the pre-commit hook
 INVALID_ENV= # resolved values do not satisfy Envfile rules
-MALFORMED_ENVSPEC= # Envfile syntax or configuration is invalid
+MALFORMED_ENVFILE= # Envfile syntax or configuration is invalid
 WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 ```
 

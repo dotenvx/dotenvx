@@ -97,21 +97,21 @@ async function run () {
     const {
       processedEnvs,
       readableFilepaths,
-      hasEnvspec,
+      hasEnvfile,
       schema,
       validationError: error
     } = await prepareValidatedEnv({
       envs: this.envs,
       options,
       processEnv: process.env,
-      requireEnvspec: false,
+      requireEnvfile: false,
       command: commandArgs,
       onStatus: (text) => {
         if (spinner && text) spinner.text = text
       }
     })
 
-    if (hasEnvspec || options.redact === true) {
+    if (hasEnvfile || options.redact === true) {
       sensitiveValues = redactedValues(processedEnvs, schema, process.env, options.redact === true)
     }
 

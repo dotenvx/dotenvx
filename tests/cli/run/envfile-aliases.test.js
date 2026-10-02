@@ -3,7 +3,7 @@ const path = require('node:path')
 const fs = require('node:fs')
 const { spawnSync } = require('node:child_process')
 const { parseenvfile } = require('@dotenvx/primitives')
-const readEnvspec = require('../../../src/lib/envspec/parsing/readEnvspec')
+const readEnvfile = require('../../../src/lib/envfile/parsing/readEnvfile')
 const cli = path.resolve('src/cli/dotenvx.js')
 
 t.test('aliases normalize to canonical options and inherit across file blocks', ct => {
@@ -11,10 +11,10 @@ t.test('aliases normalize to canonical options and inherit across file blocks', 
     ct.same(parseenvfile(`env "VALUE", redact: ${value}, encrypt: ${value}\n`), parseenvfile(`env "VALUE", redacted: ${value}, encrypted: ${value}\n`))
   }
   const cwd = ct.testdir({ Envfile: 'env "VALUE", redact: false, encrypted: false\nfile ".env.production" do\n env "VALUE", redacted: true, encrypt: true\nend\n' })
-  const root = readEnvspec(path.join(cwd, 'Envfile'), [])
+  const root = readEnvfile(path.join(cwd, 'Envfile'), [])
   ct.equal(root.redactionRules.get('VALUE'), false)
   ct.equal(root.encryptionRules.get('VALUE'), false)
-  const production = readEnvspec(path.join(cwd, 'Envfile'), [path.join(cwd, '.env.production')])
+  const production = readEnvfile(path.join(cwd, 'Envfile'), [path.join(cwd, '.env.production')])
   ct.equal(production.redactionRules.get('VALUE'), true)
   ct.equal(production.encryptionRules.get('VALUE'), true)
   ct.end()
@@ -28,7 +28,7 @@ t.test('aliases reject duplicate options, invalid booleans, and root modifiers',
       `${alias}: false, ${canonical}: false`,
       `${alias}: true, ${alias}: true`
     ]) {
-      ct.throws(() => parseenvfile(`env "VALUE", ${options}`), { message: `[MALFORMED_ENVSPEC] Duplicate Envfile option: ${canonical}` })
+      ct.throws(() => parseenvfile(`env "VALUE", ${options}`), { message: `[MALFORMED_ENVFILE] Duplicate Envfile option: ${canonical}` })
     }
     for (const value of ['"false"', '0', 'falseevil']) ct.throws(() => parseenvfile(`env "VALUE", ${alias}: ${value}`))
     ct.throws(() => parseenvfile(`${alias} false\nenv "VALUE"`))

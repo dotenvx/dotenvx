@@ -2,8 +2,8 @@ const envsResolver = require('../resolvers/envs')
 const Session = require('../../db/session')
 const buildCommandEnvs = require('../helpers/buildCommandEnvs')
 const resolveEnvKeysFile = require('../helpers/resolveEnvKeysFile')
-const readEnvspec = require('../envspec/parsing/readEnvspec')
-const validateEnvspec = require('../envspec/validation/validateEnvspec')
+const readEnvfile = require('../envfile/parsing/readEnvfile')
+const validateEnvfile = require('../envfile/validation/validateEnvfile')
 const normalizeDotenvConfigPath = require('../helpers/normalizeDotenvConfigPath')
 const Errors = require('../helpers/errors')
 const { determine } = require('../helpers/envResolution')
@@ -11,7 +11,7 @@ const path = require('node:path')
 const resolveDirectoryFilepath = require('../helpers/resolveDirectoryFilepath')
 
 // Load once and validate the final values; callers own presentation and execution.
-module.exports = async function validate ({ envs = [], options = {}, processEnv = { ...process.env }, requireEnvspec = true, command, onStatus, onKey } = {}) {
+module.exports = async function validate ({ envs = [], options = {}, processEnv = { ...process.env }, requireEnvfile = true, command, onStatus, onKey } = {}) {
   envs = normalizeDotenvConfigPath(envs, processEnv)
   const requiredFilepaths = new Set(envs.filter(env => env.type === 'envFile').flatMap(env => {
     const resolved = resolveDirectoryFilepath(env.value, '.env')
@@ -20,8 +20,8 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
   }))
   envs = buildCommandEnvs(envs, options.convention)
   envs = determine(envs, processEnv)
-  const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
-  if (requireEnvspec && !schema.exists) throw new Errors().envspecRequired()
+  const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+  if (requireEnvfile && !schema.exists) throw new Errors().envfileRequired()
 
   const session = new Session()
   const token = options.token || processEnv.DOTENVX_TOKEN
@@ -46,8 +46,8 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
     processedEnvs,
     readableFilepaths,
     requiredFilepaths,
-    hasEnvspec: schema.exists,
+    hasEnvfile: schema.exists,
     schema,
-    validationError: validateEnvspec(schema, processEnv, processedEnvs, onKey)
+    validationError: validateEnvfile(schema, processEnv, processedEnvs, onKey)
   }
 }

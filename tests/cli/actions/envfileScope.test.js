@@ -47,10 +47,10 @@ t.test('removed proxy declarations block run, check, config and encrypt before s
     ]) {
       const result = run(dir, args)
       t.equal(result.status, 1)
-      t.match(result.stderr, 'MALFORMED_ENVSPEC')
+      t.match(result.stderr, 'MALFORMED_ENVFILE')
       t.notMatch(result.stdout, 'LAUNCHED')
     }
-    const config = spawnSync(process.execPath, ['-e', `try { require(${JSON.stringify(main)}).config({ processEnv: {}, noArmor: true, noNative: true }) } catch (e) { if (e.code === 'MALFORMED_ENVSPEC') process.exit(17); throw e }`], { cwd: dir, encoding: 'utf8' })
+    const config = spawnSync(process.execPath, ['-e', `try { require(${JSON.stringify(main)}).config({ processEnv: {}, noArmor: true, noNative: true }) } catch (e) { if (e.code === 'MALFORMED_ENVFILE') process.exit(17); throw e }`], { cwd: dir, encoding: 'utf8' })
     t.equal(config.status, 17, config.stderr)
     t.equal(fs.readFileSync(path.join(dir, '.env'), 'utf8'), 'TOKEN=unchanged\n')
     t.notOk(fs.existsSync(path.join(dir, '.env.keys')))

@@ -2,12 +2,12 @@ const { logger } = require('./../../shared/logger')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prepareValidatedEnv = require('../../lib/services/validate')
-const diagnosticLocations = require('../../lib/envspec/validation/diagnosticLocation')
+const diagnosticLocations = require('../../lib/envfile/validation/diagnosticLocation')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
 const path = require('node:path')
-const previewEnvspec = require('../../lib/envspec/rendering/previewEnvspec')
+const previewEnvfile = require('../../lib/envfile/rendering/previewEnvfile')
 
 async function check () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
@@ -57,7 +57,7 @@ async function check () {
     if (spinner) spinner.stop()
     if (showPreview) {
       const diagnostics = validationError && !ignore.includes(validationError.code) ? validationError.diagnostics : []
-      const preview = previewEnvspec(processedEnvs, schema, processEnv, diagnostics)
+      const preview = previewEnvfile(processedEnvs, schema, processEnv, diagnostics)
       if (preview) {
         for (const line of preview.split('\n')) logger.info(line)
       }

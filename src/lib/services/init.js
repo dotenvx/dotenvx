@@ -2,8 +2,8 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { scan, encrypted } = require('@dotenvx/primitives')
 
-const normalizeEnvspec = require('../envspec/rendering/normalizeEnvspec')
-const renderEnvspec = require('../envspec/rendering/renderEnvspec')
+const normalizeEnvfile = require('../envfile/rendering/normalizeEnvfile')
+const renderEnvfile = require('../envfile/rendering/renderEnvfile')
 const isPublicKey = require('../helpers/isPublicKey')
 
 function declaration (name) {
@@ -63,8 +63,8 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
   const invalid = keys.filter(key => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(key))
   if (invalid.length) throw new Error(`Unsupported Envfile variable names: ${invalid.join(', ')}`)
 
-  const document = normalizeEnvspec({ files, codeDeclarations })
-  const content = renderEnvspec(document)
+  const document = normalizeEnvfile({ files, codeDeclarations })
+  const content = renderEnvfile(document)
   if (stdout) return { created: false, content }
   try {
     fs.writeFileSync(target, content, { flag: overwrite ? fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC | fs.constants.O_NOFOLLOW : 'wx' })

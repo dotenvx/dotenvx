@@ -53,7 +53,7 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
-    "@dotenvx/primitives": "git+https://github.com/dotenvx/primitives.git#1dacab53f794c82a7bc3eceed53cef3442c5e67c",
+    "@dotenvx/primitives": "git+https://github.com/dotenvx/primitives.git#55d4cd7a991b395c72076388d8fc98d102b3c9ea",
     "@dotenvx/tooling": "^1.0.3",
     "undici": "^6.28.1",
     "yocto-spinner": "^1.2.1"

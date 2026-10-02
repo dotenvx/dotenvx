@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const plaintextKeys = require('../../lib/helpers/plaintextKeys')
-const protectEnvspec = require('../../lib/envspec/validation/protectEnvspec')
+const protectEnvfile = require('../../lib/envfile/validation/protectEnvfile')
 const { logger } = require('../../shared/logger')
 const createProtectSpinner = require('../../lib/helpers/createProtectSpinner')
 const logProtectedFiles = require('../../lib/helpers/logProtectedFiles')
@@ -26,7 +26,7 @@ function check (filepath, content, beforeError = () => {}) {
   let rejected = null
   if (!privateKeyFile) {
     try {
-      rejected = protectEnvspec(filepath, content.toString('utf8'))
+      rejected = protectEnvfile(filepath, content.toString('utf8'))
     } catch (error) {
       beforeError()
       logger.error(error.message)
