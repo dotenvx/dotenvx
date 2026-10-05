@@ -3322,16 +3322,6 @@ WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
 
 &nbsp;
 
-## Membership
-
-[![dotenvx](https://dotenvx.com/membership.png?v2)](https://dotenvx.com/membership)
-
-<p align="center">Dotenvx Membership. Be part of the .env story.</p>
-
-<p align="center"><a href="https://dotenvx.com/membership">Membership Benefits →</a></p>
-
-&nbsp;
-
 ## FAQ
 
 <details><summary>How does encryption work?</summary><br>
