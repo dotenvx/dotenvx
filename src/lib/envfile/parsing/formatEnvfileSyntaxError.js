@@ -1,6 +1,6 @@
 const path = require('node:path')
 
-module.exports = function formatEnvspecSyntaxError (error, src, filepath) {
+module.exports = function formatEnvfileSyntaxError (error, src, filepath) {
   const location = error.location?.start
   if (!location) return error.message
 

@@ -86,6 +86,9 @@ export interface DotenvConfigOptions {
    */
   path?: string | string[] | URL;
 
+  /** Select a named Envfile profile when no explicit paths are supplied. */
+  profile?: string;
+
   /**
    * Specify the encoding of your file containing environment variables.
    *
@@ -257,9 +260,8 @@ export interface DotenvPopulateInput {
 /**
  * Loads `.env` file contents into process.env by default.
  * Reads Envfile from the current directory and validates the final resolved environment.
- * Falls back to Envspec, then Dotenvspec, when earlier filenames are absent.
  * Validation failures warn and return an error, or throw when strictness is enabled.
- * Invalid Envfile syntax and active proxy rules always throw; use run for proxy support.
+ * Invalid Envfile syntax always throws.
  *
  * @see https://dotenvx.com/docs
  *
@@ -279,6 +281,9 @@ export interface SetOptions {
    * @example require('@dotenvx/dotenvx').set(key, value, { path: ['/path/to/first.env', '/path/to/second.env'] })
    */
   path?: string | string[] | URL;
+
+  /** Select a named Envfile profile when no explicit paths are supplied. */
+  profile?: string;
 
   /**
    * Customize the path to your .env.keys file. This is useful with monorepos.
@@ -373,6 +378,9 @@ export interface GetOptions {
    * @example require('@dotenvx/dotenvx').get('KEY', { path: ['/path/to/first.env', '/path/to/second.env'] })
    */
   path?: string | string[] | URL;
+
+  /** Select a named Envfile profile when no explicit paths are supplied. */
+  profile?: string;
 
   /**
    * Mask returned values, optionally setting the number of visible characters.

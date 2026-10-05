@@ -13,7 +13,6 @@ const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
-const configureProxy = require('../../lib/proxy/configureProxy')
 
 function inferCommandArgsFromProcessArgv (argv) {
   const runIndex = argv.indexOf('run')
@@ -25,7 +24,7 @@ function inferCommandArgsFromProcessArgv (argv) {
   if (separatorIndex !== -1) return args.slice(separatorIndex + 1)
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '-f' || args[i] === '--file' || args[i] === '--env-file') {
+    if (args[i] === '-f' || args[i] === '--file' || args[i] === '--env-file' || args[i] === '--profile') {
       i++
       continue
     }
@@ -58,7 +57,6 @@ async function run () {
   }
   let commandEnv = process.env
   let sensitiveValues = []
-  let closeProxy
 
   let commandArgs = this.args
   if (commandArgs.length < 1) {
@@ -99,26 +97,21 @@ async function run () {
     const {
       processedEnvs,
       readableFilepaths,
-      hasEnvspec,
+      hasEnvfile,
       schema,
-      proxyCredentials,
-      proxyToken,
-      session: sesh,
-      proxyError,
       validationError: error
     } = await prepareValidatedEnv({
       envs: this.envs,
       options,
       processEnv: process.env,
-      requireEnvspec: false,
+      requireEnvfile: false,
       command: commandArgs,
       onStatus: (text) => {
         if (spinner && text) spinner.text = text
       }
     })
-    if (proxyError) throw proxyError
 
-    if (hasEnvspec || options.redact === true) {
+    if (hasEnvfile || options.redact === true) {
       sensitiveValues = redactedValues(processedEnvs, schema, process.env, options.redact === true)
     }
 
@@ -149,10 +142,7 @@ async function run () {
           continue // ignore error
         }
 
-        const strict = processedEnv.type === 'envFile'
-          ? (schema.strictByFile?.get(path.resolve(processedEnv.filepath)) ?? schema.strict)
-          : schema.strict
-        if (options.strict || strict) throw error // throw if strict and not ignored
+        if (options.strict) throw error // file-loading failures use the CLI strict flag
 
         if (error.code === 'MISSING_ENV_FILE' && options.convention) { // do not output error for conventions (too noisy)
           // intentionally quiet
@@ -187,19 +177,7 @@ async function run () {
       }
     }
 
-    const proxy = await configureProxy(commandArgs, commandEnv, proxyCredentials, sesh, proxyToken)
-    closeProxy = proxy.close
-    commandArgs = proxy.commandArgs
-    commandEnv = proxy.env
-
-    const gatedKeys = new Set((proxyCredentials || [])
-      .filter(credential => commandEnv[credential.name] === credential.placeholder)
-      .map(credential => credential.name))
     const injectedKeys = uniqueInjectedKeys(processedEnvs)
-    for (const key of gatedKeys) {
-      injectedKeys.delete(key)
-      logger.verbose(`${key} proxied via Armor proxy`)
-    }
 
     let msg = ''
     const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
@@ -212,10 +190,8 @@ async function run () {
     }
 
     if (spinner) spinner.stop()
-    if (gatedKeys.size > 0) logger.success(`⧈ proxied (${gatedKeys.size})${msg}`)
     logger.success(`⟐ injected env (${injectedKeys.size})${msg}`)
   } catch (error) {
-    if (closeProxy) await closeProxy()
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
       return { exitCode: 130, error }
@@ -224,11 +200,7 @@ async function run () {
     return { exitCode: 1, error }
   }
 
-  try {
-    return await executeCommand(commandArgs, commandEnv, sensitiveValues, closeProxy)
-  } finally {
-    if (closeProxy) await closeProxy()
-  }
+  return executeCommand(commandArgs, commandEnv, sensitiveValues)
 }
 
 module.exports = require('../../lib/events/cli')('run', run)

@@ -1,4 +1,4 @@
-const redact = require('./redact')
+const { redact } = require('@dotenvx/primitives')
 const { StringDecoder } = require('string_decoder')
 
 function normalizedValues (values) {
@@ -26,11 +26,7 @@ function redactOutput (value, sensitiveValues) {
 
   if (typeof value !== 'string') return value
 
-  let result = value
-  for (const sensitiveValue of values) {
-    result = result.split(sensitiveValue).join(redact(sensitiveValue))
-  }
-  return result
+  return redact(value, values)
 }
 
 function partialMatchLength (value, sensitiveValues) {

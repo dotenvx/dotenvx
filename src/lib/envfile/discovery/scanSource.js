@@ -4,7 +4,7 @@ const { ignore } = require('@dotenvx/tooling')
 const extractEnvKeys = require('./extractEnvKeys')
 
 const ignoredDirectories = new Set(['.git', 'node_modules', 'dist', 'build', '.next', 'vendor', '.venv', 'coverage', '__pycache__'])
-const projectMarkers = new Set(['package.json', 'Envfile', 'Envspec', 'Dotenvspec', '.env.schema'])
+const projectMarkers = new Set(['package.json', 'Envfile', 'Envfile', 'Dotenvfile', '.env.schema'])
 const languages = {
   js: 'js',
   mjs: 'js',

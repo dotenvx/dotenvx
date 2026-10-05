@@ -38,17 +38,6 @@ async function main () {
   await emptyDir(outputDir)
 
   const outfile = `${outputDir}/index.js`
-  // Embed a complete script, including its dependencies. Child Node processes
-  // cannot load modules from the executable's virtual filesystem.
-  const preload = await esbuild.build({
-    entryPoints: ['src/lib/proxy/proxyPreload.js'],
-    bundle: true,
-    platform: 'node',
-    target: 'node18',
-    minify,
-    write: false
-  })
-
   /** @type { import('esbuild').BuildOptions } */
   const config = {
     entryPoints: [pkgJson.bin.dotenvx],
@@ -61,15 +50,6 @@ async function main () {
     outfile,
     // Keep dependencies inside each entrypoint. Shared external bundles reduce
     // size but make packaged CLI startup slower, before the spinner can appear.
-    plugins: [{
-      name: 'embed-proxy-preload',
-      setup (build) {
-        build.onLoad({ filter: /[/\\]proxyPreloadSource\.js$/ }, () => ({
-          contents: `module.exports = ${JSON.stringify(preload.outputFiles[0].text)}`,
-          loader: 'js'
-        }))
-      }
-    }],
     // suppress direct-eval warning
     logOverride: {
       'direct-eval': 'silent',

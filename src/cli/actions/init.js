@@ -1,9 +1,9 @@
 const fs = require('node:fs')
 const process = require('node:process')
 const prompts = require('../../lib/helpers/prompts')
-const initEnvspec = require('../../lib/services/init')
-const scanSource = require('../../lib/envspec/discovery/scanSource')
-const discoverEnvFiles = require('../../lib/envspec/discovery/discoverEnvFiles')
+const initEnvfile = require('../../lib/services/init')
+const scanSource = require('../../lib/envfile/discovery/scanSource')
+const discoverEnvFiles = require('../../lib/envfile/discovery/discoverEnvFiles')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const { logger } = require('../../shared/logger')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
@@ -49,7 +49,7 @@ module.exports = async function spec () {
       sourceKeys = keys
     }
 
-    const { created, replaced, content } = initEnvspec({ envFile, envFiles, sourceKeys, overwrite, stdout, onFile })
+    const { created, replaced, content } = initEnvfile({ envFile, envFiles, sourceKeys, overwrite, stdout, onFile })
     if (spinner) spinner.stop()
     if (stdout) {
       process.stdout.write(content)

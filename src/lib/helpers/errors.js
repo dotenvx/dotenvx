@@ -233,9 +233,9 @@ class Errors {
     return e
   }
 
-  envspecRequired () {
-    const e = new Error('[ENVSPEC_REQUIRED] check requires an Envfile')
-    e.code = 'ENVSPEC_REQUIRED'
+  envfileRequired () {
+    const e = new Error('[ENVFILE_REQUIRED] check requires an Envfile')
+    e.code = 'ENVFILE_REQUIRED'
     e.help = 'fix: run [dotenvx spec]'
     e.messageWithHelp = `${e.message}. ${e.help}`
     return e
@@ -339,8 +339,8 @@ class Errors {
     return e
   }
 
-  malformedEnvspec () {
-    const code = 'MALFORMED_ENVSPEC'
+  malformedEnvfile () {
+    const code = 'MALFORMED_ENVFILE'
     const message = `[${code}] ${this.message}`
     const e = new Error(message)
     e.code = code
