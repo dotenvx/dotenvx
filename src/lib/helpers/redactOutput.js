@@ -67,16 +67,35 @@ function safeBoundary (value, boundary, sensitiveValues) {
   return result
 }
 
-function createRedactedStreamWriter (stream, sensitiveValues, source) {
-  const values = normalizedValues(sensitiveValues)
+function createRedactor (sensitiveValues) {
+  const values = new Set(normalizedValues(sensitiveValues))
   const decoder = new StringDecoder('utf8')
   let pending = ''
-  let waitingForDrain = false
+  return {
+    add: secrets => normalizedValues(secrets).forEach(secret => values.add(secret)),
+    write (chunk) {
+      pending += decoder.write(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
+      const secrets = [...values]
+      const boundary = safeBoundary(pending, pending.length - partialMatchLength(pending, secrets), secrets)
+      const output = redact(pending.slice(0, boundary), secrets)
+      pending = pending.slice(boundary)
+      return output
+    },
+    flush (maskPending = false) {
+      pending += decoder.end()
+      const output = maskPending && pending ? '[REDACTED]' : redact(pending, [...values])
+      pending = ''
+      return output
+    }
+  }
+}
 
+function createRedactedStreamWriter (stream, sensitiveValues, source) {
+  const redactor = createRedactor(sensitiveValues)
+  let waitingForDrain = false
   const writeToStream = (value) => {
     if (!value) return
-
-    const canContinue = stream.write(redactOutput(value, values))
+    const canContinue = stream.write(value)
     if (!canContinue && source && !waitingForDrain) {
       waitingForDrain = true
       source.pause()
@@ -86,31 +105,14 @@ function createRedactedStreamWriter (stream, sensitiveValues, source) {
       })
     }
   }
-
-  const flush = () => {
-    pending += decoder.end()
-    if (!pending) return
-    writeToStream(pending)
-    pending = ''
+  return {
+    write: chunk => writeToStream(redactor.write(chunk)),
+    flush: () => writeToStream(redactor.flush())
   }
-
-  const write = (chunk) => {
-    pending += Buffer.isBuffer(chunk) ? decoder.write(chunk) : `${chunk}`
-
-    const holdbackLength = partialMatchLength(pending, values)
-    let boundary = pending.length - holdbackLength
-    boundary = safeBoundary(pending, boundary, values)
-
-    const output = pending.slice(0, boundary)
-    pending = pending.slice(boundary)
-
-    writeToStream(output)
-  }
-
-  return { write, flush }
 }
 
 module.exports = {
   redactOutput,
+  createRedactor,
   createRedactedStreamWriter
 }

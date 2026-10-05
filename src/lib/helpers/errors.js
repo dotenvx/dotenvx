@@ -339,15 +339,6 @@ class Errors {
     return e
   }
 
-  malformedEnvfile () {
-    const code = 'MALFORMED_ENVFILE'
-    const message = `[${code}] ${this.message}`
-    const e = new Error(message)
-    e.code = code
-    e.messageWithHelp = message
-    return e
-  }
-
   invalidEnv () {
     const code = 'INVALID_ENV'
     const message = `[${code}] ${this.message}`

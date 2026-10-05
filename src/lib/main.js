@@ -32,6 +32,7 @@ const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
 const readEnvfile = require('./envfile/parsing/readEnvfile')
 const validateEnvfile = require('./envfile/validation/validateEnvfile')
 const redactedValues = require('./helpers/redactedValues')
+const redactProcessOutput = require('./helpers/redactProcessOutput')
 const { redactOutput } = require('./helpers/redactOutput')
 
 function uniqueInjectedKeys (processedEnvs) {
@@ -81,7 +82,7 @@ const config = function (options = {}, events) {
   let fatal = false
   let sensitiveValues = []
   try {
-    const envs = options.envs || selectEnvfileEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, processEnv)
+    const envs = options.envs || selectEnvfileEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, { ...process.env, ...processEnv })
     const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
     const {
       processedEnvs,
@@ -102,6 +103,7 @@ const config = function (options = {}, events) {
 
     const validationError = validateEnvfile.error(validateEnvfile(schema, processEnv).errors)
     sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
+    if (schema.exists) redactProcessOutput(sensitiveValues)
 
     if (options.mask !== undefined) {
       const showChar = options.mask === true ? 6 : options.mask

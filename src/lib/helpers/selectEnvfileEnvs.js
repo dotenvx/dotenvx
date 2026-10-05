@@ -24,5 +24,5 @@ module.exports = function selectEnvfileEnvs (envs = [], options = {}, processEnv
     throw readEnvfile.formatError(error, document)
   }
   if (files.length) return explicit
-  return (selected ? selected.split(',').map(value => ({ type: 'envFile', value })) : []).concat(explicit)
+  return buildCommandEnvs((selected ? selected.split(',').map(value => ({ type: 'envFile', value })) : []).concat(explicit))
 }

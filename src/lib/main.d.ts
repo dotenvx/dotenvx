@@ -262,6 +262,8 @@ export interface DotenvPopulateInput {
  * Reads Envfile from the current directory and validates the final resolved environment.
  * Validation failures warn and return an error, or throw when strictness is enabled.
  * Invalid Envfile syntax always throws.
+ * With an Envfile, subsequent Node stdout/stderr writes are automatically redacted.
+ * Environment and returned values remain unchanged; native writes and inherited child output bypass redaction.
  *
  * @see https://dotenvx.com/docs
  *

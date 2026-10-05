@@ -7,7 +7,7 @@ const { createRedactedStreamWriter, redactOutput } = require('./redactOutput')
 const ptyCommand = require('./ptyCommand')
 const { finished } = require('stream/promises')
 
-async function executeCommand (commandArgs, env, sensitiveValues = [], onComplete) {
+async function executeCommand (commandArgs, env, sensitiveValues = []) {
   const FORWARD_SIGNAL_GRACE_MS = 1000
   const FORCE_KILL_GRACE_MS = 1000
   const signals = [
@@ -200,7 +200,6 @@ async function executeCommand (commandArgs, env, sensitiveValues = [], onComplet
     otherSignalHandlers.forEach((handler, signal) => {
       process.removeListener(signal, handler)
     })
-    if (onComplete) await onComplete()
   }
 
   return { exitCode: commandExitCode || 0, signal: commandSignal, error: commandError }

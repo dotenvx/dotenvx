@@ -17,13 +17,7 @@ module.exports = function previewEnvfile (processedEnvs, schema, checked, diagno
   const errors = new Map()
   for (const diagnostic of diagnostics) {
     keys.add(diagnostic.key)
-    const message = diagnostic.rule
-      ? `!${diagnostic.rule}`
-      : diagnostic.code === 'EXPECTED_ENCRYPTED'
-        ? '!encrypted'
-        : diagnostic.code === 'MISSING_REQUIRED'
-          ? '!required'
-          : `! ${diagnostic.message.slice(diagnostic.key.length + 1).replace(/^is /, '')}`
+    const message = diagnostic.rule ? `!${diagnostic.rule}` : `! ${diagnostic.message}`
     errors.set(diagnostic.key, [...new Set([...(errors.get(diagnostic.key) || []), message])])
   }
   for (const key of keys) {
