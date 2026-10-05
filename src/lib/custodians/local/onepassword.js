@@ -70,11 +70,9 @@ function parseResponse (value) {
 async function available () {
   try {
     const version = await run(['--version'], undefined, 2000)
-    if (!/^2\./.test(version.trim())) return false
-    if (process.env.OP_SERVICE_ACCOUNT_TOKEN) return true
-    // Account discovery is local; authenticate only after the user selects 1Password.
-    const accounts = parseResponse(await run(['account', 'list', '--format=json'], undefined, 2000))
-    return Array.isArray(accounts) && accounts.length > 0
+    // Availability means the CLI is installed. Account setup and authentication
+    // are checked by set() only after the user selects 1Password.
+    return /^2\./.test(version.trim())
   } catch {
     return false
   }

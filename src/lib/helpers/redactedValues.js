@@ -6,7 +6,7 @@ function redactedValues (processedEnvs, schema, processEnv = {}, legacyRedact = 
 
   const rows = [...(processedEnvs || [])]
   if (schema?.exists) {
-    rows.push({ injected: Object.fromEntries([...schema.redactionRules.keys()].map(key => [key, processEnv[key]])) })
+    rows.push({ injected: Object.fromEntries(Object.keys(schema.keys).map(key => [key, processEnv[key]])) })
   }
   for (const processedEnv of rows) {
     const values = {
@@ -15,7 +15,7 @@ function redactedValues (processedEnvs, schema, processEnv = {}, legacyRedact = 
     }
 
     for (const [key, value] of Object.entries(values)) {
-      const redacted = schema?.exists ? (schema.redactionRules.get(key) ?? schema.redacted) : !isPublicKey(key)
+      const redacted = schema?.exists ? (schema.keys[key]?.stdio.redacted ?? true) : !isPublicKey(key)
       if (!redacted) continue
       if (value === undefined || value === null || value === '') continue
 

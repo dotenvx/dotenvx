@@ -19,7 +19,6 @@ const setTransform = require('./transforms/set')
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
 const buildConfigEnvs = require('./helpers/buildConfigEnvs')
-const { determine } = require('./helpers/envResolution')
 const escape = require('./helpers/escape')
 const fsx = require('./helpers/fsx')
 const decryptKeyValue = require('./helpers/cryptography/decryptKeyValue')
@@ -27,12 +26,13 @@ const Errors = require('./helpers/errors')
 const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgnore')
-const normalizeDotenvConfigPath = require('./helpers/normalizeDotenvConfigPath')
+const selectEnvfileEnvs = require('./helpers/selectEnvfileEnvs')
 const mask = require('./helpers/mask')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
-const readEnvspec = require('./envspec/parsing/readEnvspec')
-const validateEnvspec = require('./envspec/validation/validateEnvspec')
+const readEnvfile = require('./envfile/parsing/readEnvfile')
+const validateEnvfile = require('./envfile/validation/validateEnvfile')
 const redactedValues = require('./helpers/redactedValues')
+const redactProcessOutput = require('./helpers/redactProcessOutput')
 const { redactOutput } = require('./helpers/redactOutput')
 
 function uniqueInjectedKeys (processedEnvs) {
@@ -82,15 +82,8 @@ const config = function (options = {}, events) {
   let fatal = false
   let sensitiveValues = []
   try {
-    let envs = normalizeDotenvConfigPath(buildConfigEnvs(options))
-    if (!options.envs) {
-      envs = determine(envs, processEnv)
-    }
-    const schema = readEnvspec(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
-    if (schema.proxyRules.size > 0) {
-      fatal = true
-      throw new Error('Envfile proxy is not supported by synchronous config(). Use dotenvx run -- yourcommand.')
-    }
+    const envs = options.envs || selectEnvfileEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, { ...process.env, ...processEnv })
+    const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
     const {
       processedEnvs,
       readableFilepaths
@@ -108,8 +101,9 @@ const config = function (options = {}, events) {
       token: options.token
     })
 
-    const validationError = validateEnvspec(schema, processEnv, processedEnvs)
+    const validationError = validateEnvfile.error(validateEnvfile(schema, processEnv).errors)
     sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
+    if (schema.exists) redactProcessOutput(sensitiveValues)
 
     if (options.mask !== undefined) {
       const showChar = options.mask === true ? 6 : options.mask
@@ -130,10 +124,7 @@ const config = function (options = {}, events) {
           continue // ignore error
         }
 
-        const policyStrict = processedEnv.type === 'envFile'
-          ? (schema.strictByFile?.get(path.resolve(processedEnv.filepath)) ?? schema.strict)
-          : schema.strict
-        if (strict || policyStrict) {
+        if (strict) {
           fatal = true
           throw error
         }
@@ -195,7 +186,7 @@ const config = function (options = {}, events) {
     }
   } catch (error) {
     if (events) events.fail(error)
-    if (strict || fatal || error.code === 'MALFORMED_ENVSPEC') throw error
+    if (strict || fatal || error.code === 'MALFORMED_ENVFILE') throw error
 
     logger.error(redactOutput(error.messageWithHelp || error.message, sensitiveValues))
 
@@ -288,6 +279,7 @@ const set = async function (key, value, options = {}, events) {
     unchangedFilepaths
   } = await setTransform({
     envs,
+    profile: options.profile,
     key,
     value,
     fk: envKeysFilepath,
@@ -372,8 +364,10 @@ const get = async function (key, options = {}, events) {
   const ignore = options.ignore || []
 
   const { parsed, errors } = await getResolver({
+    resolveDirectories: false,
     key,
     envs,
+    profile: options.profile,
     overload: options.overload,
     all: options.all,
     envKeysFile: options.envKeysFile,

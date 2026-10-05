@@ -54,13 +54,11 @@ function inject (processEnv, parsed) {
   }
 }
 
-function buildParseOptions ({ lockPassword, processEnv, overload, envKeysFilepath, provider, decryptor, proxyCredentials, proxyRules }) {
+function buildParseOptions ({ lockPassword, processEnv, overload, envKeysFilepath, provider, decryptor }) {
   const options = {
     lockPassword,
     processEnv,
     overload,
-    proxyCredentials,
-    proxyRules,
     fk: envKeysFilepath
   }
 
@@ -77,7 +75,7 @@ function buildParseOptions ({ lockPassword, processEnv, overload, envKeysFilepat
   return options
 }
 
-async function injectEnv ({ env, lockPassword, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus, proxyCredentials, proxyRules }) {
+async function injectEnv ({ env, lockPassword, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus }) {
   const row = {}
   row.type = TYPE_ENV
   row.string = env.value
@@ -94,9 +92,7 @@ async function injectEnv ({ env, lockPassword, overload, processEnv, envKeysFile
       lockPassword,
       envKeysFilepath,
       provider,
-      decryptor,
-      proxyCredentials,
-      proxyRules
+      decryptor
     })
 
     const {
@@ -186,7 +182,7 @@ function injectEnvSync ({ env, lockPassword, overload, processEnv, envKeysFilepa
   return row
 }
 
-async function injectEnvFile ({ env, lockPassword, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus, proxyCredentials, proxyRules }) {
+async function injectEnvFile ({ env, lockPassword, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus }) {
   const row = {}
   row.type = TYPE_ENV_FILE
   row.filepath = env.value
@@ -205,9 +201,7 @@ async function injectEnvFile ({ env, lockPassword, overload, processEnv, envKeys
       lockPassword,
       envKeysFilepath: fk,
       provider,
-      decryptor,
-      proxyCredentials,
-      proxyRules
+      decryptor
     })
 
     const {
@@ -331,8 +325,6 @@ async function envs (options = {}) {
         readableFilepaths,
         no1Password,
         noBitwarden,
-        proxyCredentials: options.proxyCredentials,
-        proxyRules: options.proxyRules,
         onStatus: options.onStatus
       }))
     } else if (env.type === TYPE_ENV) {
@@ -346,8 +338,6 @@ async function envs (options = {}) {
         decryptor,
         no1Password,
         noBitwarden,
-        proxyCredentials: options.proxyCredentials,
-        proxyRules: options.proxyRules,
         onStatus: options.onStatus
       }))
     }

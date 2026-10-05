@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.32.4...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.33.0...main)
+
+## [2.33.0](https://github.com/dotenvx/dotenvx/compare/v2.32.4...v2.33.0) (2026-10-05)
+
+### Added
+
+* Add Envfile profiles for selecting .env file combinations with `--profile` or `DOTENV_ENV`.
+* Automatically redact stdout/stderr from `config()` when an Envfile is present.
+
+### Changed
+
+* Move Envfile processing into `@dotenvx/primitives`.
+* First file wins when combining Envfile rules. `run` and `check` validate final values; encryption rules apply to `encrypt`, `set`, and `protect`.
 
 ## [2.32.4](https://github.com/dotenvx/dotenvx/compare/v2.32.3...v2.32.4) (2026-10-01)
 
