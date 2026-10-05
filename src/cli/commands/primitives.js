@@ -27,8 +27,35 @@ function output (operation, required = false) {
 
 module.exports = function primitives (command) {
   command
-    .description('standalone primitives without env file reads or writes')
+    .description('standalone primitive operations')
     .action(function () { this.help() })
+
+  command.command('profile')
+    .description('resolve an Envfile profile to comma-separated filenames')
+    .option('--profile <name>', 'explicit profile name')
+    .option('-f, --file <paths>', 'explicit comma-separated files, overriding profile selection', (value, previous) => previous === undefined ? value : `${previous},${value}`)
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitivesProfile')))
+
+  command.command('redact')
+    .description('replace secret strings in text with [REDACTED]')
+    .argument('[text]', 'text to redact')
+    .requiredOption('-s, --secret <value>', 'literal secret to redact (repeat for multiple secrets)', (value, previous) => [...(previous || []), value])
+    .option('--stdin', 'read text from stdin')
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitivesRedact')))
+
+  command.command('policy')
+    .description('print the Envfile policy for selected files as JSON')
+    .option('-f, --file <paths>', 'comma-separated env files, first file wins (default: .env)', (value, previous) => previous === undefined ? value : `${previous},${value}`)
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/policy')))
+
+  command.command('check')
+    .description('check selected env files against Envfile and print redacted JSON')
+    .option('-f, --file <paths>', 'comma-separated env files, first file wins (default: .env)', (value, previous) => previous === undefined ? value : `${previous},${value}`)
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitivesCheck')))
 
   command.command('keypair')
     .description('generate or restore a keypair and print JSON')
