@@ -364,6 +364,7 @@ const get = async function (key, options = {}, events) {
   const ignore = options.ignore || []
 
   const { parsed, errors } = await getResolver({
+    resolveDirectories: false,
     key,
     envs,
     profile: options.profile,
