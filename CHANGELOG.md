@@ -8,9 +8,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
-* Swap internal provider logic for @dotenvx/providers
-* BREAKING: Remove `lock` commands and support for unlocking. Passwords are too difficult to manage securely. Convenience not worth it for the agentic future we are entering.
-* Return provider information with `dotenvx keypair` command
+* Swap internal provider logic for @dotenvx/providers ([#1008](https://github.com/dotenvx/dotenvx/pull/1008))
+* BREAKING: Remove `lock` commands and support for unlocking. Passwords are too difficult to manage securely. Convenience not worth it for the agentic future we are entering. ([#1008](https://github.com/dotenvx/dotenvx/pull/1008))
+* Return provider information with `dotenvx keypair` command ([#1008](https://github.com/dotenvx/dotenvx/pull/1008))
 
 ## [2.33.0](https://github.com/dotenvx/dotenvx/compare/v2.32.4...v2.33.0) (2026-10-05)
 
