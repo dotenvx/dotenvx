@@ -5,7 +5,7 @@ const { Conf, dotenv, envPaths } = require('@dotenvx/tooling')
 const jsonToEnv = require('./../lib/helpers/jsonToEnv')
 const packageJson = require('./../lib/helpers/packageJson')
 const { http } = require('./../lib/helpers/http')
-const nativeProvider = require('./../lib/providers/native')
+const nativeProvider = require('./../lib/custodians/local/native/backend')
 const { logger } = require('./../shared/logger')
 
 const HOURS_24 = 60 * 60 * 24 * 1000

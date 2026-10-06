@@ -2,7 +2,6 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { scan, derive } = require('@dotenvx/primitives')
 const custodians = require('./index')
-const protection = require('./lock')
 const keynames = require('../conventions/keynames')
 const matchesStoredKey = require('../helpers/matchesStoredKey')
 const removeEnvKey = require('../helpers/removeEnvKey')
@@ -31,10 +30,10 @@ module.exports = async function resolveLocalKey (envFile = '.env', { allowMissin
   }
 
   async function result (stored, remove, reread) {
-    // A file-only push remains supported, including password-locked keys.
-    if (!publicKey) publicKey = stored.startsWith('locked:') ? stored.split(':')[1] : derive(stored)
+    // A file-only push remains supported.
+    if (!publicKey) publicKey = derive(stored)
     if (!matchesStoredKey(publicKey, stored)) throw new Error('private key does not match the .env public key')
-    const privateKey = (await protection.unlock(publicKey, { [publicKey]: stored }))[publicKey]
+    const privateKey = stored
     return {
       publicKey,
       privateKey,

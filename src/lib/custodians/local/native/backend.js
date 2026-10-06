@@ -43,17 +43,11 @@ index.delete = function (key) {
 }
 
 function index (publicKeyHex) {
-  if (!['darwin', 'linux', 'win32'].includes(process.platform)) return {}
+  return require('@dotenvx/providers').native().getSync(publicKeyHex)
+}
 
-  try {
-    const privateKeyHex = get(publicKeyHex)
-
-    if (!privateKeyHex) return {}
-
-    return { [publicKeyHex]: privateKeyHex }
-  } catch {
-    return {}
-  }
+index.async = function (publicKeyHex) {
+  return require('@dotenvx/providers').native().get(publicKeyHex)
 }
 
 index.set = set

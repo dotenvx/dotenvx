@@ -1,4 +1,5 @@
-const { execFile, execFileSync } = require('child_process')
+const { bitwarden } = require('@dotenvx/providers')
+const { execFile } = require('child_process')
 const matchesStoredKey = require('../../helpers/matchesStoredKey')
 const Session = require('../../../db/session')
 const prompts = require('../../helpers/prompts')
@@ -97,10 +98,6 @@ async function authenticate (loc) {
   }
 }
 
-function requireSession () {
-  if (!unlockedSession && !process.env.BW_SESSION) throw failure('Bitwarden requires an unlocked BW_SESSION; run bw login, then bw unlock --raw and set BW_SESSION')
-}
-
 function checkIdentity (status, loc) {
   if (!status || status.status !== 'unlocked' || !ID.test(status.userId || '')) throw commandFailure()
   if (loc && (status.userId !== loc.userId || (status.serverUrl || '') !== loc.serverUrl)) {
@@ -118,18 +115,11 @@ async function get (publicKey) {
   const loc = location(publicKey)
   if (!loc) return {}
   await authenticate(loc)
-  return verified(publicKey, (await run(['get', 'password', loc.item])).trim())
+  return bitwarden({ processEnv: commandEnv() }).get(publicKey)
 }
 
 function getSync (publicKey) {
-  const loc = location(publicKey)
-  if (!loc) return {}
-  requireSession()
-  function read (args) {
-    try { return execFileSync('bw', [...args, '--nointeraction'], { ...COMMAND_OPTIONS, env: commandEnv(), stdio: ['ignore', 'pipe', 'pipe'] }) } catch { throw commandFailure() }
-  }
-  checkIdentity(parse(read(['status'])), loc)
-  return verified(publicKey, read(['get', 'password', loc.item]).trim())
+  return bitwarden({ processEnv: commandEnv() }).getSync(publicKey)
 }
 
 async function set (publicKey, privateKey) {

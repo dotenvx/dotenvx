@@ -2,144 +2,95 @@ const t = require('tap')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 
-t.afterEach((ct) => {
-  sinon.restore()
-})
+const ring = { 'public-key': 'private-key' }
+const expected = { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' }
 
-t.test('keypair forwards envKeysFilepath to primitive keyring',
-  async ct => {
-    const keyring = sinon.stub().resolves({
-      'public-key': 'private-key'
-    })
-    const keyringSync = sinon.stub().returns({
-      'public-key': 'private-key'
-    })
-    const providers = sinon.stub().resolves(null)
-    providers.sync = sinon.stub().returns(null)
-    const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
-      './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-      './../helpers/fsx': {
-        readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
-        readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
-      },
-      './../providers': providers,
-      '@dotenvx/primitives': {
-        publickeys: () => ['public-key'],
-        keyring,
-        keyringSync
-      }
-    })
+function setup ({ fileRing = {}, remoteRing = ring, noProvider = false } = {}) {
+  const get = sinon.stub().resolves(fileRing)
+  const getSync = sinon.stub().returns(fileRing)
+  const file = sinon.stub().returns({ get, getSync })
+  const provider = sinon.stub().resolves(remoteRing)
+  const providerSync = sinon.stub().returns(remoteRing)
+  const providers = sinon.stub().resolves(noProvider ? null : provider)
+  providers.sync = sinon.stub().returns(noProvider ? null : providerSync)
+  // Invoke the resolver's provider so tests exercise file lookup and fallback.
+  const keyring = sinon.stub().callsFake(async ({ provider }) => provider('public-key'))
+  const keyringSync = sinon.stub().callsFake(({ provider }) => provider('public-key'))
+  const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
+    './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+    './../helpers/fsx': {
+      readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
+      readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
+    },
+    './../providers': providers,
+    '@dotenvx/providers': { file },
+    '@dotenvx/primitives': { publickeys: () => ['public-key'], keyring, keyringSync }
+  })
+  return { keypair, file, get, getSync, provider, providerSync, providers, keyring, keyringSync }
+}
 
-    const out = await keypair({
+for (const sync of [false, true]) {
+  const mode = sync ? 'sync' : 'async'
+  const lookup = (fixture, options) => sync ? fixture.keypair.sync(options) : fixture.keypair(options)
+
+  t.test(`keypair ${mode} reads envKeysFilepath before other providers`, async ct => {
+    const fixture = setup({ fileRing: ring })
+    const out = await lookup(fixture, {
       envFile: '.env',
-      envKeysFilepath: '.env.custom.keys'
-    })
-    const outSync = keypair.sync({
-      envFile: '.env',
-      envKeysFilepath: '.env.custom.keys'
+      envKeysFilepath: '.env.custom.keys',
+      includeProvider: true
     })
 
-    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
-    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
-    ct.equal(keyring.firstCall.args[0].fk, '.env.custom.keys')
-    ct.equal(keyringSync.firstCall.args[0].fk, '.env.custom.keys')
-    ct.end()
+    ct.same(out, { ...expected, provider: '.env.keys' })
+    ct.same(fixture.file.firstCall.args, [{ fk: '.env.custom.keys' }])
+    ct.same((sync ? fixture.getSync : fixture.get).firstCall.args, ['public-key'])
+    ct.same((sync ? fixture.keyringSync : fixture.keyring).firstCall.args[0].fk, [])
+    ct.equal(fixture.provider.callCount + fixture.providerSync.callCount, 0, 'file key takes precedence')
   })
 
-t.test('keypair passes no provider when noArmor is true',
-  async ct => {
-    const keyring = sinon.stub().callsFake(async ({ ring }) => ring)
-    const keyringSync = sinon.stub().callsFake(({ ring }) => ring)
-    const providers = sinon.stub().resolves(null)
-    providers.sync = sinon.stub().returns(null)
-    const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
-      './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-      './../helpers/fsx': {
-        readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
-        readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
-      },
-      './../providers': providers,
-      '@dotenvx/primitives': {
-        publickeys: () => ['public-key'],
-        keyring,
-        keyringSync
-      }
-    })
+  t.test(`keypair ${mode} handles missing keys when no provider is enabled`, async ct => {
+    const fixture = setup({ noProvider: true })
+    const out = await lookup(fixture, { envFile: '.env', noArmor: true, includeProvider: true })
 
-    const out = await keypair({
-      envFile: '.env',
-      noArmor: true
-    })
-    const outSync = keypair.sync({
-      envFile: '.env',
-      noArmor: true
-    })
-
-    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
-    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
-    ct.equal(keyring.firstCall.args[0].provider, null)
-    ct.equal(keyringSync.firstCall.args[0].provider, null)
-    ct.end()
+    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null, provider: null })
+    ct.equal((sync ? fixture.providers.sync : fixture.providers).firstCall.args[0].noArmor, true)
+    ct.same((sync ? fixture.getSync : fixture.get).firstCall.args, ['public-key'])
   })
 
-t.test('keypair passes provider by default',
-  async ct => {
-    const provider = sinon.stub()
-    const providerSync = sinon.stub()
-    const providers = sinon.stub().resolves(provider)
-    providers.sync = sinon.stub().returns(providerSync)
-    const keyring = sinon.stub().callsFake(async ({ ring }) => ring)
-    const keyringSync = sinon.stub().callsFake(({ ring }) => ring)
-    const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
-      './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-      './../helpers/fsx': {
-        readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
-        readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
-      },
-      './../providers': providers,
-      '@dotenvx/primitives': {
-        publickeys: () => ['public-key'],
-        keyring,
-        keyringSync
-      }
-    })
-
-    const out = await keypair({ envFile: '.env' })
-    const outSync = keypair.sync({ envFile: '.env' })
-
-    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
-    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null })
-    ct.equal(keyring.firstCall.args[0].provider, provider)
-    ct.equal(keyringSync.firstCall.args[0].provider, providerSync)
-    ct.end()
+  t.test(`keypair ${mode} still reads file keys with noArmor`, async ct => {
+    const fixture = setup({ noProvider: true, fileRing: ring })
+    ct.same(await lookup(fixture, { envFile: '.env', noArmor: true }), expected)
   })
 
-t.test('keypair forwards onStatus to providers',
-  async ct => {
+  t.test(`keypair ${mode} falls back to a provider when the file has no matching key`, async ct => {
+    const fixture = setup({ fileRing: { 'another-key': 'another-private-key' } })
+    const out = await lookup(fixture, { envFile: '.env', includeProvider: true })
+
+    ct.same(out, { ...expected, provider: 'custom' })
+    const get = sync ? fixture.getSync : fixture.get
+    const provider = sync ? fixture.providerSync : fixture.provider
+    ct.same(provider.firstCall.args, ['public-key'])
+    ct.ok(get.calledBefore(provider), 'checks the file before falling back')
+  })
+
+  t.test(`keypair ${mode} forwards onStatus and reports the provider origin`, async ct => {
+    const fixture = setup()
     const onStatus = sinon.stub()
-    const keyring = sinon.stub().callsFake(async ({ provider }) => provider('public-key'))
-    const provider = sinon.stub().resolves({ 'public-key': 'private-key' })
-    const providers = sinon.stub().resolves(provider)
-    providers.sync = sinon.stub()
-    const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
-      './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
-      './../helpers/fsx': {
-        readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"'
-      },
-      './../providers': providers,
-      '@dotenvx/primitives': {
-        publickeys: () => ['public-key'],
-        keyring,
-        keyringSync: sinon.stub()
-      }
-    })
+    const providers = sync ? fixture.providers.sync : fixture.providers
+    const resolve = publicKey => {
+      const options = providers.firstCall.args[0]
+      options.onStatus('waiting for approval')
+      options.onProvider('armor', publicKey)
+      return ring
+    }
+    if (sync) fixture.providerSync.callsFake(resolve)
+    else fixture.provider.callsFake(async publicKey => resolve(publicKey))
 
-    const out = await keypair({
-      envFile: '.env',
-      onStatus
-    })
+    const out = await lookup(fixture, { envFile: '.env', onStatus, includeProvider: true })
 
-    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
-    ct.same(providers.firstCall.args, [{ envFile: '.env', onStatus }])
-    ct.end()
+    ct.same(out, { ...expected, provider: 'armor' })
+    ct.equal(providers.firstCall.args[0].envFile, '.env')
+    ct.equal(providers.firstCall.args[0].onStatus, onStatus)
+    ct.same(onStatus.firstCall.args, ['waiting for approval'])
   })
+}

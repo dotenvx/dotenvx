@@ -3295,7 +3295,6 @@ DECRYPTION_FAILED= # an encrypted value could not be decrypted
 FILE_NOT_WRITABLE= # dotenvx could not write to the target file
 INVALID_COLOR= # the requested terminal color is invalid
 INVALID_CONVENTION= # the requested environment-file convention is invalid
-INVALID_PASSPHRASE= # a locked private key could not be unlocked with the supplied passphrase
 INVALID_PRIVATE_KEY= # a private key is malformed or otherwise invalid
 INVALID_PUBLIC_KEY= # a public key is malformed or otherwise invalid
 MALFORMED_ENCRYPTED_DATA= # the encrypted value is malformed

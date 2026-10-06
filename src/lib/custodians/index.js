@@ -1,4 +1,4 @@
-const protection = require('./lock')
+const nativeProviders = { darwin: 'macosKeychain', win32: 'windowsCredentialManager', linux: 'linuxSecretService' }
 
 // Explicit registration keeps bundling predictable and avoids executing
 // arbitrary modules discovered in a project's working directory.
@@ -45,21 +45,22 @@ function createRegistry (custodians) {
         const method = sync ? 'getSync' : 'get'
         if (!custodian.enabled(options) || !custodian.get || (custodian.configured && !custodian.configured())) continue
         if (typeof custodian[method] !== 'function') throw new Error(`custodian ${custodian.id} does not support synchronous reads`)
-        if (sync) {
-          providers.push(publicKey => protection.unlockSync(publicKey, custodian[method](publicKey), options))
-        } else {
-          providers.push(async publicKey => protection.unlock(publicKey, await custodian[method](publicKey), options))
+        function found (publicKey, ring) {
+          if (ring && ring[publicKey] && options.onProvider) {
+            const name = custodian.id === 'native' ? nativeProviders[process.platform] || custodian.id : custodian.id
+            options.onProvider(name, publicKey)
+          }
+          return ring
         }
+        providers.push(sync
+          ? publicKey => found(publicKey, custodian[method](publicKey))
+          : async publicKey => found(publicKey, await custodian[method](publicKey)))
       }
       return providers
     },
     async store (selection, publicKey, privateKey, context = {}) {
-      const { id, lock = false } = typeof selection === 'string' ? { id: selection } : selection
+      const { id } = typeof selection === 'string' ? { id: selection } : selection
       const custodian = get(id)
-      if (lock) {
-        if (custodian.custody === 'managed') throw new Error('password locking is only supported for local custody')
-        privateKey = await protection.lock(publicKey, privateKey, context)
-      }
       const result = await custodian.store(publicKey, privateKey, context) || {}
       // Only the native custodian's unavailable-write path requests fallback.
       // Authentication and verification errors propagate without writing a file.

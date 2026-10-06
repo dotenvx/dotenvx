@@ -1,6 +1,6 @@
 // @ts-check
 const path = require('path')
-const { encrypted, parseSync } = require('@dotenvx/primitives')
+const { encrypted, parseSync, injectsummary } = require('@dotenvx/primitives')
 
 // shared
 const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/logger')
@@ -96,7 +96,6 @@ const config = function (options = {}, events) {
       noNative,
       no1Password: options.no1Password,
       noBitwarden: options.noBitwarden,
-      lockPassword: options.lockPassword,
       noSpinner: options.noSpinner,
       token: options.token
     })
@@ -172,11 +171,7 @@ const config = function (options = {}, events) {
     }
 
     if (events) events.add({ files: readableFilepaths, injected_count: uniqueInjectedKeys(processedEnvs).size })
-    let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
-    if (readableFilepaths.length > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}`
-    }
-    logger.success(`⟐ ${msg}`)
+    logger.success(injectsummary(uniqueInjectedKeys(processedEnvs).size, readableFilepaths))
 
     if (lastError) {
       if (events) events.fail(lastError)
@@ -287,7 +282,6 @@ const set = async function (key, value, options = {}, events) {
     noNative,
     no1Password: options.no1Password,
     noBitwarden: options.noBitwarden,
-    lockPassword: options.lockPassword,
     noCreate,
     encrypt
   })
@@ -374,8 +368,7 @@ const get = async function (key, options = {}, events) {
     noArmor,
     noNative,
     no1Password: options.no1Password,
-    noBitwarden: options.noBitwarden,
-    lockPassword: options.lockPassword
+    noBitwarden: options.noBitwarden
   })
 
   if (options.mask !== undefined) {

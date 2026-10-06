@@ -1,5 +1,5 @@
-const { execFile, execFileSync } = require('child_process')
-const matchesStoredKey = require('../../helpers/matchesStoredKey')
+const { execFile } = require('child_process')
+const { onepassword } = require('@dotenvx/providers')
 const Session = require('../../../db/session')
 const armoredKeyDisplay = require('../../helpers/armoredKeyDisplay')
 
@@ -94,32 +94,12 @@ function location (publicKey) {
   return { account, reference }
 }
 
-function verified (publicKey, privateKey) {
-  try {
-    if (matchesStoredKey(publicKey, privateKey)) return { [publicKey]: privateKey }
-  } catch {}
-  throw failure('1Password private key does not match the .env public key')
-}
-
 async function get (publicKey) {
-  const loc = location(publicKey)
-  if (!loc) return {}
-  const privateKey = await run(['read', loc.reference, '--no-newline', `--account=${loc.account}`])
-  return verified(publicKey, privateKey.trim())
+  return onepassword().get(publicKey)
 }
 
 function getSync (publicKey) {
-  const loc = location(publicKey)
-  if (!loc) return {}
-  let privateKey
-  try {
-    privateKey = execFileSync('op', ['read', loc.reference, '--no-newline', `--account=${loc.account}`], {
-      ...COMMAND_OPTIONS, stdio: ['ignore', 'pipe', 'pipe']
-    }).trim()
-  } catch {
-    throw failure('1Password CLI could not read the private key; check sign-in and vault permissions')
-  }
-  return verified(publicKey, privateKey)
+  return onepassword().getSync(publicKey)
 }
 
 async function set (publicKey, privateKey) {
