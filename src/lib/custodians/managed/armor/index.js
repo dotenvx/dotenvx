@@ -15,10 +15,10 @@ module.exports = {
     return !!options.token || !new Session().noArmorSync()
   },
   get,
-  getSync (publicKey) {
+  getSync (publicKey, options = {}) {
     const { createSyncFn } = require('@dotenvx/tooling')
-    const runProviderSync = createSyncFn(require.resolve('../../../providers/provider-worker.js'))
-    return runProviderSync(publicKey)
+    const runProviderSync = createSyncFn(require.resolve('../../../providers/provider-worker.js'), { timeout: 330000 })
+    return runProviderSync(publicKey, { token: options.token })
   },
   store
 }
