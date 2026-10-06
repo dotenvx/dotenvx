@@ -1,6 +1,6 @@
 // @ts-check
 const path = require('path')
-const { encrypted, parseSync } = require('@dotenvx/primitives')
+const { encrypted, parseSync, injectsummary } = require('@dotenvx/primitives')
 
 // shared
 const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/logger')
@@ -172,11 +172,7 @@ const config = function (options = {}, events) {
     }
 
     if (events) events.add({ files: readableFilepaths, injected_count: uniqueInjectedKeys(processedEnvs).size })
-    let msg = `injected env (${uniqueInjectedKeys(processedEnvs).size})`
-    if (readableFilepaths.length > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}`
-    }
-    logger.success(`⟐ ${msg}`)
+    logger.success(injectsummary(uniqueInjectedKeys(processedEnvs).size, readableFilepaths))
 
     if (lastError) {
       if (events) events.fail(lastError)

@@ -1,6 +1,29 @@
-const { parse, parseSync, parsearrays } = require('@dotenvx/primitives')
+const { parse, parseSync, parsearrays, publickeys } = require('@dotenvx/primitives')
+const { file } = require('@dotenvx/providers')
 const withLockedKeys = require('./withLockedKeys')
 const SERVER_SIDE_DECRYPTION_REQUIRED = 'SERVER_SIDE_DECRYPTION_REQUIRED'
+
+function withFileKeys (src, options, sync = false) {
+  const keys = file({ fk: options.fk })
+  const fallback = options.provider
+  const provider = sync
+    ? publicKey => {
+      const ring = keys.getSync(publicKey)
+      return ring[publicKey] ? ring : (fallback ? fallback(publicKey) : {})
+    }
+    : async publicKey => {
+      const ring = await keys.get(publicKey)
+      return ring[publicKey] ? ring : (fallback ? fallback(publicKey) : {})
+    }
+  const resolved = withLockedKeys({ ...options, provider }, sync)
+  return {
+    ...resolved,
+    // Provider lookup requires a public key. Keep legacy key discovery for
+    // encrypted files that do not declare one, and for error recovery.
+    fk: publickeys(src).length ? [] : options.fk,
+    fallbackFk: options.fk
+  }
+}
 
 function decryptOptions (error) {
   const meta = error.meta || {}
@@ -15,6 +38,7 @@ function decryptOptions (error) {
 function parseOptionsWithoutProvider (options) {
   return {
     ...options,
+    fk: options.fallbackFk,
     provider: null,
     decryptor: null
   }
@@ -36,7 +60,7 @@ parseWithDecryptor.arrays = async function parsearraysWithDecryptor (src, option
 }
 
 async function parseWith (src, options, parser) {
-  options = withLockedKeys(options)
+  options = withFileKeys(src, options)
   try {
     return await parser(src, options)
   } catch (error) {
@@ -58,7 +82,7 @@ async function parseWith (src, options, parser) {
 }
 
 parseWithDecryptor.sync = function parseWithDecryptorSync (src, options = {}) {
-  options = withLockedKeys(options, true)
+  options = withFileKeys(src, options, true)
   try {
     return parseSync(src, options)
   } catch (error) {

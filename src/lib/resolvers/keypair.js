@@ -1,3 +1,4 @@
+const { file } = require('@dotenvx/providers')
 const fsx = require('./../helpers/fsx')
 const path = require('path')
 const keynames = require('./../conventions/keynames')
@@ -43,7 +44,12 @@ async function keypair (options = {}) {
     })
 
     const provider = await providers(options)
-    keyringOptions.provider = provider
+    const keys = file({ fk: keyringOptions.fk })
+    keyringOptions.provider = async publicKey => {
+      const ring = await keys.get(publicKey)
+      return ring[publicKey] ? ring : (provider ? provider(publicKey) : {})
+    }
+    if (publicKey) keyringOptions.fk = []
 
     const ring = await keyring(keyringOptions)
 
@@ -67,7 +73,12 @@ function keypairSync (options = {}) {
       fk: options.envKeysFilepath || options.envKeysFile || path.resolve(path.dirname(filepath), '.env.keys')
     })
     const provider = providers.sync(options)
-    keyringOptions.provider = provider
+    const keys = file({ fk: keyringOptions.fk })
+    keyringOptions.provider = publicKey => {
+      const ring = keys.getSync(publicKey)
+      return ring[publicKey] ? ring : (provider ? provider(publicKey) : {})
+    }
+    if (publicKey) keyringOptions.fk = []
 
     const ring = keyringSync(keyringOptions)
 

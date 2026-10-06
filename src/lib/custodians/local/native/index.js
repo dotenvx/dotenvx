@@ -17,7 +17,7 @@ module.exports = {
   enabled,
   available: () => true,
   configured: () => true,
-  get: backend,
+  get: backend.async,
   getSync: backend,
   set: backend.set,
   delete: backend.delete,

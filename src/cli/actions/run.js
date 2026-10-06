@@ -1,4 +1,5 @@
 const path = require('path')
+const { injectsummary } = require('@dotenvx/primitives')
 const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
@@ -179,18 +180,8 @@ async function run () {
 
     const injectedKeys = uniqueInjectedKeys(processedEnvs)
 
-    let msg = ''
-    const envStringCount = processedEnvs.filter((processedEnv) => processedEnv.type === 'env' && processedEnv.parsed).length
-    if (readableFilepaths.length > 0 && envStringCount > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}, and --env flag${envStringCount > 1 ? 's' : ''}`
-    } else if (readableFilepaths.length > 0) {
-      msg += ` from ${readableFilepaths.join(', ')}`
-    } else if (envStringCount > 0) {
-      msg += ` from --env flag${envStringCount > 1 ? 's' : ''}`
-    }
-
     if (spinner) spinner.stop()
-    logger.success(`⟐ injected env (${injectedKeys.size})${msg}`)
+    logger.success(injectsummary(injectedKeys.size, readableFilepaths))
   } catch (error) {
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
