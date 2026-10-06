@@ -1,21 +1,20 @@
 const Session = require('../../../db/session')
-const PostArmorDecrypt = require('../../api/postArmorDecrypt')
+const { armor } = require('@dotenvx/providers')
+const { version } = require('../../helpers/packageJson')
 
 async function index (src, options = {}) {
   const sesh = new Session()
 
   const hostname = sesh.hostname()
-  const token = sesh.token()
+  const token = options.token || sesh.token()
   const devicePublicKey = sesh.devicePublicKey()
 
-  return await new PostArmorDecrypt(
+  return await armor({
     hostname,
     token,
     devicePublicKey,
-    options.publicKey,
-    src,
-    options.grantToken
-  ).run()
+    cliVersion: version
+  }).decrypt(src, { publicKey: options.publicKey, grantToken: options.grantToken })
 }
 
 module.exports = index

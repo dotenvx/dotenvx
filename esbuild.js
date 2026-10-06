@@ -1,6 +1,7 @@
 const esbuild = require('esbuild')
 const { stat, writeFile, rm, mkdir } = require('fs/promises')
 const pkgJson = require('./package.json')
+const path = require('path')
 
 const outputDir = 'build'
 
@@ -62,8 +63,8 @@ async function main () {
   await Promise.all([
     esbuild.build({
       ...config,
-      entryPoints: ['src/lib/providers/provider-worker.js'],
-      outfile: `${outputDir}/provider-worker.js`
+      entryPoints: [path.join(path.dirname(require.resolve('@dotenvx/providers')), 'armorWorker.js')],
+      outfile: `${outputDir}/armorWorker.js`
     }),
     esbuild.build({
       ...config,
@@ -73,7 +74,7 @@ async function main () {
   ])
 
   console.log(`Build took ${Date.now() - start}ms`)
-  await printSize([outfile, `${outputDir}/provider-worker.js`, `${outputDir}/decryptor-worker.js`])
+  await printSize([outfile, `${outputDir}/armorWorker.js`, `${outputDir}/decryptor-worker.js`])
 
   // create main patched package.json
   cleanPkgJson(pkgJson)
@@ -85,7 +86,7 @@ async function main () {
   pkgJson.bin = 'index.js'
   pkgJson.pkg = {
     scripts: [
-      'provider-worker.js',
+      'armorWorker.js',
       'decryptor-worker.js'
     ]
   }
