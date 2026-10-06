@@ -31,6 +31,7 @@ function outputKeypair ({ out, filepath, publicKey, ring }) {
 
 async function keypair (options = {}) {
   const out = {}
+  const origins = {}
   const processEnv = options.processEnv || process.env
 
   for (const filepath of filepaths(options.envFile)) {
@@ -43,24 +44,36 @@ async function keypair (options = {}) {
       fk: options.envKeysFilepath || options.envKeysFile || path.resolve(path.dirname(filepath), '.env.keys')
     })
 
-    const provider = await providers(options)
+    let origin = 'environment'
+    const provider = await providers({ ...options, onProvider: name => { origin = name } })
     const keys = file({ fk: keyringOptions.fk })
     keyringOptions.provider = async publicKey => {
       const ring = await keys.get(publicKey)
-      return ring[publicKey] ? ring : (provider ? provider(publicKey) : {})
+      if (ring[publicKey]) {
+        origin = '.env.keys'
+        return ring
+      }
+      origin = 'custom'
+      return provider ? provider(publicKey) : {}
     }
     if (publicKey) keyringOptions.fk = []
 
     const ring = await keyring(keyringOptions)
 
     outputKeypair({ out, filepath, publicKey, ring })
+    origins[filepath] = publicKey && ring[publicKey] ? origin : null
   }
 
+  if (options.includeProvider) {
+    const names = Object.keys(origins)
+    out.provider = names.length === 1 ? origins[names[0]] : origins
+  }
   return out
 }
 
 function keypairSync (options = {}) {
   const out = {}
+  const origins = {}
   const processEnv = options.processEnv || process.env
 
   for (const filepath of filepaths(options.envFile)) {
@@ -72,19 +85,30 @@ function keypairSync (options = {}) {
       processEnv,
       fk: options.envKeysFilepath || options.envKeysFile || path.resolve(path.dirname(filepath), '.env.keys')
     })
-    const provider = providers.sync(options)
+    let origin = 'environment'
+    const provider = providers.sync({ ...options, onProvider: name => { origin = name } })
     const keys = file({ fk: keyringOptions.fk })
     keyringOptions.provider = publicKey => {
       const ring = keys.getSync(publicKey)
-      return ring[publicKey] ? ring : (provider ? provider(publicKey) : {})
+      if (ring[publicKey]) {
+        origin = '.env.keys'
+        return ring
+      }
+      origin = 'custom'
+      return provider ? provider(publicKey) : {}
     }
     if (publicKey) keyringOptions.fk = []
 
     const ring = keyringSync(keyringOptions)
 
     outputKeypair({ out, filepath, publicKey, ring })
+    origins[filepath] = publicKey && ring[publicKey] ? origin : null
   }
 
+  if (options.includeProvider) {
+    const names = Object.keys(origins)
+    out.provider = names.length === 1 ? origins[names[0]] : origins
+  }
   return out
 }
 

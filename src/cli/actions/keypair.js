@@ -18,6 +18,7 @@ async function keypair (key) {
 
   try {
     const keypairs = await keypairResolver({
+      includeProvider: key === 'provider' || (!key && !['shell', 'colon'].includes(options.format)),
       envFile: options.envFile,
       envKeysFile: options.envKeysFile,
       armor: options.armor,

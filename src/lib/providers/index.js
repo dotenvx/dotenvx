@@ -42,7 +42,11 @@ async function providers (options = {}) {
 
   const armor = custodians.get('armored')
   if (armor.enabled(options) && await armor.configured(options)) {
-    providerFns.push(publicKey => armor.get(publicKey, options))
+    providerFns.push(async publicKey => {
+      const ring = await armor.get(publicKey, options)
+      if (hasKey(ring, publicKey) && options.onProvider) options.onProvider('armor', publicKey)
+      return ring
+    })
   }
 
   return providerFrom(providerFns, composeProviders)
@@ -57,7 +61,11 @@ providers.sync = function providersSync (options = {}) {
 
   const armor = custodians.get('armored')
   if (armor.enabled(options) && armor.configuredSync(options)) {
-    providerFns.push(armor.getSync)
+    providerFns.push(publicKey => {
+      const ring = armor.getSync(publicKey)
+      if (hasKey(ring, publicKey) && options.onProvider) options.onProvider('armor', publicKey)
+      return ring
+    })
   }
 
   return providerFrom(providerFns, composeProvidersSync)

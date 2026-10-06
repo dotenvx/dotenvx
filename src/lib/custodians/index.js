@@ -1,3 +1,5 @@
+const nativeProviders = { darwin: 'macosKeychain', win32: 'windowsCredentialManager', linux: 'linuxSecretService' }
+
 // Explicit registration keeps bundling predictable and avoids executing
 // arbitrary modules discovered in a project's working directory.
 const builtins = [
@@ -43,7 +45,16 @@ function createRegistry (custodians) {
         const method = sync ? 'getSync' : 'get'
         if (!custodian.enabled(options) || !custodian.get || (custodian.configured && !custodian.configured())) continue
         if (typeof custodian[method] !== 'function') throw new Error(`custodian ${custodian.id} does not support synchronous reads`)
-        providers.push(publicKey => custodian[method](publicKey))
+        function found (publicKey, ring) {
+          if (ring && ring[publicKey] && options.onProvider) {
+            const name = custodian.id === 'native' ? nativeProviders[process.platform] || custodian.id : custodian.id
+            options.onProvider(name, publicKey)
+          }
+          return ring
+        }
+        providers.push(sync
+          ? publicKey => found(publicKey, custodian[method](publicKey))
+          : async publicKey => found(publicKey, await custodian[method](publicKey)))
       }
       return providers
     },
