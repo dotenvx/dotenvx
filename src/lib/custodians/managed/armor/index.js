@@ -1,5 +1,3 @@
-const Session = require('../../../../db/session')
-const get = require('./get')
 const store = require('./store')
 
 module.exports = {
@@ -8,17 +6,5 @@ module.exports = {
   custody: 'managed',
   enabled: (options = {}) => options.noArmor !== true && options.armor !== false && process.env.DOTENVX_NO_ARMOR !== 'true',
   available: () => true,
-  async configured (options = {}) {
-    return !!options.token || !await new Session().noArmor()
-  },
-  configuredSync (options = {}) {
-    return !!options.token || !new Session().noArmorSync()
-  },
-  get,
-  getSync (publicKey, options = {}) {
-    const { createSyncFn } = require('@dotenvx/tooling')
-    const runProviderSync = createSyncFn(require.resolve('../../../providers/provider-worker.js'), { timeout: 330000 })
-    return runProviderSync(publicKey, { token: options.token })
-  },
   store
 }

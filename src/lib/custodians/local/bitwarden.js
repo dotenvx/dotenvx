@@ -162,4 +162,4 @@ function enabled (options = {}) {
   return options.noBitwarden !== true && process.env.DOTENVX_NO_BITWARDEN !== 'true'
 }
 
-module.exports = { id: 'bitwarden', name: 'Bitwarden', enabled, store: set, available, configured, get, getSync, set, delete: remove }
+module.exports = { id: 'bitwarden', name: 'Bitwarden', enabled, store: set, available, configured, get, getSync, set, delete: remove, commandEnv }
