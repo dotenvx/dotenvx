@@ -27,7 +27,7 @@ async function selectKeyStorage (options = {}) {
         setup.set(id, `Install the ${custodian.name} CLI (${command}), then retry this command.`)
       } else if (id === 'armored' && !await custodian.configured(options)) {
         name += ' (sign in)'
-        setup.set(id, 'Sign in with [dotenvx armor login], then retry this command.')
+        setup.set(id, 'Sign in with [dotenvx login], then retry this command.')
       }
       entries.push({ name, value: id })
     }
