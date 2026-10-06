@@ -52,9 +52,11 @@ function createRegistry (custodians) {
           }
           return ring
         }
-        providers.push(sync
+        const provider = sync
           ? publicKey => found(publicKey, custodian[method](publicKey))
-          : async publicKey => found(publicKey, await custodian[method](publicKey)))
+          : async publicKey => found(publicKey, await custodian[method](publicKey))
+        provider.providerId = custodian.id
+        providers.push(provider)
       }
       return providers
     },

@@ -54,7 +54,7 @@
   "funding": "https://dotenvx.com",
   "dependencies": {
     "@dotenvx/primitives": "^3.2.0",
-    "@dotenvx/providers": "^0.3.2",
+    "@dotenvx/providers": "^0.3.3",
     "@dotenvx/tooling": "^1.0.4",
     "undici": "^6.28.1",
     "yocto-spinner": "^1.2.1"
