@@ -54,9 +54,8 @@ function inject (processEnv, parsed) {
   }
 }
 
-function buildParseOptions ({ lockPassword, processEnv, overload, envKeysFilepath, provider, decryptor }) {
+function buildParseOptions ({ processEnv, overload, envKeysFilepath, provider, decryptor }) {
   const options = {
-    lockPassword,
     processEnv,
     overload,
     fk: envKeysFilepath
@@ -75,7 +74,7 @@ function buildParseOptions ({ lockPassword, processEnv, overload, envKeysFilepat
   return options
 }
 
-async function injectEnv ({ env, lockPassword, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus }) {
+async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus }) {
   const row = {}
   row.type = TYPE_ENV
   row.string = env.value
@@ -89,7 +88,6 @@ async function injectEnv ({ env, lockPassword, overload, processEnv, envKeysFile
     const parseOptions = buildParseOptions({
       processEnv: parseProcessEnv,
       overload,
-      lockPassword,
       envKeysFilepath,
       provider,
       decryptor
@@ -129,7 +127,7 @@ async function injectEnv ({ env, lockPassword, overload, processEnv, envKeysFile
   return row
 }
 
-function injectEnvSync ({ env, lockPassword, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden }) {
+function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden }) {
   const row = {}
   row.type = TYPE_ENV
   row.string = env.value
@@ -143,7 +141,6 @@ function injectEnvSync ({ env, lockPassword, overload, processEnv, envKeysFilepa
     const parseOptions = buildParseOptions({
       processEnv: parseProcessEnv,
       overload,
-      lockPassword,
       envKeysFilepath,
       provider,
       decryptor
@@ -182,7 +179,7 @@ function injectEnvSync ({ env, lockPassword, overload, processEnv, envKeysFilepa
   return row
 }
 
-async function injectEnvFile ({ env, lockPassword, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus }) {
+async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus }) {
   const row = {}
   row.type = TYPE_ENV_FILE
   row.filepath = env.value
@@ -198,7 +195,6 @@ async function injectEnvFile ({ env, lockPassword, overload, processEnv, envKeys
     const parseOptions = buildParseOptions({
       processEnv,
       overload,
-      lockPassword,
       envKeysFilepath: fk,
       provider,
       decryptor
@@ -243,7 +239,7 @@ async function injectEnvFile ({ env, lockPassword, overload, processEnv, envKeys
   return row
 }
 
-function injectEnvFileSync ({ env, lockPassword, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden }) {
+function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden }) {
   const row = {}
   row.type = TYPE_ENV_FILE
   row.filepath = env.value
@@ -259,7 +255,6 @@ function injectEnvFileSync ({ env, lockPassword, overload, processEnv, envKeysFi
     const parseOptions = buildParseOptions({
       processEnv,
       overload,
-      lockPassword,
       envKeysFilepath: fk,
       provider,
       decryptor
@@ -317,7 +312,6 @@ async function envs (options = {}) {
       processedEnvs.push(await injectEnvFile({
         env,
         overload: options.overload,
-        lockPassword: options.lockPassword,
         processEnv,
         envKeysFilepath,
         provider,
@@ -331,7 +325,6 @@ async function envs (options = {}) {
       processedEnvs.push(await injectEnv({
         env,
         overload: options.overload,
-        lockPassword: options.lockPassword,
         processEnv,
         envKeysFilepath,
         provider,
@@ -364,7 +357,6 @@ function envsSync (options = {}) {
       processedEnvs.push(injectEnvFileSync({
         env,
         overload: options.overload,
-        lockPassword: options.lockPassword,
         processEnv,
         envKeysFilepath,
         provider,
@@ -377,7 +369,6 @@ function envsSync (options = {}) {
       processedEnvs.push(injectEnvSync({
         env,
         overload: options.overload,
-        lockPassword: options.lockPassword,
         processEnv,
         envKeysFilepath,
         provider,

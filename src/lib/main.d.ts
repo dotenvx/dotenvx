@@ -64,8 +64,6 @@ export function parse<T extends DotenvParseOutput = DotenvParseOutput>(
 ): T;
 
 export interface DotenvConfigOptions {
-  /** Password to unlock private keys in memory. Defaults to DOTENVX_LOCK_PASSWORD. */
-  lockPassword?: string;
 
   /**
    * Specify explicit env sources. When set, `path` and `convention` are ignored.
@@ -368,8 +366,6 @@ export function set(
 ): Promise<SetOutput>;
 
 export interface GetOptions {
-  /** Password to unlock private keys in memory. Defaults to DOTENVX_LOCK_PASSWORD. */
-  lockPassword?: string;
 
   /**
    * Specify a custom path if your file containing environment variables is located elsewhere.

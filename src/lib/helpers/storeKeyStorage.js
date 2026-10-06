@@ -2,7 +2,6 @@ const selectKeyStorage = require('./selectKeyStorage')
 const custodians = require('../custodians')
 
 async function storeKeyStorage (storage, publicKey, privateKey, options, context) {
-  // Preserve the operation context so locked custody can reuse its passphrase.
   context.allowCustodyBack = true
   while (true) {
     storage = storage || await selectKeyStorage(options)

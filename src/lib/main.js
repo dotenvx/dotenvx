@@ -96,7 +96,6 @@ const config = function (options = {}, events) {
       noNative,
       no1Password: options.no1Password,
       noBitwarden: options.noBitwarden,
-      lockPassword: options.lockPassword,
       noSpinner: options.noSpinner,
       token: options.token
     })
@@ -283,7 +282,6 @@ const set = async function (key, value, options = {}, events) {
     noNative,
     no1Password: options.no1Password,
     noBitwarden: options.noBitwarden,
-    lockPassword: options.lockPassword,
     noCreate,
     encrypt
   })
@@ -370,8 +368,7 @@ const get = async function (key, options = {}, events) {
     noArmor,
     noNative,
     no1Password: options.no1Password,
-    noBitwarden: options.noBitwarden,
-    lockPassword: options.lockPassword
+    noBitwarden: options.noBitwarden
   })
 
   if (options.mask !== undefined) {

@@ -1,5 +1,3 @@
-const protection = require('./lock')
-
 // Explicit registration keeps bundling predictable and avoids executing
 // arbitrary modules discovered in a project's working directory.
 const builtins = [
@@ -45,21 +43,13 @@ function createRegistry (custodians) {
         const method = sync ? 'getSync' : 'get'
         if (!custodian.enabled(options) || !custodian.get || (custodian.configured && !custodian.configured())) continue
         if (typeof custodian[method] !== 'function') throw new Error(`custodian ${custodian.id} does not support synchronous reads`)
-        if (sync) {
-          providers.push(publicKey => protection.unlockSync(publicKey, custodian[method](publicKey), options))
-        } else {
-          providers.push(async publicKey => protection.unlock(publicKey, await custodian[method](publicKey), options))
-        }
+        providers.push(publicKey => custodian[method](publicKey))
       }
       return providers
     },
     async store (selection, publicKey, privateKey, context = {}) {
-      const { id, lock = false } = typeof selection === 'string' ? { id: selection } : selection
+      const { id } = typeof selection === 'string' ? { id: selection } : selection
       const custodian = get(id)
-      if (lock) {
-        if (custodian.custody === 'managed') throw new Error('password locking is only supported for local custody')
-        privateKey = await protection.lock(publicKey, privateKey, context)
-      }
       const result = await custodian.store(publicKey, privateKey, context) || {}
       // Only the native custodian's unavailable-write path requests fallback.
       // Authentication and verification errors propagate without writing a file.

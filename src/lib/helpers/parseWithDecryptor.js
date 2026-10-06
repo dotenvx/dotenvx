@@ -1,6 +1,5 @@
 const { parse, parseSync, parsearrays, publickeys } = require('@dotenvx/primitives')
 const { file } = require('@dotenvx/providers')
-const withLockedKeys = require('./withLockedKeys')
 const SERVER_SIDE_DECRYPTION_REQUIRED = 'SERVER_SIDE_DECRYPTION_REQUIRED'
 
 function withFileKeys (src, options, sync = false) {
@@ -15,9 +14,9 @@ function withFileKeys (src, options, sync = false) {
       const ring = await keys.get(publicKey)
       return ring[publicKey] ? ring : (fallback ? fallback(publicKey) : {})
     }
-  const resolved = withLockedKeys({ ...options, provider }, sync)
   return {
-    ...resolved,
+    ...options,
+    provider,
     // Provider lookup requires a public key. Keep legacy key discovery for
     // encrypted files that do not declare one, and for error recovery.
     fk: publickeys(src).length ? [] : options.fk,

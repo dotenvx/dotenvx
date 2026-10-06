@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.33.0...main)
 
+### Changed
+
+* Swap internal logic for @dotenvx/providers
+* BREAKING: Remove `lock` commands and support for unlocking. Passwords are too difficult to manage securely. Convenience not worth it for the agentic future we are entering.
+
 ## [2.33.0](https://github.com/dotenvx/dotenvx/compare/v2.32.4...v2.33.0) (2026-10-05)
 
 ### Added

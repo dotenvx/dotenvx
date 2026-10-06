@@ -80,7 +80,6 @@ program.command('run')
   .option('--token <token>', 'set Armor ⛨ token')
   .option('--mask [characters]', 'inject masked values, optionally setting visible characters')
   .option('--redact', 'redact injected values except public keys (Envfile rules take precedence)', false)
-  .option('--lock-password <password>', 'password to unlock private keys (defaults to DOTENVX_LOCK_PASSWORD)')
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
   .option('--no-1password', 'disable 1Password secret reference resolution')
@@ -110,7 +109,6 @@ program.command('get')
   .option('-pp, --pretty-print', 'pretty print output')
   .option('--pp', 'pretty print output (alias)')
   .option('--format <type>', 'format of the output (json, shell, colon, eval, eval-export)', 'json')
-  .option('--lock-password <password>', 'password to unlock private keys (defaults to DOTENVX_LOCK_PASSWORD)')
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
   .option('--no-1password', 'disable 1Password secret reference resolution')
@@ -341,7 +339,7 @@ function hiddenSubcommands (name) {
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  lock                   ⊡ lock private keys with a local passphrase\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n  spec                   create an Envfile\n  check                  check Envfile rules against .env file(s)\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
+  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n  spec                   create an Envfile\n  check                  check Envfile rules against .env file(s)\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
   .action(function () { this.outputHelp() })
 
 // dotenvx update
@@ -407,9 +405,6 @@ require('./commands/custody')(program.command('bitwarden', { hidden: true }), 'B
 
 // dotenvx native
 require('./commands/native')(program.command('native', { hidden: true }))
-
-// dotenvx lock
-require('./commands/lock')(program.command('lock', { hidden: true }))
 
 // dotenvx armor
 require('./commands/armor')(program.command('armor', { hidden: true }))

@@ -75,7 +75,6 @@ async function run () {
 
     debugOptions = { ...options, env: (options.env || []).map(envSrc => maskEnvSrc(envSrc, showChar)), token }
   }
-  if (options.lockPassword !== undefined) debugOptions = { ...debugOptions, lockPassword: '[REDACTED]' }
 
   const ignore = options.ignore || []
 
