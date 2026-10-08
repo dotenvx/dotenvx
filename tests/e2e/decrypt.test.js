@@ -176,3 +176,70 @@ t.test('#decrypt --stdout - missing DOTENV_PRIVATE_KEY', ct => {
 
   ct.end()
 })
+
+for (const stdout of [false, true]) {
+  for (const keySource of ['file', 'environment']) {
+    t.test(`#decrypt${stdout ? ' --stdout' : ''} preserves file values with a ${keySource} private key`, ct => {
+      fs.writeFileSync('.env', 'KEY=first\nKEY=second\nVISIBLE_PLAIN=original\n')
+      execShell(`${dotenvx} encrypt`)
+      const encryptedSrc = fs.readFileSync('.env', 'utf8')
+      const env = {
+        ...process.env,
+        DOTENVX_CONFIG: path.join(tempDir, 'config'),
+        KEY: 'shell',
+        VISIBLE_PLAIN: 'shell'
+      }
+      if (keySource === 'environment') {
+        const { scan } = require('@dotenvx/primitives')
+        env.DOTENV_PRIVATE_KEY = scan(fs.readFileSync('.env.keys', 'utf8')).parsed.DOTENV_PRIVATE_KEY[0]
+        fs.unlinkSync('.env.keys')
+      }
+
+      const args = [path.join(originalDir, 'src/cli/dotenvx.js'), 'decrypt', '--no-native', '--no-armor']
+      if (stdout) args.push('--stdout')
+      const result = spawnSync(node, args, { env, encoding: 'utf8' })
+      const decryptedSrc = stdout ? result.stdout : fs.readFileSync('.env', 'utf8')
+
+      ct.equal(result.status, 0, result.stderr)
+      ct.match(decryptedSrc, /^KEY=first\nKEY=second$/m, 'each duplicate assignment is decrypted from the file')
+      ct.match(decryptedSrc, /^VISIBLE_PLAIN=original$/m, 'plaintext file values are preserved too')
+      if (stdout) ct.equal(fs.readFileSync('.env', 'utf8'), encryptedSrc, '--stdout leaves the file encrypted')
+      ct.end()
+    })
+  }
+}
+
+t.test('#decrypt --stdout respects key selection despite shell overrides', ct => {
+  fs.writeFileSync('.env', 'KEY=file\nOTHER=unchanged\n')
+  execShell(`${dotenvx} encrypt`)
+  const encryptedSrc = fs.readFileSync('.env', 'utf8')
+  const other = encryptedSrc.match(/^OTHER=.*$/m)[0]
+  const result = spawnSync(node, [
+    path.join(originalDir, 'src/cli/dotenvx.js'), 'decrypt', '--stdout', '--key', 'KEY', '--no-native', '--no-armor'
+  ], {
+    env: { ...process.env, DOTENVX_CONFIG: path.join(tempDir, 'config'), KEY: 'shell', OTHER: 'shell' },
+    encoding: 'utf8'
+  })
+
+  ct.equal(result.status, 0, result.stderr)
+  ct.match(result.stdout, /^KEY=file$/m)
+  ct.ok(result.stdout.includes(other), 'unselected ciphertext is preserved')
+  ct.equal(fs.readFileSync('.env', 'utf8'), encryptedSrc)
+  ct.end()
+})
+
+t.test('#decrypt --stdout reports missing private keys despite shell overrides', ct => {
+  fs.writeFileSync('.env', 'KEY=file\n')
+  execShell(`${dotenvx} encrypt`)
+  fs.unlinkSync('.env.keys')
+  const result = spawnSync(node, [
+    path.join(originalDir, 'src/cli/dotenvx.js'), 'decrypt', '--stdout', '--no-native', '--no-armor'
+  ], {
+    env: { ...process.env, DOTENVX_CONFIG: path.join(tempDir, 'config'), KEY: 'shell' },
+    encoding: 'utf8'
+  })
+
+  ct.equal(result.status, 1)
+  ct.match(result.stderr, /DECRYPTION_FAILED/)
+  ct.end()
+})
