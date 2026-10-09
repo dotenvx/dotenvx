@@ -24,9 +24,9 @@ async function pull () {
 
     if (spinner) spinner.stop()
     if (changed) {
-      logger.success(`◇ pulled to .env.keys (${keyDisplay})`)
+      logger.success(`◇ pulled ${options.envFile || '.env'} (${keyDisplay}) to .env.keys`)
     } else {
-      logger.info(`○ no change (${keyDisplay})`)
+      logger.info(`○ no change to ${options.envFile || '.env'} (${keyDisplay})`)
     }
   } catch (error) {
     if (spinner) spinner.stop()

@@ -92,7 +92,7 @@ t.test('#decrypt - missing DOTENV_PRIVATE_KEY', ct => {
   }
 
   ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
-  ct.match(stdout, /^○ no change \.env \([0-9A-F]{3} [0-9A-F]{3}\) via source unknown\n$/)
+  ct.match(stdout, /^○ no change to \.env \([0-9A-F]{3} [0-9A-F]{3}\) via source unknown\n$/)
   ct.equal(stderr, '☠ [DECRYPTION_FAILED] could not decrypt HELLO. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n')
 
   ct.end()

@@ -19,7 +19,7 @@ t.test('encrypt, repeat encrypt, run and clean get output', t => {
   t.match(encrypted.stderr, `◈ encrypted ${files} via .env.keys ⛉`)
   const repeat = run(['encrypt', '-f', '.env', '-f', '.env.production'])
   t.equal(repeat.status, 0)
-  t.match(repeat.stdout, `○ no change ${files} via .env.keys ⛉`)
+  t.match(repeat.stdout, `○ no change to ${files} via .env.keys ⛉`)
   const injected = run(['run', '-f', '.env', '-f', '.env.production', '--', process.execPath, '-e', 'console.log(process.env.HELLO + process.env.HI)'])
   t.equal(injected.status, 0, injected.stderr)
   t.match(injected.stderr, files.split(',').join(', '))

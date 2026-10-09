@@ -81,7 +81,7 @@ t.test('armor pull uses session values and calls ArmorPull service with default 
   ct.same(ArmorPullStub.firstCall && ArmorPullStub.firstCall.args, ['https://armor.dotenvx.com', 'session-token', 'device-public-key', undefined, undefined], 'constructs ArmorPull with fallback session values')
   ct.equal(runStub.callCount, 1, 'runs ArmorPull once')
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after success')
-  ct.same(successStub.lastCall && successStub.lastCall.args, ['◇ pulled to .env.keys (027 C9C)'], 'prints pulled message')
+  ct.same(successStub.lastCall && successStub.lastCall.args, ['◇ pulled .env (027 C9C) to .env.keys'], 'prints pulled message')
   ct.equal(infoStub.callCount, 0, 'does not print no change info on success')
   ct.equal(errorStub.callCount, 0, 'does not log error on success')
   ct.equal(processExitStub.callCount, 0, 'does not exit process on success')
@@ -218,7 +218,7 @@ t.test('armor pull prints no changes message when .env.keys is unchanged', async
 
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after success')
   ct.equal(successStub.callCount, 0, 'does not print success for no change')
-  ct.same(infoStub.lastCall && infoStub.lastCall.args, ['○ no change (027 C9C)'], 'prints no change message')
+  ct.same(infoStub.lastCall && infoStub.lastCall.args, ['○ no change to .env (027 C9C)'], 'prints no change message')
 })
 
 t.test('armor pull logs errors and returns failure', async (ct) => {
