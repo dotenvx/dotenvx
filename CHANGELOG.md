@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.34.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.34.1...main)
+
+## [2.34.1](https://github.com/dotenvx/dotenvx/compare/v2.34.0...v2.34.1) (2026-10-08)
+
+### Changed
+
+* Patch: don't write public key on ctrl+c or prompt failure ([#1009](https://github.com/dotenvx/dotenvx/pull/1009))
 
 ## [2.34.0](https://github.com/dotenvx/dotenvx/compare/v2.33.0...v2.34.0) (2026-10-08)
 
