@@ -41,20 +41,25 @@ function clearLastLine (stream) {
 }
 
 async function select ({ message, choices, navigation, backValue, initial, prefix }, context) {
-  if (navigation) {
-    const CustodySelect = require('./custodySelect')
-    return new CustodySelect({ message, choices: choicesForSelect(choices), backValue, initial, ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}), ...enquirerOptions(context) }).run()
-  }
-  const answer = await enquirer.prompt({
-    type: 'select',
-    name: 'value',
-    ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}),
-    message,
-    choices: choicesForSelect(choices),
-    ...enquirerOptions(context)
-  })
+  try {
+    if (navigation) {
+      const CustodySelect = require('./custodySelect')
+      return await new CustodySelect({ message, choices: choicesForSelect(choices), backValue, initial, ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}), ...enquirerOptions(context) }).run()
+    }
+    const answer = await enquirer.prompt({
+      type: 'select',
+      name: 'value',
+      ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}),
+      message,
+      choices: choicesForSelect(choices),
+      ...enquirerOptions(context)
+    })
 
-  return answer.value
+    return answer.value
+  } catch (error) {
+    if (error instanceof Error) throw error
+    throw Object.assign(new Error('prompt cancelled'), { code: 'PROMPT_CANCELLED' })
+  }
 }
 
 async function multiselect ({ message, choices, initial = [], submitLabel }, context) {
