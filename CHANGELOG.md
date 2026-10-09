@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.34.0...main)
 
-## [2.34.0](https://github.com/dotenvx/dotenvx/compare/v2.33.0...v2.34.0) (2026-10-06)
+## [2.34.0](https://github.com/dotenvx/dotenvx/compare/v2.33.0...v2.34.0) (2026-10-08)
 
 ### Changed
 
