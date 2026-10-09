@@ -1,7 +1,6 @@
-const keySummary = require('./helpers/keySummary')
 // @ts-check
 const path = require('path')
-const { encrypted, parseSync, injectsummary } = require('@dotenvx/primitives')
+const { encrypted, parseSync, injectsummary, publickeys } = require('@dotenvx/primitives')
 
 // shared
 const { setLogLevel, setLogName, setLogVersion, logger } = require('./../shared/logger')
@@ -172,8 +171,15 @@ const config = function (options = {}, events) {
     }
 
     if (events) events.add({ files: readableFilepaths, injected_count: uniqueInjectedKeys(processedEnvs).size })
-    const summary = keySummary(readableFilepaths, processedEnvs)
-    logger.success(injectsummary(uniqueInjectedKeys(processedEnvs).size, summary.files) + summary.suffix)
+    const summaryRows = readableFilepaths.map(filepath => {
+      const row = processedEnvs.find(row => row.filepath === filepath)
+      return {
+        filepath,
+        publicKeys: row ? publickeys(row.src || '') : [],
+        keySources: row && row.keySources
+      }
+    })
+    logger.success(injectsummary(uniqueInjectedKeys(processedEnvs).size, summaryRows))
 
     if (lastError) {
       if (events) events.fail(lastError)

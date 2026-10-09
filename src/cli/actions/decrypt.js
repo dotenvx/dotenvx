@@ -1,10 +1,10 @@
+const { publickeys, injectsummary } = require('@dotenvx/primitives')
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
-const keySummary = require('../../lib/helpers/keySummary')
 
 const decryptTransform = require('./../../lib/transforms/decrypt')
 const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
@@ -99,11 +99,16 @@ async function decrypt () {
       }
 
       if (spinner) spinner.stop()
+      const summaryRows = new Map(processedEnvs.map(row => [row.envFilepath, {
+        filepath: row.envFilepath,
+        publicKeys: publickeys(row.envSrc || ''),
+        keySources: row.keySources
+      }]))
       if (changedFilepaths.length > 0) {
-        const summary = keySummary(changedFilepaths, processedEnvs)
+        const summary = injectsummary.sources(changedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
         logger.success(`◇ decrypted ${summary.files.join(',')}${summary.suffix}`)
       } else if (unchangedFilepaths.length > 0) {
-        const summary = keySummary(unchangedFilepaths, processedEnvs)
+        const summary = injectsummary.sources(unchangedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
         logger.info(`○ no change ${summary.files.join(',')}${summary.suffix}`)
       } else {
         // do nothing - scenario when no .env files found

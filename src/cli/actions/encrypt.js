@@ -5,9 +5,8 @@ const encryptTransform = require('./../../lib/transforms/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const keySummary = require('../../lib/helpers/keySummary')
 const keypair = require('../../lib/resolvers/keypair')
-const { publickeys } = require('@dotenvx/primitives')
+const { publickeys, injectsummary } = require('@dotenvx/primitives')
 
 async function encryptAction () {
   const options = this.opts()
@@ -78,11 +77,16 @@ async function encryptAction () {
       } catch {}
     }
 
+    const summaryRows = new Map(processedEnvs.map(row => [row.envFilepath, {
+      filepath: row.envFilepath,
+      publicKeys: publickeys(row.envSrc || ''),
+      keySources: row.keySources
+    }]))
     if (changedFilepaths.length > 0) {
-      const summary = keySummary(changedFilepaths, processedEnvs)
+      const summary = injectsummary.sources(changedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
       logger.success(`◈ encrypted ${summary.files.join(',')}${summary.suffix}`)
     } else if (unchangedFilepaths.length > 0) {
-      const summary = keySummary(unchangedFilepaths, processedEnvs)
+      const summary = injectsummary.sources(unchangedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
       logger.info(`○ no change ${summary.files.join(',')}${summary.suffix}`)
     } else {
       // do nothing - scenario when no .env files found
