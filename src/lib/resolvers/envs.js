@@ -95,11 +95,13 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
 
     const {
       parsed,
+      keySources,
       errors,
       injected,
       existed
     } = await parseWithDecryptor(env.value, parseOptions)
 
+    row.keySources = keySources
     row.parsed = parsed
     row.errors = decryptErrors(parsed, errors)
     row.injected = injected || {}
@@ -148,11 +150,13 @@ function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, 
 
     const {
       parsed,
+      keySources,
       errors,
       injected,
       existed
     } = parseWithDecryptor.sync(env.value, parseOptions)
 
+    row.keySources = keySources
     row.parsed = parsed
     row.errors = decryptErrors(parsed, errors)
     row.injected = injected || {}
@@ -202,12 +206,14 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
 
     const {
       parsed,
+      keySources,
       errors,
       injected,
       existed
     } = await parseWithDecryptor(src, parseOptions)
 
     row.src = src
+    row.keySources = keySources
     row.parsed = parsed
     row.injected = injected || {}
     row.errors = decryptErrors(parsed, errors)
@@ -262,12 +268,14 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
 
     const {
       parsed,
+      keySources,
       errors,
       injected,
       existed
     } = parseWithDecryptor.sync(src, parseOptions)
 
     row.src = src
+    row.keySources = keySources
     row.parsed = parsed
     row.injected = injected || {}
     row.errors = decryptErrors(parsed, errors)
@@ -305,7 +313,15 @@ async function envs (options = {}) {
   const envKeysFilepath = options.envKeysFilepath || options.envKeysFile || null
   const no1Password = options.no1Password === true || process.env.DOTENVX_NO_1PASSWORD === 'true'
   const noBitwarden = options.noBitwarden === true || process.env.DOTENVX_NO_BITWARDEN === 'true'
-  const provider = await providers(options)
+  const sources = new Map()
+  const provider = await providers({
+    ...options,
+    onProvider: (name, key) => {
+      sources.set(key, name)
+      if (options.onProvider) options.onProvider(name, key)
+    }
+  })
+  if (provider) provider.sourceFor = key => sources.get(key)
   const decryptor = await decryptors(options)
   for (const env of options.envs || []) {
     if (env.type === TYPE_ENV_FILE) {
@@ -349,7 +365,15 @@ function envsSync (options = {}) {
   const envKeysFilepath = options.envKeysFilepath || options.envKeysFile || null
   const no1Password = options.no1Password === true || process.env.DOTENVX_NO_1PASSWORD === 'true'
   const noBitwarden = options.noBitwarden === true || process.env.DOTENVX_NO_BITWARDEN === 'true'
-  const provider = providers.sync(options)
+  const sources = new Map()
+  const provider = providers.sync({
+    ...options,
+    onProvider: (name, key) => {
+      sources.set(key, name)
+      if (options.onProvider) options.onProvider(name, key)
+    }
+  })
+  if (provider) provider.sourceFor = key => sources.get(key)
   const decryptor = decryptors.sync(options)
 
   for (const env of options.envs || []) {

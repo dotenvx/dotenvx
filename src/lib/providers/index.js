@@ -9,8 +9,9 @@ const nativeNames = { darwin: 'macosKeychain', win32: 'windowsCredentialManager'
 
 function lookup (publicKey, options, sync) {
   let source
+  let armorError
   let cleanup = () => {}
-  const keys = provider({
+  const providerOptions = {
     ...options,
     // File keys are already resolved against the selected env file by callers.
     fk: [],
@@ -20,15 +21,24 @@ function lookup (publicKey, options, sync) {
     // synchronous path reads BW_SESSION without prompting.
     noBitwarden: sync ? options.noBitwarden : true,
     onLookup (name) { source = name },
+    onLookupEnd (name) {
+      if (name === 'armor') {
+        cleanup()
+        cleanup = () => {}
+      }
+    },
+    onArmorError (error) { armorError = error },
     onApprovalRequired: options.onStatus && (({ approvalUri, code }) => {
       cleanup()
       const display = armoredKeyDisplay(publicKey)
       options.onStatus(`[${code}] press Enter to open [${approvalUri}] and approve${display ? ` (${display})` : ''}`)
       cleanup = listenForOpenKey(() => openUrl(approvalUri))
     })
-  })
+  }
+  const keys = provider(providerOptions)
 
   function found (ring) {
+    if (!ring[publicKey] && armorError) throw armorError
     if (ring[publicKey] && options.onProvider) {
       options.onProvider(source === 'native' ? nativeNames[process.platform] || source : source, publicKey)
     }
@@ -36,7 +46,10 @@ function lookup (publicKey, options, sync) {
   }
 
   if (sync) {
-    try { return found(keys.getSync(publicKey)) } finally { cleanup() }
+    try {
+      const ring = keys.getSync(publicKey)
+      return found(ring)
+    } finally { cleanup() }
   }
 
   return (async () => {

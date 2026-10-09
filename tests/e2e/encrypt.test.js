@@ -78,7 +78,7 @@ t.test('#encrypt', ct => {
   const output = execShellResult(`${dotenvx} encrypt`)
 
   ct.equal(output.stdout, '')
-  ct.equal(output.stderr, '◈ encrypted (.env)')
+  ct.match(output.stderr, /^◈ encrypted \.env \([0-9A-F]{3} [0-9A-F]{3}\) via [^\n]+$/)
 
   ct.end()
 })
@@ -88,7 +88,7 @@ t.test('#encrypt creates a minimal sample env', ct => {
   const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))
 
   ct.equal(output.stdout, '')
-  ct.equal(output.stderr, '◈ encrypted (.env)')
+  ct.match(output.stderr, /^◈ encrypted \.env \([0-9A-F]{3} [0-9A-F]{3}\) via [^\n]+$/)
   ct.same(Object.keys(parsedEnv).sort(), ['DOTENV_PUBLIC_KEY', 'HELLO'])
   ct.equal(execShell(`${dotenvx} get HELLO`), 'World')
 
@@ -119,7 +119,7 @@ t.test('#encrypt -k', ct => {
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
 
   ct.equal(output.stdout, '')
-  ct.equal(output.stderr, '◈ encrypted (.env)')
+  ct.match(output.stderr, /^◈ encrypted \.env \([0-9A-F]{3} [0-9A-F]{3}\) via [^\n]+$/)
 
   execShell('rm .env.keys')
 

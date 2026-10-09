@@ -58,7 +58,7 @@ t.test('#decrypt', ct => {
 
   const output = execShellResult(`${dotenvx} decrypt`)
   ct.equal(output.stdout, '')
-  ct.equal(output.stderr, '◇ decrypted (.env)')
+  ct.equal(output.stderr, `◇ decrypted .env (${DOTENV_PUBLIC_KEY.slice(0, 3).toUpperCase()} ${DOTENV_PUBLIC_KEY.slice(3, 6).toUpperCase()}) via .env.keys ⛉`)
 
   execShell('rm .env.keys')
 
@@ -92,7 +92,7 @@ t.test('#decrypt - missing DOTENV_PRIVATE_KEY', ct => {
   }
 
   ct.equal(exitCode, 1, 'should exit with code 1 when DOTENV_PRIVATE_KEY is missing')
-  ct.equal(stdout, '○ no change (.env)\n')
+  ct.match(stdout, /^○ no change to \.env \([0-9A-F]{3} [0-9A-F]{3}\) via source unknown\n$/)
   ct.equal(stderr, '☠ [DECRYPTION_FAILED] could not decrypt HELLO. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n')
 
   ct.end()
@@ -122,7 +122,8 @@ t.test('#decrypt - partially decrypts when another encrypted value is bad', ct =
 
   ct.equal(exitCode, 1, 'should exit with code 1 when one encrypted value cannot be decrypted')
   ct.equal(stdout, '')
-  ct.equal(stderr, '☠ [DECRYPTION_FAILED] could not decrypt FAKE. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n◇ decrypted (.env)\n')
+  ct.match(stderr, '☠ [DECRYPTION_FAILED] could not decrypt FAKE. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n')
+  ct.match(stderr, /◇ decrypted \.env \([0-9A-F]{3} [0-9A-F]{3}\) via \.env.keys ⛉\n$/)
   ct.match(envSrc, /HELLO=World/)
   ct.match(envSrc, /FAKE="encrypted:fake123345343434"/)
 
