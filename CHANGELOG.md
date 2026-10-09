@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.34.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.34.2...main)
+
+## [2.34.2](https://github.com/dotenvx/dotenvx/compare/v2.34.1...v2.34.2) (2026-10-09)
+
+### Changed
+
+* Patch: fix atomic edge case of writing .env and .env.keys file ([#1014](https://github.com/dotenvx/dotenvx/pull/1014))
 
 ## [2.34.1](https://github.com/dotenvx/dotenvx/compare/v2.34.0...v2.34.1) (2026-10-08)
 

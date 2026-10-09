@@ -1,4 +1,5 @@
 const fs = require('fs')
+const writeFileAtomic = require('write-file-atomic')
 const Errors = require('./errors')
 
 const ENCODING = 'utf8'
@@ -22,7 +23,7 @@ function readFileXSync (filepath, encoding = null) {
 
 function writeFileXSync (filepath, str, options = ENCODING) {
   try {
-    return fs.writeFileSync(filepath, str, options)
+    return writeFileAtomic.sync(filepath, str, typeof options === 'string' ? options : { ...options })
   } catch (error) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       throw new Errors({ filepath }).fileNotWritable()
@@ -34,7 +35,7 @@ function writeFileXSync (filepath, str, options = ENCODING) {
 
 async function writeFileX (filepath, str, options = ENCODING) {
   try {
-    return await fs.promises.writeFile(filepath, str, options)
+    return await writeFileAtomic(filepath, str, typeof options === 'string' ? options : { ...options })
   } catch (error) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       throw new Errors({ filepath }).fileNotWritable()
