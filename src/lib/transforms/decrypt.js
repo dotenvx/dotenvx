@@ -24,7 +24,15 @@ async function decrypt (options = {}) {
   const ik = options.ik
   const ek = options.ek
   const fk = options.fk
-  const provider = await providers(options)
+  const sources = new Map()
+  const provider = await providers({
+    ...options,
+    onProvider: (name, key) => {
+      sources.set(key, name)
+      if (options.onProvider) options.onProvider(name, key)
+    }
+  })
+  if (provider) provider.sourceFor = key => sources.get(key)
   const decryptor = await decryptors(options)
 
   const processedEnvs = []
@@ -44,7 +52,9 @@ async function decrypt (options = {}) {
       const encoding = await detectEncoding(filepath)
       row.envSrc = await fsx.readFileX(filepath, { encoding })
 
-      const { parsed, errors } = await parseWithDecryptor.arrays(row.envSrc, { fk, ik, ek, provider, decryptor })
+      const { parsed, errors, keySources } = await parseWithDecryptor.arrays(row.envSrc, { fk, ik, ek, provider, decryptor })
+
+      row.keySources = keySources
 
       if (errors.length > 0) {
         row.error = parseError(errors[0])

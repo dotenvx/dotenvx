@@ -46,7 +46,7 @@ t.test('parseWithDecryptor delegates server-side decryption and reparses plainte
     decryptor
   })
 
-  ct.same(result, { parsed: { HELLO: 'World' }, errors: [] })
+  ct.same(result, { parsed: { HELLO: 'World' }, errors: [], keySources: { 'public-key': 'armor' } })
   ct.same(decryptor.firstCall.args, [
     'HELLO=encrypted:ciphertext\n',
     {
@@ -163,7 +163,7 @@ t.test('parseWithDecryptor.sync delegates through a synchronous decryptor', ct =
 
   const result = parseWithDecryptor.sync('HELLO=encrypted:ciphertext\n', { decryptor })
 
-  ct.same(result, { parsed: { HELLO: 'World' }, errors: [] })
+  ct.same(result, { parsed: { HELLO: 'World' }, errors: [], keySources: { 'public-key': 'armor' } })
   ct.equal(decryptor.callCount, 1)
   ct.equal(parseSync.secondCall.args[1].decryptor, null)
   ct.end()

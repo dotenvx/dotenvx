@@ -1,3 +1,4 @@
+const keySummary = require('../../lib/helpers/keySummary')
 const path = require('path')
 const { injectsummary } = require('@dotenvx/primitives')
 const { logger } = require('./../../shared/logger')
@@ -180,7 +181,8 @@ async function run () {
     const injectedKeys = uniqueInjectedKeys(processedEnvs)
 
     if (spinner) spinner.stop()
-    logger.success(injectsummary(injectedKeys.size, readableFilepaths))
+    const summary = keySummary(readableFilepaths, processedEnvs)
+    logger.success(injectsummary(injectedKeys.size, summary.files) + summary.suffix)
   } catch (error) {
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {

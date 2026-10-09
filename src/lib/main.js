@@ -1,3 +1,4 @@
+const keySummary = require('./helpers/keySummary')
 // @ts-check
 const path = require('path')
 const { encrypted, parseSync, injectsummary } = require('@dotenvx/primitives')
@@ -171,7 +172,8 @@ const config = function (options = {}, events) {
     }
 
     if (events) events.add({ files: readableFilepaths, injected_count: uniqueInjectedKeys(processedEnvs).size })
-    logger.success(injectsummary(uniqueInjectedKeys(processedEnvs).size, readableFilepaths))
+    const summary = keySummary(readableFilepaths, processedEnvs)
+    logger.success(injectsummary(uniqueInjectedKeys(processedEnvs).size, summary.files) + summary.suffix)
 
     if (lastError) {
       if (events) events.fail(lastError)

@@ -5,6 +5,9 @@ const encryptTransform = require('./../../lib/transforms/encrypt')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
+const keySummary = require('../../lib/helpers/keySummary')
+const keypair = require('../../lib/resolvers/keypair')
+const { publickeys } = require('@dotenvx/primitives')
 
 async function encryptAction () {
   const options = this.opts()
@@ -65,15 +68,22 @@ async function encryptAction () {
       }
     }
 
+    // Existing public keys can encrypt without private-key access. Metadata
+    // lookup must never turn successful encryption into a failure.
+    for (const row of processedEnvs) {
+      if (options.quiet || row.error || row.keySources || !publickeys(row.envSrc || '').length) continue
+      try {
+        const resolved = await keypair({ ...options, envFile: [row.filepath], envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden, includeProvider: true })
+        row.keySources = { [publickeys(row.envSrc)[0]]: resolved.provider }
+      } catch {}
+    }
+
     if (changedFilepaths.length > 0) {
-      // const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
-      const msg = `◈ encrypted (${changedFilepaths.join(',')})`
-      // if (remoteKeyAddedEnv) {
-      //   msg += ' · armored ⛨'
-      // }
-      logger.success(msg)
+      const summary = keySummary(changedFilepaths, processedEnvs)
+      logger.success(`◈ encrypted ${summary.files.join(',')}${summary.suffix}`)
     } else if (unchangedFilepaths.length > 0) {
-      logger.info(`○ no change (${unchangedFilepaths})`)
+      const summary = keySummary(unchangedFilepaths, processedEnvs)
+      logger.info(`○ no change ${summary.files.join(',')}${summary.suffix}`)
     } else {
       // do nothing - scenario when no .env files found
     }

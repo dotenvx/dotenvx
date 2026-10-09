@@ -4,6 +4,7 @@ const { logger } = require('./../../shared/logger')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
+const keySummary = require('../../lib/helpers/keySummary')
 
 const decryptTransform = require('./../../lib/transforms/decrypt')
 const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
@@ -99,9 +100,11 @@ async function decrypt () {
 
       if (spinner) spinner.stop()
       if (changedFilepaths.length > 0) {
-        logger.success(`◇ decrypted (${changedFilepaths.join(',')})`)
+        const summary = keySummary(changedFilepaths, processedEnvs)
+        logger.success(`◇ decrypted ${summary.files.join(',')}${summary.suffix}`)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`○ no change (${unchangedFilepaths})`)
+        const summary = keySummary(unchangedFilepaths, processedEnvs)
+        logger.info(`○ no change ${summary.files.join(',')}${summary.suffix}`)
       } else {
         // do nothing - scenario when no .env files found
       }
