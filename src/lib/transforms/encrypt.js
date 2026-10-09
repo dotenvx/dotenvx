@@ -126,10 +126,10 @@ async function encryptTransform (options = {}) {
         unchangedFilepaths.push(envFilepath)
       }
     } catch (error) {
-      if (error.code === 'ENOENT') {
+      if (error?.code === 'ENOENT') {
         row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
       } else {
-        row.error = error
+        row.error = error instanceof Error ? error : new Error('Encryption aborted before private key storage completed')
       }
     }
 
