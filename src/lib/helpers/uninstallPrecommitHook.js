@@ -1,4 +1,5 @@
 const fs = require('fs')
+const fsx = require('./fsx')
 const path = require('path')
 const { execFileSync } = require('child_process')
 const { HOOK_SCRIPT } = require('./installPrecommitHook')
@@ -59,7 +60,7 @@ function uninstallPrecommitHook (directory = process.cwd()) {
     return /dotenvx\s+(?:ext\s+)?precommit/.test(source) ? manual() : { removed: false }
   }
   if (next.trim() === '') fs.unlinkSync(hookPath)
-  else fs.writeFileSync(hookPath, next, 'utf8')
+  else fsx.writeFileSync(hookPath, next, 'utf8')
   return { removed: true, warning: /dotenvx\s+(?:ext\s+)?precommit/.test(next) ? manual().warning : undefined }
 }
 
