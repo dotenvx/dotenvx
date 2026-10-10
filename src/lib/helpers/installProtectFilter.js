@@ -1,4 +1,5 @@
 const fs = require('fs')
+const fsx = require('./fsx')
 const path = require('path')
 const os = require('os')
 const { execFileSync } = require('child_process')
@@ -43,7 +44,7 @@ function installProtectFilter () {
     const value = line.replace(/\r?\n$/, '')
     return ATTRIBUTES.includes(value + '.protect') ? line.replace('filter=dotenvx', 'filter=dotenvx.protect') : line
   }).join('')
-  if (migrated !== current) fs.writeFileSync(attributesPath, migrated)
+  if (migrated !== current) fsx.writeFileSync(attributesPath, migrated)
   current = migrated
   const existing = new Set(current.split(/\r?\n/))
   const missing = ATTRIBUTES.filter(attribute => !existing.has(attribute))
