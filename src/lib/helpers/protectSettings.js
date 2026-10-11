@@ -21,7 +21,7 @@ function read (filename) {
 function removeLines (filename, lines) {
   const current = read(filename)
   const updated = current.split(/(?<=\n)/).filter(line => !lines.includes(line.replace(/\r?\n$/, ''))).join('')
-  if (updated !== current) fsx.writeFileSync(filename, updated)
+  if (updated !== current) fsx.writeFileXSync(filename, updated)
 }
 function state () {
   const attributes = read(file('core.attributesFile', 'attributes'))

@@ -37,7 +37,7 @@ function removeLegacyProtectFilter (directory = process.cwd()) {
   const oldRules = patterns.map(pattern => `${pattern.includes('/') ? '**/' : ''}${pattern} filter=dotenvx`)
   const source = fs.readFileSync(attributesPath, 'utf8')
   const updated = source.split(/(?<=\n)/).map(line => oldRules.includes(line.replace(/\r?\n$/, '')) ? line.replace('filter=dotenvx', 'filter=dotenvx.protect') : line).join('')
-  if (updated !== source) fsx.writeFileSync(attributesPath, updated)
+  if (updated !== source) fsx.writeFileXSync(attributesPath, updated)
 }
 
 module.exports = removeLegacyProtectFilter

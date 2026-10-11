@@ -60,7 +60,7 @@ function uninstallPrecommitHook (directory = process.cwd()) {
     return /dotenvx\s+(?:ext\s+)?precommit/.test(source) ? manual() : { removed: false }
   }
   if (next.trim() === '') fs.unlinkSync(hookPath)
-  else fsx.writeFileSync(hookPath, next, 'utf8')
+  else fsx.writeFileXSync(hookPath, next, 'utf8')
   return { removed: true, warning: /dotenvx\s+(?:ext\s+)?precommit/.test(next) ? manual().warning : undefined }
 }
 
