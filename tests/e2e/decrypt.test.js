@@ -95,18 +95,23 @@ for (const stdout of [false, true]) {
       ct.equal(result.status, 0, result.stderr)
       return result.stdout
     }
+    const getValues = () => {
+      const values = JSON.parse(cli(['get']))
+      delete values.DOTENV_PUBLIC_KEY
+      return values
+    }
 
     for (let i = 0; i < 2; i++) {
-      ct.match(JSON.parse(cli(['get'])), expected, 'plaintext values are preserved')
+      ct.same(getValues(), expected, 'plaintext values are preserved')
       cli(['encrypt'])
-      ct.match(JSON.parse(cli(['get'])), expected, 'encrypted values are preserved')
+      ct.same(getValues(), expected, 'encrypted values are preserved')
       const encryptedSrc = fs.readFileSync('.env', 'utf8')
       const output = cli(stdout ? ['decrypt', '--stdout'] : ['decrypt'])
       if (stdout) {
         ct.equal(fs.readFileSync('.env', 'utf8'), encryptedSrc, '--stdout leaves the encrypted file unchanged')
         fs.writeFileSync('.env', output)
       }
-      ct.match(JSON.parse(cli(['get'])), expected, 'decrypted values are preserved')
+      ct.same(getValues(), expected, 'decrypted values are preserved')
       const decryptedSrc = fs.readFileSync('.env', 'utf8')
       ct.match(decryptedSrc, String.raw`DUPLICATE=first\$value`, 'unquoted duplicate is escaped')
       ct.match(decryptedSrc, String.raw`DUPLICATE='second$value'`, 'single-quoted duplicate remains literal')
