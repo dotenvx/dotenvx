@@ -70,7 +70,9 @@ async function encryptTransform (options = {}) {
       if (options.with !== undefined) {
         // Inspect every assignment before selection or schema rules can hide it.
         const { parsed: existing } = scan(row.envSrc)
-        if (Object.keys(existing).some(isDotenvPublicKey) || Object.values(existing).some(values => values.some(encrypted))) {
+        const declaredKeys = Object.entries(existing).filter(([key]) => isDotenvPublicKey(key)).flatMap(([, values]) => values)
+        const matchingKey = declaredKeys.length > 0 && declaredKeys.every(value => value.toLowerCase() === options.with.toLowerCase())
+        if (!matchingKey && (declaredKeys.length > 0 || Object.values(existing).some(values => values.some(encrypted)))) {
           throw new Errors({ envFilepath }).alreadyEncrypted()
         }
         const { publicKeyName } = keynames(envFilepath)
@@ -80,8 +82,10 @@ async function encryptTransform (options = {}) {
         } catch {
           throw new Errors({ publicKeyName, publicKey: options.with }).invalidPublicKey()
         }
-        row.envSrc = mutateSrc({ envSrc: row.envSrc, envFilepath, publicKeyName, publicKeyValue: options.with }).envSrc
-        row.changed = true
+        if (!matchingKey) {
+          row.envSrc = mutateSrc({ envSrc: row.envSrc, envFilepath, publicKeyName, publicKeyValue: options.with }).envSrc
+          row.changed = true
+        }
       }
 
       const { parsed } = scan(row.envSrc, { ik, ek })

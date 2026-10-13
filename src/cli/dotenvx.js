@@ -157,7 +157,7 @@ program.command('del')
 function configureEncryptCommand (command) {
   return command
     .description('encrypt .env file(s)')
-    .option('--with <public-key>', 'encrypt a fresh .env with this public key; rejects existing public keys or ciphertext')
+    .option('--with <public-key>', 'encrypt with this public key; accepts a fresh file or matching existing public key')
     .option('--profile <name>', 'select an Envfile profile')
     .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
     .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
