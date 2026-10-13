@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.34.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.35.0...main)
+
+## [2.35.0](https://github.com/dotenvx/dotenvx/compare/v2.34.2...v2.35.0) (2026-10-13)
+
+### Added
+
+* Add `encrypt --with` to bring public key. Useful for Dotenvx Armor's new remote enclaved private keys. Encrypt locally but decrypt only on the remote software enclave. Private keys never leave. ([#1022](https://github.com/dotenvx/dotenvx/pull/1022))
 
 ## [2.34.2](https://github.com/dotenvx/dotenvx/compare/v2.34.1...v2.34.2) (2026-10-09)
 
