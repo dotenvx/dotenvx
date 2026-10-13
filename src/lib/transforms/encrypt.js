@@ -29,7 +29,7 @@ async function encryptTransform (options = {}) {
 
   // set up keysSrc
   let keysSrc
-  if (await fsx.exists(fk)) {
+  if (options.with === undefined && await fsx.exists(fk)) {
     try {
       const encoding = await detectEncoding(fk)
       keysSrc = await fsx.readFileX(fk, { encoding })
@@ -64,6 +64,23 @@ async function encryptTransform (options = {}) {
 
       if (!schema.exists && row.envSrc.trim().length === 0) {
         row.envSrc = SAMPLE_ENV_KIT
+        row.changed = true
+      }
+
+      if (options.with !== undefined) {
+        // Inspect every assignment before selection or schema rules can hide it.
+        const { parsed: existing } = scan(row.envSrc)
+        if (Object.keys(existing).some(isDotenvPublicKey) || Object.values(existing).some(values => values.some(encrypted))) {
+          throw new Errors({ envFilepath }).alreadyEncrypted()
+        }
+        const { publicKeyName } = keynames(envFilepath)
+        try {
+          if (!/^(?:0[23][0-9a-f]{64}|04[0-9a-f]{128})$/i.test(options.with)) throw new Error('Invalid public key format')
+          encrypt(options.with, '') // Validate the curve point even if no values need encryption.
+        } catch {
+          throw new Errors({ publicKeyName, publicKey: options.with }).invalidPublicKey()
+        }
+        row.envSrc = mutateSrc({ envSrc: row.envSrc, envFilepath, publicKeyName, publicKeyValue: options.with }).envSrc
         row.changed = true
       }
 

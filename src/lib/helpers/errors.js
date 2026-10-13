@@ -159,6 +159,14 @@ class Errors {
     return e
   }
 
+  alreadyEncrypted () {
+    const e = new Error(`[ALREADY_ENCRYPTED] ${this.envFilepath || '.env'} is already configured for encryption`)
+    e.code = 'ALREADY_ENCRYPTED'
+    e.help = 'fix: use a fresh .env file'
+    e.messageWithHelp = `${e.message}. ${e.help}`
+    return e
+  }
+
   invalidPublicKey () {
     const code = 'INVALID_PUBLIC_KEY'
     const message = `[${code}] could not encrypt using public key '${this.publicKeyName}=${truncate(this.publicKey)}'`

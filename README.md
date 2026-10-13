@@ -117,6 +117,14 @@ $ dotenvx encrypt
 ◈ encrypted (.env)
 ```
 
+To encrypt a fresh plaintext file with a public key created elsewhere:
+
+```sh
+dotenvx encrypt -f .env.production --with <public-key>
+```
+
+This writes the supplied public key into the file and encrypts its values without creating or storing a private key. If the file already contains a `DOTENV_PUBLIC_KEY*` entry or an `encrypted:` value, it fails with `ALREADY_ENCRYPTED` and leaves the file unchanged.
+
 *Commit* your encrypted `.env` files with your code. It's safe. Now you can securely share secrets through git.
 
 ```sh
