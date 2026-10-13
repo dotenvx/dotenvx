@@ -1,4 +1,5 @@
 const fs = require('node:fs')
+const fsx = require('../helpers/fsx')
 const path = require('node:path')
 const { scan, encrypted } = require('@dotenvx/primitives')
 
@@ -67,7 +68,13 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
   const content = renderEnvfile(document)
   if (stdout) return { created: false, content }
   try {
-    fs.writeFileSync(target, content, { flag: overwrite ? fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC | fs.constants.O_NOFOLLOW : 'wx' })
+    if (overwrite) {
+      const stat = fs.lstatSync(target, { throwIfNoEntry: false })
+      if (stat && !stat.isFile()) throw new Error(`Cannot replace Envfile: expected a regular file (${target})`)
+      fsx.writeFileXSync(target, content)
+    } else {
+      fs.writeFileSync(target, content, { flag: 'wx' })
+    }
   } catch (error) {
     if (error.code === 'EEXIST') return { created: false }
     throw error
