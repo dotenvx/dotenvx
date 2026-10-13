@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Add `encrypt --with` to bring public key. Useful for Dotenvx Armor's new remote enclaved private keys. Encrypt locally but decrypt only on the remote software enclave. Private keys never leave. ([#1022](https://github.com/dotenvx/dotenvx/pull/1022))
 
+### Changed
+
+* Use atomic file writes in `protect` ([#1019](https://github.com/dotenvx/dotenvx/pull/1019))
+
 ## [2.34.2](https://github.com/dotenvx/dotenvx/compare/v2.34.1...v2.34.2) (2026-10-09)
 
 ### Changed
