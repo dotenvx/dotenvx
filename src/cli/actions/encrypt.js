@@ -30,7 +30,7 @@ async function encryptAction () {
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    const { processedEnvs } = await encryptTransform({ profile: options.profile, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
+    const { processedEnvs } = await encryptTransform({ publicKey: options.with, profile: options.profile, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
 
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
@@ -47,9 +47,9 @@ async function encryptAction () {
   }
 
   try {
-    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ profile: options.profile, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ publicKey: options.with, profile: options.profile, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
 
-    if (keysSrc) {
+    if (keysSrc && options.with === undefined) {
       await fsx.writeKeyFile(fk, keysSrc)
     }
 
@@ -70,7 +70,7 @@ async function encryptAction () {
     // Existing public keys can encrypt without private-key access. Metadata
     // lookup must never turn successful encryption into a failure.
     for (const row of processedEnvs) {
-      if (options.quiet || row.error || row.keySources || !publickeys(row.envSrc || '').length) continue
+      if (options.with !== undefined || options.quiet || row.error || row.keySources || !publickeys(row.envSrc || '').length) continue
       try {
         const resolved = await keypair({ ...options, envFile: [row.filepath], envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden, includeProvider: true })
         row.keySources = { [publickeys(row.envSrc)[0]]: resolved.provider }
