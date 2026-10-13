@@ -71,7 +71,7 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
     if (overwrite) {
       const stat = fs.lstatSync(target, { throwIfNoEntry: false })
       if (stat && !stat.isFile()) throw new Error(`Cannot replace Envfile: expected a regular file (${target})`)
-      fsx.writeFileXSync(target, content)
+      fsx.writeFileXSync(target, content, { followSymlinks: false })
     } else {
       fs.writeFileSync(target, content, { flag: 'wx' })
     }
