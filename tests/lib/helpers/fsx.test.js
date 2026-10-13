@@ -97,3 +97,138 @@ t.test('#init creates an Envfile when none exists', ct => {
 
   ct.end()
 })
+
+t.test('#init overwrite rejects existing symlinks', { skip: process.platform === 'win32' }, ct => {
+  withTmpDir(dir => {
+    const other = path.join(dir, 'other')
+    fs.writeFileSync(other, 'KEEP\n')
+    fs.symlinkSync(other, path.join(dir, 'Envfile'))
+    ct.throws(() => init({ directory: dir, overwrite: true }), /expected a regular file/)
+    ct.equal(fs.readFileSync(other, 'utf8'), 'KEEP\n')
+  })
+  ct.end()
+})
+
+t.test('#init overwrite never follows a symlink introduced during the atomic write', { skip: process.platform === 'win32' }, ct => {
+  for (const initiallyExists of [true, false]) {
+    withTmpDir(dir => {
+      const target = path.join(dir, 'Envfile')
+      const other = path.join(dir, 'other')
+      if (initiallyExists) fs.writeFileSync(target, 'ORIGINAL\n')
+      fs.writeFileSync(other, 'KEEP\n')
+      fs.writeFileSync(path.join(dir, '.env'), 'HELLO=World\n')
+      const realpath = fs.realpathSync
+      let swapped = false
+      const stub = sinon.stub(fs, 'realpathSync').callsFake(function (filename, ...args) {
+        if (!swapped) {
+          swapped = true
+          if (initiallyExists) fs.unlinkSync(target)
+          fs.symlinkSync(other, target)
+        }
+        return realpath.call(fs, filename, ...args)
+      })
+      try {
+        ct.throws(() => init({ directory: dir, overwrite: true }), /expected a regular file/)
+      } finally {
+        stub.restore()
+      }
+      ct.ok(swapped, 'swaps the destination when the atomic library resolves its path')
+      ct.equal(fs.readFileSync(other, 'utf8'), 'KEEP\n', 'symlink target is untouched')
+      ct.same(fs.readdirSync(dir).filter(name => name.startsWith('.dotenvx-write-')), [], 'staging is cleaned up')
+    })
+  }
+  ct.end()
+})
+
+t.test('#init overwrite cannot follow a symlink swapped immediately before the final rename', { skip: process.platform === 'win32' }, ct => {
+  withTmpDir(dir => {
+    const target = path.join(dir, 'Envfile')
+    const other = path.join(dir, 'other')
+    fs.writeFileSync(target, 'ORIGINAL\n')
+    fs.writeFileSync(other, 'KEEP\n')
+    fs.writeFileSync(path.join(dir, '.env'), 'HELLO=World\n')
+    const rename = fs.renameSync
+    let swapped = false
+    const stub = sinon.stub(fs, 'renameSync').callsFake((from, to) => {
+      if (to === target) {
+        swapped = true
+        fs.unlinkSync(target)
+        fs.symlinkSync(other, target)
+      }
+      return rename.call(fs, from, to)
+    })
+    try {
+      ct.equal(init({ directory: dir, overwrite: true }).created, true)
+    } finally {
+      stub.restore()
+    }
+    ct.ok(swapped)
+    ct.equal(fs.readFileSync(other, 'utf8'), 'KEEP\n')
+    ct.ok(fs.lstatSync(target).isFile(), 'rename replaces the link itself')
+    ct.match(fs.readFileSync(target, 'utf8'), 'HELLO')
+  })
+  ct.end()
+})
+
+t.test('#init atomic overwrite preserves permissions and cleans staging after failure', ct => {
+  withTmpDir(dir => {
+    const target = path.join(dir, 'Envfile')
+    fs.writeFileSync(target, 'ORIGINAL\n', { mode: 0o600 })
+    fs.writeFileSync(path.join(dir, '.env'), 'HELLO=World\n')
+    ct.equal(init({ directory: dir, overwrite: true }).created, true)
+    if (process.platform !== 'win32') ct.equal(fs.statSync(target).mode & 0o777, 0o600)
+    const source = fs.readFileSync(target, 'utf8')
+    const stub = sinon.stub(fs, 'writeSync').throws(enospc())
+    try {
+      ct.throws(() => init({ directory: dir, overwrite: true }), { code: 'ENOSPC' })
+    } finally {
+      stub.restore()
+    }
+    ct.equal(fs.readFileSync(target, 'utf8'), source)
+    ct.same(fs.readdirSync(dir).filter(name => name.startsWith('.dotenvx-write-')), [])
+  })
+  ct.end()
+})
+
+t.test('#init overwrite creates a missing Envfile atomically', ct => {
+  withTmpDir(dir => {
+    fs.writeFileSync(path.join(dir, '.env'), 'HELLO=World\n')
+    ct.equal(init({ directory: dir, overwrite: true }).created, true)
+    ct.match(fs.readFileSync(path.join(dir, 'Envfile'), 'utf8'), 'HELLO')
+    ct.same(fs.readdirSync(dir).sort(), ['.env', 'Envfile'])
+  })
+  ct.end()
+})
+
+t.test('#init preserves the original when the final rename fails', ct => {
+  withTmpDir(dir => {
+    const target = path.join(dir, 'Envfile')
+    fs.writeFileSync(target, 'ORIGINAL\n')
+    const rename = fs.renameSync
+    const stub = sinon.stub(fs, 'renameSync').callsFake((from, to) => {
+      if (to === target) throw enospc()
+      return rename.call(fs, from, to)
+    })
+    try {
+      ct.throws(() => init({ directory: dir, overwrite: true }), { code: 'ENOSPC' })
+    } finally {
+      stub.restore()
+    }
+    ct.equal(fs.readFileSync(target, 'utf8'), 'ORIGINAL\n')
+    ct.same(fs.readdirSync(dir), ['Envfile'])
+  })
+  ct.end()
+})
+
+t.test('#writeFileXSync still follows symlinks by default', { skip: process.platform === 'win32' }, ct => {
+  withTmpDir(dir => {
+    const target = path.join(dir, 'target')
+    const link = path.join(dir, 'link')
+    fs.writeFileSync(target, 'ORIGINAL\n')
+    fs.symlinkSync(target, link)
+    fsx.writeFileXSync(link, 'UPDATED\n')
+    ct.ok(fs.lstatSync(link).isSymbolicLink())
+    ct.equal(fs.readFileSync(target, 'utf8'), 'UPDATED\n')
+  })
+  ct.end()
+})
