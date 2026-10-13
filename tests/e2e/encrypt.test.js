@@ -155,8 +155,11 @@ t.test('#encrypt --with uses the supplied public key without a local private key
 t.test('#encrypt --with rejects existing encryption before applying filters', ct => {
   const { keypair, encrypt } = require('@dotenvx/primitives')
   const { publicKey } = keypair()
+  const otherPublicKey = keypair().publicKey
   const fixtures = [
-    `DOTENV_PUBLIC_KEY="${publicKey}"\n`,
+    `DOTENV_PUBLIC_KEY="${otherPublicKey}"\n`,
+    `DOTENV_PUBLIC_KEY="${publicKey}"\nDOTENV_PUBLIC_KEY_CI="${otherPublicKey}"\n`,
+    `DOTENV_PUBLIC_KEY="${publicKey}"\nDOTENV_PUBLIC_KEY="${otherPublicKey}"\n`,
     'export DOTENV_PUBLIC_KEY_PRODUCTION=""\n',
     'DOTENV_PUBLIC_KEY_CUSTOM=invalid\n',
     `SECRET="${encrypt(publicKey, 'secret')}"\n`,
@@ -234,5 +237,33 @@ t.test('#encrypt --with creates an encrypted sample unless --no-create is set', 
   ct.equal(parsed.DOTENV_PUBLIC_KEY, publicKey)
   ct.equal(decrypt(privateKey, parsed.HELLO), 'World')
   ct.equal(fs.existsSync('.env.keys'), false)
+  ct.end()
+})
+
+t.test('#encrypt --with accepts matching public keys and preserves existing ciphertext', ct => {
+  const { keypair, encrypt, decrypt } = require('@dotenvx/primitives')
+  const { publicKey, privateKey } = keypair()
+  for (const keyName of ['DOTENV_PUBLIC_KEY', 'DOTENV_PUBLIC_KEY_CI']) {
+    const ciphertext = encrypt(publicKey, 'existing secret')
+    fs.writeFileSync('.env', `${keyName}="${publicKey}"\nSECRET="${ciphertext}"\nHELLO=World\n`)
+    const result = execShellResult(`${dotenvx} encrypt --with ${publicKey}`)
+    ct.equal(result.status, 0, result.stderr)
+    ct.notMatch(result.stderr, 'ALREADY_ENCRYPTED')
+    const source = fs.readFileSync('.env', 'utf8')
+    const parsed = dotenv.parse(source)
+    ct.equal(parsed[keyName], publicKey)
+    ct.equal(Object.keys(parsed).filter(key => key.startsWith('DOTENV_PUBLIC_KEY')).length, 1)
+    ct.equal(parsed.SECRET, ciphertext)
+    ct.equal(decrypt(privateKey, parsed.HELLO), 'World')
+    ct.equal(fs.existsSync('.env.keys'), false)
+
+    const repeated = execShellResult(`${dotenvx} encrypt --with ${publicKey}`)
+    ct.equal(repeated.status, 0, repeated.stderr)
+    ct.equal(fs.readFileSync('.env', 'utf8'), source)
+
+    const stdout = execShellResult(`${dotenvx} encrypt --with ${publicKey} --stdout`)
+    ct.equal(stdout.status, 0, stdout.stderr)
+    ct.equal(stdout.stdout, source.trim())
+  }
   ct.end()
 })
