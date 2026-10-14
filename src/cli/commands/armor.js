@@ -81,6 +81,17 @@ function configureArmorCommand (armor) {
       return commandAction(require('./../actions/armor/move')).apply(this, args)
     })
 
+  // dotenvx armor invite
+  armor
+    .command('invite')
+    .description('invite a member to your team')
+    .option('--team <team>', 'team to invite member to')
+    .option('--email <email>', 'email address to invite')
+    .option('--token <token>', 'set token')
+    .action(function (...args) {
+      return commandAction(require('./../actions/armor/invite')).apply(this, args)
+    })
+
   // dotenvx armor login
   armor
     .command('login')
