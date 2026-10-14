@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.35.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.36.0...main)
+
+## [2.36.0](https://github.com/dotenvx/dotenvx/compare/v2.35.0...v2.36.0) (2026-10-14)
+
+### Added
+
+* Add `dotenvx armor invite` command ([#1025](https://github.com/dotenvx/dotenvx/pull/1025))
 
 ## [2.35.0](https://github.com/dotenvx/dotenvx/compare/v2.34.2...v2.35.0) (2026-10-13)
 
