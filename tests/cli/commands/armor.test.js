@@ -8,8 +8,8 @@ const configureArmorCommand = require('../../../src/cli/commands/armor')
 const Session = require('../../../src/db/session')
 
 const armor = configureArmorCommand(new Command('armor'))
-const commandsWithToken = ['up', 'down', 'push', 'pull', 'move']
-const nativeCommands = ['up', 'down', 'push', 'pull', 'open', 'move', 'login', 'logout', 'status', 'settings']
+const commandsWithToken = ['up', 'down', 'push', 'pull', 'move', 'invite']
+const nativeCommands = ['up', 'down', 'push', 'pull', 'open', 'move', 'invite', 'login', 'logout', 'status', 'settings']
 
 t.test('armor subcommands accept explicit token option', async (ct) => {
   for (const commandName of commandsWithToken) {
