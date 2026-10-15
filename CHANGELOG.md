@@ -2,7 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.36.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.37.0...main)
+
+## [2.37.0](https://github.com/dotenvx/dotenvx/compare/v2.36.0...v2.37.0) (2026-10-15)
+
+### Added
+
+* New: Dotenvx Armor Enclaved Keys - software enclaved on the remote provider like Vercel, GitHub Actions, and more. ([#1026](https://github.com/dotenvx/dotenvx/pull/1026))
+
+```text
+⛨ Choose key type …
+  ⛨ Armored
+❯ ◊ Enclaved
+```
+
 
 ## [2.36.0](https://github.com/dotenvx/dotenvx/compare/v2.35.0...v2.36.0) (2026-10-14)
 
