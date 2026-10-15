@@ -1,4 +1,6 @@
 const fs = require('fs')
+const path = require('path')
+const writeFileAtomic = require('write-file-atomic')
 const Errors = require('./errors')
 
 const ENCODING = 'utf8'
@@ -22,7 +24,8 @@ function readFileXSync (filepath, encoding = null) {
 
 function writeFileXSync (filepath, str, options = ENCODING) {
   try {
-    return fs.writeFileSync(filepath, str, options)
+    if (options && options.followSymlinks === false) return writeFileNoFollowSync(filepath, str, options)
+    return writeFileAtomic.sync(filepath, str, typeof options === 'string' ? options : { ...options })
   } catch (error) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       throw new Errors({ filepath }).fileNotWritable()
@@ -32,9 +35,34 @@ function writeFileXSync (filepath, str, options = ENCODING) {
   }
 }
 
+function writeFileNoFollowSync (filepath, str, options) {
+  const regularFile = () => {
+    const stat = fs.lstatSync(filepath, { throwIfNoEntry: false })
+    if (stat && !stat.isFile()) throw new Error(`Cannot replace file: expected a regular file (${filepath})`)
+    return stat
+  }
+  const stat = regularFile()
+  const { followSymlinks, ...atomicOptions } = options
+  if (stat) {
+    if (atomicOptions.mode == null) atomicOptions.mode = stat.mode
+    if (atomicOptions.chown == null && process.getuid) atomicOptions.chown = { uid: stat.uid, gid: stat.gid }
+  }
+  // write-file-atomic resolves symlinks. Stage in a private sibling directory so
+  // it never resolves the destination, then rename over the directory entry.
+  const staging = fs.mkdtempSync(path.join(path.dirname(filepath), '.dotenvx-write-'))
+  try {
+    const stagedFile = path.join(staging, 'content')
+    writeFileAtomic.sync(stagedFile, str, atomicOptions)
+    regularFile()
+    fs.renameSync(stagedFile, filepath) // rename never follows the destination symlink
+  } finally {
+    fs.rmSync(staging, { recursive: true, force: true })
+  }
+}
+
 async function writeFileX (filepath, str, options = ENCODING) {
   try {
-    return await fs.promises.writeFile(filepath, str, options)
+    return await writeFileAtomic(filepath, str, typeof options === 'string' ? options : { ...options })
   } catch (error) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       throw new Errors({ filepath }).fileNotWritable()

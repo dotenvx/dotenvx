@@ -2,9 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.34.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.36.0...main)
 
-## [2.34.0](https://github.com/dotenvx/dotenvx/compare/v2.33.0...v2.34.0) (2026-10-06)
+## [2.36.0](https://github.com/dotenvx/dotenvx/compare/v2.35.0...v2.36.0) (2026-10-14)
+
+### Added
+
+* Add `dotenvx armor invite` command ([#1025](https://github.com/dotenvx/dotenvx/pull/1025))
+
+## [2.35.0](https://github.com/dotenvx/dotenvx/compare/v2.34.2...v2.35.0) (2026-10-13)
+
+### Added
+
+* Add `encrypt --with` to bring public key. Useful for Dotenvx Armor's new remote enclaved private keys. Encrypt locally but decrypt only on the remote software enclave. Private keys never leave. ([#1022](https://github.com/dotenvx/dotenvx/pull/1022))
+
+### Changed
+
+* Use atomic file writes in `protect` ([#1019](https://github.com/dotenvx/dotenvx/pull/1019))
+
+## [2.34.2](https://github.com/dotenvx/dotenvx/compare/v2.34.1...v2.34.2) (2026-10-09)
+
+### Changed
+
+* Patch: fix atomic edge case of writing .env and .env.keys file ([#1014](https://github.com/dotenvx/dotenvx/pull/1014))
+
+## [2.34.1](https://github.com/dotenvx/dotenvx/compare/v2.34.0...v2.34.1) (2026-10-08)
+
+### Changed
+
+* Patch: don't write public key on ctrl+c or prompt failure ([#1009](https://github.com/dotenvx/dotenvx/pull/1009))
+
+## [2.34.0](https://github.com/dotenvx/dotenvx/compare/v2.33.0...v2.34.0) (2026-10-08)
 
 ### Changed
 

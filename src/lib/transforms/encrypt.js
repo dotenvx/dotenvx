@@ -29,7 +29,7 @@ async function encryptTransform (options = {}) {
 
   // set up keysSrc
   let keysSrc
-  if (await fsx.exists(fk)) {
+  if (options.with === undefined && await fsx.exists(fk)) {
     try {
       const encoding = await detectEncoding(fk)
       keysSrc = await fsx.readFileX(fk, { encoding })
@@ -67,6 +67,27 @@ async function encryptTransform (options = {}) {
         row.changed = true
       }
 
+      if (options.with !== undefined) {
+        // Inspect every assignment before selection or schema rules can hide it.
+        const { parsed: existing } = scan(row.envSrc)
+        const declaredKeys = Object.entries(existing).filter(([key]) => isDotenvPublicKey(key)).flatMap(([, values]) => values)
+        const matchingKey = declaredKeys.length > 0 && declaredKeys.every(value => value.toLowerCase() === options.with.toLowerCase())
+        if (!matchingKey && (declaredKeys.length > 0 || Object.values(existing).some(values => values.some(encrypted)))) {
+          throw new Errors({ envFilepath }).alreadyEncrypted()
+        }
+        const { publicKeyName } = keynames(envFilepath)
+        try {
+          if (!/^(?:0[23][0-9a-f]{64}|04[0-9a-f]{128})$/i.test(options.with)) throw new Error('Invalid public key format')
+          encrypt(options.with, '') // Validate the curve point even if no values need encryption.
+        } catch {
+          throw new Errors({ publicKeyName, publicKey: options.with }).invalidPublicKey()
+        }
+        if (!matchingKey) {
+          row.envSrc = mutateSrc({ envSrc: row.envSrc, envFilepath, publicKeyName, publicKeyValue: options.with }).envSrc
+          row.changed = true
+        }
+      }
+
       const { parsed } = scan(row.envSrc, { ik, ek })
       const selected = Object.entries(parsed).filter(([key]) => {
         if (isDotenvPublicKey(key)) return false
@@ -96,6 +117,7 @@ async function encryptTransform (options = {}) {
 
         const result = await storeKeyStorage(storage, publicKey, privateKey, options, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
         storage = result.storage
+        row.keySources = { [publicKey]: Object.prototype.hasOwnProperty.call(result.stored, 'keysSrc') ? 'file' : (typeof storage === 'string' ? storage : storage.id) }
         const stored = result.stored
         if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
@@ -126,10 +148,10 @@ async function encryptTransform (options = {}) {
         unchangedFilepaths.push(envFilepath)
       }
     } catch (error) {
-      if (error.code === 'ENOENT') {
+      if (error?.code === 'ENOENT') {
         row.error = new Errors({ envFilepath, filepath }).missingEnvFile()
       } else {
-        row.error = error
+        row.error = error instanceof Error ? error : new Error('Encryption aborted before private key storage completed')
       }
     }
 

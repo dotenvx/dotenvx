@@ -77,7 +77,7 @@ t.test('armor up passes explicit team option to ArmorUp service', async (ct) => 
   ct.same(ArmorUpStub.firstCall && ArmorUpStub.firstCall.args, ['https://armor.dotenvx.com', 'session-token', 'device-public-key', '.env.production', 'hackclub'], 'passes --team value into ArmorUp')
   ct.equal(runStub.callCount, 1, 'runs ArmorUp request once')
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after success')
-  ct.same(successStub.lastCall && successStub.lastCall.args, ['⛨ armored (027 C9C)'], 'prints armored key display')
+  ct.same(successStub.lastCall && successStub.lastCall.args, ['⛨ armored .env.production (027 C9C)'], 'prints armored key display')
 })
 
 t.test('armor up prints no changes message when remote armor is unchanged', async (ct) => {
@@ -120,7 +120,7 @@ t.test('armor up prints no changes message when remote armor is unchanged', asyn
 
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after success')
   ct.equal(successStub.callCount, 0, 'does not print success for no change')
-  ct.same(infoStub.lastCall && infoStub.lastCall.args, ['○ no change (027 C9C)'], 'prints no change message')
+  ct.same(infoStub.lastCall && infoStub.lastCall.args, ['○ no change to .env (027 C9C)'], 'prints no change message')
 })
 
 t.test('armor up falls back to private key name when public key display is unavailable', async (ct) => {
@@ -161,7 +161,7 @@ t.test('armor up falls back to private key name when public key display is unava
   await upAction.call({ opts: () => ({}) })
 
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after success')
-  ct.same(successStub.lastCall && successStub.lastCall.args, ['⛨ armored (DOTENV_PRIVATE_KEY)'], 'prints private key name fallback')
+  ct.same(successStub.lastCall && successStub.lastCall.args, ['⛨ armored .env (DOTENV_PRIVATE_KEY)'], 'prints private key name fallback')
 })
 
 t.test('armor up logs errors and returns failure', async (ct) => {

@@ -1,3 +1,4 @@
+const { publickeys, injectsummary } = require('@dotenvx/primitives')
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
@@ -98,10 +99,17 @@ async function decrypt () {
       }
 
       if (spinner) spinner.stop()
+      const summaryRows = new Map(processedEnvs.map(row => [row.envFilepath, {
+        filepath: row.envFilepath,
+        publicKeys: publickeys(row.envSrc || ''),
+        keySources: row.keySources
+      }]))
       if (changedFilepaths.length > 0) {
-        logger.success(`◇ decrypted (${changedFilepaths.join(',')})`)
+        const summary = injectsummary.sources(changedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
+        logger.success(`◇ decrypted ${summary.files.join(',')}${summary.suffix}`)
       } else if (unchangedFilepaths.length > 0) {
-        logger.info(`○ no change (${unchangedFilepaths})`)
+        const summary = injectsummary.sources(unchangedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
+        logger.info(`○ no change to ${summary.files.join(',')}${summary.suffix}`)
       } else {
         // do nothing - scenario when no .env files found
       }

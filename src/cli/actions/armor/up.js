@@ -24,9 +24,9 @@ async function up () {
 
     if (spinner) spinner.stop()
     if (changed) {
-      logger.success(`⛨ armored (${keyDisplay})`)
+      logger.success(`⛨ armored ${options.envFile || '.env'} (${keyDisplay})`)
     } else {
-      logger.info(`○ no change (${keyDisplay})`)
+      logger.info(`○ no change to ${options.envFile || '.env'} (${keyDisplay})`)
     }
   } catch (error) {
     if (spinner) spinner.stop()

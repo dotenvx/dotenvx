@@ -1,21 +1,31 @@
-const { parse, parseSync, parsearrays, publickeys } = require('@dotenvx/primitives')
+const { parse, parseSync, parsearrays, publickeys, keyringSync } = require('@dotenvx/primitives')
 const { file } = require('@dotenvx/providers')
 const SERVER_SIDE_DECRYPTION_REQUIRED = 'SERVER_SIDE_DECRYPTION_REQUIRED'
 
 function withFileKeys (src, options, sync = false) {
   const keys = file({ fk: options.fk })
   const fallback = options.provider
+  const keySources = {}
+  const environment = keyringSync({ processEnv: options.processEnv || process.env, fk: [], provider: null })
+  for (const key of publickeys(src)) {
+    if (environment[key]) keySources[key] = 'environment'
+  }
+  function found (publicKey, ring, source) {
+    if (ring[publicKey]) keySources[publicKey] = source || 'custom'
+    return ring
+  }
   const provider = sync
     ? publicKey => {
       const ring = keys.getSync(publicKey)
-      return ring[publicKey] ? ring : (fallback ? fallback(publicKey) : {})
+      return ring[publicKey] ? found(publicKey, ring, '.env.keys') : found(publicKey, fallback ? fallback(publicKey) : {}, fallback && fallback.sourceFor && fallback.sourceFor(publicKey))
     }
     : async publicKey => {
       const ring = await keys.get(publicKey)
-      return ring[publicKey] ? ring : (fallback ? fallback(publicKey) : {})
+      return ring[publicKey] ? found(publicKey, ring, '.env.keys') : found(publicKey, fallback ? await fallback(publicKey) : {}, fallback && fallback.sourceFor && fallback.sourceFor(publicKey))
     }
   return {
     ...options,
+    keySources,
     provider,
     // Provider lookup requires a public key. Keep legacy key discovery for
     // encrypted files that do not declare one, and for error recovery.
@@ -61,7 +71,7 @@ parseWithDecryptor.arrays = async function parsearraysWithDecryptor (src, option
 async function parseWith (src, options, parser) {
   options = withFileKeys(src, options)
   try {
-    return await parser(src, options)
+    return { ...await parser(src, options), keySources: options.keySources }
   } catch (error) {
     if (error.code !== SERVER_SIDE_DECRYPTION_REQUIRED || typeof options.decryptor !== 'function') {
       if (typeof options.provider !== 'function') throw error
@@ -72,7 +82,7 @@ async function parseWith (src, options, parser) {
 
     try {
       const result = await options.decryptor(src, decryptOptions(error))
-      return await parser(result.src, parseOptionsWithoutProvider(options))
+      return { ...await parser(result.src, parseOptionsWithoutProvider(options)), keySources: { [decryptOptions(error).publicKey]: 'armor' } }
     } catch (decryptorError) {
       const result = await parser(src, parseOptionsWithoutProvider(options))
       return failedKeyAccessFallback(result, decryptorError)
@@ -83,7 +93,7 @@ async function parseWith (src, options, parser) {
 parseWithDecryptor.sync = function parseWithDecryptorSync (src, options = {}) {
   options = withFileKeys(src, options, true)
   try {
-    return parseSync(src, options)
+    return { ...parseSync(src, options), keySources: options.keySources }
   } catch (error) {
     if (error.code !== SERVER_SIDE_DECRYPTION_REQUIRED || typeof options.decryptor !== 'function') {
       if (typeof options.provider !== 'function') throw error
@@ -94,7 +104,7 @@ parseWithDecryptor.sync = function parseWithDecryptorSync (src, options = {}) {
 
     try {
       const result = options.decryptor(src, decryptOptions(error))
-      return parseSync(result.src, parseOptionsWithoutProvider(options))
+      return { ...parseSync(result.src, parseOptionsWithoutProvider(options)), keySources: { [decryptOptions(error).publicKey]: 'armor' } }
     } catch (decryptorError) {
       const result = parseSync(src, parseOptionsWithoutProvider(options))
       return failedKeyAccessFallback(result, decryptorError)

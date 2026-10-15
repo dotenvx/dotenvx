@@ -81,7 +81,7 @@ t.test('armor down uses session values and calls ArmorDown service with default 
   ct.same(ArmorDownStub.firstCall && ArmorDownStub.firstCall.args, ['https://armor.dotenvx.com', 'session-token', 'device-public-key', undefined, undefined], 'constructs ArmorDown with fallback session values')
   ct.equal(runStub.callCount, 1, 'runs ArmorDown once')
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after success')
-  ct.same(successStub.lastCall && successStub.lastCall.args, ['◇ dearmored to .env.keys (027 C9C)'], 'prints dearmored message')
+  ct.same(successStub.lastCall && successStub.lastCall.args, ['◇ dearmored .env (027 C9C) to .env.keys'], 'prints dearmored message')
   ct.equal(infoStub.callCount, 0, 'does not print no change info on success')
   ct.equal(errorStub.callCount, 0, 'does not log error on success')
   ct.equal(processExitStub.callCount, 0, 'does not exit process on success')
@@ -218,7 +218,7 @@ t.test('armor down prints no changes message when remote armor is unchanged', as
 
   ct.equal(spinnerStop.callCount, 1, 'stops spinner after success')
   ct.equal(successStub.callCount, 0, 'does not print success for no change')
-  ct.same(infoStub.lastCall && infoStub.lastCall.args, ['○ no change (027 C9C)'], 'prints no change message')
+  ct.same(infoStub.lastCall && infoStub.lastCall.args, ['○ no change to .env (027 C9C)'], 'prints no change message')
 })
 
 t.test('armor down logs errors and returns failure', async (ct) => {

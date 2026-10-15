@@ -1,5 +1,5 @@
 const path = require('path')
-const { injectsummary } = require('@dotenvx/primitives')
+const { injectsummary, publickeys } = require('@dotenvx/primitives')
 const { logger } = require('./../../shared/logger')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
@@ -180,7 +180,15 @@ async function run () {
     const injectedKeys = uniqueInjectedKeys(processedEnvs)
 
     if (spinner) spinner.stop()
-    logger.success(injectsummary(injectedKeys.size, readableFilepaths))
+    const summaryRows = readableFilepaths.map(filepath => {
+      const row = processedEnvs.find(row => row.filepath === filepath)
+      return {
+        filepath,
+        publicKeys: row ? publickeys(row.src || '') : [],
+        keySources: row && row.keySources
+      }
+    })
+    logger.success(injectsummary(injectedKeys.size, summaryRows))
   } catch (error) {
     if (spinner) spinner.stop()
     if (error.code === 'PROMPT_CANCELLED') {
