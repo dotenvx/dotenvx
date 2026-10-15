@@ -115,7 +115,7 @@ async function encryptTransform (options = {}) {
 
         const comment = path.basename(envFilepath)
 
-        const result = await storeKeyStorage(storage, publicKey, privateKey, options, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
+        const result = await storeKeyStorage(storage, publicKey, privateKey, options, Object.assign(custodyContext, { envFilepath: filepath, keysSrc, privateKeyName, comment, keysFilepath: fk }))
         storage = result.storage
         row.keySources = { [publicKey]: Object.prototype.hasOwnProperty.call(result.stored, 'keysSrc') ? 'file' : (typeof storage === 'string' ? storage : storage.id) }
         const stored = result.stored

@@ -74,4 +74,17 @@ function keypairMetadata (envFile = '.env', metadata = undefined) {
   })
 }
 
+// Descriptive upload context must never prevent storing a key.
+keypairMetadata.file = function (envFile = '.env') {
+  try {
+    return compact({
+      filepath: normalizeFilepath(envFile),
+      filename: canonicalEnvFilename(envFile),
+      project_name: projectName()
+    })
+  } catch (_) {
+    return {}
+  }
+}
+
 module.exports = keypairMetadata

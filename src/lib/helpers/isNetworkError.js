@@ -1,4 +1,5 @@
 const NETWORK_ERROR_CODES = new Set([
+  'EAI_AGAIN',
   'ECONNRESET',
   'ECONNREFUSED',
   'ENOTFOUND',
@@ -15,7 +16,9 @@ const NETWORK_ERROR_CODES = new Set([
 ])
 
 function isNetworkError (error) {
-  return NETWORK_ERROR_CODES.has(error && error.code) || NETWORK_ERROR_CODES.has(error && error.cause && error.cause.code)
+  if (!error) return false
+  return NETWORK_ERROR_CODES.has(error.code) || isNetworkError(error.cause) ||
+    (Array.isArray(error.errors) && error.errors.some(isNetworkError))
 }
 
 module.exports = isNetworkError

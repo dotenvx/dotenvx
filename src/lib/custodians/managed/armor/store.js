@@ -1,3 +1,4 @@
+const keypairMetadata = require('../../../helpers/keypairMetadata')
 const Session = require('../../../../db/session')
 const PostArmorUp = require('../../../api/postArmorUp')
 const prompts = require('../../../helpers/prompts')
@@ -10,8 +11,10 @@ async function store (publicKey, privateKey, context = {}) {
   const token = context.token || sesh.token()
   const devicePublicKey = sesh.devicePublicKey()
 
+  const metadata = keypairMetadata.file(context.envFilepath)
+
   try {
-    await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined).run()
+    await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined, metadata).run()
   } catch (error) {
     if (!isTeamRequiredError(error)) {
       throw error
@@ -38,7 +41,7 @@ async function store (publicKey, privateKey, context = {}) {
       throw error
     }
 
-    await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team).run()
+    await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team, metadata).run()
   }
 }
 
