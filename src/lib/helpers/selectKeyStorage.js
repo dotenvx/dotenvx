@@ -1,6 +1,11 @@
 const prompts = require('./prompts')
 const custodians = require('../custodians')
 const createSpinner = require('./createSpinner')
+const Session = require('../../db/session')
+const GetTeams = require('../api/getTeams')
+const GetTeamServices = require('../api/getTeamServices')
+const selectConnection = require('./selectConnection')
+const selectConnectionResource = require('./selectConnectionResource')
 
 const nativeNames = { darwin: 'macOS Keychain', win32: 'Windows Credential Manager', linux: 'Linux Secret Service' }
 
@@ -64,23 +69,67 @@ async function selectKeyStorage (options = {}) {
       }
       if (setup.has(storage)) throw new Error(setup.get(storage))
       if (storage === 'armored') {
-        const keyType = await prompts.select({
-          message: 'Choose key type',
-          prefix: '⛨',
-          choices: [
-            { name: '⛨ Armored', value: 'armored' },
-            { name: '◊ Enclaved', value: 'enclaved', disabled: '(coming soon)' },
-            { name: '← back', value: '__back' }
-          ],
-          initial: 'armored',
-          navigation: true,
-          backValue: '__back'
-        }, context)
-        if (keyType === '__back') {
-          initial = 'armored'
-          continue
+        while (true) {
+          const keyType = await prompts.select({
+            message: 'Choose key type',
+            prefix: '⛨',
+            choices: [
+              { name: '⛨ Armored', value: 'armored' },
+              { name: '◊ Enclaved', value: 'enclaved' },
+              { name: '← back', value: '__back' }
+            ],
+            initial: 'armored',
+            navigation: true,
+            backValue: '__back'
+          }, context)
+          if (keyType === '__back') {
+            initial = 'armored'
+            break
+          }
+          if (keyType === 'enclaved') {
+            const session = new Session()
+            const { teams } = await new GetTeams(session.hostname(), options.token || session.token()).run()
+            if (!teams.length) throw new Error('No teams available for enclave keys')
+            const choices = teams.map(team => ({ name: team.slug, value: team.slug }))
+            while (true) {
+              const team = await prompts.select({
+                message: 'Select team',
+                prefix: '◊',
+                choices: [...choices, { name: '← back', value: '__back' }],
+                navigation: true,
+                backValue: '__back'
+              }, context)
+              if (team === '__back') break
+              if (!choices.some(choice => choice.value === team)) throw new Error('Invalid team selection')
+              const { services } = await new GetTeamServices(session.hostname(), options.token || session.token(), team).run()
+              if (!services.length) throw new Error('No services available for this team')
+              const serviceChoices = services.map(service => ({ name: service.name, value: service.slug }))
+              while (true) {
+                const service = await prompts.select({
+                  message: 'Select service',
+                  prefix: '◊',
+                  choices: [...serviceChoices, { name: '← back', value: '__back' }],
+                  navigation: true,
+                  backValue: '__back'
+                }, context)
+                if (service === '__back') break
+                if (!serviceChoices.some(choice => choice.value === service)) throw new Error('Invalid service selection')
+                const selectedService = services.find(item => item.slug === service)
+                while (true) {
+                  const connection = await selectConnection(session.hostname(), options.token || session.token(), team, selectedService, context)
+                  if (!connection) break
+                  const resource = await selectConnectionResource(session.hostname(), options.token || session.token(), team, connection, context)
+                  if (!resource) continue
+                  return { id: 'enclaved', team, service, connectionId: connection.id, resourceId: resource.id }
+                }
+              }
+            }
+            continue
+          }
+          if (keyType !== 'armored') throw new Error('Invalid key type selection')
+          return storage
         }
-        if (keyType !== 'armored') throw new Error('Invalid key type selection')
+        continue
       }
       return storage
     }

@@ -15,6 +15,7 @@ const Session = require('./../db/session')
 
 // transforms
 const setTransform = require('./transforms/set')
+const logSetSummary = require('./helpers/logSetSummary')
 
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
@@ -321,30 +322,9 @@ const set = async function (key, value, options = {}, events) {
   }
   if (events) events.add({ error_count: processedEnvs.filter(env => env.error).length })
 
-  let keyAddedSuffix = ''
-  const localKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.localPrivateKeyAdded)
-  const remoteKeyAddedEnv = processedEnvs.find((processedEnv) => processedEnv.remotePrivateKeyAdded)
-
-  if (remoteKeyAddedEnv) {
-    keyAddedSuffix = ' · armored ⛨'
-  }
-
-  if (changedFilepaths.length > 0) {
-    if (encrypt) {
-      logger.success(`◈ encrypted ${key} (${changedFilepaths.join(',')})${keyAddedSuffix}`)
-    } else {
-      logger.success(`◇ set ${key} (${changedFilepaths.join(',')})`)
-    }
-  } else if (encrypt && localKeyAddedEnv) {
-    const keyAddedEnvFilepath = localKeyAddedEnv.envFilepath || changedFilepaths[0] || '.env'
-    logger.success(`◈ encrypted ${key} (${keyAddedEnvFilepath})${keyAddedSuffix}`)
-  } else if (unchangedFilepaths.length > 0) {
-    logger.info(`○ no change (${unchangedFilepaths})`)
-  } else {
-    // do nothing
-  }
-
-  // intentionally quiet: success line communicates key creation
+  await logSetSummary(key, encrypt, { processedEnvs, changedFilepaths, unchangedFilepaths }, {
+    ...options, noArmor, noNative
+  })
 
   return {
     processedEnvs,

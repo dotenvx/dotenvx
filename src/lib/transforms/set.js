@@ -1,6 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypt, upsert, publickeys, keypair } = require('@dotenvx/primitives')
+const { encrypt, upsert, publickeys } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -74,18 +74,14 @@ async function setTransform (options = {}) {
 
       // only create if missing public key and encryption needed
       if (!publicKey && !noEncrypt) {
-        // upsert public key to .env file
-        const kp = keypair() // local
-        publicKey = kp.publicKey
-        const privateKey = kp.privateKey
         const { publicKeyName, privateKeyName } = keynames(envFilepath)
-        const { envSrc } = mutateSrc({ envSrc: row.envSrc, envFilepath, keysFilepath: fk, publicKeyName, publicKeyValue: publicKey })
-        row.envSrc = envSrc
-
         const comment = path.basename(envFilepath)
 
-        const result = await storeKeyStorage(storage, publicKey, privateKey, options, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
+        const result = await storeKeyStorage(storage, undefined, undefined, options, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
         storage = result.storage
+        publicKey = result.publicKey
+        row.envSrc = mutateSrc({ envSrc: row.envSrc, envFilepath, keysFilepath: fk, publicKeyName, publicKeyValue: publicKey }).envSrc
+        row.keySources = { [publicKey]: Object.prototype.hasOwnProperty.call(result.stored, 'keysSrc') ? 'file' : (typeof storage === 'string' ? storage : storage.id) }
         const stored = result.stored
         if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true

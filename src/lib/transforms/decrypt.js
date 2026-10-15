@@ -5,6 +5,7 @@ const { upsert } = require('@dotenvx/primitives')
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
+const enclavedHint = require('../helpers/enclavedHint')
 const { determine } = require('./../helpers/envResolution')
 const detectEncoding = require('./../helpers/detectEncoding')
 const providers = require('./../providers')
@@ -83,6 +84,7 @@ async function decrypt (options = {}) {
       }
     }
 
+    enclavedHint(row.error, envFilepath)
     processedEnvs.push(row)
   }
 
