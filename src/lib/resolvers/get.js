@@ -61,12 +61,16 @@ async function get (options = {}) {
   const processEnv = { ...(options.processEnv || process.env) }
   const { processedEnvs } = await envsResolver(buildOptions(options, processEnv))
 
-  return result({
+  const resolved = result({
     key: options.key,
     all: options.all,
     processedEnvs,
     processEnv
   })
+  if (options.includeKeySources) {
+    resolved.keySources = Object.assign({}, ...processedEnvs.map(row => row.keySources))
+  }
+  return resolved
 }
 
 module.exports = get

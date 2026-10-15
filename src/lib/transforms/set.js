@@ -77,7 +77,7 @@ async function setTransform (options = {}) {
         const { publicKeyName, privateKeyName } = keynames(envFilepath)
         const comment = path.basename(envFilepath)
 
-        const result = await storeKeyStorage(storage, undefined, undefined, options, Object.assign(custodyContext, { keysSrc, privateKeyName, comment, keysFilepath: fk }))
+        const result = await storeKeyStorage(storage, undefined, undefined, options, Object.assign(custodyContext, { envFilepath: filepath, keysSrc, privateKeyName, comment, keysFilepath: fk }))
         storage = result.storage
         publicKey = result.publicKey
         row.envSrc = mutateSrc({ envSrc: row.envSrc, envFilepath, keysFilepath: fk, publicKeyName, publicKeyValue: publicKey }).envSrc
@@ -95,7 +95,8 @@ async function setTransform (options = {}) {
         }
       } else {
         // expensive additional loop
-        const { parsed } = await getResolver({
+        const { parsed, keySources } = await getResolver({
+          includeKeySources: true,
           key,
           envs: [env],
           all: true,
@@ -106,6 +107,7 @@ async function setTransform (options = {}) {
           noBitwarden: options.noBitwarden
         })
 
+        row.keySources = row.keySources || keySources
         const before = parsed[key]
         if (value !== before) {
           const encryptedValue = encrypt(publicKey, value)

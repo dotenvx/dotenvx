@@ -89,9 +89,7 @@ async function set (key, value) {
       }
     }
 
-    await logSetSummary(key, encrypt, { processedEnvs, changedFilepaths, unchangedFilepaths }, {
-      ...options, envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden
-    })
+    await logSetSummary(key, encrypt, { processedEnvs, changedFilepaths, unchangedFilepaths })
 
     return { exitCode: errorCount > 0 ? 1 : 0, errorCount }
   } catch (error) {

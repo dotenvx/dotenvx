@@ -322,9 +322,7 @@ const set = async function (key, value, options = {}, events) {
   }
   if (events) events.add({ error_count: processedEnvs.filter(env => env.error).length })
 
-  await logSetSummary(key, encrypt, { processedEnvs, changedFilepaths, unchangedFilepaths }, {
-    ...options, noArmor, noNative
-  })
+  await logSetSummary(key, encrypt, { processedEnvs, changedFilepaths, unchangedFilepaths })
 
   return {
     processedEnvs,
