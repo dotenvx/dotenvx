@@ -35,6 +35,7 @@ function loadKeypairAction ({ result, error, spinner, catchAndLog } = {}) {
 
   const catchAndLogStub = catchAndLog || sinon.stub()
   const keypair = proxyquire('./../../../src/cli/actions/keypair', {
+    '../../lib/events/cli': (command, action) => action,
     './../../lib/resolvers/keypair': keypairResolver,
     './../../lib/helpers/catchAndLog': catchAndLogStub,
     '../../lib/helpers/createSpinner': sinon.stub().resolves(fakeSpinner)
@@ -206,12 +207,14 @@ t.test('keypair KEY (not found)', async ct => {
   const processExitStub = sinon.stub(process, 'exit')
   const { keypair, keypairResolver } = loadKeypairAction({ result: {} })
 
+  let result
   const stdout = await captureStdout(async () => {
-    await keypair.call(fakeContext, 'NOTFOUND')
+    result = await keypair.call(fakeContext, 'NOTFOUND')
   })
 
   t.ok(keypairResolver.called, 'keypair resolver called')
-  t.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   t.equal(stdout, '\n')
 
   ct.end()
@@ -258,10 +261,12 @@ t.test('keypair logs provider errors without an uncaught stack', async ct => {
   })
   const fakeContext = { opts: sinon.stub().returns({}) }
 
-  await keypair.call(fakeContext, undefined)
+  const result = await keypair.call(fakeContext, undefined)
 
   ct.same(catchAndLogStub.firstCall && catchAndLogStub.firstCall.args, [error])
   ct.ok(fakeSpinner.stop.called, 'spinner stopped')
-  ct.ok(processExitStub.calledWith(1), 'process.exit(1)')
+  ct.equal(result.exitCode, 1, 'returns the exit code to the command lifecycle')
+  ct.equal(result.error, error, 'preserves the provider error')
+  ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.end()
 })
