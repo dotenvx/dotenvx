@@ -40,17 +40,18 @@ function clearLastLine (stream) {
   }
 }
 
-async function select ({ message, choices, navigation, backValue, initial, prefix }, context) {
+async function select ({ message, choices, navigation, backValue, initial, prefix, footer }, context) {
   try {
     if (navigation) {
       const CustodySelect = require('./custodySelect')
-      return await new CustodySelect({ message, choices: choicesForSelect(choices), backValue, initial, ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}), ...enquirerOptions(context) }).run()
+      return await new CustodySelect({ message, choices: choicesForSelect(choices), backValue, initial, footer, ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}), ...enquirerOptions(context) }).run()
     }
     const answer = await enquirer.prompt({
       type: 'select',
       name: 'value',
       ...(prefix ? { symbols: { prefix: { pending: prefix } } } : {}),
       message,
+      footer,
       choices: choicesForSelect(choices),
       ...enquirerOptions(context)
     })
@@ -85,11 +86,19 @@ async function multiselect ({ message, choices, initial = [], submitLabel }, con
   }
 }
 
-async function input ({ message }, context) {
+async function input ({ message, initial }, context) {
   try {
     const answer = await enquirer.prompt({
       type: 'input',
       name: 'value',
+      ...(initial !== undefined
+        ? {
+            onRun () {
+              this.input = String(initial)
+              this.cursor = this.input.length
+            }
+          }
+        : {}),
       message,
       ...enquirerOptions(context)
     })

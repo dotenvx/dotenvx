@@ -6,6 +6,7 @@ const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
 
 const Errors = require('./../helpers/errors')
+const enclavedHint = require('../helpers/enclavedHint')
 const detectEncoding = require('./../helpers/detectEncoding')
 const detectEncodingSync = require('./../helpers/detectEncodingSync')
 const keynames = require('./../conventions/keynames')
@@ -242,6 +243,7 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
     }
   }
 
+  for (const error of row.errors || []) enclavedHint(error, env.value)
   return row
 }
 
@@ -303,6 +305,7 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
     }
   }
 
+  for (const error of row.errors || []) enclavedHint(error, env.value)
   return row
 }
 

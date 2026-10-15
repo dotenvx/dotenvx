@@ -6,6 +6,7 @@ const filepaths = require('./../conventions/filepaths')
 
 const { keyring, keyringSync, publickeys } = require('@dotenvx/primitives')
 const providers = require('./../providers')
+const enclavedHint = require('../helpers/enclavedHint')
 
 function buildOptions ({ publicKey, processEnv, fk }) {
   const ring = {}
@@ -45,7 +46,8 @@ async function keypair (options = {}) {
     })
 
     let origin = 'environment'
-    const provider = await providers({ ...options, onProvider: name => { origin = name } })
+    let confirmedProvider = false
+    const provider = await providers({ ...options, onProvider: name => { origin = name; confirmedProvider = true } })
     const keys = file({ fk: keyringOptions.fk })
     keyringOptions.provider = async publicKey => {
       const ring = await keys.get(publicKey)
@@ -58,10 +60,18 @@ async function keypair (options = {}) {
     }
     if (publicKey) keyringOptions.fk = []
 
-    const ring = await keyring(keyringOptions)
+    let ring
+    try {
+      ring = await keyring(keyringOptions)
+    } catch (error) {
+      enclavedHint(error, filepath)
+      if (!options.onError) throw error
+      options.onError(error)
+      ring = {}
+    }
 
     outputKeypair({ out, filepath, publicKey, ring })
-    origins[filepath] = publicKey && ring[publicKey] ? origin : null
+    origins[filepath] = publicKey && (ring[publicKey] || confirmedProvider) ? origin : null
   }
 
   if (options.includeProvider) {
@@ -86,7 +96,8 @@ function keypairSync (options = {}) {
       fk: options.envKeysFilepath || options.envKeysFile || path.resolve(path.dirname(filepath), '.env.keys')
     })
     let origin = 'environment'
-    const provider = providers.sync({ ...options, onProvider: name => { origin = name } })
+    let confirmedProvider = false
+    const provider = providers.sync({ ...options, onProvider: name => { origin = name; confirmedProvider = true } })
     const keys = file({ fk: keyringOptions.fk })
     keyringOptions.provider = publicKey => {
       const ring = keys.getSync(publicKey)
@@ -99,10 +110,18 @@ function keypairSync (options = {}) {
     }
     if (publicKey) keyringOptions.fk = []
 
-    const ring = keyringSync(keyringOptions)
+    let ring
+    try {
+      ring = keyringSync(keyringOptions)
+    } catch (error) {
+      enclavedHint(error, filepath)
+      if (!options.onError) throw error
+      options.onError(error)
+      ring = {}
+    }
 
     outputKeypair({ out, filepath, publicKey, ring })
-    origins[filepath] = publicKey && ring[publicKey] ? origin : null
+    origins[filepath] = publicKey && (ring[publicKey] || confirmedProvider) ? origin : null
   }
 
   if (options.includeProvider) {

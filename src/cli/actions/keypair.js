@@ -17,7 +17,9 @@ async function keypair (key) {
   const prettyPrint = options.prettyPrint || options.pp
 
   try {
+    const errors = []
     const keypairs = await keypairResolver({
+      onError: error => errors.push(error),
       includeProvider: key === 'provider' || (!key && !['shell', 'colon'].includes(options.format)),
       envFile: options.envFile,
       envKeysFile: options.envKeysFile,
@@ -37,6 +39,7 @@ async function keypair (key) {
     const results = key ? keypairs[key] : keypairs
 
     if (spinner) spinner.stop()
+    errors.forEach(catchAndLog)
     if (typeof results === 'object' && results !== null) {
       if (options.format === 'shell') {
         let inline = ''
@@ -73,6 +76,7 @@ async function keypair (key) {
         console.log(results)
       }
     }
+    return { exitCode: errors.length > 0 ? 1 : 0, errorCount: errors.length }
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

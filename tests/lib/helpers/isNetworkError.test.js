@@ -1,6 +1,6 @@
 const t = require('tap')
 
-const isNetworkError = require('../../../src/lib/helpers/isNetworkError')
+const { isNetworkError } = require('@dotenvx/providers')
 
 t.test('isNetworkError recognizes direct and wrapped connectivity errors', ct => {
   ct.equal(isNetworkError({ code: 'ENETUNREACH' }), true)

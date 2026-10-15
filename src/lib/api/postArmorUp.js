@@ -4,13 +4,14 @@ const packageJson = require('../helpers/packageJson')
 const normalizeToken = require('../helpers/normalizeToken')
 
 class PostArmorUp {
-  constructor (hostname, token, devicePublicKey, publicKey, privateKey, team) {
+  constructor (hostname, token, devicePublicKey, publicKey, privateKey, team, metadata) {
     this.hostname = hostname
     this.token = token
     this.devicePublicKey = devicePublicKey
     this.publicKey = publicKey
     this.privateKey = privateKey
     this.team = team
+    this.metadata = metadata
   }
 
   async run () {
@@ -26,7 +27,8 @@ class PostArmorUp {
       cli_version: packageJson.version,
       public_key: publicKey,
       private_key: privateKey,
-      team
+      team,
+      metadata: this.metadata
     }
 
     const resp = await http(url, {

@@ -1,3 +1,4 @@
+const keypairMetadata = require('../helpers/keypairMetadata')
 const prompts = require('../helpers/prompts')
 const resolveLocalKey = require('../custodians/resolveLocalKey')
 const PostArmorUp = require('../api/postArmorUp')
@@ -23,13 +24,15 @@ class ArmorUp {
     const source = await resolveLocalKey(envFile, { allowMissing: true })
     const { publicKey, privateKey, privateKeyName } = source
 
+    const metadata = keypairMetadata.file(envFile)
+
     let json
 
     if (team) {
-      json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team).run()
+      json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team, metadata).run()
     } else {
       try {
-        json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined).run()
+        json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, undefined, metadata).run()
       } catch (error) {
         if (!isTeamRequiredError(error)) {
           throw error
@@ -49,7 +52,7 @@ class ArmorUp {
           })
         }
 
-        json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team).run()
+        json = await new PostArmorUp(hostname, token, devicePublicKey, publicKey, privateKey, team, metadata).run()
       }
     }
 

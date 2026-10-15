@@ -38,7 +38,13 @@ function lookup (publicKey, options, sync) {
   const keys = provider(providerOptions)
 
   function found (ring) {
-    if (!ring[publicKey] && armorError) throw armorError
+    if (!ring[publicKey] && armorError) {
+      // This response confirms custody even though the private key cannot be retrieved.
+      if (armorError.code === 'ENCLAVED' || (armorError.code === 'BAD_REQUEST' && ['[BAD_REQUEST] private key enclaved ◊', '[BAD_REQUEST] Private key is held exclusively in its remote enclave.'].includes(armorError.message))) {
+        if (options.onProvider) options.onProvider('armor', publicKey)
+      }
+      throw armorError
+    }
     if (ring[publicKey] && options.onProvider) {
       options.onProvider(source === 'native' ? nativeNames[process.platform] || source : source, publicKey)
     }
