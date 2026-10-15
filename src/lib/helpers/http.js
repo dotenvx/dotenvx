@@ -1,5 +1,5 @@
 const { request } = require('@dotenvx/tooling')
-const isNetworkError = require('./isNetworkError')
+const { isNetworkError } = require('@dotenvx/providers')
 
 async function http (url, opts = {}) {
   try {
