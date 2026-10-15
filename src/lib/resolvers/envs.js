@@ -14,6 +14,7 @@ const decryptors = require('./../decryptors')
 const parseWithDecryptor = require('./../helpers/parseWithDecryptor')
 const resolveOnePassword = require('./../helpers/resolveOnePassword')
 const resolveBitwardenPassword = require('./../helpers/resolveBitwardenPassword')
+const onePasswordBatch = require('./../helpers/onePasswordBatch')
 
 function unresolvedEncryptedErrors (parsed) {
   const keys = []
@@ -74,12 +75,13 @@ function buildParseOptions ({ processEnv, overload, envKeysFilepath, provider, d
   return options
 }
 
-async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus }) {
+async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus, batch }) {
   const row = {}
   row.type = TYPE_ENV
   row.string = env.value
 
   try {
+    if (batch) await batch.before(env.value)
     const parseProcessEnv = { ...processEnv }
     if (env.privateKeyName && Object.prototype.hasOwnProperty.call(processEnv, env.privateKeyName)) {
       parseProcessEnv[env.privateKeyName] = processEnv[env.privateKeyName]
@@ -108,7 +110,7 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
     row.existed = existed || {}
 
     if (!no1Password) {
-      const result = await resolveOnePassword(row.injected, { onStatus })
+      const result = await (batch ? batch.resolve : resolveOnePassword)(row.injected, { onStatus })
       row.errors.push(...result.errors)
       Object.assign(row.parsed, row.injected)
     }
@@ -129,12 +131,13 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
   return row
 }
 
-function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden }) {
+function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, batch }) {
   const row = {}
   row.type = TYPE_ENV
   row.string = env.value
 
   try {
+    if (batch) batch.before(env.value)
     const parseProcessEnv = { ...processEnv }
     if (env.privateKeyName && Object.prototype.hasOwnProperty.call(processEnv, env.privateKeyName)) {
       parseProcessEnv[env.privateKeyName] = processEnv[env.privateKeyName]
@@ -163,7 +166,7 @@ function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, 
     row.existed = existed || {}
 
     if (!no1Password) {
-      const result = resolveOnePassword.sync(row.injected)
+      const result = (batch ? batch.resolve : resolveOnePassword).sync(row.injected)
       row.errors.push(...result.errors)
       Object.assign(row.parsed, row.injected)
     }
@@ -183,7 +186,7 @@ function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, 
   return row
 }
 
-async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus }) {
+async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus, batch }) {
   const row = {}
   row.type = TYPE_ENV_FILE
   row.filepath = env.value
@@ -193,6 +196,8 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
     const encoding = await detectEncoding(filepath)
     const src = await fsx.readFileX(filepath, { encoding })
     readableFilepaths.add(env.value)
+
+    if (batch) await batch.before(src)
 
     const { privateKeyName } = keynames(filepath)
     const fk = envKeysFilepath || (processEnv[privateKeyName] ? null : path.resolve(path.dirname(filepath), '.env.keys'))
@@ -220,7 +225,7 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
     row.existed = existed || {}
 
     if (!no1Password) {
-      const result = await resolveOnePassword(row.injected, { onStatus })
+      const result = await (batch ? batch.resolve : resolveOnePassword)(row.injected, { onStatus })
       row.errors.push(...result.errors)
       Object.assign(row.parsed, row.injected)
     }
@@ -245,7 +250,7 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
   return row
 }
 
-function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden }) {
+function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, batch }) {
   const row = {}
   row.type = TYPE_ENV_FILE
   row.filepath = env.value
@@ -255,6 +260,8 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
     const encoding = detectEncodingSync(filepath)
     const src = fsx.readFileXSync(filepath, { encoding })
     readableFilepaths.add(env.value)
+
+    if (batch) batch.before(src)
 
     const { privateKeyName } = keynames(filepath)
     const fk = envKeysFilepath || (processEnv[privateKeyName] ? null : path.resolve(path.dirname(filepath), '.env.keys'))
@@ -282,7 +289,7 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
     row.existed = existed || {}
 
     if (!no1Password) {
-      const result = resolveOnePassword.sync(row.injected)
+      const result = (batch ? batch.resolve : resolveOnePassword).sync(row.injected)
       row.errors.push(...result.errors)
       Object.assign(row.parsed, row.injected)
     }
@@ -313,6 +320,7 @@ async function envs (options = {}) {
   const envKeysFilepath = options.envKeysFilepath || options.envKeysFile || null
   const no1Password = options.no1Password === true || process.env.DOTENVX_NO_1PASSWORD === 'true'
   const noBitwarden = options.noBitwarden === true || process.env.DOTENVX_NO_BITWARDEN === 'true'
+  const batch = no1Password ? null : onePasswordBatch(processEnv, options.onStatus)
   const sources = new Map()
   const provider = await providers({
     ...options,
@@ -335,6 +343,7 @@ async function envs (options = {}) {
         readableFilepaths,
         no1Password,
         noBitwarden,
+        batch,
         onStatus: options.onStatus
       }))
     } else if (env.type === TYPE_ENV) {
@@ -347,10 +356,14 @@ async function envs (options = {}) {
         decryptor,
         no1Password,
         noBitwarden,
+        batch,
         onStatus: options.onStatus
       }))
     }
+    if (batch) batch.add(processedEnvs[processedEnvs.length - 1])
   }
+
+  if (batch) await batch.flush()
 
   return {
     processedEnvs,
@@ -365,6 +378,7 @@ function envsSync (options = {}) {
   const envKeysFilepath = options.envKeysFilepath || options.envKeysFile || null
   const no1Password = options.no1Password === true || process.env.DOTENVX_NO_1PASSWORD === 'true'
   const noBitwarden = options.noBitwarden === true || process.env.DOTENVX_NO_BITWARDEN === 'true'
+  const batch = no1Password ? null : onePasswordBatch(processEnv, null, true)
   const sources = new Map()
   const provider = providers.sync({
     ...options,
@@ -387,7 +401,8 @@ function envsSync (options = {}) {
         decryptor,
         readableFilepaths,
         no1Password,
-        noBitwarden
+        noBitwarden,
+        batch
       }))
     } else if (env.type === TYPE_ENV) {
       processedEnvs.push(injectEnvSync({
@@ -398,10 +413,14 @@ function envsSync (options = {}) {
         provider,
         decryptor,
         no1Password,
-        noBitwarden
+        noBitwarden,
+        batch
       }))
     }
+    if (batch) batch.add(processedEnvs[processedEnvs.length - 1])
   }
+
+  if (batch) batch.flush()
 
   return {
     processedEnvs,
