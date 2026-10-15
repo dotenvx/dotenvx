@@ -63,6 +63,25 @@ async function selectKeyStorage (options = {}) {
         if (!entries.some(choice => choice.value === storage)) throw new Error('Invalid private key storage selection')
       }
       if (setup.has(storage)) throw new Error(setup.get(storage))
+      if (storage === 'armored') {
+        const keyType = await prompts.select({
+          message: 'Choose key type',
+          prefix: '⛨',
+          choices: [
+            { name: '⛨ Armored', value: 'armored' },
+            { name: '◊ Enclaved', value: 'enclaved', disabled: '(coming soon)' },
+            { name: '← back', value: '__back' }
+          ],
+          initial: 'armored',
+          navigation: true,
+          backValue: '__back'
+        }, context)
+        if (keyType === '__back') {
+          initial = 'armored'
+          continue
+        }
+        if (keyType !== 'armored') throw new Error('Invalid key type selection')
+      }
       return storage
     }
   } finally {

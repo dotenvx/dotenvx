@@ -58,7 +58,14 @@ async function keypair (options = {}) {
     }
     if (publicKey) keyringOptions.fk = []
 
-    const ring = await keyring(keyringOptions)
+    let ring
+    try {
+      ring = await keyring(keyringOptions)
+    } catch (error) {
+      if (!options.onError) throw error
+      options.onError(error)
+      ring = {}
+    }
 
     outputKeypair({ out, filepath, publicKey, ring })
     origins[filepath] = publicKey && ring[publicKey] ? origin : null
@@ -99,7 +106,14 @@ function keypairSync (options = {}) {
     }
     if (publicKey) keyringOptions.fk = []
 
-    const ring = keyringSync(keyringOptions)
+    let ring
+    try {
+      ring = keyringSync(keyringOptions)
+    } catch (error) {
+      if (!options.onError) throw error
+      options.onError(error)
+      ring = {}
+    }
 
     outputKeypair({ out, filepath, publicKey, ring })
     origins[filepath] = publicKey && ring[publicKey] ? origin : null

@@ -5,6 +5,15 @@ const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
 const listenForOpenKey = require('../helpers/listenForOpenKey')
 const openUrl = require('../helpers/openUrl')
 
+const connectionErrors = new Set(['ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'EAI_AGAIN', 'ETIMEDOUT', 'EHOSTUNREACH', 'ENETUNREACH', 'ENETDOWN', 'EPIPE', 'EPERM', 'EACCES', 'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT', 'UND_ERR_SOCKET'])
+
+function isConnectionError (error) {
+  if (!error) return false
+  return connectionErrors.has(error.code) ||
+    isConnectionError(error.cause) ||
+    (Array.isArray(error.errors) && error.errors.some(isConnectionError))
+}
+
 const nativeNames = { darwin: 'macosKeychain', win32: 'windowsCredentialManager', linux: 'linuxSecretService' }
 
 function lookup (publicKey, options, sync) {
@@ -38,7 +47,12 @@ function lookup (publicKey, options, sync) {
   const keys = provider(providerOptions)
 
   function found (ring) {
-    if (!ring[publicKey] && armorError) throw armorError
+    if (!ring[publicKey] && armorError) {
+      if (isConnectionError(armorError)) {
+        armorError.messageWithHelp = '[ARMOR_UNREACHABLE] could not reach armor. fix: [check your connection or use --no-armor]'
+      }
+      throw armorError
+    }
     if (ring[publicKey] && options.onProvider) {
       options.onProvider(source === 'native' ? nativeNames[process.platform] || source : source, publicKey)
     }
