@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.37.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.38.0...main)
+
+## [2.38.0](https://github.com/dotenvx/dotenvx/compare/v2.37.0...v2.38.0) (2026-10-16)
+
+### Added
+
+* Add `getSync` convenience ([#1029](https://github.com/dotenvx/dotenvx/pull/1029))
 
 ### Changed
 
-* default to file key storage in non-interactive mode ([#1028](https://github.com/dotenvx/dotenvx/pull/1028))
+* Default to file key storage in non-interactive mode ([#1028](https://github.com/dotenvx/dotenvx/pull/1028))
 
 ## [2.37.0](https://github.com/dotenvx/dotenvx/compare/v2.36.0...v2.37.0) (2026-10-15)
 
