@@ -3233,6 +3233,20 @@ console.log(decryptedValue)
 This is known as *Decryption at Access* and is written about in [the whitepaper](https://dotenvx.com/dotenvx.pdf).
 
 </details>
+<details><summary>`getSync(KEY)` - synchronous access</summary><br>
+
+Synchronously resolve an environment variable without populating `process.env`. This is useful in configuration files that cannot await `get()`.
+
+```js
+const dotenvx = require('@dotenvx/dotenvx')
+const decryptedValue = dotenvx.getSync('HELLO', { path: '.env.credentials', strict: true })
+```
+
+`getSync()` accepts the same options as `get()`, including masking, multiple paths, and error handling. Omit the key to return all values from the selected files. It blocks while files and providers are resolved.
+
+If you already called `dotenvx.config()`, you can read the loaded value directly from `process.env.HELLO` instead.
+
+</details>
 <details><summary>`get(KEY, {mask:})`</summary><br>
 
 Programmatically return a masked environment variable value.

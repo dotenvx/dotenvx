@@ -367,6 +367,12 @@ export function set(
 
 export interface GetOptions {
 
+  /** Include all process environment variables when no key is supplied. */
+  all?: boolean;
+
+  /** Format the returned values when no key is supplied. */
+  format?: 'eval' | 'eval-export' | 'shell' | 'colon';
+
   /**
    * Specify a custom path if your file containing environment variables is located elsewhere.
    * Can also be an array of strings, specifying multiple paths.
@@ -463,6 +469,29 @@ export function get(
   key: string,
   options?: GetOptions
 ): Promise<string>;
+
+/**
+ * Synchronously resolve an environment variable without modifying process.env.
+ * Blocks while files and providers are resolved. Uses the same options as get().
+ *
+ * @example require('@dotenvx/dotenvx').getSync('KEY', { path: '.env.credentials' })
+ */
+export function getSync(
+  key: string,
+  options?: GetOptions
+): string | undefined;
+export function getSync(
+  key: undefined,
+  options: GetOptions & { format: NonNullable<GetOptions['format']> }
+): string;
+export function getSync(
+  key?: undefined,
+  options?: GetOptions & { format?: undefined }
+): Record<string, string>;
+export function getSync(
+  key: string | undefined,
+  options?: GetOptions
+): string | Record<string, string> | undefined;
 
 /**
  * List all env files in the current working directory
