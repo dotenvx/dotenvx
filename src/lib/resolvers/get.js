@@ -61,6 +61,16 @@ async function get (options = {}) {
   const processEnv = { ...(options.processEnv || process.env) }
   const { processedEnvs } = await envsResolver(buildOptions(options, processEnv))
 
+  return resolveResult(options, processedEnvs, processEnv)
+}
+
+function getSync (options = {}) {
+  const processEnv = { ...(options.processEnv || process.env) }
+  const { processedEnvs } = envsResolver.sync(buildOptions(options, processEnv))
+  return resolveResult(options, processedEnvs, processEnv)
+}
+
+function resolveResult (options, processedEnvs, processEnv) {
   const resolved = result({
     key: options.key,
     all: options.all,
@@ -74,3 +84,4 @@ async function get (options = {}) {
 }
 
 module.exports = get
+module.exports.sync = getSync

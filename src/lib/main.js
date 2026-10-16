@@ -331,8 +331,21 @@ const set = async function (key, value, options = {}, events) {
   }
 }
 
-/* @type {import('./main').get} */
+/** @type {import('./main').get} */
 const get = async function (key, options = {}, events) {
+  const prepared = prepareGet(key, options)
+  const resolved = await getResolver(prepared.resolverOptions)
+  return getResult(key, prepared.options, resolved, events)
+}
+
+/** @type {import('./main').getSync} */
+const getSync = function (key, options = {}) {
+  const prepared = prepareGet(key, options)
+  const resolved = getResolver.sync(prepared.resolverOptions)
+  return getResult(key, prepared.options, resolved)
+}
+
+function prepareGet (key, options) {
   options = normalizeDotenvConfigConvention(options)
   options = normalizeDotenvConfigIgnore(options)
 
@@ -340,22 +353,26 @@ const get = async function (key, options = {}, events) {
   const noArmor = resolveNoArmor(options)
   const noNative = resolveNoNative(options)
 
-  // ignore
-  const ignore = options.ignore || []
+  return {
+    options,
+    resolverOptions: {
+      resolveDirectories: false,
+      key,
+      envs,
+      profile: options.profile,
+      overload: options.overload,
+      all: options.all,
+      envKeysFile: options.envKeysFile,
+      noArmor,
+      noNative,
+      no1Password: options.no1Password,
+      noBitwarden: options.noBitwarden
+    }
+  }
+}
 
-  const { parsed, errors } = await getResolver({
-    resolveDirectories: false,
-    key,
-    envs,
-    profile: options.profile,
-    overload: options.overload,
-    all: options.all,
-    envKeysFile: options.envKeysFile,
-    noArmor,
-    noNative,
-    no1Password: options.no1Password,
-    noBitwarden: options.noBitwarden
-  })
+function getResult (key, options, { parsed, errors }, events) {
+  const ignore = options.ignore || []
 
   if (options.mask !== undefined) {
     const showChar = options.mask === true ? 6 : options.mask
@@ -441,6 +458,7 @@ module.exports = {
   // actions related
   set,
   get,
+  getSync,
   ls,
   // expose for libs depending on @dotenvx/dotenvx
   setLogLevel,
