@@ -83,6 +83,20 @@ t.test('#encrypt', ct => {
   ct.end()
 })
 
+t.test('#encrypt non-interactively defaults to .env.keys without CI or --no-native', ct => {
+  delete process.env.CI
+  fs.writeFileSync('.env', 'HELLO=World\n')
+
+  const output = execShellResult(`${dotenvx} encrypt`)
+  const keys = dotenv.parse(fs.readFileSync('.env.keys'))
+
+  ct.equal(output.status, 0)
+  ct.ok(keys.DOTENV_PRIVATE_KEY)
+  ct.match(fs.readFileSync('.env', 'utf8'), /encrypted:/)
+  ct.equal(execShell(`${dotenvx} get HELLO`), 'World')
+  ct.end()
+})
+
 t.test('#encrypt creates a minimal sample env', ct => {
   const output = execShellResult(`${dotenvx} encrypt`)
   const parsedEnv = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env')))

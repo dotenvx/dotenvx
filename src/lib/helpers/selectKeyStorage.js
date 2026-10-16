@@ -10,8 +10,7 @@ const selectConnectionResource = require('./selectConnectionResource')
 const nativeNames = { darwin: 'macOS Keychain', win32: 'Windows Credential Manager', linux: 'Linux Secret Service' }
 
 async function selectKeyStorage (options = {}) {
-  const defaultStorage = custodians.get('native').enabled(options) ? 'native' : 'file'
-  if (process.env.CI || options.noCreate || !process.stdin.isTTY || !process.stderr.isTTY) return defaultStorage
+  if (process.env.CI || options.noCreate || !process.stdin.isTTY || !process.stderr.isTTY) return 'file'
 
   const groups = new Map()
   const setup = new Map()
