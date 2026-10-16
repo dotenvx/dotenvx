@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.37.0...main)
 
+### Changed
+
+* default to file key storage in non-interactive mode ([#1028](https://github.com/dotenvx/dotenvx/pull/1028))
+
 ## [2.37.0](https://github.com/dotenvx/dotenvx/compare/v2.36.0...v2.37.0) (2026-10-15)
 
 ### Added
@@ -15,7 +19,6 @@ All notable changes to this project will be documented in this file. See [standa
   ⛨ Armored
 ❯ ◊ Enclaved
 ```
-
 
 ## [2.36.0](https://github.com/dotenvx/dotenvx/compare/v2.35.0...v2.36.0) (2026-10-14)
 
