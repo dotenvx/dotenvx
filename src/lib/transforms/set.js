@@ -94,7 +94,7 @@ async function setTransform (options = {}) {
           row.changed = true
         }
       } else {
-        // expensive additional loop
+        // Compare plaintext before rewriting ciphertext; surface any provider approval.
         const { parsed, keySources } = await getResolver({
           includeKeySources: true,
           key,
@@ -104,7 +104,8 @@ async function setTransform (options = {}) {
           noArmor,
           noNative,
           no1Password: options.no1Password,
-          noBitwarden: options.noBitwarden
+          noBitwarden: options.noBitwarden,
+          onStatus: options.onStatus
         })
 
         row.keySources = row.keySources || keySources

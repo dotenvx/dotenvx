@@ -1,3 +1,4 @@
+const statusReporter = require('../../lib/helpers/statusReporter')
 const path = require('path')
 const { injectsummary, publickeys } = require('@dotenvx/primitives')
 const { logger } = require('./../../shared/logger')
@@ -106,9 +107,7 @@ async function run () {
       processEnv: process.env,
       requireEnvfile: false,
       command: commandArgs,
-      onStatus: (text) => {
-        if (spinner && text) spinner.text = text
-      }
+      onStatus: statusReporter(spinner)
     })
 
     if (hasEnvfile || options.redact === true) {

@@ -1,3 +1,4 @@
+const statusReporter = require('../../lib/helpers/statusReporter')
 const { logger } = require('./../../shared/logger')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
@@ -28,7 +29,7 @@ async function check () {
     const { processedEnvs, readableFilepaths, requiredFilepaths, validationError, schema, checked: checkedValues } = await prepareValidatedEnv({
       envs: this.envs,
       options,
-      onStatus: text => { if (spinner && text) spinner.text = text }
+      onStatus: statusReporter(spinner)
     })
     checked.push(...readableFilepaths)
     if (processedEnvs.some(row => row.type === 'env' && Object.keys(row.parsed || {}).length)) checked.push('--env')

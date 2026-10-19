@@ -13,7 +13,10 @@ async function index (src, options = {}) {
     hostname,
     token,
     devicePublicKey,
-    cliVersion: version
+    cliVersion: version,
+    onApprovalRequired: options.onStatus && (({ approvalUri, code }) => {
+      options.onStatus(`[${code}] open [${approvalUri}] to approve. Waiting for approval…`)
+    })
   }).decrypt(src, { publicKey: options.publicKey, grantToken: options.grantToken })
 }
 
