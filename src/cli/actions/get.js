@@ -1,3 +1,4 @@
+const statusReporter = require('../../lib/helpers/statusReporter')
 const { logger } = require('./../../shared/logger')
 
 const escape = require('./../../lib/helpers/escape')
@@ -43,11 +44,7 @@ async function get (key) {
       noNative,
       no1Password: options['1password'] === false || options.no1Password === true,
       noBitwarden: options.bitwarden === false || options.noBitwarden === true,
-      onStatus: (text) => {
-        if (spinner && text) {
-          spinner.text = text
-        }
-      }
+      onStatus: statusReporter(spinner)
     })
     const parsed = filterKeys(resolved, options.includeKey, options.excludeKey)
 

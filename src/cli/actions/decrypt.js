@@ -1,3 +1,4 @@
+const statusReporter = require('../../lib/helpers/statusReporter')
 const { publickeys, injectsummary } = require('@dotenvx/primitives')
 const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
@@ -34,11 +35,7 @@ async function decrypt () {
       fk: options.envKeysFile,
       noArmor,
       noNative,
-      onStatus: (text) => {
-        if (spinner && text) {
-          spinner.text = text
-        }
-      }
+      onStatus: statusReporter(spinner)
     })
 
     if (spinner) spinner.stop()
@@ -74,11 +71,7 @@ async function decrypt () {
         fk: options.envKeysFile,
         noArmor,
         noNative,
-        onStatus: (text) => {
-          if (spinner && text) {
-            spinner.text = text
-          }
-        }
+        onStatus: statusReporter(spinner)
       })
 
       for (const processedEnv of processedEnvs) {

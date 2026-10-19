@@ -1,3 +1,4 @@
+const statusReporter = require('../../lib/helpers/statusReporter')
 const { logger } = require('./../../shared/logger')
 
 const keypairResolver = require('./../../lib/resolvers/keypair')
@@ -29,11 +30,7 @@ async function keypair (key) {
       no1Password: options['1password'] === false || options.no1Password === true,
       token: options.token,
       command: process.argv.slice(2),
-      onStatus: (text) => {
-        if (spinner && text) {
-          spinner.text = text
-        }
-      }
+      onStatus: statusReporter(spinner)
     })
 
     const results = key ? keypairs[key] : keypairs
