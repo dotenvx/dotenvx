@@ -28,6 +28,7 @@ function lookup (publicKey, options, sync) {
       }
     },
     onArmorError (error) { armorError = error },
+    // Without CLI presentation, providers reports approval itself (including getSync).
     onApprovalRequired: options.onStatus && (({ approvalUri, code }) => {
       cleanup()
       const display = armoredKeyDisplay(publicKey)
