@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.38.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.38.2...main)
+
+## [2.38.2](https://github.com/dotenvx/dotenvx/compare/v2.38.1...v2.38.2) (2026-10-20)
+
+### Changed
+
+* Fix SEA crash ([#1031](https://github.com/dotenvx/dotenvx/issues/1031)) 
 
 ## [2.38.1](https://github.com/dotenvx/dotenvx/compare/v2.38.0...v2.38.1) (2026-10-19)
 
