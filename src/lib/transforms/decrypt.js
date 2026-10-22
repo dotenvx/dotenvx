@@ -53,7 +53,7 @@ async function decrypt (options = {}) {
       const encoding = await detectEncoding(filepath)
       row.envSrc = await fsx.readFileX(filepath, { encoding })
 
-      const { parsed, errors, keySources } = await parseWithDecryptor.arrays(row.envSrc, { fk, ik, ek, provider, decryptor })
+      const { parsed, errors, keySources } = await parseWithDecryptor.arrays(row.envSrc, { fk, ik, ek, provider, decryptor, overload: true })
 
       row.keySources = keySources
 
