@@ -2,6 +2,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { profile, policy, parse, check } = require('@dotenvx/primitives')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
+const envfileSources = require('../../lib/helpers/envfileSources')
 
 module.exports = async function primitivesCheck () {
   try {
@@ -9,9 +10,10 @@ module.exports = async function primitivesCheck () {
     const file = profile(source, { f: this.opts().file ?? '.env' })
     const rules = policy(source, file)
     const processEnv = { ...process.env }
+    const filterSource = envfileSources({ envs: (file === '' ? [] : file.split(',')).map(value => ({ type: 'envFile', value })) }, processEnv)
     const keys = new Set(Object.keys(rules.keys))
     for (const filename of file === '' ? [] : file.split(',')) {
-      const { parsed, injected, errors } = await parse(fs.readFileSync(filename), {
+      const { parsed, injected, errors } = await parse(filterSource(fs.readFileSync(filename, 'utf8'), 'envFile'), {
         processEnv,
         fk: path.join(path.dirname(filename), '.env.keys')
       })

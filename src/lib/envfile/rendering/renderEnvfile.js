@@ -1,8 +1,9 @@
 function declaration (item) {
   let line = `env "${item.name}"`
+  if (item.source !== undefined) line += `, source: ${JSON.stringify(item.source)}`
   if (item.type) line += `, type: "${item.type}"`
-  if (item.encrypted !== undefined) line += `, encrypted: ${item.encrypted}`
   if (item.redacted !== undefined) line += `, redacted: ${item.redacted}`
+  if (item.encrypted !== undefined) line += `, encrypted: ${item.encrypted}`
   if (item.optional !== undefined) line += `, optional: ${item.optional}`
   return line
 }
@@ -18,7 +19,7 @@ function renderFile (file) {
 }
 
 module.exports = function renderEnvfile (document) {
-  const sections = ['strict true']
+  const sections = ['strict true # stop on validation failures\nredacted true # hide values in output\nencrypted true # require encryption for values stored in files\nsource ["env", "file"] # for a stronger security boundary set to just "file"']
   if (document.declarations.length) sections.push(document.declarations.map(declaration).join('\n'))
   for (const file of document.files) {
     sections.push(renderFile(file))

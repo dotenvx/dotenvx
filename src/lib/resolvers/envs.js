@@ -13,6 +13,7 @@ const keynames = require('./../conventions/keynames')
 const providers = require('./../providers')
 const decryptors = require('./../decryptors')
 const parseWithDecryptor = require('./../helpers/parseWithDecryptor')
+const envfileSources = require('../helpers/envfileSources')
 const resolveOnePassword = require('./../helpers/resolveOnePassword')
 const resolveBitwardenPassword = require('./../helpers/resolveBitwardenPassword')
 
@@ -75,7 +76,7 @@ function buildParseOptions ({ processEnv, overload, envKeysFilepath, provider, d
   return options
 }
 
-async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus }) {
+async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, onStatus, filterSource }) {
   const row = {}
   row.type = TYPE_ENV
   row.string = env.value
@@ -100,7 +101,7 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
       errors,
       injected,
       existed
-    } = await parseWithDecryptor(env.value, parseOptions)
+    } = await parseWithDecryptor(filterSource(env.value, TYPE_ENV), parseOptions)
 
     row.keySources = keySources
     row.parsed = parsed
@@ -130,7 +131,7 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
   return row
 }
 
-function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden }) {
+function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, no1Password, noBitwarden, filterSource }) {
   const row = {}
   row.type = TYPE_ENV
   row.string = env.value
@@ -155,7 +156,7 @@ function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, 
       errors,
       injected,
       existed
-    } = parseWithDecryptor.sync(env.value, parseOptions)
+    } = parseWithDecryptor.sync(filterSource(env.value, TYPE_ENV), parseOptions)
 
     row.keySources = keySources
     row.parsed = parsed
@@ -184,7 +185,7 @@ function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, 
   return row
 }
 
-async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus }) {
+async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, onStatus, filterSource }) {
   const row = {}
   row.type = TYPE_ENV_FILE
   row.filepath = env.value
@@ -211,7 +212,7 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
       errors,
       injected,
       existed
-    } = await parseWithDecryptor(src, parseOptions)
+    } = await parseWithDecryptor(filterSource(src, TYPE_ENV_FILE), parseOptions)
 
     row.src = src
     row.keySources = keySources
@@ -247,7 +248,7 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
   return row
 }
 
-function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden }) {
+function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provider, decryptor, readableFilepaths, no1Password, noBitwarden, filterSource }) {
   const row = {}
   row.type = TYPE_ENV_FILE
   row.filepath = env.value
@@ -274,7 +275,7 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
       errors,
       injected,
       existed
-    } = parseWithDecryptor.sync(src, parseOptions)
+    } = parseWithDecryptor.sync(filterSource(src, TYPE_ENV_FILE), parseOptions)
 
     row.src = src
     row.keySources = keySources
@@ -313,6 +314,7 @@ async function envs (options = {}) {
   const processedEnvs = []
   const readableFilepaths = new Set()
   const processEnv = options.processEnv || process.env
+  const filterSource = envfileSources(options, processEnv)
   const envKeysFilepath = options.envKeysFilepath || options.envKeysFile || null
   const no1Password = options.no1Password === true || process.env.DOTENVX_NO_1PASSWORD === 'true'
   const noBitwarden = options.noBitwarden === true || process.env.DOTENVX_NO_BITWARDEN === 'true'
@@ -330,6 +332,7 @@ async function envs (options = {}) {
     if (env.type === TYPE_ENV_FILE) {
       processedEnvs.push(await injectEnvFile({
         env,
+        filterSource,
         overload: options.overload,
         processEnv,
         envKeysFilepath,
@@ -343,6 +346,7 @@ async function envs (options = {}) {
     } else if (env.type === TYPE_ENV) {
       processedEnvs.push(await injectEnv({
         env,
+        filterSource,
         overload: options.overload,
         processEnv,
         envKeysFilepath,
@@ -365,6 +369,7 @@ function envsSync (options = {}) {
   const processedEnvs = []
   const readableFilepaths = new Set()
   const processEnv = options.processEnv || process.env
+  const filterSource = envfileSources(options, processEnv)
   const envKeysFilepath = options.envKeysFilepath || options.envKeysFile || null
   const no1Password = options.no1Password === true || process.env.DOTENVX_NO_1PASSWORD === 'true'
   const noBitwarden = options.noBitwarden === true || process.env.DOTENVX_NO_BITWARDEN === 'true'
@@ -383,6 +388,7 @@ function envsSync (options = {}) {
     if (env.type === TYPE_ENV_FILE) {
       processedEnvs.push(injectEnvFileSync({
         env,
+        filterSource,
         overload: options.overload,
         processEnv,
         envKeysFilepath,
@@ -395,6 +401,7 @@ function envsSync (options = {}) {
     } else if (env.type === TYPE_ENV) {
       processedEnvs.push(injectEnvSync({
         env,
+        filterSource,
         overload: options.overload,
         processEnv,
         envKeysFilepath,
