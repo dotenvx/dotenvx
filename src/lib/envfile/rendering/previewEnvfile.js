@@ -38,6 +38,6 @@ module.exports = function previewEnvfile (processedEnvs, schema, checked, diagno
       ? getColor('red', process.stdout)(`☠ ${line}`)
       : unspecced
         ? getColor('orangered', process.stdout)(`⚠ ${line}`)
-        : `${getColor('green', process.stdout)('✔')} ${getColor('gray', process.stdout)(line)}`
+        : `${getColor('amber', process.stdout)('✔')} ${getColor('gray', process.stdout)(line)}`
   }).join('\n')
 }

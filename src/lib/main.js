@@ -101,7 +101,7 @@ const config = function (options = {}, events) {
       token: options.token
     })
 
-    const validationError = validateEnvfile.error(validateEnvfile(schema, processEnv).errors)
+    const validationError = validateEnvfile.error(validateEnvfile(schema, processEnv, processedEnvs).errors)
     sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
     if (schema.exists) redactProcessOutput(sensitiveValues)
 

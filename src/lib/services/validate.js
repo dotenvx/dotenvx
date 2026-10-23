@@ -42,7 +42,7 @@ module.exports = async function validate ({ envs = [], options = {}, processEnv 
     ...processedEnvs.flatMap(row => Object.keys(row.parsed || {}))
   ])
   const finalEnv = Object.fromEntries([...keys].filter(key => Object.hasOwn(processEnv, key)).map(key => [key, processEnv[key]]))
-  const result = validateEnvfile(schema, finalEnv)
+  const result = validateEnvfile(schema, finalEnv, processedEnvs)
 
   return {
     processEnv,

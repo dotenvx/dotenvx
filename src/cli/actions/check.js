@@ -67,7 +67,11 @@ async function check () {
       logger.error('no environment sources found to check')
       return { exitCode: 1 }
     }
-    if (errorCount > 0) return { exitCode: 1 }
+    if (errorCount > 0) {
+      logger.error(`invalid ${checked.join(', ')} per Envfile ⚖`)
+      return { exitCode: 1 }
+    }
+    logger.success(`◈ valid ${checked.join(', ')} per Envfile ⚖`)
   } catch (error) {
     flush()
     catchAndLog(error)
