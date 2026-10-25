@@ -13,7 +13,7 @@ const keynames = require('./../conventions/keynames')
 const providers = require('./../providers')
 const decryptors = require('./../decryptors')
 const parseWithDecryptor = require('./../helpers/parseWithDecryptor')
-const readEnvfile = require('../envfile/parsing/readEnvfile')
+const readEnvarmor = require('../envarmor/parsing/readEnvarmor')
 const resolveOnePassword = require('./../helpers/resolveOnePassword')
 const resolveBitwardenPassword = require('./../helpers/resolveBitwardenPassword')
 
@@ -311,7 +311,7 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
 }
 
 function inheritedInputs (options, processEnv) {
-  const policy = readEnvfile(undefined, (options.envs || []).filter(env => env.type === TYPE_ENV_FILE).map(env => env.value))
+  const policy = readEnvarmor(undefined, (options.envs || []).filter(env => env.type === TYPE_ENV_FILE).map(env => env.value))
   if (!policy.exists) return []
   const keys = new Set(Object.keys(policy.keys))
   for (const input of options.envs || []) {

@@ -98,19 +98,19 @@ async function run () {
     const {
       processedEnvs,
       readableFilepaths,
-      hasEnvfile,
+      hasEnvarmor,
       schema,
       validationError: error
     } = await prepareValidatedEnv({
       envs: this.envs,
       options,
       processEnv: process.env,
-      requireEnvfile: false,
+      requireEnvarmor: false,
       command: commandArgs,
       onStatus: statusReporter(spinner)
     })
 
-    if (hasEnvfile || options.redact === true) {
+    if (hasEnvarmor || options.redact === true) {
       sensitiveValues = redactedValues(processedEnvs, schema, process.env, options.redact === true)
     }
 

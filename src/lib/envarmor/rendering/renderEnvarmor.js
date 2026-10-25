@@ -17,7 +17,7 @@ function renderFile (file) {
   return lines.join('\n')
 }
 
-module.exports = function renderEnvfile (document) {
+module.exports = function renderEnvarmor (document) {
   const sections = ['strict false       # halt on validation failures\nredacted false     # hide values in stdout/stderr. recommended: true\nencrypted false    # encrypt values in files. recommended: true']
   if (document.declarations.length) sections.push(document.declarations.map(declaration).join('\n'))
   for (const proxy of document.proxies || []) sections.push(`proxy "${proxy.host}", bearer: "${proxy.key}"`)

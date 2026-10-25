@@ -1,5 +1,5 @@
 const fs = require('node:fs')
-const resolveEnvarmorPath = require('../../lib/envfile/parsing/resolveEnvarmorPath')
+const resolveEnvarmorPath = require('../../lib/envarmor/parsing/resolveEnvarmorPath')
 const { profile } = require('@dotenvx/primitives')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 

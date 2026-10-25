@@ -27,11 +27,12 @@ const Errors = require('./helpers/errors')
 const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgnore')
-const selectEnvfileEnvs = require('./helpers/selectEnvfileEnvs')
+const selectEnvarmorEnvs = require('./helpers/selectEnvarmorEnvs')
 const mask = require('./helpers/mask')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
-const readEnvfile = require('./envfile/parsing/readEnvfile')
-const validateEnvfile = require('./envfile/validation/validateEnvfile')
+const readEnvarmor = require('./envarmor/parsing/readEnvarmor')
+const checkResolvedEnv = require('./envarmor/validation/checkResolvedEnv')
+const createValidationError = require('./helpers/createValidationError')
 const redactedValues = require('./helpers/redactedValues')
 const redactProcessOutput = require('./helpers/redactProcessOutput')
 const { redactOutput } = require('./helpers/redactOutput')
@@ -83,8 +84,8 @@ const config = function (options = {}, events) {
   let fatal = false
   let sensitiveValues = []
   try {
-    const envs = options.envs || selectEnvfileEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, { ...process.env, ...processEnv })
-    const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+    const envs = options.envs || selectEnvarmorEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, { ...process.env, ...processEnv })
+    const schema = readEnvarmor(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
     const {
       processedEnvs,
       readableFilepaths
@@ -101,7 +102,7 @@ const config = function (options = {}, events) {
       token: options.token
     })
 
-    const validationError = validateEnvfile.error(validateEnvfile(schema, processEnv, processedEnvs).errors)
+    const validationError = createValidationError(checkResolvedEnv(schema, processEnv, processedEnvs).errors)
     sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
     if (schema.exists) redactProcessOutput(sensitiveValues)
 

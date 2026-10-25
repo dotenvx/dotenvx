@@ -2,7 +2,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { policy } = require('@dotenvx/primitives')
 const resolveEnvarmorPath = require('./resolveEnvarmorPath')
-const formatEnvfileSyntaxError = require('./formatEnvfileSyntaxError')
+const formatEnvarmorSyntaxError = require('./formatEnvarmorSyntaxError')
 
 function readSource (filepath = resolveEnvarmorPath()) {
   try {
@@ -14,7 +14,7 @@ function readSource (filepath = resolveEnvarmorPath()) {
   }
 }
 
-function readEnvfile (filepath, files = ['.env']) {
+function readEnvarmor (filepath, files = ['.env']) {
   const document = readSource(filepath)
   if (!document.exists) return { keys: {}, exists: false }
   // File paths arrive relative to the caller; file blocks are relative to the policy file.
@@ -30,12 +30,12 @@ function readEnvfile (filepath, files = ['.env']) {
   }
 }
 
-module.exports = readEnvfile
+module.exports = readEnvarmor
 module.exports.source = readSource
 
 function formatError (error, document) {
   if (error.location) {
-    error.message = `[${error.code}] ${formatEnvfileSyntaxError(error.cause || error, document.source, document.filepath)}`
+    error.message = `[${error.code}] ${formatEnvarmorSyntaxError(error.cause || error, document.source, document.filepath)}`
     error.messageWithHelp = error.message
   }
   return error

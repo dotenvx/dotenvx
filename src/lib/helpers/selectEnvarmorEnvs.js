@@ -1,12 +1,12 @@
 const { profile } = require('@dotenvx/primitives')
-const readEnvfile = require('../envfile/parsing/readEnvfile')
+const readEnvarmor = require('../envarmor/parsing/readEnvarmor')
 const normalizeDotenvConfigPath = require('./normalizeDotenvConfigPath')
 const buildCommandEnvs = require('./buildCommandEnvs')
 const determine = require('./envResolution/determine')
 
-module.exports = function selectEnvfileEnvs (envs = [], options = {}, processEnv = process.env) {
+module.exports = function selectEnvarmorEnvs (envs = [], options = {}, processEnv = process.env) {
   const resolve = values => options.resolveDirectories === false ? values : buildCommandEnvs(values, options.convention)
-  const document = readEnvfile.source()
+  const document = readEnvarmor.source()
   if (!document.exists) {
     if (options.profile !== undefined) throw new Error('Profile selection requires an Envarmor file')
     return determine(resolve(normalizeDotenvConfigPath(envs, processEnv)), processEnv)
@@ -22,7 +22,7 @@ module.exports = function selectEnvfileEnvs (envs = [], options = {}, processEnv
       processEnv
     })
   } catch (error) {
-    throw readEnvfile.formatError(error, document)
+    throw readEnvarmor.formatError(error, document)
   }
   if (files.length) return explicit
   return resolve((selected ? selected.split(',').map(value => ({ type: 'envFile', value })) : []).concat(explicit))

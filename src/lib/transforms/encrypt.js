@@ -6,13 +6,13 @@ const TYPE_ENV_FILE = 'envFile'
 const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 
 const Errors = require('../helpers/errors')
-const selectEnvfileEnvs = require('../helpers/selectEnvfileEnvs')
+const selectEnvarmorEnvs = require('../helpers/selectEnvarmorEnvs')
 const detectEncoding = require('./../helpers/detectEncoding')
 const { isDotenvPublicKey, isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 
 const storeKeyStorage = require('../helpers/storeKeyStorage')
-const readEnvfile = require('../envfile/parsing/readEnvfile')
+const readEnvarmor = require('../envarmor/parsing/readEnvarmor')
 
 async function encryptTransform (options = {}) {
   const envs = options.envs || []
@@ -42,7 +42,7 @@ async function encryptTransform (options = {}) {
     }
   }
 
-  for (const env of selectEnvfileEnvs(envs, options)) {
+  for (const env of selectEnvarmorEnvs(envs, options)) {
     if (env.type !== TYPE_ENV_FILE) {
       continue
     }
@@ -52,7 +52,7 @@ async function encryptTransform (options = {}) {
     const row = { keys: [], type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
-      const schema = readEnvfile(undefined, [filepath])
+      const schema = readEnvarmor(undefined, [filepath])
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = SAMPLE_ENV_KIT

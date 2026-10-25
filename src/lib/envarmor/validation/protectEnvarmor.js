@@ -1,12 +1,12 @@
 const fs = require('node:fs')
 const path = require('node:path')
 const { execFileSync } = require('node:child_process')
-const readEnvfile = require('../parsing/readEnvfile')
+const readEnvarmor = require('../parsing/readEnvarmor')
 const resolveEnvarmorPath = require('../parsing/resolveEnvarmorPath')
 const plaintextKeys = require('../../helpers/plaintextKeys')
 
 function readPolicy (policyPath, file) {
-  const schema = readEnvfile(policyPath, [file])
+  const schema = readEnvarmor(policyPath, [file])
   if (!schema.exists) {
     // A dangling policy symlink is a broken policy, not an absent policy.
     if (fs.lstatSync(policyPath, { throwIfNoEntry: false })) throw new Error(`Cannot read ${path.basename(policyPath)}: ${policyPath}`)
@@ -16,7 +16,7 @@ function readPolicy (policyPath, file) {
 }
 
 // Inspect Git's incoming blob, never the working-tree env values or shell overrides.
-module.exports = function protectEnvfile (filepath, content) {
+module.exports = function protectEnvarmor (filepath, content) {
   const file = path.resolve(filepath)
   const directory = path.dirname(file)
   let schema = readPolicy(resolveEnvarmorPath(directory), file)

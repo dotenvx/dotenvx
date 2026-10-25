@@ -1,6 +1,6 @@
 const envsResolver = require('./envs')
 const Errors = require('./../helpers/errors')
-const selectEnvfileEnvs = require('../helpers/selectEnvfileEnvs')
+const selectEnvarmorEnvs = require('../helpers/selectEnvarmorEnvs')
 
 function collectErrors (processedEnvs) {
   const errors = []
@@ -45,7 +45,7 @@ function result ({ key, all, processedEnvs, processEnv }) {
 
 function buildOptions (options, processEnv) {
   return {
-    envs: selectEnvfileEnvs(options.envs, options, processEnv),
+    envs: selectEnvarmorEnvs(options.envs, options, processEnv),
     overload: options.overload,
     processEnv,
     envKeysFilepath: options.envKeysFilepath || options.envKeysFile || null,

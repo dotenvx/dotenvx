@@ -3,8 +3,8 @@ const fsx = require('../helpers/fsx')
 const path = require('node:path')
 const { scan, encrypted } = require('@dotenvx/primitives')
 
-const normalizeEnvfile = require('../envfile/rendering/normalizeEnvfile')
-const renderEnvfile = require('../envfile/rendering/renderEnvfile')
+const normalizeEnvarmor = require('../envarmor/rendering/normalizeEnvarmor')
+const renderEnvarmor = require('../envarmor/rendering/renderEnvarmor')
 const isPublicKey = require('../helpers/isPublicKey')
 
 function declaration (name) {
@@ -64,8 +64,8 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
   const invalid = keys.filter(key => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(key))
   if (invalid.length) throw new Error(`Unsupported Envarmor variable names: ${invalid.join(', ')}`)
 
-  const document = normalizeEnvfile({ files, codeDeclarations })
-  const content = renderEnvfile(document)
+  const document = normalizeEnvarmor({ files, codeDeclarations })
+  const content = renderEnvarmor(document)
   if (stdout) return { created: false, content }
   try {
     if (overwrite) {

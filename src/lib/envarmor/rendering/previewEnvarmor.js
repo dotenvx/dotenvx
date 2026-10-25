@@ -9,7 +9,7 @@ function displayValue (value) {
 }
 
 // Show final resolved values once, not source contents or unrelated shell variables.
-module.exports = function previewEnvfile (processedEnvs, schema, checked, diagnostics = []) {
+module.exports = function previewEnvarmor (processedEnvs, schema, checked, diagnostics = []) {
   const keys = new Set((processedEnvs || []).flatMap(row => [...Object.keys(row.parsed || {}), ...Object.keys(row.injected || {}), ...Object.keys(row.existed || {})]))
   for (const key of Object.keys(schema.keys)) keys.add(key)
   const location = diagnosticLocations(processedEnvs || [], 'env', { environmentLabel: 'env' })

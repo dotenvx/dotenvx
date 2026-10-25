@@ -228,7 +228,7 @@ class Errors {
     return e
   }
 
-  envfileRequired () {
+  envarmorRequired () {
     const e = new Error('[MISSING_ENVARMOR_FILE] check requires an Envarmor file')
     e.code = 'MISSING_ENVARMOR_FILE'
     e.help = 'fix: run [dotenvx check --init]'

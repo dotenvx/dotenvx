@@ -7,7 +7,7 @@ const prepareValidatedEnv = require('../../lib/services/validate')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
-const previewEnvfile = require('../../lib/envfile/rendering/previewEnvfile')
+const previewEnvarmor = require('../../lib/envarmor/rendering/previewEnvarmor')
 
 async function check () {
   if (this.opts().init) return initializeEnvarmor.call(this)
@@ -43,7 +43,7 @@ async function check () {
 
     if (!options.quiet) {
       const diagnostics = validationError && !ignore.includes(validationError.code) ? validationError.diagnostics : []
-      for (const line of previewEnvfile(processedEnvs, schema, checkedValues, diagnostics)) {
+      for (const line of previewEnvarmor(processedEnvs, schema, checkedValues, diagnostics)) {
         logger.verbose(line)
       }
     }
@@ -52,7 +52,7 @@ async function check () {
       return { exitCode: errorCount > 0 ? 1 : 0 }
     }
     if (errorCount > 0) return { exitCode: 1 }
-    logger.success(`◈ valid env per ${path.basename(schema.filepath)} ϟ`)
+    logger.success(`◈ valid env per ${path.basename(schema.filepath)} ⛉`)
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)
@@ -64,9 +64,9 @@ async function initializeEnvarmor () {
   const fs = require('node:fs')
   const process = require('node:process')
   const prompts = require('../../lib/helpers/prompts')
-  const initEnvfile = require('../../lib/services/init')
-  const scanSource = require('../../lib/envfile/discovery/scanSource')
-  const discoverEnvFiles = require('../../lib/envfile/discovery/discoverEnvFiles')
+  const initEnvarmor = require('../../lib/services/init')
+  const scanSource = require('../../lib/envarmor/discovery/scanSource')
+  const discoverEnvFiles = require('../../lib/envarmor/discovery/discoverEnvFiles')
   const options = this.opts()
   const envFile = Array.isArray(options.envFile) ? undefined : options.envFile
   const overwrite = options.overwrite === true
@@ -107,14 +107,14 @@ async function initializeEnvarmor () {
       sourceKeys = keys
     }
 
-    const { created, replaced, content } = initEnvfile({ envFile, envFiles, sourceKeys, overwrite, stdout, onFile })
+    const { created, replaced, content } = initEnvarmor({ envFile, envFiles, sourceKeys, overwrite, stdout, onFile })
     if (spinner) spinner.stop()
     if (stdout) {
       process.stdout.write(content)
       return
     }
     if (created) {
-      logger.success(replaced ? '◈ recreated Envarmor ϟ' : '◈ created Envarmor ϟ')
+      logger.success(replaced ? '◈ recreated Envarmor ⛉' : '◈ created Envarmor ⛉')
       logger.help('⮕ next run [dotenvx check]')
     } else logger.info('○ Envarmor already exists [edit or run: dotenvx check --init --overwrite]')
   } catch (error) {

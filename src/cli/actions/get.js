@@ -11,8 +11,8 @@ const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvCo
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
 const filterKeys = require('../../lib/helpers/filterKeys')
-const selectEnvfileEnvs = require('../../lib/helpers/selectEnvfileEnvs')
-const readEnvfile = require('../../lib/envfile/parsing/readEnvfile')
+const selectEnvarmorEnvs = require('../../lib/helpers/selectEnvarmorEnvs')
+const readEnvarmor = require('../../lib/envarmor/parsing/readEnvarmor')
 
 async function get (key) {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(this.opts()))
@@ -49,8 +49,8 @@ async function get (key) {
       onStatus: statusReporter(spinner)
     })
     const parsed = filterKeys(resolved, options.includeKey, options.excludeKey)
-    const selected = selectEnvfileEnvs(envs, options)
-    const policy = readEnvfile(undefined, selected.filter(env => env.type === 'envFile').map(env => env.value))
+    const selected = selectEnvarmorEnvs(envs, options)
+    const policy = readEnvarmor(undefined, selected.filter(env => env.type === 'envFile').map(env => env.value))
     for (const key of Object.keys(parsed)) {
       if (parsed[key] !== undefined && policy.proxies?.some(proxy => proxy.key === key)) parsed[key] = 'proxied_OPENAI_API_KEY'
     }

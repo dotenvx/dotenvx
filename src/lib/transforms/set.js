@@ -5,8 +5,8 @@ const { encrypt, upsert, publickeys } = require('@dotenvx/primitives')
 const TYPE_ENV_FILE = 'envFile'
 
 const getResolver = require('./../resolvers/get')
-const selectEnvfileEnvs = require('../helpers/selectEnvfileEnvs')
-const readEnvfile = require('../envfile/parsing/readEnvfile')
+const selectEnvarmorEnvs = require('../helpers/selectEnvarmorEnvs')
+const readEnvarmor = require('../envarmor/parsing/readEnvarmor')
 const detectEncoding = require('./../helpers/detectEncoding')
 const { isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
@@ -44,7 +44,7 @@ async function setTransform (options = {}) {
     }
   }
 
-  for (const env of selectEnvfileEnvs(envs, options)) {
+  for (const env of selectEnvarmorEnvs(envs, options)) {
     if (env.type !== TYPE_ENV_FILE) {
       continue
     }
@@ -54,7 +54,7 @@ async function setTransform (options = {}) {
     const row = { key, value, type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
-      const schema = readEnvfile(undefined, [filepath])
+      const schema = readEnvarmor(undefined, [filepath])
       const noEncrypt = !options.encrypt || (schema.exists ? schema.keys[key]?.fs.encrypted === false : isPlainKey(key))
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
