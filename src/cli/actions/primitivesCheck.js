@@ -1,12 +1,12 @@
 const fs = require('node:fs')
-const resolveEnvfilePath = require('../../lib/envfile/parsing/resolveEnvfilePath')
+const resolveSuperenvPath = require('../../lib/envfile/parsing/resolveSuperenvPath')
 const path = require('node:path')
 const { profile, policy, parse, check } = require('@dotenvx/primitives')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 
 module.exports = async function primitivesCheck () {
   try {
-    const source = fs.readFileSync(resolveEnvfilePath())
+    const source = fs.readFileSync(resolveSuperenvPath())
     const file = profile(source, { f: this.opts().file ?? '.env' })
     const rules = policy(source, file)
     const processEnv = { ...process.env }

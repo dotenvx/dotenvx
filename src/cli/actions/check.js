@@ -17,12 +17,6 @@ async function check () {
   const ignore = options.ignore || []
   let errorCount = 0
   let validationCount = 0
-  const messages = []
-  const report = (level, message) => messages.push({ level, message })
-  const flush = () => {
-    if (spinner) spinner.stop()
-    for (const { level, message } of messages.splice(0)) logger[level](message)
-  }
 
   try {
     const { processedEnvs, validationError, schema, checked: checkedValues } = await prepareValidatedEnv({
@@ -30,12 +24,13 @@ async function check () {
       options,
       onStatus: statusReporter(spinner)
     })
+    if (spinner) spinner.stop()
     for (const row of processedEnvs) {
       for (const error of row.errors || []) {
         if (ignore.includes(error.code)) continue
         if (options.strict) errorCount++
         else if (error.code === 'MISSING_ENV_FILE' && options.convention) continue
-        report('error', error.messageWithHelp || error.message)
+        logger.error(error.messageWithHelp || error.message)
       }
     }
     if (validationError && !ignore.includes(validationError.code)) {
@@ -46,7 +41,6 @@ async function check () {
       }
     }
 
-    flush()
     if (!options.quiet) {
       const diagnostics = validationError && !ignore.includes(validationError.code) ? validationError.diagnostics : []
       for (const line of previewEnvfile(processedEnvs, schema, checkedValues, diagnostics)) {
@@ -60,7 +54,7 @@ async function check () {
     if (errorCount > 0) return { exitCode: 1 }
     logger.success(`◈ valid env per ${path.basename(schema.filepath)} ϟ`)
   } catch (error) {
-    flush()
+    if (spinner) spinner.stop()
     catchAndLog(error)
     return { exitCode: 1, error }
   }

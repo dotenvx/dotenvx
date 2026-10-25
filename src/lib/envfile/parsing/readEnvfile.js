@@ -1,10 +1,10 @@
 const fs = require('node:fs')
 const path = require('node:path')
 const { policy } = require('@dotenvx/primitives')
-const resolveEnvfilePath = require('./resolveEnvfilePath')
+const resolveSuperenvPath = require('./resolveSuperenvPath')
 const formatEnvfileSyntaxError = require('./formatEnvfileSyntaxError')
 
-function readSource (filepath = resolveEnvfilePath()) {
+function readSource (filepath = resolveSuperenvPath()) {
   try {
     return { source: fs.readFileSync(filepath, 'utf8'), filepath, exists: true }
   } catch (error) {
