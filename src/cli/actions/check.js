@@ -10,7 +10,7 @@ const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvCo
 const previewEnvfile = require('../../lib/envfile/rendering/previewEnvfile')
 
 async function check () {
-  if (this.opts().init) return initializeSuperenv.call(this)
+  if (this.opts().init) return initializeEnvarmor.call(this)
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking', ...(process.env.CI ? { spinner: false } : {}) })
@@ -60,7 +60,7 @@ async function check () {
   }
 }
 
-async function initializeSuperenv () {
+async function initializeEnvarmor () {
   const fs = require('node:fs')
   const process = require('node:process')
   const prompts = require('../../lib/helpers/prompts')
@@ -75,12 +75,12 @@ async function initializeSuperenv () {
   let spinner
 
   try {
-    const existing = stdout ? undefined : fs.lstatSync('Superenv', { throwIfNoEntry: false })
+    const existing = stdout ? undefined : fs.lstatSync('Envarmor', { throwIfNoEntry: false })
     if (existing && !overwrite) {
-      logger.info('○ Superenv already exists [edit or run: dotenvx check --init --overwrite]')
+      logger.info('○ Envarmor already exists [edit or run: dotenvx check --init --overwrite]')
       return
     }
-    if (existing && !existing.isFile()) throw new Error('Cannot replace Superenv: expected a regular file')
+    if (existing && !existing.isFile()) throw new Error('Cannot replace Envarmor: expected a regular file')
 
     let envFiles = Array.isArray(options.envFile) && options.envFile.length ? options.envFile : undefined
     let sourceKeys = []
@@ -91,8 +91,8 @@ async function initializeSuperenv () {
     if (interactive && !envFile && !envFiles) {
       const candidates = discoverEnvFiles()
       const selected = await prompts.multiselect({
-        message: existing ? 'Recreate Superenv from .env files and code' : 'Create Superenv from .env files and code',
-        submitLabel: existing ? 'Recreate Superenv' : 'Create Superenv',
+        message: existing ? 'Recreate Envarmor from .env files and code' : 'Create Envarmor from .env files and code',
+        submitLabel: existing ? 'Recreate Envarmor' : 'Create Envarmor',
         choices: [...candidates, { name: 'code ./**/* (env references)', value: '__scan_source' }],
         initial: [...candidates, '__scan_source']
       })
@@ -114,9 +114,9 @@ async function initializeSuperenv () {
       return
     }
     if (created) {
-      logger.success(replaced ? '◈ recreated Superenv ϟ' : '◈ created Superenv ϟ')
+      logger.success(replaced ? '◈ recreated Envarmor ϟ' : '◈ created Envarmor ϟ')
       logger.help('⮕ next run [dotenvx check]')
-    } else logger.info('○ Superenv already exists [edit or run: dotenvx check --init --overwrite]')
+    } else logger.info('○ Envarmor already exists [edit or run: dotenvx check --init --overwrite]')
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

@@ -1,11 +1,11 @@
 const fs = require('node:fs')
-const resolveSuperenvPath = require('../../lib/envfile/parsing/resolveSuperenvPath')
+const resolveEnvarmorPath = require('../../lib/envfile/parsing/resolveEnvarmorPath')
 const { profile, policy } = require('@dotenvx/primitives')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 
 module.exports = function policyAction () {
   try {
-    const source = fs.readFileSync(resolveSuperenvPath())
+    const source = fs.readFileSync(resolveEnvarmorPath())
     const file = profile(source, { f: this.opts().file ?? '.env' })
     process.stdout.write(JSON.stringify(policy(source, file), null, 2) + '\n')
   } catch (error) {

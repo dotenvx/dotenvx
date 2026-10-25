@@ -84,7 +84,7 @@ export interface DotenvConfigOptions {
    */
   path?: string | string[] | URL;
 
-  /** Select a named Superenv profile when no explicit paths are supplied. */
+  /** Select a named Envarmor profile when no explicit paths are supplied. */
   profile?: string;
 
   /**
@@ -111,7 +111,7 @@ export interface DotenvConfigOptions {
 
   /**
    * Throw immediately if an error is encountered - like a missing .env file.
-   * Includes Superenv validation failures. Superenv strict settings also enforce throwing.
+   * Includes Envarmor validation failures. Envarmor strict settings also enforce throwing.
    * @default false
    * @example require('@dotenvx/dotenvx').config({ strict: true })
    */
@@ -257,10 +257,10 @@ export interface DotenvPopulateInput {
 
 /**
  * Loads `.env` file contents into process.env by default.
- * Reads Superenv (or legacy Envfile) from the current directory and validates the final resolved environment.
+ * Reads Envarmor (or legacy Envfile) from the current directory and validates the final resolved environment.
  * Validation failures log an error and return it, or throw when strictness is enabled.
- * Invalid Superenv syntax always throws.
- * With a Superenv, subsequent Node stdout/stderr writes are automatically redacted.
+ * Invalid Envarmor syntax always throws.
+ * With an Envarmor, subsequent Node stdout/stderr writes are automatically redacted.
  * Environment and returned values remain unchanged; native writes and inherited child output bypass redaction.
  *
  * @see https://dotenvx.com/docs
@@ -282,7 +282,7 @@ export interface SetOptions {
    */
   path?: string | string[] | URL;
 
-  /** Select a named Superenv profile when no explicit paths are supplied. */
+  /** Select a named Envarmor profile when no explicit paths are supplied. */
   profile?: string;
 
   /**
@@ -383,7 +383,7 @@ export interface GetOptions {
    */
   path?: string | string[] | URL;
 
-  /** Select a named Superenv profile when no explicit paths are supplied. */
+  /** Select a named Envarmor profile when no explicit paths are supplied. */
   profile?: string;
 
   /**

@@ -190,7 +190,7 @@ const config = function (options = {}, events) {
     }
   } catch (error) {
     if (events) events.fail(error)
-    if (strict || fatal || error.code === 'MALFORMED_SUPERENV') throw error
+    if (strict || fatal || error.code === 'MALFORMED_ENVARMOR') throw error
 
     logger.error(redactOutput(error.messageWithHelp || error.message, sensitiveValues))
 

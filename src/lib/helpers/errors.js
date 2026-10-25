@@ -229,8 +229,8 @@ class Errors {
   }
 
   envfileRequired () {
-    const e = new Error('[MISSING_SUPERENV_FILE] check requires a Superenv file')
-    e.code = 'MISSING_SUPERENV_FILE'
+    const e = new Error('[MISSING_ENVARMOR_FILE] check requires an Envarmor file')
+    e.code = 'MISSING_ENVARMOR_FILE'
     e.help = 'fix: run [dotenvx check --init]'
     e.messageWithHelp = `${e.message}. ${e.help}`
     return e

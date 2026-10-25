@@ -16,10 +16,10 @@ function declaration (name) {
 }
 
 module.exports = function init ({ directory = process.cwd(), envFile, envFiles, sourceKeys = [], overwrite = false, stdout = false, onFile = () => {} } = {}) {
-  const target = path.resolve(directory, 'Superenv')
+  const target = path.resolve(directory, 'Envarmor')
   const existing = stdout ? undefined : fs.lstatSync(target, { throwIfNoEntry: false })
   if (existing && !overwrite) return { created: false }
-  if (existing && !existing.isFile()) throw new Error(`Cannot replace Superenv: expected a regular file (${target})`)
+  if (existing && !existing.isFile()) throw new Error(`Cannot replace Envarmor: expected a regular file (${target})`)
   const seen = new Set()
 
   const sources = []
@@ -62,7 +62,7 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
   const addedFromSource = names.size - inputCount
   const keys = [...names]
   const invalid = keys.filter(key => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(key))
-  if (invalid.length) throw new Error(`Unsupported Superenv variable names: ${invalid.join(', ')}`)
+  if (invalid.length) throw new Error(`Unsupported Envarmor variable names: ${invalid.join(', ')}`)
 
   const document = normalizeEnvfile({ files, codeDeclarations })
   const content = renderEnvfile(document)
@@ -70,7 +70,7 @@ module.exports = function init ({ directory = process.cwd(), envFile, envFiles, 
   try {
     if (overwrite) {
       const stat = fs.lstatSync(target, { throwIfNoEntry: false })
-      if (stat && !stat.isFile()) throw new Error(`Cannot replace Superenv: expected a regular file (${target})`)
+      if (stat && !stat.isFile()) throw new Error(`Cannot replace Envarmor: expected a regular file (${target})`)
       fsx.writeFileXSync(target, content, { followSymlinks: false })
     } else {
       fs.writeFileSync(target, content, { flag: 'wx' })

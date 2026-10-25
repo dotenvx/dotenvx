@@ -2,7 +2,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { execFileSync } = require('node:child_process')
 const readEnvfile = require('../parsing/readEnvfile')
-const resolveSuperenvPath = require('../parsing/resolveSuperenvPath')
+const resolveEnvarmorPath = require('../parsing/resolveEnvarmorPath')
 const plaintextKeys = require('../../helpers/plaintextKeys')
 
 function readPolicy (policyPath, file) {
@@ -19,7 +19,7 @@ function readPolicy (policyPath, file) {
 module.exports = function protectEnvfile (filepath, content) {
   const file = path.resolve(filepath)
   const directory = path.dirname(file)
-  let schema = readPolicy(resolveSuperenvPath(directory), file)
+  let schema = readPolicy(resolveEnvarmorPath(directory), file)
   if (!schema) {
     let root
     try {
@@ -32,7 +32,7 @@ module.exports = function protectEnvfile (filepath, content) {
       // Outside a Git working tree, only an adjacent policy can apply.
       return null
     }
-    if (path.resolve(root) !== directory) schema = readPolicy(resolveSuperenvPath(root), file)
+    if (path.resolve(root) !== directory) schema = readPolicy(resolveEnvarmorPath(root), file)
   }
   if (!schema) return null
 

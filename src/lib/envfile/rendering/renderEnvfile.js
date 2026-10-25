@@ -10,7 +10,7 @@ function declaration (item) {
 function renderFile (file) {
   const quote = file.filename.includes('"') ? "'" : '"'
   if (file.filename.includes(quote) || /[\r\n\0*?[\]{}]/.test(file.filename)) {
-    throw new Error(`Unsupported Superenv filename: ${file.filename}`)
+    throw new Error(`Unsupported Envarmor filename: ${file.filename}`)
   }
   const lines = [`file ${quote}${file.filename}${quote} do`]
   lines.push(...file.declarations.map(item => `  ${declaration(item)}`), 'end')
@@ -27,5 +27,5 @@ module.exports = function renderEnvfile (document) {
   if (document.codeDeclarations.length) {
     sections.push('# additionally found in code\n' + document.codeDeclarations.map(declaration).join('\n'))
   }
-  return '# Superenv (safe to commit)\n' + sections.join('\n\n') + '\n'
+  return '# Envarmor (safe to commit)\n' + sections.join('\n\n') + '\n'
 }
