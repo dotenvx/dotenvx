@@ -1,9 +1,8 @@
 function declaration (item) {
   let line = `env "${item.name}"`
-  if (item.source !== undefined) line += `, source: ${JSON.stringify(item.source)}`
   if (item.type) line += `, type: "${item.type}"`
   if (item.redacted !== undefined) line += `, redacted: ${item.redacted}`
-  if (item.encrypted !== undefined) line += `, encrypted: ${item.encrypted}`
+  if (item.encrypted !== undefined) line += `, encrypted: ${JSON.stringify(item.encrypted)}`
   if (item.optional !== undefined) line += `, optional: ${item.optional}`
   return line
 }
@@ -11,7 +10,7 @@ function declaration (item) {
 function renderFile (file) {
   const quote = file.filename.includes('"') ? "'" : '"'
   if (file.filename.includes(quote) || /[\r\n\0*?[\]{}]/.test(file.filename)) {
-    throw new Error(`Unsupported Envfile filename: ${file.filename}`)
+    throw new Error(`Unsupported Superenv filename: ${file.filename}`)
   }
   const lines = [`file ${quote}${file.filename}${quote} do`]
   lines.push(...file.declarations.map(item => `  ${declaration(item)}`), 'end')
@@ -19,13 +18,14 @@ function renderFile (file) {
 }
 
 module.exports = function renderEnvfile (document) {
-  const sections = ['strict true # stop on validation failures\nredacted true # hide values in output\nencrypted true # require encryption for values stored in files\nsource ["env", "file"] # for a stronger security boundary set to just "file"']
+  const sections = ['strict false       # halt on validation failures\nredacted false     # hide values in stdout/stderr. recommended: true\nencrypted false    # encrypt values in files. recommended: true']
   if (document.declarations.length) sections.push(document.declarations.map(declaration).join('\n'))
+  for (const proxy of document.proxies || []) sections.push(`proxy "${proxy.host}", bearer: "${proxy.key}"`)
   for (const file of document.files) {
     sections.push(renderFile(file))
   }
   if (document.codeDeclarations.length) {
     sections.push('# additionally found in code\n' + document.codeDeclarations.map(declaration).join('\n'))
   }
-  return '# Envfile (safe to commit)\n# ------------------------\n\n' + sections.join('\n\n') + '\n'
+  return '# Superenv (safe to commit)\n' + sections.join('\n\n') + '\n'
 }

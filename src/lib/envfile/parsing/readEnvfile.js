@@ -9,7 +9,7 @@ function readSource (filepath = resolveEnvfilePath()) {
     return { source: fs.readFileSync(filepath, 'utf8'), filepath, exists: true }
   } catch (error) {
     if (error.code !== 'ENOENT') throw error
-    if (fs.lstatSync(filepath, { throwIfNoEntry: false })) throw new Error(`Cannot read Envfile: ${filepath}`)
+    if (fs.lstatSync(filepath, { throwIfNoEntry: false })) throw new Error(`Cannot read ${path.basename(filepath)}: ${filepath}`)
     return { filepath, exists: false }
   }
 }
@@ -17,13 +17,13 @@ function readSource (filepath = resolveEnvfilePath()) {
 function readEnvfile (filepath, files = ['.env']) {
   const document = readSource(filepath)
   if (!document.exists) return { keys: {}, exists: false }
-  // File paths arrive relative to the caller; file blocks are relative to Envfile.
+  // File paths arrive relative to the caller; file blocks are relative to the policy file.
   const selected = files.flatMap(file => {
     const absolute = path.resolve(file)
     return [path.relative(path.dirname(document.filepath), absolute), absolute]
   }).join(',')
   try {
-    return { ...policy(document.source, selected), exists: true }
+    return { ...policy(document.source, selected), filepath: document.filepath, exists: true }
   } catch (error) {
     formatError(error, document)
     throw error

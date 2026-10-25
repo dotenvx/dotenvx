@@ -172,7 +172,7 @@ async function run () {
       } else if (options.strict || error.diagnostics?.some(diagnostic => diagnostic.strict)) {
         throw error
       } else {
-        logger.warn(error.messageWithHelp || error.message)
+        logger.error(error.messageWithHelp || error.message)
       }
     }
 

@@ -1,23 +1,24 @@
+const path = require('node:path')
 const statusReporter = require('../../lib/helpers/statusReporter')
 const { logger } = require('./../../shared/logger')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prepareValidatedEnv = require('../../lib/services/validate')
-const diagnosticLocations = require('../../lib/envfile/validation/diagnosticLocation')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
-const path = require('node:path')
 const previewEnvfile = require('../../lib/envfile/rendering/previewEnvfile')
 
 async function check () {
+  if (this.opts().init) return require('./init').call(this)
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking', ...(process.env.CI ? { spinner: false } : {}) })
   const ignore = options.ignore || []
   const showPreview = !options.quiet && !['error', 'infoerror', 'warn'].includes(logger.level)
+  const verbose = !options.quiet && ['verbose', 'debug', 'silly'].includes(logger.level)
   let errorCount = 0
-  const checked = []
+  let validationCount = 0
   const messages = []
   const report = (level, message) => messages.push({ level, message })
   const flush = () => {
@@ -26,52 +27,44 @@ async function check () {
   }
 
   try {
-    const { processedEnvs, readableFilepaths, requiredFilepaths, validationError, schema, checked: checkedValues } = await prepareValidatedEnv({
+    const { processedEnvs, validationError, schema, checked: checkedValues } = await prepareValidatedEnv({
       envs: this.envs,
       options,
       onStatus: statusReporter(spinner)
     })
-    checked.push(...readableFilepaths)
-    if (processedEnvs.some(row => row.type === 'env' && Object.keys(row.parsed || {}).length)) checked.push('--env')
-    if (checked.length === 0 && Object.keys(schema.keys).some(key => checkedValues[key] !== undefined)) checked.push('shell environment')
-    const location = diagnosticLocations(processedEnvs, checked.join(', ') || 'Envfile')
     for (const row of processedEnvs) {
       for (const error of row.errors || []) {
         if (ignore.includes(error.code)) continue
-        if (error.code === 'MISSING_ENV_FILE' && !requiredFilepaths.has(path.resolve(row.filepath))) {
-          report('infoerror', `○ skipped (${row.filepath})`)
-          continue
-        }
-        errorCount++
+        if (options.strict) errorCount++
+        else if (error.code === 'MISSING_ENV_FILE' && options.convention) continue
         report('error', error.messageWithHelp || error.message)
       }
     }
     if (validationError && !ignore.includes(validationError.code)) {
-      errorCount++
-      for (const diagnostic of showPreview ? [] : validationError.diagnostics) {
-        const message = diagnostic.message.replace(`${diagnostic.key} is `, `${diagnostic.key} `)
-        report('error', `${message} (${location(diagnostic.key)})`)
+      for (const diagnostic of validationError.diagnostics) {
+        const fatal = options.strict || diagnostic.strict
+        validationCount++
+        if (fatal) errorCount++
       }
     }
 
-    if (spinner) spinner.stop()
+    flush()
     if (showPreview) {
       const diagnostics = validationError && !ignore.includes(validationError.code) ? validationError.diagnostics : []
-      const preview = previewEnvfile(processedEnvs, schema, checkedValues, diagnostics)
+      const preview = previewEnvfile(processedEnvs, schema, checkedValues, diagnostics, { verbose })
       if (preview) {
-        for (const line of preview.split('\n')) logger.info(line)
+        for (const line of preview.split('\n')) {
+          if (verbose) logger.verbose(line)
+          else logger.info(line)
+        }
       }
     }
-    flush()
-    if (checked.length === 0) {
-      logger.error('no environment sources found to check')
-      return { exitCode: 1 }
+    if (validationCount > 0) {
+      logger.error(validationError.messageWithHelp || validationError.message)
+      return { exitCode: errorCount > 0 ? 1 : 0 }
     }
-    if (errorCount > 0) {
-      logger.error(`invalid ${checked.join(', ')} per Envfile ⚖`)
-      return { exitCode: 1 }
-    }
-    logger.success(`◈ valid ${checked.join(', ')} per Envfile ⚖`)
+    if (errorCount > 0) return { exitCode: 1 }
+    logger.success(`◈ valid env per ${path.basename(schema.filepath)} ϟ`)
   } catch (error) {
     flush()
     catchAndLog(error)

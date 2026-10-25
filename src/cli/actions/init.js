@@ -8,33 +8,33 @@ const createSpinner = require('../../lib/helpers/createSpinner')
 const { logger } = require('../../shared/logger')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 
-module.exports = async function spec () {
+module.exports = async function init () {
   const options = this.opts()
-  const envFile = options.envFile
+  const envFile = Array.isArray(options.envFile) ? undefined : options.envFile
   const overwrite = options.overwrite === true
   const stdout = options.stdout === true
   const interactive = !process.env.CI && process.stdin.isTTY && process.stderr.isTTY
   let spinner
 
   try {
-    const existing = stdout ? undefined : fs.lstatSync('Envfile', { throwIfNoEntry: false })
+    const existing = stdout ? undefined : fs.lstatSync('Superenv', { throwIfNoEntry: false })
     if (existing && !overwrite) {
-      logger.info('○ Envfile already exists [edit or run: spec --overwrite]')
+      logger.info('○ Superenv already exists [edit or run: dotenvx check --init --overwrite]')
       return
     }
-    if (existing && !existing.isFile()) throw new Error('Cannot replace Envfile: expected a regular file')
+    if (existing && !existing.isFile()) throw new Error('Cannot replace Superenv: expected a regular file')
 
-    let envFiles
+    let envFiles = Array.isArray(options.envFile) && options.envFile.length ? options.envFile : undefined
     let sourceKeys = []
     let scanCode = false
     const onFile = filename => {
       if (spinner) spinner.text = `scanning ${filename}`
     }
-    if (interactive && !envFile) {
+    if (interactive && !envFile && !envFiles) {
       const candidates = discoverEnvFiles()
       const selected = await prompts.multiselect({
-        message: existing ? 'Recreate Envfile from .env files and code' : 'Create Envfile from .env files and code',
-        submitLabel: existing ? 'Recreate Envfile' : 'Create Envfile',
+        message: existing ? 'Recreate Superenv from .env files and code' : 'Create Superenv from .env files and code',
+        submitLabel: existing ? 'Recreate Superenv' : 'Create Superenv',
         choices: [...candidates, { name: 'code ./**/* (env references)', value: '__scan_source' }],
         initial: [...candidates, '__scan_source']
       })
@@ -56,9 +56,9 @@ module.exports = async function spec () {
       return
     }
     if (created) {
-      logger.success(replaced ? '◈ recreated (Envfile)' : '◈ created (Envfile)')
+      logger.success(replaced ? '◈ recreated Superenv ϟ' : '◈ created Superenv ϟ')
       logger.help('⮕ next run [dotenvx check]')
-    } else logger.info('○ Envfile already exists [edit or run: spec --overwrite]')
+    } else logger.info('○ Superenv already exists [edit or run: dotenvx check --init --overwrite]')
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

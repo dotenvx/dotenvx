@@ -1,4 +1,4 @@
-const { check } = require('@dotenvx/primitives')
+const { check, scan, encrypted } = require('@dotenvx/primitives')
 const Errors = require('../../helpers/errors')
 const plaintextKeys = require('../../helpers/plaintextKeys')
 const readEnvfile = require('../parsing/readEnvfile')
@@ -8,9 +8,16 @@ module.exports = function validateEnvfile (policy, env, processedEnvs = []) {
   const result = check(policy, env)
   const sources = new Map()
   for (const row of processedEnvs) {
-    for (const key of Object.keys(row.injected || {})) sources.set(key, row.type)
+    for (const key of Object.keys(row.injected || {})) sources.set(key, row.inherited ? 'env' : row.type)
     for (const key of Object.keys(row.existed || {})) {
       if (!sources.has(key)) sources.set(key, 'env')
+    }
+  }
+  for (const row of processedEnvs.filter(row => row.type === 'env')) {
+    for (const [key, value] of Object.entries(scan(row.string).parsed)) {
+      if (sources.get(key) !== 'env') continue
+      if ((policy.keys[key]?.fs.encrypted ?? policy.encrypted) !== 'always' || value.every(item => encrypted(item))) continue
+      result.errors.push({ key, code: 'NOT_ENCRYPTED', rule: 'encrypted', message: `${key} must be encrypted in env`, strict: policy.keys[key]?.env.strict ?? policy.strict ?? false })
     }
   }
   for (const row of processedEnvs) {
@@ -19,7 +26,7 @@ module.exports = function validateEnvfile (policy, env, processedEnvs = []) {
     for (const key of plaintextKeys(row.src)) {
       if (sources.get(key) !== 'envFile') continue
       const rules = filePolicy.keys[key]
-      if (!(rules?.fs.encrypted ?? filePolicy.encrypted ?? true)) continue
+      if (!(rules?.fs.encrypted ?? filePolicy.encrypted ?? false)) continue
       result.errors.push({
         key,
         code: 'NOT_ENCRYPTED',

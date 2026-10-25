@@ -9,10 +9,10 @@ function displayValue (value) {
 }
 
 // Show final resolved values once, not source contents or unrelated shell variables.
-module.exports = function previewEnvfile (processedEnvs, schema, checked, diagnostics = []) {
+module.exports = function previewEnvfile (processedEnvs, schema, checked, diagnostics = [], { verbose = false } = {}) {
   const keys = new Set((processedEnvs || []).flatMap(row => [...Object.keys(row.parsed || {}), ...Object.keys(row.injected || {}), ...Object.keys(row.existed || {})]))
   for (const key of Object.keys(schema.keys)) keys.add(key)
-  const location = diagnosticLocations(processedEnvs || [], 'process.env', { environmentLabel: 'process.env' })
+  const location = diagnosticLocations(processedEnvs || [], 'env', { environmentLabel: 'env' })
   const rows = []
   const errors = new Map()
   for (const diagnostic of diagnostics) {
@@ -24,20 +24,20 @@ module.exports = function previewEnvfile (processedEnvs, schema, checked, diagno
     const missing = checked[key] === undefined
     if (/^DOTENV_(?:PUBLIC|PRIVATE)_KEY/.test(key) || (missing && !errors.has(key))) continue
     const value = String(checked[key])
-    const display = missing ? '[MISSING]' : displayValue(encrypted(value) ? '[REDACTED]' : value)
+    const display = missing ? '' : displayValue(encrypted(value) ? '[REDACTED]' : value)
     const source = missing ? '' : displayValue(location(key))
     const error = errors.has(key) ? errors.get(key).join(', ') : ''
     const unspecced = !Object.hasOwn(schema.keys, key)
+    if (!verbose && !error && !unspecced) continue
     const status = [unspecced ? '!declared' : '', error].filter(Boolean).join(', ')
     rows.push({ assignment: `${key}=${display}`, comment: [source, status].filter(Boolean).join(' '), error, unspecced })
   }
   const width = Math.max(0, ...rows.map(row => row.assignment.length))
   return rows.map(({ assignment, comment, error, unspecced }) => {
     const line = `${assignment.padEnd(width)} # ${comment}`
+    if (verbose) return `${error ? '☠' : unspecced ? '⚠' : '✔'} ${line}`
     return error
       ? getColor('red', process.stdout)(`☠ ${line}`)
-      : unspecced
-        ? getColor('orangered', process.stdout)(`⚠ ${line}`)
-        : `${getColor('amber', process.stdout)('✔')} ${getColor('gray', process.stdout)(line)}`
+      : getColor('orangered', process.stdout)(`⚠ ${line}`)
   }).join('\n')
 }

@@ -15,7 +15,7 @@ function redactedValues (processedEnvs, schema, processEnv = {}, legacyRedact = 
     }
 
     for (const [key, value] of Object.entries(values)) {
-      const redacted = schema?.exists ? (schema.keys[key]?.stdio.redacted ?? true) : !isPublicKey(key)
+      const redacted = schema?.exists ? (schema.keys[key]?.stdio.redacted ?? schema.redacted ?? false) : !isPublicKey(key)
       if (!redacted) continue
       if (value === undefined || value === null || value === '') continue
 

@@ -9,7 +9,7 @@ function readPolicy (policyPath, file) {
   const schema = readEnvfile(policyPath, [file])
   if (!schema.exists) {
     // A dangling policy symlink is a broken policy, not an absent policy.
-    if (fs.lstatSync(policyPath, { throwIfNoEntry: false })) throw new Error(`Cannot read Envfile: ${policyPath}`)
+    if (fs.lstatSync(policyPath, { throwIfNoEntry: false })) throw new Error(`Cannot read ${path.basename(policyPath)}: ${policyPath}`)
     return null
   }
   return schema
@@ -36,5 +36,5 @@ module.exports = function protectEnvfile (filepath, content) {
   }
   if (!schema) return null
 
-  return plaintextKeys(content).filter(key => /^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) || (schema.keys[key]?.fs.encrypted ?? true))
+  return plaintextKeys(content).filter(key => /^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) || (schema.keys[key]?.fs.encrypted ?? schema.encrypted ?? false))
 }

@@ -91,7 +91,7 @@ async function encryptTransform (options = {}) {
       const { parsed } = scan(row.envSrc, { ik, ek })
       const selected = Object.entries(parsed).filter(([key]) => {
         if (isDotenvPublicKey(key)) return false
-        return schema.exists ? (schema.keys[key]?.fs.encrypted ?? true) : !isPlainKey(key)
+        return schema.exists ? (schema.keys[key]?.fs.encrypted ?? schema.encrypted ?? false) : !isPlainKey(key)
       })
       if (schema.exists && !selected.some(([, values]) => values.some(value => !encrypted(value)))) {
         // A missing file still needs writing even when its initial values are

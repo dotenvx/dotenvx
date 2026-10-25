@@ -8,7 +8,7 @@ module.exports = function selectEnvfileEnvs (envs = [], options = {}, processEnv
   const resolve = values => options.resolveDirectories === false ? values : buildCommandEnvs(values, options.convention)
   const document = readEnvfile.source()
   if (!document.exists) {
-    if (options.profile !== undefined) throw new Error('Profile selection requires an Envfile')
+    if (options.profile !== undefined) throw new Error('Profile selection requires a Superenv file')
     return determine(resolve(normalizeDotenvConfigPath(envs, processEnv)), processEnv)
   }
   // Keep explicit CLI file/inline-env ordering; profiles only supply file selection.

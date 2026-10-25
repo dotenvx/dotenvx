@@ -166,7 +166,7 @@ const config = function (options = {}, events) {
         fatal = true
         throw validationError
       } else {
-        logger.warn(validationError.messageWithHelp || validationError.message)
+        logger.error(validationError.messageWithHelp || validationError.message)
         lastError = validationError
       }
     }
@@ -190,7 +190,7 @@ const config = function (options = {}, events) {
     }
   } catch (error) {
     if (events) events.fail(error)
-    if (strict || fatal || error.code === 'MALFORMED_ENVFILE') throw error
+    if (strict || fatal || error.code === 'MALFORMED_SUPERENV') throw error
 
     logger.error(redactOutput(error.messageWithHelp || error.message, sensitiveValues))
 
