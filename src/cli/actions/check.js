@@ -15,8 +15,6 @@ async function check () {
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking', ...(process.env.CI ? { spinner: false } : {}) })
   const ignore = options.ignore || []
-  const showPreview = !options.quiet && !['error', 'infoerror', 'warn'].includes(logger.level)
-  const verbose = !options.quiet && ['verbose', 'debug', 'silly'].includes(logger.level)
   let errorCount = 0
   let validationCount = 0
   const messages = []
@@ -49,14 +47,10 @@ async function check () {
     }
 
     flush()
-    if (showPreview) {
+    if (!options.quiet) {
       const diagnostics = validationError && !ignore.includes(validationError.code) ? validationError.diagnostics : []
-      const preview = previewEnvfile(processedEnvs, schema, checkedValues, diagnostics, { verbose })
-      if (preview) {
-        for (const line of preview.split('\n')) {
-          if (verbose) logger.verbose(line)
-          else logger.info(line)
-        }
+      for (const line of previewEnvfile(processedEnvs, schema, checkedValues, diagnostics)) {
+        logger.verbose(line)
       }
     }
     if (validationCount > 0) {

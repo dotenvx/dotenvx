@@ -24,23 +24,22 @@ const debug = (m, stream) => getColor('plum', stream)(`┆ ${m}`)
 
 let currentLevel = levels.info // default log level
 
-function stderr (level, message) {
+function isLevelEnabled (level) {
   if (levels[level] === undefined) {
     throw new Errors({ level }).missingLogLevel()
   }
+  return levels[level] <= currentLevel
+}
 
-  if (levels[level] <= currentLevel) {
+function stderr (level, message) {
+  if (isLevelEnabled(level)) {
     const formattedMessage = formatMessage(level, message, process.stderr)
     console.error(formattedMessage)
   }
 }
 
 function stdout (level, message) {
-  if (levels[level] === undefined) {
-    throw new Errors({ level }).missingLogLevel()
-  }
-
-  if (levels[level] <= currentLevel) {
+  if (isLevelEnabled(level)) {
     const formattedMessage = formatMessage(level, message, process.stdout)
     console.log(formattedMessage)
   }

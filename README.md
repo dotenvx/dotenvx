@@ -1677,7 +1677,7 @@ All selected sources are merged before validation. The first file wins by defaul
 
 File-loading errors use the same behavior as `run`: they are printed but do not stop a non-strict check. CLI `--strict` makes them fatal; Superenv strictness applies to validation failures. Missing convention layers are quiet unless CLI strictness is enabled, and `--ignore` suppresses matching errors. There are no `skipped` messages. Required values can resolve from inherited or inline values without a local file. An environment-only check validates the declarations even when all values are absent. `check --strict` also makes all validation failures fatal.
 
-By default, `check` shows failing or undeclared keys on stdout and its result on stderr. `--verbose` shows every resolved key and its origin using normal verbose styling on stderr. Values follow Superenv redaction settings. Loading errors go to stderr. `--quiet` suppresses the preview. Checks with fatal errors exit with code 1; validation failures use the same combined `[INVALID_ENV]` error as `run` and `config()`, with exit 0 unless strictness makes them fatal.
+By default, `check` shows only its result on stderr. `--verbose` lists all key rows on stderr; failing rows remain red, undeclared rows retain warning styling, and passing rows use normal verbose styling. Values follow Superenv redaction settings. Loading errors go to stderr. `--quiet` suppresses the preview. Checks with fatal errors exit with code 1; validation failures use the same combined `[INVALID_ENV]` error as `run` and `config()`, with exit 0 unless strictness makes them fatal.
 
 </details>
 <details><summary>`protect with a Superenv`</summary><br>
