@@ -191,7 +191,7 @@ $ claude --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx check --init
+$ echo 'redacted true' > Dotenvxfile
 $ dotenvx run -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
 Hello [REDACTED]
 ```
@@ -213,7 +213,7 @@ $ codex --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx check --init
+$ echo 'redacted true' > Dotenvxfile
 $ dotenvx run -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
 Hello [REDACTED]
 ```
@@ -235,7 +235,7 @@ $ agent --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx check --init
+$ echo 'redacted true' > Dotenvxfile
 $ dotenvx run -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
 Hello [REDACTED]
 ```
@@ -1322,12 +1322,12 @@ $ echo "SECRET=super-secret-value" > .env
 $ echo "PUBLIC_VALUE=visible-value" >> .env
 $ echo "console.log(process.env.SECRET, process.env.PUBLIC_VALUE)" > index.js
 
-$ dotenvx check --init
+$ printf 'redacted true\nenv "PUBLIC_VALUE", redacted: false\n' > Dotenvxfile
 $ dotenvx run --quiet -- node index.js
 [REDACTED] visible-value
 ```
 
-With a Dotenvxfile, all values are redacted by default. Use `redacted: false` on individual declarations to leave those values visible. `check --init` generates these settings, including public-name exceptions. If an existing environment variable takes precedence, its effective value follows the same rules. Matching is exact, so transformed or derived values are not redacted.
+With `redacted true` in your Dotenvxfile, all values are redacted by default. Use `redacted: false` on individual declarations to leave those values visible. If an existing environment variable takes precedence, its effective value follows the same rules. Matching is exact, so transformed or derived values are not redacted.
 
 Without a Dotenvxfile, `dotenvx run --redact -- yourcommand` redacts loaded values except recognized public names (containing `PUBLIC` or starting with `VITE`, case-sensitive). `_PLAIN` values are redacted too. Without either a Dotenvxfile or `--redact`, output is not redacted. A Dotenvxfile always takes precedence: its rules apply automatically, even when `--redact` is passed.
 
@@ -1341,7 +1341,7 @@ Run Claude in print mode with real environment variables while redacting any val
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx check --init
+$ echo 'redacted true' > Dotenvxfile
 $ dotenvx run --quiet -- claude -p 'Print the value of $SECRET'
 [REDACTED]
 ```
@@ -1354,7 +1354,7 @@ Start a fully interactive Claude session. Claude receives the real values, but a
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx check --init
+$ echo 'redacted true' > Dotenvxfile
 $ dotenvx run --quiet -- claude
 ```
 
@@ -1366,7 +1366,7 @@ Run Codex non-interactively with real environment variables while redacting any 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx check --init
+$ echo 'redacted true' > Dotenvxfile
 $ dotenvx run --quiet -- codex exec 'Print the value of $SECRET'
 [REDACTED]
 ```
@@ -1379,7 +1379,7 @@ Start a fully interactive Codex session. Codex receives the real values, but any
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx check --init
+$ echo 'redacted true' > Dotenvxfile
 $ dotenvx run --quiet -- codex
 ```
 
@@ -1607,19 +1607,9 @@ file ".env.development" do
 end
 ```
 
-`Dotenvxfile` is the default policy filename. Existing `Envfile` files remain supported as a fallback when no Dotenvxfile is present. When both exist, Dotenvxfile takes precedence. New generation writes Dotenvxfile.
-
-`check --init` generates declarations with encryption and redaction disabled by default. Generated Dotenvxfile files explicitly set `encrypted false` and `redacted false` at the root. These root defaults apply to declarations, including declarations in file blocks; per-key options override them. File-level `encrypted` and `redacted` settings are not supported. Use `encrypted: false` on individual declarations to permit plaintext. Entirely plaintext inputs generate no encryption exceptions except for keys ending in `_PLAIN`, so the next `encrypt` encrypts the remaining values. `_PLAIN` keys get `encrypted: false` only when none of their assignments contain ciphertext; code-only references do not infer this exception. For files that already contain ciphertext, `check --init` preserves plaintext values with per-key exceptions. Source files are never modified.
-
-`check --init` infers `redacted: false` for names starting with `PUBLIC`, `VITE`, `NEXT_PUBLIC`, or `NUXT_PUBLIC`, or containing `PUBLIC` anywhere (case-sensitive). This affects visibility only; public names still require encryption unless explicitly exempted. Other names, including those ending in `_PLAIN`, remain redacted.
+`Dotenvxfile` is the default policy filename. Existing `Envfile` files remain supported as a fallback when no Dotenvxfile is present. When both exist, Dotenvxfile takes precedence. Create Dotenvxfile manually with the rules you want to enforce.
 
 `check`, `run`, and `config()` enforce file encryption rules only for keys whose effective values come from files. An environment value that wins precedence does not require encryption, even if a loaded file also contains a plaintext assignment for that key. Blank values and `op://` / `bw://` references are exempt, as with Git protection.
-
-`dotenvx check --init` generates `Dotenvxfile` with `strict false`, including with `--overwrite` or `--stdout`. Enable `strict true` to stop commands on validation failures. Existing policies that omit `strict` continue to warn.
-
-If a Dotenvxfile already exists, `check --init` leaves it untouched and prints `○ Dotenvxfile already exists [edit or run: dotenvx check --init --overwrite]`. Use `dotenvx check --init --overwrite` to regenerate it from the selected inputs, replacing custom rules, comments, and blocks for files absent from this machine. Interactive overwrite runs show the full file-and-code checklist with the prompt `Recreate Dotenvxfile from .env files and code`. Noninteractive runs use `.env.example` and `.env`, or the file selected with `-f`. Input validation finishes before the old Dotenvxfile is replaced; cancelled selection leaves it untouched. Symlinked Envfiles cannot be overwritten.
-
-Use `dotenvx check --init --stdout` to print the generated Dotenvxfile without writing it, or `dotenvx check --init --stdout -f .env.production` to select an input file. This works even when a Dotenvxfile already exists; `--stdout` leaves it untouched even with `--overwrite`. Prompts and progress stay on stderr so stdout contains only the generated content.
 
 Root and file-level `redacted` settings are not supported. Use per-key `redacted: false` to permit output visibility. When selected files specify conflicting options, the first file's explicit option wins. `check` previews values with policy-driven redaction and reports issues per key.
 

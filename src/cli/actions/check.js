@@ -1,4 +1,3 @@
-const checkInit = require('./checkInit')
 const statusReporter = require('../../lib/helpers/statusReporter')
 const { logger } = require('./../../shared/logger')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
@@ -12,7 +11,6 @@ const path = require('node:path')
 const previewDotenvxfile = require('../../lib/dotenvxfile/rendering/previewDotenvxfile')
 
 async function check () {
-  if (this.opts().init) return checkInit.call(this)
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking', ...(process.env.CI ? { spinner: false } : {}) })
