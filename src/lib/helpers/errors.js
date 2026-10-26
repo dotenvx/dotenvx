@@ -228,14 +228,6 @@ class Errors {
     return e
   }
 
-  envfileRequired () {
-    const e = new Error('[ENVFILE_REQUIRED] check requires an Envfile')
-    e.code = 'ENVFILE_REQUIRED'
-    e.help = 'fix: run [dotenvx spec]'
-    e.messageWithHelp = `${e.message}. ${e.help}`
-    return e
-  }
-
   missingEnvKeysFile () {
     const code = 'MISSING_ENV_KEYS_FILE'
     const envKeysFilepath = this.envKeysFilepath || '.env.keys'
@@ -331,16 +323,6 @@ class Errors {
     e.code = code
     e.help = help
     e.messageWithHelp = `${message}. ${help}`
-    return e
-  }
-
-  invalidEnv () {
-    const code = 'INVALID_ENV'
-    const message = `[${code}] ${this.message}`
-
-    const e = new Error(message)
-    e.code = code
-    e.messageWithHelp = message
     return e
   }
 

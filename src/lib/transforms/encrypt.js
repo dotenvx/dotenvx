@@ -6,13 +6,12 @@ const TYPE_ENV_FILE = 'envFile'
 const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 
 const Errors = require('../helpers/errors')
-const selectEnvfileEnvs = require('../helpers/selectEnvfileEnvs')
+const selectEnvs = require('../helpers/selectEnvs')
 const detectEncoding = require('./../helpers/detectEncoding')
 const { isDotenvPublicKey, isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 
 const storeKeyStorage = require('../helpers/storeKeyStorage')
-const readEnvfile = require('../envfile/parsing/readEnvfile')
 
 async function encryptTransform (options = {}) {
   const envs = options.envs || []
@@ -42,7 +41,7 @@ async function encryptTransform (options = {}) {
     }
   }
 
-  for (const env of selectEnvfileEnvs(envs, options)) {
+  for (const env of selectEnvs(envs, options)) {
     if (env.type !== TYPE_ENV_FILE) {
       continue
     }
@@ -52,7 +51,6 @@ async function encryptTransform (options = {}) {
     const row = { keys: [], type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
-      const schema = readEnvfile(undefined, [filepath])
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = SAMPLE_ENV_KIT
@@ -62,13 +60,13 @@ async function encryptTransform (options = {}) {
         row.envSrc = await fsx.readFileX(filepath, { encoding })
       }
 
-      if (!schema.exists && row.envSrc.trim().length === 0) {
+      if (row.envSrc.trim().length === 0) {
         row.envSrc = SAMPLE_ENV_KIT
         row.changed = true
       }
 
       if (options.with !== undefined) {
-        // Inspect every assignment before selection or schema rules can hide it.
+        // Inspect every assignment before selection can hide it.
         const { parsed: existing } = scan(row.envSrc)
         const declaredKeys = Object.entries(existing).filter(([key]) => isDotenvPublicKey(key)).flatMap(([, values]) => values)
         const matchingKey = declaredKeys.length > 0 && declaredKeys.every(value => value.toLowerCase() === options.with.toLowerCase())
@@ -91,17 +89,8 @@ async function encryptTransform (options = {}) {
       const { parsed } = scan(row.envSrc, { ik, ek })
       const selected = Object.entries(parsed).filter(([key]) => {
         if (isDotenvPublicKey(key)) return false
-        return schema.exists ? (schema.keys[key]?.fs.encrypted ?? true) : !isPlainKey(key)
+        return !isPlainKey(key)
       })
-      if (schema.exists && !selected.some(([, values]) => values.some(value => !encrypted(value)))) {
-        // A missing file still needs writing even when its initial values are
-        // exempt from encryption. Avoid generating keys, but preserve creation.
-        if (row.changed) changedFilepaths.push(envFilepath)
-        else unchangedFilepaths.push(envFilepath)
-        processedEnvs.push(row)
-        continue
-      }
-
       let publicKey = publickeys(row.envSrc)[0]
 
       if (!publicKey) {

@@ -191,8 +191,7 @@ $ claude --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx spec
-$ dotenvx run -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
+$ dotenvx run --redact -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
 Hello [REDACTED]
 ```
 
@@ -213,8 +212,7 @@ $ codex --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx spec
-$ dotenvx run -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
+$ dotenvx run --redact -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
 Hello [REDACTED]
 ```
 
@@ -235,8 +233,7 @@ $ agent --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx spec
-$ dotenvx run -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
+$ dotenvx run --redact -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
 Hello [REDACTED]
 ```
 
@@ -1236,7 +1233,7 @@ Use `--no-1password` to leave `op://` values unresolved.
 $ dotenvx run --no-1password -- node index.js
 ```
 
-The same flag is available for `dotenvx get` and `dotenvx check`.
+The same flag is available for `dotenvx get`.
 
 </details>
 <details><summary>`run` - Bitwarden</summary><br>
@@ -1268,7 +1265,7 @@ Use `--no-bitwarden` to skip Bitwarden resolution intentionally.
 $ dotenvx run --no-bitwarden -- node index.js
 ```
 
-The same flag is available for `dotenvx get` and `dotenvx check`.
+The same flag is available for `dotenvx get`.
 
 </details>
 <details><summary>`run -f <directory>`</summary><br>
@@ -1313,27 +1310,6 @@ Hello String
 ```
 
 </details>
-<details><summary>`run with Envfile redaction`</summary><br>
-
-Run any command with real environment variables while automatically redacting values selected by your Envfile from stdout and stderr.
-
-```sh
-$ echo "SECRET=super-secret-value" > .env
-$ echo "PUBLIC_VALUE=visible-value" >> .env
-$ echo "console.log(process.env.SECRET, process.env.PUBLIC_VALUE)" > index.js
-
-$ dotenvx spec
-$ dotenvx run --quiet -- node index.js
-[REDACTED] visible-value
-```
-
-With an Envfile, all values are redacted by default. Use `redacted: false` on individual declarations to leave those values visible. `spec` generates these settings, including public-name exceptions. If an existing environment variable takes precedence, its effective value follows the same rules. Matching is exact, so transformed or derived values are not redacted.
-
-Without an Envfile, `dotenvx run --redact -- yourcommand` redacts loaded values except recognized public names (containing `PUBLIC` or starting with `VITE`, case-sensitive). `_PLAIN` values are redacted too. Without either an Envfile or `--redact`, output is not redacted. An Envfile always takes precedence: its rules apply automatically, even when `--redact` is passed.
-
-When stdin, stdout, and stderr are attached to a terminal, dotenvx preserves interactive behavior on macOS and Linux systems with `script` available. Piped and redirected commands continue to use normal stdin, stdout, and stderr streams.
-
-</details>
 <details><summary>`run -- claude -p`</summary><br>
 
 Run Claude in print mode with real environment variables while redacting any values it prints.
@@ -1341,8 +1317,7 @@ Run Claude in print mode with real environment variables while redacting any val
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx spec
-$ dotenvx run --quiet -- claude -p 'Print the value of $SECRET'
+$ dotenvx run --redact --quiet -- claude -p 'Print the value of $SECRET'
 [REDACTED]
 ```
 
@@ -1354,8 +1329,7 @@ Start a fully interactive Claude session. Claude receives the real values, but a
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx spec
-$ dotenvx run --quiet -- claude
+$ dotenvx run --redact --quiet -- claude
 ```
 
 </details>
@@ -1366,8 +1340,7 @@ Run Codex non-interactively with real environment variables while redacting any 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx spec
-$ dotenvx run --quiet -- codex exec 'Print the value of $SECRET'
+$ dotenvx run --redact --quiet -- codex exec 'Print the value of $SECRET'
 [REDACTED]
 ```
 
@@ -1379,8 +1352,7 @@ Start a fully interactive Codex session. Codex receives the real values, but any
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx spec
-$ dotenvx run --quiet -- codex
+$ dotenvx run --redact --quiet -- codex
 ```
 
 </details>
@@ -1573,125 +1545,6 @@ Hello production
 ```
 
 Available log levels are `error, warn, info, verbose, debug, silly` ([source](https://docs.npmjs.com/cli/v8/using-npm/logging#setting-log-levels))
-
-</details>
-<details><summary>`run with an Envfile`</summary><br>
-
-`Envfile` is like a Dockerfile for your secrets.
-
-When an `Envfile` is present, `run` and `check` validate the same requirements: required values, types, enums, and ranges. No validation flag is needed. `run` performs validation before starting your command.
-
-```ruby
-# Envfile
-env "DATABASE_URL", type: "url"
-env "API_KEY"
-env "SENTRY_DSN", optional: true
-```
-
-```sh
-$ dotenvx run -- node index.js
-[INVALID_ENV] DATABASE_URL is required; API_KEY is required
-```
-
-Envfile validation failures warn by default; `run --strict` stops before launching the command. A `strict true` setting in Envfile, at the root or in an active file block, also makes its validation failures fatal. `check` always exits with failure when validation fails. Strictness changes enforcement, not which rules are checked. Invalid Envfile syntax always stops execution.
-
-Envfile values default to `redacted: true`: `run` masks their values in child stdout/stderr and resolved-value debug output, while the child still receives the real values. Set `redacted: false` for values that may appear in output. This is independent of `encrypted: true`, which controls encryption in `encrypt`, `set`, and `protect`, and is validated against loaded files by `check`, `run`, and `config()`.
-
-The synchronous `dotenvx.config()` API also reads `Envfile` from the current working directory and validates the final resolved values using the same rules, including selected file blocks. Validation failures warn and are returned in `{ parsed, error }`; `config({ strict: true })` or an applicable Envfile `strict true` setting makes failures throw. `ignore: ['INVALID_ENV']` suppresses validation failures. Invalid Envfile syntax always throws before loading values. With an Envfile, `config()` automatically redacts subsequent writes through Node's stdout/stderr streams, including existing `console.log` and `console.error` calls. Environment values and returned values stay unchanged. Repeated calls retain earlier secrets and add newly loaded ones. An unfinished secret prefix is masked at shutdown. Direct native writes and child processes inheriting file descriptors bypass these wrappers; use `dotenvx run` to capture child output.
-
-```ruby
-file ".env.development" do
-  env "BASE_URL", type: "url", redacted: false
-  env "TOKEN_SECRET", encrypted: true
-end
-```
-
-`spec` generates declarations with encryption and redaction required by default. Generated Envfiles explicitly set `encrypted true` and `redacted true` at the root. These root defaults apply to declarations, including declarations in file blocks; per-key options override them. File-level `encrypted` and `redacted` settings are not supported. Use `encrypted: false` on individual declarations to permit plaintext. Entirely plaintext inputs generate no encryption exceptions except for keys ending in `_PLAIN`, so the next `encrypt` encrypts the remaining values. `_PLAIN` keys get `encrypted: false` only when none of their assignments contain ciphertext; code-only references do not infer this exception. For files that already contain ciphertext, `spec` preserves plaintext values with per-key exceptions. Source files are never modified.
-
-`spec` infers `redacted: false` for names starting with `PUBLIC`, `VITE`, `NEXT_PUBLIC`, or `NUXT_PUBLIC`, or containing `PUBLIC` anywhere (case-sensitive). This affects visibility only; public names still require encryption unless explicitly exempted. Other names, including those ending in `_PLAIN`, remain redacted.
-
-`spec` also generates `source ["env", "file"]`. Root and per-key `source` accept `"file"`, `"env"`, or `["env", "file"]`. File-only keys ignore inherited environment values; env-only keys use the inherited environment and ignore file assignments; the array prefers the inherited environment and falls back to selected files. Explicit source rules take precedence over `--overload`. Per-key options override the root, including inside file blocks. Omitting source rules preserves existing loading behavior. Inline `-e` assignments cannot supply keys with an explicit source rule. Bootstrap `DOTENV_PUBLIC_KEY` and `DOTENV_PRIVATE_KEY` variables are exempt. `check`, `run`, and `config()` enforce file encryption rules only for keys whose effective values come from files. An allowed environment value that wins precedence does not require encryption, even if a loaded file also contains a plaintext assignment for that key. With `source "file"`, ambient overrides are ignored and file encryption is enforced. Blank values and `op://` / `bw://` references are exempt, as with Git protection.
-
-`dotenvx spec` always generates `Envfile` with `strict true` at the top, including with `--overwrite` or `--stdout`. Generated policies stop commands on validation failures. Existing policies that omit `strict` continue to warn.
-
-If an Envfile already exists, `spec` leaves it untouched and prints `○ Envfile already exists [edit or run: spec --overwrite]`. Use `spec --overwrite` to regenerate it from the selected inputs, replacing custom rules, comments, and blocks for files absent from this machine. Interactive overwrite runs show the full file-and-code checklist with the prompt `Recreate Envfile from .env files and code`. Noninteractive runs use `.env.example` and `.env`, or the file selected with `-f`. Input validation finishes before the old Envfile is replaced; cancelled selection leaves it untouched. Symlinked Envfiles cannot be overwritten.
-
-Use `dotenvx spec --stdout` to print the generated Envfile without writing it, or `dotenvx spec --stdout -f .env.production` to select an input file. This works even when an Envfile already exists; `--stdout` leaves it untouched even with `--overwrite`. Prompts and progress stay on stderr so stdout contains only the generated content.
-
-Root and file-level `redacted` settings are not supported. Use per-key `redacted: false` to permit output visibility. When selected files specify conflicting options, the first file's explicit option wins. `check` previews values with policy-driven redaction and reports issues per key.
-
-
-</details>
-<details><summary>`run with Envfile file rules`</summary><br>
-
-Use exact file blocks to override rules for selected files:
-
-```ruby
-env "HELLO"
-env "PORT", type: "port"
-env "STRIPE_SECRET_KEY", optional: true
-
-file ".env.production" do
-  env "STRIPE_SECRET_KEY", required: true
-  env "PORT", min: 1024
-end
-```
-
-Profiles select file combinations:
-
-```ruby
-profile "development", files: [".env.local", ".env"]
-profile "production", files: [".env.production"]
-```
-
-Selection order is explicit `-f`, `--profile`, `DOTENV_FILE` / `DOTENV_PATH` / `DOTENV_F`, then `DOTENV_ENV`, `APP_ENV`, `RAILS_ENV`, `RACK_ENV`, `MIX_ENV`, and `NODE_ENV`. Without a selector, the development profile is used if declared; otherwise `.env`. Explicit unknown profiles fail.
-
-Both `dotenvx run -f .env.production -- node index.js` and `dotenvx check -f .env.production` use the production rules. Block declarations inherit top-level options and override only the options they specify. Encryption and redaction are specified per key.
-
-Paths in file blocks are relative to the Envfile. They match the selected paths exactly after path normalization (`./.env.production` matches `.env.production`); they are not basename matches or globs. Directory inputs and `DOTENV_FILE` use their resolved file paths.
-
-When no file block matches, top-level rules apply. Selected file blocks override explicit options in file order: the first file wins. Policy selection is independent of where the final value comes from, including shell values and `--overload`. A selected missing file still activates its block. Blocks cannot be nested, and duplicate declarations within one scope or duplicate file blocks are errors.
-
-</details>
-<details><summary>`check`</summary><br>
-
-Validate the final resolved environment against your Envfile, using the same loader and precedence as `run`:
-
-```sh
-$ dotenvx check -f .env.local -f .env
-✔ PORT=3000 # .env.local:1
-
-$ dotenvx check -f .env.production
-☠ PORT=bad # .env.production:4 !port
-```
-
-Envfile `file` blocks define policy; they do not select files to load. By default, `check` uses the same profile and file selection as `run`. Use repeated `-f` flags or `--convention` to select layers. `DOTENV_FILE` and its aliases are also supported.
-
-All selected sources are merged before validation. The first file wins by default, existing shell values take precedence, and `--overload` lets later sources override earlier values. Partial files can satisfy the schema together. Value validation checks final values; encryption validation checks original file assignments for file-sourced keys, including duplicate assignments. Environment-sourced keys are exempt. `check` fails on violations; `run` and `config()` follow their normal strictness and ignore settings. Rules are combined independently, with the first explicit file option winning.
-
-Missing files explicitly selected with `-f` or `DOTENV_FILE` (and its aliases) fail the check. Missing optional convention layers and implicit default files are reported as `○ skipped (filename)`. `check` has no `--strict` flag. Required values must still resolve; shell or inline values can satisfy the schema without a local file. A check with no readable files, inline values, or declared shell values fails rather than reporting an empty success.
-
-The preview shows redacted values and per-key diagnostics on stdout, with source locations where available. Loading errors go to stderr. `--quiet` suppresses the preview. Failed checks exit with code 1.
-
-</details>
-<details><summary>`protect with an Envfile`</summary><br>
-
-The Git protection filter reads `Envfile` in the same directory as the file being staged. Encryption is required by default. Keys explicitly marked `encrypted: false` may be committed as plaintext:
-
-```ruby
-env "BASE_URL", encrypted: false
-env "TOKEN_SECRET"
-```
-
-This permits plaintext `BASE_URL` while requiring `TOKEN_SECRET` and undeclared keys to be encrypted. Only keys explicitly marked `encrypted: false` may remain plaintext. `redacted` only controls output visibility.
-
-Without an Envfile, protection keeps its existing rules, including exemptions for `.env.example`, `.env.vault`, and `.env.x`. A `_PLAIN` suffix alone does not permit plaintext through Git protection.
-
-Protection inspects every assignment in the incoming Git blob, including duplicates. It does not merge files, use shell overrides, or decrypt values. Empty values, public encryption keys, and `op://` / `bw://` references remain allowed. Private-key files (`.env.keys*`) and nonempty plaintext `DOTENV_PRIVATE_KEY` values remain blocked even with `encrypted: false`.
-
-The policy is read from the working-tree Envfile beside the staged file, even if that policy itself is unstaged. If no adjacent Envfile exists, the Git repository root is checked. Invalid or unreadable policies block staging with an error. Envfile encryption rules also apply to otherwise exempt files such as `.env.example`.
-
-Accepted blobs pass through byte-for-byte. This integration applies to Git protection, not `protect --docker`.
 
 </details>
 <details><summary>`run --strict`</summary><br>
@@ -2297,7 +2150,7 @@ $ dotenvx set HELLO_PLAIN World
 set HELLO_PLAIN (.env)
 ```
 
-Without an Envfile, `dotenvx set` and `dotenvx encrypt` skip keys ending in `_PLAIN`. With an Envfile, its per-key encryption rules take precedence.
+`dotenvx set` and `dotenvx encrypt` skip keys ending in `_PLAIN`.
 
 </details>
 <details><summary>`set KEY value --no-native`</summary><br>
@@ -2355,8 +2208,6 @@ $ dotenvx del HELLO -f .env.production
 <details><summary>`encrypt`</summary><br>
 
 Encrypt the contents of a `.env` file to an encrypted `.env` file.
-
-When the current directory contains an Envfile, `encrypt` encrypts all keys except those explicitly marked `encrypted: false` in the applicable declarations. Values with effective `encrypted: false` remain unchanged, including any existing ciphertext. Undeclared keys require encryption too; both `run` and `check` validate loaded keys and their shell overrides without checking unrelated host environment variables. `run` warns on validation failures by default and refuses to launch when strictness is enabled; `check` exits with failure. The policy applies even with `--key` or `--stdout`; `--exclude-key` can further narrow the selection. If no values need encryption, no keypair is generated. Invalid Envfiles fail rather than falling back to encrypting everything. The Envfile itself is never modified.
 
 ```sh
 $ echo "HELLO=World" > .env
@@ -3307,39 +3158,6 @@ BW_SESSION= # set to bitwarden session token to bypass password prompt
 <details><summary>Error Codes 🚨</summary><br>
 
 Dotenvx errors begin with a stable code in square brackets like `[MISSING_ENV_FILE]`.
-
-```ini
-# error codes
-1PASSWORD_FAILED= # a value could not be resolved with the 1Password CLI
-ACCESS_APPROVAL_TIMEOUT= # an Armor access-approval request timed out
-BITWARDEN_FAILED= # a value could not be resolved with the Bitwarden CLI
-COMMAND_EXITED_WITH_CODE= # the command run by dotenvx exited with a non-zero status
-COMMAND_SUBSTITUTION_FAILED= # a $(command) expression in an environment value could not be evaluated
-DECRYPTION_FAILED= # an encrypted value could not be decrypted
-FILE_NOT_WRITABLE= # dotenvx could not write to the target file
-INVALID_COLOR= # the requested terminal color is invalid
-INVALID_CONVENTION= # the requested environment-file convention is invalid
-INVALID_PRIVATE_KEY= # a private key is malformed or otherwise invalid
-INVALID_PUBLIC_KEY= # a public key is malformed or otherwise invalid
-MALFORMED_ENCRYPTED_DATA= # the encrypted value is malformed
-MISPAIRED_PRIVATE_KEY= # a private key does not match the existing public key
-MISSING_DIRECTORY= # the requested directory does not exist
-ENVSPEC_REQUIRED= # the required Envfile does not exist
-MISSING_ENV_FILE= # a requested environment file does not exist
-MISSING_ENV_FILES= # no .env* files were found
-MISSING_ENV_KEYS_FILE= # the requested .env.keys file does not exist
-MISSING_KEY= # a requested environment key does not exist
-MISSING_LOG_LEVEL= # the requested log level is not supported
-MISSING_PRIVATE_KEY= # the private key required to decrypt a value is missing
-MISSING_PUBLIC_KEY= # the public key required to encrypt a value is missing
-MISSING_REQUIRED= # validation detail for which required variables are missing; surfaced by INVALID_ENV
-MISSING_VALUE= # no value was supplied for a key
-NOT_FOUND= # a private key was not found in the native secret store
-PRECOMMIT_HOOK_MODIFY_FAILED= # dotenvx could not update the pre-commit hook
-INVALID_ENV= # resolved values do not satisfy Envfile rules
-MALFORMED_ENVSPEC= # Envfile syntax or configuration is invalid
-WRONG_PRIVATE_KEY= # the supplied private key cannot decrypt the value
-```
 
 </details>
 

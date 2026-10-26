@@ -84,9 +84,6 @@ export interface DotenvConfigOptions {
    */
   path?: string | string[] | URL;
 
-  /** Select a named Envfile profile when no explicit paths are supplied. */
-  profile?: string;
-
   /**
    * Specify the encoding of your file containing environment variables.
    *
@@ -111,7 +108,6 @@ export interface DotenvConfigOptions {
 
   /**
    * Throw immediately if an error is encountered - like a missing .env file.
-   * Includes Envfile validation failures. Envfile strict settings also enforce throwing.
    * @default false
    * @example require('@dotenvx/dotenvx').config({ strict: true })
    */
@@ -257,11 +253,6 @@ export interface DotenvPopulateInput {
 
 /**
  * Loads `.env` file contents into process.env by default.
- * Reads Envfile from the current directory and validates the final resolved environment.
- * Validation failures warn and return an error, or throw when strictness is enabled.
- * Invalid Envfile syntax always throws.
- * With an Envfile, subsequent Node stdout/stderr writes are automatically redacted.
- * Environment and returned values remain unchanged; native writes and inherited child output bypass redaction.
  *
  * @see https://dotenvx.com/docs
  *
@@ -281,9 +272,6 @@ export interface SetOptions {
    * @example require('@dotenvx/dotenvx').set(key, value, { path: ['/path/to/first.env', '/path/to/second.env'] })
    */
   path?: string | string[] | URL;
-
-  /** Select a named Envfile profile when no explicit paths are supplied. */
-  profile?: string;
 
   /**
    * Customize the path to your .env.keys file. This is useful with monorepos.
@@ -382,9 +370,6 @@ export interface GetOptions {
    * @example require('@dotenvx/dotenvx').get('KEY', { path: ['/path/to/first.env', '/path/to/second.env'] })
    */
   path?: string | string[] | URL;
-
-  /** Select a named Envfile profile when no explicit paths are supplied. */
-  profile?: string;
 
   /**
    * Mask returned values, optionally setting the number of visible characters.

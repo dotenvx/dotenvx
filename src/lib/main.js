@@ -20,6 +20,9 @@ const logSetSummary = require('./helpers/logSetSummary')
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
 const buildConfigEnvs = require('./helpers/buildConfigEnvs')
+const buildCommandEnvs = require('./helpers/buildCommandEnvs')
+const normalizeDotenvConfigPath = require('./helpers/normalizeDotenvConfigPath')
+const determine = require('./helpers/envResolution/determine')
 const escape = require('./helpers/escape')
 const fsx = require('./helpers/fsx')
 const decryptKeyValue = require('./helpers/cryptography/decryptKeyValue')
@@ -27,14 +30,8 @@ const Errors = require('./helpers/errors')
 const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgnore')
-const selectEnvfileEnvs = require('./helpers/selectEnvfileEnvs')
 const mask = require('./helpers/mask')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
-const readEnvfile = require('./envfile/parsing/readEnvfile')
-const validateEnvfile = require('./envfile/validation/validateEnvfile')
-const redactedValues = require('./helpers/redactedValues')
-const redactProcessOutput = require('./helpers/redactProcessOutput')
-const { redactOutput } = require('./helpers/redactOutput')
 
 function uniqueInjectedKeys (processedEnvs) {
   const result = new Set()
@@ -81,10 +78,8 @@ const config = function (options = {}, events) {
   const noNative = resolveNoNative(options)
 
   let fatal = false
-  let sensitiveValues = []
   try {
-    const envs = options.envs || selectEnvfileEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, { ...process.env, ...processEnv })
-    const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+    const envs = options.envs || determine(buildCommandEnvs(normalizeDotenvConfigPath(buildConfigEnvs(options), { ...process.env, ...processEnv })), { ...process.env, ...processEnv })
     const {
       processedEnvs,
       readableFilepaths
@@ -100,10 +95,6 @@ const config = function (options = {}, events) {
       noSpinner: options.noSpinner,
       token: options.token
     })
-
-    const validationError = validateEnvfile.error(validateEnvfile(schema, processEnv, processedEnvs).errors)
-    sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
-    if (schema.exists) redactProcessOutput(sensitiveValues)
 
     if (options.mask !== undefined) {
       const showChar = options.mask === true ? 6 : options.mask
@@ -144,30 +135,18 @@ const config = function (options = {}, events) {
       Object.assign(parsedAll, processedEnv.existed || {}) // existed 'wins'
 
       // debug parsed
-      logger.debug(redactOutput(processedEnv.parsed, sensitiveValues))
+      logger.debug(processedEnv.parsed)
 
       // verbose/debug injected key/value
       for (const [key, value] of Object.entries(processedEnv.injected || {})) {
         logger.verbose(`${key} set`)
-        logger.debug(redactOutput(`${key} set to ${value}`, sensitiveValues))
+        logger.debug(`${key} set to ${value}`)
       }
 
       // verbose/debug existed key/value
       for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-        logger.debug(redactOutput(`${key} pre-exists as ${value} (protip: use --overload to override)`, sensitiveValues))
-      }
-    }
-
-    if (validationError) {
-      if (ignore.includes(validationError.code)) {
-        logger.verbose(`ignored: ${validationError.message}`)
-      } else if (strict || validationError.diagnostics?.some(diagnostic => diagnostic.strict)) {
-        fatal = true
-        throw validationError
-      } else {
-        logger.warn(validationError.messageWithHelp || validationError.message)
-        lastError = validationError
+        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
     }
 
@@ -190,9 +169,9 @@ const config = function (options = {}, events) {
     }
   } catch (error) {
     if (events) events.fail(error)
-    if (strict || fatal || error.code === 'MALFORMED_ENVFILE') throw error
+    if (strict || fatal) throw error
 
-    logger.error(redactOutput(error.messageWithHelp || error.message, sensitiveValues))
+    logger.error(error.messageWithHelp || error.message)
 
     return { parsed: {}, error }
   }
@@ -283,7 +262,6 @@ const set = async function (key, value, options = {}, events) {
     unchangedFilepaths
   } = await setTransform({
     envs,
-    profile: options.profile,
     key,
     value,
     fk: envKeysFilepath,
@@ -359,7 +337,6 @@ function prepareGet (key, options) {
       resolveDirectories: false,
       key,
       envs,
-      profile: options.profile,
       overload: options.overload,
       all: options.all,
       envKeysFile: options.envKeysFile,
