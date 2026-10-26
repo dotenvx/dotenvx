@@ -1,4 +1,4 @@
-const { derive, keypair } = require('@dotenvx/primitives')
+const { derive } = require('@dotenvx/primitives')
 const commandAction = require('../commandAction')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 
@@ -56,7 +56,7 @@ module.exports = function primitives (command) {
     .argument('[privateKey]', 'hex-encoded private key to restore')
     .option('--stdin', 'read the private key from stdin')
     .allowExcessArguments(false)
-    .action(output(keypair))
+    .action(commandAction(require('../actions/primitives/keypair')))
 
   command.command('derive')
     .description('derive and print a public key from a private key')
