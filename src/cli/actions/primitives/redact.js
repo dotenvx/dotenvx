@@ -1,19 +1,24 @@
-const { redact } = require('@dotenvx/primitives')
+const { redact: _redact } = require('@dotenvx/primitives')
 const catchAndLog = require('../../../lib/helpers/catchAndLog')
 
-module.exports = async function primitivesRedact (text) {
+async function redact (text) {
+  const options = this.opts()
+  const stdin = options.stdin
+  const secret = options.secret
+
   try {
-    const options = this.opts()
-    if (options.stdin) {
-      if (text !== undefined) throw new Error('Cannot combine a text argument with --stdin')
+    if (stdin) {
       process.stdin.setEncoding('utf8')
       text = ''
       for await (const chunk of process.stdin) text += chunk
     }
-    if (text === undefined) throw new Error('Provide text or use --stdin')
-    process.stdout.write(redact(text, options.secret))
+
+    const redacted = _redact(text, secret)
+    console.log(redacted)
   } catch (error) {
     catchAndLog(error)
     return { exitCode: 1, error }
   }
 }
+
+module.exports = redact
