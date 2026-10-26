@@ -35,7 +35,7 @@ module.exports = function primitives (command) {
     .option('--profile <name>', 'explicit profile name')
     .option('-f, --file <paths>', 'explicit comma-separated files, overriding profile selection', (value, previous) => previous === undefined ? value : `${previous},${value}`)
     .allowExcessArguments(false)
-    .action(commandAction(require('../actions/primitivesProfile')))
+    .action(commandAction(require('../actions/primitives/profile')))
 
   command.command('redact')
     .description('replace secret strings in text with [REDACTED]')
@@ -43,13 +43,13 @@ module.exports = function primitives (command) {
     .requiredOption('-s, --secret <value>', 'literal secret to redact (repeat for multiple secrets)', (value, previous) => [...(previous || []), value])
     .option('--stdin', 'read text from stdin')
     .allowExcessArguments(false)
-    .action(commandAction(require('../actions/primitivesRedact')))
+    .action(commandAction(require('../actions/primitives/redact')))
 
   command.command('policy')
     .description('print the Dotenvxfile policy for selected files as JSON')
     .option('-f, --file <paths>', 'comma-separated env files, first file wins (default: .env)', (value, previous) => previous === undefined ? value : `${previous},${value}`)
     .allowExcessArguments(false)
-    .action(commandAction(require('../actions/policy')))
+    .action(commandAction(require('../actions/primitives/policy')))
 
   command.command('keypair')
     .description('generate or restore a keypair and print JSON')

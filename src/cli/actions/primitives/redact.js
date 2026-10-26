@@ -1,5 +1,5 @@
 const { redact } = require('@dotenvx/primitives')
-const catchAndLog = require('../../lib/helpers/catchAndLog')
+const catchAndLog = require('../../../lib/helpers/catchAndLog')
 
 module.exports = async function primitivesRedact (text) {
   try {

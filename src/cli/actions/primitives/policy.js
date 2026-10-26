@@ -1,7 +1,7 @@
 const fs = require('node:fs')
-const resolveDotenvxfilePath = require('../../lib/dotenvxfile/parsing/resolveDotenvxfilePath')
+const resolveDotenvxfilePath = require('../../../lib/dotenvxfile/parsing/resolveDotenvxfilePath')
 const { profile, policy } = require('@dotenvx/primitives')
-const catchAndLog = require('../../lib/helpers/catchAndLog')
+const catchAndLog = require('../../../lib/helpers/catchAndLog')
 
 module.exports = function policyAction () {
   try {
