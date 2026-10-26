@@ -1,16 +1,18 @@
+const checkInit = require('./checkInit')
 const statusReporter = require('../../lib/helpers/statusReporter')
 const { logger } = require('./../../shared/logger')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const prepareValidatedEnv = require('../../lib/services/validate')
-const diagnosticLocations = require('../../lib/envfile/validation/diagnosticLocation')
+const diagnosticLocations = require('../../lib/dotenvxfile/validation/diagnosticLocation')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
 const path = require('node:path')
-const previewEnvfile = require('../../lib/envfile/rendering/previewEnvfile')
+const previewDotenvxfile = require('../../lib/dotenvxfile/rendering/previewDotenvxfile')
 
 async function check () {
+  if (this.opts().init) return checkInit.call(this)
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'checking', ...(process.env.CI ? { spinner: false } : {}) })
@@ -34,7 +36,7 @@ async function check () {
     checked.push(...readableFilepaths)
     if (processedEnvs.some(row => row.type === 'env' && Object.keys(row.parsed || {}).length)) checked.push('--env')
     if (checked.length === 0 && Object.keys(schema.keys).some(key => checkedValues[key] !== undefined)) checked.push('shell environment')
-    const location = diagnosticLocations(processedEnvs, checked.join(', ') || 'Envfile')
+    const location = diagnosticLocations(processedEnvs, checked.join(', ') || 'Dotenvxfile')
     for (const row of processedEnvs) {
       for (const error of row.errors || []) {
         if (ignore.includes(error.code)) continue
@@ -57,7 +59,7 @@ async function check () {
     if (spinner) spinner.stop()
     if (showPreview) {
       const diagnostics = validationError && !ignore.includes(validationError.code) ? validationError.diagnostics : []
-      const preview = previewEnvfile(processedEnvs, schema, checkedValues, diagnostics)
+      const preview = previewDotenvxfile(processedEnvs, schema, checkedValues, diagnostics)
       if (preview) {
         for (const line of preview.split('\n')) logger.info(line)
       }
@@ -68,10 +70,10 @@ async function check () {
       return { exitCode: 1 }
     }
     if (errorCount > 0) {
-      logger.error(`invalid ${checked.join(', ')} per Envfile ⚖`)
+      logger.error(`invalid ${checked.join(', ')} per ${path.basename(schema.filepath)} ⛉`)
       return { exitCode: 1 }
     }
-    logger.success(`◈ valid ${checked.join(', ')} per Envfile ⚖`)
+    logger.success(`◈ valid ${checked.join(', ')} per ${path.basename(schema.filepath)} ⛉`)
   } catch (error) {
     flush()
     catchAndLog(error)

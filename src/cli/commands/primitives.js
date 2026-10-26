@@ -31,7 +31,7 @@ module.exports = function primitives (command) {
     .action(function () { this.help() })
 
   command.command('profile')
-    .description('resolve an Envfile profile to comma-separated filenames')
+    .description('resolve a Dotenvxfile profile to comma-separated filenames')
     .option('--profile <name>', 'explicit profile name')
     .option('-f, --file <paths>', 'explicit comma-separated files, overriding profile selection', (value, previous) => previous === undefined ? value : `${previous},${value}`)
     .allowExcessArguments(false)
@@ -46,16 +46,10 @@ module.exports = function primitives (command) {
     .action(commandAction(require('../actions/primitivesRedact')))
 
   command.command('policy')
-    .description('print the Envfile policy for selected files as JSON')
+    .description('print the Dotenvxfile policy for selected files as JSON')
     .option('-f, --file <paths>', 'comma-separated env files, first file wins (default: .env)', (value, previous) => previous === undefined ? value : `${previous},${value}`)
     .allowExcessArguments(false)
     .action(commandAction(require('../actions/policy')))
-
-  command.command('check')
-    .description('check selected env files against Envfile and print redacted JSON')
-    .option('-f, --file <paths>', 'comma-separated env files, first file wins (default: .env)', (value, previous) => previous === undefined ? value : `${previous},${value}`)
-    .allowExcessArguments(false)
-    .action(commandAction(require('../actions/primitivesCheck')))
 
   command.command('keypair')
     .description('generate or restore a keypair and print JSON')

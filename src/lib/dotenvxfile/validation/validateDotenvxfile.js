@@ -1,9 +1,9 @@
 const { check } = require('@dotenvx/primitives')
 const Errors = require('../../helpers/errors')
 const plaintextKeys = require('../../helpers/plaintextKeys')
-const readEnvfile = require('../parsing/readEnvfile')
+const readDotenvxfile = require('../parsing/readDotenvxfile')
 
-module.exports = function validateEnvfile (policy, env, processedEnvs = []) {
+module.exports = function validateDotenvxfile (policy, env, processedEnvs = []) {
   if (!policy.exists) return { checked: {}, errors: [] }
   const result = check(policy, env)
   const sources = new Map()
@@ -15,7 +15,7 @@ module.exports = function validateEnvfile (policy, env, processedEnvs = []) {
   }
   for (const row of processedEnvs) {
     if (row.type !== 'envFile' || row.src === undefined) continue
-    const filePolicy = readEnvfile(undefined, [row.filepath])
+    const filePolicy = readDotenvxfile(undefined, [row.filepath])
     for (const key of plaintextKeys(row.src)) {
       if (sources.get(key) !== 'envFile') continue
       const rules = filePolicy.keys[key]

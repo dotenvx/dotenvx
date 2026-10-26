@@ -6,7 +6,11 @@ const { logger } = require('./../../shared/logger')
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
-const prepareValidatedEnv = require('../../lib/services/validate')
+const envsResolver = require('../../lib/resolvers/envs')
+const selectDotenvxfileEnvs = require('../../lib/helpers/selectDotenvxfileEnvs')
+const readDotenvxfile = require('../../lib/dotenvxfile/parsing/readDotenvxfile')
+const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
+const Session = require('../../db/session')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
@@ -95,22 +99,25 @@ async function run () {
   }
 
   try {
-    const {
-      processedEnvs,
-      readableFilepaths,
-      hasEnvfile,
-      schema,
-      validationError: error
-    } = await prepareValidatedEnv({
-      envs: this.envs,
-      options,
+    const envs = selectDotenvxfileEnvs(this.envs, options, process.env)
+    const schema = readDotenvxfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+    const session = new Session()
+    const noArmor = options.armor === false || (!(options.token || process.env.DOTENVX_TOKEN) && (await session.noArmor()))
+    const { processedEnvs, readableFilepaths } = await envsResolver({
+      envs,
+      overload: options.overload,
       processEnv: process.env,
-      requireEnvfile: false,
+      envKeysFile: resolveEnvKeysFile(options.envKeysFile),
+      noArmor,
+      noNative: options.native === false || options.noNative === true,
+      no1Password: options['1password'] === false || options.no1Password === true,
+      noBitwarden: options.bitwarden === false || options.noBitwarden === true,
+      token: options.token,
       command: commandArgs,
       onStatus: statusReporter(spinner)
     })
 
-    if (hasEnvfile || options.redact === true) {
+    if (schema.exists || options.redact === true) {
       sensitiveValues = redactedValues(processedEnvs, schema, process.env, options.redact === true)
     }
 
@@ -163,16 +170,6 @@ async function run () {
       for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
         logger.debug(redactOutput(`${key} pre-exists as ${value} (protip: use --overload to override)`, sensitiveValues))
-      }
-    }
-
-    if (error) {
-      if (ignore.includes(error.code)) {
-        logger.verbose(`ignored: ${error.message}`)
-      } else if (options.strict || error.diagnostics?.some(diagnostic => diagnostic.strict)) {
-        throw error
-      } else {
-        logger.warn(error.messageWithHelp || error.message)
       }
     }
 

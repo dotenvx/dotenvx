@@ -228,10 +228,10 @@ class Errors {
     return e
   }
 
-  envfileRequired () {
-    const e = new Error('[ENVFILE_REQUIRED] check requires an Envfile')
-    e.code = 'ENVFILE_REQUIRED'
-    e.help = 'fix: run [dotenvx spec]'
+  dotenvxfileRequired () {
+    const e = new Error('[DOTENVXFILE_REQUIRED] check requires a Dotenvxfile')
+    e.code = 'DOTENVXFILE_REQUIRED'
+    e.help = 'fix: run [dotenvx check --init]'
     e.messageWithHelp = `${e.message}. ${e.help}`
     return e
   }

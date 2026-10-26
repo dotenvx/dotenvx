@@ -27,11 +27,10 @@ const Errors = require('./helpers/errors')
 const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgnore')
-const selectEnvfileEnvs = require('./helpers/selectEnvfileEnvs')
+const selectDotenvxfileEnvs = require('./helpers/selectDotenvxfileEnvs')
 const mask = require('./helpers/mask')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
-const readEnvfile = require('./envfile/parsing/readEnvfile')
-const validateEnvfile = require('./envfile/validation/validateEnvfile')
+const readDotenvxfile = require('./dotenvxfile/parsing/readDotenvxfile')
 const redactedValues = require('./helpers/redactedValues')
 const redactProcessOutput = require('./helpers/redactProcessOutput')
 const { redactOutput } = require('./helpers/redactOutput')
@@ -83,8 +82,8 @@ const config = function (options = {}, events) {
   let fatal = false
   let sensitiveValues = []
   try {
-    const envs = options.envs || selectEnvfileEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, { ...process.env, ...processEnv })
-    const schema = readEnvfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+    const envs = options.envs || selectDotenvxfileEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, { ...process.env, ...processEnv })
+    const schema = readDotenvxfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
     const {
       processedEnvs,
       readableFilepaths
@@ -101,7 +100,6 @@ const config = function (options = {}, events) {
       token: options.token
     })
 
-    const validationError = validateEnvfile.error(validateEnvfile(schema, processEnv, processedEnvs).errors)
     sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
     if (schema.exists) redactProcessOutput(sensitiveValues)
 
@@ -159,18 +157,6 @@ const config = function (options = {}, events) {
       }
     }
 
-    if (validationError) {
-      if (ignore.includes(validationError.code)) {
-        logger.verbose(`ignored: ${validationError.message}`)
-      } else if (strict || validationError.diagnostics?.some(diagnostic => diagnostic.strict)) {
-        fatal = true
-        throw validationError
-      } else {
-        logger.warn(validationError.messageWithHelp || validationError.message)
-        lastError = validationError
-      }
-    }
-
     if (events) events.add({ files: readableFilepaths, injected_count: uniqueInjectedKeys(processedEnvs).size })
     const summaryRows = readableFilepaths.map(filepath => {
       const row = processedEnvs.find(row => row.filepath === filepath)
@@ -190,7 +176,7 @@ const config = function (options = {}, events) {
     }
   } catch (error) {
     if (events) events.fail(error)
-    if (strict || fatal || error.code === 'MALFORMED_ENVFILE') throw error
+    if (strict || fatal || error.code === 'MALFORMED_DOTENVXFILE') throw error
 
     logger.error(redactOutput(error.messageWithHelp || error.message, sensitiveValues))
 

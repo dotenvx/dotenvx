@@ -1,6 +1,6 @@
 const path = require('node:path')
 
-module.exports = function formatEnvfileSyntaxError (error, src, filepath) {
+module.exports = function formatDotenvxfileSyntaxError (error, src, filepath) {
   const location = error.location?.start
   if (!location) return error.message
 

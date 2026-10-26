@@ -1,25 +1,20 @@
-const fs = require('node:fs')
 const path = require('node:path')
 const { execFileSync } = require('node:child_process')
-const readEnvfile = require('../parsing/readEnvfile')
-const resolveEnvfilePath = require('../parsing/resolveEnvfilePath')
+const readDotenvxfile = require('../parsing/readDotenvxfile')
+const resolveDotenvxfilePath = require('../parsing/resolveDotenvxfilePath')
 const plaintextKeys = require('../../helpers/plaintextKeys')
 
 function readPolicy (policyPath, file) {
-  const schema = readEnvfile(policyPath, [file])
-  if (!schema.exists) {
-    // A dangling policy symlink is a broken policy, not an absent policy.
-    if (fs.lstatSync(policyPath, { throwIfNoEntry: false })) throw new Error(`Cannot read Envfile: ${policyPath}`)
-    return null
-  }
+  const schema = readDotenvxfile(policyPath, [file])
+  if (!schema.exists) return null
   return schema
 }
 
 // Inspect Git's incoming blob, never the working-tree env values or shell overrides.
-module.exports = function protectEnvfile (filepath, content) {
+module.exports = function protectDotenvxfile (filepath, content) {
   const file = path.resolve(filepath)
   const directory = path.dirname(file)
-  let schema = readPolicy(resolveEnvfilePath(directory), file)
+  let schema = readPolicy(resolveDotenvxfilePath(directory), file)
   if (!schema) {
     let root
     try {
@@ -32,7 +27,7 @@ module.exports = function protectEnvfile (filepath, content) {
       // Outside a Git working tree, only an adjacent policy can apply.
       return null
     }
-    if (path.resolve(root) !== directory) schema = readPolicy(resolveEnvfilePath(root), file)
+    if (path.resolve(root) !== directory) schema = readPolicy(resolveDotenvxfilePath(root), file)
   }
   if (!schema) return null
 
