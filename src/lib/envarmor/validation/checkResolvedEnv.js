@@ -1,4 +1,5 @@
 const { check, scan } = require('@dotenvx/primitives')
+const checkEncryption = require('./checkEncryption')
 const readEnvarmor = require('../parsing/readEnvarmor')
 
 module.exports = function checkResolvedEnv (policy, env, processedEnvs = [], { policyForFile = filepath => readEnvarmor(undefined, [filepath]) } = {}) {
@@ -25,5 +26,7 @@ module.exports = function checkResolvedEnv (policy, env, processedEnvs = [], { p
       values
     })
   }
-  return check(policy, env, { sources: arrivals })
+  const result = check(policy, env)
+  result.errors.push(...checkEncryption(policy, arrivals))
+  return result
 }

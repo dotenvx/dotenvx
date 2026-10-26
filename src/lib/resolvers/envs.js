@@ -320,7 +320,7 @@ function inheritedInputs (options, processEnv) {
       for (const key of Object.keys(scan(fsx.readFileXSync(path.resolve(input.value), { encoding: 'utf8' })).parsed)) keys.add(key)
     } catch {}
   }
-  return Object.entries(processEnv).filter(([key, value]) => keys.has(key) && ((policy.keys[key]?.fs.encrypted ?? policy.encrypted) === 'always' || encrypted(value)) && !/^DOTENV_(?:PUBLIC|PRIVATE)_KEY(?:_|$)/.test(key)).map(([key, value]) => ({
+  return Object.entries(processEnv).filter(([key, value]) => keys.has(key) && ((policy.keys[key]?.fs.encrypted ?? false) === 'always' || encrypted(value)) && !/^DOTENV_(?:PUBLIC|PRIVATE)_KEY(?:_|$)/.test(key)).map(([key, value]) => ({
     key,
     value,
     encrypted: encrypted(value),

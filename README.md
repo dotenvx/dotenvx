@@ -1690,7 +1690,7 @@ env "BASE_URL", encrypted: false
 env "TOKEN_SECRET"
 ```
 
-This permits plaintext `BASE_URL` while requiring `TOKEN_SECRET` and undeclared keys to be encrypted. With root encryption enabled, only keys explicitly marked `encrypted: false` may remain plaintext. `redacted` only controls output visibility.
+This permits plaintext `BASE_URL` while requiring declared `TOKEN_SECRET` to be encrypted. Root settings apply only to declared keys; undeclared keys remain unmanaged. `redacted` only controls output visibility.
 
 Without an Envarmor, protection keeps its existing rules, including exemptions for `.env.example`, `.env.vault`, and `.env.x`. A `_PLAIN` suffix alone does not permit plaintext through Git protection.
 
@@ -2363,7 +2363,7 @@ $ dotenvx del HELLO -f .env.production
 
 Encrypt the contents of a `.env` file to an encrypted `.env` file.
 
-When the current directory contains an Envarmor, `encrypt` encrypts keys whose applicable Envarmor encryption setting is `true` or `"always"`. Omitted settings default to `false`. Values with effective `encrypted: false` remain unchanged, including any existing ciphertext. Undeclared keys inherit the root encryption setting; both `run` and `check` validate loaded keys and their shell overrides without checking unrelated host environment variables. `run` reports validation errors and continues by default, and refuses to launch when strictness is enabled; `check` displays validation errors and exits 0 unless strictness makes them fatal. The policy applies even with `--key` or `--stdout`; `--exclude-key` can further narrow the selection. If no values need encryption, no keypair is generated. Invalid Envarmor files fail rather than falling back to encrypting everything. The Envarmor itself is never modified.
+When the current directory contains an Envarmor, `encrypt` encrypts keys whose applicable Envarmor encryption setting is `true` or `"always"`. Omitted settings default to `false`. Values with effective `encrypted: false` remain unchanged, including any existing ciphertext. Undeclared keys are not encrypted or validated by Envarmor; both `run` and `check` validate loaded keys and their shell overrides without checking unrelated host environment variables. `run` reports validation errors and continues by default, and refuses to launch when strictness is enabled; `check` displays validation errors and exits 0 unless strictness makes them fatal. The policy applies even with `--key` or `--stdout`; `--exclude-key` can further narrow the selection. If no values need encryption, no keypair is generated. Invalid Envarmor files fail rather than falling back to encrypting everything. The Envarmor itself is never modified.
 
 ```sh
 $ echo "HELLO=World" > .env

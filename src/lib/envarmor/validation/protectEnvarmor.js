@@ -36,5 +36,5 @@ module.exports = function protectEnvarmor (filepath, content) {
   }
   if (!schema) return null
 
-  return plaintextKeys(content).filter(key => /^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) || (schema.keys[key]?.fs.encrypted ?? schema.encrypted ?? false))
+  return plaintextKeys(content).filter(key => /^DOTENV_PRIVATE_KEY(?:_|$)/.test(key) || (schema.keys[key]?.fs.encrypted ?? false))
 }

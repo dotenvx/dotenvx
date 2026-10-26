@@ -55,7 +55,7 @@ async function setTransform (options = {}) {
 
     try {
       const schema = readEnvarmor(undefined, [filepath])
-      const noEncrypt = !options.encrypt || (schema.exists ? schema.keys[key]?.fs.encrypted === false : isPlainKey(key))
+      const noEncrypt = !options.encrypt || (schema.exists ? !(schema.keys[key]?.fs.encrypted ?? false) : isPlainKey(key))
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = ''

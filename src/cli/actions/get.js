@@ -52,7 +52,7 @@ async function get (key) {
     const selected = selectEnvarmorEnvs(envs, options)
     const policy = readEnvarmor(undefined, selected.filter(env => env.type === 'envFile').map(env => env.value))
     for (const key of Object.keys(parsed)) {
-      if (parsed[key] !== undefined && policy.proxies?.some(proxy => proxy.key === key)) parsed[key] = 'proxied_OPENAI_API_KEY'
+      if (parsed[key] !== undefined && Object.values(policy.proxies || {}).some(proxy => proxy.bearer === key)) parsed[key] = 'proxied_OPENAI_API_KEY'
     }
 
     for (const error of errors || []) {
