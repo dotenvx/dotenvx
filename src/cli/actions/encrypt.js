@@ -2,6 +2,8 @@ const fsx = require('./../../lib/helpers/fsx')
 const { logger } = require('./../../shared/logger')
 
 const encryptTransform = require('./../../lib/transforms/encrypt')
+const withKeyFileLock = require('../../lib/helpers/withKeyFileLock')
+const readKeyFileSnapshot = require('../../lib/helpers/readKeyFileSnapshot')
 
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
@@ -48,24 +50,42 @@ async function encryptAction () {
   }
 
   try {
-    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ with: options.with, profile: options.profile, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
-
-    if (keysSrc && options.with === undefined) {
-      await fsx.writeKeyFile(fk, keysSrc)
-    }
-
-    if (spinner) spinner.stop()
-    for (const processedEnv of processedEnvs) {
-      logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
-      if (processedEnv.error) {
-        errorCount += 1
-        logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
-      } else if (processedEnv.changed) {
-        await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
-        logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
-      } else {
-        logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+    // Prepare once: native/remote storage may have side effects.
+    const { keysSrc, initialKeyFileSnapshot, keysChanged, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ with: options.with, profile: options.profile, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
+    const writeEnvs = async () => {
+      if (spinner) spinner.stop()
+      for (const processedEnv of processedEnvs) {
+        logger.verbose(`encrypting ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+        if (processedEnv.error) {
+          errorCount += 1
+          logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
+        } else if (processedEnv.changed) {
+          await fsx.writeFileX(processedEnv.filepath, processedEnv.envSrc)
+          logger.verbose(`encrypted ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+        } else {
+          logger.verbose(`no change ${processedEnv.envFilepath} (${processedEnv.filepath})`)
+        }
       }
+    }
+    if (keysChanged && options.with === undefined) {
+      if (initialKeyFileSnapshot.error) throw initialKeyFileSnapshot.error
+      await withKeyFileLock(fk, async () => {
+        const current = await readKeyFileSnapshot(fk)
+        const before = initialKeyFileSnapshot.contents
+        const matches = before === null
+          ? current.contents === null
+          : current.contents !== null && before.equals(current.contents)
+        if (!matches) {
+          const error = new Error(`[KEY_FILE_CHANGED] ${fk} changed during encryption. Retry the command.`)
+          error.code = 'KEY_FILE_CHANGED'
+          throw error
+        }
+        // Publish keys before ciphertext, holding the lock through every env.
+        await fsx.writeKeyFile(fk, keysSrc)
+        await writeEnvs()
+      })
+    } else {
+      await writeEnvs()
     }
 
     // Existing public keys can encrypt without private-key access. Metadata

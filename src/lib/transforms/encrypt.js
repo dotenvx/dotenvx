@@ -8,6 +8,7 @@ const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 const Errors = require('../helpers/errors')
 const selectEnvfileEnvs = require('../helpers/selectEnvfileEnvs')
 const detectEncoding = require('./../helpers/detectEncoding')
+const readKeyFileSnapshot = require('../helpers/readKeyFileSnapshot')
 const { isDotenvPublicKey, isPlainKey, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 
@@ -27,20 +28,27 @@ async function encryptTransform (options = {}) {
   const changedFilepaths = []
   const unchangedFilepaths = []
 
-  // set up keysSrc
+  // Preserve the exact bytes used to prepare file-key updates. Do not treat
+  // access errors as a missing file: public-key-only encryption may proceed,
+  // but an unknown snapshot must never be overwritten.
   let keysSrc
-  if (options.with === undefined && await fsx.exists(fk)) {
+  let initialKeyFileSnapshot
+  if (options.with === undefined) {
     try {
-      const encoding = await detectEncoding(fk)
-      keysSrc = await fsx.readFileX(fk, { encoding })
+      initialKeyFileSnapshot = await readKeyFileSnapshot(fk)
+      if (initialKeyFileSnapshot.contents !== null) {
+        const encoding = await detectEncoding(fk)
+        keysSrc = initialKeyFileSnapshot.contents.toString(encoding)
+      }
     } catch (err) {
-      if (err.code === 'EACCES' || err.code === 'EPERM') {
-        // do nothing (scenario: chmod a-r .env.keys)
+      if (err.code === 'EACCES' || err.code === 'EPERM' || err.code === 'ENOTDIR') {
+        initialKeyFileSnapshot = { error: err }
       } else {
         throw err
       }
     }
   }
+  const initialKeysSrc = keysSrc
 
   for (const env of selectEnvfileEnvs(envs, options)) {
     if (env.type !== TYPE_ENV_FILE) {
@@ -155,6 +163,8 @@ async function encryptTransform (options = {}) {
 
   return {
     keysSrc,
+    initialKeyFileSnapshot,
+    keysChanged: keysSrc !== initialKeysSrc,
     processedEnvs,
     changedFilepaths,
     unchangedFilepaths
