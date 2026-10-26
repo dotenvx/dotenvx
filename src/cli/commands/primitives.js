@@ -26,6 +26,13 @@ module.exports = function primitives (command) {
     .allowExcessArguments(false)
     .action(commandAction(require('../actions/primitives/policy')))
 
+  command.command('check')
+    .description('check the current environment against Dotenvxfile and print JSON')
+    .option('--profile <name>', 'explicit profile name')
+    .option('-f, --file <paths>', 'comma-separated env files for policy selection')
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitives/check')))
+
   command.command('keypair')
     .description('generate or restore a keypair and print JSON')
     .argument('[privateKey]', 'hex-encoded private key to restore')
