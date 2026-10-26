@@ -31,7 +31,7 @@ async function encryptAction () {
 
   // stdout - should not have a try so that exit codes can surface to stdout
   if (options.stdout) {
-    const { processedEnvs } = await encryptTransform({ with: options.with, profile: options.profile, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
+    const { processedEnvs } = await encryptTransform({ with: options.with, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
 
     if (spinner) spinner.stop()
     for (const processedEnv of processedEnvs) {
@@ -48,7 +48,7 @@ async function encryptAction () {
   }
 
   try {
-    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ with: options.with, profile: options.profile, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await encryptTransform({ with: options.with, envs, ik, ek, fk, noArmor, token: options.token, noCreate, noNative, no1Password, noBitwarden })
 
     if (keysSrc && options.with === undefined) {
       await fsx.writeKeyFile(fk, keysSrc)

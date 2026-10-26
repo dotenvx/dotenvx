@@ -273,9 +273,6 @@ export interface SetOptions {
    */
   path?: string | string[] | URL;
 
-  /** Select a named Dotenvxfile profile when no explicit paths are supplied. */
-  profile?: string;
-
   /**
    * Customize the path to your .env.keys file. This is useful with monorepos.
    * @default []
@@ -373,9 +370,6 @@ export interface GetOptions {
    * @example require('@dotenvx/dotenvx').get('KEY', { path: ['/path/to/first.env', '/path/to/second.env'] })
    */
   path?: string | string[] | URL;
-
-  /** Select a named Dotenvxfile profile when no explicit paths are supplied. */
-  profile?: string;
 
   /**
    * Mask returned values, optionally setting the number of visible characters.

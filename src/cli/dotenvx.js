@@ -98,7 +98,6 @@ program.command('get')
   .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
   .option('-o, --overload', 'override existing env variables (by default, existing env vars take precedence over .env files)')
   .option('--strict', 'process.exit(1) on any errors', false)
-  .option('--profile <name>', 'select a Dotenvxfile profile')
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('-a, --all', 'include all machine envs as well')
@@ -121,7 +120,6 @@ program.command('get')
 program.command('set')
   .usage('<KEY> [value] [options]')
   .description('encrypt a single environment variable')
-  .option('--profile <name>', 'select a Dotenvxfile profile')
   .addHelpText('after', help.set)
   .allowUnknownOption()
   .argument('KEY', 'KEY')
@@ -157,7 +155,6 @@ function configureEncryptCommand (command) {
   return command
     .description('encrypt .env file(s)')
     .option('--with <public-key>', 'encrypt with this public key; accepts a fresh file or matching existing public key')
-    .option('--profile <name>', 'select a Dotenvxfile profile')
     .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
     .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
     .option('-k, --key <keys...>', 'keys(s) to encrypt (default: all keys in file)')
@@ -224,26 +221,6 @@ program.command('ls', { hidden: true })
   .option('--json', 'output a JSON array of absolute filepaths')
   .action(function (...args) {
     return commandAction(require('./actions/ls')).apply(this, args)
-  })
-
-// dotenvx check
-program.command('check', { hidden: true })
-  .description('check Dotenvxfile rules against .env file(s)')
-  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
-  .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
-  .option('-o, --overload', 'override existing env variables (by default, existing env vars take precedence over .env files)')
-  .option('--profile <name>', 'select a Dotenvxfile profile')
-  .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
-  .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
-  .option('--token <token>', 'set Armor ⛨ token')
-  .option('--no-armor', 'disable Dotenvx Armor features')
-  .option('--no-native', 'disable OS secret store features')
-  .option('--no-1password', 'disable 1Password secret reference resolution')
-  .option('--no-bitwarden', 'disable Bitwarden secret reference resolution')
-  .action(function (...args) {
-    this.envs = envs
-    return commandAction(require('./actions/check')).apply(this, args)
   })
 
 // dotenvx gitignore
@@ -329,7 +306,7 @@ function hiddenSubcommands (name) {
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n  check                  check Dotenvxfile rules against .env file(s)\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
+  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
   .action(function () { this.outputHelp() })
 
 // dotenvx update

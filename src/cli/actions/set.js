@@ -65,7 +65,7 @@ async function set (key, value) {
   let errorCount = 0
 
   try {
-    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await setTransform({ profile: options.profile, envs, key, value, fk, noArmor, token: options.token, noCreate, encrypt, noNative, no1Password, noBitwarden, onStatus: statusReporter(spinner) })
+    const { keysSrc, processedEnvs, changedFilepaths, unchangedFilepaths } = await setTransform({ envs, key, value, fk, noArmor, token: options.token, noCreate, encrypt, noNative, no1Password, noBitwarden, onStatus: statusReporter(spinner) })
 
     if (keysSrc) {
       await fsx.writeKeyFile(fk, keysSrc)

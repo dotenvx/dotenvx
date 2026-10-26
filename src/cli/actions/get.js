@@ -35,7 +35,6 @@ async function get (key) {
     const { parsed: resolved, errors } = await getResolver({
       key,
       envs,
-      profile: options.profile,
       convention: options.convention,
       overload: options.overload,
       all: options.all,

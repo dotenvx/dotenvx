@@ -262,7 +262,6 @@ const set = async function (key, value, options = {}, events) {
     unchangedFilepaths
   } = await setTransform({
     envs,
-    profile: options.profile,
     key,
     value,
     fk: envKeysFilepath,
@@ -338,7 +337,6 @@ function prepareGet (key, options) {
       resolveDirectories: false,
       key,
       envs,
-      profile: options.profile,
       overload: options.overload,
       all: options.all,
       envKeysFile: options.envKeysFile,
