@@ -20,6 +20,9 @@ const logSetSummary = require('./helpers/logSetSummary')
 // helpers
 const buildEnvs = require('./helpers/buildEnvs')
 const buildConfigEnvs = require('./helpers/buildConfigEnvs')
+const buildCommandEnvs = require('./helpers/buildCommandEnvs')
+const normalizeDotenvConfigPath = require('./helpers/normalizeDotenvConfigPath')
+const determine = require('./helpers/envResolution/determine')
 const escape = require('./helpers/escape')
 const fsx = require('./helpers/fsx')
 const decryptKeyValue = require('./helpers/cryptography/decryptKeyValue')
@@ -27,13 +30,8 @@ const Errors = require('./helpers/errors')
 const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgnore')
-const selectDotenvxfileEnvs = require('./helpers/selectDotenvxfileEnvs')
 const mask = require('./helpers/mask')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
-const readDotenvxfile = require('./dotenvxfile/parsing/readDotenvxfile')
-const redactedValues = require('./helpers/redactedValues')
-const redactProcessOutput = require('./helpers/redactProcessOutput')
-const { redactOutput } = require('./helpers/redactOutput')
 
 function uniqueInjectedKeys (processedEnvs) {
   const result = new Set()
@@ -80,10 +78,8 @@ const config = function (options = {}, events) {
   const noNative = resolveNoNative(options)
 
   let fatal = false
-  let sensitiveValues = []
   try {
-    const envs = options.envs || selectDotenvxfileEnvs(buildConfigEnvs(options), { ...options, convention: undefined }, { ...process.env, ...processEnv })
-    const schema = readDotenvxfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+    const envs = options.envs || determine(buildCommandEnvs(normalizeDotenvConfigPath(buildConfigEnvs(options), { ...process.env, ...processEnv })), { ...process.env, ...processEnv })
     const {
       processedEnvs,
       readableFilepaths
@@ -99,9 +95,6 @@ const config = function (options = {}, events) {
       noSpinner: options.noSpinner,
       token: options.token
     })
-
-    sensitiveValues = redactedValues(processedEnvs, schema, processEnv)
-    if (schema.exists) redactProcessOutput(sensitiveValues)
 
     if (options.mask !== undefined) {
       const showChar = options.mask === true ? 6 : options.mask
@@ -142,18 +135,18 @@ const config = function (options = {}, events) {
       Object.assign(parsedAll, processedEnv.existed || {}) // existed 'wins'
 
       // debug parsed
-      logger.debug(redactOutput(processedEnv.parsed, sensitiveValues))
+      logger.debug(processedEnv.parsed)
 
       // verbose/debug injected key/value
       for (const [key, value] of Object.entries(processedEnv.injected || {})) {
         logger.verbose(`${key} set`)
-        logger.debug(redactOutput(`${key} set to ${value}`, sensitiveValues))
+        logger.debug(`${key} set to ${value}`)
       }
 
       // verbose/debug existed key/value
       for (const [key, value] of Object.entries(processedEnv.existed || {})) {
         logger.verbose(`${key} pre-exists (protip: use --overload to override)`)
-        logger.debug(redactOutput(`${key} pre-exists as ${value} (protip: use --overload to override)`, sensitiveValues))
+        logger.debug(`${key} pre-exists as ${value} (protip: use --overload to override)`)
       }
     }
 
@@ -176,9 +169,9 @@ const config = function (options = {}, events) {
     }
   } catch (error) {
     if (events) events.fail(error)
-    if (strict || fatal || error.code === 'MALFORMED_DOTENVXFILE') throw error
+    if (strict || fatal) throw error
 
-    logger.error(redactOutput(error.messageWithHelp || error.message, sensitiveValues))
+    logger.error(error.messageWithHelp || error.message)
 
     return { parsed: {}, error }
   }

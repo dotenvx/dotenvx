@@ -84,9 +84,6 @@ export interface DotenvConfigOptions {
    */
   path?: string | string[] | URL;
 
-  /** Select a named Dotenvxfile profile when no explicit paths are supplied. */
-  profile?: string;
-
   /**
    * Specify the encoding of your file containing environment variables.
    *
@@ -111,7 +108,6 @@ export interface DotenvConfigOptions {
 
   /**
    * Throw immediately if an error is encountered - like a missing .env file.
-   * Includes Dotenvxfile validation failures. Dotenvxfile strict settings also enforce throwing.
    * @default false
    * @example require('@dotenvx/dotenvx').config({ strict: true })
    */
@@ -257,11 +253,6 @@ export interface DotenvPopulateInput {
 
 /**
  * Loads `.env` file contents into process.env by default.
- * Reads Dotenvxfile from the current directory and validates the final resolved environment.
- * Validation failures warn and return an error, or throw when strictness is enabled.
- * Invalid Dotenvxfile syntax always throws.
- * With a Dotenvxfile, subsequent Node stdout/stderr writes are automatically redacted.
- * Environment and returned values remain unchanged; native writes and inherited child output bypass redaction.
  *
  * @see https://dotenvx.com/docs
  *

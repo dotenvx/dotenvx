@@ -1598,7 +1598,7 @@ $ dotenvx check
 
 Dotenvxfile values default to `redacted: true`: `run` masks their values in child stdout/stderr and resolved-value debug output, while the child still receives the real values. Set `redacted: false` for values that may appear in output. This is independent of `encrypted: true`, which controls encryption in `encrypt`, `set`, and `protect`, and is validated against loaded files by `check`.
 
-The synchronous `dotenvx.config()` API reads Dotenvxfile for file selection and redaction, without validating resolved values or file encryption. With a Dotenvxfile, `config()` automatically redacts subsequent writes through Node's stdout/stderr streams, including existing `console.log` and `console.error` calls. Environment values and returned values stay unchanged. Repeated calls retain earlier secrets and add newly loaded ones. An unfinished secret prefix is masked at shutdown. Direct native writes and child processes inheriting file descriptors bypass these wrappers; use `dotenvx run` to capture child output.
+The synchronous `dotenvx.config()` API loads environment values without reading Dotenvxfile or modifying stdout/stderr. Use `path`, `envs`, or `convention` to select inputs.
 
 ```ruby
 file ".env.development" do
@@ -1609,7 +1609,7 @@ end
 
 `Dotenvxfile` is the default policy filename. Existing `Envfile` files remain supported as a fallback when no Dotenvxfile is present. When both exist, Dotenvxfile takes precedence. Create Dotenvxfile manually with the rules you want to enforce.
 
-`check`, `run`, and `config()` enforce file encryption rules only for keys whose effective values come from files. An environment value that wins precedence does not require encryption, even if a loaded file also contains a plaintext assignment for that key. Blank values and `op://` / `bw://` references are exempt, as with Git protection.
+`check` enforces file encryption rules only for keys whose effective values come from files. An environment value that wins precedence does not require encryption, even if a loaded file also contains a plaintext assignment for that key. Blank values and `op://` / `bw://` references are exempt, as with Git protection.
 
 Root and file-level `redacted` settings are not supported. Use per-key `redacted: false` to permit output visibility. When selected files specify conflicting options, the first file's explicit option wins. `check` previews values with policy-driven redaction and reports issues per key.
 

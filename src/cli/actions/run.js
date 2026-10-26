@@ -7,8 +7,9 @@ const executeCommand = require('./../../lib/helpers/executeCommand')
 const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const envsResolver = require('../../lib/resolvers/envs')
-const selectDotenvxfileEnvs = require('../../lib/helpers/selectDotenvxfileEnvs')
-const readDotenvxfile = require('../../lib/dotenvxfile/parsing/readDotenvxfile')
+const normalizeDotenvConfigPath = require('../../lib/helpers/normalizeDotenvConfigPath')
+const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
+const determine = require('../../lib/helpers/envResolution/determine')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const Session = require('../../db/session')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
@@ -30,7 +31,7 @@ function inferCommandArgsFromProcessArgv (argv) {
   if (separatorIndex !== -1) return args.slice(separatorIndex + 1)
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '-f' || args[i] === '--file' || args[i] === '--env-file' || args[i] === '--profile') {
+    if (args[i] === '-f' || args[i] === '--file' || args[i] === '--env-file') {
       i++
       continue
     }
@@ -99,8 +100,7 @@ async function run () {
   }
 
   try {
-    const envs = selectDotenvxfileEnvs(this.envs, options, process.env)
-    const schema = readDotenvxfile(undefined, envs.filter(env => env.type === 'envFile').map(env => env.value))
+    const envs = determine(buildCommandEnvs(normalizeDotenvConfigPath(this.envs, process.env), options.convention), process.env)
     const session = new Session()
     const noArmor = options.armor === false || (!(options.token || process.env.DOTENVX_TOKEN) && (await session.noArmor()))
     const { processedEnvs, readableFilepaths } = await envsResolver({
@@ -117,8 +117,8 @@ async function run () {
       onStatus: statusReporter(spinner)
     })
 
-    if (schema.exists || options.redact === true) {
-      sensitiveValues = redactedValues(processedEnvs, schema, process.env, options.redact === true)
+    if (options.redact === true) {
+      sensitiveValues = redactedValues(processedEnvs)
     }
 
     logger.debug(redactOutput(`options: ${JSON.stringify(debugOptions)}`, sensitiveValues))
