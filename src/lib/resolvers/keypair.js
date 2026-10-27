@@ -23,21 +23,20 @@ function buildOptions ({ publicKey, processEnv, fk }) {
   return options
 }
 
-function outputKeypair ({ out, filepath, publicKey, ring }) {
-  const { publicKeyName, privateKeyName } = keynames(filepath)
-
-  out[publicKeyName] = publicKey || null
-  out[privateKeyName] = publicKey ? ring[publicKey] || null : null
+function appendKeyValue (out, name, value) {
+  out[name] = [out[name], value].filter(Boolean).join(',') || null
 }
 
-function providerValue (origins) {
-  const filepaths = Object.keys(origins)
-  return filepaths.length === 1 ? origins[filepaths[0]] : origins
+function outputKeypair ({ out, filepath, src, publicKey, ring, custody }) {
+  const { publicKeyName, privateKeyName, keyCustodyName } = keynames(filepath, src)
+
+  appendKeyValue(out, publicKeyName, publicKey)
+  appendKeyValue(out, privateKeyName, publicKey ? ring[publicKey] : null)
+  appendKeyValue(out, keyCustodyName, custody)
 }
 
 async function keypair (options = {}) {
   const out = {}
-  const origins = {}
   const processEnv = options.processEnv || process.env
 
   for (const filepath of filepaths(options.envFile)) {
@@ -75,17 +74,15 @@ async function keypair (options = {}) {
       ring = {}
     }
 
-    outputKeypair({ out, filepath, publicKey, ring })
-    origins[filepath] = publicKey && (ring[publicKey] || confirmedProvider) ? origin : null
+    const custody = publicKey && (ring[publicKey] || confirmedProvider) ? origin : null
+    outputKeypair({ out, filepath, src, publicKey, ring, custody })
   }
 
-  out.provider = providerValue(origins)
   return out
 }
 
 function keypairSync (options = {}) {
   const out = {}
-  const origins = {}
   const processEnv = options.processEnv || process.env
 
   for (const filepath of filepaths(options.envFile)) {
@@ -122,11 +119,10 @@ function keypairSync (options = {}) {
       ring = {}
     }
 
-    outputKeypair({ out, filepath, publicKey, ring })
-    origins[filepath] = publicKey && (ring[publicKey] || confirmedProvider) ? origin : null
+    const custody = publicKey && (ring[publicKey] || confirmedProvider) ? origin : null
+    outputKeypair({ out, filepath, src, publicKey, ring, custody })
   }
 
-  out.provider = providerValue(origins)
   return out
 }
 

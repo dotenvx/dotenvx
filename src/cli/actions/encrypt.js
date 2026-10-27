@@ -7,6 +7,7 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const statusReporter = require('../../lib/helpers/statusReporter')
 const keypair = require('../../lib/resolvers/keypair')
+const keynames = require('../../lib/conventions/keynames')
 const { publickeys, injectsummary } = require('@dotenvx/primitives')
 
 async function encryptAction () {
@@ -74,7 +75,8 @@ async function encryptAction () {
       if (options.with !== undefined || options.quiet || row.error || row.keySources || !publickeys(row.envSrc || '').length) continue
       try {
         const resolved = await keypair({ ...options, envFile: [row.filepath], envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden, onStatus: statusReporter(null) })
-        row.keySources = { [publickeys(row.envSrc)[0]]: resolved.provider }
+        const { keyCustodyName } = keynames(row.filepath, row.envSrc)
+        row.keySources = { [publickeys(row.envSrc)[0]]: resolved[keyCustodyName] }
       } catch {}
     }
 

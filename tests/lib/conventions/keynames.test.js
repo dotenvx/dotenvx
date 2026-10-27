@@ -6,7 +6,8 @@ t.test('keynames returns base key names for .env', ct => {
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY',
-    privateKeyName: 'DOTENV_PRIVATE_KEY'
+    privateKeyName: 'DOTENV_PRIVATE_KEY',
+    keyCustodyName: 'DOTENV_KEY_CUSTODY'
   })
   ct.end()
 })
@@ -16,7 +17,8 @@ t.test('keynames returns environment key names for .env.production', ct => {
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_PRODUCTION',
-    privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION'
+    privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
+    keyCustodyName: 'DOTENV_KEY_CUSTODY_PRODUCTION'
   })
   ct.end()
 })
@@ -26,7 +28,8 @@ t.test('keynames returns local environment key names', ct => {
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_CI_LOCAL',
-    privateKeyName: 'DOTENV_PRIVATE_KEY_CI_LOCAL'
+    privateKeyName: 'DOTENV_PRIVATE_KEY_CI_LOCAL',
+    keyCustodyName: 'DOTENV_KEY_CUSTODY_CI_LOCAL'
   })
   ct.end()
 })
@@ -36,7 +39,8 @@ t.test('keynames handles .env1', ct => {
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_DEVELOPMENT1',
-    privateKeyName: 'DOTENV_PRIVATE_KEY_DEVELOPMENT1'
+    privateKeyName: 'DOTENV_PRIVATE_KEY_DEVELOPMENT1',
+    keyCustodyName: 'DOTENV_KEY_CUSTODY_DEVELOPMENT1'
   })
   ct.end()
 })
@@ -46,7 +50,8 @@ t.test('keynames truncates long environment suffixes', ct => {
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_CI_LOCAL',
-    privateKeyName: 'DOTENV_PRIVATE_KEY_CI_LOCAL'
+    privateKeyName: 'DOTENV_PRIVATE_KEY_CI_LOCAL',
+    keyCustodyName: 'DOTENV_KEY_CUSTODY_CI_LOCAL'
   })
   ct.end()
 })
@@ -56,7 +61,8 @@ t.test('keynames handles .env.txt', ct => {
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY',
-    privateKeyName: 'DOTENV_PRIVATE_KEY'
+    privateKeyName: 'DOTENV_PRIVATE_KEY',
+    keyCustodyName: 'DOTENV_KEY_CUSTODY'
   })
   ct.end()
 })
@@ -66,7 +72,8 @@ t.test('keynames handles .env.production.txt', ct => {
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_PRODUCTION',
-    privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION'
+    privateKeyName: 'DOTENV_PRIVATE_KEY_PRODUCTION',
+    keyCustodyName: 'DOTENV_KEY_CUSTODY_PRODUCTION'
   })
   ct.end()
 })
@@ -76,7 +83,8 @@ t.test('keynames handles uppercase filenames', ct => {
 
   ct.same(result, {
     publicKeyName: 'DOTENV_PUBLIC_KEY_LOCAL',
-    privateKeyName: 'DOTENV_PRIVATE_KEY_LOCAL'
+    privateKeyName: 'DOTENV_PRIVATE_KEY_LOCAL',
+    keyCustodyName: 'DOTENV_KEY_CUSTODY_LOCAL'
   })
   ct.end()
 })

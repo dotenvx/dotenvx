@@ -32,7 +32,6 @@ async function keypair (key) {
       onStatus: statusReporter(spinner)
     })
 
-    if (!key && ['shell', 'colon'].includes(options.format)) delete keypairs.provider
     const results = key ? keypairs[key] : keypairs
 
     if (spinner) spinner.stop()

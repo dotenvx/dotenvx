@@ -17,7 +17,7 @@ function setup ({ fileRing = {}, remoteRing = ring, noProvider = false } = {}) {
   const keyring = sinon.stub().callsFake(async ({ provider }) => provider('public-key'))
   const keyringSync = sinon.stub().callsFake(({ provider }) => provider('public-key'))
   const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
-    './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+    './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY', keyCustodyName: 'DOTENV_KEY_CUSTODY' }),
     './../helpers/fsx': {
       readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
       readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
@@ -40,7 +40,7 @@ for (const sync of [false, true]) {
       envKeysFilepath: '.env.custom.keys'
     })
 
-    ct.same(out, { ...expected, provider: '.env.keys' })
+    ct.same(out, { ...expected, DOTENV_KEY_CUSTODY: '.env.keys' })
     ct.same(fixture.file.firstCall.args, [{ fk: '.env.custom.keys' }])
     ct.same((sync ? fixture.getSync : fixture.get).firstCall.args, ['public-key'])
     ct.same((sync ? fixture.keyringSync : fixture.keyring).firstCall.args[0].fk, [])
@@ -51,21 +51,21 @@ for (const sync of [false, true]) {
     const fixture = setup({ noProvider: true })
     const out = await lookup(fixture, { envFile: '.env', noArmor: true })
 
-    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null, provider: null })
+    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null, DOTENV_KEY_CUSTODY: null })
     ct.equal((sync ? fixture.providers.sync : fixture.providers).firstCall.args[0].noArmor, true)
     ct.same((sync ? fixture.getSync : fixture.get).firstCall.args, ['public-key'])
   })
 
   t.test(`keypair ${mode} still reads file keys with noArmor`, async ct => {
     const fixture = setup({ noProvider: true, fileRing: ring })
-    ct.same(await lookup(fixture, { envFile: '.env', noArmor: true }), { ...expected, provider: '.env.keys' })
+    ct.same(await lookup(fixture, { envFile: '.env', noArmor: true }), { ...expected, DOTENV_KEY_CUSTODY: '.env.keys' })
   })
 
   t.test(`keypair ${mode} falls back to a provider when the file has no matching key`, async ct => {
     const fixture = setup({ fileRing: { 'another-key': 'another-private-key' } })
     const out = await lookup(fixture, { envFile: '.env' })
 
-    ct.same(out, { ...expected, provider: 'custom' })
+    ct.same(out, { ...expected, DOTENV_KEY_CUSTODY: 'custom' })
     const get = sync ? fixture.getSync : fixture.get
     const provider = sync ? fixture.providerSync : fixture.provider
     ct.same(provider.firstCall.args, ['public-key'])
@@ -87,7 +87,7 @@ for (const sync of [false, true]) {
 
     const out = await lookup(fixture, { envFile: '.env', onStatus })
 
-    ct.same(out, { ...expected, provider: 'armor' })
+    ct.same(out, { ...expected, DOTENV_KEY_CUSTODY: 'armor' })
     ct.equal(providers.firstCall.args[0].envFile, '.env')
     ct.equal(providers.firstCall.args[0].onStatus, onStatus)
     ct.same(onStatus.firstCall.args, ['waiting for approval'])
