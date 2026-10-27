@@ -1,4 +1,4 @@
-const fs = require('node:fs')
+const fsx = require('../../lib/helpers/fsx')
 const primitives = require('@dotenvx/primitives')
 const { logger } = require('../../shared/logger')
 const get = require('../../lib/resolvers/get')
@@ -12,7 +12,7 @@ module.exports = async function check () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(this.opts()))
 
   try {
-    const policy = primitives.policy(fs.readFileSync('Dotenvxfile'))
+    const policy = primitives.policy(fsx.readFileXSync('Dotenvxfile'))
     const session = new Session()
     const { parsed: finalEnv, errors: loadingErrors } = await get({
       envs: this.envs,
