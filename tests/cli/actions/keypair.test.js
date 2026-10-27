@@ -52,7 +52,7 @@ t.test('keypair', async ct => {
   const optsStub = sinon.stub().returns({})
   const fakeContext = { opts: optsStub }
   const { keypair, keypairResolver } = loadKeypairAction({
-    result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }
+    result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>', provider: '.env.keys' }
   })
 
   const stdout = await captureStdout(async () => {
@@ -60,7 +60,7 @@ t.test('keypair', async ct => {
   })
 
   t.ok(keypairResolver.called, 'keypair resolver called')
-  t.equal(stdout, `${JSON.stringify({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }, null, 0)}\n`)
+  t.equal(stdout, `${JSON.stringify({ DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>', provider: '.env.keys' }, null, 0)}\n`)
 
   ct.end()
 })
@@ -86,7 +86,7 @@ t.test('keypair --format shell', async ct => {
   const optsStub = sinon.stub().returns({ format: 'shell' })
   const fakeContext = { opts: optsStub }
   const { keypair, keypairResolver } = loadKeypairAction({
-    result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }
+    result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>', provider: '.env.keys' }
   })
 
   const stdout = await captureStdout(async () => {
@@ -120,7 +120,7 @@ t.test('keypair --format colon', async ct => {
   const optsStub = sinon.stub().returns({ format: 'colon' })
   const fakeContext = { opts: optsStub }
   const { keypair, keypairResolver } = loadKeypairAction({
-    result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }
+    result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>', provider: '.env.keys' }
   })
 
   const stdout = await captureStdout(async () => {
@@ -227,7 +227,7 @@ t.test('keypair updates spinner text while waiting for approval', async ct => {
   }
   const { keypair, keypairResolver } = loadKeypairAction({
     spinner: fakeSpinner,
-    result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>' }
+    result: { DOTENV_PUBLIC_KEY: '<publicKey>', DOTENV_PRIVATE_KEY: '<privateKey>', provider: '.env.keys' }
   })
   keypairResolver.callsFake(async function (options) {
     options.onStatus('[ACCESS_APPROVAL_REQUIRED] press Enter to open [https://armor.dotenvx.com/grants/grant-token-123] and approve (027 C9C)')
@@ -270,3 +270,11 @@ t.test('keypair logs provider errors without an uncaught stack', async ct => {
   ct.ok(processExitStub.notCalled, 'leaves process termination to the command lifecycle')
   ct.end()
 })
+
+for (const format of ['json', 'shell', 'colon']) {
+  t.test(`keypair provider --format ${format}`, async ct => {
+    const { keypair } = loadKeypairAction({ result: { provider: '.env.keys' } })
+    const stdout = await captureStdout(() => keypair.call({ opts: () => ({ format }) }, 'provider'))
+    ct.equal(stdout, format === 'colon' ? 'provider:.env.keys\n' : '.env.keys\n')
+  })
+}

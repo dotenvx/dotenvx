@@ -73,7 +73,7 @@ async function encryptAction () {
     for (const row of processedEnvs) {
       if (options.with !== undefined || options.quiet || row.error || row.keySources || !publickeys(row.envSrc || '').length) continue
       try {
-        const resolved = await keypair({ ...options, envFile: [row.filepath], envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden, includeProvider: true, onStatus: statusReporter(null) })
+        const resolved = await keypair({ ...options, envFile: [row.filepath], envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden, onStatus: statusReporter(null) })
         row.keySources = { [publickeys(row.envSrc)[0]]: resolved.provider }
       } catch {}
     }

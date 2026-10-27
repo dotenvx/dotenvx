@@ -37,8 +37,7 @@ for (const sync of [false, true]) {
     const fixture = setup({ fileRing: ring })
     const out = await lookup(fixture, {
       envFile: '.env',
-      envKeysFilepath: '.env.custom.keys',
-      includeProvider: true
+      envKeysFilepath: '.env.custom.keys'
     })
 
     ct.same(out, { ...expected, provider: '.env.keys' })
@@ -50,7 +49,7 @@ for (const sync of [false, true]) {
 
   t.test(`keypair ${mode} handles missing keys when no provider is enabled`, async ct => {
     const fixture = setup({ noProvider: true })
-    const out = await lookup(fixture, { envFile: '.env', noArmor: true, includeProvider: true })
+    const out = await lookup(fixture, { envFile: '.env', noArmor: true })
 
     ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: null, provider: null })
     ct.equal((sync ? fixture.providers.sync : fixture.providers).firstCall.args[0].noArmor, true)
@@ -59,12 +58,12 @@ for (const sync of [false, true]) {
 
   t.test(`keypair ${mode} still reads file keys with noArmor`, async ct => {
     const fixture = setup({ noProvider: true, fileRing: ring })
-    ct.same(await lookup(fixture, { envFile: '.env', noArmor: true }), expected)
+    ct.same(await lookup(fixture, { envFile: '.env', noArmor: true }), { ...expected, provider: '.env.keys' })
   })
 
   t.test(`keypair ${mode} falls back to a provider when the file has no matching key`, async ct => {
     const fixture = setup({ fileRing: { 'another-key': 'another-private-key' } })
-    const out = await lookup(fixture, { envFile: '.env', includeProvider: true })
+    const out = await lookup(fixture, { envFile: '.env' })
 
     ct.same(out, { ...expected, provider: 'custom' })
     const get = sync ? fixture.getSync : fixture.get
@@ -86,7 +85,7 @@ for (const sync of [false, true]) {
     if (sync) fixture.providerSync.callsFake(resolve)
     else fixture.provider.callsFake(async publicKey => resolve(publicKey))
 
-    const out = await lookup(fixture, { envFile: '.env', onStatus, includeProvider: true })
+    const out = await lookup(fixture, { envFile: '.env', onStatus })
 
     ct.same(out, { ...expected, provider: 'armor' })
     ct.equal(providers.firstCall.args[0].envFile, '.env')

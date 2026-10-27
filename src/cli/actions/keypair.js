@@ -21,7 +21,6 @@ async function keypair (key) {
     const errors = []
     const keypairs = await keypairResolver({
       onError: error => errors.push(error),
-      includeProvider: key === 'provider' || (!key && !['shell', 'colon'].includes(options.format)),
       envFile: options.envFile,
       envKeysFile: options.envKeysFile,
       armor: options.armor,
@@ -33,6 +32,7 @@ async function keypair (key) {
       onStatus: statusReporter(spinner)
     })
 
+    if (!key && ['shell', 'colon'].includes(options.format)) delete keypairs.provider
     const results = key ? keypairs[key] : keypairs
 
     if (spinner) spinner.stop()

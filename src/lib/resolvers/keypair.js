@@ -30,6 +30,11 @@ function outputKeypair ({ out, filepath, publicKey, ring }) {
   out[privateKeyName] = publicKey ? ring[publicKey] || null : null
 }
 
+function providerValue (origins) {
+  const filepaths = Object.keys(origins)
+  return filepaths.length === 1 ? origins[filepaths[0]] : origins
+}
+
 async function keypair (options = {}) {
   const out = {}
   const origins = {}
@@ -74,10 +79,7 @@ async function keypair (options = {}) {
     origins[filepath] = publicKey && (ring[publicKey] || confirmedProvider) ? origin : null
   }
 
-  if (options.includeProvider) {
-    const names = Object.keys(origins)
-    out.provider = names.length === 1 ? origins[names[0]] : origins
-  }
+  out.provider = providerValue(origins)
   return out
 }
 
@@ -124,10 +126,7 @@ function keypairSync (options = {}) {
     origins[filepath] = publicKey && (ring[publicKey] || confirmedProvider) ? origin : null
   }
 
-  if (options.includeProvider) {
-    const names = Object.keys(origins)
-    out.provider = names.length === 1 ? origins[names[0]] : origins
-  }
+  out.provider = providerValue(origins)
   return out
 }
 
