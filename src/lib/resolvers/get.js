@@ -12,13 +12,11 @@ function collectErrors (processedEnvs) {
   return errors
 }
 
-function result ({ key, all, includeKeySources }, processedEnvs, processEnv) {
+function result ({ key, all }, processedEnvs, processEnv) {
   const errors = collectErrors(processedEnvs)
   const parsed = {}
-  const resolved = { parsed, errors }
-  if (includeKeySources) {
-    resolved.keySources = Object.assign({}, ...processedEnvs.map(row => row.keySources))
-  }
+  const keySources = Object.assign({}, ...processedEnvs.map(row => row.keySources))
+  const resolved = { parsed, errors, keySources }
 
   if (key) {
     const value = processEnv[key]

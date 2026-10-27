@@ -94,7 +94,6 @@ async function setTransform (options = {}) {
       } else {
         // Compare plaintext before rewriting ciphertext; surface any provider approval.
         const { parsed, keySources } = await getResolver({
-          includeKeySources: true,
           key,
           envs: [env],
           all: true,

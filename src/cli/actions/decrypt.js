@@ -99,10 +99,10 @@ async function decrypt () {
       }]))
       if (changedFilepaths.length > 0) {
         const summary = injectsummary.sources(changedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
-        logger.success(`◇ decrypted ${summary.files.join(',')}${summary.suffix}`)
+        logger.success(`◇ decrypted ${summary.files.join('; ')}${summary.suffix}`)
       } else if (unchangedFilepaths.length > 0) {
         const summary = injectsummary.sources(unchangedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
-        logger.info(`○ no change to ${summary.files.join(',')}${summary.suffix}`)
+        logger.info(`○ no change to ${summary.files.join('; ')}${summary.suffix}`)
       } else {
         // do nothing - scenario when no .env files found
       }
