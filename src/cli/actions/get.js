@@ -1,3 +1,4 @@
+const { match } = require('@dotenvx/primitives')
 const statusReporter = require('../../lib/helpers/statusReporter')
 const { logger } = require('./../../shared/logger')
 
@@ -10,7 +11,18 @@ const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDote
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
-const filterKeys = require('../../lib/helpers/filterKeys')
+
+function filter (parsed, includeKeys, excludeKeys) {
+  const include = includeKeys && match(includeKeys)
+  const exclude = excludeKeys && match(excludeKeys)
+
+  return Object.fromEntries(Object.entries(parsed).filter(([key]) => {
+    if (include && !include(key)) return false
+    if (exclude && exclude(key)) return false
+
+    return true
+  }))
+}
 
 async function get (key) {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(this.opts()))
@@ -32,7 +44,7 @@ async function get (key) {
     const sesh = new Session()
     const noArmor = options.armor === false || (await sesh.noArmor())
     const noNative = options.native === false || options.noNative === true
-    const { parsed: resolved, errors } = await getResolver({
+    const { parsed, errors } = await getResolver({
       key,
       envs,
       convention: options.convention,
@@ -45,7 +57,7 @@ async function get (key) {
       noBitwarden: options.bitwarden === false || options.noBitwarden === true,
       onStatus: statusReporter(spinner)
     })
-    const parsed = filterKeys(resolved, options.includeKey, options.excludeKey)
+    const filtered = filter(parsed, options.includeKey, options.excludeKey)
 
     for (const error of errors || []) {
       if (options.strict) throw error // throw immediately if strict
@@ -65,13 +77,13 @@ async function get (key) {
         showChar = 6
       }
 
-      for (const key of Object.keys(parsed)) {
-        parsed[key] = mask(parsed[key], showChar)
+      for (const key of Object.keys(filtered)) {
+        filtered[key] = mask(filtered[key], showChar)
       }
     }
 
     if (key) {
-      const single = parsed[key]
+      const single = filtered[key]
       if (single === undefined) {
         console.log('')
       } else {
@@ -81,7 +93,7 @@ async function get (key) {
       if (options.format === 'eval' || options.format === 'eval-export') {
         const prefix = options.format === 'eval-export' ? 'export ' : ''
         let inline = ''
-        for (const [key, value] of Object.entries(parsed)) {
+        for (const [key, value] of Object.entries(filtered)) {
           inline += `${prefix}${key}=${escape(value)}\n`
         }
         inline = inline.trim()
@@ -89,7 +101,7 @@ async function get (key) {
         console.log(inline)
       } else if (options.format === 'shell') {
         let inline = ''
-        for (const [key, value] of Object.entries(parsed)) {
+        for (const [key, value] of Object.entries(filtered)) {
           inline += `${key}=${value} `
         }
         inline = inline.trim()
@@ -97,7 +109,7 @@ async function get (key) {
         console.log(inline)
       } else if (options.format === 'colon') {
         let inline = ''
-        for (const [key, value] of Object.entries(parsed)) {
+        for (const [key, value] of Object.entries(filtered)) {
           inline += `${key}:${value} `
         }
         inline = inline.trim()
@@ -109,7 +121,7 @@ async function get (key) {
           space = 2
         }
 
-        console.log(JSON.stringify(parsed, null, space))
+        console.log(JSON.stringify(filtered, null, space))
       }
     }
 

@@ -15,8 +15,9 @@ function collectErrors (processedEnvs) {
 function result ({ key, all }, processedEnvs, processEnv) {
   const errors = collectErrors(processedEnvs)
   const parsed = {}
+  const declared = {}
   const custodies = Object.assign({}, ...processedEnvs.map(row => row.custodies))
-  const resolved = { parsed, errors, custodies, processedEnvs }
+  const resolved = { declared, parsed, errors, custodies, processedEnvs }
 
   if (key) {
     const value = processEnv[key]
@@ -40,8 +41,7 @@ function result ({ key, all }, processedEnvs, processEnv) {
     }
   }
 
-  // todo: here try to pull in policy keys somehow
-
+  // { parsed, errors, custodies, processedEnvs }
   return resolved
 }
 
@@ -84,8 +84,6 @@ async function get (options = {}) {
   //   readableFilepaths: ['.env']
   // }
   //
-  // 'injected' here communicate it was written to processEnv object
-
   return result(options, processedEnvs, processEnv)
 }
 
