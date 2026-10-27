@@ -16,13 +16,11 @@ Example:
       "keys": {
         "PORT": {
           "env": {"type":"port","required":true,"strict":true},
-          "fs": {"encrypted":false},
-          "stdio": {"redacted":false}
+          "stdout": {"redacted":false}
         },
         "API_KEY": {
           "env": {"type":"string","required":true,"strict":true},
-          "fs": {"encrypted":true},
-          "stdio": {"redacted":true}
+          "stdout": {"redacted":true}
         }
       }
     }' \\
@@ -33,7 +31,7 @@ Output:
 
   --policy takes the resolved JSON returned by primitives policy.
   --env supplies the values to check; no files or shell environment are loaded.
-  check validates env rules and applies stdio redaction; fs rules describe storage policy.
+  check validates env rules and applies stdout redaction when present.
   Output is JSON containing checked values and errors.`)
     .allowExcessArguments(false)
     .action(commandAction(require('../actions/primitives/check')))
@@ -93,19 +91,15 @@ Examples:
     .action(commandAction(require('../actions/primitives/keypair')))
 
   command.command('policy')
-    .description('resolve policy source for selected files and print JSON')
-    .requiredOption('--source <text>', 'policy source text in Dotenvxfile syntax')
+    .description('resolve environment rules from Dotenvxfile source and print JSON')
+    .requiredOption('--source <text>', 'Dotenvxfile source text')
     .option('--file <paths>', 'comma-separated env files, first file wins (default: .env)')
     .addHelpText('after', `
-Examples:
-  Resolve inline policy source:
-    dotenvx primitives policy --source 'env "PORT", type: "port", required: true'
-
-  Read source from a file using your shell and select production rules:
-    dotenvx primitives policy --source "$(cat Dotenvxfile)" --file .env.production
+Example:
+  dotenvx primitives policy --source 'env "PORT", type: "port", required: true' --file .env.production
 
   --source is policy text. --file selects rules; it does not read an env file.
-  Output is JSON containing the resolved keys and their policy rules.`)
+  Output contains keys with env and stdout rules.`)
     .allowExcessArguments(false)
     .action(commandAction(require('../actions/primitives/policy')))
 
@@ -121,4 +115,32 @@ Output:
   token=[REDACTED] password=[REDACTED]`)
     .allowExcessArguments(false)
     .action(commandAction(require('../actions/primitives/redact')))
+
+  command.command('storagecheck')
+    .description('check stored values against a storage policy and print JSON')
+    .requiredOption('--policy <json>', 'resolved storage policy as JSON')
+    .requiredOption('--values <json>', 'original stored names and values as JSON')
+    .addHelpText('after', `
+Example:
+  dotenvx primitives storagecheck \\
+    --policy '{"keys":{"TOKEN":{"storage":{"type":"encrypted","required":true,"strict":true}}}}' \\
+    --values '{"TOKEN":"encrypted:example"}'
+
+  Pass original stored strings, before decryption. No files are read.
+  Output is JSON containing checked values and errors, without redaction.`)
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitives/storagecheck')))
+
+  command.command('storagepolicy')
+    .description('resolve storage rules from Dotenvxfile source and print JSON')
+    .requiredOption('--source <text>', 'Dotenvxfile source text')
+    .option('--file <paths>', 'one env filename (default: .env)')
+    .addHelpText('after', `
+Example:
+  dotenvx primitives storagepolicy --source 'storage "encrypted"\nenv "PORT", storage: "plaintext"' --file .env.production
+
+  --source is policy text. --file selects rules; it does not read an env file.
+  Output contains keys with storage rules.`)
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitives/storagepolicy')))
 }
