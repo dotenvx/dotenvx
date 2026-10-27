@@ -1,7 +1,7 @@
 const fsx = require('../../lib/helpers/fsx')
 const primitives = require('@dotenvx/primitives')
 const { logger } = require('../../shared/logger')
-const get = require('../../lib/resolvers/get')
+const getResolver = require('../../lib/resolvers/get')
 const Session = require('../../db/session')
 const Errors = require('../../lib/helpers/errors')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
@@ -15,10 +15,9 @@ module.exports = async function check () {
   try {
     const policy = primitives.policy(fsx.readFileXSync('Dotenvxfile'))
     const session = new Session()
-    const { parsed: finalEnv, errors: loadingErrors, keySources } = await get({
+    const { parsed: finalEnv, errors: loadingErrors } = await getResolver({
       envs: this.envs,
       all: true,
-      includeKeySources: true,
       convention: options.convention,
       overload: options.overload,
       envKeysFile: resolveEnvKeysFile(options.envKeysFile),
@@ -27,16 +26,15 @@ module.exports = async function check () {
       no1Password: options['1password'] === false,
       noBitwarden: options.bitwarden === false
     })
+
     const { checked, errors: validationErrors } = primitives.check(policy, finalEnv)
-    const keys = new Set([...Object.keys(keySources), ...Object.keys(policy.keys)])
-    keys.delete('*')
-    for (const key of keys) {
+
+    for (const [key, value] of Object.entries(checked)) {
       if (/^DOTENV_(?:PUBLIC|PRIVATE)_KEY/.test(key)) continue
       const failures = validationErrors.filter(error => error.key === key)
       const declared = Object.hasOwn(policy.keys, key)
       const status = [declared ? '' : '!declared', ...failures.map(error => `!${error.rule}`)].filter(Boolean).join(', ')
-      const value = checked[key] === undefined ? '[MISSING]' : JSON.stringify(checked[key])
-      logger.verbose(`${failures.length ? '☠' : declared ? '✔' : '⚠'} ${key}=${value}${status ? ` # ${status}` : ''}`)
+      logger.verbose(`${failures.length ? '☠' : declared ? '✔' : '⚠'} ${key}=${JSON.stringify(value)}${status ? ` # ${status}` : ''}`)
     }
     const ignore = options.ignore || []
     const errors = [...loadingErrors]

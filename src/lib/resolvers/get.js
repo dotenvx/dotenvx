@@ -32,13 +32,13 @@ function result ({ key, all, processedEnvs, processEnv }) {
   }
 
   const parsed = {}
-  for (const processedEnv of processedEnvs) {
-    if (processedEnv.parsed) {
-      for (const key of Object.keys(processedEnv.parsed)) {
-        parsed[key] = processEnv[key]
-      }
+  for (const row of processedEnvs) {
+    for (const key of Object.keys(row.parsed || {})) {
+      parsed[key] = processEnv[key]
     }
   }
+
+  // todo: here try to pull in policy keys somehow
 
   return { parsed, errors }
 }
