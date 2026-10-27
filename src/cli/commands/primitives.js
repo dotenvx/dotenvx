@@ -5,6 +5,26 @@ module.exports = function primitives (command) {
     .description('standalone primitive operations')
     .action(function () { this.help() })
 
+  command.command('check')
+    .description('check the current environment against Dotenvxfile and print JSON')
+    .option('-f, --file <paths>', 'comma-separated env files for policy selection (default: .env)')
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitives/check')))
+
+  command.command('derive')
+    .description('derive and print a public key from a private key')
+    .argument('[privateKey]', 'hex-encoded private key')
+    .option('--stdin', 'read the private key from stdin')
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitives/derive')))
+
+  command.command('keypair')
+    .description('generate or restore a keypair and print JSON')
+    .argument('[privateKey]', 'hex-encoded private key to restore')
+    .option('--stdin', 'read the private key from stdin')
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitives/keypair')))
+
   command.command('policy')
     .description('print the Dotenvxfile policy for selected files as JSON')
     .option('-f, --file <paths>', 'comma-separated env files, first file wins (default: .env)')
@@ -18,18 +38,4 @@ module.exports = function primitives (command) {
     .option('--stdin', 'read text from stdin')
     .allowExcessArguments(false)
     .action(commandAction(require('../actions/primitives/redact')))
-
-  command.command('keypair')
-    .description('generate or restore a keypair and print JSON')
-    .argument('[privateKey]', 'hex-encoded private key to restore')
-    .option('--stdin', 'read the private key from stdin')
-    .allowExcessArguments(false)
-    .action(commandAction(require('../actions/primitives/keypair')))
-
-  command.command('derive')
-    .description('derive and print a public key from a private key')
-    .argument('[privateKey]', 'hex-encoded private key')
-    .option('--stdin', 'read the private key from stdin')
-    .allowExcessArguments(false)
-    .action(commandAction(require('../actions/primitives/derive')))
 }
