@@ -56,11 +56,11 @@ function envKeys (envFile) {
     return null
   }
 
-  const { parsed } = scan(src)
+  const { scanned } = scan(src)
 
-  if (!parsed || Object.keys(parsed).length === 0) return null
+  if (!scanned || Object.keys(scanned).length === 0) return null
 
-  return Object.keys(parsed)
+  return Object.keys(scanned)
 }
 
 function keypairMetadata (envFile = '.env', metadata = undefined) {

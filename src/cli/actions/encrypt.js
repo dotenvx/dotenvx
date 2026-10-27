@@ -7,6 +7,7 @@ const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const statusReporter = require('../../lib/helpers/statusReporter')
 const keypair = require('../../lib/resolvers/keypair')
+const keynames = require('../../lib/conventions/keynames')
 const { publickeys, injectsummary } = require('@dotenvx/primitives')
 
 async function encryptAction () {
@@ -71,24 +72,25 @@ async function encryptAction () {
     // Existing public keys can encrypt without private-key access. Metadata
     // lookup must never turn successful encryption into a failure.
     for (const row of processedEnvs) {
-      if (options.with !== undefined || options.quiet || row.error || row.keySources || !publickeys(row.envSrc || '').length) continue
+      if (options.with !== undefined || options.quiet || row.error || row.custodies || !publickeys(row.envSrc || '').length) continue
       try {
-        const resolved = await keypair({ ...options, envFile: [row.filepath], envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden, includeProvider: true, onStatus: statusReporter(null) })
-        row.keySources = { [publickeys(row.envSrc)[0]]: resolved.provider }
+        const resolved = await keypair({ ...options, envFile: [row.filepath], envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden, onStatus: statusReporter(null) })
+        const { keyCustodyName } = keynames(row.filepath, row.envSrc)
+        row.custodies = { [publickeys(row.envSrc)[0]]: resolved[keyCustodyName] }
       } catch {}
     }
 
     const summaryRows = new Map(processedEnvs.map(row => [row.envFilepath, {
       filepath: row.envFilepath,
       publicKeys: publickeys(row.envSrc || ''),
-      keySources: row.keySources
+      keyCustodies: Object.values(row.custodies || {})
     }]))
     if (changedFilepaths.length > 0) {
       const summary = injectsummary.sources(changedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
-      logger.success(`◈ encrypted ${summary.files.join(',')}${summary.suffix}`)
+      logger.success(`◈ encrypted ${summary.files.join('; ')}${summary.suffix}`)
     } else if (unchangedFilepaths.length > 0) {
       const summary = injectsummary.sources(unchangedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))
-      logger.info(`○ no change to ${summary.files.join(',')}${summary.suffix}`)
+      logger.info(`○ no change to ${summary.files.join('; ')}${summary.suffix}`)
     } else {
       // do nothing - scenario when no .env files found
     }

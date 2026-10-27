@@ -21,7 +21,6 @@ async function keypair (key) {
     const errors = []
     const keypairs = await keypairResolver({
       onError: error => errors.push(error),
-      includeProvider: key === 'provider' || (!key && !['shell', 'colon'].includes(options.format)),
       envFile: options.envFile,
       envKeysFile: options.envKeysFile,
       armor: options.armor,

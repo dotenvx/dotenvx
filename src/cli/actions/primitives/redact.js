@@ -1,19 +1,11 @@
 const { redact: _redact } = require('@dotenvx/primitives')
 const catchAndLog = require('../../../lib/helpers/catchAndLog')
 
-async function redact (text) {
-  const options = this.opts()
-  const stdin = options.stdin
-  const secret = options.secret
+async function redact () {
+  const { text, secrets } = this.opts()
 
   try {
-    if (stdin) {
-      process.stdin.setEncoding('utf8')
-      text = ''
-      for await (const chunk of process.stdin) text += chunk
-    }
-
-    const redacted = _redact(text, secret)
+    const redacted = _redact(text, secrets)
     console.log(redacted)
   } catch (error) {
     catchAndLog(error)

@@ -3,14 +3,15 @@ const canonicalEnvFilename = require('../helpers/canonicalEnvFilename')
 const environment = require('./environment')
 
 function keynames (filepath = '.env', src = '') {
-  const { parsed } = scan(src)
+  const { scanned } = scan(src)
 
   // src public key name wins
-  for (const publicKeyName in parsed) {
+  for (const publicKeyName in scanned) {
     if (publicKeyName.startsWith('DOTENV_PUBLIC_KEY')) {
       return {
         publicKeyName,
-        privateKeyName: publicKeyName.replace('DOTENV_PUBLIC_KEY', 'DOTENV_PRIVATE_KEY')
+        privateKeyName: publicKeyName.replace('DOTENV_PUBLIC_KEY', 'DOTENV_PRIVATE_KEY'),
+        keyCustodyName: publicKeyName.replace('DOTENV_PUBLIC_KEY', 'DOTENV_KEY_CUSTODY')
       }
     }
   }
@@ -21,7 +22,8 @@ function keynames (filepath = '.env', src = '') {
   if (filename === '.env') {
     return {
       publicKeyName: 'DOTENV_PUBLIC_KEY',
-      privateKeyName: 'DOTENV_PRIVATE_KEY'
+      privateKeyName: 'DOTENV_PRIVATE_KEY',
+      keyCustodyName: 'DOTENV_KEY_CUSTODY'
     }
   }
 
@@ -30,7 +32,8 @@ function keynames (filepath = '.env', src = '') {
 
   return {
     publicKeyName: `DOTENV_PUBLIC_KEY_${resolvedEnvironment}`,
-    privateKeyName: `DOTENV_PRIVATE_KEY_${resolvedEnvironment}`
+    privateKeyName: `DOTENV_PRIVATE_KEY_${resolvedEnvironment}`,
+    keyCustodyName: `DOTENV_KEY_CUSTODY_${resolvedEnvironment}`
   }
 }
 

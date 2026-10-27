@@ -5,13 +5,13 @@ const SERVER_SIDE_DECRYPTION_REQUIRED = 'SERVER_SIDE_DECRYPTION_REQUIRED'
 function withFileKeys (src, options, sync = false) {
   const keys = file({ fk: options.fk })
   const fallback = options.provider
-  const keySources = {}
+  const custodies = {}
   const environment = keyringSync({ processEnv: options.processEnv || process.env, fk: [], provider: null })
   for (const key of publickeys(src)) {
-    if (environment[key]) keySources[key] = 'environment'
+    if (environment[key]) custodies[key] = 'environment'
   }
   function found (publicKey, ring, source) {
-    if (ring[publicKey]) keySources[publicKey] = source || 'custom'
+    if (ring[publicKey]) custodies[publicKey] = source || 'custom'
     return ring
   }
   const provider = sync
@@ -25,7 +25,7 @@ function withFileKeys (src, options, sync = false) {
     }
   return {
     ...options,
-    keySources,
+    custodies,
     provider,
     // Provider lookup requires a public key. Keep legacy key discovery for
     // encrypted files that do not declare one, and for error recovery.
@@ -71,7 +71,7 @@ parseWithDecryptor.arrays = async function parsearraysWithDecryptor (src, option
 async function parseWith (src, options, parser) {
   options = withFileKeys(src, options)
   try {
-    return { ...await parser(src, options), keySources: options.keySources }
+    return { ...await parser(src, options), custodies: options.custodies }
   } catch (error) {
     if (error.code !== SERVER_SIDE_DECRYPTION_REQUIRED || typeof options.decryptor !== 'function') {
       if (typeof options.provider !== 'function') throw error
@@ -82,7 +82,7 @@ async function parseWith (src, options, parser) {
 
     try {
       const result = await options.decryptor(src, decryptOptions(error))
-      return { ...await parser(result.src, parseOptionsWithoutProvider(options)), keySources: { [decryptOptions(error).publicKey]: 'armor' } }
+      return { ...await parser(result.src, parseOptionsWithoutProvider(options)), custodies: { [decryptOptions(error).publicKey]: 'armor' } }
     } catch (decryptorError) {
       const result = await parser(src, parseOptionsWithoutProvider(options))
       return failedKeyAccessFallback(result, decryptorError)
@@ -93,7 +93,7 @@ async function parseWith (src, options, parser) {
 parseWithDecryptor.sync = function parseWithDecryptorSync (src, options = {}) {
   options = withFileKeys(src, options, true)
   try {
-    return { ...parseSync(src, options), keySources: options.keySources }
+    return { ...parseSync(src, options), custodies: options.custodies }
   } catch (error) {
     if (error.code !== SERVER_SIDE_DECRYPTION_REQUIRED || typeof options.decryptor !== 'function') {
       if (typeof options.provider !== 'function') throw error
@@ -104,7 +104,7 @@ parseWithDecryptor.sync = function parseWithDecryptorSync (src, options = {}) {
 
     try {
       const result = options.decryptor(src, decryptOptions(error))
-      return { ...parseSync(result.src, parseOptionsWithoutProvider(options)), keySources: { [decryptOptions(error).publicKey]: 'armor' } }
+      return { ...parseSync(result.src, parseOptionsWithoutProvider(options)), custodies: { [decryptOptions(error).publicKey]: 'armor' } }
     } catch (decryptorError) {
       const result = parseSync(src, parseOptionsWithoutProvider(options))
       return failedKeyAccessFallback(result, decryptorError)

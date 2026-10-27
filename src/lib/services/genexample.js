@@ -6,11 +6,11 @@ const findEnvFiles = require('../helpers/findEnvFiles')
 const { scan, upsert } = require('@dotenvx/primitives')
 
 function finalValues (src) {
-  const { parsed } = scan(src)
+  const { scanned } = scan(src)
   const result = {}
 
-  for (const key in parsed) {
-    const values = parsed[key]
+  for (const key in scanned) {
+    const values = scanned[key]
     result[key] = values[values.length - 1]
   }
 
