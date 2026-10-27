@@ -27,6 +27,15 @@ const ISSUE_BY_CODE = {
 }
 
 class Errors {
+  invalidEnv () {
+    const code = 'INVALID_ENV'
+    const message = `[${code}] ${this.message}`
+    const error = new Error(message)
+    error.code = code
+    error.messageWithHelp = message
+    return error
+  }
+
   constructor (options = {}) {
     this.filepath = options.filepath
     this.envFilepath = options.envFilepath

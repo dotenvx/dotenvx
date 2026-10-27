@@ -3,6 +3,7 @@ const primitives = require('@dotenvx/primitives')
 const { logger } = require('../../shared/logger')
 const get = require('../../lib/resolvers/get')
 const Session = require('../../db/session')
+const Errors = require('../../lib/helpers/errors')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
@@ -14,9 +15,10 @@ module.exports = async function check () {
   try {
     const policy = primitives.policy(fsx.readFileXSync('Dotenvxfile'))
     const session = new Session()
-    const { parsed: finalEnv, errors: loadingErrors } = await get({
+    const { parsed: finalEnv, errors: loadingErrors, keySources } = await get({
       envs: this.envs,
       all: true,
+      includeKeySources: true,
       convention: options.convention,
       overload: options.overload,
       envKeysFile: resolveEnvKeysFile(options.envKeysFile),
@@ -25,13 +27,36 @@ module.exports = async function check () {
       no1Password: options['1password'] === false,
       noBitwarden: options.bitwarden === false
     })
-    const { errors: validationErrors } = primitives.check(policy, finalEnv)
-    const errors = [...loadingErrors, ...validationErrors].filter(error => !(options.ignore || []).includes(error.code))
+    const { checked, errors: validationErrors } = primitives.check(policy, finalEnv)
+    const keys = new Set([...Object.keys(keySources), ...Object.keys(policy.keys)])
+    keys.delete('*')
+    for (const key of keys) {
+      if (/^DOTENV_(?:PUBLIC|PRIVATE)_KEY/.test(key)) continue
+      const failures = validationErrors.filter(error => error.key === key)
+      const declared = Object.hasOwn(policy.keys, key)
+      const status = [declared ? '' : '!declared', ...failures.map(error => `!${error.rule}`)].filter(Boolean).join(', ')
+      const value = checked[key] === undefined ? '[MISSING]' : JSON.stringify(checked[key])
+      logger.verbose(`${failures.length ? '☠' : declared ? '✔' : '⚠'} ${key}=${value}${status ? ` # ${status}` : ''}`)
+    }
+    const ignore = options.ignore || []
+    const errors = [...loadingErrors]
+    if (validationErrors.length) {
+      const error = new Errors({ message: validationErrors.map(error => error.message).join('; ') }).invalidEnv()
+      error.strict = validationErrors.some(error => error.strict)
+      errors.push(error)
+    }
 
-    for (const error of errors) logger.error(error.messageWithHelp || error.message)
-    if (errors.length) return { exitCode: 1, errorCount: errors.length }
+    let errorCount = 0
+    let exitCode = 0
+    for (const error of errors) {
+      if (ignore.includes(error.code)) continue
+      errorCount++
+      if (error.strict !== false) exitCode = 1
+      logger.error(error.messageWithHelp || error.message)
+    }
+    if (errorCount) return { exitCode, errorCount }
 
-    logger.success('valid environment per Dotenvxfile')
+    logger.success('◈ valid env per Dotenvxfile')
     return { exitCode: 0, errorCount: 0 }
   } catch (error) {
     if (error.code === 'PROMPT_CANCELLED') return { exitCode: 130, error }
