@@ -12,11 +12,15 @@ function collectErrors (processedEnvs) {
   return errors
 }
 
-function result ({ key, all, processedEnvs, processEnv }) {
+function result ({ key, all, includeKeySources }, processedEnvs, processEnv) {
   const errors = collectErrors(processedEnvs)
+  const parsed = {}
+  const resolved = { parsed, errors }
+  if (includeKeySources) {
+    resolved.keySources = Object.assign({}, ...processedEnvs.map(row => row.keySources))
+  }
 
   if (key) {
-    const parsed = {}
     const value = processEnv[key]
     parsed[key] = value
 
@@ -24,14 +28,14 @@ function result ({ key, all, processedEnvs, processEnv }) {
       errors.push(new Errors({ key }).missingKey())
     }
 
-    return { parsed, errors }
+    return resolved
   }
 
   if (all) {
-    return { parsed: processEnv, errors }
+    resolved.parsed = processEnv
+    return resolved
   }
 
-  const parsed = {}
   for (const row of processedEnvs) {
     for (const key of Object.keys(row.parsed || {})) {
       parsed[key] = processEnv[key]
@@ -40,7 +44,7 @@ function result ({ key, all, processedEnvs, processEnv }) {
 
   // todo: here try to pull in policy keys somehow
 
-  return { parsed, errors }
+  return resolved
 }
 
 function buildOptions (options, processEnv) {
@@ -59,28 +63,38 @@ function buildOptions (options, processEnv) {
 
 async function get (options = {}) {
   const processEnv = { ...(options.processEnv || process.env) }
-  const { processedEnvs } = await envsResolver(buildOptions(options, processEnv))
 
-  return resolveResult(options, processedEnvs, processEnv)
+  const { processedEnvs } = await envsResolver(buildOptions(options, processEnv))
+  // builds in memory processedEnvs
+  // {
+  //   processedEnvs: [
+  //     {
+  //       type: 'envFile',
+  //       filepath: '.env',
+  //       src: 'HELLO=World\n',
+  //       parsed: {
+  //         HELLO: 'World'
+  //       },
+  //       injected: {
+  //         HELLO: 'World',
+  //       },
+  //       existed: {},
+  //       keySources: {},
+  //       errors: []
+  //     }
+  //   ],
+  //   readableFilepaths: ['.env']
+  // }
+  //
+  // 'injected' here communicate it was written to processEnv object
+
+  return result(options, processedEnvs, processEnv)
 }
 
 function getSync (options = {}) {
   const processEnv = { ...(options.processEnv || process.env) }
   const { processedEnvs } = envsResolver.sync(buildOptions(options, processEnv))
-  return resolveResult(options, processedEnvs, processEnv)
-}
-
-function resolveResult (options, processedEnvs, processEnv) {
-  const resolved = result({
-    key: options.key,
-    all: options.all,
-    processedEnvs,
-    processEnv
-  })
-  if (options.includeKeySources) {
-    resolved.keySources = Object.assign({}, ...processedEnvs.map(row => row.keySources))
-  }
-  return resolved
+  return result(options, processedEnvs, processEnv)
 }
 
 module.exports = get

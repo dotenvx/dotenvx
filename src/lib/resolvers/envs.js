@@ -355,6 +355,25 @@ async function envs (options = {}) {
     }
   }
 
+  // {
+  //   processedEnvs: [
+  //     {
+  //       type: 'envFile',
+  //       filepath: '.env',
+  //       src: 'HELLO=World\n',
+  //       parsed: {
+  //         HELLO: 'World'
+  //       },
+  //       injected: {
+  //         HELLO: 'World',
+  //       },
+  //       existed: {},
+  //       keySources: {},
+  //       errors: []
+  //     }
+  //   ],
+  //   readableFilepaths: ['.env']
+  // }
   return {
     processedEnvs,
     readableFilepaths: [...readableFilepaths]
