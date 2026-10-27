@@ -13,9 +13,9 @@ module.exports = async function check () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(this.opts()))
 
   try {
-    const policy = primitives.policy(fsx.readFileXSync('Dotenvxfile'))
+    const source = fsx.readFileXSync('Dotenvxfile')
     const session = new Session()
-    const { parsed: finalEnv, errors: loadingErrors } = await getResolver({
+    const { parsed: finalEnv, errors: loadingErrors, processedEnvs } = await getResolver({
       envs: this.envs,
       all: true,
       convention: options.convention,
@@ -27,17 +27,26 @@ module.exports = async function check () {
       noBitwarden: options.bitwarden === false
     })
 
-    const { checked, errors: validationErrors } = primitives.check(policy, finalEnv)
-
-    for (const [key, value] of Object.entries(checked)) {
-      if (/^DOTENV_(?:PUBLIC|PRIVATE)_KEY/.test(key)) continue
-      const failures = validationErrors.filter(error => error.key === key)
-      const declared = Object.hasOwn(policy.keys, key)
-      const status = [declared ? '' : '!declared', ...failures.map(error => `!${error.rule}`)].filter(Boolean).join(', ')
-      logger.verbose(`${failures.length ? '☠' : declared ? '✔' : '⚠'} ${key}=${JSON.stringify(value)}${status ? ` # ${status}` : ''}`)
-    }
-    const ignore = options.ignore || []
+    const files = processedEnvs.filter(row => row.type === 'envFile')
+    const policy = primitives.policy(source, files.length ? files.map(row => row.filepath).join(',') : undefined)
     const errors = [...loadingErrors]
+    for (const file of files) {
+      if (file.src === undefined) continue
+      const storagePolicy = primitives.storagepolicy(source, file.filepath)
+      const { scanned } = primitives.scan(file.src)
+      const values = Object.fromEntries(Object.entries(scanned)
+        .filter(([key]) => !/^DOTENV_(?:PUBLIC|PRIVATE)_KEY/.test(key)))
+      const { errors: storageErrors } = primitives.storagecheck(storagePolicy, values)
+      if (storageErrors.length) {
+        const error = new Errors({ message: `${file.filepath}: ${storageErrors.map(error => error.message).join('; ')}` }).invalidStorage()
+        error.strict = storageErrors.some(error => error.strict)
+        errors.push(error)
+      }
+    }
+
+    const { errors: validationErrors } = primitives.check(policy, finalEnv)
+
+    const ignore = options.ignore || []
     if (validationErrors.length) {
       const error = new Errors({ message: validationErrors.map(error => error.message).join('; ') }).invalidEnv()
       error.strict = validationErrors.some(error => error.strict)

@@ -67,7 +67,7 @@ async function encryptTransform (options = {}) {
 
       if (options.with !== undefined) {
         // Inspect every assignment before selection can hide it.
-        const { parsed: existing } = scan(row.envSrc)
+        const { scanned: existing } = scan(row.envSrc)
         const declaredKeys = Object.entries(existing).filter(([key]) => isDotenvPublicKey(key)).flatMap(([, values]) => values)
         const matchingKey = declaredKeys.length > 0 && declaredKeys.every(value => value.toLowerCase() === options.with.toLowerCase())
         if (!matchingKey && (declaredKeys.length > 0 || Object.values(existing).some(values => values.some(encrypted)))) {
@@ -86,8 +86,8 @@ async function encryptTransform (options = {}) {
         }
       }
 
-      const { parsed } = scan(row.envSrc, { ik, ek })
-      const selected = Object.entries(parsed).filter(([key]) => {
+      const { scanned } = scan(row.envSrc, { ik, ek })
+      const selected = Object.entries(scanned).filter(([key]) => {
         if (isDotenvPublicKey(key)) return false
         return !isPlainKey(key)
       })

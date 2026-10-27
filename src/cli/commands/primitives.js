@@ -119,12 +119,12 @@ Output:
   command.command('storagecheck')
     .description('check stored values against a storage policy and print JSON')
     .requiredOption('--policy <json>', 'resolved storage policy as JSON')
-    .requiredOption('--values <json>', 'original stored names and values as JSON')
+    .requiredOption('--scanned <json>', 'original stored values as JSON arrays per key')
     .addHelpText('after', `
 Example:
   dotenvx primitives storagecheck \\
     --policy '{"keys":{"TOKEN":{"storage":{"type":"encrypted","required":true,"strict":true}}}}' \\
-    --values '{"TOKEN":"encrypted:example"}'
+    --scanned '{"TOKEN":["encrypted:example"]}'
 
   Pass original stored strings, before decryption. No files are read.
   Output is JSON containing checked values and errors, without redaction.`)

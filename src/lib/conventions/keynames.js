@@ -3,10 +3,10 @@ const canonicalEnvFilename = require('../helpers/canonicalEnvFilename')
 const environment = require('./environment')
 
 function keynames (filepath = '.env', src = '') {
-  const { parsed } = scan(src)
+  const { scanned } = scan(src)
 
   // src public key name wins
-  for (const publicKeyName in parsed) {
+  for (const publicKeyName in scanned) {
     if (publicKeyName.startsWith('DOTENV_PUBLIC_KEY')) {
       return {
         publicKeyName,

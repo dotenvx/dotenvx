@@ -15,7 +15,7 @@ function read (filename) {
 }
 
 function value (src, name) {
-  return src === undefined ? undefined : scan(src).parsed[name]?.at(-1)
+  return src === undefined ? undefined : scan(src).scanned[name]?.at(-1)
 }
 
 // Return the originating store with the key, so a move only removes that source.

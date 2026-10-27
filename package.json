@@ -53,7 +53,7 @@
   },
   "funding": "https://dotenvx.com",
   "dependencies": {
-    "@dotenvx/primitives": "^4.0.5",
+    "@dotenvx/primitives": "^4.0.6",
     "@dotenvx/providers": "^0.3.11",
     "@dotenvx/tooling": "^1.0.6",
     "undici": "^6.28.1",

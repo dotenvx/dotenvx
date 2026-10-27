@@ -194,6 +194,7 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
     const encoding = await detectEncoding(filepath)
     const src = await fsx.readFileX(filepath, { encoding })
     readableFilepaths.add(env.value)
+    row.src = src
 
     const { privateKeyName } = keynames(filepath)
     const fk = envKeysFilepath || (processEnv[privateKeyName] ? null : path.resolve(path.dirname(filepath), '.env.keys'))
@@ -213,7 +214,6 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
       existed
     } = await parseWithDecryptor(src, parseOptions)
 
-    row.src = src
     row.custodies = custodies
     row.parsed = parsed
     row.injected = injected || {}
@@ -257,6 +257,7 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
     const encoding = detectEncodingSync(filepath)
     const src = fsx.readFileXSync(filepath, { encoding })
     readableFilepaths.add(env.value)
+    row.src = src
 
     const { privateKeyName } = keynames(filepath)
     const fk = envKeysFilepath || (processEnv[privateKeyName] ? null : path.resolve(path.dirname(filepath), '.env.keys'))
@@ -276,7 +277,6 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
       existed
     } = parseWithDecryptor.sync(src, parseOptions)
 
-    row.src = src
     row.custodies = custodies
     row.parsed = parsed
     row.injected = injected || {}

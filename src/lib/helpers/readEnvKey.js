@@ -17,8 +17,8 @@ function readEnvKey (key, filepath, options = {}) {
     return undefined
   }
 
-  const { parsed } = scan(src)
-  const values = parsed[key]
+  const { scanned } = scan(src)
+  const values = scanned[key]
   const value = values ? values[values.length - 1] : undefined
   if (value === undefined) {
     const error = new Errors({ key }).missingKey()
