@@ -181,7 +181,7 @@ async function run () {
       return {
         filepath,
         publicKeys: row ? publickeys(row.src || '') : [],
-        keySources: row && row.keySources
+        keyCustodies: Object.values(row?.custodies || {})
       }
     })
     logger.success(injectsummary(injectedKeys.size, summaryRows))

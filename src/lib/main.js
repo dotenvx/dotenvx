@@ -156,7 +156,7 @@ const config = function (options = {}, events) {
       return {
         filepath,
         publicKeys: row ? publickeys(row.src || '') : [],
-        keySources: row && row.keySources
+        keyCustodies: Object.values(row?.custodies || {})
       }
     })
     logger.success(injectsummary(uniqueInjectedKeys(processedEnvs).size, summaryRows))

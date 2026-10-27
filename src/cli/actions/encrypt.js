@@ -72,18 +72,18 @@ async function encryptAction () {
     // Existing public keys can encrypt without private-key access. Metadata
     // lookup must never turn successful encryption into a failure.
     for (const row of processedEnvs) {
-      if (options.with !== undefined || options.quiet || row.error || row.keySources || !publickeys(row.envSrc || '').length) continue
+      if (options.with !== undefined || options.quiet || row.error || row.custodies || !publickeys(row.envSrc || '').length) continue
       try {
         const resolved = await keypair({ ...options, envFile: [row.filepath], envKeysFile: fk, noArmor, noNative, no1Password, noBitwarden, onStatus: statusReporter(null) })
         const { keyCustodyName } = keynames(row.filepath, row.envSrc)
-        row.keySources = { [publickeys(row.envSrc)[0]]: resolved[keyCustodyName] }
+        row.custodies = { [publickeys(row.envSrc)[0]]: resolved[keyCustodyName] }
       } catch {}
     }
 
     const summaryRows = new Map(processedEnvs.map(row => [row.envFilepath, {
       filepath: row.envFilepath,
       publicKeys: publickeys(row.envSrc || ''),
-      keySources: row.keySources
+      keyCustodies: Object.values(row.custodies || {})
     }]))
     if (changedFilepaths.length > 0) {
       const summary = injectsummary.sources(changedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))

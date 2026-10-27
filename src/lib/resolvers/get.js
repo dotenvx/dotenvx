@@ -15,8 +15,8 @@ function collectErrors (processedEnvs) {
 function result ({ key, all }, processedEnvs, processEnv) {
   const errors = collectErrors(processedEnvs)
   const parsed = {}
-  const keySources = Object.assign({}, ...processedEnvs.map(row => row.keySources))
-  const resolved = { parsed, errors, keySources }
+  const custodies = Object.assign({}, ...processedEnvs.map(row => row.custodies))
+  const resolved = { parsed, errors, custodies }
 
   if (key) {
     const value = processEnv[key]
@@ -77,7 +77,7 @@ async function get (options = {}) {
   //         HELLO: 'World',
   //       },
   //       existed: {},
-  //       keySources: {},
+  //       custodies: {},
   //       errors: []
   //     }
   //   ],

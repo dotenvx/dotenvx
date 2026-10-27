@@ -6,7 +6,7 @@ function logSetSummary (key, encrypt, result) {
   const rows = new Map(processedEnvs.map(row => [row.envFilepath, {
     filepath: `(${row.envFilepath})`,
     publicKeys: publickeys(row.envSrc || ''),
-    keySources: row.keySources
+    keyCustodies: Object.values(row.custodies || {})
   }]))
   const paths = changedFilepaths.length ? changedFilepaths : unchangedFilepaths
   if (!paths.length) return

@@ -96,13 +96,13 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
 
     const {
       parsed,
-      keySources,
+      custodies,
       errors,
       injected,
       existed
     } = await parseWithDecryptor(env.value, parseOptions)
 
-    row.keySources = keySources
+    row.custodies = custodies
     row.parsed = parsed
     row.errors = decryptErrors(parsed, errors)
     row.injected = injected || {}
@@ -151,13 +151,13 @@ function injectEnvSync ({ env, overload, processEnv, envKeysFilepath, provider, 
 
     const {
       parsed,
-      keySources,
+      custodies,
       errors,
       injected,
       existed
     } = parseWithDecryptor.sync(env.value, parseOptions)
 
-    row.keySources = keySources
+    row.custodies = custodies
     row.parsed = parsed
     row.errors = decryptErrors(parsed, errors)
     row.injected = injected || {}
@@ -207,14 +207,14 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
 
     const {
       parsed,
-      keySources,
+      custodies,
       errors,
       injected,
       existed
     } = await parseWithDecryptor(src, parseOptions)
 
     row.src = src
-    row.keySources = keySources
+    row.custodies = custodies
     row.parsed = parsed
     row.injected = injected || {}
     row.errors = decryptErrors(parsed, errors)
@@ -270,14 +270,14 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
 
     const {
       parsed,
-      keySources,
+      custodies,
       errors,
       injected,
       existed
     } = parseWithDecryptor.sync(src, parseOptions)
 
     row.src = src
-    row.keySources = keySources
+    row.custodies = custodies
     row.parsed = parsed
     row.injected = injected || {}
     row.errors = decryptErrors(parsed, errors)
@@ -368,7 +368,7 @@ async function envs (options = {}) {
   //         HELLO: 'World',
   //       },
   //       existed: {},
-  //       keySources: {},
+  //       custodies: {},
   //       errors: []
   //     }
   //   ],

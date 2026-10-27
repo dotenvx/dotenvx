@@ -79,7 +79,7 @@ async function setTransform (options = {}) {
         storage = result.storage
         publicKey = result.publicKey
         row.envSrc = mutateSrc({ envSrc: row.envSrc, envFilepath, keysFilepath: fk, publicKeyName, publicKeyValue: publicKey }).envSrc
-        row.keySources = { [publicKey]: Object.prototype.hasOwnProperty.call(result.stored, 'keysSrc') ? 'file' : (typeof storage === 'string' ? storage : storage.id) }
+        row.custodies = { [publicKey]: Object.prototype.hasOwnProperty.call(result.stored, 'keysSrc') ? 'file' : (typeof storage === 'string' ? storage : storage.id) }
         const stored = result.stored
         if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
@@ -93,7 +93,7 @@ async function setTransform (options = {}) {
         }
       } else {
         // Compare plaintext before rewriting ciphertext; surface any provider approval.
-        const { parsed, keySources } = await getResolver({
+        const { parsed, custodies } = await getResolver({
           key,
           envs: [env],
           all: true,
@@ -105,7 +105,7 @@ async function setTransform (options = {}) {
           onStatus: options.onStatus
         })
 
-        row.keySources = row.keySources || keySources
+        row.custodies = row.custodies || custodies
         const before = parsed[key]
         if (value !== before) {
           const encryptedValue = encrypt(publicKey, value)

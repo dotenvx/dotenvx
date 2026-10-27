@@ -95,7 +95,7 @@ async function decrypt () {
       const summaryRows = new Map(processedEnvs.map(row => [row.envFilepath, {
         filepath: row.envFilepath,
         publicKeys: publickeys(row.envSrc || ''),
-        keySources: row.keySources
+        keyCustodies: Object.values(row.custodies || {})
       }]))
       if (changedFilepaths.length > 0) {
         const summary = injectsummary.sources(changedFilepaths.map(filepath => summaryRows.get(filepath) || filepath))

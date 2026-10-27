@@ -101,7 +101,7 @@ async function encryptTransform (options = {}) {
         storage = result.storage
         publicKey = result.publicKey
         row.envSrc = mutateSrc({ envSrc: row.envSrc, envFilepath, keysFilepath: fk, publicKeyName, publicKeyValue: publicKey }).envSrc
-        row.keySources = { [publicKey]: Object.prototype.hasOwnProperty.call(result.stored, 'keysSrc') ? 'file' : (typeof storage === 'string' ? storage : storage.id) }
+        row.custodies = { [publicKey]: Object.prototype.hasOwnProperty.call(result.stored, 'keysSrc') ? 'file' : (typeof storage === 'string' ? storage : storage.id) }
         const stored = result.stored
         if (Object.prototype.hasOwnProperty.call(stored, 'keysSrc')) keysSrc = stored.keysSrc
         if (stored.nativePrivateKeyAdded) row.nativePrivateKeyAdded = true
