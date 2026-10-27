@@ -5,6 +5,12 @@ module.exports = function primitives (command) {
     .description('standalone primitive operations')
     .action(function () { this.help() })
 
+  command.command('policy')
+    .description('print the Dotenvxfile policy for selected files as JSON')
+    .option('-f, --file <paths>', 'comma-separated env files, first file wins (default: .env)')
+    .allowExcessArguments(false)
+    .action(commandAction(require('../actions/primitives/policy')))
+
   command.command('redact')
     .description('replace secret strings in text with [REDACTED]')
     .argument('[text]', 'text to redact')
