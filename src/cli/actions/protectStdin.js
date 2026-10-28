@@ -12,11 +12,11 @@ function exempt (filepath) {
 
 function fixMessage (filepath, privateKeyFile) {
   if (Array.from(filepath).some(char => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)) {
-    return privateKeyFile ? 'fix: add this private-key file to .gitignore' : 'fix: encrypt this env file or add it to .gitignore'
+    return privateKeyFile ? 'fix: run [dotenvx protect]' : 'fix: encrypt this env file or add it to .gitignore'
   }
   const argument = /^[a-zA-Z0-9_./-]+$/.test(filepath) ? filepath : "'" + filepath.replace(/'/g, "'\\''") + "'"
   return privateKeyFile
-    ? `fix: add ${JSON.stringify(filepath)} to .gitignore`
+    ? 'fix: run [dotenvx protect]'
     : `fix: run [dotenvx encrypt -f ${argument}]`
 }
 
