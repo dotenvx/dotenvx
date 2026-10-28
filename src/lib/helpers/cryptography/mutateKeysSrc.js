@@ -1,10 +1,4 @@
-const FIRST_TIME_KEYS_SRC = [
-  '#/------------------!DOTENV_PRIVATE_KEYS!-------------------/',
-  '#/ private decryption keys. DO NOT commit to source control /',
-  '#/     [how it works](https://dotenvx.com/encryption)       /',
-  '#/          ⛨ ARMORED KEYS: `dotenvx armor up`              /',
-  '#/----------------------------------------------------------/'
-].join('\n')
+const FIRST_TIME_KEYS_SRC = '# ⛉ private decryption keys (do not commit · ⇄ move with `dotenvx transfer`)'
 
 function mutateKeysSrc ({ keysSrc, privateKeyName, privateKeyValue, comment }) {
   const appendPrivateKey = [`# ${comment}`, `${privateKeyName}=${privateKeyValue}`, ''].join('\n')
