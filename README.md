@@ -2347,10 +2347,7 @@ Encrypt the contents of a `.env` file and send to stdout.
 ```sh
 $ echo "HELLO=World" > .env
 $ dotenvx encrypt --stdout
-#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
-#/            public-key encryption for .env files          /
-#/       [how it works](https://dotenvx.com/docs/quickstart/encryption)     /
-#/----------------------------------------------------------/
+# ◈ encrypted with Dotenvx
 DOTENV_PUBLIC_KEY="034af93e93708b994c10f236c96ef88e47291066946cce2e8d98c9e02c741ced45"
 # .env
 HELLO="encrypted:BDqDBibm4wsYqMpCjTQ6BsDHmMadg9K3dAt+Z9HPMfLEIRVz50hmLXPXRuDBXaJi/LwWYEVUNiq0HISrslzQPaoyS8Lotg3gFWJTsNCdOWnqpjF2xNUX2RQiP05kAbEXM6MWVjDr"
@@ -2479,10 +2476,7 @@ Decrypt the contents of an encrypted `.env` file and send to stdout.
 
 ```sh
 $ dotenvx decrypt --stdout
-#/-------------------[DOTENV_PUBLIC_KEY]--------------------/
-#/            public-key encryption for .env files          /
-#/       [how it works](https://dotenvx.com/docs/quickstart/encryption)     /
-#/----------------------------------------------------------/
+# ◈ encrypted with Dotenvx
 DOTENV_PUBLIC_KEY="034af93e93708b994c10f236c96ef88e47291066946cce2e8d98c9e02c741ced45"
 # .env
 HELLO="World"
