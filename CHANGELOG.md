@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.38.2...main)
 
+### Breaking changes
+
+* Remove `--mask` from `run`, `get`, and `decrypt`, and remove library `mask` options.
+* Remove `run --redact`. Configure output redaction through `Dotenvxfile` instead.
+
 ## [2.38.2](https://github.com/dotenvx/dotenvx/compare/v2.38.1...v2.38.2) (2026-10-20)
 
 ### Changed
