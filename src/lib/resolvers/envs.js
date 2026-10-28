@@ -316,17 +316,25 @@ function injectDotenvxFile ({ env, envs = [], processEnv }) {
     row.src = fsx.readFileXSync(row.filepath)
     const files = envs.filter(env => env.type === TYPE_ENV_FILE).map(env => env.value)
     row.parsed = parsedotenvxfileSync(row.src, files.length ? files.join(',') : undefined)
-    for (const key of Object.keys(row.parsed)) {
+    for (const [key, value] of Object.entries(row.parsed)) {
       if (Object.hasOwn(processEnv, key)) {
         row.existed[key] = processEnv[key]
       } else {
-        row.injected[key] = ''
-        processEnv[key] = ''
+        row.injected[key] = value
+        processEnv[key] = value
       }
     }
   } catch (error) {
     if (error.code === 'ENOENT') return []
-    row.errors.push(error)
+    if (error.code === 'MALFORMED_DOTENVXFILE') {
+      row.errors.push(new Errors({
+        code: error.code,
+        message: `[${error.code}] malformed file (${row.filepath})`,
+        debug: error.message
+      }).custom())
+    } else {
+      row.errors.push(error)
+    }
   }
   return [row]
 }

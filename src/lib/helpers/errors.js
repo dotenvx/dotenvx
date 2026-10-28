@@ -10,6 +10,7 @@ const ISSUE_BY_CODE = {
   INVALID_PUBLIC_KEY: 'https://github.com/dotenvx/dotenvx/issues/756',
   '1PASSWORD_FAILED': 'https://www.1password.dev/cli/get-started',
   BITWARDEN_FAILED: 'https://bitwarden.com/help/cli/',
+  MALFORMED_DOTENVXFILE: 'https://github.com/dotenvx/dotenvx/issues/1040',
   MALFORMED_ENCRYPTED_DATA: 'https://github.com/dotenvx/dotenvx/issues/467',
   MISPAIRED_PRIVATE_KEY: 'https://github.com/dotenvx/dotenvx/issues/752',
   MISSING_DIRECTORY: 'https://github.com/dotenvx/dotenvx/issues/758',
