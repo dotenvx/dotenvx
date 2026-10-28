@@ -3,7 +3,7 @@ const executeDynamic = require('./../../lib/helpers/executeDynamic')
 
 function configureArmorCommand (armor) {
   armor
-    .description('move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]')
+    .description('Dotenvx Armor ⛨')
     .allowUnknownOption()
     .argument('[command]', 'dotenvx-armor command')
     .argument('[args...]', 'dotenvx-armor command arguments')

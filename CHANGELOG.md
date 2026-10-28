@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Breaking changes
 
+* Remove `native`, `1password`, and `bitwarden` transfer commands. Armor commands and key loading integrations remain available.
 * Remove deprecated `gitignore`, `precommit`, and `prebuild` commands, including their `ext` aliases. Use `protect` for Git protection and `protect --docker` for Docker checks.
 * Remove `--mask` from `run`, `get`, and `decrypt`, and remove library `mask` options.
 * Remove `run --redact`. Configure output redaction through `Dotenvxfile` instead.
