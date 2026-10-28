@@ -10,7 +10,6 @@ const getResolver = require('./../../lib/resolvers/get')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
-const mask = require('../../lib/helpers/mask')
 const { applyRedaction } = require('../../lib/helpers/redaction')
 
 function filter (parsed, includeKeys, excludeKeys) {
@@ -73,17 +72,6 @@ async function get (key) {
     }
 
     if (spinner) spinner.stop()
-    if (options.mask !== undefined) {
-      let showChar = options.mask
-      if (options.mask === true) {
-        showChar = 6
-      }
-
-      for (const key of Object.keys(filtered)) {
-        filtered[key] = mask(filtered[key], showChar)
-      }
-    }
-
     if (key) {
       const single = filtered[key]
       if (single === undefined) {
