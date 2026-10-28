@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.38.2...main)
 
+### Added
+
+* Add interactive `transfer` command to move private keys between stores ([#1048](https://github.com/dotenvx/dotenvx/pull/1048)).
+
 ### Breaking changes
 
 * Remove `native`, `1password`, and `bitwarden` transfer commands. Armor commands and key loading integrations remain available.
