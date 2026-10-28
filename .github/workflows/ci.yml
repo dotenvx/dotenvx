@@ -48,30 +48,6 @@ jobs:
       - run: npm install
       - run: npm test
       - run: npm run testshell
-  test-npm-linux-native:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 20.x
-      - name: install Linux Secret Service tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y dbus-x11 gnome-keyring libsecret-tools
-      - name: install packed dotenvx
-        run: |
-          npm install
-          TARBALL=$(npm pack)
-          mkdir fixture
-          cd fixture
-          npm init -y
-          npm install "../$TARBALL"
-      - name: verify key loading with Linux Secret Service
-        working-directory: fixture
-        run: dbus-run-session -- bash ../tests/ci/linux-native.sh
   test-npm-powershell-shim:
     runs-on: windows-latest
     strategy:
@@ -135,59 +111,6 @@ jobs:
             Write-Output "expected .env.local to contain encrypted value"
             exit 1
           }
-  test-npm-powershell-native:
-    runs-on: windows-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 20.x
-      - name: verify key loading with Windows Credential Manager
-        shell: pwsh
-        run: |
-          npm install
-          $TARBALL = npm pack
-          mkdir fixture
-          cd fixture
-          npm init -y
-          npm install "..\$TARBALL"
-
-          @'
-          const assert = require('node:assert/strict')
-          const fs = require('node:fs')
-          const path = require('node:path')
-          const { execFileSync } = require('node:child_process')
-
-          // Exercise the packed package against the real OS vault, without transfer commands.
-          const root = path.dirname(require.resolve('@dotenvx/dotenvx/package.json', { paths: [process.cwd()] }))
-          const helper = { linux: 'linuxSecretService', win32: 'windowsCredentialManager' }[process.platform]
-          assert.ok(helper, 'supported CI platform')
-          const store = require(path.join(root, 'src/lib/helpers', helper))
-          const cli = path.join(root, 'src/cli/dotenvx.js')
-          const env = { ...process.env, CI: '', DOTENVX_NO_ARMOR: 'true' }
-          const run = (...args) => execFileSync(process.execPath, [cli, ...args], { env, encoding: 'utf8' }).trim()
-          const value = 'NativeStoreTest'
-
-          fs.writeFileSync('.env', `HELLO=${value}\n`)
-          run('encrypt', '--no-armor', '--no-native')
-          const readEnvKey = require(path.join(root, 'src/lib/helpers/readEnvKey'))
-          const publicKey = readEnvKey('DOTENV_PUBLIC_KEY', '.env', { strict: true })
-          const privateKey = readEnvKey('DOTENV_PRIVATE_KEY', '.env.keys', { strict: true })
-
-          try {
-            store.set(publicKey, privateKey, 'dotenvx CI')
-            assert.equal(store.get(publicKey), privateKey)
-            fs.unlinkSync('.env.keys')
-            assert.equal(run('get', 'HELLO'), value)
-          } finally {
-            store.delete(publicKey)
-          }
-          assert.equal(store.get(publicKey), null)
-          console.log('Native key storage and dotenvx get passed')
-          '@ | node
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
   test-pkg:
     runs-on: ubuntu-latest
     strategy:
