@@ -88,24 +88,6 @@ program.command('run')
     return require('./actions/run').apply(this, args)
   })
 
-// dotenvx check
-program.command('check', { hidden: true })
-  .description('check Dotenvxfile rules against .env file(s)')
-  .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
-  .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
-  .option('-o, --overload', 'override existing env variables (by default, existing env vars take precedence over .env files)')
-  .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
-  .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
-  .option('--no-armor', 'disable Dotenvx Armor features')
-  .option('--no-native', 'disable OS secret store features')
-  .option('--no-1password', 'disable 1Password secret reference resolution')
-  .option('--no-bitwarden', 'disable Bitwarden secret reference resolution')
-  .action(function (...args) {
-    this.envs = envs
-    return commandAction(require('./actions/check')).apply(this, args)
-  })
-
 // dotenvx get
 program.command('get')
   .usage('[KEY] [options]')
