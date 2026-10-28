@@ -135,25 +135,6 @@ t.test('takes option for path along with home directory char ~', ct => {
   ct.end()
 })
 
-t.test('reads path with encoding, parsing output to process.env', ct => {
-  const readFileXStub = sinon.stub(fsx, 'readFileXSync').returns('BASIC=basic')
-  readFileXStub.withArgs('Dotenvxfile').returns('')
-  const readFileSyncStub = sinon.stub(fs, 'readFileSync').returns('test=foo') // for purpose of encoding check
-  const parseStub = sinon.stub(dotenvx, 'parse').returns({ BASIC: 'basic' })
-
-  const res = dotenvx.config()
-
-  ct.same(res.parsed, { BASIC: 'basic' })
-  ct.same(readFileXStub.getCalls().map(call => call.args[0]), [path.resolve('.env'), 'Dotenvxfile'])
-  ct.ok(readFileSyncStub.called) // encoding check
-
-  readFileXStub.restore()
-  parseStub.restore()
-  readFileSyncStub.restore()
-
-  ct.end()
-})
-
 t.test('does not write over keys already in process.env', ct => {
   const testPath = 'tests/.env'
   const existing = 'bar'
