@@ -48,6 +48,70 @@ jobs:
       - run: npm install
       - run: npm test
       - run: npm run testshell
+  test-npm-linux-native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20.x
+      - name: install Linux Secret Service tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dbus-x11 gnome-keyring libsecret-tools expect
+      - name: install packed dotenvx
+        run: |
+          npm install
+          TARBALL=$(npm pack --pack-destination "$RUNNER_TEMP")
+          mkdir fixture
+          cd fixture
+          npm init -y
+          npm install "$RUNNER_TEMP/$TARBALL"
+      - name: encrypt with native storage and decrypt with get
+        working-directory: fixture
+        run: |
+          dbus-run-session -- bash -eu <<'BASH'
+          export CI= DOTENVX_NO_ARMOR=true DOTENVX_NO_1PASSWORD=true DOTENVX_NO_BITWARDEN=true
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/native-config"
+          export XDG_DATA_HOME="$RUNNER_TEMP/native-data"
+          export XDG_RUNTIME_DIR="$RUNNER_TEMP/native-runtime"
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
+          eval "$(printf '%s' 'dotenvx-ci' | gnome-keyring-daemon --unlock --components=secrets)"
+          cleanup () {
+            if [ -f .env ]; then
+              PUBLIC_KEY=$(sed -n 's/^DOTENV_PUBLIC_KEY="\([^"]*\)"/\1/p' .env)
+              if [ -n "$PUBLIC_KEY" ]; then
+                secret-tool clear service dotenvx public-key "$PUBLIC_KEY" || true
+              fi
+            fi
+          }
+          trap cleanup EXIT
+          printf 'HELLO=LinuxNative\n' > .env
+          expect <<'EXPECT'
+          set timeout 30
+          spawn ./node_modules/.bin/dotenvx encrypt --no-armor
+          expect {
+            "Choose private key custody" { send "\r" }
+            timeout { exit 1 }
+            eof { exit 1 }
+          }
+          expect {
+            "Choose local custody" { send "\033\[B\r" }
+            timeout { exit 1 }
+            eof { exit 1 }
+          }
+          expect {
+            eof {}
+            timeout { exit 1 }
+          }
+          exit [lindex [wait] 3]
+          EXPECT
+          grep -q '^HELLO=.*encrypted:' .env
+          test ! -f .env.keys
+          test "$(./node_modules/.bin/dotenvx get HELLO)" = 'LinuxNative'
+          BASH
   test-npm-powershell-shim:
     runs-on: windows-latest
     strategy:
@@ -110,6 +174,71 @@ jobs:
           if ($ENV_LOCAL -notmatch "encrypted:") {
             Write-Output "expected .env.local to contain encrypted value"
             exit 1
+          }
+  test-npm-powershell-native:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20.x
+      - name: encrypt with native storage and decrypt with PowerShell get
+        shell: pwsh
+        run: |
+          npm install
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $TARBALL = npm pack
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          mkdir fixture
+          cd fixture
+          npm init -y
+          npm install "..\$TARBALL" node-pty@1.1.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:CI = ''
+          $env:DOTENVX_NO_ARMOR = 'true'
+          $env:DOTENVX_NO_1PASSWORD = 'true'
+          $env:DOTENVX_NO_BITWARDEN = 'true'
+          "HELLO=WindowsNative" | Out-File -FilePath .env -Encoding utf8NoBOM
+          try {
+            @'
+          const pty = require('node-pty');
+          const child = pty.spawn('pwsh.exe', ['-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', String.raw`& .\node_modules\.bin\dotenvx.ps1 encrypt --no-armor; exit $LASTEXITCODE`], {
+            name: 'xterm-256color', cols: 120, rows: 30, cwd: process.cwd(), env: process.env
+          });
+          let stage = 0;
+          let output = '';
+          const timeout = setTimeout(() => {
+            console.error('Timed out selecting native storage');
+            child.kill();
+            process.exit(1);
+          }, 30000);
+          child.onData(data => {
+            process.stdout.write(data);
+            output += data;
+            if (stage === 0 && output.includes('Choose private key custody')) {
+              stage = 1;
+              output = '';
+              child.write('\r');
+            } else if (stage === 1 && output.includes('Choose local custody')) {
+              stage = 2;
+              output = '';
+              child.write('\x1b[B\r');
+            }
+          });
+          child.onExit(({ exitCode }) => {
+            clearTimeout(timeout);
+            process.exit(exitCode || (stage === 2 ? 0 : 1));
+          });
+          '@ | node
+            if ($LASTEXITCODE -ne 0) { throw 'Interactive native encryption failed' }
+            if ((Get-Content .env -Raw) -notmatch '(?m)^HELLO=.*encrypted:') { throw 'Expected encrypted HELLO' }
+            if (Test-Path .env.keys) { throw 'Native encryption unexpectedly wrote .env.keys' }
+            $VALUE = .\node_modules\.bin\dotenvx.ps1 get HELLO
+            if ($LASTEXITCODE -ne 0 -or $VALUE -ne 'WindowsNative') { throw 'get failed to decrypt through Credential Manager' }
+          } finally {
+            $PUBLIC_KEY = ((Get-Content .env | Select-String '^DOTENV_PUBLIC_KEY=').Line -split '=', 2)[1].Trim('"')
+            if ($PUBLIC_KEY) { & cmdkey.exe "/delete:dotenvx:$PUBLIC_KEY" | Out-Null }
           }
   test-pkg:
     runs-on: ubuntu-latest

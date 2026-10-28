@@ -6,10 +6,16 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
+* Introduce `Dotenvxfile`: declare environment rules, fail early with strict validation, control plaintext/encrypted storage, and redact secret output from one file ([#1038](https://github.com/dotenvx/dotenvx/pull/1038), [#1042](https://github.com/dotenvx/dotenvx/pull/1042), [#1043](https://github.com/dotenvx/dotenvx/pull/1043), [#1044](https://github.com/dotenvx/dotenvx/pull/1044)).
 * Add interactive `transfer` command to move private keys between stores ([#1048](https://github.com/dotenvx/dotenvx/pull/1048)).
+
+### Changed
+
+* Make `protect` a main command and apply `Dotenvxfile` storage rules when protecting Git commits and Docker builds ([#1045](https://github.com/dotenvx/dotenvx/pull/1045), [#1046](https://github.com/dotenvx/dotenvx/pull/1046)).
 
 ### Breaking changes
 
+* Replace `Envfile` with `Dotenvxfile`. Remove `--profile`, `spec`, and the standalone `check` command; environment validation now runs automatically during loading.
 * Remove `native`, `1password`, and `bitwarden` transfer commands. Armor commands and key loading integrations remain available.
 * Remove deprecated `gitignore`, `precommit`, and `prebuild` commands, including their `ext` aliases. Use `protect` for Git protection and `protect --docker` for Docker checks.
 * Remove `--mask` from `run`, `get`, and `decrypt`, and remove library `mask` options.
