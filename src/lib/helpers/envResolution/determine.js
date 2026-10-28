@@ -2,6 +2,7 @@ const dotenvPrivateKeyNames = require('./../dotenvPrivateKeyNames')
 const guessPrivateKeyFilename = require('./../guessPrivateKeyFilename')
 
 const TYPE_ENV_FILE = 'envFile'
+const TYPE_DOTENVX_FILE = 'dotenvxFile'
 const DEFAULT_ENVS = [{ type: TYPE_ENV_FILE, value: '.env' }]
 
 function envsFromDotenvPrivateKey (privateKeyNames) {
@@ -17,6 +18,7 @@ function envsFromDotenvPrivateKey (privateKeyNames) {
 
 function determine (envs = [], processEnv) {
   const privateKeyNames = dotenvPrivateKeyNames(processEnv)
+  const defaultDotenvxFile = { type: TYPE_DOTENVX_FILE, value: 'Dotenvxfile' }
 
   // https://github.com/dotenvx/dotenvx/issues/670
   let defaults = DEFAULT_ENVS // default to .env file expectation
@@ -26,7 +28,7 @@ function determine (envs = [], processEnv) {
   }
 
   if (!envs || envs.length <= 0) {
-    return defaults
+    return [...defaults, defaultDotenvxFile]
   } else {
     let fileAlreadySpecified = false
 
@@ -38,11 +40,11 @@ function determine (envs = [], processEnv) {
 
     // return early since envs array objects already contain 1 .env file
     if (fileAlreadySpecified) {
-      return envs
+      return [...envs, defaultDotenvxFile]
     }
 
     // no .env file specified as a flag so default to .env
-    return [...defaults, ...envs]
+    return [...defaults, ...envs, defaultDotenvxFile]
   }
 }
 
