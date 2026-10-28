@@ -86,6 +86,6 @@ t.test('feedback is listed only in the hidden menu', ct => {
   const commandHelp = execFileSync(process.execPath, [cli, 'feedback', '--help'], { encoding: 'utf8' })
   ct.notMatch(help, /feedback/)
   ct.match(hidden, /feedback \[message\]/)
-  ct.match(commandHelp, /send feedback to dotenvx/)
+  ct.match(commandHelp, /send us feedback/)
   ct.end()
 })
