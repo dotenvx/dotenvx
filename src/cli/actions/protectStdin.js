@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
-const plaintextKeys = require('../../lib/helpers/plaintextKeys')
+const { sealed } = require('@dotenvx/primitives')
+const readStoragePolicy = require('../../lib/helpers/readStoragePolicy')
 const { logger } = require('../../shared/logger')
 const createProtectSpinner = require('../../lib/helpers/createProtectSpinner')
 const logProtectedFiles = require('../../lib/helpers/logProtectedFiles')
@@ -22,7 +23,7 @@ function fixMessage (filepath, privateKeyFile) {
 function check (filepath, content, beforeError = () => {}) {
   const filename = path.posix.basename(filepath)
   const privateKeyFile = filename.startsWith('.env.keys')
-  const plaintext = !exempt(filepath) && plaintextKeys(content.toString('utf8')).length > 0
+  const plaintext = !privateKeyFile && !exempt(filepath) && !sealed(content.toString('utf8'), readStoragePolicy(filepath))
   if (privateKeyFile || plaintext) {
     const code = privateKeyFile ? 'PRIVATE_KEY_FILE' : 'PLAINTEXT_ENV'
     const fix = fixMessage(filepath, privateKeyFile)

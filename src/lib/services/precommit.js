@@ -5,6 +5,7 @@ const { ignore } = require('@dotenvx/tooling')
 
 const ls = require('../resolvers/ls')
 const { sealed } = require('@dotenvx/primitives')
+const readStoragePolicy = require('../helpers/readStoragePolicy')
 
 const InstallPrecommitHook = require('./../helpers/installPrecommitHook')
 const Errors = require('./../helpers/errors')
@@ -70,10 +71,10 @@ class Precommit {
           } else {
             if (filename !== '.env.example' && filename !== '.env.vault' && filename !== '.env.x') {
               const src = fsx.readFileXSync(file)
-              const encrypted = sealed(src)
+              const privateKeyFile = filename.startsWith('.env.keys')
+              const plaintext = !privateKeyFile && !sealed(src, readStoragePolicy(file))
 
-              // if contents are encrypted don't raise an error
-              if (!encrypted) {
+              if (privateKeyFile || plaintext) {
                 let errorMsg = `${file} not encrypted/gitignored`
                 let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx gitignore --pattern ${file}]`
                 if (file.includes('.env.keys')) {
