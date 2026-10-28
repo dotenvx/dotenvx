@@ -249,7 +249,7 @@ program.command('doctor', { hidden: true })
 
 // dotenvx feedback
 program.command('feedback', { hidden: true })
-  .description('send feedback to dotenvx')
+  .description('send us feedback')
   .argument('[message]', 'feedback message')
   .allowExcessArguments(false)
   .option('--hostname <hostname>', 'set API hostname')
@@ -261,7 +261,7 @@ program.command('feedback', { hidden: true })
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n  primitives             low-level tools for environment values and policies\n\nRun directly: dotenvx <command>`)
+  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send us feedback\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  armor                  Dotenvx Armor ⛨\n  curl                   Dotenvx Armor API\n  primitives             standalone primitives\n\nRun directly: dotenvx <command>`)
   .action(function () { this.outputHelp() })
 
 // dotenvx update
