@@ -48,7 +48,7 @@ async function selectKeyStorage (options = {}) {
     ]
     let initial = 'local'
     while (true) {
-      const category = await prompts.select({ message: 'Choose private key custody', choices, navigation: true, initial }, context)
+      const category = await prompts.select({ message: options.message || 'Choose private key custody', choices, navigation: true, initial }, context)
       if (!choices.some(choice => choice.value === category)) throw new Error('Invalid private key storage selection')
       let storage = category
       if (category !== 'armored') {
@@ -68,6 +68,7 @@ async function selectKeyStorage (options = {}) {
       }
       if (setup.has(storage)) throw new Error(setup.get(storage))
       if (storage === 'armored') {
+        if (options.existingKey) return storage
         while (true) {
           const keyType = await prompts.select({
             message: 'Choose key type',

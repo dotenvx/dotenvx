@@ -261,8 +261,16 @@ program.command('feedback', { hidden: true })
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => '\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send us feedback\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  armor                  Dotenvx Armor ⛨\n  curl                   Dotenvx Armor API\n  primitives             standalone primitives\n\nRun directly: dotenvx <command>')
+  .addHelpText('after', () => '\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send us feedback\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  armor                  Dotenvx Armor ⛨\n  curl                   Dotenvx Armor API\n  transfer               transfer a private key between stores\n  primitives             standalone primitives\n\nRun directly: dotenvx <command>')
   .action(function () { this.outputHelp() })
+
+// dotenvx transfer
+program.command('transfer', { hidden: true })
+  .description('transfer a private key between stores')
+  .option('-f, --env-file <path>', 'path to your env file', '.env')
+  .action(function (...args) {
+    return commandAction(require('./actions/transfer')).apply(this, args)
+  })
 
 // dotenvx update
 program.command('update', { hidden: true })

@@ -20,7 +20,7 @@ function value (src, name) {
 
 // Return the originating store with the key, so a move only removes that source.
 // Never look up Armor itself: these operations upload a locally held private key.
-module.exports = async function resolveLocalKey (envFile = '.env', { allowMissing = false } = {}) {
+module.exports = async function resolveLocalKey (envFile = '.env', { allowMissing = false, all = false } = {}) {
   const src = read(envFile)
   const { publicKeyName, privateKeyName } = keynames(envFile, src || '')
   let publicKey = value(src, publicKeyName)
@@ -29,12 +29,15 @@ module.exports = async function resolveLocalKey (envFile = '.env', { allowMissin
     throw new Errors({ key: publicKeyName }).missingKey()
   }
 
-  async function result (stored, remove, reread) {
+  const sources = []
+
+  async function result (stored, remove, reread, origin) {
     // A file-only push remains supported.
     if (!publicKey) publicKey = derive(stored)
     if (!matchesStoredKey(publicKey, stored)) throw new Error('private key does not match the .env public key')
     const privateKey = stored
     return {
+      ...origin,
       publicKey,
       privateKey,
       privateKeyName,
@@ -48,7 +51,11 @@ module.exports = async function resolveLocalKey (envFile = '.env', { allowMissin
   const files = [...new Set([path.resolve(path.dirname(envFile), '.env.keys'), path.resolve('.env.keys')])]
   for (const filename of files) {
     const stored = value(read(filename), privateKeyName)
-    if (stored) return result(stored, () => removeEnvKey(privateKeyName, filename), () => value(read(filename), privateKeyName))
+    if (stored) {
+      const source = await result(stored, () => removeEnvKey(privateKeyName, filename), () => value(read(filename), privateKeyName), { id: 'file', name: path.relative(process.cwd(), filename), filepath: filename })
+      if (!all) return source
+      sources.push(source)
+    }
   }
 
   if (publicKey) {
@@ -56,9 +63,15 @@ module.exports = async function resolveLocalKey (envFile = '.env', { allowMissin
       const custodian = custodians.get(id)
       if (!custodian.enabled() || (custodian.configured && !custodian.configured())) continue
       const stored = (await custodian.get(publicKey))?.[publicKey]
-      if (stored) return result(stored, () => custodian.delete(publicKey), async () => (await custodian.get(publicKey))?.[publicKey])
+      if (stored) {
+        const source = await result(stored, () => custodian.delete(publicKey), async () => (await custodian.get(publicKey))?.[publicKey], { id, name: custodian.name })
+        if (!all) return source
+        sources.push(source)
+      }
     }
   }
+
+  if (all) return sources
 
   // Up can be repeated for a key already held by Armor; the server verifies it.
   if (allowMissing) return { publicKey, privateKeyName, remove: async () => {} }
