@@ -31,6 +31,7 @@ const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgnore')
 const mask = require('./helpers/mask')
+const { applyRedaction } = require('./helpers/redaction')
 const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
 
 function uniqueInjectedKeys (processedEnvs) {
@@ -82,7 +83,8 @@ const config = function (options = {}, events) {
     const envs = options.envs || determine(buildCommandEnvs(normalizeDotenvConfigPath(buildConfigEnvs(options), { ...process.env, ...processEnv })), { ...process.env, ...processEnv })
     const {
       processedEnvs,
-      readableFilepaths
+      readableFilepaths,
+      sensitiveValues
     } = envsResolver.sync({
       envs,
       overload,
@@ -95,6 +97,8 @@ const config = function (options = {}, events) {
       noSpinner: options.noSpinner,
       token: options.token
     })
+
+    applyRedaction(sensitiveValues)
 
     if (options.mask !== undefined) {
       const showChar = options.mask === true ? 6 : options.mask
@@ -348,7 +352,8 @@ function prepareGet (key, options) {
   }
 }
 
-function getResult (key, options, { parsed, errors }, events) {
+function getResult (key, options, { parsed, errors, sensitiveValues }, events) {
+  applyRedaction(sensitiveValues)
   const ignore = options.ignore || []
 
   if (options.mask !== undefined) {

@@ -1,5 +1,6 @@
 const statusReporter = require('../../lib/helpers/statusReporter')
 const path = require('path')
+const { applyRedaction } = require('../../lib/helpers/redaction')
 const { injectsummary, publickeys } = require('@dotenvx/primitives')
 const { logger } = require('./../../shared/logger')
 
@@ -103,7 +104,7 @@ async function run () {
     const envs = determine(buildCommandEnvs(normalizeDotenvConfigPath(this.envs, process.env), options.convention), process.env)
     const session = new Session()
     const noArmor = options.armor === false || (!(options.token || process.env.DOTENVX_TOKEN) && (await session.noArmor()))
-    const { processedEnvs, readableFilepaths } = await envsResolver({
+    const { processedEnvs, readableFilepaths, sensitiveValues: policySecrets } = await envsResolver({
       envs,
       overload: options.overload,
       processEnv: process.env,
@@ -117,9 +118,8 @@ async function run () {
       onStatus: statusReporter(spinner)
     })
 
-    if (options.redact === true) {
-      sensitiveValues = redactedValues(processedEnvs)
-    }
+    sensitiveValues = [...new Set([...(policySecrets || []), ...(options.redact === true ? redactedValues(processedEnvs) : [])])]
+    applyRedaction(sensitiveValues)
 
     logger.debug(redactOutput(`options: ${JSON.stringify(debugOptions)}`, sensitiveValues))
     logger.debug(redactOutput(`process command [${commandArgs.join(' ')}]`, sensitiveValues))

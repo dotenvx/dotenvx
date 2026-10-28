@@ -11,6 +11,7 @@ const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDote
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
+const { applyRedaction } = require('../../lib/helpers/redaction')
 
 function filter (parsed, includeKeys, excludeKeys) {
   const include = includeKeys && match(includeKeys)
@@ -44,7 +45,7 @@ async function get (key) {
     const sesh = new Session()
     const noArmor = options.armor === false || (await sesh.noArmor())
     const noNative = options.native === false || options.noNative === true
-    const { parsed, errors } = await getResolver({
+    const { parsed, errors, sensitiveValues } = await getResolver({
       key,
       envs,
       convention: options.convention,
@@ -57,6 +58,7 @@ async function get (key) {
       noBitwarden: options.bitwarden === false || options.noBitwarden === true,
       onStatus: statusReporter(spinner)
     })
+    applyRedaction(sensitiveValues)
     const filtered = filter(parsed, options.includeKey, options.excludeKey)
 
     for (const error of errors || []) {
