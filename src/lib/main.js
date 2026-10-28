@@ -115,7 +115,7 @@ const config = function (options = {}, events) {
           continue // ignore error
         }
 
-        if (strict) {
+        if (strict || error.strict) {
           fatal = true
           throw error
         }
@@ -364,7 +364,7 @@ function getResult (key, options, { parsed, errors }, events) {
     }
 
     if (events) events.fail(error)
-    if (options.strict) throw error // throw immediately if strict
+    if (options.strict || error.strict) throw error
 
     logger.error(error.messageWithHelp || error.message)
   }

@@ -1,6 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypted } = require('@dotenvx/primitives')
+const { encrypted, policy, check } = require('@dotenvx/primitives')
 
 const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
@@ -309,6 +309,29 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
   return row
 }
 
+function checkDotenvxfile (envs, processEnv) {
+  if (!fsx.existsSync('Dotenvxfile')) return []
+
+  try {
+    const source = fsx.readFileXSync('Dotenvxfile')
+    const files = envs.filter(env => env.type === TYPE_ENV_FILE).map(env => env.value)
+    return check(policy(source, files.join(',')), processEnv).errors.map(error => {
+      const failure = new Error(`[${error.code}] ${error.message}`, { cause: error })
+      failure.code = error.code
+      failure.strict = error.strict
+      return failure
+    })
+  } catch (error) {
+    if (error.code === 'ENOENT') return []
+    return [error]
+  }
+}
+
+function appendPolicyErrors (processedEnvs, options, processEnv) {
+  const errors = checkDotenvxfile(options.envs || [], processEnv)
+  if (errors.length) processedEnvs.push({ type: 'policy', errors })
+}
+
 async function envs (options = {}) {
   const processedEnvs = []
   const readableFilepaths = new Set()
@@ -354,6 +377,8 @@ async function envs (options = {}) {
       }))
     }
   }
+
+  appendPolicyErrors(processedEnvs, options, processEnv)
 
   // {
   //   processedEnvs: [
@@ -424,6 +449,8 @@ function envsSync (options = {}) {
       }))
     }
   }
+
+  appendPolicyErrors(processedEnvs, options, processEnv)
 
   return {
     processedEnvs,
