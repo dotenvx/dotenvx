@@ -2199,7 +2199,7 @@ $ echo "HELLO=World" > .env
 
 $ dotenvx encrypt
 ◈ encrypted (.env) + local key (.env.keys)
-⮕  add .env.keys to .gitignore
+⮕  next run [dotenvx protect] to protect .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='122...0b8' dotenvx run -- yourcommand] to test decryption locally
 ```
 
@@ -2214,7 +2214,7 @@ $ echo "HELLO=Production" > .env.production
 
 $ dotenvx encrypt -f .env.production
 ◈ encrypted (.env.production) + local key (.env.keys)
-⮕  add .env.keys to .gitignore
+⮕  next run [dotenvx protect] to protect .env.keys
 ⮕  next run [DOTENV_PRIVATE_KEY='bff...bc4' dotenvx run -- yourcommand] to test decryption locally
 ```
 
