@@ -10,16 +10,8 @@ t.test('ext dynamic action forwards to executeExtension', (ct) => {
   const ext = proxyquire('../../../src/cli/commands/ext', {
     './../../lib/helpers/executeExtension': executeExtensionStub,
     '../../lib/helpers/removeDynamicHelpSection': () => {},
-    './../examples': {
-      gitignore: () => '',
-      prebuild: () => '',
-      precommit: () => ''
-    },
     './../actions/ls': sinon.stub(),
     './../actions/ext/genexample': sinon.stub(),
-    './../actions/ext/gitignore': sinon.stub(),
-    './../actions/ext/prebuild': sinon.stub(),
-    './../actions/ext/precommit': sinon.stub(),
     './../actions/ext/scan': sinon.stub()
   })
 
@@ -37,41 +29,24 @@ t.test('ext dynamic action forwards to executeExtension', (ct) => {
 t.test('ext subcommands lazy-load handlers and preserve this context', (ct) => {
   const lsStub = sinon.stub()
   const genexampleStub = sinon.stub()
-  const gitignoreStub = sinon.stub()
-  const prebuildStub = sinon.stub()
-  const precommitStub = sinon.stub()
   const scanStub = sinon.stub()
 
   const ext = proxyquire('../../../src/cli/commands/ext', {
     './../../lib/helpers/executeExtension': sinon.stub(),
     '../../lib/helpers/removeDynamicHelpSection': () => {},
-    './../examples': {
-      gitignore: () => '',
-      prebuild: () => '',
-      precommit: () => ''
-    },
     './../actions/ls': lsStub,
     './../actions/ext/genexample': genexampleStub,
-    './../actions/ext/gitignore': gitignoreStub,
-    './../actions/ext/prebuild': prebuildStub,
-    './../actions/ext/precommit': precommitStub,
     './../actions/ext/scan': scanStub
   })
 
   const commandToStub = {
     ls: lsStub,
     genexample: genexampleStub,
-    gitignore: gitignoreStub,
-    prebuild: prebuildStub,
-    precommit: precommitStub,
     scan: scanStub
   }
   const commandHasPositionalArg = {
     ls: true,
     genexample: true,
-    gitignore: false,
-    prebuild: true,
-    precommit: true,
     scan: false
   }
 
@@ -100,16 +75,8 @@ t.test('ext helpInformation removes dynamic section', (ct) => {
   const ext = proxyquire('../../../src/cli/commands/ext', {
     './../../lib/helpers/executeExtension': sinon.stub(),
     '../../lib/helpers/removeDynamicHelpSection': removeDynamicHelpSectionStub,
-    './../examples': {
-      gitignore: () => '',
-      prebuild: () => '',
-      precommit: () => ''
-    },
     './../actions/ls': sinon.stub(),
     './../actions/ext/genexample': sinon.stub(),
-    './../actions/ext/gitignore': sinon.stub(),
-    './../actions/ext/prebuild': sinon.stub(),
-    './../actions/ext/precommit': sinon.stub(),
     './../actions/ext/scan': sinon.stub()
   })
 

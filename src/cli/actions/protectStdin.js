@@ -16,7 +16,7 @@ function fixMessage (filepath, privateKeyFile) {
   }
   const argument = /^[a-zA-Z0-9_./-]+$/.test(filepath) ? filepath : "'" + filepath.replace(/'/g, "'\\''") + "'"
   return privateKeyFile
-    ? `fix: run [dotenvx gitignore --pattern ${argument}]`
+    ? `fix: add ${JSON.stringify(filepath)} to .gitignore`
     : `fix: run [dotenvx encrypt -f ${argument}]`
 }
 

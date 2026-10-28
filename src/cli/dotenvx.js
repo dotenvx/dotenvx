@@ -219,15 +219,6 @@ program.command('ls', { hidden: true })
     return commandAction(require('./actions/ls')).apply(this, args)
   })
 
-// dotenvx gitignore
-program.command('gitignore', { hidden: true })
-  .description('deprecated. use [dotenvx protect]')
-  .addHelpText('after', help.gitignore)
-  .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
-  .action(function (...args) {
-    return require('./actions/ext/gitignore').apply(this, args)
-  })
-
 // dotenvx genexample
 program.command('genexample', { hidden: true })
   .description('generate .env.example')
@@ -237,35 +228,15 @@ program.command('genexample', { hidden: true })
     return commandAction(require('./actions/ext/genexample')).apply(this, args)
   })
 
-// dotenvx precommit
-program.command('precommit', { hidden: true })
-  .description('deprecated. use [dotenvx protect]')
-  .addHelpText('after', help.precommit)
-  .argument('[directory]', 'directory to prevent committing .env files from', '.')
-  .option('-i, --install', 'install a pre-commit hook')
-  .option('--uninstall', 'remove the dotenvx pre-commit hook')
-  .action(function (...args) {
-    return require('./actions/ext/precommit').apply(this, args)
-  })
-
 // dotenvx protect
 program.command('protect', { hidden: true })
   .description('protect secrets and private keys from code commits')
   .argument('[directory]', 'directory to check with --docker', '.')
-  .addOption(program.createOption('--docker', 'check env files are encrypted or dockerignored').conflicts(['gitFile', 'gitProcess']))
+  .addOption(program.createOption('--docker', 'check env files comply with storage policy or are dockerignored').conflicts(['gitFile', 'gitProcess']))
   .addOption(program.createOption('--git-file <pathname>', 'check stdin contents for the given Git pathname').hideHelp())
   .addOption(program.createOption('--git-process', 'run the Git protection filter protocol').hideHelp())
   .action(function () {
     return require('./actions/protect').apply(this, arguments)
-  })
-
-// dotenvx prebuild
-program.command('prebuild', { hidden: true })
-  .description('deprecated. use [dotenvx protect --docker]')
-  .addHelpText('after', help.prebuild)
-  .argument('[directory]', 'directory to prevent including .env files from', '.')
-  .action(function (...args) {
-    return require('./actions/ext/prebuild').apply(this, args)
   })
 
 // dotenvx doctor
@@ -302,7 +273,7 @@ function hiddenSubcommands (name) {
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n${hiddenSubcommands('primitives')}\n\nDeprecated Commands:\n  gitignore              deprecated. use [dotenvx protect]\n  precommit [directory]  deprecated. use [dotenvx protect]\n  prebuild [directory]   deprecated. use [dotenvx protect --docker]\n\nRun directly: dotenvx <command>`)
+  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  protect                protect secrets and private keys from code commits\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n${hiddenSubcommands('primitives')}\n\nRun directly: dotenvx <command>`)
   .action(function () { this.outputHelp() })
 
 // dotenvx update

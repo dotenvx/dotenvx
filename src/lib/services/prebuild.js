@@ -47,7 +47,7 @@ class Prebuild {
         if (file === '.env.example' || file === '.env.vault' || file === '.env.x') {
           const warning = new Errors({
             message: `${file} ignored (should not be)`,
-            help: `fix: [dotenvx gitignore --pattern !${file}]`
+            help: `fix: remove ${file} from .dockerignore`
           }).custom()
           warnings.push(warning)
         }
@@ -58,10 +58,10 @@ class Prebuild {
 
           if (privateKeyFile || hasPlaintextSecrets(src, readStoragePolicy(file))) {
             let errorMsg = `${file} not encrypted/dockerignored`
-            let errorHelp = `fix: [dotenvx encrypt -f ${file}] or [dotenvx gitignore --pattern ${file}]`
+            let errorHelp = `fix: [dotenvx encrypt -f ${file}] or add ${file} to .dockerignore`
             if (privateKeyFile) {
               errorMsg = `${file} not dockerignored`
-              errorHelp = `fix: [dotenvx gitignore --pattern ${file}]`
+              errorHelp = `fix: add ${file} to .dockerignore`
             }
 
             throw new Errors({ message: errorMsg, help: errorHelp }).custom()

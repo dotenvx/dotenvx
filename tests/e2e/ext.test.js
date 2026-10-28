@@ -37,9 +37,9 @@ t.test('ext', ct => {
   const output = execShell(`${dotenvx} ext`)
 
   t.match(output, /genexample/, 'should say genexample')
-  t.match(output, /gitignore/, 'should say gitignore')
-  t.match(output, /prebuild/, 'should say prebuild')
-  t.match(output, /precommit/, 'should say precommit')
+  t.notMatch(output, /gitignore/, 'does not list gitignore')
+  t.notMatch(output, /prebuild/, 'does not list prebuild')
+  t.notMatch(output, /precommit/, 'does not list precommit')
 
   ct.end()
 })
@@ -70,32 +70,6 @@ t.test('genexample works as a direct command', ct => {
   ct.equal(result.exitCode, 0, 'genexample exits successfully')
   ct.match(result.output, /generated \(\.env\.example\)/, 'generates .env.example')
   ct.equal(fs.readFileSync(path.join(tempDir, '.env.example'), 'utf8'), '# .env.example - generated with dotenvx\n\nHELLO=\n')
-
-  ct.end()
-})
-
-t.test('precommit forwards a string directory to action', ct => {
-  const tempDir = fs.mkdtempSync(path.join(osTempDir, 'dotenvx-ext-precommit-'))
-  fs.writeFileSync(path.join(tempDir, '.gitignore'), '')
-
-  const result = runCommand(`${dotenvx} precommit`, tempDir)
-
-  ct.equal(result.exitCode, 0, 'precommit exits successfully')
-  ct.notMatch(result.output, /paths\[0\]/, 'does not fail with paths[0] type error')
-  ct.notMatch(result.output, /DEPRECATION NOTICE: \[precommit\]/, 'does not show deprecation notice')
-
-  ct.end()
-})
-
-t.test('prebuild forwards a string directory to action', ct => {
-  const tempDir = fs.mkdtempSync(path.join(osTempDir, 'dotenvx-ext-prebuild-'))
-  fs.writeFileSync(path.join(tempDir, '.dockerignore'), '')
-
-  const result = runCommand(`${dotenvx} prebuild`, tempDir)
-
-  ct.equal(result.exitCode, 0, 'prebuild exits successfully')
-  ct.notMatch(result.output, /paths\[0\]/, 'does not fail with paths[0] type error')
-  ct.notMatch(result.output, /DEPRECATION NOTICE: \[prebuild\]/, 'does not show deprecation notice')
 
   ct.end()
 })
