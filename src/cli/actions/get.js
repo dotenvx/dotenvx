@@ -60,11 +60,11 @@ async function get (key) {
     const filtered = filter(parsed, options.includeKey, options.excludeKey)
 
     for (const error of errors || []) {
-      if (options.strict) throw error // throw immediately if strict
-
       if (ignore.includes(error.code)) {
         continue // ignore error
       }
+
+      if (options.strict || error.strict) throw error
 
       errorCount += 1
       logger.error(error.messageWithHelp || error.message)

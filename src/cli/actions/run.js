@@ -148,7 +148,7 @@ async function run () {
           continue // ignore error
         }
 
-        if (options.strict) throw error // file-loading failures use the CLI strict flag
+        if (options.strict || error.strict) throw error
 
         if (error.code === 'MISSING_ENV_FILE' && options.convention) { // do not output error for conventions (too noisy)
           // intentionally quiet
