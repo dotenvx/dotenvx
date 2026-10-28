@@ -550,7 +550,7 @@ Commands:
     End
 
     Describe 'when already installed'
-      Before 'preinstall_dotenvx'
+      BeforeEach 'preinstall_dotenvx'
 
       It 'returns true and outputs a message'
         When call is_installed
@@ -697,7 +697,7 @@ Commands:
     End
 
     Describe 'when already installed at same location'
-      Before 'preinstall_dotenvx'
+      BeforeEach 'preinstall_dotenvx'
 
       It 'says already installed'
         When call run
