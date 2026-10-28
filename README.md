@@ -191,7 +191,9 @@ $ claude --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
 Hello [REDACTED]
 ```
 
@@ -212,7 +214,9 @@ $ codex --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
 Hello [REDACTED]
 ```
 
@@ -233,7 +237,9 @@ $ agent --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
 Hello [REDACTED]
 ```
 
@@ -1317,7 +1323,9 @@ Run Claude in print mode with real environment variables while redacting any val
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- claude -p 'Print the value of $SECRET'
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run --quiet -- claude -p 'Print the value of $SECRET'
 [REDACTED]
 ```
 
@@ -1329,7 +1337,9 @@ Start a fully interactive Claude session. Claude receives the real values, but a
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- claude
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run --quiet -- claude
 ```
 
 </details>
@@ -1340,7 +1350,9 @@ Run Codex non-interactively with real environment variables while redacting any 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- codex exec 'Print the value of $SECRET'
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run --quiet -- codex exec 'Print the value of $SECRET'
 [REDACTED]
 ```
 
@@ -1352,7 +1364,9 @@ Start a fully interactive Codex session. Codex receives the real values, but any
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- codex
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run --quiet -- codex
 ```
 
 </details>

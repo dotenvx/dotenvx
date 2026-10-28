@@ -19,7 +19,6 @@ const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvCo
 const mask = require('../../lib/helpers/mask')
 const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
-const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
 
 function inferCommandArgsFromProcessArgv (argv) {
@@ -118,7 +117,7 @@ async function run () {
       onStatus: statusReporter(spinner)
     })
 
-    sensitiveValues = [...new Set([...(policySecrets || []), ...(options.redact === true ? redactedValues(processedEnvs) : [])])]
+    sensitiveValues = policySecrets || []
     applyRedaction(sensitiveValues)
 
     logger.debug(redactOutput(`options: ${JSON.stringify(debugOptions)}`, sensitiveValues))
