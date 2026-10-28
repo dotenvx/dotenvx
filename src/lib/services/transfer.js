@@ -69,7 +69,7 @@ module.exports = async function transfer (envFile = '.env') {
     message: `Transfer private key from ${source.name} to`
   })
   const destination = custodians.get(selection)
-  const result = changed => ({ changed, publicKey, from: source.name, to: destination.name })
+  const result = changed => ({ changed, publicKey, from: source.name, to: destination.name, toId: selection })
   if (selection === source.id) {
     if (selection !== 'file' || source.filepath === keysFilepath) return result(false)
     if (fs.existsSync(source.filepath) && fs.existsSync(keysFilepath)) {
