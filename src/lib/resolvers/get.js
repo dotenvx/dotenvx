@@ -59,14 +59,14 @@ function buildOptions (options, processEnv) {
 
 async function get (options = {}) {
   const processEnv = { ...(options.processEnv || process.env) }
-  const { processedEnvs } = await envsResolver(buildOptions(options, processEnv))
-  return result(options, processedEnvs, processEnv)
+  const { processedEnvs, sensitiveValues } = await envsResolver(buildOptions(options, processEnv))
+  return { ...result(options, processedEnvs, processEnv), sensitiveValues }
 }
 
 function getSync (options = {}) {
   const processEnv = { ...(options.processEnv || process.env) }
-  const { processedEnvs } = envsResolver.sync(buildOptions(options, processEnv))
-  return result(options, processedEnvs, processEnv)
+  const { processedEnvs, sensitiveValues } = envsResolver.sync(buildOptions(options, processEnv))
+  return { ...result(options, processedEnvs, processEnv), sensitiveValues }
 }
 
 module.exports = get

@@ -8,7 +8,6 @@ const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 
 const decryptTransform = require('./../../lib/transforms/decrypt')
-const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 
 async function decrypt () {
   const options = this.opts()
@@ -44,16 +43,7 @@ async function decrypt () {
         errorCount += 1
         logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
       } else {
-        let showChar = options.mask
-        if (options.mask === true) {
-          showChar = 6
-        }
-
-        let envSrc = processedEnv.envSrc
-        if (options.mask !== undefined) {
-          envSrc = maskEnvSrc(processedEnv.envSrc, showChar)
-        }
-        console.log(envSrc)
+        console.log(processedEnv.envSrc)
       }
     }
 

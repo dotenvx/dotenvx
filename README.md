@@ -191,7 +191,9 @@ $ claude --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run -- claude -p 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --dangerously-skip-permissions
 Hello [REDACTED]
 ```
 
@@ -212,7 +214,9 @@ $ codex --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run -- codex exec 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --skip-git-repo-check
 Hello [REDACTED]
 ```
 
@@ -233,7 +237,9 @@ $ agent --version
 ```sh
 $ echo "HELLO=World" > .env
 
-$ dotenvx run --redact -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run -- agent -p --force 'Run `dotenvx get HELLO` and echo back just Hello VALUE' --output-format text
 Hello [REDACTED]
 ```
 
@@ -1317,7 +1323,9 @@ Run Claude in print mode with real environment variables while redacting any val
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- claude -p 'Print the value of $SECRET'
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run --quiet -- claude -p 'Print the value of $SECRET'
 [REDACTED]
 ```
 
@@ -1329,7 +1337,9 @@ Start a fully interactive Claude session. Claude receives the real values, but a
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- claude
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run --quiet -- claude
 ```
 
 </details>
@@ -1340,7 +1350,9 @@ Run Codex non-interactively with real environment variables while redacting any 
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- codex exec 'Print the value of $SECRET'
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run --quiet -- codex exec 'Print the value of $SECRET'
 [REDACTED]
 ```
 
@@ -1352,7 +1364,9 @@ Start a fully interactive Codex session. Codex receives the real values, but any
 ```sh
 $ echo "SECRET=super-secret-value" > .env
 
-$ dotenvx run --redact --quiet -- codex
+$ echo 'redacted true' > Dotenvxfile
+
+$ dotenvx run --quiet -- codex
 ```
 
 </details>
@@ -1662,21 +1676,6 @@ $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 ```
 
 </details>
-<details><summary>`run --mask`</summary><br>
-
-Inject masked values into the command. By default, up to the first six characters are visible.
-
-```sh
-$ echo "SECRET=abcdefghijkl" > .env
-$ echo "console.log(process.env.SECRET)" > index.js
-
-$ dotenvx run --mask --quiet -- node index.js
-abcdef******
-```
-
-Pass a number to control how many characters are visible, such as `--mask 0` to fully mask values.
-
-</details>
 <details><summary>`run --token`</summary><br>
 
 Set Armor ⛨ token for retrieving armored private keys.
@@ -1714,20 +1713,6 @@ $ echo "HELLO=World" > .env
 $ dotenvx get HELLO
 World
 ```
-
-</details>
-<details><summary>`get KEY --mask`</summary><br>
-
-Return a masked environment variable value. By default, up to the first six characters are visible.
-
-```sh
-$ echo "SECRET=abcdefghijkl" > .env
-
-$ dotenvx get SECRET --mask
-abcdef******
-```
-
-Pass a number to control how many characters are visible, such as `--mask 0` to fully mask values.
 
 </details>
 <details><summary>`get KEY --no-native`</summary><br>
@@ -2510,23 +2495,6 @@ $ dotenvx decrypt --stdout > somefile.txt
 ```
 
 </details>
-<details><summary>`decrypt --stdout --mask`</summary><br>
-
-Decrypt the contents of an encrypted `.env` file to stdout with its values masked. The encrypted `.env` file remains unchanged.
-
-```sh
-$ echo "SECRET=abcdefghijkl" > .env
-$ dotenvx encrypt
-◈ encrypted (.env)
-
-$ dotenvx decrypt --stdout --mask
-...
-SECRET="abcdef******"
-```
-
-Pass a number to control how many characters are visible, such as `--mask 0` to fully mask values.
-
-</details>
 <details><summary>`keypair`</summary><br>
 
 Print public/private keys for `.env` file.
@@ -2683,33 +2651,6 @@ Hello World
 ```
 
 It defaults to looking for a `.env` file.
-
-</details>
-<details><summary>`config(mask: true)` - mask</summary><br>
-
-Inject and return masked values. By default, up to the first six characters are visible.
-
-```ini
-# .env
-SECRET="abcdefghijkl"
-```
-
-```js
-// index.js
-const dotenvx = require('@dotenvx/dotenvx')
-const result = dotenvx.config({ mask: true, quiet: true })
-
-console.log(process.env.SECRET)
-console.log(result.parsed.SECRET)
-```
-
-```sh
-$ node index.js
-abcdef******
-abcdef******
-```
-
-Set `mask: 0` to fully mask values.
 
 </details>
 <details><summary>`config(path: ['.env.local', '.env'])` - multiple files</summary><br>
@@ -3095,28 +3036,9 @@ const dotenvx = require('@dotenvx/dotenvx')
 const decryptedValue = dotenvx.getSync('HELLO', { path: '.env.credentials', strict: true })
 ```
 
-`getSync()` accepts the same options as `get()`, including masking, multiple paths, and error handling. Omit the key to return all values from the selected files. It blocks while files and providers are resolved.
+`getSync()` accepts the same options as `get()`, including multiple paths and error handling. Omit the key to return all values from the selected files. It blocks while files and providers are resolved.
 
 If you already called `dotenvx.config()`, you can read the loaded value directly from `process.env.HELLO` instead.
-
-</details>
-<details><summary>`get(KEY, {mask:})`</summary><br>
-
-Programmatically return a masked environment variable value.
-
-```js
-// index.js
-const dotenvx = require('@dotenvx/dotenvx')
-const maskedValue = await dotenvx.get('SECRET', { mask: true })
-console.log(maskedValue)
-```
-
-```sh
-$ node index.js
-abcdef******
-```
-
-Set `mask: 0` to fully mask values.
 
 </details>
 

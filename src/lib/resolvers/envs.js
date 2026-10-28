@@ -1,5 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
+const { policyValues } = require('../helpers/redaction')
 const { encrypted, policy, check } = require('@dotenvx/primitives')
 
 const TYPE_ENV = 'env'
@@ -309,27 +310,32 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
   return row
 }
 
-function checkDotenvxfile (envs, processEnv) {
-  if (!fsx.existsSync('Dotenvxfile')) return []
+function checkDotenvxfile (envs, processEnv, loadedKeys) {
+  if (!fsx.existsSync('Dotenvxfile')) return { errors: [], sensitiveValues: [] }
 
   try {
     const source = fsx.readFileXSync('Dotenvxfile')
     const files = envs.filter(env => env.type === TYPE_ENV_FILE).map(env => env.value)
-    return check(policy(source, files.join(',')), processEnv).errors.map(error => {
+    const resolved = policy(source, files.join(','))
+    const sensitiveValues = policyValues(resolved, processEnv, loadedKeys)
+    const errors = check(resolved, processEnv).errors.map(error => {
       const failure = new Error(`[${error.code}] ${error.message}`, { cause: error })
       failure.code = error.code
       failure.strict = error.strict
       return failure
     })
+    return { errors, sensitiveValues }
   } catch (error) {
-    if (error.code === 'ENOENT') return []
-    return [error]
+    if (error.code === 'ENOENT') return { errors: [], sensitiveValues: [] }
+    return { errors: [error], sensitiveValues: [] }
   }
 }
 
 function appendPolicyErrors (processedEnvs, options, processEnv) {
-  const errors = checkDotenvxfile(options.envs || [], processEnv)
+  const loadedKeys = processedEnvs.flatMap(row => Object.keys(row.parsed || {}))
+  const { errors, sensitiveValues } = checkDotenvxfile(options.envs || [], processEnv, loadedKeys)
   if (errors.length) processedEnvs.push({ type: 'policy', errors })
+  return sensitiveValues
 }
 
 async function envs (options = {}) {
@@ -378,7 +384,7 @@ async function envs (options = {}) {
     }
   }
 
-  appendPolicyErrors(processedEnvs, options, processEnv)
+  const sensitiveValues = appendPolicyErrors(processedEnvs, options, processEnv)
 
   // {
   //   processedEnvs: [
@@ -401,7 +407,8 @@ async function envs (options = {}) {
   // }
   return {
     processedEnvs,
-    readableFilepaths: [...readableFilepaths]
+    readableFilepaths: [...readableFilepaths],
+    sensitiveValues
   }
 }
 
@@ -450,11 +457,12 @@ function envsSync (options = {}) {
     }
   }
 
-  appendPolicyErrors(processedEnvs, options, processEnv)
+  const sensitiveValues = appendPolicyErrors(processedEnvs, options, processEnv)
 
   return {
     processedEnvs,
-    readableFilepaths: [...readableFilepaths]
+    readableFilepaths: [...readableFilepaths],
+    sensitiveValues
   }
 }
 

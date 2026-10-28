@@ -30,8 +30,7 @@ const Errors = require('./helpers/errors')
 const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('./helpers/normalizeDotenvConfigIgnore')
-const mask = require('./helpers/mask')
-const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
+const { applyRedaction } = require('./helpers/redaction')
 
 function uniqueInjectedKeys (processedEnvs) {
   const result = new Set()
@@ -82,7 +81,8 @@ const config = function (options = {}, events) {
     const envs = options.envs || determine(buildCommandEnvs(normalizeDotenvConfigPath(buildConfigEnvs(options), { ...process.env, ...processEnv })), { ...process.env, ...processEnv })
     const {
       processedEnvs,
-      readableFilepaths
+      readableFilepaths,
+      sensitiveValues
     } = envsResolver.sync({
       envs,
       overload,
@@ -96,10 +96,7 @@ const config = function (options = {}, events) {
       token: options.token
     })
 
-    if (options.mask !== undefined) {
-      const showChar = options.mask === true ? 6 : options.mask
-      maskProcessedEnvs(processedEnvs, processEnv, showChar)
-    }
+    applyRedaction(sensitiveValues)
 
     let lastError
     /** @type {Record<string, string>} */
@@ -348,15 +345,9 @@ function prepareGet (key, options) {
   }
 }
 
-function getResult (key, options, { parsed, errors }, events) {
+function getResult (key, options, { parsed, errors, sensitiveValues }, events) {
+  applyRedaction(sensitiveValues)
   const ignore = options.ignore || []
-
-  if (options.mask !== undefined) {
-    const showChar = options.mask === true ? 6 : options.mask
-    for (const key of Object.keys(parsed)) {
-      parsed[key] = mask(parsed[key], showChar)
-    }
-  }
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {

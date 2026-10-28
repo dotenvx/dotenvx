@@ -1,5 +1,6 @@
 const statusReporter = require('../../lib/helpers/statusReporter')
 const path = require('path')
+const { applyRedaction } = require('../../lib/helpers/redaction')
 const { injectsummary, publickeys } = require('@dotenvx/primitives')
 const { logger } = require('./../../shared/logger')
 
@@ -15,10 +16,6 @@ const Session = require('../../db/session')
 const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const normalizeDotenvConfigIgnore = require('../../lib/helpers/normalizeDotenvConfigIgnore')
-const mask = require('../../lib/helpers/mask')
-const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
-const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
-const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
 
 function inferCommandArgsFromProcessArgv (argv) {
@@ -57,12 +54,6 @@ function uniqueInjectedKeys (processedEnvs) {
 async function run () {
   const options = normalizeDotenvConfigIgnore(normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts())))
   const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
-  const maskEnabled = options.mask !== undefined
-  let showChar = options.mask
-  if (options.mask === true) {
-    showChar = 6
-  }
-  let commandEnv = process.env
   let sensitiveValues = []
 
   let commandArgs = this.args
@@ -71,16 +62,6 @@ async function run () {
   }
 
   const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'injecting' })
-
-  let debugOptions = options
-  if (maskEnabled) {
-    let token = options.token
-    if (options.token) {
-      token = mask(options.token, showChar)
-    }
-
-    debugOptions = { ...options, env: (options.env || []).map(envSrc => maskEnvSrc(envSrc, showChar)), token }
-  }
 
   const ignore = options.ignore || []
 
@@ -103,7 +84,7 @@ async function run () {
     const envs = determine(buildCommandEnvs(normalizeDotenvConfigPath(this.envs, process.env), options.convention), process.env)
     const session = new Session()
     const noArmor = options.armor === false || (!(options.token || process.env.DOTENVX_TOKEN) && (await session.noArmor()))
-    const { processedEnvs, readableFilepaths } = await envsResolver({
+    const { processedEnvs, readableFilepaths, sensitiveValues: policySecrets } = await envsResolver({
       envs,
       overload: options.overload,
       processEnv: process.env,
@@ -117,17 +98,11 @@ async function run () {
       onStatus: statusReporter(spinner)
     })
 
-    if (options.redact === true) {
-      sensitiveValues = redactedValues(processedEnvs)
-    }
+    sensitiveValues = policySecrets || []
+    applyRedaction(sensitiveValues)
 
-    logger.debug(redactOutput(`options: ${JSON.stringify(debugOptions)}`, sensitiveValues))
+    logger.debug(redactOutput(`options: ${JSON.stringify(options)}`, sensitiveValues))
     logger.debug(redactOutput(`process command [${commandArgs.join(' ')}]`, sensitiveValues))
-
-    if (maskEnabled) {
-      commandEnv = { ...process.env }
-      maskProcessedEnvs(processedEnvs, commandEnv, showChar)
-    }
 
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envFile') {
@@ -135,10 +110,7 @@ async function run () {
       }
 
       if (processedEnv.type === 'env') {
-        let envString = processedEnv.string
-        if (maskEnabled) {
-          envString = maskEnvSrc(processedEnv.string, showChar)
-        }
+        const envString = processedEnv.string
         logger.verbose(redactOutput(`loading env from string (${envString})`, sensitiveValues))
       }
 
@@ -194,7 +166,7 @@ async function run () {
     return { exitCode: 1, error }
   }
 
-  return executeCommand(commandArgs, commandEnv, sensitiveValues)
+  return executeCommand(commandArgs, process.env, sensitiveValues)
 }
 
 module.exports = require('../../lib/events/cli')('run', run)
