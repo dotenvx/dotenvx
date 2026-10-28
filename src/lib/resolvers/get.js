@@ -15,9 +15,8 @@ function collectErrors (processedEnvs) {
 function result ({ key, all }, processedEnvs, processEnv) {
   const errors = collectErrors(processedEnvs)
   const parsed = {}
-  const declared = {}
   const custodies = Object.assign({}, ...processedEnvs.map(row => row.custodies))
-  const resolved = { declared, parsed, errors, custodies, processedEnvs }
+  const resolved = { parsed, errors, custodies, processedEnvs }
 
   if (key) {
     const value = processEnv[key]
@@ -41,7 +40,6 @@ function result ({ key, all }, processedEnvs, processEnv) {
     }
   }
 
-  // { parsed, errors, custodies, processedEnvs }
   return resolved
 }
 
@@ -61,29 +59,7 @@ function buildOptions (options, processEnv) {
 
 async function get (options = {}) {
   const processEnv = { ...(options.processEnv || process.env) }
-
   const { processedEnvs } = await envsResolver(buildOptions(options, processEnv))
-  // builds in memory processedEnvs
-  // {
-  //   processedEnvs: [
-  //     {
-  //       type: 'envFile',
-  //       filepath: '.env',
-  //       src: 'HELLO=World\n',
-  //       parsed: {
-  //         HELLO: 'World'
-  //       },
-  //       injected: {
-  //         HELLO: 'World',
-  //       },
-  //       existed: {},
-  //       custodies: {},
-  //       errors: []
-  //     }
-  //   ],
-  //   readableFilepaths: ['.env']
-  // }
-  //
   return result(options, processedEnvs, processEnv)
 }
 
