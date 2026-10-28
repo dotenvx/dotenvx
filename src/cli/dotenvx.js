@@ -257,23 +257,11 @@ program.command('feedback', { hidden: true })
     return commandAction(require('./actions/feedback')).apply(this, args)
   })
 
-// Build menu entries from the command definitions so new subcommands stay discoverable.
-function hiddenSubcommands (name) {
-  const parent = program.commands.find(command => command.name() === name)
-  const formatter = parent.createHelp()
-  const entries = parent.commands.map(command => ({
-    term: `${name} ${formatter.subcommandTerm(command)}`,
-    description: command.description()
-  }))
-  const width = Math.max(...entries.map(entry => entry.term.length))
-  return entries.map(entry => `  ${entry.term.padEnd(width)}  ${entry.description}`).join('\n')
-}
-
 // dotenvx hidden (a menu of commands and subcommands)
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  native                 ⌥ move private keys in/out of your OS secret store\n  1password              □ move private keys in/out of 1Password\n  bitwarden              □ move private keys in/out of Bitwarden\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n\nBeta Commands:\n${hiddenSubcommands('primitives')}\n\nRun directly: dotenvx <command>`)
+  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send feedback to dotenvx\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  armor                  ⛨ move private keys in/out of Dotenvx Armor [www.dotenvx.com/armor]\n  curl                   ⛨ call authenticated api Dotenvx Armor [www.dotenvx.com/armor]\n  primitives             low-level tools for environment values and policies\n\nRun directly: dotenvx <command>`)
   .action(function () { this.outputHelp() })
 
 // dotenvx update
@@ -333,12 +321,6 @@ program.command('help [command]')
       program.outputHelp()
     }
   })
-
-require('./commands/custody')(program.command('1password', { hidden: true }), '1Password', 'onepassword')
-require('./commands/custody')(program.command('bitwarden', { hidden: true }), 'Bitwarden', 'bitwarden')
-
-// dotenvx native
-require('./commands/native')(program.command('native', { hidden: true }))
 
 // dotenvx armor
 require('./commands/armor')(program.command('armor', { hidden: true }))
