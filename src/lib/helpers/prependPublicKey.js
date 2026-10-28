@@ -4,10 +4,7 @@ function prependPublicKey (publicKeyName, publicKey, filename, relativeFilepath 
     : ` # -fk ${relativeFilepath}`
 
   return [
-    '#/-------------------[DOTENV_PUBLIC_KEY]--------------------/',
-    '#/            public-key encryption for .env files          /',
-    '#/       [how it works](https://dotenvx.com/encryption)     /',
-    '#/----------------------------------------------------------/',
+    '# ◈ encrypted with Dotenvx',
     `${publicKeyName}="${publicKey}"${comment}`,
     '',
     `# ${filename}`
