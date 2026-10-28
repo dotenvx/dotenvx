@@ -7,8 +7,9 @@ const SAMPLE_ENV_KIT = require('../helpers/kits/sample')
 
 const Errors = require('../helpers/errors')
 const selectEnvs = require('../helpers/selectEnvs')
+const readStoragePolicy = require('../helpers/readStoragePolicy')
 const detectEncoding = require('./../helpers/detectEncoding')
-const { isDotenvPublicKey, isPlainKey, mutateSrc } = require('../helpers/cryptography')
+const { isDotenvPublicKey, isPlaintext, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 
 const storeKeyStorage = require('../helpers/storeKeyStorage')
@@ -51,6 +52,7 @@ async function encryptTransform (options = {}) {
     const row = { keys: [], type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
+      const storagePolicy = readStoragePolicy(envFilepath)
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = SAMPLE_ENV_KIT
@@ -89,7 +91,7 @@ async function encryptTransform (options = {}) {
       const { scanned } = scan(row.envSrc, { ik, ek })
       const selected = Object.entries(scanned).filter(([key]) => {
         if (isDotenvPublicKey(key)) return false
-        return !isPlainKey(key)
+        return !isPlaintext(key, storagePolicy)
       })
       let publicKey = publickeys(row.envSrc)[0]
 

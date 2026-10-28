@@ -6,8 +6,9 @@ const TYPE_ENV_FILE = 'envFile'
 
 const getResolver = require('./../resolvers/get')
 const selectEnvs = require('../helpers/selectEnvs')
+const readStoragePolicy = require('../helpers/readStoragePolicy')
 const detectEncoding = require('./../helpers/detectEncoding')
-const { isPlainKey, mutateSrc } = require('../helpers/cryptography')
+const { isPlaintext, mutateSrc } = require('../helpers/cryptography')
 const keynames = require('../conventions/keynames')
 const Errors = require('../helpers/errors')
 
@@ -53,7 +54,8 @@ async function setTransform (options = {}) {
     const row = { key, value, type: TYPE_ENV_FILE, filepath, envFilepath, changed: false }
 
     try {
-      const noEncrypt = !options.encrypt || isPlainKey(key)
+      const storagePolicy = readStoragePolicy(envFilepath)
+      const noEncrypt = !options.encrypt || isPlaintext(key, storagePolicy)
       const fileExists = await fsx.exists(filepath)
       if (!fileExists && !noCreate) {
         row.envSrc = ''
