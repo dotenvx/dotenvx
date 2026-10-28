@@ -261,7 +261,7 @@ program.command('feedback', { hidden: true })
 program.command('hidden')
   .allowExcessArguments(false)
   .description('hidden features')
-  .addHelpText('after', () => `\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send us feedback\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  armor                  Dotenvx Armor ⛨\n  curl                   Dotenvx Armor API\n  primitives             standalone primitives\n\nRun directly: dotenvx <command>`)
+  .addHelpText('after', () => '\nHidden Commands:\n  update                 update dotenvx\n  feedback [message]     send us feedback\n  ls [directory]         print all .env files in a tree structure\n  genexample [directory] generate .env.example\n  armor                  Dotenvx Armor ⛨\n  curl                   Dotenvx Armor API\n  primitives             standalone primitives\n\nRun directly: dotenvx <command>')
   .action(function () { this.outputHelp() })
 
 // dotenvx update
