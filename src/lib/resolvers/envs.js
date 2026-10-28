@@ -1,9 +1,10 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { encrypted } = require('@dotenvx/primitives')
+const { encrypted, parsedotenvxfileSync } = require('@dotenvx/primitives')
 
 const TYPE_ENV = 'env'
 const TYPE_ENV_FILE = 'envFile'
+const TYPE_DOTENVX_FILE = 'dotenvxFile'
 
 const Errors = require('./../helpers/errors')
 const enclavedHint = require('../helpers/enclavedHint')
@@ -309,6 +310,27 @@ function injectEnvFileSync ({ env, overload, processEnv, envKeysFilepath, provid
   return row
 }
 
+function injectDotenvxFile ({ env, envs = [], processEnv }) {
+  const row = { type: TYPE_DOTENVX_FILE, filepath: env.value, parsed: {}, injected: {}, existed: {}, errors: [] }
+  try {
+    row.src = fsx.readFileXSync(row.filepath)
+    const files = envs.filter(env => env.type === TYPE_ENV_FILE).map(env => env.value)
+    row.parsed = parsedotenvxfileSync(row.src, files.length ? files.join(',') : undefined)
+    for (const key of Object.keys(row.parsed)) {
+      if (Object.hasOwn(processEnv, key)) {
+        row.existed[key] = processEnv[key]
+      } else {
+        row.injected[key] = ''
+        processEnv[key] = ''
+      }
+    }
+  } catch (error) {
+    if (error.code === 'ENOENT') return []
+    row.errors.push(error)
+  }
+  return [row]
+}
+
 async function envs (options = {}) {
   const processedEnvs = []
   const readableFilepaths = new Set()
@@ -352,6 +374,8 @@ async function envs (options = {}) {
         noBitwarden,
         onStatus: options.onStatus
       }))
+    } else if (env.type === TYPE_DOTENVX_FILE) {
+      processedEnvs.push(...injectDotenvxFile({ env, envs: options.envs, processEnv }))
     }
   }
 
@@ -422,6 +446,8 @@ function envsSync (options = {}) {
         no1Password,
         noBitwarden
       }))
+    } else if (env.type === TYPE_DOTENVX_FILE) {
+      processedEnvs.push(...injectDotenvxFile({ env, envs: options.envs, processEnv }))
     }
   }
 

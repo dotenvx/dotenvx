@@ -40,8 +40,6 @@ function result ({ key, all }, processedEnvs, processEnv) {
     }
   }
 
-  // todo: here try to pull in policy keys somehow
-
   return resolved
 }
 
@@ -61,31 +59,7 @@ function buildOptions (options, processEnv) {
 
 async function get (options = {}) {
   const processEnv = { ...(options.processEnv || process.env) }
-
   const { processedEnvs } = await envsResolver(buildOptions(options, processEnv))
-  // builds in memory processedEnvs
-  // {
-  //   processedEnvs: [
-  //     {
-  //       type: 'envFile',
-  //       filepath: '.env',
-  //       src: 'HELLO=World\n',
-  //       parsed: {
-  //         HELLO: 'World'
-  //       },
-  //       injected: {
-  //         HELLO: 'World',
-  //       },
-  //       existed: {},
-  //       custodies: {},
-  //       errors: []
-  //     }
-  //   ],
-  //   readableFilepaths: ['.env']
-  // }
-  //
-  // 'injected' here communicate it was written to processEnv object
-
   return result(options, processedEnvs, processEnv)
 }
 
