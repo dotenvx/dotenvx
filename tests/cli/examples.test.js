@@ -1,9 +1,6 @@
 const tap = require('tap')
 const {
   run,
-  precommit,
-  prebuild,
-  gitignore,
   set,
   curl
 } = require('../../src/cli/help')
@@ -31,66 +28,6 @@ Try it:
   \`\`\`
   `
   t.equal(run(), expected)
-  t.end()
-})
-
-tap.test('precommit function returns expected string', (t) => {
-  const expected = `
-Examples:
-
-  \`\`\`
-  $ dotenvx precommit
-  $ dotenvx precommit --install
-  \`\`\`
-
-Try it:
-
-  \`\`\`
-  $ dotenvx precommit
-  [dotenvx@0.45.0][precommit] success
-  \`\`\`
-  `
-  t.equal(precommit(), expected)
-  t.end()
-})
-
-tap.test('prebuild function returns expected string', (t) => {
-  const expected = `
-Deprecated. Use [dotenvx protect --docker].
-
-Examples:
-
-  \`\`\`
-  $ dotenvx protect --docker
-  \`\`\`
-
-Try it:
-
-  \`\`\`
-  $ dotenvx protect --docker apps/backend
-  \`\`\`
-  `
-  t.equal(prebuild(), expected)
-  t.end()
-})
-
-tap.test('gitignore function returns expected string', (t) => {
-  const expected = `
-Examples:
-
-  \`\`\`
-  $ dotenvx gitignore
-  $ dotenvx gitignore --pattern .env.keys
-  \`\`\`
-
-  Try it:
-
-  \`\`\`
-  $ dotenvx gitignore
-  ▣ ignored .env* (.gitignore)
-  \`\`\`
-  `
-  t.equal(gitignore(), expected)
   t.end()
 })
 

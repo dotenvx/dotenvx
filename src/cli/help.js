@@ -22,60 +22,6 @@ Try it:
   `
 }
 
-const precommit = function () {
-  return `
-Examples:
-
-  \`\`\`
-  $ dotenvx precommit
-  $ dotenvx precommit --install
-  \`\`\`
-
-Try it:
-
-  \`\`\`
-  $ dotenvx precommit
-  [dotenvx@0.45.0][precommit] success
-  \`\`\`
-  `
-}
-
-const prebuild = function () {
-  return `
-Deprecated. Use [dotenvx protect --docker].
-
-Examples:
-
-  \`\`\`
-  $ dotenvx protect --docker
-  \`\`\`
-
-Try it:
-
-  \`\`\`
-  $ dotenvx protect --docker apps/backend
-  \`\`\`
-  `
-}
-
-const gitignore = function () {
-  return `
-Examples:
-
-  \`\`\`
-  $ dotenvx gitignore
-  $ dotenvx gitignore --pattern .env.keys
-  \`\`\`
-
-  Try it:
-
-  \`\`\`
-  $ dotenvx gitignore
-  ▣ ignored .env* (.gitignore)
-  \`\`\`
-  `
-}
-
 const set = function () {
   return `
 Examples:
@@ -170,9 +116,6 @@ Examples:
 
 module.exports = {
   run,
-  precommit,
-  prebuild,
-  gitignore,
   set,
   del,
   curl

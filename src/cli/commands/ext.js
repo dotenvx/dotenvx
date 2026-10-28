@@ -1,7 +1,6 @@
 const commandAction = require('../commandAction')
 const { Command } = require('@dotenvx/tooling')
 
-const help = require('./../help')
 const executeExtension = require('../../lib/helpers/executeExtension')
 const removeDynamicHelpSection = require('../../lib/helpers/removeDynamicHelpSection')
 
@@ -37,35 +36,6 @@ ext.command('genexample')
   .option('-f, --env-file <paths...>', 'path(s) to your env file(s)', '.env')
   .action(function (...args) {
     return commandAction(require('./../actions/ext/genexample')).apply(this, args)
-  })
-
-// dotenvx ext gitignore
-ext.command('gitignore')
-  .description('append to .gitignore')
-  .addHelpText('after', help.gitignore)
-  .option('--pattern <patterns...>', 'pattern(s) to gitignore', ['.env*'])
-  .action(function (...args) {
-    return require('./../actions/ext/gitignore').apply(this, args)
-  })
-
-// dotenvx ext prebuild
-ext.command('prebuild')
-  .description('deprecated. use [dotenvx protect --docker]')
-  .addHelpText('after', help.prebuild)
-  .argument('[directory]', 'directory to prevent including .env files from', '.')
-  .action(function (...args) {
-    return require('./../actions/ext/prebuild').apply(this, args)
-  })
-
-// dotenvx ext precommit
-ext.command('precommit')
-  .description('prevent committing .env files to code')
-  .addHelpText('after', help.precommit)
-  .argument('[directory]', 'directory to prevent committing .env files from', '.')
-  .option('-i, --install', 'install a pre-commit hook')
-  .option('--uninstall', 'remove the dotenvx pre-commit hook')
-  .action(function (...args) {
-    return require('./../actions/ext/precommit').apply(this, args)
   })
 
 // dotenvx ext scan

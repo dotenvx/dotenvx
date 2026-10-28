@@ -2,7 +2,28 @@ const fs = require('fs')
 const fsx = require('./fsx')
 const path = require('path')
 const { execFileSync } = require('child_process')
-const { HOOK_SCRIPT } = require('./installPrecommitHook')
+// Known legacy hook content, retained only to migrate existing installations.
+const HOOK_SCRIPT = `#!/bin/sh
+
+if command -v dotenvx 2>&1 >/dev/null
+then
+  dotenvx precommit
+elif npx dotenvx -V >/dev/null 2>&1
+then
+  npx dotenvx precommit
+else
+  if [ -t 2 ]; then
+    RED="$(printf '\\033[31m')"
+    RESET="$(printf '\\033[0m')"
+  else
+    RED=""
+    RESET=""
+  fi
+
+  printf "%s☠ 'dotenvx precommit' command not found (.git/hooks/precommit) fix: [curl -sfS https://dotenvx.sh | sh]%s\n" "$RED" "$RESET" >&2
+  exit 1
+fi
+`
 
 const LEGACY_SCRIPT = `#!/bin/sh
 
