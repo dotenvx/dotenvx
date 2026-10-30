@@ -69,6 +69,57 @@ t.test('#decrypt', ct => {
   ct.end()
 })
 
+for (const stdout of [false, true]) {
+  t.test(`#decrypt${stdout ? ' --stdout' : ''} preserves literal dollars across repeated round trips`, ct => {
+    fs.writeFileSync('.env', [
+      String.raw`UNQUOTED=pa\$sword`,
+      String.raw`DOUBLE="pa\$sword"`,
+      String.raw`SINGLE='pa$sword'`,
+      String.raw`SLASH=pa\\$sword`,
+      String.raw`BACKSLASH=C:\tmp\\file`,
+      String.raw`DUPLICATE=first\$value`,
+      String.raw`DUPLICATE='second$value'`,
+      ''
+    ].join('\n'))
+    const expected = {
+      UNQUOTED: 'pa$sword',
+      DOUBLE: 'pa$sword',
+      SINGLE: 'pa$sword',
+      SLASH: String.raw`pa\$sword`,
+      BACKSLASH: String.raw`C:\tmp\\file`,
+      DUPLICATE: 'second$value'
+    }
+    const env = { ...process.env, DOTENVX_CONFIG: path.join(tempDir, 'config') }
+    const cli = (args) => {
+      const result = spawnSync(node, [path.join(originalDir, 'src/cli/dotenvx.js'), ...args, '--no-native', '--no-armor'], { env, encoding: 'utf8' })
+      ct.equal(result.status, 0, result.stderr)
+      return result.stdout
+    }
+    const getValues = () => {
+      const values = JSON.parse(cli(['get']))
+      delete values.DOTENV_PUBLIC_KEY
+      return values
+    }
+
+    for (let i = 0; i < 2; i++) {
+      ct.same(getValues(), expected, 'plaintext values are preserved')
+      cli(['encrypt'])
+      ct.same(getValues(), expected, 'encrypted values are preserved')
+      const encryptedSrc = fs.readFileSync('.env', 'utf8')
+      const output = cli(stdout ? ['decrypt', '--stdout'] : ['decrypt'])
+      if (stdout) {
+        ct.equal(fs.readFileSync('.env', 'utf8'), encryptedSrc, '--stdout leaves the encrypted file unchanged')
+        fs.writeFileSync('.env', output)
+      }
+      ct.same(getValues(), expected, 'decrypted values are preserved')
+      const decryptedSrc = fs.readFileSync('.env', 'utf8')
+      ct.match(decryptedSrc, String.raw`DUPLICATE=first\$value`, 'unquoted duplicate is escaped')
+      ct.match(decryptedSrc, String.raw`DUPLICATE='second$value'`, 'single-quoted duplicate remains literal')
+    }
+    ct.end()
+  })
+}
+
 t.test('#decrypt - missing DOTENV_PRIVATE_KEY', ct => {
   execShell(`
     echo "HELLO=World" > .env

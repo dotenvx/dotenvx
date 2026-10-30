@@ -1,6 +1,6 @@
 const fsx = require('./../helpers/fsx')
 const path = require('path')
-const { upsert } = require('@dotenvx/primitives')
+const { scan, upsert } = require('@dotenvx/primitives')
 
 const TYPE_ENV_FILE = 'envFile'
 
@@ -52,6 +52,7 @@ async function decrypt (options = {}) {
     try {
       const encoding = await detectEncoding(filepath)
       row.envSrc = await fsx.readFileX(filepath, { encoding })
+      const { parsed: quotes } = scan(row.envSrc, ({ quote }) => quote)
 
       const { parsed, errors, custodies } = await parseWithDecryptor.arrays(row.envSrc, { fk, ik, ek, provider, decryptor })
 
@@ -63,7 +64,8 @@ async function decrypt (options = {}) {
 
       for (const [key, values] of Object.entries(parsed)) {
         const before = row.envSrc
-        const after = upsert(before, key, values)
+        const escapedValues = values.map((value, index) => quotes[key][index] === "'" ? value : value.replaceAll('$', '\\$'))
+        const after = upsert(before, key, escapedValues)
         if (after !== before) {
           row.envSrc = after
           row.changed = true
