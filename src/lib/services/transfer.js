@@ -5,6 +5,8 @@ const resolveLocalKey = require('../custodians/resolveLocalKey')
 const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const upsertEnvKey = require('../helpers/upsertEnvKey')
+const mutateKeysSrc = require('../helpers/cryptography/mutateKeysSrc')
+const fsx = require('../helpers/fsx')
 const matchesStoredKey = require('../helpers/matchesStoredKey')
 const selectKeyStorage = require('../helpers/selectKeyStorage')
 const prompts = require('../helpers/prompts')
@@ -83,7 +85,12 @@ module.exports = async function transfer (envFile = '.env') {
   if (selection === 'file') {
     const existing = readEnvKey(privateKeyName, keysFilepath)
     if (existing && existing !== privateKey) throw new Error('destination contains a different private key; nothing was changed')
-    upsertEnvKey(privateKeyName, privateKey, keysFilepath)
+    if (!fs.existsSync(keysFilepath) || fs.statSync(keysFilepath).size === 0) {
+      const { keysSrc } = mutateKeysSrc({ privateKeyName, privateKeyValue: privateKey, comment: envFile })
+      fsx.writeKeyFileSync(keysFilepath, keysSrc)
+    } else {
+      upsertEnvKey(privateKeyName, privateKey, keysFilepath)
+    }
     if (readEnvKey(privateKeyName, keysFilepath, { strict: true }) !== privateKey) throw new Error('could not verify destination; source was not removed')
   } else if (selection === 'armored') {
     await destination.store(publicKey, privateKey, { envFilepath: envFile })
