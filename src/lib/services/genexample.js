@@ -81,6 +81,10 @@ class Genexample {
         if (key in parsed) {
           existed[key] = parsed[key]
         } else {
+          if (exampleSrc.length > 0 && !exampleSrc.endsWith('\n')) {
+            exampleSrc += '\n'
+          }
+
           exampleSrc += `${key}=''\n`
 
           addedKeys.add(key)
