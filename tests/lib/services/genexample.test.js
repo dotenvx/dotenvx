@@ -73,6 +73,40 @@ HELLO2=''
   ct.same(injected, { HELLO2: '' })
   ct.same(existed, { HELLO: '' })
 
+  sandbox.restore()
+  ct.end()
+})
+
+t.test('#run (.env.example already exists without trailing newline)', ct => {
+  const originalReadFileSync = fsx.readFileXSync
+  const sandbox = sinon.createSandbox()
+  sandbox.stub(fsx, 'readFileXSync').callsFake((filepath, options) => {
+    if (filepath === path.resolve('tests/monorepo/apps/backend/.env')) {
+      return 'HELLO=world\nHELLO2=universe'
+    } else if (filepath === path.resolve('tests/monorepo/apps/backend/.env.example')) {
+      return "HELLO=''"
+    } else {
+      return originalReadFileSync(filepath, options)
+    }
+  })
+
+  const genexample = new Genexample('tests/monorepo/apps/backend')
+
+  const {
+    envExampleFile,
+    injected,
+    existed
+  } = genexample.run()
+
+  const output = `HELLO=''
+HELLO2=''
+`
+
+  ct.same(envExampleFile, output)
+  ct.same(injected, { HELLO2: '' })
+  ct.same(existed, { HELLO: '' })
+
+  sandbox.restore()
   ct.end()
 })
 
