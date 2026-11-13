@@ -121,7 +121,7 @@ $ curl -sfS https://dotenvx.sh | sh
 
 ```sh
 $ dotenvx encrypt
-◈ encrypted (.env)
+◈ encrypted .env (039 BCA) via .env.keys ⛉
 ```
 
 *Commit* your encrypted `.env` files with your code. It's safe. Now you can securely share secrets through git.
@@ -135,7 +135,7 @@ $ git commit -m "encrypt .env"
 
 ```sh
 $ dotenvx run -- node index.js
-⟐ injected env (2) from .env
+⟐ injected env (2) from .env (039 BCA) via .env.keys ⛉
 ```
 
 &nbsp;
