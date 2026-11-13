@@ -110,6 +110,13 @@ dotenvx encrypt
 
 ## Usage
 
+*Install* dotenvx.
+
+```sh
+$ curl -sfS https://dotenvx.sh | sh
+◈ installed (2.38.2:/usr/local/bin/dotenvx)
+```
+
 *Encrypt* your secrets in `.env` files. The values become ciphertext and only your private key can unlock them.
 
 ```sh
