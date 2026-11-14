@@ -3122,4 +3122,4 @@ This fix is easy. Replace `--env-file` with `--file` (or `-f`).
 You can fork this repo and create [pull requests](https://github.com/dotenvx/dotenvx/pulls) or if you have questions or feedback:
 
 * [github.com/dotenvx/dotenvx](https://github.com/dotenvx/dotenvx/issues) - bugs and discussions
-* [@dotenvx 𝕏](https://x.com/dotenvx) (DMs are open)
+* [support@dotenvx.com](mailto:support@dotenvx.com)
