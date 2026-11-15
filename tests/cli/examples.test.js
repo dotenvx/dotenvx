@@ -1,7 +1,10 @@
 const tap = require('tap')
 const {
   run,
+  get,
   set,
+  del,
+  transfer,
   curl
 } = require('../../src/cli/help')
 
@@ -31,6 +34,20 @@ Try it:
   t.end()
 })
 
+tap.test('get function returns expected string', (t) => {
+  const expected = `
+Examples:
+
+  \`\`\`
+  $ dotenvx get KEY
+  $ dotenvx get KEY -f .env.production
+  $ dotenvx get --format json
+  \`\`\`
+  `
+  t.equal(get(), expected)
+  t.end()
+})
+
 tap.test('set function returns expected string', (t) => {
   const expected = `
 Examples:
@@ -45,6 +62,32 @@ Examples:
   \`\`\`
   `
   t.equal(set(), expected)
+  t.end()
+})
+
+tap.test('del function returns expected string', (t) => {
+  const expected = `
+Examples:
+
+  \`\`\`
+  $ dotenvx del KEY
+  $ dotenvx del KEY -f .env.production
+  \`\`\`
+  `
+  t.equal(del(), expected)
+  t.end()
+})
+
+tap.test('transfer function returns expected string', (t) => {
+  const expected = `
+Examples:
+
+  \`\`\`
+  $ dotenvx transfer
+  $ dotenvx transfer -f .env.production
+  \`\`\`
+  `
+  t.equal(transfer(), expected)
   t.end()
 })
 
