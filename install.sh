@@ -551,7 +551,7 @@ run() {
     directory=* | --directory=*)
       DIRECTORY="${arg#*=}"
       ;;
-    force | --force)
+    force | --force | force=true)
       FORCE="1"
       ;;
     help | --help)
