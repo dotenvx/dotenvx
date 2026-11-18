@@ -22,6 +22,18 @@ Try it:
   `
 }
 
+const get = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx get KEY
+  $ dotenvx get KEY -f .env.production
+  $ dotenvx get --format json
+  \`\`\`
+  `
+}
+
 const set = function () {
   return `
 Examples:
@@ -44,6 +56,17 @@ Examples:
   \`\`\`
   $ dotenvx del KEY
   $ dotenvx del KEY -f .env.production
+  \`\`\`
+  `
+}
+
+const transfer = function () {
+  return `
+Examples:
+
+  \`\`\`
+  $ dotenvx transfer
+  $ dotenvx transfer -f .env.production
   \`\`\`
   `
 }
@@ -116,7 +139,9 @@ Examples:
 
 module.exports = {
   run,
+  get,
   set,
   del,
+  transfer,
   curl
 }
