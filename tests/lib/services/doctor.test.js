@@ -21,10 +21,14 @@ t.test('#run', ct => {
     { lang: 'Node', filepath: 'config.mjs', line: 1, code: "import 'dotenv/config'", msg: 'found dotenv/config import' },
     { lang: 'Node', filepath: 'index.js', line: 1, code: "require('dotenv').config()", msg: 'found dotenv config require call' },
     { lang: 'Node', filepath: 'index.js', line: 4, code: 'dotenv.config({ override: true })', msg: 'found dotenv config call' },
+    { lang: 'Node', filepath: 'index.js', line: 6, code: 'process.loadEnvFile()', msg: 'found process.loadEnvFile call' },
     { lang: 'PHP', filepath: 'index.php', line: 3, code: 'Dotenv\\Dotenv::createImmutable(__DIR__)', msg: 'found vlucas/phpdotenv loader' },
+    { lang: 'Dart', filepath: 'main.dart', line: 4, code: 'dotenv.load()', msg: 'found flutter_dotenv load call' },
+    { lang: 'Elixir', filepath: 'main.ex', line: 2, code: 'Dotenv.load()', msg: 'found Elixir dotenv load call' },
     { lang: 'Go', filepath: 'main.go', line: 4, code: 'godotenv.Overload()', msg: 'found godotenv load call' },
     { lang: 'Rust', filepath: 'main.rs', line: 2, code: 'dotenvy::dotenv()', msg: 'found Rust dotenv load call' },
-    { lang: 'Rust', filepath: 'main.rs', line: 3, code: 'dotenv::dotenv()', msg: 'found Rust dotenv load call' }
+    { lang: 'Rust', filepath: 'main.rs', line: 3, code: 'dotenv::dotenv()', msg: 'found Rust dotenv load call' },
+    { lang: 'Swift', filepath: 'main.swift', line: 3, code: 'Dotenv.load()', msg: 'found Swift dotenv load call' }
   ]
 
   ct.same(findings, expected)

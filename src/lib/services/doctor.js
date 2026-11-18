@@ -10,6 +10,7 @@ const patterns = [
   { lang: 'Node', file: /\.(js|cjs|mjs|ts)$/, match: /require\(['"]dotenv['"]\)\.config\s*\([^)]*\)/, msg: 'found dotenv config require call' },
   { lang: 'Node', file: /\.(js|cjs|mjs|ts)$/, match: /import\s+['"]dotenv\/config['"]/, msg: 'found dotenv/config import' },
   { lang: 'Node', file: /\.(js|cjs|mjs|ts)$/, match: /dotenv\.config\s*\([^)]*\)/, msg: 'found dotenv config call' },
+  { lang: 'Node', file: /\.(js|cjs|mjs|ts)$/, match: /process\.loadEnvFile\s*\([^)]*\)/, msg: 'found process.loadEnvFile call' },
 
   { lang: 'Ruby', file: /\.rb$/, match: /Dotenv\.(load|overload)\s*\([^)]*\)/, msg: 'found ruby dotenv load call' },
   { lang: 'Go', file: /\.go$/, match: /godotenv\.(Load|Overload)\s*\([^)]*\)/, msg: 'found godotenv load call' },
@@ -18,7 +19,10 @@ const patterns = [
   { lang: 'Rust', file: /\.rs$/, match: /dotenvy?::dotenv\s*\([^)]*\)/, msg: 'found Rust dotenv load call' },
   { lang: 'Java', file: /\.java$/, match: /Dotenv\.(load|configure)\s*\([^)]*\)/, msg: 'found java-dotenv load call' },
   { lang: 'Kotlin', file: /\.kt$/, match: /Dotenv\.(load|configure)\s*\([^)]*\)/, msg: 'found java-dotenv load call' },
-  { lang: '.NET', file: /\.(cs|fs|vb)$/, match: /(?:DotNetEnv\.)?Env\.Load\s*\([^)]*\)/, msg: 'found DotNetEnv load call' }
+  { lang: '.NET', file: /\.(cs|fs|vb)$/, match: /(?:DotNetEnv\.)?Env\.Load\s*\([^)]*\)/, msg: 'found DotNetEnv load call' },
+  { lang: 'Dart', file: /\.dart$/, match: /dotenv\.load\s*\([^)]*\)/, msg: 'found flutter_dotenv load call' },
+  { lang: 'Swift', file: /\.swift$/, match: /Dotenv\.load\s*\([^)]*\)/, msg: 'found Swift dotenv load call' },
+  { lang: 'Elixir', file: /\.(ex|exs)$/, match: /Dotenv(?:Parser)?\.load\s*\([^)]*\)/, msg: 'found Elixir dotenv load call' }
 ]
 
 class Doctor {
@@ -53,6 +57,7 @@ class Doctor {
       .filter((filepath) => this._patternsFor(filepath).length > 0)
       .crawl(this.cwd)
       .sync()
+      .map(filepath => filepath.split(path.sep).join('/'))
       .sort()
   }
 
@@ -84,7 +89,8 @@ class Doctor {
   }
 
   _ignored (filepath) {
-    return this.exclude(filepath)
+    const normalized = filepath.split(path.sep).join('/')
+    return this.exclude(normalized)
   }
 }
 
