@@ -6,188 +6,58 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-#### Rust CLI and shared engine
+Faster: Rebuilt in Rust for faster startup, loading, and decryption, with a substantially smaller executable.
 
-* Introduce a standalone Rust CLI, replacing the packaged Node.js executable.
-* Share Rust parsing, expansion, decryption, source selection, precedence, validation, and policy handling across the CLI and native language bindings.
-* Support ordered dotenv files and inline sources, automatic file selection, and Next.js, Flow, and Rails file conventions through the shared loader.
-* Continue loading available values after nonfatal errors by default; support strict loading and error-code ignores for callers that need them.
+Custom Installs: Choose which commands and integrations ship in your binary with dotenvx install. Ship only run in production; excluded commands and their exclusive dependencies stay out of the executable. Add or remove features as needed—updates preserve your choices.
 
-#### Versioned keys and ciphertext
+Language Support: Native integrations for Node.js, Ruby, Python, PHP, Go, Rust, and Next.js, powered by the same Rust engine.
 
-* Introduce versioned public keys: `DOTENV-PUBLIC-KEY-3-SECP256K1-…`.
-* Introduce versioned private keys: `DOTENV-PRIVATE-KEY-3-SECP256K1-…`.
-* Introduce versioned ciphertext: `DOTENV-CIPHERTEXT-3-SECP256K1-AES256GCM-…`, including a key identifier.
-* Generate new keypairs in the versioned format.
-* Support optional custody metadata on versioned public keys, separate from their cryptographic identity.
-* Retain support for Classic hex keys and `encrypted:` ciphertext. Encryption with an existing Classic public key retains the Classic ciphertext format.
-* Recognize malformed versioned ciphertext as encrypted input and report decryption errors instead of treating it as plaintext.
+Dotenv.toml: Define required variables, types, allowed values, encrypted/plaintext storage rules, and output redaction in one project configuration file.
 
-#### Environment policy
+Key Custody: Store and retrieve keys through Native, Armor, 1Password, or Bitwarden. Inspect custody and list stored keys from the CLI.
 
-* Introduce `Dotenv.toml` for environment validation, encrypted/plaintext storage rules, and output redaction.
-* Accept lowercase `dotenv.toml`; prefer `Dotenv.toml` when both exist.
-* Support root rules and file-specific overrides. When multiple files are selected, the first selected file's rules take precedence.
-* Support required keys, strictness, value types, bounds, and allowed values.
-* Validate loaded and declared keys without validating unrelated machine environment variables.
-* Apply storage rules when setting, encrypting, decrypting, and protecting env files.
-* Apply output redaction without changing the actual values passed to applications.
-* Filter secrets across output writes, including secrets split between writes.
+Encryption Envelope: A new, self-describing format for public keys, private keys, and encrypted values, with explicit version and algorithm identifiers, a ciphertext key identifier, and optional key-custody metadata. Existing Classic keys and encrypted files remain supported.
 
-#### Installation and custom builds
+### Changed
 
-* Add a feature catalog and customizable CLI builds, with `default` and `armor` presets and individual feature IDs.
-* Add browser-based feature selection with `dotenvx install`.
-* Add direct installation with `dotenvx install --build=default`, `--build=armor`, or dash-separated feature IDs.
-* Add `dotenvx install --add` and `--remove` to edit features while preserving the installed version and unrelated features.
-* Accept repeated feature-edit flags, comma-separated feature names, and catalog IDs. Apply edits in order, with the last edit for a feature winning.
-* Resolve required feature dependencies, retain shared dependencies, reject invalid removals, and skip no-op installations.
-* Support removing telemetry with `dotenvx install --remove telemetry`.
-* Preserve the current build's features when running `dotenvx update`.
-* Install into the current executable's directory, with `--directory` available to select another location.
-* Verify downloaded archives with SHA-256 before installation.
-* Add `dotenvx uninstall` to remove the running executable and its adjacent `dx` symlink when it points to that executable, preserving configuration and project files.
-* Add `dotenvx info` to inspect the installed build and its feature information.
-* Serve Forge CLI archives and checksums through `install.dotenvx.com`.
-* Add an explicit-version bridge in `dotenvx.sh` for stable `0.4.x` and `3.0.0+` versions. Unversioned requests continue using the legacy installer until the default routing is switched; RC and beta versions do not match the bridge's stable-version rule.
+* **BREAKING:** Replace `Envfile` and `Dotenvxfile` configuration with `Dotenv.toml`. Only `Dotenv.toml` and lowercase `dotenv.toml` are discovered; legacy files are no longer loaded.
+* **BREAKING:** On Unix, `run` replaces itself with the child process when redaction is disabled. With redaction enabled, output passes through pipes rather than a PTY, which can affect terminal behavior.
+* **BREAKING:** Argument errors exit with status `2`; missing executables exit with status `127`.
+* **BREAKING:** `get` sorts output keys alphabetically instead of preserving insertion order.
+* **BREAKING:** Node.js `get()` is synchronous, with `getSync` as an alias. `await get()` still works, but `.then()` and `.catch()` no longer do; failures throw synchronously.
+* **BREAKING:** Node.js secret-reference resolution requires `resolveReferences: true`.
+* **BREAKING:** The npm CLI prefers an installed standalone dotenvx over its bundled binary. Its version may differ from the npm package version, and command failures do not trigger fallback. Set `DOTENVX_CLI` to select an executable explicitly.
+* **BREAKING:** Armor, Native, 1Password, Bitwarden, `protect`, `ls`, and `genexample` require their corresponding build features. Deprecated `gitignore`, `precommit`, and `prebuild` commands are also optional.
+* Generate new keypairs using the encryption envelope format. Existing Classic public keys continue producing Classic ciphertext.
+* Resolve matching environment private keys before local key files and remote custody. Locally pulled keys work without changing custody metadata.
+* Apply `Dotenv.toml` rules during loading, file edits, encryption, decryption, and protection. File-specific rules override root rules; the first selected file takes precedence.
+* Validate loaded and declared variables without validating unrelated machine variables. Redaction changes displayed output, not the values applications receive.
+* Leave an env file unchanged if any selected value fails to decrypt.
+* Install into the current executable’s directory, support `--directory` overrides, and verify downloads with SHA-256.
+* Resolve custom-build dependencies automatically, reject incompatible removals, and skip installations that would make no changes.
+* Use `dotenvx info` to inspect the installed build and `dotenvx uninstall` to remove its executable while preserving configuration and project files.
+* Use a required Git filter for `dotenvx protect`, enforcing storage policy before staging. Use `dotenvx protect --docker` to check storage policy and Docker ignore rules.
+* Distribute Node.js native addons and the bundled CLI through exact-version platform packages. Python uses Maturin-built native wheels instead of runtime CLI downloads.
+* Share Armor sessions between the Node and Rust implementations. Store bearer tokens in the OS credential store, with configuration-file fallback; mask token output unless `--unmask` is supplied.
+* Show file activity with `--verbose` and variable decisions, custody details, and executable selection with `--debug`. Diagnostics go to stderr without secret values.
+* Prefer `--file` and `--keys-file` in help output; retain `--env-file` and `--env-keys-file` as hidden aliases.
+* Use native filesystem error messages and skip absent convention files unless strict mode is enabled.
 
-#### Key custody and Armor
+### Removed
 
-* Add `list` and `show` commands to `dotenvx native`, `dotenvx 1password`, and `dotenvx bitwarden`.
-* Add custody inspection with `dotenvx keypair DOTENV_KEY_CUSTODY`.
-* Support stored-key lookup through enabled native, Armor, 1Password, and Bitwarden custody features.
-* Support Armor server-side decryption and access approval in `get` and `run`.
-* Let compatible language SDKs delegate stored-key lookup and Armor server-side decryption to an SDK-enabled CLI.
-* Resolve matching environment private keys before local key files and declared remote custody.
-* Allow locally pulled keys to decrypt files without rewriting their Armor custody metadata.
-* Support Armor `push`/`up` and `pull`/`down`: copying a key preserves its original custody, while moving it removes the original only after the destination is verified.
-* Support opening a key's Armor page and inviting team members from the CLI.
-* Share the existing Node and Rust Armor session; use the OS credential store for the bearer token with the config `.env` as a fallback.
-* Add top-level authentication/token support for installation. Token output is masked unless `--unmask` is supplied.
-
-#### Node.js SDK and npm CLI
-
-* Replace the JavaScript loading implementation with bindings to the shared Rust engine while keeping the `@dotenvx/dotenvx` package name.
-* Deliver native addons and the default Rust CLI through exact-version optional platform packages, without install-time compilation or downloads.
-* Provide platform packages for macOS ARM64/x64, Linux glibc ARM64/x64, Linux musl ARM64/x64, and Windows ARM64/x64.
-* Support CommonJS, named/default ES module imports, TypeScript declarations, and CommonJS/ES module preload entry points.
-* Support synchronous `config`, `parse`, and `get` APIs, including a custom environment object through `processEnv`.
-* Install policy-based redaction before diagnostics and environment injection, covering console output and stream writes.
-* Prefer an existing standalone native `dotenvx` on PATH for npm CLI commands, falling back to the bundled default Rust executable.
-* Preserve an existing Armor/custom build when invoking the npm CLI. Skip script wrappers during PATH discovery to avoid recursion.
-* Support `DOTENVX_CLI` as an explicit executable override for the npm launcher and delegated SDK custody.
-* Forward CLI arguments, terminal input/output, exit status, and termination signals to the selected executable.
-* Keep locally resolved and delegated private keys in the internal keyring rather than injecting them into the application's environment.
-
-#### Other language integrations
-
-* Ruby: bundle the Rust implementation as a Magnus native extension and publish native gems for Linux, macOS, and Windows.
-* Ruby: provide conventional dotenv loading, parsing, overwrite, and strict missing-file APIs, with shared loading diagnostics and injection summaries.
-* Python: provide `load_dotenv`, `dotenv_values`, and `find_dotenv` with python-dotenv-compatible public arguments and defaults.
-* Python: retain `load_dotenvx` as a compatibility API returning parsed values.
-* Python: bundle a PyO3 native extension in Linux, macOS, and Windows wheels rather than downloading an external CLI at runtime.
-* Go: provide a native loader through cgo, with bundled libraries for macOS and glibc Linux on amd64/arm64. Requires Go 1.22+ and a C compiler.
-* Rust: provide the `dotenvx-official` crate for loading plaintext and encrypted env files.
-* PHP: provide the native `phpdotenvx-ext` extension and Composer integration through `dotenvx/phpdotenvx`.
-* Next.js: provide a native `@dotenvx/next-env` replacement for `@next/env`, using npm overrides to integrate with existing applications.
-* Next.js: include prebuilt addons for macOS ARM64/x64, Linux glibc ARM64/x64, and Windows x64.
-* Share policy-based redaction across adapters: Ruby and Python filter standard output streams, PHP filters buffered output, and Node.js/Next.js filter console and standard streams.
-
-#### Release verification
-
-* Add public postrelease checks against explicit published versions for npm, the curl installer, Windows ZIP downloads, and Bun.
-* Check reported versions, `get`, `run`, and nested invocations; check npm SDK loading and Windows archive checksums.
-* Allow separate published CLI and npm versions for manual checks of older releases.
-
-### Changed and breaking changes
-
-#### CLI process behavior and output
-
-* Without redaction, Unix `run` replaces dotenvx with the child process using `exec`; the Node CLI remained running as its parent.
-* With redaction, Rust filters output through pipes; the Node implementation could use a PTY to preserve terminal behavior.
-* Argument errors exit with status `2`; missing executables exit with status `127`.
-* Help shows `--file` and `--keys-file`; keep `--env-file` and `--env-keys-file` as hidden aliases.
-* Ignore `DOTENV_F`; continue supporting `DOTENV_FILE` and `DOTENV_PATH`.
-* Preserve supplied `./` prefixes in injection summaries.
-* Show parser errors with the skull glyph, without `error:` prefixes, tips, or usage footers.
-* Keep help/version flags working while hiding them from help listings.
-* Use native OS wording for filesystem errors instead of Node's error text.
-* Skip missing convention files unless strict mode is enabled.
-* Show files read or edited with `--verbose`. Add variable decisions, custody details, and the executable name for `run` with `--debug`. Send these diagnostics to stderr without secret values; support explicit levels with `--log-level`.
-
-#### Command and flag changes
-
-* Replace `Envfile` and the intermediate `Dotenvxfile` policy format with `Dotenv.toml`. Report a migration error when only the legacy `Dotenvxfile` exists.
-* Remove `--profile`, `spec`, and the standalone `check` command from the legacy policy workflow; validate during loading.
-* Replace `get --include-key` / `-ik` and `--exclude-key` / `-ek` with multiple space-separated key arguments and quoted glob patterns such as `dotenvx get 'PUBLIC*' 'VITE_*'`.
-* Support case-sensitive key globs, brace alternatives, and character classes in `get`. Unmatched patterns return an empty selection; missing exact keys still report `MISSING_KEY`.
-* Sort `get` output keys alphabetically rather than preserving Node's insertion order.
-* Remove the `set -c` shorthand for encryption.
-* Remove `encrypt --key` / `-k` and `--exclude-key` / `-ek`; select encrypted/plaintext values with `Dotenv.toml` storage rules.
-* Remove `decrypt --key` / `-k` and `--exclude-key` / `-ek`; use storage rules to retain selected values as ciphertext.
-* Leave a file untouched if any selected value fails to decrypt.
-* Remove `--mask` from `run`, `get`, and `decrypt`, and remove library `mask` options.
-* Remove `run --redact`; configure output redaction through `Dotenv.toml`.
-* Remove `armor move`; move armored keys between teams in the Armor UI.
-* Remove the hidden `dotenvx armor curl` convenience command.
-* Remove `dotenvx feedback`.
-
-#### Feature availability and protection
-
-* Ship `run`, `get`, `set`, `del`, `encrypt`, `decrypt`, `keypair`, installation, and authentication in the default CLI build, with SDK custody delegation and local key-file support.
-* Omit `protect`, `ls`, and `genexample` from the default build; enable them in custom builds.
-* Omit deprecated `gitignore`, `precommit`, and `prebuild` commands from the default build; retain them as optional custom-build features.
-* Make 1Password and Bitwarden custody optional custom-build features.
-* Enable Armor commands through the Armor preset or custom feature selection.
-* Use `dotenvx protect` for Git protection when its feature is enabled. Install a required global Git filter that blocks private-key files and enforces env-file storage policy before staging.
-* Let the interactive protection checklist add or remove a global `.env.keys*` ignore rule. Noninteractive invocations install the filter.
-* Use `dotenvx protect --docker [directory]` to check env-file storage policy and Docker ignore rules, optionally within a subtree.
-* Removing the `install` feature also removes `update` and `uninstall`; use the curl installer for subsequent changes.
-* Removing a feature needed by another retained feature is rejected.
-
-#### Node.js API migration
-
-* Remove SDK `set()` and `ls()`. Use CLI commands for file updates and listings, enabling the `ls` feature when needed.
-* Remove `withEvents()` and its `flushEvents()` facade. SDK loading no longer automatically sends Armor activity events for logged-in users; shared SDK event tracking is deferred.
-* Remove public `logger`, `setLogLevel`, `getColor`, and `bold` exports. Consumers supply their own logging and color utilities.
-* Make `get()` synchronous, with `getSync` as the same function. `await get(...)` still works on its return value, but Promise `.then()` and `.catch()` calls are unsupported; failures throw synchronously.
-* Keep `config()` returning `{ parsed, error? }` for nonfatal errors; strict/fatal failures throw before injecting resolved values.
-* Make secret-reference resolution opt-in with `resolveReferences: true`.
-* The npm launcher can select an installed standalone CLI independently of the pinned npm package version. It does not fall back if that CLI rejects a command or exits with an error.
-
-#### Python packaging
-
-* Remove `dotenvx-postinstall`, runtime CLI downloads, and the legacy setuptools build configuration.
-* Use Maturin to build and publish native wheels.
-* Upgrade PyO3 to 0.29.0, addressing its iterator, synchronization-bound, and string-conversion security advisories noted in the Python changelog.
-
-### Performance
-
-Local macOS ARM64 measurements comparing Node 2.38.2 with Rust 0.4.1 (not a new RC0 benchmark):
-
-| Benchmark | Node 2.38.2 | Rust 0.4.1 | Rust improvement |
-| --- | ---: | ---: | ---: |
-| Executable size | 64.45 MB | 7.58 MB | 88% smaller |
-| CLI startup (`--version`) | 60.51 ms | 3.48 ms | 17.4× faster |
-| Load and inject 10 encrypted values | 196.22 ms | 6.47 ms | 30.4× faster |
-| Load and inject 100 encrypted values | 1,138.94 ms | 14.70 ms | 77.5× faster |
-| Encrypt 10 values | 213.69 ms | 9.66 ms | 22.1× faster |
-| Encrypt 100 values | 1,168.75 ms | 19.74 ms | 59.2× faster |
-| Decrypt 10 values | 207.95 ms | 9.77 ms | 21.3× faster |
-| Decrypt 100 values | 1,139.29 ms | 20.63 ms | 55.2× faster |
-
-Both executables were built locally and measured on the same Mac. Sizes are for
-uncompressed executables. Timings are median wall-clock times, including CLI
-startup, across 51 startup trials and 21 trials per workload after warmup. Both
-builds used the same fixtures and an existing keypair, with telemetry disabled.
-
-### Current limitations
-
-* External `dotenvx-<command>` dispatch is not implemented in the Rust CLI.
-* Stored-key custody in language SDKs requires a compatible CLI with the needed custody feature. Environment keys and local key files can be used directly.
-* Armor Enclave server-side decryption is unavailable in `@dotenvx/next-env` v3.
-* The Node.js adapter currently supports UTF-8 env files.
-* Installer-driven CLI changes on Windows require a compatible shell environment.
+* **BREAKING:** Remove the legacy policy workflow’s `--profile` flag, `spec` command, and standalone `check` command. Validation now happens during loading.
+* **BREAKING:** Remove `get --include-key` / `-ik` and `--exclude-key` / `-ek`. Select multiple keys or quoted glob patterns instead: `dotenvx get HELLO PORT` or `dotenvx get 'PUBLIC*'`.
+* **BREAKING:** Remove `encrypt` and `decrypt` key-selection flags: `--key` / `-k` and `--exclude-key` / `-ek`. Use `Dotenv.toml` storage rules instead.
+* **BREAKING:** Remove `--mask` from `run`, `get`, and `decrypt`, along with library `mask` options. Configure redaction in `Dotenv.toml`.
+* **BREAKING:** Remove `run --redact`. Configure redaction in `Dotenv.toml`.
+* **BREAKING:** Remove the `set -c` encryption shorthand.
+* **BREAKING:** Stop reading `DOTENV_F`. Use `DOTENV_FILE`, `DOTENV_PATH`, or explicit file arguments.
+* **BREAKING:** Remove `armor move`; move keys between teams through the Armor UI. Also remove `dotenvx armor curl` and `dotenvx feedback`.
+* **BREAKING:** Remove Node.js SDK `set()` and `ls()` methods. Use the corresponding CLI commands.
+* **BREAKING:** Remove Node.js `withEvents()` and `flushEvents()`. SDK loading no longer automatically sends Armor activity events.
+* **BREAKING:** Remove Node.js `logger`, `setLogLevel`, `getColor`, and `bold` exports.
+* **BREAKING:** Rename the public `parsedotenvxfile` primitive to `parsedotenvtoml`, without a compatibility alias.
+* Remove Python’s `dotenvx-postinstall`, runtime CLI downloads, and legacy setuptools build configuration.
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.38.2...main)
 
