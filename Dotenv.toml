@@ -1,0 +1,3 @@
+# Public benchmark fixture key; never used for real secrets.
+[files."benchmarks/fixtures/keys.env".env.DOTENV_PRIVATE_KEY]
+storage = "plaintext"
