@@ -4,8 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 3.0.0-rc0
 
-Draft release inventory for review and consolidation. Related language SDKs have their own version numbers. The older Unreleased notes below predate the Rust implementation and include superseded names and behavior.
-
 ### Added
 
 #### Rust CLI and shared engine
