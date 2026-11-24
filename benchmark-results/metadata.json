@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-24T00:01:57.516Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "os": "24.6.0",
+  "cpu": "Apple M1",
+  "hyperfine": "hyperfine 2.0.0",
+  "stableVersion": "2.38.2",
+  "betaVersion": "3.0.0-rc0",
+  "stableBinarySizeBytes": 52441744,
+  "betaBinarySizeBytes": 7585952,
+  "variables": 30,
+  "format": "legacy encrypted:",
+  "child": "/usr/bin/true",
+  "runs": 3,
+  "warmup": 1,
+  "smoke": true
+}
