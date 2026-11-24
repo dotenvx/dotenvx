@@ -1,8 +1,8 @@
 # dotenvx run startup benchmark
 
 Compare the latest published stable dotenvx 2 binary from `https://dotenvx.sh`
-with the pinned dotenvx 3 candidate, currently `0.4.17`, from
-`https://dotenvx.sh?version=0.4.17`. Both installers run in temporary directories;
+with the pinned dotenvx 3 candidate, currently `3.0.0-rc0`, from
+`https://dotenvx.sh?version=3.0.0-rc0`. Both installers run in temporary directories;
 the globally installed dotenvx is untouched. The repository's source version is
 not built or measured.
 

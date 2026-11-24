@@ -7,7 +7,7 @@ const { execFileSync } = require('node:child_process')
 const root = path.resolve(__dirname, '..')
 const fixtures = path.join(root, 'benchmarks/fixtures')
 const expected = require('../benchmarks/fixtures/expected.json')
-const betaVersion = '0.4.17'
+const betaVersion = '3.0.0-rc0'
 const runs = process.argv.includes('--smoke') ? 3 : 50
 const warmup = process.argv.includes('--smoke') ? 1 : 5
 const results = path.join(root, 'benchmark-results')
@@ -42,7 +42,7 @@ function install (name, version) {
   execute('sh', [installer, `--directory=${directory}`, ...(version ? [`--version=${version}`] : [])])
   const binary = path.join(directory, 'dotenvx')
   const actual = execute(binary, ['--version'], true).trim()
-  if (version) assert.equal(actual, version, 'Pinned beta version must match')
+  if (version) assert.equal(actual, version, 'Pinned RC version must match')
   else assert.match(actual, /^2\./, 'The stable installer must still serve dotenvx 2.x')
   return { binary, version: actual, binarySizeBytes: fs.statSync(binary).size }
 }
