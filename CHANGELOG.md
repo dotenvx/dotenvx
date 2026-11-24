@@ -6,17 +6,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Added
 
-Faster: Rebuilt in Rust for faster startup, loading, and decryption, with a substantially smaller executable.
-
-Custom Installs: Choose which commands and integrations ship in your binary with dotenvx install. Ship only run in production; excluded commands and their exclusive dependencies stay out of the executable. Add or remove features as needed—updates preserve your choices.
-
-Language Support: Native integrations for Node.js, Ruby, Python, PHP, Go, Rust, and Next.js, powered by the same Rust engine.
-
-Dotenv.toml: Define required variables, types, allowed values, encrypted/plaintext storage rules, and output redaction in one project configuration file.
-
-Key Custody: Store and retrieve keys through Native, Armor, 1Password, or Bitwarden. Inspect custody and list stored keys from the CLI.
-
-Encryption Envelope: A new, self-describing format for public keys, private keys, and encrypted values, with explicit version and algorithm identifiers, a ciphertext key identifier, and optional key-custody metadata. Existing Classic keys and encrypted files remain supported.
+* **Faster:** Rebuilt in Rust for faster startup, loading, and decryption, with a substantially smaller executable.
+* **Custom Installs:** Choose which commands and integrations ship in your binary with dotenvx install. Ship only run in production; excluded commands and their exclusive dependencies stay out of the executable. Add or remove features as needed—updates preserve your choices.
+* **Language Support:** Native integrations for Node.js, Ruby, Python, PHP, Go, Rust, and Next.js, powered by the same Rust engine.
+* **Dotenv.toml:** Define required variables, types, allowed values, encrypted/plaintext storage rules, and output redaction in one project configuration file.
+* **Key Custody:** Store and retrieve keys through Native, Armor, 1Password, or Bitwarden. Inspect custody and list stored keys from the CLI.
+* **Encryption Envelope:** A new, self-describing format for public keys, private keys, and encrypted values, with explicit version and algorithm identifiers, a ciphertext key identifier, and optional key-custody metadata. Existing Classic keys and encrypted files remain supported.
 
 ### Changed
 
