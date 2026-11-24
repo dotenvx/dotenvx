@@ -2,6 +2,63 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.0.0-rc0
+
+### Added
+
+Faster: Rebuilt in Rust for faster startup, loading, and decryption, with a substantially smaller executable.
+
+Custom Installs: Choose which commands and integrations ship in your binary with dotenvx install. Ship only run in production; excluded commands and their exclusive dependencies stay out of the executable. Add or remove features as needed—updates preserve your choices.
+
+Language Support: Native integrations for Node.js, Ruby, Python, PHP, Go, Rust, and Next.js, powered by the same Rust engine.
+
+Dotenv.toml: Define required variables, types, allowed values, encrypted/plaintext storage rules, and output redaction in one project configuration file.
+
+Key Custody: Store and retrieve keys through Native, Armor, 1Password, or Bitwarden. Inspect custody and list stored keys from the CLI.
+
+Encryption Envelope: A new, self-describing format for public keys, private keys, and encrypted values, with explicit version and algorithm identifiers, a ciphertext key identifier, and optional key-custody metadata. Existing Classic keys and encrypted files remain supported.
+
+### Changed
+
+* **BREAKING:** Replace `Envfile` and `Dotenvxfile` configuration with `Dotenv.toml`. Only `Dotenv.toml` and lowercase `dotenv.toml` are discovered; legacy files are no longer loaded.
+* **BREAKING:** On Unix, `run` replaces itself with the child process when redaction is disabled. With redaction enabled, output passes through pipes rather than a PTY, which can affect terminal behavior.
+* **BREAKING:** Argument errors exit with status `2`; missing executables exit with status `127`.
+* **BREAKING:** `get` sorts output keys alphabetically instead of preserving insertion order.
+* **BREAKING:** Node.js `get()` is synchronous, with `getSync` as an alias. `await get()` still works, but `.then()` and `.catch()` no longer do; failures throw synchronously.
+* **BREAKING:** Node.js secret-reference resolution requires `resolveReferences: true`.
+* **BREAKING:** The npm CLI prefers an installed standalone dotenvx over its bundled binary. Its version may differ from the npm package version, and command failures do not trigger fallback. Set `DOTENVX_CLI` to select an executable explicitly.
+* **BREAKING:** Armor, Native, 1Password, Bitwarden, `protect`, `ls`, and `genexample` require their corresponding build features. Deprecated `gitignore`, `precommit`, and `prebuild` commands are also optional.
+* Generate new keypairs using the encryption envelope format. Existing Classic public keys continue producing Classic ciphertext.
+* Resolve matching environment private keys before local key files and remote custody. Locally pulled keys work without changing custody metadata.
+* Apply `Dotenv.toml` rules during loading, file edits, encryption, decryption, and protection. File-specific rules override root rules; the first selected file takes precedence.
+* Validate loaded and declared variables without validating unrelated machine variables. Redaction changes displayed output, not the values applications receive.
+* Leave an env file unchanged if any selected value fails to decrypt.
+* Install into the current executable’s directory, support `--directory` overrides, and verify downloads with SHA-256.
+* Resolve custom-build dependencies automatically, reject incompatible removals, and skip installations that would make no changes.
+* Use `dotenvx info` to inspect the installed build and `dotenvx uninstall` to remove its executable while preserving configuration and project files.
+* Use a required Git filter for `dotenvx protect`, enforcing storage policy before staging. Use `dotenvx protect --docker` to check storage policy and Docker ignore rules.
+* Distribute Node.js native addons and the bundled CLI through exact-version platform packages. Python uses Maturin-built native wheels instead of runtime CLI downloads.
+* Share Armor sessions between the Node and Rust implementations. Store bearer tokens in the OS credential store, with configuration-file fallback; mask token output unless `--unmask` is supplied.
+* Show file activity with `--verbose` and variable decisions, custody details, and executable selection with `--debug`. Diagnostics go to stderr without secret values.
+* Prefer `--file` and `--keys-file` in help output; retain `--env-file` and `--env-keys-file` as hidden aliases.
+* Use native filesystem error messages and skip absent convention files unless strict mode is enabled.
+
+### Removed
+
+* **BREAKING:** Remove the legacy policy workflow’s `--profile` flag, `spec` command, and standalone `check` command. Validation now happens during loading.
+* **BREAKING:** Remove `get --include-key` / `-ik` and `--exclude-key` / `-ek`. Select multiple keys or quoted glob patterns instead: `dotenvx get HELLO PORT` or `dotenvx get 'PUBLIC*'`.
+* **BREAKING:** Remove `encrypt` and `decrypt` key-selection flags: `--key` / `-k` and `--exclude-key` / `-ek`. Use `Dotenv.toml` storage rules instead.
+* **BREAKING:** Remove `--mask` from `run`, `get`, and `decrypt`, along with library `mask` options. Configure redaction in `Dotenv.toml`.
+* **BREAKING:** Remove `run --redact`. Configure redaction in `Dotenv.toml`.
+* **BREAKING:** Remove the `set -c` encryption shorthand.
+* **BREAKING:** Stop reading `DOTENV_F`. Use `DOTENV_FILE`, `DOTENV_PATH`, or explicit file arguments.
+* **BREAKING:** Remove `armor move`; move keys between teams through the Armor UI. Also remove `dotenvx armor curl` and `dotenvx feedback`.
+* **BREAKING:** Remove Node.js SDK `set()` and `ls()` methods. Use the corresponding CLI commands.
+* **BREAKING:** Remove Node.js `withEvents()` and `flushEvents()`. SDK loading no longer automatically sends Armor activity events.
+* **BREAKING:** Remove Node.js `logger`, `setLogLevel`, `getColor`, and `bold` exports.
+* **BREAKING:** Rename the public `parsedotenvxfile` primitive to `parsedotenvtoml`, without a compatibility alias.
+* Remove Python’s `dotenvx-postinstall`, runtime CLI downloads, and legacy setuptools build configuration.
+
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.38.2...main)
 
 ### Added

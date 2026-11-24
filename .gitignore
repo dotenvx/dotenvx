@@ -27,3 +27,6 @@ tests/tmp
 spec/tmp/*
 !spec/tmp/.gitkeep
 llms.txt
+
+# Downloaded-binary startup benchmark results
+benchmark-results/
