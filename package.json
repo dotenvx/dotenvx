@@ -47,6 +47,7 @@
     "standard:fix": "standard --fix",
     "test": "tap run --test-env=DOTENVX_NO_ARMOR=true --allow-empty-coverage --allow-incomplete-coverage --disable-coverage --timeout=60000",
     "testshell": "shellspec --shell /bin/bash",
+    "test:perf": "node scripts/performance.cjs",
     "release:check": "npm test && npm run testshell",
     "prerelease": "npm run release:check",
     "release": "npm run release:check && standard-version"
