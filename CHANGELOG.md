@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.0.0-rc1
+
+### Added
+
+* Add `encrypt --format 3` and `--format classic` to migrate formats while keeping the same key. Matching local private keys are converted too.
+
+### Changed
+
+* Fix `get` and `run` to accept Classic and v3 private keys with either ciphertext format.
+* Safely fall back to Classic keys when looking up v3 keys.
+
 ## 3.0.0-rc0
 
 ### Added
