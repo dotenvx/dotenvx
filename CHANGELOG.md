@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Fix `get` and `run` to accept Classic and v3 private keys with either ciphertext format.
 * Safely fall back to Classic keys when looking up v3 keys.
+* Include Native OS key storage in default builds so existing keys stored by 2.x continue to work. New private keys default to `.env.keys`; OS storage remains an explicit custody choice. Native can still be removed with `dotenvx install --remove native`.
 
 ## 3.0.0-rc0
 
