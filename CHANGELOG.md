@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.0.0-rc2
+
+> **BREAKING: Native OS key storage now requires an explicit install option.**
+> The default and Armor builds do **not** include Native. If dotenvx 2.x stored
+> your private keys in macOS Keychain, Linux Secret Service, or Windows Credential
+> Manager, run **`dotenvx install --add native`** before using those keys with 3.x.
+> Without this feature, the CLI cannot retrieve private keys from the OS store;
+> encrypted values that depend on those keys will not decrypt unless the matching
+> key is supplied through another enabled source, such as the environment or
+> `.env.keys`. Existing OS-stored keys are preserved. New private keys default to
+> `.env.keys`.
+
 ## 3.0.0-rc1
 
 ### Added
